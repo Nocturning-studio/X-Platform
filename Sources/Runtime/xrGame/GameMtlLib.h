@@ -268,32 +268,32 @@ class CGameMtlLibrary
 		material_count = 0;
 		material_pairs_rt.clear();
 #endif
-		for (GameMtlIt m_it = materials.begin(); materials.end() != m_it; ++m_it)
+		for(GameMtlIt m_it = materials.begin(); materials.end() != m_it; ++m_it)
 			xr_delete(*m_it);
 		materials.clear();
-		for (GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
+		for(GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
 			xr_delete(*p_it);
 		material_pairs.clear();
 	}
 	// material routine
 	IC GameMtlIt GetMaterialIt(LPCSTR name)
 	{
-		for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-			if (0 == strcmpi(*(*it)->m_Name, name))
+		for(GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+			if(0 == strcmpi(*(*it)->m_Name, name))
 				return it;
 		return materials.end();
 	}
 	IC GameMtlIt GetMaterialIt(shared_str& name)
 	{
-		for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-			if (name.equal((*it)->m_Name))
+		for(GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+			if(name.equal((*it)->m_Name))
 				return it;
 		return materials.end();
 	}
 	IC GameMtlIt GetMaterialItByID(int id)
 	{
-		for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-			if ((*it)->ID == id)
+		for(GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+			if((*it)->ID == id)
 				return it;
 		return materials.end();
 	}
@@ -396,10 +396,10 @@ class CGameMtlLibrary
 
 #define GET_RANDOM(a_vector) (a_vector[Random.randI(a_vector.size())])
 
-#define CLONE_MTL_SOUND(_res_, _mtl_pair_, _a_vector_)                                                                 \
-	{                                                                                                                  \
-		VERIFY2(!_mtl_pair_##->_a_vector_.empty(), _mtl_pair_->dbg_Name());                                            \
-		_res_.clone(GET_RANDOM(_mtl_pair_##->_a_vector_), st_Effect, sg_SourceType);                                   \
+#define CLONE_MTL_SOUND(_res_, _mtl_pair_, _a_vector_)                               \
+	{                                                                                \
+		VERIFY2(!_mtl_pair_##->_a_vector_.empty(), _mtl_pair_->dbg_Name());          \
+		_res_.clone(GET_RANDOM(_mtl_pair_##->_a_vector_), st_Effect, sg_SourceType); \
 	}
 
 extern CGameMtlLibrary GMLib;

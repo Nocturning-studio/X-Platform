@@ -77,14 +77,14 @@ IC bool btwIsPow2(u32 v)
 IC int btwPow2_Ceil(int v)
 {
 	int i = btwLowestBitMask(v);
-	while (i < v)
+	while(i < v)
 		i <<= 1;
 	return i;
 }
 IC u32 btwPow2_Ceil(u32 v)
 {
 	u32 i = btwLowestBitMask(v);
-	while (i < v)
+	while(i < v)
 		i <<= 1;
 	return i;
 }

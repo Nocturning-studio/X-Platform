@@ -59,11 +59,11 @@ void CInfoDocument::OnH_A_Chield()
 	// передать информацию содержащуюся в документе
 	// объекту, который поднял документ
 	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
-	if (!pInvOwner)
+	if(!pInvOwner)
 		return;
 
 	// создать и отправить пакет о получении новой информации
-	if (m_Info.size())
+	if(m_Info.size())
 	{
 		NET_Packet P;
 		u_EventGen(P, GE_INFO_TRANSFER, H_Parent()->ID());

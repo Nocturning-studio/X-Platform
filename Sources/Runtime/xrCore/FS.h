@@ -234,7 +234,8 @@ class XRCORE_API CMemoryWriter : public IWriter
 //------------------------------------------------------------------------------------
 // Read
 //------------------------------------------------------------------------------------
-template <typename implementation_type> class IReaderBase
+template <typename implementation_type>
+class IReaderBase
 {
   public:
 	virtual ~IReaderBase()
@@ -400,15 +401,15 @@ template <typename implementation_type> class IReaderBase
 		u32 dwSize, dwType;
 
 		rewind();
-		while (!eof())
+		while(!eof())
 		{
 			dwType = r_u32();
 			dwSize = r_u32();
-			if ((dwType & (~CFS_CompressMark)) == ID)
+			if((dwType & (~CFS_CompressMark)) == ID)
 			{
 
 				VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
-				if (bCompressed)
+				if(bCompressed)
 					*bCompressed = dwType & CFS_CompressMark;
 				return dwSize;
 			}
@@ -421,7 +422,7 @@ template <typename implementation_type> class IReaderBase
 	IC BOOL r_chunk(u32 ID, void* dest) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
 		u32 dwSize = find_chunk(ID);
-		if (dwSize != 0)
+		if(dwSize != 0)
 		{
 			r(dest, dwSize);
 			return TRUE;
@@ -433,7 +434,7 @@ template <typename implementation_type> class IReaderBase
 	IC BOOL r_chunk_safe(u32 ID, void* dest, u32 dest_size) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
 		u32 dwSize = find_chunk(ID);
-		if (dwSize != 0)
+		if(dwSize != 0)
 		{
 			R_ASSERT(dwSize == dest_size);
 			r(dest, dwSize);
@@ -469,7 +470,7 @@ class XRCORE_API IReader : public IReaderBase<IReader>
   protected:
 	IC u32 correction(u32 p)
 	{
-		if (p % 16)
+		if(p % 16)
 		{
 			return ((p % 16) + 1) * 16 - p;
 		}

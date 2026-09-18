@@ -28,7 +28,7 @@ struct clQueryCollision
 	xr_vector<CObject*> objects; // affected objects
 	xr_vector<clQueryTri> tris;	 // triangles		(if queried)
 	xr_vector<Fobb> boxes;		 // boxes/ellipsoids	(if queried)
-	xr_vector<fvec4> spheres; // spheres			(if queried)
+	xr_vector<fvec4> spheres;	 // spheres			(if queried)
 
 	IC void Clear()
 	{
@@ -129,7 +129,8 @@ class ENGINE_API CCF_Skeleton : public ICollisionForm
   public:
 	struct SElement
 	{
-		union {
+		union
+		{
 			struct
 			{
 				fmat4x4 b_IM; // world 2 bone transform
@@ -207,7 +208,8 @@ class ENGINE_API CCF_EventBox : public ICollisionForm
 class ENGINE_API CCF_Shape : public ICollisionForm
 {
   public:
-	union shape_data {
+	union shape_data
+	{
 		Fsphere sphere;
 		struct
 		{

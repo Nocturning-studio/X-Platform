@@ -38,7 +38,7 @@ struct vis_data
 
 	vis_data& operator=(const vis_data& other)
 	{
-		if (this != &other)
+		if(this != &other)
 		{
 			box = other.box;
 			sphere = other.sphere;

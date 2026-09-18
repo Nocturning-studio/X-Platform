@@ -66,7 +66,7 @@ void CWeaponPistol::Load(LPCSTR section)
 	strconcat(sizeof(str), str, pSettings->r_string(*hud_sect, "anim_shoot"), "_r");
 	animGet(wm_mhud_r.mhud_shots, str);
 
-	if (IsZoomEnabled())
+	if(IsZoomEnabled())
 	{
 		strconcat(sizeof(str), str, pSettings->r_string(*hud_sect, "anim_idle_aim"), "_r");
 		animGet(wm_mhud_r.mhud_idle_aim, str);
@@ -82,12 +82,12 @@ void CWeaponPistol::OnH_B_Chield()
 void CWeaponPistol::PlayAnimShow()
 {
 	VERIFY(GetState() == eShowing);
-	if (iAmmoElapsed >= 1)
+	if(iAmmoElapsed >= 1)
 		m_opened = false;
 	else
 		m_opened = true;
 
-	if (m_opened)
+	if(m_opened)
 	{
 		CWeaponPistol::WWPMotions& m = wwpm_current();
 		m_pHUD->animPlay(random_anim(m.mhud_show_empty), FALSE, this, GetState());
@@ -102,7 +102,7 @@ void CWeaponPistol::PlayAnimShow()
 void CWeaponPistol::PlayAnimIdle()
 {
 	VERIFY(GetState() == eIdle);
-	if (m_opened)
+	if(m_opened)
 	{
 		CWeaponPistol::WWPMotions& m = wwpm_current();
 		m_pHUD->animPlay(random_anim(m.mhud_empty), TRUE, NULL, GetState());
@@ -110,7 +110,7 @@ void CWeaponPistol::PlayAnimIdle()
 	else
 	{
 		CActor* A = smart_cast<CActor*>(H_Parent());
-		if (A && A->Holder())
+		if(A && A->Holder())
 		{
 			MotionSVec* m = (IsZoomed()) ? &wm_mhud_r.mhud_idle_aim : &wm_mhud_r.mhud_idle;
 			m_pHUD->animPlay(random_anim(*m), TRUE, NULL, GetState());
@@ -123,7 +123,7 @@ void CWeaponPistol::PlayAnimIdle()
 void CWeaponPistol::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
-	if (m_opened)
+	if(m_opened)
 	{
 		CWeaponPistol::WWPMotions& m = wwpm_current();
 		m_pHUD->animPlay(random_anim(m.mhud_reload_empty), TRUE, this, GetState());
@@ -140,7 +140,7 @@ void CWeaponPistol::PlayAnimReload()
 void CWeaponPistol::PlayAnimHide()
 {
 	VERIFY(GetState() == eHiding);
-	if (m_opened)
+	if(m_opened)
 	{
 		PlaySound(sndClose, get_LastFP());
 		CWeaponPistol::WWPMotions& m = wwpm_current();
@@ -153,7 +153,7 @@ void CWeaponPistol::PlayAnimHide()
 void CWeaponPistol::PlayAnimShoot()
 {
 	VERIFY(GetState() == eFire || GetState() == eFire2);
-	if (iAmmoElapsed > 1)
+	if(iAmmoElapsed > 1)
 	{
 		CWeaponMagazined::SWMmotions& m = swm_current();
 		m_pHUD->animPlay(random_anim(m.mhud_shots), FALSE, this, GetState());
@@ -175,7 +175,7 @@ void CWeaponPistol::switch2_Reload()
 
 void CWeaponPistol::OnAnimationEnd(u32 state)
 {
-	if (state == eHiding && m_opened)
+	if(state == eHiding && m_opened)
 	{
 		m_opened = false;
 		//		switch2_Hiding();
@@ -211,14 +211,14 @@ void CWeaponPistol::UpdateSounds()
 {
 	inherited::UpdateSounds();
 
-	if (sndClose.playing())
+	if(sndClose.playing())
 		sndClose.set_position(get_LastFP());
 }
 
 CWeaponPistol::WWPMotions& CWeaponPistol::wwpm_current()
 {
 	CActor* A = smart_cast<CActor*>(H_Parent());
-	if (A && A->Holder())
+	if(A && A->Holder())
 	{
 		//		Msg("right-hand animation playing");
 		return mhud_pistol_r;
@@ -230,7 +230,7 @@ CWeaponPistol::WWPMotions& CWeaponPistol::wwpm_current()
 CWeaponMagazined::SWMmotions& CWeaponPistol::swm_current()
 {
 	CActor* A = smart_cast<CActor*>(H_Parent());
-	if (A && A->Holder())
+	if(A && A->Holder())
 	{
 		//.		Msg("right-hand animation playing");
 		return wm_mhud_r;

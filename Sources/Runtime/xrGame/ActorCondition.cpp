@@ -22,14 +22,14 @@
 
 BOOL GodMode()
 {
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 		return psActorFlags.test(AF_GODMODE);
 	return FALSE;
 }
 
 BOOL LastChanceMode()
 {
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 		return psActorFlags.test(AF_LAST_CHANCE);
 	return FALSE;
 }
@@ -108,14 +108,14 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 void CActorCondition::UpdateCondition()
 {
-	if (GodMode())
+	if(GodMode())
 		return;
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
-	if (!object().Local() && m_object != Level().CurrentViewEntity())
+	if(!object().Local() && m_object != Level().CurrentViewEntity())
 		return;
 
-	if ((object().mstate_real & mcAnyMove))
+	if((object().mstate_real & mcAnyMove))
 	{
 		ConditionWalk(object().inventory().TotalWeight() / object().inventory().GetMaxWeight(),
 					  isActorAccelerated(object().mstate_real, object().IsZoomAimingMode()),
@@ -126,12 +126,12 @@ void CActorCondition::UpdateCondition()
 		ConditionStand(object().inventory().TotalWeight() / object().inventory().GetMaxWeight());
 	};
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 
 		float k_max_power = 1.0f;
 
-		if (true)
+		if(true)
 		{
 			float weight = object().inventory().TotalWeight();
 
@@ -153,12 +153,12 @@ void CActorCondition::UpdateCondition()
 	m_fAlcohol += m_fV_Alcohol * m_fDeltaTime;
 	clamp(m_fAlcohol, 0.0f, 1.0f);
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
-		if ((m_fAlcohol > 0.0001f))
+		if((m_fAlcohol > 0.0001f))
 		{
-			if (!ce)
+			if(!ce)
 			{
 				AddEffector(m_object, effAlcohol, "effector_alcohol",
 							GET_KOEFF_FUNC(this, &CActorCondition::GetAlcohol));
@@ -166,7 +166,7 @@ void CActorCondition::UpdateCondition()
 		}
 		else
 		{
-			if (ce)
+			if(ce)
 				RemoveEffector(m_object, effAlcohol);
 		}
 
@@ -175,22 +175,22 @@ void CActorCondition::UpdateCondition()
 		string64 pp_sect_name;
 		shared_str ln = Level().name();
 		strconcat(sizeof(pp_sect_name), pp_sect_name, "effector_psy_health", "_", *ln);
-		if (!pSettings->section_exist(pp_sect_name))
+		if(!pSettings->section_exist(pp_sect_name))
 			strcpy_s(pp_sect_name, "effector_psy_health");
 
-		if (!fsimilar(GetPsyHealth(), 1.0f, 0.05f))
+		if(!fsimilar(GetPsyHealth(), 1.0f, 0.05f))
 		{
-			if (!ppe)
+			if(!ppe)
 			{
 				AddEffector(m_object, effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
 			}
 		}
 		else
 		{
-			if (ppe)
+			if(ppe)
 				RemoveEffector(m_object, effPsyHealth);
 		}
-		if (fis_zero(GetPsyHealth()))
+		if(fis_zero(GetPsyHealth()))
 			health() = 0.0f;
 	};
 
@@ -198,17 +198,17 @@ void CActorCondition::UpdateCondition()
 
 	inherited::UpdateCondition();
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 		UpdateTutorialThresholds();
 }
 
 void CActorCondition::UpdateSatiety()
 {
-	if (!IsGameTypeSingle())
+	if(!IsGameTypeSingle())
 		return;
 
 	float k = 1.0f;
-	if (m_fSatiety > 0)
+	if(m_fSatiety > 0)
 	{
 		m_fSatiety -= m_fV_Satiety * k * m_fDeltaTime;
 
@@ -216,7 +216,7 @@ void CActorCondition::UpdateSatiety()
 	}
 
 	// сытость увеличивает здоровье только если нет открытых ран
-	if (!m_bIsBleeding)
+	if(!m_bIsBleeding)
 	{
 		m_fDeltaHealth += CanBeHarmed() ? (m_fV_SatietyHealth * (m_fSatiety > 0.0f ? 1.f : -1.f) * m_fDeltaTime) : 0;
 	}
@@ -230,7 +230,7 @@ void CActorCondition::UpdateSatiety()
 
 CWound* CActorCondition::ConditionHit(SHit* pHDS)
 {
-	if (GodMode())
+	if(GodMode())
 		return NULL;
 	return inherited::ConditionHit(pHDS);
 }
@@ -259,9 +259,9 @@ void CActorCondition::ConditionStand(float weight)
 
 bool CActorCondition::IsCantWalk() const
 {
-	if (m_fPower < m_fCantWalkPowerBegin)
+	if(m_fPower < m_fCantWalkPowerBegin)
 		m_bCantWalk = true;
-	else if (m_fPower > m_fCantWalkPowerEnd)
+	else if(m_fPower > m_fCantWalkPowerEnd)
 		m_bCantWalk = false;
 	return m_bCantWalk;
 }
@@ -270,15 +270,15 @@ bool CActorCondition::IsCantWalk() const
 
 bool CActorCondition::IsCantWalkWeight()
 {
-	if (IsGameTypeSingle() && !GodMode())
+	if(IsGameTypeSingle() && !GodMode())
 	{
 		float max_w = m_MaxWalkWeight;
 
 		CCustomOutfit* outfit = m_object->GetOutfit();
-		if (outfit)
+		if(outfit)
 			max_w += outfit->m_additional_weight;
 
-		if (object().inventory().TotalWeight() > max_w)
+		if(object().inventory().TotalWeight() > max_w)
 		{
 			m_condition_flags.set(eCantWalkWeight, TRUE);
 			return true;
@@ -290,18 +290,18 @@ bool CActorCondition::IsCantWalkWeight()
 
 bool CActorCondition::IsCantSprint() const
 {
-	if (m_fPower < m_fCantSprintPowerBegin)
+	if(m_fPower < m_fCantSprintPowerBegin)
 		m_bCantSprint = true;
-	else if (m_fPower > m_fCantSprintPowerEnd)
+	else if(m_fPower > m_fCantSprintPowerEnd)
 		m_bCantSprint = false;
 	return m_bCantSprint;
 }
 
 bool CActorCondition::IsLimping() const
 {
-	if (m_fPower < m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
+	if(m_fPower < m_fLimpingPowerBegin || GetHealth() < m_fLimpingHealthBegin)
 		m_bLimping = true;
-	else if (m_fPower > m_fLimpingPowerEnd && GetHealth() > m_fLimpingHealthEnd)
+	else if(m_fPower > m_fLimpingPowerEnd && GetHealth() > m_fLimpingHealthEnd)
 		m_bLimping = false;
 	return m_bLimping;
 }
@@ -353,60 +353,60 @@ void CActorCondition::UpdateTutorialThresholds()
 	static float _cPsyHealthThr = pSettings->r_float("tutorial_conditions_thresholds", "psy_health");
 
 	bool b = true;
-	if (b && !m_condition_flags.test(eCriticalPowerReached) && GetPower() < _cPowerThr)
+	if(b && !m_condition_flags.test(eCriticalPowerReached) && GetPower() < _cPowerThr)
 	{
 		m_condition_flags.set(eCriticalPowerReached, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_critical_power");
 	}
 
-	if (b && !m_condition_flags.test(eCriticalMaxPowerReached) && GetMaxPower() < _cPowerMaxThr)
+	if(b && !m_condition_flags.test(eCriticalMaxPowerReached) && GetMaxPower() < _cPowerMaxThr)
 	{
 		m_condition_flags.set(eCriticalMaxPowerReached, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_critical_max_power");
 	}
 
-	if (b && !m_condition_flags.test(eCriticalBleedingSpeed) && BleedingSpeed() > _cBleeding)
+	if(b && !m_condition_flags.test(eCriticalBleedingSpeed) && BleedingSpeed() > _cBleeding)
 	{
 		m_condition_flags.set(eCriticalBleedingSpeed, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_bleeding");
 	}
 
-	if (b && !m_condition_flags.test(eCriticalSatietyReached) && GetSatiety() < _cSatiety)
+	if(b && !m_condition_flags.test(eCriticalSatietyReached) && GetSatiety() < _cSatiety)
 	{
 		m_condition_flags.set(eCriticalSatietyReached, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_satiety");
 	}
 
-	if (b && !m_condition_flags.test(eCriticalRadiationReached) && GetRadiation() > _cRadiation)
+	if(b && !m_condition_flags.test(eCriticalRadiationReached) && GetRadiation() > _cRadiation)
 	{
 		m_condition_flags.set(eCriticalRadiationReached, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_radiation");
 	}
 
-	if (b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth() > _cPsyHealthThr)
+	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth() > _cPsyHealthThr)
 	{
 		//.		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_psy");
 	}
 
-	if (b && !m_condition_flags.test(eCantWalkWeight))
+	if(b && !m_condition_flags.test(eCantWalkWeight))
 	{
 		//.		m_condition_flags.set			(eCantWalkWeight, TRUE);
 		b = false;
 		strcpy_s(cb_name, "_G.on_actor_cant_walk_weight");
 	}
 
-	if (b && !m_condition_flags.test(eWeaponJammedReached) && m_object->inventory().GetActiveSlot() != NO_ACTIVE_SLOT)
+	if(b && !m_condition_flags.test(eWeaponJammedReached) && m_object->inventory().GetActiveSlot() != NO_ACTIVE_SLOT)
 	{
 		PIItem item = m_object->inventory().ItemFromSlot(m_object->inventory().GetActiveSlot());
 		CWeapon* pWeapon = smart_cast<CWeapon*>(item);
-		if (pWeapon && pWeapon->GetCondition() < _cWpnCondition)
+		if(pWeapon && pWeapon->GetCondition() < _cWpnCondition)
 		{
 			m_condition_flags.set(eWeaponJammedReached, TRUE);
 			b = false;
@@ -414,7 +414,7 @@ void CActorCondition::UpdateTutorialThresholds()
 		}
 	}
 
-	if (!b)
+	if(!b)
 	{
 		luabind::functor<LPCSTR> fl;
 		R_ASSERT(ai().script_engine().functor<LPCSTR>(cb_name, fl));

@@ -9,7 +9,7 @@
 
 void __stdcall xrSkin1W_SSE(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* Bones)
 {
-	for (u32 i = 0; i < vCount; ++i)
+	for(u32 i = 0; i < vCount; ++i)
 	{
 		const vertBoned1W& src = S[i];
 		vertRender& dst = D[i];

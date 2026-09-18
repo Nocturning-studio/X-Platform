@@ -15,19 +15,20 @@
 												};\
 												private:
 */
-#define DECLARE_PHLIST_ITEM(class_name)                                                                                \
-	friend class CPHItemList<class_name>;                                                                              \
-	friend class CPHItemList<class_name>::iterator;                                                                    \
-	class_name* next;                                                                                                  \
+#define DECLARE_PHLIST_ITEM(class_name)             \
+	friend class CPHItemList<class_name>;           \
+	friend class CPHItemList<class_name>::iterator; \
+	class_name* next;                               \
 	class_name** tome;
-#define DECLARE_PHSTACK_ITEM(class_name)                                                                               \
-	DECLARE_PHLIST_ITEM(class_name)                                                                                    \
-	friend class CPHItemStack<class_name>;                                                                             \
+#define DECLARE_PHSTACK_ITEM(class_name)   \
+	DECLARE_PHLIST_ITEM(class_name)        \
+	friend class CPHItemStack<class_name>; \
 	u16 stack_pos;
 
 // #define TPI(item)								((T::CPHListItem*)item)
 
-template <class T> class CPHItemList
+template <class T>
+class CPHItemList
 {
 	T* first_next;
 	T** last_tome;
@@ -82,7 +83,7 @@ template <class T> class CPHItemList
 	}
 	void move_items(CPHItemList<T>& sourse_list)
 	{
-		if (!sourse_list.first_next)
+		if(!sourse_list.first_next)
 			return;
 		*(last_tome) = sourse_list.first_next;
 		sourse_list.first_next->tome = last_tome;
@@ -95,7 +96,7 @@ template <class T> class CPHItemList
 		T* item = *i;
 		T* next = item->next;
 		*(item->tome) = next;
-		if (next)
+		if(next)
 			next->tome = item->tome;
 		else
 			last_tome = item->tome;
@@ -117,7 +118,8 @@ template <class T> class CPHItemList
 	}
 };
 
-template <class T> class CPHItemStack : public CPHItemList<T>
+template <class T>
+class CPHItemStack : public CPHItemList<T>
 {
   public:
 	void push_back(T* item)
@@ -126,10 +128,10 @@ template <class T> class CPHItemStack : public CPHItemList<T>
 		CPHItemList<T>::push_back(item);
 	}
 };
-#define DEFINE_PHITEM_LIST(T, N, I)                                                                                    \
-	typedef CPHItemList<T> N;                                                                                          \
+#define DEFINE_PHITEM_LIST(T, N, I) \
+	typedef CPHItemList<T> N;       \
 	typedef CPHItemList<T>::iterator I;
-#define DEFINE_PHITEM_STACK(T, N, I)                                                                                   \
-	typedef CPHItemStack<T> N;                                                                                         \
+#define DEFINE_PHITEM_STACK(T, N, I) \
+	typedef CPHItemStack<T> N;       \
 	typedef CPHItemStack<T>::iterator I;
 #endif

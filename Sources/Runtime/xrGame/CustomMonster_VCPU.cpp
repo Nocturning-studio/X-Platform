@@ -4,9 +4,9 @@
 
 IC void conv_angle(float& c)
 {
-	if (c < 0)
+	if(c < 0)
 		c += PI_MUL_2;
-	else if (c > PI_MUL_2)
+	else if(c > PI_MUL_2)
 		c -= PI_MUL_2;
 }
 
@@ -19,7 +19,7 @@ void CCustomMonster::mk_rotation(fvec3& dir, SRotation& R)
 	clamp(DYaw.x, -0.9999999f, 0.9999999f);
 	clamp(DYaw.y, -0.9999999f, 0.9999999f);
 	clamp(DYaw.z, -0.9999999f, 0.9999999f);
-	if (DYaw.x >= 0)
+	if(DYaw.x >= 0)
 		R.yaw = acosf(DYaw.z);
 	else
 		R.yaw = 2 * PI - acosf(DYaw.z);
@@ -31,7 +31,7 @@ void CCustomMonster::mk_rotation(fvec3& dir, SRotation& R)
 
 void CCustomMonster::Exec_Look(float dt)
 {
-	if (animation_movement_controlled())
+	if(animation_movement_controlled())
 		return;
 
 	movement().m_body.current.yaw = angle_normalize_signed(movement().m_body.current.yaw);

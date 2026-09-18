@@ -16,7 +16,7 @@
 // T_INIT		-	класс где определена статическая InitIdToIndex
 //					функция инициализации section_name и line_name
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <u32 ITEM_REC_NUM, typename ITEM_DATA, typename T_ID, typename T_INDEX, typename T_INIT>
 #define CSINI_IdToIndex CIni_IdToIndex<ITEM_REC_NUM, ITEM_DATA, T_ID, T_INDEX, T_INIT>
 
@@ -31,15 +31,17 @@ class CIni_IdToIndex
 	typedef xr_vector<ITEM_DATA> T_VECTOR;
 	static T_VECTOR* m_pItemDataVector;
 
-	template <u32 NUM> static void LoadItemData(u32, LPCSTR)
+	template <u32 NUM>
+	static void LoadItemData(u32, LPCSTR)
 	{
 		STATIC_CHECK(false, Specialization_for_LoadItemData_in_CIni_IdToIndex_not_found);
 		NODEFAULT;
 	}
 
-	template <> static void LoadItemData<0>(u32 count, LPCSTR cfgRecord)
+	template <>
+	static void LoadItemData<0>(u32 count, LPCSTR cfgRecord)
 	{
-		for (u32 k = 0; k < count; k += 1)
+		for(u32 k = 0; k < count; k += 1)
 		{
 			string64 buf;
 			LPCSTR id_str = _GetItem(cfgRecord, k, buf);
@@ -51,9 +53,10 @@ class CIni_IdToIndex
 		}
 	}
 
-	template <> static void LoadItemData<1>(u32 count, LPCSTR cfgRecord)
+	template <>
+	static void LoadItemData<1>(u32 count, LPCSTR cfgRecord)
 	{
-		for (u32 k = 0; k < count; k += 2)
+		for(u32 k = 0; k < count; k += 2)
 		{
 			string64 buf, buf1;
 			LPCSTR id_str = _GetItem(cfgRecord, k, buf);
@@ -120,13 +123,13 @@ TEMPLATE_SPECIALIZATION
 const typename ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)
 {
 	T_VECTOR::iterator it = m_pItemDataVector->begin();
-	for (; m_pItemDataVector->end() != it; it++)
+	for(; m_pItemDataVector->end() != it; it++)
 	{
-		if (!xr_strcmp((*it).id, str_id))
+		if(!xr_strcmp((*it).id, str_id))
 			break;
 	}
 
-	if (m_pItemDataVector->end() == it)
+	if(m_pItemDataVector->end() == it)
 	{
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;
@@ -138,9 +141,9 @@ const typename ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_a
 TEMPLATE_SPECIALIZATION
 const typename ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_assert)
 {
-	if ((size_t)index >= m_pItemDataVector->size())
+	if((size_t)index >= m_pItemDataVector->size())
 	{
-		if (!no_assert)
+		if(!no_assert)
 			Debug.fatal(DEBUG_INFO, "item by index not found in section %s, line %s", section_name, line_name);
 		return NULL;
 	}

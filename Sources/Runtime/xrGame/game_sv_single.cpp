@@ -27,7 +27,7 @@ void game_sv_Single::Create(shared_str& options)
 {
 	inherited::Create(options);
 
-	if (strstr(*options, "/alife"))
+	if(strstr(*options, "/alife"))
 		m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
 
 	switch_Phase(GAME_PHASE_INPROGRESS);
@@ -49,27 +49,27 @@ CSE_Abstract*		game_sv_Single::get_entity_from_eid		(u16 id)
 
 void game_sv_Single::OnCreate(u16 id_who)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	CSE_Abstract* e_who = get_entity_from_eid(id_who);
 	VERIFY(e_who);
-	if (!e_who->m_bALifeControl)
+	if(!e_who->m_bALifeControl)
 		return;
 
 	CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(e_who);
-	if (!alife_object)
+	if(!alife_object)
 		return;
 
 	alife_object->m_bOnline = true;
 
-	if (alife_object->ID_Parent != 0xffff)
+	if(alife_object->ID_Parent != 0xffff)
 	{
 		CSE_ALifeDynamicObject* parent = ai().alife().objects().object(alife_object->ID_Parent, true);
-		if (parent)
+		if(parent)
 		{
 			CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(parent);
-			if (trader)
+			if(trader)
 				alife().create(alife_object);
 			else
 				alife_object->m_bALifeControl = false;
@@ -88,17 +88,17 @@ BOOL game_sv_Single::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 	CSE_Abstract* e_what = get_entity_from_eid(eid_what);
 	VERIFY(e_what);
 
-	if (ai().get_alife())
+	if(ai().get_alife())
 	{
 		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e_what);
 		CSE_ALifeDynamicObject* l_tpDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(e_who);
 
-		if (l_tpALifeInventoryItem && l_tpDynamicObject &&
-			ai().alife().graph().level().object(l_tpALifeInventoryItem->base()->ID, true) &&
-			ai().alife().objects().object(e_who->ID, true) && ai().alife().objects().object(e_what->ID, true))
+		if(l_tpALifeInventoryItem && l_tpDynamicObject &&
+		   ai().alife().graph().level().object(l_tpALifeInventoryItem->base()->ID, true) &&
+		   ai().alife().objects().object(e_who->ID, true) && ai().alife().objects().object(e_what->ID, true))
 			alife().graph().attach(*e_who, l_tpALifeInventoryItem, l_tpDynamicObject->m_tGraphID, false, false);
 #ifdef DEBUG
-		else if (psAI_Flags.test(aiALife))
+		else if(psAI_Flags.test(aiALife))
 		{
 			Msg("Cannot attach object [%s][%s][%d] to object [%s][%s][%d]", e_what->name_replace(), *e_what->s_name,
 				e_what->ID, e_who->name_replace(), *e_who->s_name, e_who->ID);
@@ -110,7 +110,7 @@ BOOL game_sv_Single::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 
 void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 {
-	if (ai().get_alife())
+	if(ai().get_alife())
 	{
 		CSE_Abstract* e_who = get_entity_from_eid(eid_who);
 		VERIFY(e_who);
@@ -118,20 +118,20 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 		VERIFY(e_what);
 
 		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e_what);
-		if (!l_tpALifeInventoryItem)
+		if(!l_tpALifeInventoryItem)
 			return;
 
 		CSE_ALifeDynamicObject* l_tpDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(e_who);
-		if (!l_tpDynamicObject)
+		if(!l_tpDynamicObject)
 			return;
 
-		if (ai().alife().objects().object(e_who->ID, true) &&
-			!ai().alife().graph().level().object(l_tpALifeInventoryItem->base()->ID, true) &&
-			ai().alife().objects().object(e_what->ID, true))
+		if(ai().alife().objects().object(e_who->ID, true) &&
+		   !ai().alife().graph().level().object(l_tpALifeInventoryItem->base()->ID, true) &&
+		   ai().alife().objects().object(e_what->ID, true))
 			alife().graph().detach(*e_who, l_tpALifeInventoryItem, l_tpDynamicObject->m_tGraphID, false, false);
 		else
 		{
-			if (!ai().alife().objects().object(e_what->ID, true))
+			if(!ai().alife().objects().object(e_what->ID, true))
 			{
 				u16 id = l_tpALifeInventoryItem->base()->ID_Parent;
 				l_tpALifeInventoryItem->base()->ID_Parent = 0xffff;
@@ -146,7 +146,7 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 				l_tpALifeInventoryItem->base()->ID_Parent = id;
 			}
 #ifdef DEBUG
-			else if (psAI_Flags.test(aiALife))
+			else if(psAI_Flags.test(aiALife))
 			{
 				Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]",
 					l_tpALifeInventoryItem->base()->name_replace(), *l_tpALifeInventoryItem->base()->s_name,
@@ -172,7 +172,7 @@ void game_sv_Single::Update()
 
 ALife::_TIME_ID game_sv_Single::GetGameTime()
 {
-	if (ai().get_alife() && ai().alife().initialized())
+	if(ai().get_alife() && ai().alife().initialized())
 		return (ai().alife().time_manager().game_time());
 	else
 		return (inherited::GetGameTime());
@@ -180,7 +180,7 @@ ALife::_TIME_ID game_sv_Single::GetGameTime()
 
 float game_sv_Single::GetGameTimeFactor()
 {
-	if (ai().get_alife() && ai().alife().initialized())
+	if(ai().get_alife() && ai().alife().initialized())
 		return (ai().alife().time_manager().time_factor());
 	else
 		return (inherited::GetGameTimeFactor());
@@ -188,7 +188,7 @@ float game_sv_Single::GetGameTimeFactor()
 
 void game_sv_Single::SetGameTimeFactor(const float fTimeFactor)
 {
-	if (ai().get_alife() && ai().alife().initialized())
+	if(ai().get_alife() && ai().alife().initialized())
 		return (alife().time_manager().set_time_factor(fTimeFactor));
 	else
 		return (inherited::SetGameTimeFactor(fTimeFactor));
@@ -211,7 +211,7 @@ void game_sv_Single::SetEnvironmentGameTimeFactor(const float fTimeFactor)
 
 bool game_sv_Single::change_level(NET_Packet& net_packet, ClientID sender)
 {
-	if (ai().get_alife())
+	if(ai().get_alife())
 		return (alife().change_level(net_packet));
 	else
 		return (true);
@@ -219,7 +219,7 @@ bool game_sv_Single::change_level(NET_Packet& net_packet, ClientID sender)
 
 void game_sv_Single::save_game(NET_Packet& net_packet, ClientID sender)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	alife().save(net_packet);
@@ -227,7 +227,7 @@ void game_sv_Single::save_game(NET_Packet& net_packet, ClientID sender)
 
 bool game_sv_Single::load_game(NET_Packet& net_packet, ClientID sender)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return (inherited::load_game(net_packet, sender));
 	shared_str game_name;
 	net_packet.r_stringZ(game_name);
@@ -240,7 +240,7 @@ void game_sv_Single::reload_game(NET_Packet& net_packet, ClientID sender)
 
 void game_sv_Single::switch_distance(NET_Packet& net_packet, ClientID sender)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	alife().set_switch_distance(net_packet.r_float());
@@ -248,7 +248,7 @@ void game_sv_Single::switch_distance(NET_Packet& net_packet, ClientID sender)
 
 void game_sv_Single::teleport_object(NET_Packet& net_packet, u16 id)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	GameGraph::_GRAPH_ID game_vertex_id;
@@ -264,7 +264,7 @@ void game_sv_Single::teleport_object(NET_Packet& net_packet, u16 id)
 
 void game_sv_Single::add_restriction(NET_Packet& packet, u16 id)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	ALife::_OBJECT_ID restriction_id;
@@ -278,7 +278,7 @@ void game_sv_Single::add_restriction(NET_Packet& packet, u16 id)
 
 void game_sv_Single::remove_restriction(NET_Packet& packet, u16 id)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	ALife::_OBJECT_ID restriction_id;
@@ -292,7 +292,7 @@ void game_sv_Single::remove_restriction(NET_Packet& packet, u16 id)
 
 void game_sv_Single::remove_all_restrictions(NET_Packet& packet, u16 id)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	RestrictionSpace::ERestrictorTypes restriction_type;
@@ -308,7 +308,7 @@ void game_sv_Single::sls_default()
 
 shared_str game_sv_Single::level_name(const shared_str& server_options) const
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return (inherited::level_name(server_options));
 	return (alife().level_name());
 }
@@ -317,7 +317,7 @@ void game_sv_Single::on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src)
 {
 	inherited::on_death(e_dest, e_src);
 
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	alife().on_death(e_dest, e_src);

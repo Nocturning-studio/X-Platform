@@ -28,7 +28,7 @@ class CBlender_distortion : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case 0:
 			C.begin_Pass("screen_quad", "postprocess_stage_distortion");

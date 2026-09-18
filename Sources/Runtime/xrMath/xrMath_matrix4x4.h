@@ -30,9 +30,11 @@
 
 #include "xrMath_utils.h"
 
-template <class T> struct template_quaternion;
+template <class T>
+struct template_quaternion;
 
-template <class T> struct template_matrix4x4
+template <class T>
+struct template_matrix4x4
 {
   public:
 	typedef T TYPE;
@@ -42,7 +44,8 @@ template <class T> struct template_matrix4x4
 	typedef template_vector3<T> Tvector;
 
   public:
-	union {
+	union
+	{
 		struct
 		{ // Direct definition
 			T _11, _12, _13, _14;
@@ -205,7 +208,7 @@ template <class T> struct template_matrix4x4
 	};
 
 	IC SelfRef invert(const Self& a)
-	{ 
+	{
 		// important: this is 4x3 invert, not the 4x4 one
 		// faster than self-invert
 		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
@@ -235,12 +238,12 @@ template <class T> struct template_matrix4x4
 	}
 
 	IC bool invert_b(const Self& a)
-	{ 
+	{
 		// important: this is 4x3 invert, not the 4x4 one
 		// faster than self-invert
 		T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
 
-		if (_abs(fDetInv) <= flt_zero)
+		if(_abs(fDetInv) <= flt_zero)
 			return false;
 		fDetInv = 1.0f / fDetInv;
 
@@ -282,24 +285,25 @@ template <class T> struct template_matrix4x4
 		result.identity();
 
 		// Прямой ход (приведение к верхнетреугольному виду)
-		for (int col = 0; col < 4; ++col)
+		for(int col = 0; col < 4; ++col)
 		{
 			// Поиск ненулевого элемента в столбце
 			int pivot = -1;
-			for (int row = col; row < 4; ++row)
+			for(int row = col; row < 4; ++row)
 			{
-				if (_abs(temp.m[row][col]) > flt_zero)
+				if(_abs(temp.m[row][col]) > flt_zero)
 				{
 					pivot = row;
 					break;
 				}
 			}
-			if (pivot == -1) return false; // вырожденная матрица
+			if(pivot == -1)
+				return false; // вырожденная матрица
 
 			// Перестановка строк
-			if (pivot != col)
+			if(pivot != col)
 			{
-				for (int j = 0; j < 4; ++j)
+				for(int j = 0; j < 4; ++j)
 				{
 					std::swap(temp.m[col][j], temp.m[pivot][j]);
 					std::swap(result.m[col][j], result.m[pivot][j]);
@@ -308,17 +312,19 @@ template <class T> struct template_matrix4x4
 
 			// Нормировка ведущей строки
 			T div = temp.m[col][col];
-			for (int j = 0; j < 4; ++j) {
+			for(int j = 0; j < 4; ++j)
+			{
 				temp.m[col][j] /= div;
 				result.m[col][j] /= div;
 			}
 
 			// Обнуление остальных строк в этом столбце
-			for (int row = 0; row < 4; ++row)
+			for(int row = 0; row < 4; ++row)
 			{
-				if (row == col) continue;
+				if(row == col)
+					continue;
 				T factor = temp.m[row][col];
-				for (int j = 0; j < 4; ++j)
+				for(int j = 0; j < 4; ++j)
 				{
 					temp.m[row][j] -= factor * temp.m[col][j];
 					result.m[row][j] -= factor * result.m[col][j];
@@ -327,8 +333,8 @@ template <class T> struct template_matrix4x4
 		}
 
 		// Копируем результат в this
-		for (int i = 0; i < 4; ++i)
-			for (int j = 0; j < 4; ++j)
+		for(int i = 0; i < 4; ++i)
+			for(int j = 0; j < 4; ++j)
 				this->m[i][j] = result.m[i][j];
 
 		return true;
@@ -803,7 +809,7 @@ template <class T> struct template_matrix4x4
 	IC SelfRef inertion(const Self& mat, T v)
 	{
 		T iv = 1.f - v;
-		for (int i = 0; i < 4; i++)
+		for(int i = 0; i < 4; i++)
 		{
 			m[i][0] = m[i][0] * v + mat.m[i][0] * iv;
 			m[i][1] = m[i][1] * v + mat.m[i][1] * iv;
@@ -913,7 +919,7 @@ template <class T> struct template_matrix4x4
 	IC void getHPB(T& h, T& p, T& b) const
 	{
 		T cy = std::sqrt(j.y * j.y + i.y * i.y);
-		if (cy > 16.0f * type_epsilon(T))
+		if(cy > 16.0f * type_epsilon(T))
 		{
 			h = (T)-atan2(k.x, k.z);
 			p = (T)-atan2(-k.y, cy);
@@ -954,7 +960,8 @@ template <class T> struct template_matrix4x4
 
 typedef template_matrix4x4<float> fmat4x4;
 
-template <class T> BOOL _valid(const template_matrix4x4<T>& m)
+template <class T>
+BOOL _valid(const template_matrix4x4<T>& m)
 {
 	return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) && _valid(m.c) && _valid(m._44_);
 }

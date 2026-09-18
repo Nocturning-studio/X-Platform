@@ -20,7 +20,7 @@ BOOL CEffectorFall::ProcessCam(SCamEffectorInfo& info)
 
 {
 	fPhase += FALL_SPEED * Engine.TimeManager.GetDeltaTime();
-	if (fPhase < 1)
+	if(fPhase < 1)
 		info.p.y -= FALL_MAXDIST * fPower * std::sin(PI * fPhase + PI);
 	else
 		fLifeTime = -1;
@@ -35,7 +35,7 @@ CEffectorDOF::CEffectorDOF(const fvec4& dof) : CEffectorCam(eCEDOF, 100000)
 
 BOOL CEffectorDOF::ProcessCam(SCamEffectorInfo& info)
 {
-	if (m_fPhase < Engine.TimeManager.GetGlobalTime())
+	if(m_fPhase < Engine.TimeManager.GetGlobalTime())
 	{
 		GamePersistent().RestoreEffectorDOF();
 		fLifeTime = -1;

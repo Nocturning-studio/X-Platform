@@ -44,7 +44,7 @@ void CUI3tButton::OnClick()
 
 bool CUI3tButton::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	if (m_bCheckMode)
+	if(m_bCheckMode)
 		return CUIWindow::OnMouse(x, y, mouse_action);
 	else
 		return CUIButton::OnMouse(x, y, mouse_action);
@@ -52,11 +52,11 @@ bool CUI3tButton::OnMouse(float x, float y, EUIMessages mouse_action)
 
 bool CUI3tButton::OnMouseDown(int mouse_btn)
 {
-	if (m_bCheckMode)
+	if(m_bCheckMode)
 	{
-		if (mouse_btn == MOUSE_1)
+		if(mouse_btn == MOUSE_1)
 		{
-			if (m_eButtonState == BUTTON_NORMAL)
+			if(m_eButtonState == BUTTON_NORMAL)
 				m_eButtonState = BUTTON_PUSHED;
 			else
 				m_eButtonState = BUTTON_NORMAL;
@@ -93,13 +93,13 @@ void CUI3tButton::InitSoundT(LPCSTR sound_file)
 
 void CUI3tButton::PlaySoundT()
 {
-	if (m_sound_t._handle())
+	if(m_sound_t._handle())
 		m_sound_t.play(NULL, sm_2D);
 }
 
 void CUI3tButton::PlaySoundH()
 {
-	if (m_sound_h._handle())
+	if(m_sound_h._handle())
 		m_sound_h.play(NULL, sm_2D);
 }
 
@@ -183,7 +183,7 @@ void CUI3tButton::SetTextureOffset(float x, float y)
 
 void CUI3tButton::DrawTexture()
 {
-	if (m_bTextureEnable)
+	if(m_bTextureEnable)
 	{
 		m_background.Draw();
 	}
@@ -193,17 +193,17 @@ void CUI3tButton::Update()
 {
 	CUIButton::Update();
 
-	if (m_bTextureEnable)
+	if(m_bTextureEnable)
 	{
-		if (!m_bIsEnabled)
+		if(!m_bIsEnabled)
 		{
 			m_background.SetState(S_Disabled);
 		}
-		else if (CUIButton::BUTTON_PUSHED == m_eButtonState)
+		else if(CUIButton::BUTTON_PUSHED == m_eButtonState)
 		{
 			m_background.SetState(S_Touched);
 		}
-		else if (m_bCursorOverWindow)
+		else if(m_bCursorOverWindow)
 		{
 			m_background.SetState(S_Highlighted);
 		}
@@ -219,24 +219,24 @@ void CUI3tButton::Update()
 	bool hintVisible = false;
 
 	const bool hasHint = m_hint && m_hint->HintStatic();
-	if (!m_bIsEnabled)
+	if(!m_bIsEnabled)
 	{
 		textColor = m_bUseTextColor[D] ? m_dwTextColor[D] : m_dwTextColor[E];
-		if (hasHint)
+		if(hasHint)
 			hintColor = m_hint->HintStatic()->m_bUseTextColor[D] ? m_hint->HintStatic()->m_dwTextColor[D]
 																 : m_hint->HintStatic()->m_dwTextColor[E];
 	}
-	else if (CUIButton::BUTTON_PUSHED == m_eButtonState)
+	else if(CUIButton::BUTTON_PUSHED == m_eButtonState)
 	{
 		textColor = m_bUseTextColor[T] ? m_dwTextColor[T] : m_dwTextColor[E];
-		if (hasHint)
+		if(hasHint)
 			hintColor = m_hint->HintStatic()->m_bUseTextColor[T] ? m_hint->HintStatic()->m_dwTextColor[T]
 																 : m_hint->HintStatic()->m_dwTextColor[E];
 	}
-	else if (m_bCursorOverWindow)
+	else if(m_bCursorOverWindow)
 	{
 		textColor = m_bUseTextColor[H] ? m_dwTextColor[H] : m_dwTextColor[E];
-		if (hasHint)
+		if(hasHint)
 			hintColor = m_hint->HintStatic()->m_bUseTextColor[H] ? m_hint->HintStatic()->m_dwTextColor[H]
 																 : m_hint->HintStatic()->m_dwTextColor[E];
 
@@ -245,16 +245,16 @@ void CUI3tButton::Update()
 	else
 	{
 		textColor = m_dwTextColor[E];
-		if (hasHint)
+		if(hasHint)
 			hintColor = m_hint->HintStatic()->m_dwTextColor[E];
 	}
 
 	CUIStatic::SetTextColor(textColor);
 
-	if (hasHint)
+	if(hasHint)
 	{
 		m_hint->HintStatic()->SetTextColor(hintColor);
-		if (m_bChangeVis)
+		if(m_bChangeVis)
 			m_hint->HintStatic()->SetVisible(hintVisible);
 	}
 }

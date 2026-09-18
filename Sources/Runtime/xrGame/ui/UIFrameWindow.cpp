@@ -38,7 +38,7 @@ void CUIFrameWindow::InitTexture(const char* texture)
 
 void CUIFrameWindow::Draw()
 {
-	if (m_bTextureVisible)
+	if(m_bTextureVisible)
 	{
 		Frect rect;
 		GetAbsoluteRect(rect);
@@ -79,7 +79,7 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	VERIFY(g_bRendering);
 
 	// Если нет границ клиппанья, то скипаем
-	if (!GetParent())
+	if(!GetParent())
 		return;
 
 	Frect ourAbsR;
@@ -95,10 +95,10 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.UpdateSize();
 
 	// Проверяем на видимость фрейма
-	if (max(ourAbsR.right, parentAbsR.left) == parentAbsR.left ||
-		min(ourAbsR.left, parentAbsR.right) == parentAbsR.right ||
-		min(ourAbsR.top, parentAbsR.bottom) == parentAbsR.bottom ||
-		max(ourAbsR.bottom, parentAbsR.top) == parentAbsR.top)
+	if(max(ourAbsR.right, parentAbsR.left) == parentAbsR.left ||
+	   min(ourAbsR.left, parentAbsR.right) == parentAbsR.right ||
+	   min(ourAbsR.top, parentAbsR.bottom) == parentAbsR.bottom ||
+	   max(ourAbsR.bottom, parentAbsR.top) == parentAbsR.top)
 	{
 		m_UIWndFrame.frame[CUIFrameRect::fmRT].SetTile(0, 0, 0, 0);
 		m_UIWndFrame.frame[CUIFrameRect::fmR].SetTile(0, 0, 0, 0);
@@ -139,9 +139,9 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	tile_y = iFloor(size_y / ts.y);
 	tile_x = iFloor(size_x / ts.x);
 
-	if (tile_y < 0)
+	if(tile_y < 0)
 		tile_y = 0;
-	if (tile_x < 0)
+	if(tile_x < 0)
 		tile_x = 0;
 	set_positive(rem_x);
 	set_positive(rem_y);
@@ -179,9 +179,9 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	tile_y = iFloor(float(size_y) / ts.y);
 
 	ClampMax_Zero(r);
-	if (tile_x < 0)
+	if(tile_x < 0)
 		tile_x = 0;
-	if (tile_y < 0)
+	if(tile_y < 0)
 		tile_y = 0;
 	set_positive(rem_x);
 	set_positive(rem_y);
@@ -218,9 +218,9 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	tile_y = iFloor(float(size_y) / ts.y);
 	tile_x = iFloor(float(size_x) / ts.y);
 
-	if (tile_y < 0)
+	if(tile_y < 0)
 		tile_y = 0;
-	if (tile_x < 0)
+	if(tile_x < 0)
 		tile_x = 0;
 	set_positive(rem_x);
 	set_positive(rem_y);
@@ -257,7 +257,7 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	tile_x = iFloor(float(size_x) / ts.x);
 	tile_y = iFloor(float(size_y) / ts.y);
 
-	if (tile_x < 0 || tile_y < 0)
+	if(tile_x < 0 || tile_y < 0)
 	{
 		rem_x = rem_y = 0.0f;
 		tile_x = tile_y = 0;
@@ -281,7 +281,7 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	tile_x = iFloor(float(size_x) / ts.x);
 	tile_y = iFloor(float(size_y) / ts.y);
 
-	if (tile_y < 0 || tile_x < 0)
+	if(tile_y < 0 || tile_x < 0)
 	{
 		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetRect(null);
 		m_UIWndFrame.frame[CUIFrameRect::fmBK].SetTile(0, 0, 0, 0);

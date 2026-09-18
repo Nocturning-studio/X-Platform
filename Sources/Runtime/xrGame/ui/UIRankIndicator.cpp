@@ -10,7 +10,7 @@ CUIRankIndicator::CUIRankIndicator()
 
 CUIRankIndicator::~CUIRankIndicator()
 {
-	for (u8 i = 0; i < max_rank; ++i)
+	for(u8 i = 0; i < max_rank; ++i)
 		xr_delete(m_ranks[i]);
 }
 
@@ -18,7 +18,7 @@ void CUIRankIndicator::InitFromXml(CUIXml& xml_doc)
 {
 	CUIXmlInit::InitWindow(xml_doc, "rank_wnd", 0, this);
 	string256 str;
-	for (u8 i = 0; i < max_rank; ++i)
+	for(u8 i = 0; i < max_rank; ++i)
 	{
 		CUIStatic*& s = m_ranks[i];
 		s = xr_new<CUIStatic>();
@@ -34,10 +34,10 @@ void CUIRankIndicator::InitFromXml(CUIXml& xml_doc)
 void CUIRankIndicator::SetRank(u8 team, u8 rank)
 {
 	rank += team * (max_rank / 2);
-	if (m_current == rank)
+	if(m_current == rank)
 		return;
 
-	if (m_current != u8(-1))
+	if(m_current != u8(-1))
 		DetachChild(m_ranks[m_current]);
 
 	m_current = rank;

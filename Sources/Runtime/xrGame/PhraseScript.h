@@ -33,7 +33,7 @@ class CPhraseScript
 						LPCSTR phrase_id) const;
 	// текст из скриптовой функции
 	//	virtual LPCSTR Text			(LPCSTR original_text, const CGameObject* pSpeaker1, const CGameObject* pSpeaker2,
-	//LPCSTR dialog_id, int phrase_num) const; 	virtual bool   HasText		() const {return *m_sScriptTextFunc!=NULL;}
+	// LPCSTR dialog_id, int phrase_num) const; 	virtual bool   HasText		() const {return *m_sScriptTextFunc!=NULL;}
 
 	DEFINE_VECTOR(shared_str, PRECONDITION_VECTOR, PRECONDITION_VECTOR_IT);
 	virtual const PRECONDITION_VECTOR& Preconditions() const
@@ -56,7 +56,8 @@ class CPhraseScript
 
   protected:
 	// загрузка содержани€ последовательности тагов в контейнер строк
-	template <class T> void LoadSequence(CUIXml* ui_xml, XML_NODE* phrase_node, LPCSTR tag, T& str_vector);
+	template <class T>
+	void LoadSequence(CUIXml* ui_xml, XML_NODE* phrase_node, LPCSTR tag, T& str_vector);
 
 	// манипул€ции с информацией во врем€ вызовов Precondition и Action
 	virtual bool CheckInfo(const CInventoryOwner* pOwner) const;

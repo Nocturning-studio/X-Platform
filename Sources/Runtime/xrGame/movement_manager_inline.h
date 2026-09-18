@@ -54,7 +54,8 @@ IC const CMovementManager::CBoneRotation& CMovementManager::body_orientation() c
 	return (m_body);
 }
 
-template <typename T> IC bool CMovementManager::accessible(T position_or_vertex_id, float radius) const
+template <typename T>
+IC bool CMovementManager::accessible(T position_or_vertex_id, float radius) const
 {
 	return (restrictions().accessible(position_or_vertex_id, radius));
 }

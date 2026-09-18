@@ -12,7 +12,8 @@
 
 class CScriptGameObject;
 
-template <typename _object_type> class CActionScriptBase : public CScriptActionBase
+template <typename _object_type>
+class CActionScriptBase : public CScriptActionBase
 {
   protected:
 	typedef CScriptActionBase inherited;

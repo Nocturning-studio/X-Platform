@@ -7,7 +7,7 @@
 #pragma pack(push, 1)
 
 // for presentation
-const u32 NET_PacketSizeLimit = 16384;//8192;
+const u32 NET_PacketSizeLimit = 16384; // 8192;
 // const	u32			NET_PacketSizeLimit	= 16384;
 
 struct NET_Buffer
@@ -135,7 +135,7 @@ class NET_Packet
 	{
 		fvec3 C;
 		float mag = D.magnitude();
-		if (mag > EPS_S)
+		if(mag > EPS_S)
 		{
 			C.div(D, mag);
 		}
@@ -153,7 +153,7 @@ class NET_Packet
 	}
 	IC void w_stringZ(shared_str& p)
 	{
-		if (*p)
+		if(*p)
 			w(*p, (u32)xr_strlen(p) + 1);
 		else
 			w_u8(0);

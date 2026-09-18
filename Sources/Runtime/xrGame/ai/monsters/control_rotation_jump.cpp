@@ -33,7 +33,7 @@ void CControlRotationJump::activate()
 	m_right_side = m_man->direction().is_from_right(angle_normalize(-yaw));
 
 	//////////////////////////////////////////////////////////////////////////
-	if (m_data.flags.is(SControlRotationJumpData::eStopAtOnce))
+	if(m_data.flags.is(SControlRotationJumpData::eStopAtOnce))
 		stop_at_once();
 	else
 		build_line_first();
@@ -56,23 +56,23 @@ void CControlRotationJump::on_release()
 
 bool CControlRotationJump::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
+	if(m_man->is_captured_pure())
 		return false;
 
-	if (!m_object->EnemyMan.get_enemy())
+	if(!m_object->EnemyMan.get_enemy())
 		return false;
-	if (m_time_next_rotation_jump > Engine.TimeManager.GetGlobalTimeMs())
+	if(m_time_next_rotation_jump > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	fvec3 enemy_position;
 	enemy_position.set(m_object->EnemyMan.get_enemy()->Position());
-	if (m_man->direction().is_face_target(enemy_position, ROTATION_JUMP_CHECK_YAW))
+	if(m_man->direction().is_face_target(enemy_position, ROTATION_JUMP_CHECK_YAW))
 		return false;
 
 	SVelocityParam& velocity_run = m_object->move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
-	if (!fsimilar(m_man->movement().velocity_current(), velocity_run.velocity.linear, ROTATION_JUMP_START_SPEED_DELTA))
+	if(!fsimilar(m_man->movement().velocity_current(), velocity_run.velocity.linear, ROTATION_JUMP_START_SPEED_DELTA))
 		return false;
 
 	return true;
@@ -80,10 +80,10 @@ bool CControlRotationJump::check_start_conditions()
 
 void CControlRotationJump::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eventAnimationEnd:
-		if ((m_stage == eStop) && (m_data.flags.is(SControlRotationJumpData::eRotateOnce) == FALSE))
+		if((m_stage == eStop) && (m_data.flags.is(SControlRotationJumpData::eRotateOnce) == FALSE))
 			build_line_second();
 		else
 			m_man->notify(ControlCom::eventRotationJumpEnd, 0);
@@ -101,7 +101,7 @@ void CControlRotationJump::stop_at_once()
 	VERIFY(ctrl_data_dir);
 
 	float target_yaw;
-	if (m_data.flags.is(SControlRotationJumpData::eRotateOnce) && m_object->EnemyMan.get_enemy())
+	if(m_data.flags.is(SControlRotationJumpData::eRotateOnce) && m_object->EnemyMan.get_enemy())
 	{
 		// if rotate once so rotate to enemy
 		fvec3 dir_to_enemy;
@@ -169,7 +169,7 @@ void CControlRotationJump::build_line_first()
 	fvec3 target_position;
 	target_position.mad(m_object->Position(), m_object->Direction(), m_dist);
 
-	if (!m_man->build_path_line(this, target_position, u32(-1), velocity_mask))
+	if(!m_man->build_path_line(this, target_position, u32(-1), velocity_mask))
 	{
 		m_man->notify(ControlCom::eventRotationJumpEnd, 0);
 	}
@@ -198,7 +198,7 @@ void CControlRotationJump::build_line_first()
 
 void CControlRotationJump::build_line_second()
 {
-	if (!m_object->EnemyMan.get_enemy())
+	if(!m_object->EnemyMan.get_enemy())
 	{
 		m_man->notify(ControlCom::eventRotationJumpEnd, 0);
 		return;
@@ -244,7 +244,7 @@ void CControlRotationJump::build_line_second()
 	fvec3 target_position;
 	target_position.mad(m_object->Position(), dir_to_enemy, m_dist);
 
-	if (!m_man->build_path_line(this, target_position, u32(-1), velocity_mask))
+	if(!m_man->build_path_line(this, target_position, u32(-1), velocity_mask))
 	{
 		m_man->notify(ControlCom::eventRotationJumpEnd, 0);
 	}

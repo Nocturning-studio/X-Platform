@@ -96,18 +96,21 @@ class XRCORE_API CLocatorAPI
 
 	void file_from_cache_impl(IReader*& R, LPSTR fname, const file& desc);
 	void file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file& desc);
-	template <typename T> void file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR& source_name);
+	template <typename T>
+	void file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR& source_name);
 
 	void file_from_archive(IReader*& R, LPCSTR fname, const file& desc);
 	void file_from_archive(CStreamReader*& R, LPCSTR fname, const file& desc);
 
 	void copy_file_to_build(IWriter* W, IReader* r);
 	void copy_file_to_build(IWriter* W, CStreamReader* r);
-	template <typename T> void copy_file_to_build(T*& R, LPCSTR source_name);
+	template <typename T>
+	void copy_file_to_build(T*& R, LPCSTR source_name);
 
 	bool check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname, const file*& desc);
 
-	template <typename T> IC T* r_open_impl(LPCSTR path, LPCSTR _fname);
+	template <typename T>
+	IC T* r_open_impl(LPCSTR path, LPCSTR _fname);
 	void ProcessExternalArch();
 
   public:

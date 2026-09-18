@@ -55,7 +55,7 @@ inline bool ValidateCollision(dxGeom* o1, dxGeom* o2)
 int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride) throw()
 {
 
-	if (ValidateCollision(Sphere, TriList))
+	if(ValidateCollision(Sphere, TriList))
 	{
 
 		return GetData(TriList)->CollideSphere(Sphere, Flags, Contact, Stride);
@@ -68,7 +68,7 @@ int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contac
 int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, int Stride) throw()
 {
 
-	if (ValidateCollision(Box, TriList))
+	if(ValidateCollision(Box, TriList))
 	{
 
 		return GetData(TriList)->CollideBox(Box, Flags, Contact, Stride);
@@ -81,7 +81,7 @@ int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, 
 int dCollideCTL(dxGeom* TriList, dxGeom* Cyl, int Flags, dContactGeom* Contact, int Stride) throw()
 {
 
-	if (ValidateCollision(Cyl, TriList))
+	if(ValidateCollision(Cyl, TriList))
 	{
 
 		return GetData(TriList)->CollideCylinder(Cyl, Flags, Contact, Stride);
@@ -95,16 +95,16 @@ dColliderFn* dTriListColliderFn(int num)
 {
 	//	Log("in dTriListColliderFn ");
 	//	Msg("num=%d",num);
-	if (num == dBoxClass)
+	if(num == dBoxClass)
 	{
 		return (dColliderFn*)&dCollideBTL;
 	}
-	if (num == dSphereClass)
+	if(num == dSphereClass)
 	{
 		return (dColliderFn*)&dCollideSTL;
 	}
 
-	if (num == dCylinderClassUser)
+	if(num == dCylinderClassUser)
 		return (dColliderFn*)&dCollideCTL;
 
 	return 0;
@@ -159,7 +159,7 @@ dTriArrayCallback* dGeomTriListGetArrayCallback(dGeomID g)
 dxGeom* dCreateTriList(dSpaceID space, dTriCallback* Callback, dTriArrayCallback* ArrayCallback)
 {
 
-	if (dTriListClass == -1)
+	if(dTriListClass == -1)
 	{
 
 		dGeomClass c;
@@ -180,7 +180,7 @@ dxGeom* dCreateTriList(dSpaceID space, dTriCallback* Callback, dTriArrayCallback
 
 	dxGeom* g = dCreateGeom(dTriListClass);
 
-	if (space)
+	if(space)
 		dSpaceAdd(space, g);
 
 	dxTriList* Data = (dxTriList*)dGeomGetClassData(g);

@@ -74,11 +74,11 @@ class game_sv_GameState : public game_GameState
   public:
 	virtual void OnPlayerConnect(ClientID id_who);
 	virtual void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID);
-	virtual void OnPlayerReady(ClientID id_who){};
-	virtual void OnPlayerEnteredGame(ClientID id_who){};
-	virtual void OnPlayerConnectFinished(ClientID id_who){};
-	virtual void OnPlayerFire(ClientID id_who, NET_Packet& P){};
-	virtual void OnPlayer_Sell_Item(ClientID id_who, NET_Packet& P){};
+	virtual void OnPlayerReady(ClientID id_who) {};
+	virtual void OnPlayerEnteredGame(ClientID id_who) {};
+	virtual void OnPlayerConnectFinished(ClientID id_who) {};
+	virtual void OnPlayerFire(ClientID id_who, NET_Packet& P) {};
+	virtual void OnPlayer_Sell_Item(ClientID id_who, NET_Packet& P) {};
 	void GenerateGameMessage(NET_Packet& P);
 
 	virtual void OnRoundStart(); // старт раунда
@@ -104,9 +104,9 @@ class game_sv_GameState : public game_GameState
 	{
 		return false;
 	};
-	virtual void SetVotingActive(bool Active){};
-	virtual void OnVoteStart(LPCSTR VoteCommand, ClientID sender){};
-	virtual void OnVoteStop(){};
+	virtual void SetVotingActive(bool Active) {};
+	virtual void OnVoteStart(LPCSTR VoteCommand, ClientID sender) {};
+	virtual void OnVoteStop() {};
 
   public:
 	game_sv_GameState();
@@ -154,14 +154,14 @@ class game_sv_GameState : public game_GameState
 	{
 		return TRUE;
 	};
-	virtual void OnCreate(u16 id_who){};
-	virtual void OnPostCreate(u16 id_who){};
+	virtual void OnCreate(u16 id_who) {};
+	virtual void OnPostCreate(u16 id_who) {};
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) = 0; // TRUE=allow ownership, FALSE=denied
 	virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
-	virtual void OnDestroyObject(u16 eid_who){};
+	virtual void OnDestroyObject(u16 eid_who) {};
 
-	virtual void OnHit(u16 id_hitter, u16 id_hitted, NET_Packet& P);			   // кто-то получил Hit
-	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; // игрок получил Hit
+	virtual void OnHit(u16 id_hitter, u16 id_hitted, NET_Packet& P);				// кто-то получил Hit
+	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P) {}; // игрок получил Hit
 
 	// Main
 	virtual void Create(shared_str& options);
@@ -192,11 +192,11 @@ class game_sv_GameState : public game_GameState
 	{
 		return false;
 	};
-	virtual void sls_default(){};
+	virtual void sls_default() {};
 	virtual shared_str level_name(const shared_str& server_options) const;
 	virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
 
-	virtual void DumpOnlineStatistic(){};
+	virtual void DumpOnlineStatistic() {};
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

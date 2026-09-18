@@ -30,7 +30,7 @@ class CBlender_ambient_occlusion : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_AO_SSAO:
 			C.begin_Pass("screen_quad", "ambient_occlusion_stage_pass_ssao", "main", "ao_pass");

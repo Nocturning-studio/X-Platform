@@ -228,7 +228,7 @@ class xrServer : public IPureServer
 		return m_bDedicated;
 	};
 
-	virtual void Assign_ServerType(string512& res){};
+	virtual void Assign_ServerType(string512& res) {};
 	virtual bool HasPassword()
 	{
 		return false;

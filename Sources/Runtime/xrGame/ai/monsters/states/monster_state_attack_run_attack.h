@@ -1,12 +1,13 @@
 #pragma once
 #include "../state.h"
 
-template <typename _Object> class CStateMonsterAttackRunAttack : public CState<_Object>
+template <typename _Object>
+class CStateMonsterAttackRunAttack : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 
   public:
-	CStateMonsterAttackRunAttack(_Object* obj) : inherited(obj){};
+	CStateMonsterAttackRunAttack(_Object* obj) : inherited(obj) {};
 
 	virtual void initialize();
 	virtual void execute();

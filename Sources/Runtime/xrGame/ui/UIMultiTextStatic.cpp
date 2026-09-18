@@ -41,7 +41,7 @@ void CUIMultiTextStatic::Draw()
 	fvec2 p;
 	GetAbsolutePos(p);
 
-	for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
+	for(Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
 	{
 		it->effect.Out(it->outX + p.x, it->outY + p.y, *it->str);
 	}
@@ -53,7 +53,7 @@ void CUIMultiTextStatic::Draw()
 
 void CUIMultiTextStatic::Update()
 {
-	for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
+	for(Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
 	{
 		it->effect.Update();
 	}
@@ -141,9 +141,9 @@ void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, 
 
 u32 CUICaption::findIndexOf_(const shared_str& key_)
 {
-	for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
+	for(Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
 	{
-		if ((*it).key == key_)
+		if((*it).key == key_)
 			return (u32)std::distance(m_vPhrases.begin(), it);
 	}
 	return u32(-1);
@@ -178,13 +178,13 @@ void CUICaption::setCaption(const shared_str& msg_name, LPCSTR message_to_out, u
 	SinglePhrase* sp = GetPhraseByIndex(findIndexOf(msg_name));
 	sp->str = *CStringTable().translate(message_to_out);
 
-	if (replaceColor)
+	if(replaceColor)
 		sp->effect.SetTextColor(color);
 }
 
 void CUICaption::Draw()
 {
-	if (psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+	if(psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 	{
 		inherited::Draw();
 		inherited::Update();

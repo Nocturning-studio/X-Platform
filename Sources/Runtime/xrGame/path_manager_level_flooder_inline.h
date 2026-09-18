@@ -8,11 +8,11 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CLevelFlooderPathManager                                                                                       \
-	CPathManager<CLevelGraph, _DataStorage, SFlooder<_dist_type, _index_type, _iteration_type>, _dist_type,            \
+#define CLevelFlooderPathManager                                                                            \
+	CPathManager<CLevelGraph, _DataStorage, SFlooder<_dist_type, _index_type, _iteration_type>, _dist_type, \
 				 _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
@@ -60,7 +60,7 @@ IC _dist_type CLevelFlooderPathManager::estimate(const _index_type& node_index) 
 TEMPLATE_SPECIALIZATION
 IC bool CLevelFlooderPathManager::is_accessible(const _index_type& vertex_id) const
 {
-	if (!inherited::is_accessible(vertex_id))
+	if(!inherited::is_accessible(vertex_id))
 		return (false);
 	int x4, y4;
 	graph->unpack_xz(graph->vertex(vertex_id), x4, y4);
@@ -76,7 +76,8 @@ IC bool CLevelFlooderPathManager::is_limit_reached(const _iteration_type iterati
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CLevelFlooderPathManager::create_path(T& vertex)
+template <typename T>
+IC void CLevelFlooderPathManager::create_path(T& vertex)
 {
 }
 

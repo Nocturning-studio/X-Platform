@@ -45,7 +45,8 @@ namespace GameObject
 enum ECallbackType;
 };
 
-template <typename _return_type> class CScriptCallbackEx;
+template <typename _return_type>
+class CScriptCallbackEx;
 
 class CGameObject : public CObject, public CUsableScriptObject, public CScriptBinder
 {
@@ -198,8 +199,8 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 
 	virtual void renderable_Render();
 	virtual void OnEvent(NET_Packet& P, u16 type);
-	virtual void Hit(SHit* pHDS){};
-	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, fvec3 Pos, fvec3 Dir){};
+	virtual void Hit(SHit* pHDS) {};
+	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, fvec3 Pos, fvec3 Dir) {};
 	virtual BOOL BonePassBullet(int boneID)
 	{
 		return FALSE;
@@ -260,14 +261,14 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 	u32 m_dwCrPr_ActivationStep;
 
   public:
-	virtual void make_Interpolation(){}; // interpolation from last visible to corrected position/rotation
-	virtual void PH_B_CrPr(){};			 // actions & operations before physic correction-prediction steps
-	virtual void PH_I_CrPr(){};			 // actions & operations after correction before prediction steps
+	virtual void make_Interpolation() {}; // interpolation from last visible to corrected position/rotation
+	virtual void PH_B_CrPr() {};		  // actions & operations before physic correction-prediction steps
+	virtual void PH_I_CrPr() {};		  // actions & operations after correction before prediction steps
 #ifdef DEBUG
-	virtual void PH_Ch_CrPr(){}; //
+	virtual void PH_Ch_CrPr() {}; //
 	virtual void dbg_DrawSkeleton();
 #endif
-	virtual void PH_A_CrPr(){}; // actions & operations after phisic correction-prediction steps
+	virtual void PH_A_CrPr() {}; // actions & operations after phisic correction-prediction steps
 	virtual void CrPr_SetActivationStep(u32 Step)
 	{
 		m_dwCrPr_ActivationStep = Step;
@@ -380,7 +381,8 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 		return false;
 	}
 	// [12.11.07] Alexander Maniluk: added this method for moving object
-	virtual void MoveTo(fvec3 const& position){};
+	virtual void MoveTo(fvec3 const& position) {};
+
   public:
 	typedef CScriptCallbackEx<void> CScriptCallbackExVoid;
 
@@ -392,7 +394,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
 	CScriptCallbackExVoid& callback(GameObject::ECallbackType type) const;
 	virtual LPCSTR visual_name(CSE_Abstract* server_entity);
 
-	virtual void On_B_NotCurrentEntity(){};
+	virtual void On_B_NotCurrentEntity() {};
 };
 
 #endif // !defined(AFX_GAMEOBJECT_H__3DA72D03_C759_4688_AEBB_89FA812AA873__INCLUDED_)

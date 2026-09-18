@@ -16,9 +16,9 @@ CStateMonsterHearInterestingSoundAbstract::CStateMonsterHearInterestingSound(_Ob
 TEMPLATE_SPECIALIZATION
 void CStateMonsterHearInterestingSoundAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
-		if (get_state(eStateHearInterestingSound_MoveToDest)->check_start_conditions())
+		if(get_state(eStateHearInterestingSound_MoveToDest)->check_start_conditions())
 			select_state(eStateHearInterestingSound_MoveToDest);
 		else
 			select_state(eStateHearInterestingSound_LookAround);
@@ -33,7 +33,7 @@ void CStateMonsterHearInterestingSoundAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateHearInterestingSound_MoveToDest)
+	if(current_substate == eStateHearInterestingSound_MoveToDest)
 	{
 		SStateDataMoveToPoint data;
 		data.point = get_target_position();
@@ -51,7 +51,7 @@ void CStateMonsterHearInterestingSoundAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateHearInterestingSound_LookAround)
+	if(current_substate == eStateHearInterestingSound_LookAround)
 	{
 		SStateDataActionLook data;
 		data.action = ACT_LOOK_AROUND;
@@ -72,7 +72,7 @@ TEMPLATE_SPECIALIZATION
 fvec3 CStateMonsterHearInterestingSoundAbstract::get_target_position()
 {
 	fvec3 snd_pos = object->SoundMemory.GetSound().position;
-	if (!object->Home->has_home() || object->Home->at_home(snd_pos))
+	if(!object->Home->has_home() || object->Home->at_home(snd_pos))
 		return snd_pos;
 
 	return ai().level_graph().vertex_position(object->Home->get_place());

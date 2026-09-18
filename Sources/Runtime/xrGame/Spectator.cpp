@@ -53,7 +53,7 @@ CSpectator::CSpectator() : CGameObject()
 
 CSpectator::~CSpectator()
 {
-	for (int i = 0; i < eacMaxCam; ++i)
+	for(int i = 0; i < eacMaxCam; ++i)
 		xr_delete(cameras[i]);
 }
 
@@ -61,51 +61,51 @@ void CSpectator::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 	{
-		if (Game().local_player && Game().local_player->GameID == ID())
+		if(Game().local_player && Game().local_player->GameID == ID())
 		{
-			if (cam_active != eacFreeFly)
+			if(cam_active != eacFreeFly)
 			{
-				if (m_pActorToLookAt && !m_pActorToLookAt->g_Alive())
+				if(m_pActorToLookAt && !m_pActorToLookAt->g_Alive())
 					cam_Set(eacFreeLook);
-				if (!m_pActorToLookAt)
+				if(!m_pActorToLookAt)
 				{
 					SelectNextPlayerToLook();
-					if (!m_pActorToLookAt)
+					if(!m_pActorToLookAt)
 						cam_Set(eacFreeFly);
 				};
 			}
-			if (Level().CurrentViewEntity() == this)
+			if(Level().CurrentViewEntity() == this)
 				cam_Update(m_pActorToLookAt);
 			return;
 		}
 	};
 
-	if (g_pGameLevel->CurrentViewEntity() == this)
+	if(g_pGameLevel->CurrentViewEntity() == this)
 	{
-		if (eacFreeFly != cam_active)
+		if(eacFreeFly != cam_active)
 		{
 			//-------------------------------------
 
 			//-------------------------------------
 			int idx = 0;
 			game_PlayerState* P = Game().local_player;
-			if (P && (P->team >= 0) && (P->team < (int)Level().seniority_holder().teams().size()))
+			if(P && (P->team >= 0) && (P->team < (int)Level().seniority_holder().teams().size()))
 			{
 				const CTeamHierarchyHolder& T = Level().seniority_holder().team(P->team);
-				for (u32 i = 0; i < T.squads().size(); ++i)
+				for(u32 i = 0; i < T.squads().size(); ++i)
 				{
 					const CSquadHierarchyHolder& S = T.squad(i);
-					for (u32 j = 0; j < S.groups().size(); ++j)
+					for(u32 j = 0; j < S.groups().size(); ++j)
 					{
 						const CGroupHierarchyHolder& G = S.group(j);
-						for (u32 k = 0; k < G.members().size(); ++k)
+						for(u32 k = 0; k < G.members().size(); ++k)
 						{
 							CActor* A = smart_cast<CActor*>(G.members()[k]);
-							if (A /*&&A->g_Alive()*/)
+							if(A /*&&A->g_Alive()*/)
 							{
-								if (idx == look_idx)
+								if(idx == look_idx)
 								{
 									cam_Update(A);
 									return;
@@ -119,7 +119,7 @@ void CSpectator::UpdateCL()
 			// не найден объект с таким индексом - сбросим на первый объект
 			look_idx = 0;
 			// никого нет за кем смотреть - переключимся на
-			if (0 == idx)
+			if(0 == idx)
 				cam_Set(eacFreeFly);
 		}
 		// по умолчанию eacFreeFly
@@ -131,7 +131,7 @@ void CSpectator::shedule_Update(u32 DT)
 {
 	inherited::shedule_Update(DT);
 	//	if (!getEnabled())	return;
-	if (!Ready())
+	if(!Ready())
 		return;
 }
 
@@ -140,73 +140,77 @@ static float Accel_mul = START_ACCEL;
 
 void CSpectator::IR_OnKeyboardPress(int cmd)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
-	switch (cmd)
+	switch(cmd)
 	{
-	case kACCEL: {
+	case kACCEL:
+	{
 		Accel_mul = START_ACCEL * 2;
 	}
 	break;
-	case kCAM_1: {
+	case kCAM_1:
+	{
 		SelectNextPlayerToLook();
-		if (m_pActorToLookAt)
+		if(m_pActorToLookAt)
 			cam_Set(eacFirstEye);
 		else
 			cam_Set(eacFreeFly);
 	}
 	break;
 	case kCAM_2:
-		if (cam_active == eacFreeFly && SelectNextPlayerToLook())
+		if(cam_active == eacFreeFly && SelectNextPlayerToLook())
 			cam_Set(eacLookAt);
 		break;
 	case kCAM_3:
-		if (cam_active == eacFreeFly && SelectNextPlayerToLook())
+		if(cam_active == eacFreeFly && SelectNextPlayerToLook())
 			cam_Set(eacFreeLook);
 		break;
 	case kCAM_4:
 		cam_Set(eacFreeFly);
 		m_pActorToLookAt = NULL;
 		break;
-	case kWPN_FIRE: {
-		if (cam_active != eacFreeFly)
+	case kWPN_FIRE:
+	{
+		if(cam_active != eacFreeFly)
 		{
 			++look_idx;
 			SelectNextPlayerToLook();
-			if (cam_active == eacFirstEye && m_pActorToLookAt)
+			if(cam_active == eacFirstEye && m_pActorToLookAt)
 				FirstEye_ToPlayer(m_pActorToLookAt);
 		}
 	}
 	break;
-	case kWPN_ZOOM: {
+	case kWPN_ZOOM:
+	{
 		game_cl_mp* pMPGame = smart_cast<game_cl_mp*>(&Game());
-		if (!pMPGame)
+		if(!pMPGame)
 			break;
 		game_PlayerState* PS = Game().local_player;
-		if (!PS || PS->GameID != ID())
+		if(!PS || PS->GameID != ID())
 			break;
 
 		EActorCameras new_camera = EActorCameras((cam_active + 1) % eacMaxCam);
 
-		if (!PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+		if(!PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 		{
-			while (!pMPGame->Is_Spectator_Camera_Allowed(new_camera) && new_camera != eacFreeFly)
+			while(!pMPGame->Is_Spectator_Camera_Allowed(new_camera) && new_camera != eacFreeFly)
 			{
 				new_camera = EActorCameras((new_camera + 1) % eacMaxCam);
 			}
 		};
 
-		if (new_camera == eacFreeFly)
+		if(new_camera == eacFreeFly)
 		{
 			cam_Set(eacFreeFly);
 			m_pActorToLookAt = NULL;
 		}
 		else
 		{
-			if (!m_pActorToLookAt)
+			if(!m_pActorToLookAt)
 				SelectNextPlayerToLook();
-			if (!m_pActorToLookAt)
+			if(!m_pActorToLookAt)
 				cam_Set(eacFreeFly);
 			else
 				cam_Set(new_camera);
@@ -218,9 +222,10 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 
 void CSpectator::IR_OnKeyboardRelease(int cmd)
 {
-	switch (cmd)
+	switch(cmd)
 	{
-	case kACCEL: {
+	case kACCEL:
+	{
 		Accel_mul = START_ACCEL;
 	}
 	break;
@@ -229,17 +234,17 @@ void CSpectator::IR_OnKeyboardRelease(int cmd)
 
 void CSpectator::IR_OnKeyboardHold(int cmd)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
 	game_cl_mp* pMPGame = smart_cast<game_cl_mp*>(&Game());
 	game_PlayerState* PS = Game().local_player;
 
-	if ((cam_active == eacFreeFly) || (cam_active == eacFreeLook))
+	if((cam_active == eacFreeFly) || (cam_active == eacFreeLook))
 	{
 		CCameraBase* C = cameras[cam_active];
 		fvec3 vmove = {0, 0, 0};
-		switch (cmd)
+		switch(cmd)
 		{
 		case kUP:
 		case kDOWN:
@@ -249,7 +254,7 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 			break;
 		case kLEFT:
 		case kRIGHT:
-			if (eacFreeLook != cam_active)
+			if(eacFreeLook != cam_active)
 				cameras[cam_active]->Move(cmd);
 			break;
 		case kFWD:
@@ -258,38 +263,40 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 		case kBACK:
 			vmove.mad(C->vDirection, -Engine.TimeManager.GetDeltaTime() * Accel_mul);
 			break;
-		case kR_STRAFE: {
+		case kR_STRAFE:
+		{
 			fvec3 right;
 			right.crossproduct(C->vNormal, C->vDirection);
 			vmove.mad(right, Engine.TimeManager.GetDeltaTime() * Accel_mul);
 		}
 		break;
-		case kL_STRAFE: {
+		case kL_STRAFE:
+		{
 			fvec3 right;
 			right.crossproduct(C->vNormal, C->vDirection);
 			vmove.mad(right, -Engine.TimeManager.GetDeltaTime() * Accel_mul);
 		}
 		break;
 		}
-		if (cam_active != eacFreeFly ||
-			(pMPGame->Is_Spectator_Camera_Allowed(eacFreeFly) || (PS && PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))))
+		if(cam_active != eacFreeFly ||
+		   (pMPGame->Is_Spectator_Camera_Allowed(eacFreeFly) || (PS && PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))))
 			Transform().c.add(vmove);
 	}
 }
 
 void CSpectator::IR_OnMouseMove(int dx, int dy)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
 	CCameraBase* C = cameras[cam_active];
 	float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.f;
-	if (dx)
+	if(dx)
 	{
 		float d = float(dx) * scale;
 		cameras[cam_active]->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
 	}
-	if (dy)
+	if(dy)
 	{
 		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
 		cameras[cam_active]->Move((d > 0) ? kUP : kDOWN, _abs(d));
@@ -299,20 +306,20 @@ void CSpectator::IR_OnMouseMove(int dx, int dy)
 void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 {
 	CObject* pCurViewEntity = Level().CurrentEntity();
-	if (pCurViewEntity)
+	if(pCurViewEntity)
 	{
 		CActor* pOldActor = smart_cast<CActor*>(pCurViewEntity);
-		if (pOldActor)
+		if(pOldActor)
 		{
 			pOldActor->inventory().Items_SetCurrentEntityHud(false);
 		};
-		if (pCurViewEntity->CLS_ID != CLSID_SPECTATOR)
+		if(pCurViewEntity->CLS_ID != CLSID_SPECTATOR)
 		{
 			Engine.Sheduler->Unregister(pCurViewEntity);
 			Engine.Sheduler->Register(pCurViewEntity, TRUE);
 		};
 	};
-	if (pObject)
+	if(pObject)
 	{
 		Level().SetEntity(pObject);
 
@@ -320,12 +327,12 @@ void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 		Engine.Sheduler->Register(pObject, TRUE);
 
 		CActor* pActor = smart_cast<CActor*>(pObject);
-		if (pActor)
+		if(pActor)
 		{
 			pActor->inventory().Items_SetCurrentEntityHud(true);
 
 			CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
-			if (pHudItem)
+			if(pHudItem)
 			{
 				pHudItem->OnStateSwitch(pHudItem->GetState());
 			}
@@ -337,11 +344,11 @@ void CSpectator::cam_Set(EActorCameras style)
 {
 	CCameraBase* old_cam = cameras[cam_active];
 	//-----------------------------------------------
-	if (style == eacFirstEye)
+	if(style == eacFirstEye)
 	{
 		FirstEye_ToPlayer(m_pActorToLookAt);
 	};
-	if (cam_active == eacFirstEye)
+	if(cam_active == eacFirstEye)
 	{
 		FirstEye_ToPlayer(this);
 	};
@@ -353,25 +360,28 @@ void CSpectator::cam_Set(EActorCameras style)
 
 void CSpectator::cam_Update(CActor* A)
 {
-	if (A)
+	if(A)
 	{
 		const fmat4x4& M = A->Transform();
 		CCameraBase* pACam = A->cam_Active();
 		CCameraBase* cam = cameras[cam_active];
-		switch (cam_active)
+		switch(cam_active)
 		{
-		case eacFirstEye: {
+		case eacFirstEye:
+		{
 			fvec3 P, D, N;
 			pACam->Get(P, D, N);
 			cam->Set(P, D, N);
 		}
 		break;
-		case eacLookAt: {
+		case eacLookAt:
+		{
 			float y, p, r;
 			M.getHPB(y, p, r);
 			cam->Set(pACam->yaw, pACam->pitch, -r);
 		}
-		case eacFreeLook: {
+		case eacFreeLook:
+		{
 			cam->SetParent(A);
 			fmat4x4 tmp;
 			tmp.identity();
@@ -382,7 +392,7 @@ void CSpectator::cam_Update(CActor* A)
 			M.transform_tiny(point);
 			tmp.translate_over(point);
 			tmp.transform_tiny(point1);
-			if (!A->g_Alive())
+			if(!A->g_Alive())
 				point.set(point1);
 			cam->Update(point, dangle);
 		}
@@ -418,11 +428,11 @@ void CSpectator::cam_Update(CActor* A)
 BOOL CSpectator::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL res = inherited::net_Spawn(DC);
-	if (!res)
+	if(!res)
 		return FALSE;
 
 	CSE_Abstract* E = (CSE_Abstract*)(DC);
-	if (!E)
+	if(!E)
 		return FALSE;
 
 	cam_active = eacFreeFly;
@@ -431,7 +441,7 @@ BOOL CSpectator::net_Spawn(CSE_Abstract* DC)
 	cameras[cam_active]->Set(-E->o_Angle.y, -E->o_Angle.x, 0); // set's camera orientation
 	cameras[cam_active]->vPosition.set(E->o_Position);
 
-	if (OnServer())
+	if(OnServer())
 	{
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 	};
@@ -442,17 +452,17 @@ BOOL CSpectator::net_Spawn(CSE_Abstract* DC)
 void CSpectator::net_Destroy()
 {
 	inherited::net_Destroy();
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		Level().MapManager().RemoveMapLocationByObjectID(ID());
 }
 
 bool CSpectator::SelectNextPlayerToLook()
 {
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 		return false;
 
 	game_PlayerState* PS = Game().local_player;
-	if (!PS)
+	if(!PS)
 		return false;
 	m_pActorToLookAt = NULL;
 
@@ -461,26 +471,26 @@ bool CSpectator::SelectNextPlayerToLook()
 	game_cl_GameState::PLAYERS_MAP_IT it = Game().players.begin();
 	u16 PPCount = 0;
 	CActor* PossiblePlayers[32];
-	for (; it != Game().players.end(); ++it)
+	for(; it != Game().players.end(); ++it)
 	{
 		game_PlayerState* ps = it->second;
-		if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps == PS)
+		if(!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps == PS)
 			continue;
-		if (pMPGame && pMPGame->Is_Spectator_TeamCamera_Allowed())
+		if(pMPGame && pMPGame->Is_Spectator_TeamCamera_Allowed())
 		{
-			if (ps->team != PS->team && !PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+			if(ps->team != PS->team && !PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 				continue;
 		};
 		u16 id = ps->GameID;
 		CObject* pObject = Level().Objects.net_Find(id);
-		if (!pObject)
+		if(!pObject)
 			continue;
 		CActor* A = smart_cast<CActor*>(pObject);
-		if (!A)
+		if(!A)
 			continue;
 		PossiblePlayers[PPCount++] = A;
 	};
-	if (PPCount > 0)
+	if(PPCount > 0)
 	{
 		look_idx %= PPCount;
 		m_pActorToLookAt = PossiblePlayers[look_idx];
@@ -491,33 +501,35 @@ bool CSpectator::SelectNextPlayerToLook()
 
 void CSpectator::net_Relcase(CObject* O)
 {
-	if (O != m_pActorToLookAt)
+	if(O != m_pActorToLookAt)
 		return;
 	m_pActorToLookAt = NULL;
-	if (cam_active != eacFreeFly)
+	if(cam_active != eacFreeFly)
 		SelectNextPlayerToLook();
-	if (!m_pActorToLookAt)
+	if(!m_pActorToLookAt)
 		cam_Set(eacFreeFly);
 };
 
 void CSpectator::GetSpectatorString(string1024& pStr)
 {
-	if (!pStr)
+	if(!pStr)
 		return;
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 		return;
 
 	xr_string SpectatorMsg;
 	CStringTable st;
-	switch (cam_active)
+	switch(cam_active)
 	{
-	case eacFreeFly: {
+	case eacFreeFly:
+	{
 		SpectatorMsg = *st.translate("mp_spectator");
 		SpectatorMsg += " ";
 		SpectatorMsg += *st.translate("mp_free_fly");
 	}
 	break;
-	case eacFirstEye: {
+	case eacFirstEye:
+	{
 		SpectatorMsg = *st.translate("mp_spectator");
 		SpectatorMsg += " ";
 		SpectatorMsg += *st.translate("mp_first_eye");
@@ -526,7 +538,8 @@ void CSpectator::GetSpectatorString(string1024& pStr)
 		SpectatorMsg += m_pActorToLookAt->Name();
 	}
 	break;
-	case eacFreeLook: {
+	case eacFreeLook:
+	{
 		SpectatorMsg = *st.translate("mp_spectator");
 		SpectatorMsg += " ";
 		SpectatorMsg += *st.translate("mp_free_look");
@@ -535,7 +548,8 @@ void CSpectator::GetSpectatorString(string1024& pStr)
 		SpectatorMsg += m_pActorToLookAt->Name();
 	}
 	break;
-	case eacLookAt: {
+	case eacLookAt:
+	{
 		SpectatorMsg = *st.translate("mp_spectator");
 		SpectatorMsg += " ";
 		SpectatorMsg += *st.translate("mp_look_at");

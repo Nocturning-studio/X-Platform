@@ -14,7 +14,7 @@ CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, floa
 BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	fLifeTime -= Engine.TimeManager.GetDeltaTime();
-	if (fLifeTime < 0)
+	if(fLifeTime < 0)
 		return FALSE;
 
 	// процент оставшегося времени

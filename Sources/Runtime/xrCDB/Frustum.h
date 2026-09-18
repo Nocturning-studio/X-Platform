@@ -52,12 +52,12 @@ class ENGINE_API CFrustum
 
 		fvec3 Neg;
 		Neg.set(mM[id[3]], mM[id[4]], mM[id[5]]);
-		if (P.classify(Neg) > 0)
+		if(P.classify(Neg) > 0)
 			return fcvNone;
 
 		fvec3 Pos;
 		Pos.set(mM[id[0]], mM[id[1]], mM[id[2]]);
-		if (P.classify(Pos) <= 0)
+		if(P.classify(Pos) <= 0)
 			return fcvFully;
 
 		return fcvPartial;

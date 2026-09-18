@@ -62,10 +62,10 @@ class CParticlesPlayer
   public:
 	IC SBoneInfo* get_bone_info(u16 bone_index)
 	{
-		if (BI_NONE == bone_index)
+		if(BI_NONE == bone_index)
 			return 0;
-		for (BoneInfoVecIt it = m_Bones.begin(); it != m_Bones.end(); it++)
-			if (it->index == bone_index)
+		for(BoneInfoVecIt it = m_Bones.begin(); it != m_Bones.end(); it++)
+			if(it->index == bone_index)
 				return &(*it);
 		return 0;
 	}
@@ -102,7 +102,7 @@ class CParticlesPlayer
 	IC u16 GetRandomBone()
 	{
 		u16 l_PBCount = u16(m_Bones.size());
-		if (l_PBCount)
+		if(l_PBCount)
 			return m_Bones[(u16)Random.randI(l_PBCount)].index;
 		else
 			return BI_NONE;

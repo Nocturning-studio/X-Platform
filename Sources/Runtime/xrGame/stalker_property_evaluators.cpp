@@ -92,13 +92,13 @@ CStalkerPropertyEvaluatorEnemies::CStalkerPropertyEvaluatorEnemies(CAI_Stalker* 
 
 _value_type CStalkerPropertyEvaluatorEnemies::evaluate()
 {
-	if (m_object->memory().enemy().selected())
+	if(m_object->memory().enemy().selected())
 		return (true);
 
-	if (m_dont_wait && *m_dont_wait)
+	if(m_dont_wait && *m_dont_wait)
 		return (false);
 
-	if (Engine.TimeManager.GetGlobalTimeMs() < m_object->memory().enemy().last_enemy_time() + m_time_to_wait)
+	if(Engine.TimeManager.GetGlobalTimeMs() < m_object->memory().enemy().last_enemy_time() + m_time_to_wait)
 		return (true);
 
 	return (false);
@@ -132,15 +132,15 @@ CStalkerPropertyEvaluatorEnemySeeMe::CStalkerPropertyEvaluatorEnemySeeMe(CAI_Sta
 _value_type CStalkerPropertyEvaluatorEnemySeeMe::evaluate()
 {
 	const CEntityAlive* enemy = m_object->memory().enemy().selected();
-	if (!enemy)
+	if(!enemy)
 		return (false);
 
 	const CCustomMonster* enemy_monster = smart_cast<const CCustomMonster*>(enemy);
-	if (enemy_monster)
+	if(enemy_monster)
 		return (enemy_monster->memory().visual().visible_now(m_object));
 
 	const CActor* actor = smart_cast<const CActor*>(enemy);
-	if (actor)
+	if(actor)
 		return (actor->memory().visual().visible_now(m_object));
 
 	return (false);
@@ -243,10 +243,10 @@ CStalkerPropertyEvaluatorAnomaly::CStalkerPropertyEvaluatorAnomaly(CAI_Stalker* 
 
 _value_type CStalkerPropertyEvaluatorAnomaly::evaluate()
 {
-	if (!m_object->undetected_anomaly())
+	if(!m_object->undetected_anomaly())
 		return (false);
 
-	if (!m_object->memory().enemy().selected())
+	if(!m_object->memory().enemy().selected())
 		return (true);
 
 	u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(),
@@ -266,10 +266,10 @@ CStalkerPropertyEvaluatorInsideAnomaly::CStalkerPropertyEvaluatorInsideAnomaly(C
 
 _value_type CStalkerPropertyEvaluatorInsideAnomaly::evaluate()
 {
-	if (!m_object->inside_anomaly())
+	if(!m_object->inside_anomaly())
 		return (false);
 
-	if (!m_object->memory().enemy().selected())
+	if(!m_object->memory().enemy().selected())
 		return (true);
 
 	u32 result = dwfChooseAction(2000, m_object->panic_threshold(), 0.f, 0.f, 0.f, m_object->g_Team(),
@@ -305,7 +305,7 @@ CStalkerPropertyEvaluatorSmartTerrainTask::CStalkerPropertyEvaluatorSmartTerrain
 
 _value_type CStalkerPropertyEvaluatorSmartTerrainTask::evaluate()
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return (false);
 
 	CSE_ALifeHumanAbstract* stalker =
@@ -327,11 +327,11 @@ CStalkerPropertyEvaluatorEnemyReached::CStalkerPropertyEvaluatorEnemyReached(CAI
 _value_type CStalkerPropertyEvaluatorEnemyReached::evaluate()
 {
 	const CEntityAlive* enemy = object().memory().enemy().selected();
-	if (!enemy)
+	if(!enemy)
 		return (false);
 
 	ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor(enemy);
-	if (processor_id != object().ID())
+	if(processor_id != object().ID())
 		return (false);
 
 	return ((object().Position().distance_to_sqr(enemy->Position()) <= _sqr(wounded_enemy_reached_distance)));
@@ -350,13 +350,13 @@ CStalkerPropertyEvaluatorPlayerOnThePath::CStalkerPropertyEvaluatorPlayerOnThePa
 _value_type CStalkerPropertyEvaluatorPlayerOnThePath::evaluate()
 {
 	const CEntityAlive* enemy = object().memory().enemy().selected();
-	if (!enemy)
+	if(!enemy)
 		return (false);
 
-	if (!object().is_relation_enemy(Actor()))
+	if(!object().is_relation_enemy(Actor()))
 		return (false);
 
-	if (!m_object->memory().visual().visible_now(Actor()))
+	if(!m_object->memory().visual().visible_now(Actor()))
 		return (false);
 
 	return (object().movement().is_object_on_the_way(Actor(), 2.f));
@@ -375,11 +375,11 @@ CStalkerPropertyEvaluatorEnemyCriticallyWounded::CStalkerPropertyEvaluatorEnemyC
 _value_type CStalkerPropertyEvaluatorEnemyCriticallyWounded::evaluate()
 {
 	const CEntityAlive* enemy = object().memory().enemy().selected();
-	if (!enemy)
+	if(!enemy)
 		return (false);
 
 	const CAI_Stalker* enemy_stalker = smart_cast<const CAI_Stalker*>(enemy);
-	if (!enemy_stalker)
+	if(!enemy_stalker)
 		return (false);
 
 	return (const_cast<CAI_Stalker*>(enemy_stalker)->critically_wounded());

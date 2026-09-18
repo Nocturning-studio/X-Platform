@@ -58,14 +58,14 @@ void CPda::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (!H_Parent())
+	if(!H_Parent())
 		return;
 	Position().set(H_Parent()->Position());
 
-	if (IsOn() && Level().CurrentEntity() && Level().CurrentEntity()->ID() == H_Parent()->ID())
+	if(IsOn() && Level().CurrentEntity() && Level().CurrentEntity()->ID() == H_Parent()->ID())
 	{
 		CEntityAlive* EA = smart_cast<CEntityAlive*>(H_Parent());
-		if (!EA || !EA->g_Alive())
+		if(!EA || !EA->g_Alive())
 		{
 			TurnOff();
 			return;
@@ -80,10 +80,10 @@ void CPda::UpdateActiveContacts()
 {
 	m_active_contacts.clear_not_free();
 	xr_vector<CObject*>::iterator it = feel_touch.begin();
-	for (; it != feel_touch.end(); ++it)
+	for(; it != feel_touch.end(); ++it)
 	{
 		CEntityAlive* pEA = smart_cast<CEntityAlive*>(*it);
-		if (!!pEA->g_Alive())
+		if(!!pEA->g_Alive())
 			m_active_contacts.push_back(*it);
 	}
 }
@@ -99,7 +99,7 @@ void CPda::feel_touch_new(CObject* O)
 
 void CPda::feel_touch_delete(CObject* O)
 {
-	if (!H_Parent())
+	if(!H_Parent())
 		return;
 	CInventoryOwner* pLostContactInvOwner = smart_cast<CInventoryOwner*>(O);
 	CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent());
@@ -111,12 +111,12 @@ void CPda::feel_touch_delete(CObject* O)
 BOOL CPda::feel_touch_contact(CObject* O)
 {
 	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(O);
-	if (pInvOwner)
+	if(pInvOwner)
 	{
-		if (this != pInvOwner->GetPDA())
+		if(this != pInvOwner->GetPDA())
 		{
 			CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(O);
-			if (pEntityAlive && !pEntityAlive->cast_base_monster())
+			if(pEntityAlive && !pEntityAlive->cast_base_monster())
 				return TRUE;
 		}
 		else
@@ -131,10 +131,10 @@ void CPda::OnH_A_Chield()
 	VERIFY(IsOff());
 
 	// включить PDA только если оно находится у первого владельца
-	if (H_Parent()->ID() == m_idOriginalOwner)
+	if(H_Parent()->ID() == m_idOriginalOwner)
 	{
 		TurnOn();
-		if (m_sFullName.empty())
+		if(m_sFullName.empty())
 		{
 			m_sFullName.assign(inherited::Name());
 			m_sFullName += " ";
@@ -166,10 +166,10 @@ void CPda::ActivePDAContacts(xr_vector<CPda*>& res)
 	xr_vector<CObject*>::iterator it = m_active_contacts.begin();
 	xr_vector<CObject*>::iterator it_e = m_active_contacts.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		CPda* p = GetPdaFromOwner(*it);
-		if (p)
+		if(p)
 			res.push_back(p);
 	}
 }
@@ -192,10 +192,10 @@ CObject* CPda::GetOwnerObject()
 }
 LPCSTR CPda::Name()
 {
-	if (!m_SpecificChracterOwner.size())
+	if(!m_SpecificChracterOwner.size())
 		return inherited::Name();
 
-	if (m_sFullName.empty())
+	if(m_sFullName.empty())
 	{
 		m_sFullName.assign(inherited::Name());
 

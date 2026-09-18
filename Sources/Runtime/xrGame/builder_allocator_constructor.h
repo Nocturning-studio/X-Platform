@@ -8,7 +8,8 @@
 
 #pragma once
 
-template <typename _path_builder, typename _vertex_allocator> struct CBuilderAllocatorConstructor
+template <typename _path_builder, typename _vertex_allocator>
+struct CBuilderAllocatorConstructor
 {
 	template <template <typename _T> class _vertex>
 	class CDataStorage : public _path_builder::template CDataStorage<_vertex>,

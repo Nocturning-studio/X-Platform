@@ -61,20 +61,20 @@ IC void CSpaceRestrictionComposition::merge(CBaseRestrictionPtr restriction)
 
 bool CSpaceRestrictionComposition::inside(const Fsphere& sphere)
 {
-	if (!initialized())
+	if(!initialized())
 	{
 		initialize();
-		if (!initialized())
+		if(!initialized())
 			return (true);
 	}
 
-	if (!m_sphere.intersect(sphere))
+	if(!m_sphere.intersect(sphere))
 		return (false);
 
 	RESTRICTIONS::iterator I = m_restrictions.begin();
 	RESTRICTIONS::iterator E = m_restrictions.end();
-	for (; I != E; ++I)
-		if ((*I)->inside(sphere))
+	for(; I != E; ++I)
+		if((*I)->inside(sphere))
 			return (true);
 
 	return (false);
@@ -84,7 +84,7 @@ void CSpaceRestrictionComposition::initialize()
 {
 	u32 n = _GetItemCount(*m_space_restrictors);
 	VERIFY(n);
-	if (n == 1)
+	if(n == 1)
 	{
 #ifdef DEBUG
 		m_correct = true;
@@ -95,12 +95,12 @@ void CSpaceRestrictionComposition::initialize()
 
 	string256 element;
 
-	for (u32 i = 0; i < n; ++i)
-		if (!m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element))->initialized())
+	for(u32 i = 0; i < n; ++i)
+		if(!m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element))->initialized())
 			return;
 
 	Fsphere* spheres = (Fsphere*)_alloca(n * sizeof(Fsphere));
-	for (u32 i = 0; i < n; ++i)
+	for(u32 i = 0; i < n; ++i)
 	{
 		SpaceRestrictionHolder::CBaseRestrictionPtr restriction =
 			m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element));
@@ -119,7 +119,7 @@ void CSpaceRestrictionComposition::initialize()
 	temp.max.y = spheres[0].P.y + spheres[0].R;
 	temp.max.z = spheres[0].P.z + spheres[0].R;
 
-	for (u32 i = 1; i < n; ++i)
+	for(u32 i = 1; i < n; ++i)
 	{
 		temp.min.x = _min(temp.min.x, spheres[i].P.x - spheres[i].R);
 		temp.min.y = _min(temp.min.y, spheres[i].P.y - spheres[i].R);
@@ -132,7 +132,7 @@ void CSpaceRestrictionComposition::initialize()
 	m_sphere.P.mad(temp.min, temp.max, .5f);
 	m_sphere.R = m_sphere.P.distance_to(spheres[0].P) + spheres[0].R;
 
-	for (u32 i = 1; i < n; ++i)
+	for(u32 i = 1; i < n; ++i)
 		m_sphere.R = _max(m_sphere.R, m_sphere.P.distance_to(spheres[i].P) + spheres[i].R);
 
 	m_sphere.R += EPS_L;
@@ -157,7 +157,7 @@ void CSpaceRestrictionComposition::test_correctness()
 	{
 		RESTRICTIONS::iterator I = m_restrictions.begin();
 		RESTRICTIONS::iterator E = m_restrictions.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			m_test_storage.insert(m_test_storage.end(), (*I)->object().m_test_storage.begin(),
 								  (*I)->object().m_test_storage.end());
 	}
@@ -167,7 +167,7 @@ void CSpaceRestrictionComposition::test_correctness()
 		m_test_storage.erase(std::unique(m_test_storage.begin(), m_test_storage.end()), m_test_storage.end());
 	}
 
-	if (m_test_storage.empty())
+	if(m_test_storage.empty())
 	{
 		m_correct = false;
 		return;
@@ -177,7 +177,7 @@ void CSpaceRestrictionComposition::test_correctness()
 	{
 		RESTRICTIONS::iterator I = m_restrictions.begin();
 		RESTRICTIONS::iterator E = m_restrictions.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			VERIFY3(!(*I)->object().m_test_storage.empty(), "Restrictor has no border", *(*I)->object().name());
 			nodes.clear();
@@ -186,12 +186,12 @@ void CSpaceRestrictionComposition::test_correctness()
 									   (*I)->object().m_test_storage.back(), &nodes, GraphEngineSpace::CFlooder());
 			ai().level_graph().clear_mask(border());
 
-			if (nodes.size() == 65535)
+			if(nodes.size() == 65535)
 				m_correct = true;
 			else
 				m_correct = (m_test_storage.size() <= nodes.size());
 
-			if (!m_correct)
+			if(!m_correct)
 				break;
 		}
 	}
@@ -209,14 +209,14 @@ Fsphere CSpaceRestrictionComposition::sphere() const
 #ifdef DEBUG
 void CSpaceRestrictionComposition::check_restrictor_type()
 {
-	if (_GetItemCount(*m_space_restrictors) == 1)
+	if(_GetItemCount(*m_space_restrictors) == 1)
 		return;
 
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	CObject* object = Level().Objects.FindObjectByName(m_space_restrictors);
-	if (!object)
+	if(!object)
 		return;
 
 	CSpaceRestrictor* restrictor = smart_cast<CSpaceRestrictor*>(object);

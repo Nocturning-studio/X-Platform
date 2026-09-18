@@ -12,7 +12,8 @@ static void w_vec_q8(NET_Packet& P, const fvec3& vec, const fvec3& min, const fv
 	P.w_float_q8(vec.y, min.y, max.y);
 	P.w_float_q8(vec.z, min.z, max.z);
 }
-template <typename src> static void r_vec_q8(src& P, fvec3& vec, const fvec3& min, const fvec3& max)
+template <typename src>
+static void r_vec_q8(src& P, fvec3& vec, const fvec3& min, const fvec3& max)
 {
 	vec.x = P.r_float_q8(min.x, max.x);
 	vec.y = P.r_float_q8(min.y, max.y);
@@ -44,7 +45,8 @@ static void w_qt_q8(NET_Packet& P, const Fquaternion& q)
 	// P.w(sign())
 }
 
-template <typename src> static void r_qt_q8(src& P, Fquaternion& q)
+template <typename src>
+static void r_qt_q8(src& P, Fquaternion& q)
 {
 	//// x^2 + y^2 + z^2 + w^2 = 1
 	// P.r_float_q8(q.x,-1.f,1.f);
@@ -84,7 +86,8 @@ static void r_vec_q16(NET_Packet& P, fvec3& vec, const fvec3& min, const fvec3& 
 	// clamp(vec.y,min.y,max.y);
 	// clamp(vec.z,min.z,max.z);
 }
-template <typename src> static void w_qt_q16(src& P, const Fquaternion& q)
+template <typename src>
+static void w_qt_q16(src& P, const Fquaternion& q)
 {
 	// fvec3 Q;
 	// Q.set(q.x,q.y,q.z);
@@ -132,7 +135,8 @@ void SPHNetState::net_Export(NET_Packet& P)
 	// P.w_vec4(*((fvec4*)&previous_quaternion));
 	P.w_u8((u8)enabled);
 }
-template <typename src> void SPHNetState::read(src& P)
+template <typename src>
+void SPHNetState::read(src& P)
 {
 	linear_vel = P.r_vec3();
 	angular_vel.set(0.f, 0.f, 0.f); // P.r_vec3(angular_vel);
@@ -181,7 +185,8 @@ void SPHNetState::net_Save(NET_Packet& P, const fvec3& min, const fvec3& max)
 	// P.w_vec4(*((fvec4*)&previous_quaternion));
 	P.w_u8((u8)enabled);
 }
-template <typename src> void SPHNetState::read(src& P, const fvec3& min, const fvec3& max)
+template <typename src>
+void SPHNetState::read(src& P, const fvec3& min, const fvec3& max)
 {
 	VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
 	linear_vel.set(0.f, 0.f, 0.f);
@@ -225,7 +230,7 @@ void SPHBonesData::net_Save(NET_Packet& P)
 	P.w_vec3(get_max());
 	P.w_u16((u16)bones.size()); // bones number;
 	PHNETSTATE_I i = bones.begin(), e = bones.end();
-	for (; e != i; i++)
+	for(; e != i; i++)
 	{
 		(*i).net_Save(P, get_min(), get_max());
 	}
@@ -247,7 +252,7 @@ void SPHBonesData::net_Load(NET_Packet& P)
 	set_min_max(_mn, _mx);
 
 	u16 bones_number = P.r_u16(); // bones number /**/
-	for (int i = 0; i < bones_number; i++)
+	for(int i = 0; i < bones_number; i++)
 	{
 		SPHNetState S;
 		S.net_Load(P, get_min(), get_max());

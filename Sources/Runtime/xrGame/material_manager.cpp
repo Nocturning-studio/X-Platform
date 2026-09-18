@@ -44,9 +44,9 @@ void CMaterialManager::reinit()
 	m_run_mode = false;
 
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(m_object);
-	if (entity_alive)
+	if(entity_alive)
 	{
-		if (entity_alive->character_physics_support()->movement()->CharacterExist())
+		if(entity_alive->character_physics_support()->movement()->CharacterExist())
 			entity_alive->character_physics_support()->movement()->SetPLastMaterialIDX(&m_last_material_idx);
 
 		//		if (entity_alive->use_simplified_visual()) {
@@ -64,29 +64,29 @@ void CMaterialManager::reload(LPCSTR section)
 
 void CMaterialManager::update(float time_delta, float volume, float step_time, bool standing)
 {
-	//OPTICK_EVENT("CMaterialManager::update");
+	// OPTICK_EVENT("CMaterialManager::update");
 
 	VERIFY(GAMEMTL_NONE_IDX != m_my_material_idx);
 	VERIFY(GAMEMTL_NONE_IDX != m_last_material_idx);
 	SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(m_my_material_idx, m_last_material_idx);
 	VERIFY3(mtl_pair, "Undefined material pair: ", *GMLib.GetMaterialByIdx(m_last_material_idx)->m_Name);
 	fvec3 position = m_object->Position();
-	if (m_movement_control->CharacterExist())
+	if(m_movement_control->CharacterExist())
 	{
 		position.y += m_movement_control->FootRadius();
 	}
 
 	// ref_sound step
-	if (!standing)
+	if(!standing)
 	{
-		if (m_time_to_step < 0)
+		if(m_time_to_step < 0)
 		{
 			SoundVec& snd_array = mtl_pair->StepSounds;
 
-			if (m_run_mode && mtl_pair->BreakingSounds.size() > 0)
+			if(m_run_mode && mtl_pair->BreakingSounds.size() > 0)
 				snd_array = mtl_pair->BreakingSounds;
 
-			if (snd_array.size() > 0)
+			if(snd_array.size() > 0)
 			{
 				m_step_id = ::Random.randI(0, snd_array.size());
 				m_time_to_step = step_time;
@@ -100,8 +100,8 @@ void CMaterialManager::update(float time_delta, float volume, float step_time, b
 	else
 		m_time_to_step = 0;
 
-	for (int i = 0; i < 4; i++)
-		if (m_step_sound[i]._feedback())
+	for(int i = 0; i < 4; i++)
+		if(m_step_sound[i]._feedback())
 		{
 			m_step_sound[i].set_position(position);
 			m_step_sound[i].set_volume(1.f * volume);

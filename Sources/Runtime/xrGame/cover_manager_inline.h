@@ -23,25 +23,25 @@ template <typename _evaluator_type, typename _restrictor_type>
 IC bool CCoverManager::inertia(float radius, _evaluator_type& evaluator, const _restrictor_type& restrictor) const
 {
 	// check if evaluator has no inertion or it's time to reevaluate
-	if (!evaluator.inertia(radius))
+	if(!evaluator.inertia(radius))
 		return (false);
 
 	// so, evaluator has inertion and it's not time to search
 	// check if we didn't select cover last time
-	if (!evaluator.selected())
+	if(!evaluator.selected())
 		return (true);
 
 	// so, evaluator has inertion and it's not time to search
 	// so, evaluator did select cover last time
 	// check if this cover is still accessible
-	if (!evaluator.accessible(evaluator.selected()->position()))
+	if(!evaluator.accessible(evaluator.selected()->position()))
 		return (false);
 
 	// so, evaluator has inertion and it's not time to search
 	// so, evaluator did select cover last time
 	// so, cover is still accessible
 	// check if restrictor still allows this cover
-	if (!restrictor(evaluator.selected()))
+	if(!restrictor(evaluator.selected()))
 		return (false);
 
 	// so, evaluator has inertion and it's not time to search
@@ -56,23 +56,23 @@ template <typename _evaluator_type, typename _restrictor_type>
 IC const CCoverPoint* CCoverManager::best_cover(const fvec3& position, float radius, _evaluator_type& evaluator,
 												const _restrictor_type& restrictor) const
 {
-	//OPTICK_EVENT("CCoverManager::best_cover");
+	// OPTICK_EVENT("CCoverManager::best_cover");
 
 	START_PROFILE("Covers/best_cover")
 
-	if (inertia(radius, evaluator, restrictor))
+	if(inertia(radius, evaluator, restrictor))
 		return (evaluator.selected());
 
 	const CCoverPoint* last = evaluator.selected();
 
 	evaluator.initialize(position);
 
-	if (last)
+	if(last)
 	{
-		if (position.distance_to_sqr(last->position()) < _sqr(3 * radius))
+		if(position.distance_to_sqr(last->position()) < _sqr(3 * radius))
 		{
-			if (evaluator.accessible(last->position()))
-				if (restrictor(last))
+			if(evaluator.accessible(last->position()))
+				if(restrictor(last))
 					evaluator.evaluate(last, restrictor.weight(last));
 		}
 	}
@@ -83,18 +83,18 @@ IC const CCoverPoint* CCoverManager::best_cover(const fvec3& position, float rad
 
 	xr_vector<CCoverPoint*>::const_iterator I = m_nearest.begin();
 	xr_vector<CCoverPoint*>::const_iterator E = m_nearest.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (radius_sqr < position.distance_to_sqr((*I)->position()))
+		if(radius_sqr < position.distance_to_sqr((*I)->position()))
 			continue;
 
-		if (_abs(position.y - (*I)->position().y) > 3.f)
+		if(_abs(position.y - (*I)->position().y) > 3.f)
 			continue;
 
-		if (!evaluator.accessible((*I)->position()))
+		if(!evaluator.accessible((*I)->position()))
 			continue;
 
-		if (!restrictor(*I))
+		if(!restrictor(*I))
 			continue;
 
 		evaluator.evaluate(*I, restrictor.weight(*I));

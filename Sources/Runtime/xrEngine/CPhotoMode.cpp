@@ -17,36 +17,33 @@
 //////////////////////////////////////////////////////////////////////
 CPhotoMode* xrPhotoMode = 0;
 
-CPhotoMode::force_position 
-CPhotoMode::g_position = 
-{
-	false, 
-	{0.0f, 0.0f, 0.0f}
-};
+CPhotoMode::force_position
+	CPhotoMode::g_position =
+		{
+			false,
+			{0.0f, 0.0f, 0.0f}};
 
 // +X, -X, +Y, -Y, +Z, -Z
-fvec3 CPhotoMode::cmNorm[6] = 
-{
-	{0.f, 1.f, 0.f}, 
-	{0.f, 1.f, 0.f}, 
-	{0.f, 0.f, -1.f},	 
-	{0.f, 0.f, 1.f}, 
-	{0.f, 1.f, 0.f}, 
-	{0.f, 1.f, 0.f}
-};
+fvec3 CPhotoMode::cmNorm[6] =
+	{
+		{0.f, 1.f, 0.f},
+		{0.f, 1.f, 0.f},
+		{0.f, 0.f, -1.f},
+		{0.f, 0.f, 1.f},
+		{0.f, 1.f, 0.f},
+		{0.f, 1.f, 0.f}};
 
-fvec3 CPhotoMode::cmDir[6] = 
-{
-	{1.f, 0.f, 0.f},  
-	{-1.f, 0.f, 0.f}, 
-	{0.f, 1.f, 0.f},
-	{0.f, -1.f, 0.f}, 
-	{0.f, 0.f, 1.f},	
-	{0.f, 0.f, -1.f}
-};
+fvec3 CPhotoMode::cmDir[6] =
+	{
+		{1.f, 0.f, 0.f},
+		{-1.f, 0.f, 0.f},
+		{0.f, 1.f, 0.f},
+		{0.f, -1.f, 0.f},
+		{0.f, 0.f, 1.f},
+		{0.f, 0.f, -1.f}};
 
-Flags32 CPhotoMode::s_hud_flag = { NULL };
-Flags32 CPhotoMode::s_dev_flags = { NULL };
+Flags32 CPhotoMode::s_hud_flag = {NULL};
+Flags32 CPhotoMode::s_dev_flags = {NULL};
 //////////////////////////////////////////////////////////////////////
 void CPhotoMode::update_whith_timescale(fvec3& v, const fvec3& v_delta)
 {
@@ -69,7 +66,7 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	DYaw.set(dir.x, 0.f, dir.z);
 	DYaw.normalize_safe();
 
-	if (DYaw.x < 0)
+	if(DYaw.x < 0)
 		m_HPB.x = acosf(DYaw.z);
 	else
 		m_HPB.x = 2 * PI - acosf(DYaw.z);
@@ -129,7 +126,7 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	m_Stage = 0;
 	m_iLMScreenshotFragment = 0;
 
-	//TODO - replace with UI Sounds
+	// TODO - replace with UI Sounds
 	music.create("photo_mode_dbg_sound", st_Music, sg_Undefined);
 	music.play_at_pos(0, Engine.RenderView.Position, sm_NoPitch);
 
@@ -174,7 +171,7 @@ void CPhotoMode::ResetParameters()
 
 void CPhotoMode::MakeScreenshotFace()
 {
-	switch (m_Stage)
+	switch(m_Stage)
 	{
 	case 0:
 		break;
@@ -189,7 +186,7 @@ void CPhotoMode::MakeScreenshotFace()
 void CPhotoMode::MakeCubeMapFace(fvec3& D, fvec3& N)
 {
 	string32 buf;
-	switch (m_Stage)
+	switch(m_Stage)
 	{
 	case 0:
 		N.set(cmNorm[m_Stage]);
@@ -216,7 +213,7 @@ void CPhotoMode::MakeCubeMapFace(fvec3& D, fvec3& N)
 
 void CPhotoMode::SwitchShowInputInfo()
 {
-	if (m_bShowInputInfo == true)
+	if(m_bShowInputInfo == true)
 		m_bShowInputInfo = false;
 	else
 		m_bShowInputInfo = true;
@@ -281,7 +278,7 @@ void CPhotoMode::ShowInputInfo()
 
 BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 {
-	if (m_bMakeScreenshot)
+	if(m_bMakeScreenshot)
 	{
 		MakeScreenshotFace();
 
@@ -294,7 +291,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 	}
 	else
 	{
-		if (m_bShowInputInfo == true)
+		if(m_bShowInputInfo == true)
 		{
 			ShowInfo();
 			ShowInputInfo();
@@ -305,17 +302,17 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 
 		float speed = m_fSpeed1, ang_speed = m_fAngSpeed1;
 
-		if (IR_GetKeyState(DIK_LSHIFT))
+		if(IR_GetKeyState(DIK_LSHIFT))
 		{
 			speed = m_fSpeed0;
 			ang_speed = m_fAngSpeed0;
 		}
-		else if (IR_GetKeyState(DIK_LALT))
+		else if(IR_GetKeyState(DIK_LALT))
 		{
 			speed = m_fSpeed2;
 			ang_speed = m_fAngSpeed2;
 		}
-		else if (IR_GetKeyState(DIK_LCONTROL))
+		else if(IR_GetKeyState(DIK_LCONTROL))
 		{
 			speed = m_fSpeed3;
 			ang_speed = m_fAngSpeed3;
@@ -328,7 +325,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 		m_HPB.y -= m_vR.x;
 		m_HPB.z += m_vR.z;
 
-		if (g_position.set_position)
+		if(g_position.set_position)
 		{
 			m_Position.set(g_position.p);
 			g_position.set_position = false;
@@ -354,7 +351,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 		vmove.mul(m_vT.y);
 		m_Position.add(vmove);
 
-		#pragma todo(NSDeathman to NSDeathman: Добавить ограничение дальности полета для избегания читинга)
+#pragma todo(NSDeathman to NSDeathman : Добавить ограничение дальности полета для избегания читинга)
 		m_Camera.setHPB(m_HPB.x, m_HPB.y, m_HPB.z);
 		m_Camera.translate_over(m_Position);
 
@@ -380,7 +377,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 
 void CPhotoMode::SwitchAutofocusState()
 {
-	if (m_bAutofocusEnabled == false)
+	if(m_bAutofocusEnabled == false)
 		m_bAutofocusEnabled = true;
 	else
 		m_bAutofocusEnabled = false;
@@ -392,7 +389,7 @@ void CPhotoMode::SwitchAutofocusState()
 // общих команд для всех рендеров
 void CPhotoMode::SwitchGridState()
 {
-	if (m_bGridEnabled == false)
+	if(m_bGridEnabled == false)
 	{
 		m_bGridEnabled = true;
 		Console->Execute("r_photo_grid on");
@@ -408,7 +405,7 @@ void CPhotoMode::SwitchGridState()
 // общих команд для всех рендеров
 void CPhotoMode::SwitchCinemaBordersState()
 {
-	if (m_bBordersEnabled == false)
+	if(m_bBordersEnabled == false)
 	{
 		m_bBordersEnabled = true;
 		Console->Execute("r_cinema_borders on");
@@ -422,7 +419,7 @@ void CPhotoMode::SwitchCinemaBordersState()
 
 void CPhotoMode::SwitchWatermarkVisibility()
 {
-	if (m_bWatermarkEnabled == false)
+	if(m_bWatermarkEnabled == false)
 	{
 		m_bWatermarkEnabled = true;
 		Console->Execute("r_watermark on");
@@ -436,7 +433,7 @@ void CPhotoMode::SwitchWatermarkVisibility()
 
 void CPhotoMode::SwitchActorVisibility()
 {
-	if (m_bActorShowState == false)
+	if(m_bActorShowState == false)
 	{
 		m_bActorShowState = true;
 		Actor->setVisible(TRUE);
@@ -459,15 +456,15 @@ void CPhotoMode::ChangeDepthOfFieldFocalDepth(int direction)
 
 	float X = dof_params_old.x * 0.1f;
 
-	if (direction > 0)
+	if(direction > 0)
 		dof_params_actual.x = dof_params_old.x + X;
 	else
 		dof_params_actual.x = dof_params_old.x - X;
 
-	if (dof_params_actual.x <= 0.5f)
+	if(dof_params_actual.x <= 0.5f)
 		dof_params_actual.x = 0.5f;
 
-	if (dof_params_actual.x >= 100.0f)
+	if(dof_params_actual.x >= 100.0f)
 		dof_params_actual.x = 100.0f;
 
 	m_fDOF = dof_params_actual;
@@ -485,7 +482,7 @@ void CPhotoMode::ChangeDepthOfFieldFocalLength(int direction)
 
 	float X = dof_params_old.y * 0.25f;
 
-	if (direction > 0)
+	if(direction > 0)
 		dof_params_actual.y = dof_params_old.y + X;
 	else
 		dof_params_actual.y = dof_params_old.y - X;
@@ -510,15 +507,15 @@ void CPhotoMode::ChangeDepthOfFieldFStop(int direction)
 
 	float X = dof_params_old.z * 0.1f;
 
-	if (direction > 0)
+	if(direction > 0)
 		dof_params_actual.z = dof_params_old.z + X;
 	else
 		dof_params_actual.z = dof_params_old.z - X;
 
-	if (dof_params_actual.z <= 0.1f)
+	if(dof_params_actual.z <= 0.1f)
 		dof_params_actual.z = 0.1f;
 
-	if (dof_params_actual.z >= 100.0f)
+	if(dof_params_actual.z >= 100.0f)
 		dof_params_actual.z = 100.0f;
 
 	m_fDOF = dof_params_actual;
@@ -529,14 +526,14 @@ void CPhotoMode::ChangeFieldOfView(int direction)
 {
 	float m_fFov_actual = Engine.RenderView.Fov;
 
-	if (direction > 0)
+	if(direction > 0)
 		m_fFov = m_fFov_actual + 0.5f;
 	else
 		m_fFov = m_fFov_actual - 0.5f;
 
-	if (m_fFov <= 2.28f)
+	if(m_fFov <= 2.28f)
 		m_fFov = 2.28f;
-	else if (m_fFov >= 113.001f)
+	else if(m_fFov >= 113.001f)
 		m_fFov = 113.0f;
 }
 
@@ -554,71 +551,71 @@ void CPhotoMode::MakeScreenshot()
 
 void CPhotoMode::IR_OnKeyboardPress(int dik)
 {
-	if (dik == DIK_GRAVE)
+	if(dik == DIK_GRAVE)
 		Console->Show();
 
-	if (dik == DIK_BACK)
+	if(dik == DIK_BACK)
 		MakeCubemap();
 
-	if (dik == DIK_F12)
+	if(dik == DIK_F12)
 		MakeScreenshot();
 
-	if (dik == DIK_ESCAPE)
+	if(dik == DIK_ESCAPE)
 		fLifeTime = -1;
 
-	if (dik == DIK_DELETE)
+	if(dik == DIK_DELETE)
 		ResetParameters();
 
-	if (dik == DIK_H)
+	if(dik == DIK_H)
 		SwitchAutofocusState();
 
-	if (dik == DIK_V)
+	if(dik == DIK_V)
 		SwitchGridState();
 
-	if (dik == DIK_B)
+	if(dik == DIK_B)
 		SwitchCinemaBordersState();
 
-	if (dik == DIK_TAB)
+	if(dik == DIK_TAB)
 		SwitchShowInputInfo();
 
-	if (dik == DIK_N)
+	if(dik == DIK_N)
 		SwitchWatermarkVisibility();
 
-	if (dik == DIK_P)
+	if(dik == DIK_P)
 		SwitchActorVisibility();
 
-	if (dik == DIK_RETURN)
+	if(dik == DIK_RETURN)
 	{
 #ifndef MASTER_GOLD
-			Actor->ForceTransform(m_Camera);
+		Actor->ForceTransform(m_Camera);
 #endif
-			fLifeTime = -1;
+		fLifeTime = -1;
 	}
 
-	//if (dik == DIK_PAUSE)
+	// if (dik == DIK_PAUSE)
 	//	Device.Pause(!Device.Paused(), TRUE, TRUE, "photo_mode");
 
 #ifndef MASTER_GOLD
 #pragma todo("NSDeathman to all: Переделать быструю отладку рендера под удобный вид")
-	if (dik == DIK_1)
+	if(dik == DIK_1)
 		Console->Execute("r_debug_render gbuffer_albedo");
-	if (dik == DIK_2)
+	if(dik == DIK_2)
 		Console->Execute("r_debug_render gbuffer_position");
-	if (dik == DIK_3)
+	if(dik == DIK_3)
 		Console->Execute("r_debug_render gbuffer_normal");
-	if (dik == DIK_4)
+	if(dik == DIK_4)
 		Console->Execute("r_debug_render gbuffer_roughness");
-	if (dik == DIK_5)
+	if(dik == DIK_5)
 		Console->Execute("r_debug_render gbuffer_matallness");
-	if (dik == DIK_6)
+	if(dik == DIK_6)
 		Console->Execute("r_debug_render gbuffer_lightmap_ao");
-	if (dik == DIK_7)
+	if(dik == DIK_7)
 		Console->Execute("r_debug_render direct_light");
-	if (dik == DIK_8)
+	if(dik == DIK_8)
 		Console->Execute("r_debug_render indirect_light");
-	if (dik == DIK_9)
+	if(dik == DIK_9)
 		Console->Execute("r_debug_render real_time_ao");
-	if (dik == DIK_0)
+	if(dik == DIK_0)
 		Console->Execute("r_debug_render disabled");
 #endif
 }
@@ -626,7 +623,7 @@ void CPhotoMode::IR_OnKeyboardPress(int dik)
 void CPhotoMode::IR_OnKeyboardHold(int dik)
 {
 	fvec3 vT_delta{}, vR_delta{};
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_A:
 	case DIK_NUMPAD1:
@@ -680,7 +677,7 @@ void CPhotoMode::IR_OnMouseMove(int dx, int dy)
 {
 	float scale = .5f; // psMouseSens;
 	fvec3 vR_delta{};
-	if (dx || dy)
+	if(dx || dy)
 	{
 		vR_delta.y += float(dx) * scale;													// heading
 		vR_delta.x += ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * (3.f / 4.f); // pitch
@@ -690,27 +687,24 @@ void CPhotoMode::IR_OnMouseMove(int dx, int dy)
 
 void CPhotoMode::IR_OnMouseHold(int btn)
 {
-
 }
 
 void CPhotoMode::IR_OnMouseWheel(int direction)
 {
-	if (IR_GetKeyState(DIK_G))
+	if(IR_GetKeyState(DIK_G))
 	{
 		ChangeDepthOfFieldFocalLength(direction);
 	}
-	else if (IR_GetKeyState(DIK_T))
+	else if(IR_GetKeyState(DIK_T))
 	{
 		ChangeDepthOfFieldFocalDepth(direction);
 	}
-	else if (IR_GetKeyState(DIK_R))
+	else if(IR_GetKeyState(DIK_R))
 	{
 		ChangeDepthOfFieldFStop(direction);
 	}
-	else if (IR_GetKeyState(DIK_F))
+	else if(IR_GetKeyState(DIK_F))
 	{
 		ChangeFieldOfView(direction);
 	}
 }
-
-

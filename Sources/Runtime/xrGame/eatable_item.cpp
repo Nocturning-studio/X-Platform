@@ -56,7 +56,7 @@ void CEatableItem::Load(LPCSTR section)
 
 BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return FALSE;
 
 	m_iPortionsNum = m_iStartPortionsNum;
@@ -66,11 +66,11 @@ BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
 
 bool CEatableItem::Useful() const
 {
-	if (!inherited::Useful())
+	if(!inherited::Useful())
 		return false;
 
 	// проверить не все ли еще съедено
-	if (Empty())
+	if(Empty())
 		return false;
 
 	return true;
@@ -78,11 +78,11 @@ bool CEatableItem::Useful() const
 
 void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 {
-	if (!Useful())
+	if(!Useful())
 	{
 		object().setVisible(FALSE);
 		object().setEnabled(FALSE);
-		if (m_physic_item)
+		if(m_physic_item)
 			m_physic_item->m_ready_to_destroy = true;
 	}
 	inherited::OnH_B_Independent(just_before_destroy);
@@ -102,11 +102,11 @@ void CEatableItem::UseBy(CEntityAlive* entity_alive)
 
 	entity_alive->conditions().SetMaxPower(entity_alive->conditions().GetMaxPower() + m_fMaxPowerUpInfluence);
 
-	if (entity_alive == Level().CurrentViewEntity())
+	if(entity_alive == Level().CurrentViewEntity())
 	{
-		if (pSettings->line_exist(m_physic_item->cNameSect(), "use_sound"))
+		if(pSettings->line_exist(m_physic_item->cNameSect(), "use_sound"))
 		{
-			if (m_use_sound._feedback())
+			if(m_use_sound._feedback())
 				m_use_sound.stop();
 
 			shared_str snd_name = pSettings->r_string(m_physic_item->cNameSect(), "use_sound");
@@ -116,7 +116,7 @@ void CEatableItem::UseBy(CEntityAlive* entity_alive)
 	}
 
 	// уменьшить количество порций
-	if (m_iPortionsNum > 0)
+	if(m_iPortionsNum > 0)
 		--(m_iPortionsNum);
 	else
 		m_iPortionsNum = 0;

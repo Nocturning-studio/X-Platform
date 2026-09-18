@@ -22,13 +22,13 @@ void CBlendInstance::construct()
 
 void CBlendInstance::blend_add(CBlend* H)
 {
-	if (Blend.size() == MAX_BLENDED)
+	if(Blend.size() == MAX_BLENDED)
 	{
-		if (H->fall_at_end)
+		if(H->fall_at_end)
 			return;
 		BlendSVecIt _d = Blend.begin();
-		for (BlendSVecIt it = Blend.begin() + 1; it != Blend.end(); it++)
-			if ((*it)->blendAmount < (*_d)->blendAmount)
+		for(BlendSVecIt it = Blend.begin() + 1; it != Blend.end(); it++)
+			if((*it)->blendAmount < (*_d)->blendAmount)
 				_d = it;
 		Blend.erase(_d);
 	}
@@ -39,7 +39,7 @@ void CBlendInstance::blend_add(CBlend* H)
 void CBlendInstance::blend_remove(CBlend* H)
 {
 	CBlend** I = std::find(Blend.begin(), Blend.end(), H);
-	if (I != Blend.end())
+	if(I != Blend.end())
 		Blend.erase(I);
 }
 
@@ -47,14 +47,14 @@ void CBlendInstance::blend_remove(CBlend* H)
 void CKinematicsAnimated::Bone_Motion_Start(CBoneData* bd, CBlend* handle)
 {
 	LL_GetBlendInstance(bd->GetSelfID()).blend_add(handle);
-	for (vecBonesIt I = bd->children.begin(); I != bd->children.end(); I++)
+	for(vecBonesIt I = bd->children.begin(); I != bd->children.end(); I++)
 		Bone_Motion_Start(*I, handle);
 }
 
 void CKinematicsAnimated::Bone_Motion_Stop(CBoneData* bd, CBlend* handle)
 {
 	LL_GetBlendInstance(bd->GetSelfID()).blend_remove(handle);
-	for (vecBonesIt I = bd->children.begin(); I != bd->children.end(); I++)
+	for(vecBonesIt I = bd->children.begin(); I != bd->children.end(); I++)
 		Bone_Motion_Stop(*I, handle);
 }
 
@@ -73,8 +73,8 @@ std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
 	shared_motions& s_mots = m_Motions[ID.slot].motions;
 	accel_map::iterator _I, _E = s_mots.motion_map()->end();
-	for (_I = s_mots.motion_map()->begin(); _I != _E; ++_I)
-		if (_I->second == ID.idx)
+	for(_I = s_mots.motion_map()->begin(); _I != _E; ++_I)
+		if(_I->second == ID.idx)
 			return std::make_pair(*_I->first, *s_mots.id());
 	return std::make_pair((LPCSTR)0, (LPCSTR)0);
 }
@@ -86,11 +86,11 @@ std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 MotionID CKinematicsAnimated::LL_MotionID(LPCSTR B)
 {
 	MotionID motion_ID;
-	for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
+	for(int k = int(m_Motions.size()) - 1; k >= 0; --k)
 	{
 		shared_motions* s_mots = &m_Motions[k].motions;
 		accel_map::iterator I = s_mots->motion_map()->find(LPSTR(B));
-		if (I != s_mots->motion_map()->end())
+		if(I != s_mots->motion_map()->end())
 		{
 			motion_ID.set(u16(k), I->second);
 			break;
@@ -101,15 +101,15 @@ MotionID CKinematicsAnimated::LL_MotionID(LPCSTR B)
 
 u16 CKinematicsAnimated::LL_PartID(LPCSTR B)
 {
-	if (0 == m_Partition)
+	if(0 == m_Partition)
 		return BI_NONE;
 
-	for (u16 id = 0; id < MAX_PARTS; id++)
+	for(u16 id = 0; id < MAX_PARTS; id++)
 	{
 		CPartDef& P = (*m_Partition)[id];
-		if (0 == P.Name)
+		if(0 == P.Name)
 			continue;
-		if (0 == xr_stricmp(B, *P.Name))
+		if(0 == xr_stricmp(B, *P.Name))
 			return id;
 	}
 
@@ -121,11 +121,11 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(LPCSTR N)
 {
 	MotionID motion_ID;
 
-	for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
+	for(int k = int(m_Motions.size()) - 1; k >= 0; --k)
 	{
 		shared_motions* s_mots = &m_Motions[k].motions;
 		accel_map::iterator I = s_mots->cycle()->find(LPSTR(N));
-		if (I != s_mots->cycle()->end())
+		if(I != s_mots->cycle()->end())
 		{
 			motion_ID.set(u16(k), I->second);
 			break;
@@ -146,11 +146,11 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(shared_str N)
 {
 	MotionID motion_ID;
 
-	for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
+	for(int k = int(m_Motions.size()) - 1; k >= 0; --k)
 	{
 		shared_motions* s_mots = &m_Motions[k].motions;
 		accel_map::iterator I = s_mots->cycle()->find(N);
-		if (I != s_mots->cycle()->end())
+		if(I != s_mots->cycle()->end())
 		{
 			motion_ID.set(u16(k), I->second);
 			break;
@@ -172,36 +172,36 @@ void CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
 {
 	BlendSVec& Blend = blend_cycles[part];
 
-	for (u32 I = 0; I < Blend.size(); I++)
+	for(u32 I = 0; I < Blend.size(); I++)
 	{
 		CBlend& B = *Blend[I];
-		if (!(mask_channel & (1 << B.channel)))
+		if(!(mask_channel & (1 << B.channel)))
 			continue;
 		B.blend = CBlend::eFalloff;
 		B.blendFalloff = falloff;
-		if (B.stop_at_end)
+		if(B.stop_at_end)
 			B.playing = FALSE; // callback не должен приходить!
 	}
 }
 
 void CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
 {
-	if (BI_NONE == part)
+	if(BI_NONE == part)
 		return;
-	if (part >= MAX_PARTS)
+	if(part >= MAX_PARTS)
 		return;
 
 	// destroy cycle(s)
 	BlendSVecIt I = blend_cycles[part].begin(), E = blend_cycles[part].end();
-	for (; I != E; I++)
+	for(; I != E; I++)
 	{
 		CBlend& B = *(*I);
-		if (!(mask_channel & (1 << B.channel)))
+		if(!(mask_channel & (1 << B.channel)))
 			continue;
 		B.blend = CBlend::eFREE_SLOT;
 
 		CPartDef& P = (*m_Partition)[B.bone_or_part];
-		for (u32 i = 0; i < P.bones.size(); i++)
+		for(u32 i = 0; i < P.bones.size(); i++)
 			Bone_Motion_Stop_IM((*bones)[P.bones[i]], *I);
 
 		blend_cycles[part].erase(I); // ?
@@ -216,7 +216,7 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID 
 {
 	VERIFY(B.channel < MAX_CHANNELS);
 	// Setup blend params
-	if (bMixing)
+	if(bMixing)
 	{
 		B.blend = CBlend::eAccrue;
 		B.blendAmount = EPS_S;
@@ -272,28 +272,28 @@ CBlend* CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMi
 										  LPVOID CallbackParam, u8 channel /*=0*/)
 {
 	// validate and unroll
-	if (!motion_ID.valid())
+	if(!motion_ID.valid())
 		return 0;
-	if (BI_NONE == part)
+	if(BI_NONE == part)
 	{
-		for (u16 i = 0; i < MAX_PARTS; i++)
+		for(u16 i = 0; i < MAX_PARTS; i++)
 			LL_PlayCycle(i, motion_ID, bMixing, blendAccrue, blendFalloff, Speed, noloop, Callback, CallbackParam,
 						 channel);
 		return 0;
 	}
-	if (part >= MAX_PARTS)
+	if(part >= MAX_PARTS)
 		return 0;
-	if (0 == m_Partition->part(part).Name)
+	if(0 == m_Partition->part(part).Name)
 		return 0;
 
 	//	shared_motions* s_mots	= &m_Motions[motion.slot];
 	//	CMotionDef* m_def		= s_mots->motion_def(motion.idx);
 
 	// Process old cycles and create _new_
-	if (channel == 0)
+	if(channel == 0)
 	{
 		_DBG_SINGLE_USE_MARKER;
-		if (bMixing)
+		if(bMixing)
 			LL_FadeCycle(part, blendFalloff, 1 << channel);
 		else
 			LL_CloseCycle(part, 1 << channel);
@@ -304,7 +304,7 @@ CBlend* CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMi
 	_DBG_SINGLE_USE_MARKER;
 	IBlendSetup(*B, part, channel, motion_ID, bMixing, blendAccrue, blendFalloff, Speed, noloop, Callback,
 				CallbackParam);
-	for (u32 i = 0; i < P.bones.size(); i++)
+	for(u32 i = 0; i < P.bones.size(); i++)
 		Bone_Motion_Start_IM((*bones)[P.bones[i]], B);
 	blend_cycles[part].push_back(B);
 	return B;
@@ -324,7 +324,7 @@ CBlend* CKinematicsAnimated::PlayCycle(LPCSTR N, BOOL bMixIn, PlayCallback Callb
 									   u8 channel /*= 0*/)
 {
 	MotionID motion_ID = ID_Cycle(N);
-	if (motion_ID.valid())
+	if(motion_ID.valid())
 		return PlayCycle(motion_ID, bMixIn, Callback, CallbackParam, channel);
 	else
 	{
@@ -347,11 +347,11 @@ CBlend* CKinematicsAnimated::PlayCycle(MotionID motion_ID, BOOL bMixIn, PlayCall
 MotionID CKinematicsAnimated::ID_FX_Safe(LPCSTR N)
 {
 	MotionID motion_ID;
-	for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
+	for(int k = int(m_Motions.size()) - 1; k >= 0; --k)
 	{
 		shared_motions* s_mots = &m_Motions[k].motions;
 		accel_map::iterator I = s_mots->fx()->find(LPSTR(N));
-		if (I != s_mots->fx()->end())
+		if(I != s_mots->fx()->end())
 		{
 			motion_ID.set(u16(k), I->second);
 			break;
@@ -391,11 +391,11 @@ CBlend* CKinematicsAnimated::LL_PlayFX(u16 bone, MotionID motion_ID, float blend
 {
 	////OPTICK_EVENT("CKinematicsAnimated::LL_PlayFX");
 
-	if (!motion_ID.valid())
+	if(!motion_ID.valid())
 		return 0;
-	if (blend_fx.size() >= MAX_BLENDED)
+	if(blend_fx.size() >= MAX_BLENDED)
 		return 0;
-	if (BI_NONE == bone)
+	if(BI_NONE == bone)
 		bone = iRoot;
 
 	CBlend* B = IBlend_Create();
@@ -413,7 +413,7 @@ void CKinematicsAnimated::DestroyCycle(CBlend& B)
 
 	B.blend = CBlend::eFREE_SLOT;
 	CPartDef& P = m_Partition->part(B.bone_or_part);
-	for (u32 i = 0; i < P.bones.size(); i++)
+	for(u32 i = 0; i < P.bones.size(); i++)
 		Bone_Motion_Stop_IM((*bones)[P.bones[i]], &B);
 }
 
@@ -421,7 +421,7 @@ IC void UpdateBlendTime(CBlend& B, float dt)
 {
 	////OPTICK_EVENT("CKinematicsAnimated::UpdateBlendTime");
 
-	if (B.playing)
+	if(B.playing)
 	{
 		B.timeCurrent += dt * B.speed; // stop@end - time is not going
 	}
@@ -434,13 +434,13 @@ IC bool UpdatePlayBlend(CBlend& B, float dt)
 
 	B.blendAmount += dt * B.blendAccrue * B.blendPower;
 
-	if (B.blendAmount > B.blendPower)
+	if(B.blendAmount > B.blendPower)
 		B.blendAmount = B.blendPower;
 
-	if (B.stop_at_end && (B.timeCurrent > (B.timeTotal - SAMPLE_SPF /*-EPS*/)))
+	if(B.stop_at_end && (B.timeCurrent > (B.timeTotal - SAMPLE_SPF /*-EPS*/)))
 	{
 		B.timeCurrent = B.timeTotal - SAMPLE_SPF /*- EPS*/; // stop@end - time frozen at the end
-		if (B.playing && B.Callback)
+		if(B.playing && B.Callback)
 			B.Callback(&B); // callback only once
 		B.playing = FALSE;
 
@@ -463,10 +463,10 @@ void CKinematicsAnimated::UpdateTracks()
 	////OPTICK_EVENT("CKinematicsAnimated::UpdateTracks");
 
 	_DBG_SINGLE_USE_MARKER;
-	if (Update_LastTime == Engine.TimeManager.GetGlobalTimeMs())
+	if(Update_LastTime == Engine.TimeManager.GetGlobalTimeMs())
 		return;
 	u32 DT = Engine.TimeManager.GetGlobalTimeMs() - Update_LastTime;
-	if (DT > 66)
+	if(DT > 66)
 		DT = 66;
 	float dt = float(DT) / 1000.f;
 	Update_LastTime = Engine.TimeManager.GetGlobalTimeMs();
@@ -474,21 +474,21 @@ void CKinematicsAnimated::UpdateTracks()
 	BlendSVecIt I, E;
 
 	// Cycles
-	for (u16 part = 0; part < MAX_PARTS; part++)
+	for(u16 part = 0; part < MAX_PARTS; part++)
 	{
-		if (0 == m_Partition->part(part).Name)
+		if(0 == m_Partition->part(part).Name)
 			continue;
 
 		I = blend_cycles[part].begin();
 		E = blend_cycles[part].end();
-		for (; I != E; I++)
+		for(; I != E; I++)
 		{
 			CBlend& B = *(*I);
-			if (B.dwFrame == Engine.TimeManager.GetFrameCount())
+			if(B.dwFrame == Engine.TimeManager.GetFrameCount())
 				continue;
 			B.dwFrame = Engine.TimeManager.GetFrameCount();
 			UpdateBlendTime(B, dt);
-			switch (B.blend)
+			switch(B.blend)
 			{
 			case CBlend::eFREE_SLOT:
 				NODEFAULT;
@@ -503,9 +503,9 @@ void CKinematicsAnimated::UpdateTracks()
 				*/
 			case CBlend::eAccrue:
 
-				if (UpdatePlayBlend(B, dt))
+				if(UpdatePlayBlend(B, dt))
 				{
-					if (B.fall_at_end)
+					if(B.fall_at_end)
 					{
 						B.blend = CBlend::eFalloff;
 						B.blendFalloff = 2.f;
@@ -515,7 +515,7 @@ void CKinematicsAnimated::UpdateTracks()
 
 				break;
 			case CBlend::eFalloff:
-				if (UpdateFalloffBlend(B, dt))
+				if(UpdateFalloffBlend(B, dt))
 				{
 					DestroyCycle(B);
 					blend_cycles[part].erase(I);
@@ -532,13 +532,13 @@ void CKinematicsAnimated::UpdateTracks()
 	// FX
 	I = blend_fx.begin();
 	E = blend_fx.end();
-	for (; I != E; I++)
+	for(; I != E; I++)
 	{
 		CBlend& B = *(*I);
-		if (!B.playing)
+		if(!B.playing)
 			continue;
 		B.timeCurrent += dt * B.speed;
-		switch (B.blend)
+		switch(B.blend)
 		{
 		case CBlend::eFREE_SLOT:
 			NODEFAULT;
@@ -559,7 +559,7 @@ void CKinematicsAnimated::UpdateTracks()
 			*/
 		case CBlend::eAccrue:
 			B.blendAmount += dt * B.blendAccrue * B.blendPower * B.speed;
-			if (B.blendAmount >= B.blendPower)
+			if(B.blendAmount >= B.blendPower)
 			{
 				// switch to fixed
 				B.blendAmount = B.blendPower;
@@ -568,7 +568,7 @@ void CKinematicsAnimated::UpdateTracks()
 			break;
 		case CBlend::eFalloff:
 			B.blendAmount -= dt * B.blendFalloff * B.blendPower * B.speed;
-			if (B.blendAmount <= 0)
+			if(B.blendAmount <= 0)
 			{
 				// destroy fx
 				B.blend = CBlend::eFREE_SLOT;
@@ -618,7 +618,7 @@ void CKinematicsAnimated::IBoneInstances_Create()
 	inherited::IBoneInstances_Create();
 	u32 size = bones->size();
 	blend_instances = xr_alloc<CBlendInstance>(size);
-	for (u32 i = 0; i < size; i++)
+	for(u32 i = 0; i < size; i++)
 		blend_instances[i].construct();
 }
 
@@ -627,7 +627,7 @@ void CKinematicsAnimated::IBoneInstances_Destroy()
 	////OPTICK_EVENT("CKinematicsAnimated::IBoneInstances_Destroy");
 
 	inherited::IBoneInstances_Destroy();
-	if (blend_instances)
+	if(blend_instances)
 	{
 		xr_free(blend_instances);
 		blend_instances = NULL;
@@ -656,7 +656,7 @@ void CKinematicsAnimated::Spawn()
 
 	IBlend_Startup();
 
-	for (u32 i = 0; i < bones->size(); i++)
+	for(u32 i = 0; i < bones->size(); i++)
 		blend_instances[i].construct();
 }
 
@@ -664,7 +664,7 @@ void CKinematicsAnimated::ChannelFactorsStartup()
 {
 	////OPTICK_EVENT("CKinematicsAnimated::ChannelFactorsStartup");
 
-	for (u8 i = 0; MAX_CHANNELS > i; ++i)
+	for(u8 i = 0; MAX_CHANNELS > i; ++i)
 		channel_factors[i] = 1.f;
 }
 
@@ -684,11 +684,11 @@ void CKinematicsAnimated::IBlend_Startup()
 	ZeroMemory(&B, sizeof(B));
 	B.blend = CBlend::eFREE_SLOT;
 	blend_pool.clear();
-	for (u32 i = 0; i < MAX_BLENDED_POOL; i++)
+	for(u32 i = 0; i < MAX_BLENDED_POOL; i++)
 		blend_pool.push_back(B);
 
 	// cycles+fx clear
-	for (u32 i = 0; i < MAX_PARTS; i++)
+	for(u32 i = 0; i < MAX_PARTS; i++)
 		blend_cycles[i].clear();
 	blend_fx.clear();
 	ChannelFactorsStartup();
@@ -701,8 +701,8 @@ CBlend* CKinematicsAnimated::IBlend_Create()
 	UpdateTracks();
 	_DBG_SINGLE_USE_MARKER;
 	CBlend *I = blend_pool.begin(), *E = blend_pool.end();
-	for (; I != E; I++)
-		if (I->blend == CBlend::eFREE_SLOT)
+	for(; I != E; I++)
+		if(I->blend == CBlend::eFREE_SLOT)
 			return I;
 	FATAL("Too many blended motions requisted");
 	return 0;
@@ -720,7 +720,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 	Update_LastTime = 0;
 
 	// Load animation
-	if (data->find_chunk(OGF_S_MOTION_REFS))
+	if(data->find_chunk(OGF_S_MOTION_REFS))
 	{
 		string_path items_nm;
 		data->r_stringZ(items_nm, sizeof(items_nm));
@@ -728,14 +728,14 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 		R_ASSERT(set_cnt < MAX_ANIM_SLOT);
 		m_Motions.reserve(set_cnt);
 		string_path nm;
-		for (u32 k = 0; k < set_cnt; k++)
+		for(u32 k = 0; k < set_cnt; k++)
 		{
 			_GetItem(items_nm, k, nm);
 			strcat(nm, ".omf");
 			string_path fn;
-			if (!FS.exist(fn, "$level$", nm))
+			if(!FS.exist(fn, "$level$", nm))
 			{
-				if (!FS.exist(fn, "$game_meshes$", nm))
+				if(!FS.exist(fn, "$game_meshes$", nm))
 				{
 #ifdef _EDITOR
 					Msg("!Can't find motion file '%s'.", nm);
@@ -747,7 +747,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 			}
 			// Check compatibility
 			m_Motions.push_back(SMotionsSlot());
-			if (!g_pMotionsContainer->has(nm)) // optimize fs operations
+			if(!g_pMotionsContainer->has(nm)) // optimize fs operations
 			{
 				IReader* MS = FS.r_open(fn);
 				m_Motions.back().motions.create(nm, MS, bones);
@@ -769,11 +769,11 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 	m_Partition = m_Motions[0].motions.partition();
 
 	// initialize motions
-	for (MotionsSlotVecIt m_it = m_Motions.begin(); m_it != m_Motions.end(); m_it++)
+	for(MotionsSlotVecIt m_it = m_Motions.begin(); m_it != m_Motions.end(); m_it++)
 	{
 		SMotionsSlot& MS = *m_it;
 		MS.bone_motions.resize(bones->size());
-		for (u32 i = 0; i < bones->size(); i++)
+		for(u32 i = 0; i < bones->size(); i++)
 		{
 			CBoneData* BD = (*bones)[i];
 			MS.bone_motions[i] = MS.motions.bone_motions(BD->name);
@@ -868,7 +868,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 	float delta = time - float(frame);
 	u32 count = M.get_count();
 	// rotation
-	if (M.test_flag(flRKeyAbsent))
+	if(M.test_flag(flRKeyAbsent))
 	{
 		const CKeyQR* KQR = &M._keysR[0];
 		QR2Quat(*KQR, D->Q);
@@ -884,7 +884,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 	}
 
 	// translate
-	if (M.test_flag(flTKeyPresent))
+	if(M.test_flag(flTKeyPresent))
 	{
 		const CKeyQT* K1t = &M._keysT[(frame + 0) % count];
 		const CKeyQT* K2t = &M._keysT[(frame + 1) % count];
@@ -950,7 +950,7 @@ IC void Dequantize(CKey& K, const CBlend& BD, const CMotion& M)
 IC void MixInterlerp(CKey& Result, const CKey* R, const float* BA, int b_count)
 {
 	VERIFY(MAX_BLENDED >= b_count);
-	switch (b_count)
+	switch(b_count)
 	{
 	case 0:
 		Result.Q.set(0, 0, 0, 0);
@@ -969,19 +969,20 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const float* BA, int b_count)
 		}
 		*/
 		break;
-	case 2: {
+	case 2:
+	{
 		float w0 = BA[0];
 		float w1 = BA[1];
 		float ws = w0 + w1;
 		float w;
-		if (fis_zero(ws))
+		if(fis_zero(ws))
 			w = 0;
 		else
 			w = w1 / ws;
 #ifdef DEBUG
-			//.					if (fis_zero(w0+w1) || (!_valid(w))){
-			//.						Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, w0: %f,
-			//w1: %f, ws:%f, BIS: %d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size()); .					}
+		//.					if (fis_zero(w0+w1) || (!_valid(w))){
+		//.						Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, w0: %f,
+		// w1: %f, ws:%f, BIS: %d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size()); .					}
 #endif
 		KEY_Interp(Result, R[0], R[1], clampr(w, 0.f, 1.f));
 		/*
@@ -997,22 +998,23 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const float* BA, int b_count)
 		*/
 	}
 	break;
-	default: {
+	default:
+	{
 		// int 	count 	= Blend.size();
 		float total = 0;
 		ConsistantKey S[MAX_BLENDED];
-		for (int i = 0; i < b_count; i++)
+		for(int i = 0; i < b_count; i++)
 			S[i].set(R + i, BA[i]);
 
 		std::sort(S, S + b_count);
 		CKey tmp;
 		total = S[0].w;
 		tmp = *S[0].K;
-		for (int cnt = 1; cnt < b_count; cnt++)
+		for(int cnt = 1; cnt < b_count; cnt++)
 		{
 			total += S[cnt].w;
 			float d;
-			if (fis_zero(total))
+			if(fis_zero(total))
 				d = 0.0f;
 			else
 				d = S[cnt].w / total;
@@ -1083,7 +1085,7 @@ IC void key_mad(CKey& res, const CKey& k0, const CKey& k1, float v)
 
 IC void keys_substruct(CKey* R, const CKey* BR, int b_count)
 {
-	for (int i = 0; i < b_count; i++)
+	for(int i = 0; i < b_count; i++)
 	{
 		CKey r;
 		key_sub(r, R[i], BR[i]);
@@ -1147,14 +1149,14 @@ IC bool check_scale(const Fquaternion& q)
 IC void MixFactors(float* F, int b_count)
 {
 	float sum = 0;
-	for (int i = 0; i < b_count; i++)
+	for(int i = 0; i < b_count; i++)
 		sum += F[i];
-	for (int i2 = 0; i2 < b_count; i2++)
+	for(int i2 = 0; i2 < b_count; i2++)
 		F[i2] /= sum;
 }
 IC void MixinAdd(CKey& Result, const CKey* R, const float* BA, int b_count)
 {
-	for (int i = 0; i < b_count; i++)
+	for(int i = 0; i < b_count; i++)
 		key_mad(Result, Result, R[i], BA[i]);
 }
 IC void MixAdd(CKey& Result, const CKey* R, const float* BA, int b_count)
@@ -1183,11 +1185,11 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 	////OPTICK_EVENT("CKinematicsAnimated::CLBone");
 
 	u16 SelfID = bd->GetSelfID();
-	if (LL_GetBoneVisible(SelfID))
+	if(LL_GetBoneVisible(SelfID))
 	{
-		if (BONE_INST.Callback_overwrite)
+		if(BONE_INST.Callback_overwrite)
 		{
-			if (BONE_INST.Callback)
+			if(BONE_INST.Callback)
 				BONE_INST.Callback(&BONE_INST);
 		}
 		else
@@ -1200,12 +1202,12 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			// float				BCA[MAX_CHANNELS]		= {0,0,0,0}; //channel factors
 
 			BlendSVecCIt BI;
-			for (BI = Blend.begin(); BI != Blend.end(); BI++)
+			for(BI = Blend.begin(); BI != Blend.end(); BI++)
 			{
 				CBlend* B = *BI;
 				int& b_count = b_counts[B->channel];
 				CKey* D = &R[B->channel][b_count];
-				if (!(channel_mask & (1 << B->channel)))
+				if(!(channel_mask & (1 << B->channel)))
 					continue;
 				u8 channel = B->channel;
 				BA[channel][b_count] = B->blendAmount;
@@ -1215,7 +1217,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 
 				QR2Quat(M._keysR[0], BK[channel][b_count].Q);
 
-				if (M.test_flag(flTKeyPresent))
+				if(M.test_flag(flTKeyPresent))
 					QT2T(M._keysT[0], M, BK[channel][b_count].T);
 				else
 					BK[channel][b_count].T.set(M._initT);
@@ -1228,15 +1230,15 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			float BC[MAX_CHANNELS];
 			u16 ch_count = 0;
 
-			for (u16 j = 0; MAX_CHANNELS > j; ++j)
+			for(u16 j = 0; MAX_CHANNELS > j; ++j)
 			{
-				if (j != 0 && b_counts[j] == 0)
+				if(j != 0 && b_counts[j] == 0)
 					continue;
 				// data for channel mix cycle based on ch_count
 				CKey& C = channels[ch_count];
 				BC[ch_count] = channel_factors[j]; // 3.f;//BCA[j]*
 
-				if (j != 0)
+				if(j != 0)
 					keys_substruct(R[j], BK[j], b_counts[j]);
 				MixInterlerp(C, R[j], BA[j], b_counts[j]);
 
@@ -1251,7 +1253,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			BONE_INST.mTransform.mul_43(*parent, RES);
 #ifdef DEBUG
 
-			if (!check_scale(RES))
+			if(!check_scale(RES))
 			{
 				VERIFY(check_scale(BONE_INST.mTransform));
 			}
@@ -1319,7 +1321,7 @@ void CKinematicsAnimated::CLBone(const CBoneData* bd, CBoneInstance& BONE_INST, 
 			VERIFY(0);
 			}
 			*/
-			if (BONE_INST.Callback)
+			if(BONE_INST.Callback)
 				BONE_INST.Callback(&BONE_INST);
 		}
 		BONE_INST.mRenderTransform.mul_43(BONE_INST.mTransform, bd->m2b_transform);
@@ -1343,7 +1345,7 @@ void CKinematicsAnimated::Bone_Calculate(CBoneData* bd, fmat4x4* parent)
 	CBoneInstance& BONE_INST = LL_GetBoneInstance(SelfID);
 	CLBone(bd, BONE_INST, parent, BLEND_INST.blend_vector(), u8(-1));
 	// Calculate children
-	for (xr_vector<CBoneData*>::iterator C = bd->children.begin(); C != bd->children.end(); C++)
+	for(xr_vector<CBoneData*>::iterator C = bd->children.begin(); C != bd->children.end(); C++)
 		Bone_Calculate(*C, &BONE_INST.mTransform);
 }
 
@@ -1358,13 +1360,13 @@ void CKinematicsAnimated::BoneChain_Calculate(const CBoneData* bd, CBoneInstance
 	// ignore callbacks
 	BoneCallback bc = bi.Callback;
 	BOOL ow = bi.Callback_overwrite;
-	if (ignore_callbacks)
+	if(ignore_callbacks)
 	{
 		bi.Callback = 0;
 		bi.Callback_overwrite = 0;
 	}
 	//
-	if (SelfID == LL_GetBoneRoot())
+	if(SelfID == LL_GetBoneRoot())
 	{
 		CLBone(bd, bi, &Fidentity, Blend, mask_channel);
 		// restore callback
@@ -1397,18 +1399,18 @@ MotionID CKinematicsAnimated::ID_Motion(LPCSTR N, u16 slot)
 	////OPTICK_EVENT("CKinematicsAnimated::ID_Motion");
 
 	MotionID motion_ID;
-	if (slot < MAX_ANIM_SLOT)
+	if(slot < MAX_ANIM_SLOT)
 	{
 		shared_motions* s_mots = &m_Motions[slot].motions;
 		// find in cycles
 		accel_map::iterator I = s_mots->cycle()->find(LPSTR(N));
-		if (I != s_mots->cycle()->end())
+		if(I != s_mots->cycle()->end())
 			motion_ID.set(slot, I->second);
-		if (!motion_ID.valid())
+		if(!motion_ID.valid())
 		{
 			// find in fx's
 			accel_map::iterator I = s_mots->fx()->find(LPSTR(N));
-			if (I != s_mots->fx()->end())
+			if(I != s_mots->fx()->end())
 				motion_ID.set(slot, I->second);
 		}
 	}

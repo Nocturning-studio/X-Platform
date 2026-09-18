@@ -7,8 +7,7 @@
 ENGINE_API ISpatial_DB* g_SpatialSpace = NULL;
 ENGINE_API ISpatial_DB* g_SpatialSpacePhysic = NULL;
 
-fvec3 c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1},
-							   {-1, -1, 1},	 {1, -1, 1},  {-1, 1, 1},  {1, 1, 1}};
+fvec3 c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
 
 //////////////////////////////////////////////////////////////////////////
 ISpatial::ISpatial(ISpatial_DB* space)
@@ -28,17 +27,17 @@ ISpatial::~ISpatial(void)
 BOOL ISpatial::spatial_inside()
 {
 	float dr = -(-spatial.node_radius + spatial.sphere.R);
-	if (spatial.sphere.P.x < spatial.node_center.x - dr)
+	if(spatial.sphere.P.x < spatial.node_center.x - dr)
 		return FALSE;
-	if (spatial.sphere.P.x > spatial.node_center.x + dr)
+	if(spatial.sphere.P.x > spatial.node_center.x + dr)
 		return FALSE;
-	if (spatial.sphere.P.y < spatial.node_center.y - dr)
+	if(spatial.sphere.P.y < spatial.node_center.y - dr)
 		return FALSE;
-	if (spatial.sphere.P.y > spatial.node_center.y + dr)
+	if(spatial.sphere.P.y > spatial.node_center.y + dr)
 		return FALSE;
-	if (spatial.sphere.P.z < spatial.node_center.z - dr)
+	if(spatial.sphere.P.z < spatial.node_center.z - dr)
 		return FALSE;
-	if (spatial.sphere.P.z > spatial.node_center.z + dr)
+	if(spatial.sphere.P.z > spatial.node_center.z + dr)
 		return FALSE;
 	return TRUE;
 }
@@ -46,17 +45,17 @@ BOOL ISpatial::spatial_inside()
 BOOL verify_sp(ISpatial* sp, fvec3& node_center, float node_radius)
 {
 	float dr = -(-node_radius + sp->spatial.sphere.R);
-	if (sp->spatial.sphere.P.x < node_center.x - dr)
+	if(sp->spatial.sphere.P.x < node_center.x - dr)
 		return FALSE;
-	if (sp->spatial.sphere.P.x > node_center.x + dr)
+	if(sp->spatial.sphere.P.x > node_center.x + dr)
 		return FALSE;
-	if (sp->spatial.sphere.P.y < node_center.y - dr)
+	if(sp->spatial.sphere.P.y < node_center.y - dr)
 		return FALSE;
-	if (sp->spatial.sphere.P.y > node_center.y + dr)
+	if(sp->spatial.sphere.P.y > node_center.y + dr)
 		return FALSE;
-	if (sp->spatial.sphere.P.z < node_center.z - dr)
+	if(sp->spatial.sphere.P.z < node_center.z - dr)
 		return FALSE;
-	if (sp->spatial.sphere.P.z > node_center.z + dr)
+	if(sp->spatial.sphere.P.z > node_center.z + dr)
 		return FALSE;
 	return TRUE;
 }
@@ -64,7 +63,7 @@ BOOL verify_sp(ISpatial* sp, fvec3& node_center, float node_radius)
 void ISpatial::spatial_register()
 {
 	spatial.type |= STYPEFLAG_INVALIDSECTOR;
-	if (spatial.node_ptr)
+	if(spatial.node_ptr)
 	{
 		// already registered - nothing to do
 	}
@@ -79,7 +78,7 @@ void ISpatial::spatial_register()
 
 void ISpatial::spatial_unregister()
 {
-	if (spatial.node_ptr)
+	if(spatial.node_ptr)
 	{
 		// remove
 		spatial.space->remove(this);
@@ -94,13 +93,13 @@ void ISpatial::spatial_unregister()
 
 void ISpatial::spatial_move()
 {
-	if (spatial.node_ptr)
+	if(spatial.node_ptr)
 	{
 		//*** somehow it was determined that object has been moved
 		spatial.type |= STYPEFLAG_INVALIDSECTOR;
 
 		//*** check if we are supposed to correct it's spatial location
-		if (spatial_inside())
+		if(spatial_inside())
 			return; // ???
 		spatial.space->remove(this);
 		spatial.space->insert(this);
@@ -116,7 +115,7 @@ void ISpatial::spatial_updatesector_internal()
 {
 	IRender_Sector* S = ::Render->detectSector(spatial_sector_point());
 	spatial.type &= ~STYPEFLAG_INVALIDSECTOR;
-	if (S)
+	if(S)
 		spatial.sector = S;
 }
 
@@ -159,7 +158,7 @@ ISpatial_DB::ISpatial_DB()
 
 ISpatial_DB::~ISpatial_DB()
 {
-	while (!allocator_pool.empty())
+	while(!allocator_pool.empty())
 	{
 		allocator.destroy(allocator_pool.back());
 		allocator_pool.pop_back();
@@ -168,7 +167,7 @@ ISpatial_DB::~ISpatial_DB()
 
 void ISpatial_DB::initialize(Fbox& BB)
 {
-	if (0 == m_root)
+	if(0 == m_root)
 	{
 		// initialize
 		fvec3 bbc, bbd;
@@ -181,7 +180,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 		m_center.set(bbc);
 		m_bounds = _max(_max(bbd.x, bbd.y), bbd.z);
 		rt_insert_object = NULL;
-		if (0 == m_root)
+		if(0 == m_root)
 			m_root = _node_create();
 		m_root->_init(NULL);
 	}
@@ -189,7 +188,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 ISpatial_NODE* ISpatial_DB::_node_create()
 {
 	stat_nodes++;
-	if (allocator_pool.empty())
+	if(allocator_pool.empty())
 		return allocator.create();
 	else
 	{
@@ -214,7 +213,7 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, fvec3& n_C, float n_R)
 	VERIFY(verify_sp(rt_insert_object, n_C, n_vR));
 
 	// we have to make sure we aren't the leaf node
-	if (n_R <= c_spatial_min)
+	if(n_R <= c_spatial_min)
 	{
 		// this is leaf node
 		N->_insert(rt_insert_object);
@@ -226,7 +225,7 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, fvec3& n_C, float n_R)
 	// we have to check if it can be putted further down
 	float s_R = rt_insert_object->spatial.sphere.R; // spatial bounds
 	float c_R = n_R / 2;							// children bounds
-	if (s_R < c_R)
+	if(s_R < c_R)
 	{
 		// object can be pushed further down - select "octant", calc node position
 		fvec3& s_C = rt_insert_object->spatial.sphere.P;
@@ -236,7 +235,7 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, fvec3& n_C, float n_R)
 		VERIFY(octant == _octant(n_C, c_C)); // check table assosiations
 		ISpatial_NODE*& chield = N->children[octant];
 
-		if (0 == chield)
+		if(0 == chield)
 		{
 			chield = _node_create();
 			VERIFY(chield);
@@ -263,15 +262,15 @@ void ISpatial_DB::insert(ISpatial* S)
 	stat_insert.Begin();
 
 	BOOL bValid = _valid(S->spatial.sphere.R) && _valid(S->spatial.sphere.P);
-	if (!bValid)
+	if(!bValid)
 	{
 		CObject* O = dynamic_cast<CObject*>(S);
-		if (O)
+		if(O)
 			Debug.fatal(DEBUG_INFO, "Invalid OBJECT position or radius (%s)", O->cName());
 		else
 		{
 			CPS_Instance* P = dynamic_cast<CPS_Instance*>(S);
-			if (P)
+			if(P)
 				Debug.fatal(DEBUG_INFO, "Invalid PS spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}",
 							VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
 			else
@@ -281,7 +280,7 @@ void ISpatial_DB::insert(ISpatial* S)
 	}
 #endif
 
-	if (verify_sp(S, m_center, m_bounds))
+	if(verify_sp(S, m_center, m_bounds))
 	{
 		// Object inside our DB
 		rt_insert_object = S;
@@ -304,33 +303,33 @@ void ISpatial_DB::insert(ISpatial* S)
 
 void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 {
-	if (0 == N)
+	if(0 == N)
 		return;
 
 	//*** we are assured that node contains N_sub and this subnode is empty
 	u32 octant = u32(-1);
-	if (N_sub == N->children[0])
+	if(N_sub == N->children[0])
 		octant = 0;
-	else if (N_sub == N->children[1])
+	else if(N_sub == N->children[1])
 		octant = 1;
-	else if (N_sub == N->children[2])
+	else if(N_sub == N->children[2])
 		octant = 2;
-	else if (N_sub == N->children[3])
+	else if(N_sub == N->children[3])
 		octant = 3;
-	else if (N_sub == N->children[4])
+	else if(N_sub == N->children[4])
 		octant = 4;
-	else if (N_sub == N->children[5])
+	else if(N_sub == N->children[5])
 		octant = 5;
-	else if (N_sub == N->children[6])
+	else if(N_sub == N->children[6])
 		octant = 6;
-	else if (N_sub == N->children[7])
+	else if(N_sub == N->children[7])
 		octant = 7;
 	VERIFY(octant < 8);
 	VERIFY(N_sub->_empty());
 	_node_destroy(N->children[octant]);
 
 	// Recurse
-	if (N->_empty())
+	if(N->_empty())
 		_remove(N->parent, N);
 }
 
@@ -344,7 +343,7 @@ void ISpatial_DB::remove(ISpatial* S)
 	N->_remove(S);
 
 	// Recurse
-	if (N->_empty())
+	if(N->_empty())
 		_remove(N->parent, N);
 #ifdef DEBUG
 	stat_remove.End();
@@ -355,7 +354,7 @@ void ISpatial_DB::remove(ISpatial* S)
 void ISpatial_DB::update(u32 nodes /* =8 */)
 {
 #ifdef DEBUG
-	if (0 == m_root)
+	if(0 == m_root)
 		return;
 	cs.Enter();
 	VERIFY(verify());

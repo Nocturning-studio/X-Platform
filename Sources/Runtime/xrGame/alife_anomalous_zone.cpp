@@ -60,12 +60,12 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 	;
 	u32 m_artefact_count;
 
-	if (m_min_artefact_count == m_max_artefact_count)
+	if(m_min_artefact_count == m_max_artefact_count)
 		m_artefact_count = m_min_artefact_count;
 	else
 		m_artefact_count = randI(m_min_artefact_count, m_max_artefact_count);
 
-	if (m_min_start_power == m_max_start_power)
+	if(m_min_start_power == m_max_start_power)
 		m_maxPower = m_min_start_power;
 	else
 		m_maxPower = randF(m_min_start_power, m_max_start_power);
@@ -81,25 +81,25 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 	ARTEFACT_PAIR* m_weights = (ARTEFACT_PAIR*)_alloca(n * sizeof(ARTEFACT_PAIR));
 	ARTEFACT_PAIR* I = m_weights;
 	ARTEFACT_PAIR* E = m_weights + n;
-	for (u32 i = 0; I != E; ++I, ++i)
+	for(u32 i = 0; I != E; ++I, ++i)
 	{
 		_GetItem(artefacts, 2 * i, temp0);
 		_GetItem(artefacts, 2 * i + 1, temp1);
-		new (I) ARTEFACT_PAIR(temp0, (float)atof(temp1));
+		new(I) ARTEFACT_PAIR(temp0, (float)atof(temp1));
 	}
 
-	for (u32 ii = 0; ii < m_artefact_count; ++ii)
+	for(u32 ii = 0; ii < m_artefact_count; ++ii)
 	{
 		float fProbability = randF(1.f);
 		float fSum = 0.f;
 		u16 p = 0;
-		for (; p < n; ++p)
+		for(; p < n; ++p)
 		{
 			fSum += m_weights[p].second;
-			if (fSum > fProbability)
+			if(fSum > fProbability)
 				break;
 		}
-		if (p < n)
+		if(p < n)
 		{
 			CSE_Abstract* l_tpSE_Abstract =
 				alife().spawn_item(*m_weights[p].first, position(), m_tNodeID, m_tGraphID, 0xffff);
@@ -129,7 +129,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 		}
 	}
 
-	for (I = m_weights; I != E; ++I)
+	for(I = m_weights; I != E; ++I)
 		I->~ARTEFACT_PAIR();
 }
 

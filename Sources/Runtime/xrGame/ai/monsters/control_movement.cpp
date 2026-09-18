@@ -27,11 +27,11 @@ float CControlMovement::real_velocity()
 	CPHMovementControl* movement_control = m_object->character_physics_support()->movement();
 	VERIFY(movement_control);
 
-	if (movement_control->IsCharacterEnabled())
+	if(movement_control->IsCharacterEnabled())
 	{
 		float tmp = movement_control->GetXZActVelInGoingDir();
 #ifdef DEBUG
-		if (_abs(tmp) > 1000)
+		if(_abs(tmp) > 1000)
 		{
 			Log("! GetVelocity", movement_control->GetVelocity());
 			Log("! GetPathDir", movement_control->GetPathDir());

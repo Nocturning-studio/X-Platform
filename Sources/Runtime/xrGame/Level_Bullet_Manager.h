@@ -10,7 +10,8 @@
 struct SBullet
 {
 	u32 frame_num; // номер кадра на котором была запущена пуля
-	union {
+	union
+	{
 		struct
 		{
 			u16 ricochet_was : 1; // пуля срикошетила

@@ -27,10 +27,10 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find(N);
 #ifdef _EDITOR
-	if (I == m_blenders.end())
+	if(I == m_blenders.end())
 		return 0;
 #else
-	if (I == m_blenders.end())
+	if(I == m_blenders.end())
 	{
 		Debug.fatal(DEBUG_INFO, "Shader '%s' not found in library.", Name);
 		return 0;
@@ -42,12 +42,12 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 
 IBlender* CResourceManager::_FindBlender(LPCSTR Name)
 {
-	if (!(Name && Name[0]))
+	if(!(Name && Name[0]))
 		return 0;
 
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find(N);
-	if (I == m_blenders.end())
+	if(I == m_blenders.end())
 		return 0;
 	else
 		return I->second;
@@ -58,16 +58,16 @@ IBlender* CResourceManager::_FindBlender(LPCSTR Name)
 //////////////////////////////////////////////////////////////////////
 void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 {
-	if (0 == names)
+	if(0 == names)
 		names = "$null";
 
 	dest.clear();
 	char* P = (char*)names;
 	svector<char, 128> N;
 
-	while (*P)
+	while(*P)
 	{
-		if (*P == ',')
+		if(*P == ',')
 		{
 			// flush
 			N.push_back(0);
@@ -83,7 +83,7 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 		}
 		P++;
 	}
-	if (N.size())
+	if(N.size())
 	{
 		// flush
 		N.push_back(0);
@@ -96,12 +96,12 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 
 ShaderElement* CResourceManager::_CreateElement(ShaderElement& S)
 {
-	if (S.passes.empty())
+	if(S.passes.empty())
 		return 0;
 
 	// Search equal in shaders array
-	for (u32 it = 0; it < v_elements.size(); it++)
-		if (S.equal(*(v_elements[it])))
+	for(u32 it = 0; it < v_elements.size(); it++)
+		if(S.equal(*(v_elements[it])))
 			return v_elements[it];
 
 	// Create _new_ entry
@@ -113,9 +113,9 @@ ShaderElement* CResourceManager::_CreateElement(ShaderElement& S)
 
 void CResourceManager::_DeleteElement(const ShaderElement* S)
 {
-	if (0 == (S->dwFlags & xr_resource_flagged::RF_REGISTERED))
+	if(0 == (S->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
-	if (reclaim(v_elements, S))
+	if(reclaim(v_elements, S))
 		return;
 	Msg("! ERROR: Failed to find compiled 'shader-element'");
 }
@@ -132,7 +132,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	C.detail_texture = nullptr;
 	C.detail_scaler = nullptr;
 #ifdef _EDITOR
-	if (!C.BT)
+	if(!C.BT)
 	{
 		ELog.Msg(mtError, "Can't find shader '%s'", s_shader);
 		return 0;
@@ -144,7 +144,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	_ParseList(C.L_textures, s_textures);
 
 	bool noTextures = false;
-	if (C.L_textures.empty())
+	if(C.L_textures.empty())
 	{
 		noTextures = true;
 		C.L_textures.push_back("$null");
@@ -209,8 +209,8 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 	}
 
 	// Search equal in shaders array
-	for (u32 it = 0; it < v_shaders.size(); it++)
-		if (S.equal(v_shaders[it]))
+	for(u32 it = 0; it < v_shaders.size(); it++)
+		if(S.equal(v_shaders[it]))
 			return v_shaders[it];
 
 	// Create _new_ entry
@@ -242,7 +242,7 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures)
 {
 #ifndef DEDICATED_SERVER
 #ifndef _EDITOR
-	if (_lua_HasShader(s_shader))
+	if(_lua_HasShader(s_shader))
 		return _lua_Create(s_shader, s_textures);
 	else
 #endif
@@ -254,32 +254,32 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures)
 
 void CResourceManager::Delete(const Shader* S)
 {
-	if (0 == (S->dwFlags & xr_resource_flagged::RF_REGISTERED))
+	if(0 == (S->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
-	if (reclaim(v_shaders, S))
+	if(reclaim(v_shaders, S))
 		return;
 	Msg("! ERROR: Failed to find complete shader");
 }
 
 void CResourceManager::DeferredUpload()
 {
-	if (!Device.b_is_Ready)
+	if(!Device.b_is_Ready)
 		return;
 
 	// 1. Собираем список текстур для загрузки
 	xr_vector<CTexture*> textures_to_load;
 	textures_to_load.reserve(m_textures.size());
 
-	for (auto& pair : m_textures)
+	for(auto& pair : m_textures)
 	{
-		if (pair.second && !pair.second->flags.bLoaded)
+		if(pair.second && !pair.second->flags.bLoaded)
 			textures_to_load.push_back(pair.second);
 	}
 
 	// 2. Грузим пачками по N штук
 	size_t total = textures_to_load.size();
 
-	for (size_t i = 0; i < total; i++)
+	for(size_t i = 0; i < total; i++)
 	{
 		textures_to_load[i]->Load();
 	}
@@ -287,7 +287,7 @@ void CResourceManager::DeferredUpload()
 
 void CResourceManager::DeferredUnload()
 {
-	if (!Device.b_is_Ready)
+	if(!Device.b_is_Ready)
 		return;
 
 	Msg("* Texture unloading, size = %d", m_textures.size());
@@ -295,19 +295,21 @@ void CResourceManager::DeferredUnload()
 	CTimer timer;
 	timer.Start();
 
-	concurrency::parallel_for_each(m_textures.begin(), m_textures.end(), [](auto& iterator){iterator.second->Unload();});
+	concurrency::parallel_for_each(m_textures.begin(), m_textures.end(), [](auto& iterator)
+								   { iterator.second->Unload(); });
 
 	Msg("* Phase time: %d ms", timer.GetElapsed_ms());
 }
 
 void CResourceManager::DeferredUnloadLevelTextures(LPCSTR level_name)
 {
-	if (!Device.b_is_Ready)
+	if(!Device.b_is_Ready)
 		return;
 
 	Msg("Unload level textures: %s", level_name);
 
-	concurrency::parallel_for_each(m_textures.begin(), m_textures.end(), [](auto& iterator) {
+	concurrency::parallel_for_each(m_textures.begin(), m_textures.end(), [](auto& iterator)
+								   {
 		LPCSTR name = iterator.second->cName.c_str();
 
 		LPCSTR templates[] = 
@@ -328,26 +330,25 @@ void CResourceManager::DeferredUnloadLevelTextures(LPCSTR level_name)
 				iterator.second->Unload();
 				break;
 			}
-		}
-	});
+		} });
 }
 
 #ifdef _EDITOR
 void CResourceManager::ED_UpdateTextures(AStringVec* names)
 {
 	// 1. Unload
-	if (names)
+	if(names)
 	{
-		for (u32 nid = 0; nid < names->size(); nid++)
+		for(u32 nid = 0; nid < names->size(); nid++)
 		{
 			map_TextureIt I = m_textures.find((*names)[nid].c_str());
-			if (I != m_textures.end())
+			if(I != m_textures.end())
 				I->second->Unload();
 		}
 	}
 	else
 	{
-		for (map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
+		for(map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
 			t->second->Unload();
 	}
 
@@ -362,10 +363,10 @@ void CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
 
 	map_Texture::iterator I = m_textures.begin();
 	map_Texture::iterator E = m_textures.end();
-	for (; I != E; I++)
+	for(; I != E; I++)
 	{
 		u32 m = I->second->flags.MemoryUsage;
-		if (strstr(I->first, "lmap"))
+		if(strstr(I->first, "lmap"))
 		{
 			c_lmaps++;
 			m_lmaps += m;
@@ -386,7 +387,7 @@ void CResourceManager::_DumpMemoryUsage()
 	{
 		map_Texture::iterator I = m_textures.begin();
 		map_Texture::iterator E = m_textures.end();
-		for (; I != E; I++)
+		for(; I != E; I++)
 		{
 			u32 m = I->second->flags.MemoryUsage;
 			shared_str n = I->second->cName;
@@ -398,7 +399,7 @@ void CResourceManager::_DumpMemoryUsage()
 	{
 		xr_multimap<u32, std::pair<u32, shared_str>>::iterator I = mtex.begin();
 		xr_multimap<u32, std::pair<u32, shared_str>>::iterator E = mtex.end();
-		for (; I != E; I++)
+		for(; I != E; I++)
 			Msg("* %4.1f : [%4d] %s", float(I->first) / 1024.f, I->second.first, I->second.second.c_str());
 	}
 }
@@ -406,12 +407,11 @@ void CResourceManager::_DumpMemoryUsage()
 void CResourceManager::fix_texture_name(LPSTR fn)
 {
 	LPSTR _ext = strext(fn);
-	if (_ext && (
-		0 == xr_stricmp(_ext, ".tga") || 
-		0 == xr_stricmp(_ext, ".dds") || 
-		0 == xr_stricmp(_ext, ".bmp") ||
-		0 == xr_stricmp(_ext, ".ogm") || 
-		0 == xr_stricmp(_ext, ".hdr")))
+	if(_ext && (0 == xr_stricmp(_ext, ".tga") ||
+				0 == xr_stricmp(_ext, ".dds") ||
+				0 == xr_stricmp(_ext, ".bmp") ||
+				0 == xr_stricmp(_ext, ".ogm") ||
+				0 == xr_stricmp(_ext, ".hdr")))
 		*_ext = 0;
 }
 

@@ -16,7 +16,7 @@ CUICDkey::CUICDkey()
 void CUICDkey::OnFocusLost()
 {
 	CUIWindow::OnFocusLost();
-	if (m_bInputFocus)
+	if(m_bInputFocus)
 	{
 		m_bInputFocus = false;
 		m_iKeyPressAndHold = 0;
@@ -38,7 +38,7 @@ void CUICDkey::Draw()
 	pos.set(rect.left + outXY.x, rect.top + outXY.y);
 	UI()->ClientToScreenScaled(pos);
 
-	if (m_bInputFocus)
+	if(m_bInputFocus)
 	{
 		m_lines.m_pFont->Out(pos.x, pos.y, "%s", AddHyphens(m_lines.m_text.c_str()));
 
@@ -60,11 +60,11 @@ void CUICDkey::Draw()
 		_w_tmp = m_lines.m_pFont->SizeOf_("-");
 		UI()->ClientToScreenScaledWidth(_w_tmp);
 
-		if (i > 3)
+		if(i > 3)
 			outXY.x += _w_tmp;
-		if (i > 7)
+		if(i > 7)
 			outXY.x += _w_tmp;
-		if (i > 11)
+		if(i > 11)
 			outXY.x += _w_tmp;
 
 		UI()->ClientToScreenScaled(outXY);
@@ -91,10 +91,10 @@ LPCSTR CUICDkey::AddHyphens(LPCSTR c)
 	int sz = xr_strlen(c);
 	int j = 0;
 
-	for (int i = 1; i <= 3; i++)
+	for(int i = 1; i <= 3; i++)
 		buf[i * 5 - 1] = '-';
 
-	for (int i = 0; i < sz; i++)
+	for(int i = 0; i < sz; i++)
 	{
 		j = i + iFloor(i / 4.0f);
 		buf[j] = c[i];
@@ -111,7 +111,7 @@ LPCSTR CUICDkey::DelHyphens(LPCSTR c)
 	int sz = xr_strlen(c);
 	int j = 0;
 
-	for (int i = 0; i < sz - _min(iFloor(sz / 4.0f), 3); i++)
+	for(int i = 0; i < sz - _min(iFloor(sz / 4.0f), 3); i++)
 	{
 		j = i + iFloor(i / 4.0f);
 		buf[i] = c[j];
@@ -123,7 +123,7 @@ LPCSTR CUICDkey::DelHyphens(LPCSTR c)
 
 void CUICDkey::AddChar(char c)
 {
-	if (m_lines.m_text.length() < 16)
+	if(m_lines.m_text.length() < 16)
 	{
 		CUIEditBox::AddChar(c);
 		SaveValue();

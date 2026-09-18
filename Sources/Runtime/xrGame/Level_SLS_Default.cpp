@@ -15,6 +15,6 @@ void CLevel::SLS_Default() // Default/Editor Load
 		}
 		g_cl_Spawn			(s_name, -1, 0, 0, 0);
 	*/
-	if (Server)
+	if(Server)
 		Server->SLS_Default();
 }

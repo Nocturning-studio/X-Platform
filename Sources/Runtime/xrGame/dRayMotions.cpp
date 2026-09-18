@@ -31,7 +31,7 @@ int dCollideRMB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int sk
 {
 	dxRayMotions* rm = (dxRayMotions*)dGeomGetClassData(o1);
 	int ret = dCollideRayBox(rm->ray, o2, flags, contact, skip);
-	for (int i = 0; i < ret; i++)
+	for(int i = 0; i < ret; i++)
 	{
 		dContactGeom* c = CONTACT(contact, skip * i);
 		c->g1 = rm->ray_ownwer;
@@ -44,7 +44,7 @@ int dCollideRMS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int sk
 {
 	dxRayMotions* rm = (dxRayMotions*)dGeomGetClassData(o1);
 	int ret = dCollideRaySphere(rm->ray, o2, flags, contact, skip);
-	for (int i = 0; i < ret; i++)
+	for(int i = 0; i < ret; i++)
 	{
 		dContactGeom* c = CONTACT(contact, skip * i);
 		c->g1 = rm->ray_ownwer;
@@ -67,7 +67,7 @@ int dCollideRMCyl(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int 
 {
 	dxRayMotions* rm = (dxRayMotions*)dGeomGetClassData(o1);
 	int ret = dCollideCylRay(o2, rm->ray, flags, contact, skip);
-	for (int i = 0; i < ret; i++)
+	for(int i = 0; i < ret; i++)
 	{
 
 		dContactGeom* c = CONTACT(contact, skip * i);
@@ -80,11 +80,11 @@ int dCollideRMCyl(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int 
 
 static dColliderFn* dRayMotionsColliderFn(int num)
 {
-	if (num == dBoxClass)
+	if(num == dBoxClass)
 		return (dColliderFn*)&dCollideRMB;
-	if (num == dSphereClass)
+	if(num == dSphereClass)
 		return (dColliderFn*)&dCollideRMS;
-	if (num == dCylinderClassUser)
+	if(num == dCylinderClassUser)
 		return (dColliderFn*)&dCollideRMCyl;
 	return 0;
 }
@@ -101,7 +101,7 @@ void dGeomRayMotionDestroy(dGeomID ray)
 }
 dxGeom* dCreateRayMotions(dSpaceID space)
 {
-	if (dRayMotionsClassUser == -1)
+	if(dRayMotionsClassUser == -1)
 	{
 		dGeomClass c;
 		c.bytes = sizeof(dxRayMotions);
@@ -112,7 +112,7 @@ dxGeom* dCreateRayMotions(dSpaceID space)
 		dRayMotionsClassUser = dCreateGeomClass(&c);
 	}
 	dGeomID g = dCreateGeom(dRayMotionsClassUser);
-	if (space)
+	if(space)
 		dSpaceAdd(space, g);
 	dxRayMotions* c = (dxRayMotions*)dGeomGetClassData(g);
 	c->ray = dCreateRay(space, REAL(1.));

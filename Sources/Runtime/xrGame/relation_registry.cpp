@@ -75,7 +75,7 @@ extern void load_attack_goodwill();
 extern bool IsGameTypeSingle();
 CRelationRegistryWrapper& RELATION_REGISTRY::relation_registry()
 {
-	if (!m_relation_registry)
+	if(!m_relation_registry)
 	{
 		VERIFY(IsGameTypeSingle());
 
@@ -88,7 +88,7 @@ CRelationRegistryWrapper& RELATION_REGISTRY::relation_registry()
 
 RELATION_REGISTRY::FIGHT_VECTOR& RELATION_REGISTRY::fight_registry()
 {
-	if (!m_fight_registry)
+	if(!m_fight_registry)
 		m_fight_registry = xr_new<FIGHT_VECTOR>();
 
 	return *m_fight_registry;
@@ -103,7 +103,7 @@ void RELATION_REGISTRY::clear_relation_registry()
 
 const shared_str& RELATION_REGISTRY::GetSpotName(ALife::ERelationType& type)
 {
-	if (!m_spot_names)
+	if(!m_spot_names)
 		m_spot_names = xr_new<RELATION_MAP_SPOTS>();
 	return m_spot_names->GetSpotName(type);
 }
@@ -113,7 +113,7 @@ const shared_str& RELATION_REGISTRY::GetSpotName(ALife::ERelationType& type)
 void RELATION_REGISTRY::ClearRelations(u16 person_id)
 {
 	const RELATION_DATA* relation_data = relation_registry().registry().objects_ptr(person_id);
-	if (relation_data)
+	if(relation_data)
 	{
 		relation_registry().registry().objects(person_id).clear();
 	}
@@ -124,10 +124,10 @@ CHARACTER_GOODWILL RELATION_REGISTRY::GetGoodwill(u16 from, u16 to) const
 {
 	const RELATION_DATA* relation_data = relation_registry().registry().objects_ptr(from);
 
-	if (relation_data)
+	if(relation_data)
 	{
 		PERSONAL_RELATION_MAP::const_iterator it = relation_data->personal.find(to);
-		if (relation_data->personal.end() != it)
+		if(relation_data->personal.end() != it)
 		{
 			const SRelation& relation = (*it).second;
 			return relation.Goodwill();
@@ -159,10 +159,10 @@ CHARACTER_GOODWILL RELATION_REGISTRY::GetCommunityGoodwill(CHARACTER_COMMUNITY_I
 {
 	const RELATION_DATA* relation_data = relation_registry().registry().objects_ptr(to_character);
 
-	if (relation_data)
+	if(relation_data)
 	{
 		COMMUNITY_RELATION_MAP::const_iterator it = relation_data->communities.find(from_community);
-		if (relation_data->communities.end() != it)
+		if(relation_data->communities.end() != it)
 		{
 			const SRelation& relation = (*it).second;
 			return relation.Goodwill();

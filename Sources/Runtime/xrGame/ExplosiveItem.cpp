@@ -37,11 +37,11 @@ void CExplosiveItem::net_Destroy()
 void CExplosiveItem::Hit(SHit* pHDS)
 {
 	//	inherited::Hit(P,dir,who,element,position_in_object_space,impulse,hit_type);
-	if (CDelayedActionFuse::isActive())
+	if(CDelayedActionFuse::isActive())
 		pHDS->power = 0.f;
 	inherited::Hit(pHDS);
-	if (!CDelayedActionFuse::isActive() && CDelayedActionFuse::CheckCondition(GetCondition()) &&
-		CExplosive::Initiator() == u16(-1))
+	if(!CDelayedActionFuse::isActive() && CDelayedActionFuse::CheckCondition(GetCondition()) &&
+	   CExplosive::Initiator() == u16(-1))
 	{
 		// запомнить того, кто взорвал вещь
 		SetInitiator(pHDS->who->ID());
@@ -65,7 +65,7 @@ void CExplosiveItem::UpdateCL()
 void CExplosiveItem::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
-	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetCondition()))
+	if(CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetCondition()))
 	{
 		fvec3 normal;
 		FindNormal(normal);

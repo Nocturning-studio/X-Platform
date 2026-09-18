@@ -40,7 +40,7 @@ SLuaWpnParams* g_lua_wpn_params = NULL;
 
 void destroy_lua_wpn_params()
 {
-	if (g_lua_wpn_params)
+	if(g_lua_wpn_params)
 		xr_delete(g_lua_wpn_params);
 }
 
@@ -63,7 +63,7 @@ CUIWpnParams::~CUIWpnParams()
 
 void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 {
-	if (!xml_doc.NavigateToNode("wpn_params", 0))
+	if(!xml_doc.NavigateToNode("wpn_params", 0))
 		return;
 	CUIXmlInit::InitWindow(xml_doc, "wpn_params", 0, this);
 
@@ -86,12 +86,12 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 {
 
-	if (!g_lua_wpn_params)
+	if(!g_lua_wpn_params)
 		g_lua_wpn_params = xr_new<SLuaWpnParams>();
 
 	m_progressRPM.SetProgressPos(g_lua_wpn_params->m_functorRPM(*wpn_section));
 	m_progressAccuracy.SetProgressPos(g_lua_wpn_params->m_functorAccuracy(*wpn_section));
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 		m_progressDamage.SetProgressPos(g_lua_wpn_params->m_functorDamage(*wpn_section));
 	else
 		m_progressDamage.SetProgressPos(g_lua_wpn_params->m_functorDamageMP(*wpn_section));
@@ -100,13 +100,13 @@ void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 
 bool CUIWpnParams::Check(const shared_str& wpn_section)
 {
-	if (pSettings->line_exist(wpn_section, "fire_dispersion_base"))
+	if(pSettings->line_exist(wpn_section, "fire_dispersion_base"))
 	{
-		if (0 == xr_strcmp(wpn_section, "wpn_addon_silencer"))
+		if(0 == xr_strcmp(wpn_section, "wpn_addon_silencer"))
 			return false;
-		if (0 == xr_strcmp(wpn_section, "wpn_binoc"))
+		if(0 == xr_strcmp(wpn_section, "wpn_binoc"))
 			return false;
-		if (0 == xr_strcmp(wpn_section, "mp_wpn_binoc"))
+		if(0 == xr_strcmp(wpn_section, "mp_wpn_binoc"))
 			return false;
 
 		return true;

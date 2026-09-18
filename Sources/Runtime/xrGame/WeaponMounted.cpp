@@ -21,7 +21,7 @@ void CWeaponMounted::BoneCallbackX(CBoneInstance* B)
 {
 	CWeaponMounted* P = static_cast<CWeaponMounted*>(B->Callback_Param);
 
-	if (P->Owner())
+	if(P->Owner())
 	{
 		fmat4x4 rX;
 		rX.rotateX(P->camera->pitch + P->m_dAngle.y);
@@ -33,7 +33,7 @@ void CWeaponMounted::BoneCallbackY(CBoneInstance* B)
 {
 	CWeaponMounted* P = static_cast<CWeaponMounted*>(B->Callback_Param);
 
-	if (P->Owner())
+	if(P->Owner())
 	{
 		fmat4x4 rY;
 		rY.rotateY(P->camera->yaw + P->m_dAngle.x);
@@ -78,7 +78,7 @@ BOOL CWeaponMounted::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeMountedWeapon* mw = smart_cast<CSE_ALifeMountedWeapon*>(e);
 	R_ASSERT(mw);
 
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	R_ASSERT(Visual() && smart_cast<CKinematics*>(Visual()));
@@ -136,7 +136,7 @@ void CWeaponMounted::net_Import(NET_Packet& P)
 void CWeaponMounted::UpdateCL()
 {
 	inherited::UpdateCL();
-	if (Owner())
+	if(Owner())
 	{
 		CKinematics* K = smart_cast<CKinematics*>(Visual());
 		K->CalculateBones();
@@ -150,7 +150,7 @@ void CWeaponMounted::UpdateCL()
 
 		UpdateFire();
 
-		if (OwnerActor() && OwnerActor()->IsMyCamera())
+		if(OwnerActor() && OwnerActor()->IsMyCamera())
 		{
 			cam_Update(Engine.TimeManager.GetDeltaTime(), g_fov);
 			OwnerActor()->Cameras().UpdateFromCamera(Camera());
@@ -174,17 +174,17 @@ void CWeaponMounted::renderable_Render()
 
 void CWeaponMounted::OnMouseMove(int dx, int dy)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
 	CCameraBase* C = camera;
 	float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.f;
-	if (dx)
+	if(dx)
 	{
 		float d = float(dx) * scale;
 		C->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
 	}
-	if (dy)
+	if(dy)
 	{
 		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
 		C->Move((d > 0) ? kUP : kDOWN, _abs(d));
@@ -192,10 +192,10 @@ void CWeaponMounted::OnMouseMove(int dx, int dy)
 }
 void CWeaponMounted::OnKeyboardPress(int dik)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
-	switch (dik)
+	switch(dik)
 	{
 	case kWPN_FIRE:
 		FireStart();
@@ -204,9 +204,9 @@ void CWeaponMounted::OnKeyboardPress(int dik)
 }
 void CWeaponMounted::OnKeyboardRelease(int dik)
 {
-	if (Remote())
+	if(Remote())
 		return;
-	switch (dik)
+	switch(dik)
 	{
 	case kWPN_FIRE:
 		FireEnd();
@@ -215,7 +215,7 @@ void CWeaponMounted::OnKeyboardRelease(int dik)
 }
 void CWeaponMounted::OnKeyboardHold(int dik)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
 	//	switch(dik)
@@ -234,7 +234,7 @@ void CWeaponMounted::cam_Update(float dt, float fov)
 	const fmat4x4& C = K->LL_GetTransform(camera_bone);
 	Transform().transform_tiny(P, C.c);
 
-	if (OwnerActor())
+	if(OwnerActor())
 	{
 		// rotate head
 		OwnerActor()->Orientation().yaw = -Camera()->yaw;
@@ -267,7 +267,7 @@ bool CWeaponMounted::attach_Actor(CGameObject* actor)
 	Transform().transform_tiny(ap, A.c);
 	fmat4x4 AP;
 	AP.translate(ap);
-	if (OwnerActor())
+	if(OwnerActor())
 		OwnerActor()->SetPhPosition(AP);
 	processing_activate();
 	return true;
@@ -321,7 +321,7 @@ void CWeaponMounted::OnShot()
 
 	StartShotParticles();
 
-	if (m_bLightShotEnabled)
+	if(m_bLightShotEnabled)
 		Light_Start();
 
 	StartFlameParticles();
@@ -344,14 +344,14 @@ void CWeaponMounted::UpdateFire()
 	CShootingObject::UpdateFlameParticles();
 	CShootingObject::UpdateLight();
 
-	if (!IsWorking())
+	if(!IsWorking())
 	{
-		if (fTime < 0)
+		if(fTime < 0)
 			fTime = 0.f;
 		return;
 	}
 
-	if (fTime <= 0)
+	if(fTime <= 0)
 	{
 		OnShot();
 		fTime += fTimeToFire;
@@ -370,10 +370,10 @@ const fmat4x4& CWeaponMounted::get_ParticlesTransform()
 
 void CWeaponMounted::AddShotEffector()
 {
-	if (OwnerActor())
+	if(OwnerActor())
 	{
 		CCameraShotEffector* S = smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot));
-		if (!S)
+		if(!S)
 			S = (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(
 				xr_new<CCameraShotEffector>(camMaxAngle, camRelaxSpeed, 0.25f, 0.01f, 0.7f));
 		R_ASSERT(S);
@@ -383,6 +383,6 @@ void CWeaponMounted::AddShotEffector()
 
 void CWeaponMounted::RemoveShotEffector()
 {
-	if (OwnerActor())
+	if(OwnerActor())
 		OwnerActor()->Cameras().RemoveCamEffector(eCEShot);
 }

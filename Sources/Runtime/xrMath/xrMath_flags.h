@@ -1,6 +1,7 @@
 #pragma once
 
-template <class T> struct template_flags
+template <class T>
+struct template_flags
 {
   public:
 	typedef T TYPE;
@@ -52,7 +53,7 @@ template <class T> struct template_flags
 	}
 	IC SelfRef set(const T mask, BOOL value)
 	{
-		if (value)
+		if(value)
 			flags |= mask;
 		else
 			flags &= ~mask;
@@ -70,7 +71,7 @@ template <class T> struct template_flags
 	{
 		return BOOL(flags & mask);
 	}
-	IC SelfRef bit_or (const T mask)
+	IC SelfRef bit_or(const T mask)
 	{
 		flags |= mask;
 		return *this;

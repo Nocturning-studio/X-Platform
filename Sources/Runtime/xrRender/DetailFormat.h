@@ -131,7 +131,7 @@ struct DetailSlot // was(4+4+3*4+2 = 22b), now(8+2*4=16b)
 	}
 	u8 r_id(u32 idx)
 	{
-		switch (idx)
+		switch(idx)
 		{
 		case 0:
 			return (u8)id0;
@@ -150,7 +150,7 @@ struct DetailSlot // was(4+4+3*4+2 = 22b), now(8+2*4=16b)
 	}
 	void w_id(u32 idx, u8 val)
 	{
-		switch (idx)
+		switch(idx)
 		{
 		case 0:
 			id0 = val;

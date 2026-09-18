@@ -33,9 +33,9 @@ void CPolterSpecialAbility::load(LPCSTR section)
 
 void CPolterSpecialAbility::update_schedule()
 {
-	if (m_object->g_Alive())
+	if(m_object->g_Alive())
 	{
-		if (!m_sound_base._feedback())
+		if(!m_sound_base._feedback())
 			m_sound_base.play_at_pos(m_object, m_object->Position());
 		else
 			m_sound_base.set_position(m_object->Position());
@@ -45,7 +45,7 @@ void CPolterSpecialAbility::update_schedule()
 void CPolterSpecialAbility::on_hide()
 {
 	VERIFY(m_particles_object == 0);
-	if (!m_object->g_Alive())
+	if(!m_object->g_Alive())
 		return;
 	m_particles_object =
 		m_object->PlayParticles(m_particles_hidden, m_object->Position(), fvec3().set(0.0f, 0.1f, 0.0f), false);
@@ -55,17 +55,17 @@ void CPolterSpecialAbility::on_hide()
 
 void CPolterSpecialAbility::on_show()
 {
-	if (m_particles_object)
+	if(m_particles_object)
 		CParticlesObject::Destroy(m_particles_object);
-	if (m_particles_object_electro)
+	if(m_particles_object_electro)
 		CParticlesObject::Destroy(m_particles_object_electro);
 }
 
 void CPolterSpecialAbility::update_frame()
 {
-	if (m_particles_object)
+	if(m_particles_object)
 		m_particles_object->SetTransform(m_object->Transform());
-	if (m_particles_object_electro)
+	if(m_particles_object_electro)
 		m_particles_object_electro->SetTransform(m_object->Transform());
 }
 
@@ -82,9 +82,9 @@ void CPolterSpecialAbility::on_die()
 
 void CPolterSpecialAbility::on_hit(SHit* pHDS)
 {
-	if (m_object->g_Alive() && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != m_last_hit_frame))
+	if(m_object->g_Alive() && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != m_last_hit_frame))
 	{
-		if (BI_NONE != pHDS->bone())
+		if(BI_NONE != pHDS->bone())
 		{
 
 			// вычислить координаты попадания
@@ -116,13 +116,13 @@ void CPoltergeist::PhysicalImpulse(const fvec3& position)
 	m_nearest.clear_not_free();
 	Level().ObjectSpace.GetNearest(m_nearest, position, IMPULSE_RADIUS, NULL);
 	// xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
-	if (m_nearest.empty())
+	if(m_nearest.empty())
 		return;
 
 	u32 index = Random.randI(m_nearest.size());
 
 	CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[index]);
-	if (!obj || !obj->m_pPhysicsShell)
+	if(!obj || !obj->m_pPhysicsShell)
 		return;
 
 	fvec3 dir;
@@ -137,28 +137,28 @@ void CPoltergeist::PhysicalImpulse(const fvec3& position)
 
 void CPoltergeist::StrangeSounds(const fvec3& position)
 {
-	if (m_strange_sound._feedback())
+	if(m_strange_sound._feedback())
 		return;
 
-	for (u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++)
+	for(u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++)
 	{
 		fvec3 dir;
 		dir.random_dir();
 
 		collide::rq_result l_rq;
-		if (Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, NULL))
+		if(Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, NULL))
 		{
-			if (l_rq.range < TRACE_DISTANCE)
+			if(l_rq.range < TRACE_DISTANCE)
 			{
 
 				// Получить пару материалов
 				CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + l_rq.element;
 				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(material().self_material_idx(), pTri->material);
-				if (!mtl_pair)
+				if(!mtl_pair)
 					continue;
 
 				// Играть звук
-				if (!mtl_pair->CollideSounds.empty())
+				if(!mtl_pair->CollideSounds.empty())
 				{
 					CLONE_MTL_SOUND(m_strange_sound, mtl_pair, CollideSounds);
 					fvec3 pos;

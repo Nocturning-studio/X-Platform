@@ -51,15 +51,15 @@ void CUINewsWnd::LoadNews()
 {
 	UIScrollWnd->Clear();
 
-	if (Actor())
+	if(Actor())
 	{
 		GAME_NEWS_VECTOR& news_vector = Actor()->game_news_registry->registry().objects();
 
 		// Показать только NEWS_TO_SHOW последних ньюсов
 		int currentNews = 0;
 
-		for (GAME_NEWS_VECTOR::reverse_iterator it = news_vector.rbegin();
-			 it != news_vector.rend() && currentNews < NEWS_TO_SHOW; ++it)
+		for(GAME_NEWS_VECTOR::reverse_iterator it = news_vector.rbegin();
+			it != news_vector.rend() && currentNews < NEWS_TO_SHOW; ++it)
 		{
 			AddNewsItem(*it);
 			++currentNews;
@@ -71,7 +71,7 @@ void CUINewsWnd::LoadNews()
 void CUINewsWnd::Update()
 {
 	inherited::Update();
-	if (m_flags.test(eNeedAdd))
+	if(m_flags.test(eNeedAdd))
 		LoadNews();
 }
 
@@ -83,16 +83,18 @@ void CUINewsWnd::AddNews()
 void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data)
 {
 	CUIWindow* itm = NULL;
-	switch (news_data.m_type)
+	switch(news_data.m_type)
 	{
-	case GAME_NEWS_DATA::eNews: {
+	case GAME_NEWS_DATA::eNews:
+	{
 		CUINewsItemWnd* _itm = xr_new<CUINewsItemWnd>();
 		_itm->Init(NEWS_XML, "news_item");
 		_itm->Setup(news_data);
 		itm = _itm;
 	}
 	break;
-	case GAME_NEWS_DATA::eTalk: {
+	case GAME_NEWS_DATA::eTalk:
+	{
 		CUINewsItemWnd* _itm = xr_new<CUINewsItemWnd>();
 		_itm->Init(NEWS_XML, "talk_item");
 		_itm->Setup(news_data);
@@ -105,7 +107,7 @@ void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data)
 
 void CUINewsWnd::Show(bool status)
 {
-	if (status)
+	if(status)
 		LoadNews();
 	else
 		InventoryUtilities::SendInfoToActor("ui_pda_news_hide");

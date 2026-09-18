@@ -46,10 +46,10 @@ CMainMenu* MainMenu()
 	return (CMainMenu*)g_pGamePersistent->m_pMainMenu;
 };
 //----------------------------------------------------------------------------------
-#define INIT_MSGBOX(_box, _template)                                                                                   \
-	{                                                                                                                  \
-		_box = xr_new<CUIMessageBoxEx>();                                                                              \
-		_box->Init(_template);                                                                                         \
+#define INIT_MSGBOX(_box, _template)      \
+	{                                     \
+		_box = xr_new<CUIMessageBoxEx>(); \
+		_box->Init(_template);            \
 	}
 //----------------------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ CMainMenu::CMainMenu()
 	m_startDialog = NULL;
 	m_screenshotFrame = u32(-1);
 	g_pGamePersistent->m_pMainMenu = this;
-	if (Device.b_is_Ready)
+	if(Device.b_is_Ready)
 		OnDeviceCreate();
 	ReadTextureInfo();
 	CUIXmlInit::InitColorDefs();
@@ -75,12 +75,12 @@ CMainMenu::CMainMenu()
 	m_NeedErrDialog = ErrNoError;
 	m_start_time = 0;
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		g_btnHint = xr_new<CUIButtonHint>();
 		m_pGameSpyFull = xr_new<CGameSpy_Full>();
 
-		for (u32 i = 0; i < u32(ErrMax); i++)
+		for(u32 i = 0; i < u32(ErrMax); i++)
 		{
 			CUIMessageBoxEx* pNewErrDlg;
 			INIT_MSGBOX(pNewErrDlg, ErrMsgBoxTemplate[i]);
@@ -111,7 +111,7 @@ CMainMenu::~CMainMenu()
 
 void CMainMenu::ReadTextureInfo()
 {
-	if (pSettings->section_exist("texture_desc"))
+	if(pSettings->section_exist("texture_desc"))
 	{
 		xr_string itemsList;
 		string256 single_item;
@@ -119,7 +119,7 @@ void CMainMenu::ReadTextureInfo()
 		itemsList = pSettings->r_string("texture_desc", "files");
 		int itemsCount = _GetItemCount(itemsList.c_str());
 
-		for (int i = 0; i < itemsCount; i++)
+		for(int i = 0; i < itemsCount; i++)
 		{
 			_GetItem(itemsList.c_str(), i, single_item);
 			strcat(single_item, ".xml");
@@ -133,20 +133,20 @@ extern bool IsGameTypeSingle();
 
 void CMainMenu::Activate(bool bActivate)
 {
-	if (!!m_Flags.test(flActive) == bActivate)
+	if(!!m_Flags.test(flActive) == bActivate)
 		return;
-	if (m_Flags.test(flGameSaveScreenshot))
+	if(m_Flags.test(flGameSaveScreenshot))
 		return;
-	if ((m_screenshotFrame == Engine.TimeManager.GetFrameCount()) || (m_screenshotFrame == Engine.TimeManager.GetFrameCount() - 1) ||
-		(m_screenshotFrame == Engine.TimeManager.GetFrameCount() + 1))
+	if((m_screenshotFrame == Engine.TimeManager.GetFrameCount()) || (m_screenshotFrame == Engine.TimeManager.GetFrameCount() - 1) ||
+	   (m_screenshotFrame == Engine.TimeManager.GetFrameCount() + 1))
 		return;
 
 	bool b_is_single = IsGameTypeSingle();
 
-	if (g_dedicated_server && bActivate)
+	if(g_dedicated_server && bActivate)
 		return;
 
-	if (bActivate)
+	if(bActivate)
 	{
 		b_shniaganeed_pp = true;
 		Device.Pause(TRUE, FALSE, TRUE, "mm_activate1");
@@ -154,7 +154,7 @@ void CMainMenu::Activate(bool bActivate)
 
 		{
 			DLL_Pure* dlg = NEW_INSTANCE(TEXT2CLSID("MAIN_MNU"));
-			if (!dlg)
+			if(!dlg)
 			{
 				m_Flags.set(flActive | flNeedChangeCapture, FALSE);
 				return;
@@ -166,27 +166,27 @@ void CMainMenu::Activate(bool bActivate)
 
 		m_Flags.set(flRestoreConsole, Console->bVisible);
 
-		if (b_is_single)
+		if(b_is_single)
 			m_Flags.set(flRestorePause, Device.Paused());
 
 		Console->Hide();
 
 		m_Flags.set(flRestoreCursor, GetUICursor()->IsVisible());
 
-		if (b_is_single)
+		if(b_is_single)
 		{
 			m_Flags.set(flRestorePauseStr, bShowPauseString);
 			bShowPauseString = FALSE;
-			if (!m_Flags.test(flRestorePause))
+			if(!m_Flags.test(flRestorePause))
 				Device.Pause(TRUE, TRUE, FALSE, "mm_activate2");
 		}
 
 		m_startDialog->m_bWorkInPause = true;
 		StartStopMenu(m_startDialog, true);
 
-		if (g_pGameLevel)
+		if(g_pGameLevel)
 		{
-			if (b_is_single)
+			if(b_is_single)
 			{
 				Engine.Events.Frame.Remove(g_pGameLevel);
 			}
@@ -204,44 +204,44 @@ void CMainMenu::Activate(bool bActivate)
 		Engine.Events.Render.Remove(this);
 
 		bool b = !!Console->bVisible;
-		if (b)
+		if(b)
 		{
 			Console->Hide();
 		}
 
 		IR_Release();
-		if (b)
+		if(b)
 		{
 			Console->Show();
 		}
 
 		StartStopMenu(m_startDialog, true);
 		CleanInternals();
-		if (g_pGameLevel)
+		if(g_pGameLevel)
 		{
-			if (b_is_single)
+			if(b_is_single)
 			{
 				Engine.Events.Frame.Add(g_pGameLevel);
 			}
 			Engine.Events.Render.Add(g_pGameLevel);
 		};
-		if (m_Flags.test(flRestoreConsole))
+		if(m_Flags.test(flRestoreConsole))
 			Console->Show();
 
-		if (b_is_single)
+		if(b_is_single)
 		{
-			if (!m_Flags.test(flRestorePause))
+			if(!m_Flags.test(flRestorePause))
 				Device.Pause(FALSE, TRUE, FALSE, "mm_deactivate1");
 
 			bShowPauseString = m_Flags.test(flRestorePauseStr);
 		}
 
-		if (m_Flags.test(flRestoreCursor))
+		if(m_Flags.test(flRestoreCursor))
 			GetUICursor()->Show();
 
 		Device.Pause(FALSE, FALSE, TRUE, "mm_deactivate2");
 
-		if (m_Flags.test(flNeedVidRestart))
+		if(m_Flags.test(flNeedVidRestart))
 		{
 			m_Flags.set(flNeedVidRestart, FALSE);
 			Console->Execute("vid_restart");
@@ -260,7 +260,7 @@ void CMainMenu::IR_OnMousePress(int btn)
 {
 	Engine.DebugUI.IR_OnMousePress(mm_mouse_button_2_key[btn]);
 
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
 	IR_OnKeyboardPress(mm_mouse_button_2_key[btn]);
@@ -268,7 +268,7 @@ void CMainMenu::IR_OnMousePress(int btn)
 
 void CMainMenu::IR_OnMouseRelease(int btn)
 {
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
 	IR_OnKeyboardRelease(mm_mouse_button_2_key[btn]);
@@ -276,7 +276,7 @@ void CMainMenu::IR_OnMouseRelease(int btn)
 
 void CMainMenu::IR_OnMouseHold(int btn)
 {
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
 	IR_OnKeyboardHold(mm_mouse_button_2_key[btn]);
@@ -284,43 +284,43 @@ void CMainMenu::IR_OnMouseHold(int btn)
 
 void CMainMenu::IR_OnMouseMove(int x, int y)
 {
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		MainInputReceiver()->IR_OnMouseMove(x, y);
 };
 
-void CMainMenu::IR_OnMouseStop(int x, int y){};
+void CMainMenu::IR_OnMouseStop(int x, int y) {};
 
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {
 	Engine.DebugUI.IR_OnKeyboardPress(dik);
 
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (is_binded(kCONSOLE, dik))
+	if(is_binded(kCONSOLE, dik))
 	{
 		Console->Show();
 		return;
 	}
-	if (DIK_F12 == dik)
+	if(DIK_F12 == dik)
 	{
 		Render->Screenshot();
 		return;
 	}
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		MainInputReceiver()->IR_OnKeyboardPress(dik);
 };
 
 void CMainMenu::IR_OnKeyboardRelease(int dik)
 {
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		MainInputReceiver()->IR_OnKeyboardRelease(dik);
 };
 
@@ -328,19 +328,19 @@ void CMainMenu::IR_OnKeyboardHold(int dik)
 {
 	Engine.DebugUI.IR_OnKeyboardHold(dik);
 
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		MainInputReceiver()->IR_OnKeyboardHold(dik);
 };
 
 void CMainMenu::IR_OnMouseWheel(int direction)
 {
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		MainInputReceiver()->IR_OnMouseWheel(direction);
 }
 
@@ -352,16 +352,16 @@ bool CMainMenu::OnRenderPPUI_query()
 extern void draw_wnds_rects();
 void CMainMenu::OnRender()
 {
-	//OPTICK_EVENT("CMainMenu::OnRender");
+	// OPTICK_EVENT("CMainMenu::OnRender");
 
-	if (m_Flags.test(flGameSaveScreenshot))
+	if(m_Flags.test(flGameSaveScreenshot))
 		return;
 
-	if (g_pGameLevel)
+	if(g_pGameLevel)
 		Render->Calculate();
 
 	Render->Render();
-	if (!OnRenderPPUI_query())
+	if(!OnRenderPPUI_query())
 	{
 		DoRenderDialogs();
 		UI()->RenderFont();
@@ -371,17 +371,17 @@ void CMainMenu::OnRender()
 
 void CMainMenu::OnRenderPPUI_main()
 {
-	//OPTICK_EVENT("CMainMenu::OnRenderPPUI_main");
+	// OPTICK_EVENT("CMainMenu::OnRenderPPUI_main");
 
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (m_Flags.test(flGameSaveScreenshot))
+	if(m_Flags.test(flGameSaveScreenshot))
 		return;
 
 	UI()->pp_start();
 
-	if (OnRenderPPUI_query())
+	if(OnRenderPPUI_query())
 	{
 		DoRenderDialogs();
 		UI()->RenderFont();
@@ -392,18 +392,18 @@ void CMainMenu::OnRenderPPUI_main()
 
 void CMainMenu::OnRenderPPUI_PP()
 {
-	//OPTICK_EVENT("CMainMenu::OnRenderPPUI_PP");
+	// OPTICK_EVENT("CMainMenu::OnRenderPPUI_PP");
 
-	if (!IsActive())
+	if(!IsActive())
 		return;
 
-	if (m_Flags.test(flGameSaveScreenshot))
+	if(m_Flags.test(flGameSaveScreenshot))
 		return;
 
 	UI()->pp_start();
 
 	xr_vector<CUIWindow*>::iterator it = m_pp_draw_wnds.begin();
-	for (; it != m_pp_draw_wnds.end(); ++it)
+	for(; it != m_pp_draw_wnds.end(); ++it)
 	{
 		(*it)->Draw();
 	}
@@ -419,10 +419,10 @@ void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 // pureFrame
 void CMainMenu::OnFrame()
 {
-	if (m_Flags.test(flNeedChangeCapture))
+	if(m_Flags.test(flNeedChangeCapture))
 	{
 		m_Flags.set(flNeedChangeCapture, FALSE);
-		if (m_Flags.test(flActive))
+		if(m_Flags.test(flActive))
 			IR_Capture();
 		else
 			IR_Release();
@@ -430,25 +430,25 @@ void CMainMenu::OnFrame()
 	CDialogHolder::OnFrame();
 
 	// screenshot stuff
-	if (m_Flags.test(flGameSaveScreenshot) && Engine.TimeManager.GetFrameCount() > m_screenshotFrame)
+	if(m_Flags.test(flGameSaveScreenshot) && Engine.TimeManager.GetFrameCount() > m_screenshotFrame)
 	{
 		m_Flags.set(flGameSaveScreenshot, FALSE);
 		::Render->Screenshot(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
 
-		if (g_pGameLevel && m_Flags.test(flActive))
+		if(g_pGameLevel && m_Flags.test(flActive))
 		{
 			Engine.Events.Frame.Remove(g_pGameLevel);
 			Engine.Events.Render.Remove(g_pGameLevel);
 		};
 
-		//if (m_Flags.test(flRestoreConsole))
+		// if (m_Flags.test(flRestoreConsole))
 		//	Console->Show();
 	}
 
-	if (IsActive() || m_sPDProgress.IsInProgress)
+	if(IsActive() || m_sPDProgress.IsInProgress)
 		m_pGameSpyFull->Update();
 
-	if (IsActive())
+	if(IsActive())
 		CheckForErrorDlg();
 }
 
@@ -458,7 +458,7 @@ void CMainMenu::OnDeviceCreate()
 
 void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 {
-	if (mode != IRender_interface::SM_FOR_GAMESAVE)
+	if(mode != IRender_interface::SM_FOR_GAMESAVE)
 	{
 		::Render->Screenshot(mode, name);
 	}
@@ -466,13 +466,13 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	{
 		m_Flags.set(flGameSaveScreenshot, TRUE);
 		strcpy(m_screenshot_name, name);
-		if (g_pGameLevel && m_Flags.test(flActive))
+		if(g_pGameLevel && m_Flags.test(flActive))
 		{
 			Engine.Events.Frame.Add(g_pGameLevel);
 			Engine.Events.Render.Add(g_pGameLevel);
 		};
 		m_screenshotFrame = Engine.TimeManager.GetFrameCount() + 1;
-		//m_Flags.set(flRestoreConsole, Console->bVisible);
+		// m_Flags.set(flRestoreConsole, Console->bVisible);
 		Console->Hide();
 	}
 }
@@ -495,7 +495,7 @@ void CMainMenu::SetErrorDialog(EErrorDlg ErrDlg)
 
 void CMainMenu::CheckForErrorDlg()
 {
-	if (m_NeedErrDialog == ErrNoError)
+	if(m_NeedErrDialog == ErrNoError)
 		return;
 	StartStopMenu(m_pMB_ErrDlgs[m_NeedErrDialog], false);
 	m_NeedErrDialog = ErrNoError;
@@ -508,21 +508,21 @@ void CMainMenu::SwitchToMultiplayerMenu()
 
 void CMainMenu::DestroyInternal(bool bForce)
 {
-	if (m_startDialog && ((m_deactivated_frame < Engine.TimeManager.GetFrameCount() + 4) || bForce))
+	if(m_startDialog && ((m_deactivated_frame < Engine.TimeManager.GetFrameCount() + 4) || bForce))
 		xr_delete(m_startDialog);
 }
 
 void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
 {
-	if (m_sPDProgress.IsInProgress)
+	if(m_sPDProgress.IsInProgress)
 		return;
 
-	if (m_pMB_ErrDlgs[NewPatchFound])
+	if(m_pMB_ErrDlgs[NewPatchFound])
 	{
 		delete_data(m_pMB_ErrDlgs[NewPatchFound]);
 		m_pMB_ErrDlgs[NewPatchFound] = NULL;
 	}
-	if (!m_pMB_ErrDlgs[NewPatchFound])
+	if(!m_pMB_ErrDlgs[NewPatchFound])
 	{
 		INIT_MSGBOX(m_pMB_ErrDlgs[NewPatchFound], "msg_box_new_patch");
 
@@ -548,14 +548,14 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 {
 	CGameSpy_Available GSA;
 	shared_str result_string;
-	if (!GSA.CheckAvailableServices(result_string))
+	if(!GSA.CheckAvailableServices(result_string))
 	{
 		Msg(*result_string);
 		return;
 	};
 
 	LPCSTR fileName = *m_sPatchURL;
-	if (!fileName)
+	if(!fileName)
 		return;
 
 	string4096 FilePath = "";
@@ -569,7 +569,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 	*/
 
 	string_path fname;
-	if (FS.path_exist("$downloads$"))
+	if(FS.path_exist("$downloads$"))
 	{
 		FS.update_path(fname, "$downloads$", FileName);
 		m_sPatchFileName = fname;
@@ -600,7 +600,7 @@ void CMainMenu::OnDownloadPatchSuccess()
 
 void CMainMenu::OnSessionTerminate(LPCSTR reason)
 {
-	if (m_NeedErrDialog == SessionTerminate && (Engine.TimeManager.GetGlobalTimeMs() - m_start_time) < 8000)
+	if(m_NeedErrDialog == SessionTerminate && (Engine.TimeManager.GetGlobalTimeMs() - m_start_time) < 8000)
 		return;
 
 	m_start_time = Engine.TimeManager.GetGlobalTimeMs();
@@ -647,7 +647,7 @@ void CMainMenu::SetNeedVidRestart()
 
 void CMainMenu::OnDeviceReset()
 {
-	if (IsActive() && g_pGameLevel)
+	if(IsActive() && g_pGameLevel)
 		SetNeedVidRestart();
 }
 
@@ -661,7 +661,7 @@ bool CMainMenu::IsCDKeyIsValid()
 
 bool CMainMenu::ValidateCDKey()
 {
-	if (IsCDKeyIsValid())
+	if(IsCDKeyIsValid())
 		return true;
 	SetErrorDialog(CMainMenu::ErrCDKeyInvalid);
 	return false;
@@ -669,18 +669,18 @@ bool CMainMenu::ValidateCDKey()
 
 void CMainMenu::Show_CTMS_Dialog()
 {
-	if (!m_pMB_ErrDlgs[ConnectToMasterServer])
+	if(!m_pMB_ErrDlgs[ConnectToMasterServer])
 		return;
-	if (m_pMB_ErrDlgs[ConnectToMasterServer]->IsShown())
+	if(m_pMB_ErrDlgs[ConnectToMasterServer]->IsShown())
 		return;
 	StartStopMenu(m_pMB_ErrDlgs[ConnectToMasterServer], false);
 }
 
 void CMainMenu::Hide_CTMS_Dialog()
 {
-	if (!m_pMB_ErrDlgs[ConnectToMasterServer])
+	if(!m_pMB_ErrDlgs[ConnectToMasterServer])
 		return;
-	if (!m_pMB_ErrDlgs[ConnectToMasterServer]->IsShown())
+	if(!m_pMB_ErrDlgs[ConnectToMasterServer]->IsShown())
 		return;
 	StartStopMenu(m_pMB_ErrDlgs[ConnectToMasterServer], false);
 }

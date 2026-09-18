@@ -100,7 +100,7 @@ void CUIEventsWnd::Init()
 
 void CUIEventsWnd::Update()
 {
-	if (m_flags.test(flNeedReload))
+	if(m_flags.test(flNeedReload))
 	{
 		ReloadList(false);
 		m_flags.set(flNeedReload, FALSE);
@@ -122,7 +122,7 @@ void CUIEventsWnd::OnFilterChanged(CUIWindow* w, void*)
 {
 	m_currFilter = (ETaskFilters)m_TaskFilter->GetActiveIndex();
 	ReloadList(false);
-	if (!GetDescriptionMode())
+	if(!GetDescriptionMode())
 		SetDescriptionMode(true);
 }
 
@@ -134,22 +134,22 @@ void CUIEventsWnd::Reload()
 void CUIEventsWnd::ReloadList(bool bClearOnly)
 {
 	m_ListWnd->Clear();
-	if (bClearOnly)
+	if(bClearOnly)
 		return;
 
-	if (!g_actor)
+	if(!g_actor)
 		return;
 	GameTasks& tasks = Actor()->GameTaskManager().GameTasks();
 	GameTasks::iterator it = tasks.begin();
 	CGameTask* task = NULL;
 
-	for (; it != tasks.end(); ++it)
+	for(; it != tasks.end(); ++it)
 	{
 		task = (*it).game_task;
 		R_ASSERT(task);
 		R_ASSERT(task->m_Objectives.size() > 0);
 
-		if (!Filter(task))
+		if(!Filter(task))
 			continue;
 		CUITaskItem* pTaskItem = NULL;
 		/*
@@ -161,9 +161,9 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 					m_ListWnd->AddWindow			(pTaskItem,true);
 				}else
 		*/
-		for (u16 i = 0; i < task->m_Objectives.size(); ++i)
+		for(u16 i = 0; i < task->m_Objectives.size(); ++i)
 		{
-			if (i == 0)
+			if(i == 0)
 			{
 				pTaskItem = xr_new<CUITaskRootItem>(this);
 			}
@@ -200,7 +200,7 @@ bool CUIEventsWnd::Filter(CGameTask* t)
 
 void CUIEventsWnd::SetDescriptionMode(bool bMap)
 {
-	if (bMap)
+	if(bMap)
 	{
 		m_UIRightWnd->DetachChild(m_UITaskInfoWnd);
 		m_UIRightWnd->AttachChild(m_UIMapWnd);
@@ -220,12 +220,12 @@ bool CUIEventsWnd::GetDescriptionMode()
 
 void CUIEventsWnd::ShowDescription(CGameTask* t, int idx)
 {
-	if (GetDescriptionMode())
+	if(GetDescriptionMode())
 	{ // map
 		SGameTaskObjective& o = t->Objective(idx);
 		CMapLocation* ml = o.LinkedMapLocation();
 
-		if (ml && ml->SpotEnabled())
+		if(ml && ml->SpotEnabled())
 			m_UIMapWnd->SetTargetMap(ml->LevelName(), ml->Position(), true);
 	}
 	else
@@ -235,14 +235,14 @@ void CUIEventsWnd::ShowDescription(CGameTask* t, int idx)
 
 		m_UITaskInfoWnd->ClearAll();
 
-		if (Actor()->encyclopedia_registry->registry().objects_ptr())
+		if(Actor()->encyclopedia_registry->registry().objects_ptr())
 		{
 			string512 need_group;
-			if (0 == idx)
+			if(0 == idx)
 			{
 				strcpy(need_group, *t->m_ID);
 			}
-			else if (o.article_key.size())
+			else if(o.article_key.size())
 			{
 				sprintf_s(need_group, "%s/%s", *t->m_ID, *o.article_key);
 			}
@@ -253,22 +253,22 @@ void CUIEventsWnd::ShowDescription(CGameTask* t, int idx)
 
 			ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
 
-			for (; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); ++it)
+			for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); ++it)
 			{
-				if (ARTICLE_DATA::eTaskArticle == it->article_type)
+				if(ARTICLE_DATA::eTaskArticle == it->article_type)
 				{
 					CEncyclopediaArticle A;
 					A.Load(it->article_id);
 
 					const shared_str& group = A.data()->group;
 
-					if (strstr(group.c_str(), need_group) == group.c_str())
+					if(strstr(group.c_str(), need_group) == group.c_str())
 					{
 						u32 sz = xr_strlen(need_group);
-						if (group.size() == sz || group.c_str()[sz] == '/')
+						if(group.size() == sz || group.c_str()[sz] == '/')
 							m_UITaskInfoWnd->AddArticle(&A);
 					}
-					else if (o.article_id.size() && it->article_id == o.article_id)
+					else if(o.article_id.size() && it->article_id == o.article_id)
 					{
 						CEncyclopediaArticle A;
 						A.Load(it->article_id);
@@ -281,11 +281,11 @@ void CUIEventsWnd::ShowDescription(CGameTask* t, int idx)
 
 	int sz = m_ListWnd->GetSize();
 
-	for (int i = 0; i < sz; ++i)
+	for(int i = 0; i < sz; ++i)
 	{
 		CUITaskItem* itm = (CUITaskItem*)m_ListWnd->GetItem(i);
 
-		if ((itm->GameTask() == t) && (itm->ObjectiveIdx() == idx))
+		if((itm->GameTask() == t) && (itm->ObjectiveIdx() == idx))
 			itm->MarkSelected(true);
 		else
 			itm->MarkSelected(false);
@@ -294,7 +294,7 @@ void CUIEventsWnd::ShowDescription(CGameTask* t, int idx)
 
 bool CUIEventsWnd::ItemHasDescription(CUITaskItem* itm)
 {
-	if (itm->ObjectiveIdx() == 0) // root
+	if(itm->ObjectiveIdx() == 0) // root
 	{
 		bool bHasLocation = itm->GameTask()->HasLinkedMapLocations();
 		return bHasLocation;

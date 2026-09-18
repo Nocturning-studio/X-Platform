@@ -42,7 +42,7 @@ xr_string EFS_Utils::ExtractFilePath(LPCSTR src)
 xr_string EFS_Utils::ExcludeBasePath(LPCSTR full_path, LPCSTR excl_path)
 {
 	LPCSTR sub = strstr(full_path, excl_path);
-	if (0 != sub)
+	if(0 != sub)
 		return xr_string(sub + xr_strlen(excl_path));
 	else
 		return xr_string(full_path);
@@ -52,7 +52,7 @@ xr_string EFS_Utils::ChangeFileExt(LPCSTR src, LPCSTR ext)
 {
 	xr_string tmp;
 	LPSTR src_ext = strext(src);
-	if (src_ext)
+	if(src_ext)
 	{
 		size_t ext_pos = src_ext - src;
 		tmp.assign(src, 0, ext_pos);
@@ -74,18 +74,18 @@ xr_string EFS_Utils::ChangeFileExt(const xr_string& src, LPCSTR ext)
 LPCSTR MakeFilter(string1024& dest, LPCSTR info, LPCSTR ext)
 {
 	ZeroMemory(dest, sizeof(dest));
-	if (ext)
+	if(ext)
 	{
 		int icnt = _GetItemCount(ext, ';');
 		LPSTR dst = dest;
-		if (icnt > 1)
+		if(icnt > 1)
 		{
 			strconcat(sizeof(dest), dst, info, " (", ext, ")");
 			dst += (xr_strlen(dst) + 1);
 			strcpy(dst, ext);
 			dst += (xr_strlen(ext) + 1);
 		}
-		for (int i = 0; i < icnt; i++)
+		for(int i = 0; i < icnt; i++)
 		{
 			string64 buf;
 			_GetItem(ext, i, buf, ';');
@@ -111,13 +111,13 @@ bool EFS_Utils::GetOpenName(LPCSTR initial, string_path& buffer, int sz_buf, boo
 
 	OPENFILENAME ofn;
 	std::memset(&ofn, 0, sizeof(ofn));
-	if (xr_strlen(buffer))
+	if(xr_strlen(buffer))
 	{
 		string_path dr;
-		if (!(buffer[0] == '\\' && buffer[1] == '\\'))
+		if(!(buffer[0] == '\\' && buffer[1] == '\\'))
 		{ // if !network
 			_splitpath(buffer, dr, 0, 0, 0);
-			if (0 == dr[0])
+			if(0 == dr[0])
 				P._update(buffer, buffer);
 		}
 	}
@@ -137,20 +137,20 @@ bool EFS_Utils::GetOpenName(LPCSTR initial, string_path& buffer, int sz_buf, boo
 	ofn.FlagsEx = OFN_EX_NOPLACESBAR;
 
 	bool bRes = !!GetOpenFileName(&ofn);
-	if (!bRes)
+	if(!bRes)
 	{
 		u32 err = CommDlgExtendedError();
-		switch (err)
+		switch(err)
 		{
 		case FNERR_BUFFERTOOSMALL:
 			Log("Too many file selected.");
 			break;
 		}
 	}
-	if (bRes && bMulti)
+	if(bRes && bMulti)
 	{
 		int cnt = _GetItemCount(buffer, 0x0);
-		if (cnt > 1)
+		if(cnt > 1)
 		{
 			string64 buf;
 			string64 dir;
@@ -159,7 +159,7 @@ bool EFS_Utils::GetOpenName(LPCSTR initial, string_path& buffer, int sz_buf, boo
 			strcpy(fns, dir);
 			strcat(fns, "\\");
 			strcat(fns, _GetItem(buffer, 1, buf, 0x0));
-			for (int i = 2; i < cnt; i++)
+			for(int i = 2; i < cnt; i++)
 			{
 				strcat(fns, ",");
 				strcat(fns, dir);
@@ -180,13 +180,13 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", P.m_DefExt);
 	OPENFILENAME ofn;
 	std::memset(&ofn, 0, sizeof(ofn));
-	if (xr_strlen(buffer))
+	if(xr_strlen(buffer))
 	{
 		string_path dr;
-		if (!(buffer[0] == '\\' && buffer[1] == '\\'))
+		if(!(buffer[0] == '\\' && buffer[1] == '\\'))
 		{ // if !network
 			_splitpath(buffer, dr, 0, 0, 0);
-			if (0 == dr[0])
+			if(0 == dr[0])
 				P._update(buffer, buffer);
 		}
 	}
@@ -205,10 +205,10 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 	ofn.FlagsEx = OFN_EX_NOPLACESBAR;
 
 	bool bRes = !!GetSaveFileName(&ofn);
-	if (!bRes)
+	if(!bRes)
 	{
 		u32 err = CommDlgExtendedError();
-		switch (err)
+		switch(err)
 		{
 		case FNERR_BUFFERTOOSMALL:
 			Log("Too many file selected.");
@@ -232,9 +232,9 @@ LPCSTR EFS_Utils::AppendFolderToName(LPCSTR src_name, LPSTR dest_name, int depth
 	LPCSTR s = src_name;
 	LPSTR d = dest_name;
 	int sv_depth = depth;
-	for (; *s && depth; s++, d++)
+	for(; *s && depth; s++, d++)
 	{
-		if (*s == '_')
+		if(*s == '_')
 		{
 			depth--;
 			*d = '\\';
@@ -244,15 +244,15 @@ LPCSTR EFS_Utils::AppendFolderToName(LPCSTR src_name, LPSTR dest_name, int depth
 			*d = *s;
 		}
 	}
-	if (full_name)
+	if(full_name)
 	{
 		*d = 0;
-		if (depth < sv_depth)
+		if(depth < sv_depth)
 			strcat(dest_name, *tmp);
 	}
 	else
 	{
-		for (; *s; s++, d++)
+		for(; *s; s++, d++)
 			*d = *s;
 		*d = 0;
 	}
@@ -263,13 +263,13 @@ LPCSTR EFS_Utils::GenerateName(LPCSTR base_path, LPCSTR base_name, LPCSTR def_ex
 {
 	int cnt = 0;
 	string_path fn;
-	if (base_name)
+	if(base_name)
 		strconcat(sizeof(fn), fn, base_path, base_name, def_ext);
 	else
 		sprintf_s(fn, sizeof(fn), "%s%02d%s", base_path, cnt++, def_ext);
 
-	while (FS.exist(fn))
-		if (base_name)
+	while(FS.exist(fn))
+		if(base_name)
 			sprintf_s(fn, sizeof(fn), "%s%s%02d%s", base_path, base_name, cnt++, def_ext);
 		else
 			sprintf_s(fn, sizeof(fn), "%s%02d%s", base_path, cnt++, def_ext);

@@ -28,14 +28,14 @@ class CCC_UserName : public CCC_String
 	{
 		string512 str;
 		strcpy(str, arguments);
-		if (xr_strlen(str) > 17)
+		if(xr_strlen(str) > 17)
 			str[17] = 0;
 
 		CCC_String::Execute(str);
 
 		WriteRegistry_StrValue(REGISTRY_VALUE_USERNAME, value);
 	}
-	virtual void Save(IWriter* F){};
+	virtual void Save(IWriter* F) {};
 };
 
 void CUIOptConCom::Init()
@@ -87,13 +87,13 @@ void CUIOptConCom::Init()
 void CUIOptConCom::ReadPlayerNameFromRegistry()
 {
 	ReadRegistry_StrValue(REGISTRY_VALUE_USERNAME, m_playerName);
-	if (xr_strlen(m_playerName) > 17)
+	if(xr_strlen(m_playerName) > 17)
 		m_playerName[17] = 0;
 };
 
 void CUIOptConCom::WritePlayerNameToRegistry()
 {
-	if (xr_strlen(m_playerName) > 17)
+	if(xr_strlen(m_playerName) > 17)
 		m_playerName[17] = 0;
 
 	WriteRegistry_StrValue(REGISTRY_VALUE_USERNAME, m_playerName);

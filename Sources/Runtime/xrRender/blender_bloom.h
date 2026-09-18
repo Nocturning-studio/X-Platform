@@ -38,7 +38,7 @@ class CBlender_bloom : public IBlender
 		// Единый файл шейдера
 		LPCSTR sh_name = "postprocess_stage_bloom";
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_PASS_PREPARE:
 			// Pass 1: Prepare

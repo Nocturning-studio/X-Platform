@@ -44,7 +44,7 @@ TEMPLATE_SPECIALIZATION
 IC void CSALifeAbstractRegistry::add(const _index_type& index, _data_type& data, bool no_assert)
 {
 	const_iterator I = objects().find(index);
-	if (I != objects().end())
+	if(I != objects().end())
 	{
 		THROW2(no_assert, "Specified object has been already found in the specified registry!");
 		return;
@@ -56,7 +56,7 @@ TEMPLATE_SPECIALIZATION
 IC void CSALifeAbstractRegistry::remove(const _index_type& index, bool no_assert)
 {
 	iterator I = m_objects.find(index);
-	if (I == objects().end())
+	if(I == objects().end())
 	{
 		THROW2(no_assert, "Specified object hasn't been found in the specified registry!");
 		return;
@@ -68,7 +68,7 @@ TEMPLATE_SPECIALIZATION
 IC _data_type* CSALifeAbstractRegistry::object(const _index_type& index, bool no_assert)
 {
 	iterator I = m_objects.find(index);
-	if (I == objects().end())
+	if(I == objects().end())
 	{
 		THROW2(no_assert, "Specified object hasn't been found in the specified registry!");
 		return (0);

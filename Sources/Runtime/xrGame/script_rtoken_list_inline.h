@@ -15,14 +15,14 @@ IC void CScriptRTokenList::add(LPCSTR value)
 
 IC void CScriptRTokenList::remove(u32 index)
 {
-	if (index >= size())
+	if(index >= size())
 		return;
 	m_values.erase(m_values.begin() + index);
 }
 
 IC LPCSTR CScriptRTokenList::get(u32 index)
 {
-	if (index >= size())
+	if(index >= size())
 		return (0);
 	return (*m_values[index]);
 }

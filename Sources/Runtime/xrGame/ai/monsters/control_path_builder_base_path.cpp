@@ -15,20 +15,20 @@ const u32 pmt_find_random_pos_attempts = 5;
 //////////////////////////////////////////////////////////////////////////
 bool CControlPathBuilderBase::target_point_need_update()
 {
-	if ((m_state & eStatePathFailed) == eStatePathFailed)
+	if((m_state & eStatePathFailed) == eStatePathFailed)
 		return true;
-	else if (m_state == eStatePathValid)
+	else if(m_state == eStatePathValid)
 	{
 
 		// если путь ещё не завершен
-		if (!m_man->path_builder().is_path_end(m_distance_to_path_end))
+		if(!m_man->path_builder().is_path_end(m_distance_to_path_end))
 		{
 
-			if (m_target_actual && !global_failed())
+			if(m_target_actual && !global_failed())
 				return false; // если global_failed - игнорировать актуальность
 
 			// если первый раз строим
-			if (m_last_time_target_set == 0)
+			if(m_last_time_target_set == 0)
 				return true;
 
 			// если время движения по пути не вышло, не перестраивать
@@ -40,17 +40,17 @@ bool CControlPathBuilderBase::target_point_need_update()
 		//} else if ((m_state & eStateWaitParamsApplied) == eStateWaitParamsApplied) {
 		//	return false;
 	}
-	else if ((m_state & eStateWaitNewPath) == eStateWaitNewPath)
+	else if((m_state & eStateWaitNewPath) == eStateWaitNewPath)
 	{
 		return false;
 	}
-	else if ((m_state & eStateNoPath) == eStateNoPath)
+	else if((m_state & eStateNoPath) == eStateNoPath)
 	{
 		return true;
 	}
-	else if ((m_state & eStatePathEnd) == eStatePathEnd)
+	else if((m_state & eStatePathEnd) == eStatePathEnd)
 	{
-		if (m_target_set.node != m_object->ai_location().level_vertex_id())
+		if(m_target_set.node != m_object->ai_location().level_vertex_id())
 			return true; // физический конец пути
 	}
 
@@ -67,14 +67,14 @@ void CControlPathBuilderBase::find_target_point_set()
 	//---------------------------------------------------
 	// Быстрые тесты
 
-	if (m_target_type == eMoveToTarget)
+	if(m_target_type == eMoveToTarget)
 	{
 		// 1. быстрый тест на достижимость цели
-		if (m_man->path_builder().valid_and_accessible(m_target_found.position, m_target_found.node))
+		if(m_man->path_builder().valid_and_accessible(m_target_found.position, m_target_found.node))
 			return;
 
 		// 2. быстрый тест на недостижимость цели (выбрать случайную позицию)
-		if (!m_man->path_builder().accessible(m_target_found.position))
+		if(!m_man->path_builder().accessible(m_target_found.position))
 		{
 			m_target_found.node = m_man->path_builder().restrictions().accessible_nearest(
 				fvec3().set(m_target_found.position), m_target_found.position);
@@ -86,7 +86,7 @@ void CControlPathBuilderBase::find_target_point_set()
 			pos_random.mad(m_object->Position(), dir, pmt_find_point_dist);
 			set_target_accessible(m_target_found, pos_random);
 
-			if (m_target_found.node != u32(-1))
+			if(m_target_found.node != u32(-1))
 				return;
 		}
 	}
@@ -96,7 +96,7 @@ void CControlPathBuilderBase::find_target_point_set()
 	//---------------------------------------------------
 	// I. Выбрать позицию
 
-	if (m_target_type == eRetreatFromTarget)
+	if(m_target_type == eRetreatFromTarget)
 	{
 		fvec3 dir;
 
@@ -106,16 +106,16 @@ void CControlPathBuilderBase::find_target_point_set()
 	}
 
 	// проверить позицию на accessible
-	if (!m_man->path_builder().accessible(m_target_found.position))
+	if(!m_man->path_builder().accessible(m_target_found.position))
 	{
 		m_target_found.node = m_man->path_builder().restrictions().accessible_nearest(
 			fvec3().set(m_target_found.position), m_target_found.position);
 	}
 
 	// если новая позиция = позиции монстра - выбрать рандомную валидную позицию
-	for (u32 i = 0; i < pmt_find_random_pos_attempts; i++)
+	for(u32 i = 0; i < pmt_find_random_pos_attempts; i++)
 	{
-		if (m_target_found.position.similar(m_object->Position(), 0.5f))
+		if(m_target_found.position.similar(m_object->Position(), 0.5f))
 		{
 
 			fvec3 pos_random;
@@ -129,7 +129,7 @@ void CControlPathBuilderBase::find_target_point_set()
 			break;
 	}
 
-	if (m_target_found.node != u32(-1))
+	if(m_target_found.node != u32(-1))
 		return;
 
 	//---------------------------------------------------
@@ -143,7 +143,7 @@ void CControlPathBuilderBase::find_target_point_set()
 void CControlPathBuilderBase::find_target_point_failed()
 {
 	// если новая позиция = позиции монстра - выбрать рандомную валидную позицию
-	for (u32 i = 0; i < pmt_find_random_pos_attempts; i++)
+	for(u32 i = 0; i < pmt_find_random_pos_attempts; i++)
 	{
 		fvec3 pos_random;
 		fvec3 dir;
@@ -152,11 +152,11 @@ void CControlPathBuilderBase::find_target_point_failed()
 		pos_random.mad(m_object->Position(), dir, pmt_find_point_dist);
 		set_target_accessible(m_target_found, pos_random);
 
-		if (!m_target_found.position.similar(m_object->Position(), 0.5f))
+		if(!m_target_found.position.similar(m_object->Position(), 0.5f))
 			break;
 	}
 
-	if (m_target_found.node != u32(-1))
+	if(m_target_found.node != u32(-1))
 		return;
 
 	//---------------------------------------------------
@@ -172,8 +172,8 @@ void CControlPathBuilderBase::find_node()
 																		 m_object->Position(), m_target_found.position);
 	m_man->path_builder().restrictions().remove_border();
 
-	if (ai().level_graph().valid_vertex_id(m_target_found.node) &&
-		m_man->path_builder().accessible(m_target_found.node))
+	if(ai().level_graph().valid_vertex_id(m_target_found.node) &&
+	   m_man->path_builder().accessible(m_target_found.node))
 	{
 		// корректировка позиции
 		m_man->path_builder().fix_position(fvec3().set(m_target_found.position), m_target_found.node,
@@ -182,11 +182,11 @@ void CControlPathBuilderBase::find_node()
 	}
 
 	// искать ноду по прямому запросу
-	if (ai().level_graph().valid_vertex_position(m_target_found.position))
+	if(ai().level_graph().valid_vertex_position(m_target_found.position))
 	{
 		m_target_found.node = ai().level_graph().vertex_id(m_target_found.position);
-		if (ai().level_graph().valid_vertex_id(m_target_found.node) &&
-			m_man->path_builder().accessible(m_target_found.node))
+		if(ai().level_graph().valid_vertex_id(m_target_found.node) &&
+		   m_man->path_builder().accessible(m_target_found.node))
 		{
 			// корректировка позиции
 			m_man->path_builder().fix_position(fvec3().set(m_target_found.position), m_target_found.node,
@@ -196,14 +196,14 @@ void CControlPathBuilderBase::find_node()
 	}
 
 	// находим с помощью каверов
-	if (m_cover_info.use_covers)
+	if(m_cover_info.use_covers)
 	{
 		m_cover_approach->setup(m_target_found.position, m_cover_info.min_dist, m_cover_info.max_dist,
 								m_cover_info.deviation);
 		const CCoverPoint* point =
 			ai().cover_manager().best_cover(m_object->Position(), m_cover_info.radius, *m_cover_approach);
 		// нашли кавер?
-		if (point)
+		if(point)
 		{
 			m_target_found.node = point->m_level_vertex_id;
 			m_target_found.position = point->m_position;

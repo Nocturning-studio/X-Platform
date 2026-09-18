@@ -42,9 +42,9 @@ void CCameraBase::Load(LPCSTR section)
 	bClampPitch = (0 != lim_pitch[0]) || (0 != lim_pitch[1]);
 	bClampYaw = (0 != lim_yaw[0]) || (0 != lim_yaw[1]);
 
-	if (bClampPitch)
+	if(bClampPitch)
 		pitch = (lim_pitch[0] + lim_pitch[1]) * 0.5f;
-	if (bClampYaw)
+	if(bClampYaw)
 		yaw = (lim_yaw[0] + lim_yaw[1]) * 0.5f;
 }
 
@@ -55,7 +55,7 @@ IC float AClamp(fvec2& l, float v)
 
 float CCameraBase::CheckLimYaw()
 {
-	if (bClampYaw)
+	if(bClampYaw)
 	{
 		return AClamp(lim_yaw, yaw);
 	}
@@ -64,7 +64,7 @@ float CCameraBase::CheckLimYaw()
 
 float CCameraBase::CheckLimPitch()
 {
-	if (bClampYaw)
+	if(bClampYaw)
 	{
 		return AClamp(lim_pitch, pitch);
 	}
@@ -73,7 +73,7 @@ float CCameraBase::CheckLimPitch()
 
 float CCameraBase::CheckLimRoll()
 {
-	if (bClampYaw)
+	if(bClampYaw)
 	{
 		return AClamp(lim_roll, roll);
 	}

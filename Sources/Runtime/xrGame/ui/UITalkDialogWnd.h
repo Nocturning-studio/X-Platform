@@ -92,7 +92,7 @@ class CUIQuestionItem : public CUIWindow, public CUIWndCallback
 
   public:
 	CUI3tButton* m_text;
-	//CUIStatic* m_num_text;
+	// CUIStatic* m_num_text;
 	shared_str m_s_value;
 	CUIQuestionItem(CUIXml* xml_doc, LPCSTR path);
 	void Init(LPCSTR val, LPCSTR text);

@@ -19,7 +19,8 @@ namespace RestrictionSpace
 enum ERestrictorTypes;
 };
 
-template <bool add> struct CRestrictionPredicate;
+template <bool add>
+struct CRestrictionPredicate;
 
 class CRestrictedObject
 {

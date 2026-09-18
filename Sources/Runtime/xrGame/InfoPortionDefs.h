@@ -5,8 +5,8 @@
 
 struct INFO_DATA : public IPureSerializeObject<IReader, IWriter>
 {
-	INFO_DATA() : info_id(NULL), receive_time(0){};
-	INFO_DATA(shared_str id, ALife::_TIME_ID time) : info_id(id), receive_time(time){};
+	INFO_DATA() : info_id(NULL), receive_time(0) {};
+	INFO_DATA(shared_str id, ALife::_TIME_ID time) : info_id(id), receive_time(time) {};
 
 	virtual void load(IReader& stream);
 	virtual void save(IWriter&);

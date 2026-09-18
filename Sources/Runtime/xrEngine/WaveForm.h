@@ -23,7 +23,7 @@ struct WaveForm
 
 	IC float Func(float t)
 	{
-		switch (F)
+		switch(F)
 		{
 		case fCONSTANT:
 			return 0;
@@ -63,17 +63,17 @@ struct WaveForm
 
 	IC BOOL Similar(const WaveForm& W) const
 	{
-		if (!fsimilar(arg[0], W.arg[0], EPS_L))
+		if(!fsimilar(arg[0], W.arg[0], EPS_L))
 			return FALSE;
-		if (!fsimilar(arg[1], W.arg[1], EPS_L))
+		if(!fsimilar(arg[1], W.arg[1], EPS_L))
 			return FALSE;
-		if (fis_zero(arg[1], EPS_L))
+		if(fis_zero(arg[1], EPS_L))
 			return TRUE;
-		if (F != W.F)
+		if(F != W.F)
 			return FALSE;
-		if (!fsimilar(arg[2], W.arg[2], EPS_L))
+		if(!fsimilar(arg[2], W.arg[2], EPS_L))
 			return FALSE;
-		if (!fsimilar(arg[3], W.arg[3], EPS_L))
+		if(!fsimilar(arg[3], W.arg[3], EPS_L))
 			return FALSE;
 		return TRUE;
 	}

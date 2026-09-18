@@ -44,7 +44,7 @@ void GAME_NEWS_DATA::load(IReader& stream)
 
 LPCSTR GAME_NEWS_DATA::SingleLineText()
 {
-	if (xr_strlen(full_news_text.c_str()))
+	if(xr_strlen(full_news_text.c_str()))
 		return full_news_text.c_str();
 	string128 time = "";
 

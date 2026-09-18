@@ -20,9 +20,9 @@ CUITextBanner::~CUITextBanner()
 
 EffectParams* CUITextBanner::SetStyleParams(const TextBannerStyles styleName)
 {
-	if (tbsNone == styleName)
+	if(tbsNone == styleName)
 	{
-		if (!m_StyleParams.empty())
+		if(!m_StyleParams.empty())
 			m_StyleParams.clear();
 		return NULL;
 	}
@@ -37,10 +37,10 @@ void CUITextBanner::Update()
 	StyleParams_it it = m_StyleParams.begin();
 
 	// Если анимация включена
-	if (m_bAnimate)
+	if(m_bAnimate)
 	{
-		for (; it != m_StyleParams.end(); ++it)
-			if (it->second.bOn)
+		for(; it != m_StyleParams.end(); ++it)
+			if(it->second.bOn)
 				it->second.fTimePassed += Engine.TimeManager.GetDeltaTime();
 	}
 }
@@ -49,21 +49,21 @@ void CUITextBanner::Update()
 
 void CUITextBanner::Out(float x, float y, const char* fmt, ...)
 {
-	if (!fmt)
+	if(!fmt)
 		return;
 
 	StyleParams_it it = m_StyleParams.begin();
 
 	// Применяем эффекты
-	for (; it != m_StyleParams.end(); ++it)
+	for(; it != m_StyleParams.end(); ++it)
 	{
 		// Fade effect
-		if (it->first & tbsFade)
+		if(it->first & tbsFade)
 		{
 			EffectFade();
 		}
 		// Flicker effect
-		if (it->first & tbsFlicker)
+		if(it->first & tbsFlicker)
 		{
 			EffectFlicker();
 		}
@@ -96,26 +96,26 @@ void CUITextBanner::EffectFade()
 	EffectParams& fade = m_StyleParams[tbsFade];
 
 	// Проверям включена ли анимация
-	if (!fade.bOn)
+	if(!fade.bOn)
 		return;
 
 	// Если пришло время сменить направление фейда
-	if (fade.fTimePassed > fade.fPeriod)
+	if(fade.fTimePassed > fade.fPeriod)
 	{
-		if (!fade.bCyclic)
+		if(!fade.bCyclic)
 		{
 			fade.bOn = false;
 			return;
 		}
 
-		if (0 == fade.iEffectStage)
+		if(0 == fade.iEffectStage)
 			fade.iEffectStage = 1;
 		else
 			fade.iEffectStage = 0;
 		fade.fTimePassed = 0;
 	}
 
-	if (fade.iEffectStage)
+	if(fade.iEffectStage)
 	{
 		m_Cl = subst_alpha(GetTextColor(), u8(iFloor(255.f * (fade.fTimePassed / fade.fPeriod))));
 	}
@@ -132,26 +132,26 @@ void CUITextBanner::EffectFlicker()
 	EffectParams& flicker = m_StyleParams[tbsFlicker];
 
 	// Проверям включена ли анимация
-	if (!flicker.bOn)
+	if(!flicker.bOn)
 		return;
 
 	// Если пришло время, показать/спрятать надпись
-	if (flicker.fTimePassed > flicker.fPeriod)
+	if(flicker.fTimePassed > flicker.fPeriod)
 	{
-		if (!flicker.bCyclic)
+		if(!flicker.bCyclic)
 		{
 			flicker.bOn = false;
 			return;
 		}
 
-		if (0 == flicker.iEffectStage)
+		if(0 == flicker.iEffectStage)
 			flicker.iEffectStage = 1;
 		else
 			flicker.iEffectStage = 0;
 		flicker.fTimePassed = 0;
 	}
 
-	if (flicker.iEffectStage)
+	if(flicker.iEffectStage)
 	{
 		m_Cl = subst_alpha(GetTextColor(), 0);
 	}

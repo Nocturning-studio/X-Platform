@@ -8,8 +8,9 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _edge_type, bool bEuclidianHeuristics> template <template <typename _T> class _vertex>
+#define TEMPLATE_SPECIALIZATION                               \
+	template <typename _edge_type, bool bEuclidianHeuristics> \
+	template <template <typename _T> class _vertex>
 
 #define CEdgePathBuilder CEdgePath<_edge_type, bEuclidianHeuristics>::CDataStorage<_vertex>
 
@@ -42,7 +43,7 @@ IC void CEdgePathBuilder::get_edge_path(xr_vector<_edge_type>& path, CGraphVerte
 	CGraphVertex *t1 = best, *t2 = best->back();
 
 	u32 i = 1;
-	for (; t2; t1 = t2, t2 = t2->back(), ++i)
+	for(; t2; t1 = t2, t2 = t2->back(), ++i)
 		;
 
 	u32 n = (u32)path.size();
@@ -50,17 +51,17 @@ IC void CEdgePathBuilder::get_edge_path(xr_vector<_edge_type>& path, CGraphVerte
 	path.resize(n + --i);
 	t2 = best;
 
-	if (!reverse_order)
+	if(!reverse_order)
 	{
 		xr_vector<_edge_type>::reverse_iterator I = path.rbegin();
 		xr_vector<_edge_type>::reverse_iterator E = path.rend();
-		for (; t2->back(); t2 = t2->back(), ++I)
+		for(; t2->back(); t2 = t2->back(), ++I)
 			*I = t2->edge();
 	}
 	else
 	{
 		xr_vector<_edge_type>::iterator I = path.begin() + n;
-		for (; t2->back(); t2 = t2->back(), ++I)
+		for(; t2->back(); t2 = t2->back(), ++I)
 			*I = t2->edge();
 	}
 }

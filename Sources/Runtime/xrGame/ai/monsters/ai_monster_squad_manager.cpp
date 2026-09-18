@@ -13,11 +13,11 @@ CMonsterSquadManager::CMonsterSquadManager()
 }
 CMonsterSquadManager::~CMonsterSquadManager()
 {
-	for (u32 team_id = 0; team_id < team.size(); team_id++)
+	for(u32 team_id = 0; team_id < team.size(); team_id++)
 	{
-		for (u32 squad_id = 0; squad_id < team[team_id].size(); squad_id++)
+		for(u32 squad_id = 0; squad_id < team[team_id].size(); squad_id++)
 		{
-			for (u32 group_id = 0; group_id < team[team_id][squad_id].size(); group_id++)
+			for(u32 group_id = 0; group_id < team[team_id][squad_id].size(); group_id++)
 			{
 				xr_delete(team[team_id][squad_id][group_id]);
 			}
@@ -30,13 +30,13 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 	CMonsterSquad* pSquad;
 
 	// нет team - создать team, squad и group
-	if (team_id >= team.size())
+	if(team_id >= team.size())
 	{
 		team.resize(team_id + 1);
 		team[team_id].resize(squad_id + 1);
 		team[team_id][squad_id].resize(group_id + 1);
 
-		for (u32 i = 0; i < group_id; i++)
+		for(u32 i = 0; i < group_id; i++)
 			team[team_id][squad_id][i] = 0;
 
 		pSquad = xr_new<CMonsterSquad>();
@@ -44,13 +44,13 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 
 		// есть team, нет squad - создать squad
 	}
-	else if (squad_id >= team[team_id].size())
+	else if(squad_id >= team[team_id].size())
 	{
 
 		team[team_id].resize(squad_id + 1);
 		team[team_id][squad_id].resize(group_id + 1);
 
-		for (u32 i = 0; i < group_id; i++)
+		for(u32 i = 0; i < group_id; i++)
 			team[team_id][squad_id][i] = 0;
 
 		pSquad = xr_new<CMonsterSquad>();
@@ -58,13 +58,13 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 
 		// есть team, squad, нет group
 	}
-	else if (group_id >= team[team_id][squad_id].size())
+	else if(group_id >= team[team_id][squad_id].size())
 	{
 
 		u32 prev_size = team[team_id][squad_id].size();
 		team[team_id][squad_id].resize(group_id + 1);
 
-		for (u32 i = prev_size; i < group_id; i++)
+		for(u32 i = prev_size; i < group_id; i++)
 			team[team_id][squad_id][i] = 0;
 
 		pSquad = xr_new<CMonsterSquad>();
@@ -72,7 +72,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
 	}
 	else
 	{
-		if (team[team_id][squad_id][group_id] == 0)
+		if(team[team_id][squad_id][group_id] == 0)
 		{
 			pSquad = xr_new<CMonsterSquad>();
 			team[team_id][squad_id][group_id] = pSquad;
@@ -105,10 +105,10 @@ CMonsterSquad* CMonsterSquadManager::get_squad(const CEntity* entity)
 
 void CMonsterSquadManager::update(CEntity* entity)
 {
-	//OPTICK_EVENT("CMonsterSquadManager::update");
+	// OPTICK_EVENT("CMonsterSquadManager::update");
 
 	CMonsterSquad* squad = monster_squad().get_squad(entity);
-	if (squad && squad->SquadActive() && (squad->GetLeader() == entity))
+	if(squad && squad->SquadActive() && (squad->GetLeader() == entity))
 	{
 		squad->UpdateSquadCommands();
 	}
@@ -116,14 +116,14 @@ void CMonsterSquadManager::update(CEntity* entity)
 
 void CMonsterSquadManager::remove_links(CObject* O)
 {
-	for (u32 team_id = 0; team_id < team.size(); team_id++)
+	for(u32 team_id = 0; team_id < team.size(); team_id++)
 	{
-		for (u32 squad_id = 0; squad_id < team[team_id].size(); squad_id++)
+		for(u32 squad_id = 0; squad_id < team[team_id].size(); squad_id++)
 		{
-			for (u32 group_id = 0; group_id < team[team_id][squad_id].size(); group_id++)
+			for(u32 group_id = 0; group_id < team[team_id][squad_id].size(); group_id++)
 			{
 				CMonsterSquad* squad = team[team_id][squad_id][group_id];
-				if (squad)
+				if(squad)
 					squad->remove_links(O);
 			}
 		}

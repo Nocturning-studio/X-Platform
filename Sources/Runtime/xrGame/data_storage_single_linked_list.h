@@ -8,12 +8,15 @@
 
 #pragma once
 
-template <bool sorted = false> struct CDataStorageSingleLinkedList
+template <bool sorted = false>
+struct CDataStorageSingleLinkedList
 {
 
-	template <template <typename _T> class T1> struct SingleLinkedList
+	template <template <typename _T> class T1>
+	struct SingleLinkedList
 	{
-		template <typename T2> struct _vertex : public T1<T2>
+		template <typename T2>
+		struct _vertex : public T1<T2>
 		{
 			T2* _next;
 

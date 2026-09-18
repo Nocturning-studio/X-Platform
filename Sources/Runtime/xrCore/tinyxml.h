@@ -338,7 +338,7 @@ class TiXmlBase
 	}
 	inline static bool IsWhiteSpace(int c)
 	{
-		if (c < 256)
+		if(c < 256)
 			return IsWhiteSpace((char)c);
 		return false; // Again, only truly correct for English/Latin...but usually works.
 	}
@@ -372,7 +372,7 @@ class TiXmlBase
 	inline static const char* GetChar(const char* p, char* _value, int* length, TiXmlEncoding encoding)
 	{
 		assert(p);
-		if (encoding == TIXML_ENCODING_UTF8)
+		if(encoding == TIXML_ENCODING_UTF8)
 		{
 			*length = utf8ByteTable[*((const unsigned char*)p)];
 			assert(*length >= 0 && *length < 5);
@@ -382,18 +382,18 @@ class TiXmlBase
 			*length = 1;
 		}
 
-		if (*length == 1)
+		if(*length == 1)
 		{
-			if (*p == '&')
+			if(*p == '&')
 				return GetEntity(p, _value, length, encoding);
 			*_value = *p;
 			return p + 1;
 		}
-		else if (*length)
+		else if(*length)
 		{
 			// strncpy( _value, p, *length );	// lots of compilers don't like this function (unsafe),
 			//  and the null terminator isn't needed
-			for (int i = 0; p[i] && i < *length; ++i)
+			for(int i = 0; p[i] && i < *length; ++i)
 			{
 				_value[i] = p[i];
 			}
@@ -428,9 +428,9 @@ class TiXmlBase
 	static int IsAlphaNum(unsigned char anyByte, TiXmlEncoding encoding);
 	inline static int ToLower(int v, TiXmlEncoding encoding)
 	{
-		if (encoding == TIXML_ENCODING_UTF8)
+		if(encoding == TIXML_ENCODING_UTF8)
 		{
-			if (v < 128)
+			if(v < 128)
 				return tolower(v);
 			return v;
 		}
@@ -1225,7 +1225,7 @@ class TiXmlElement : public TiXmlNode
 	{
 		double d;
 		int result = QueryDoubleAttribute(name, &d);
-		if (result == TIXML_SUCCESS)
+		if(result == TIXML_SUCCESS)
 		{
 			*_value = (float)d;
 		}
@@ -1238,15 +1238,16 @@ class TiXmlElement : public TiXmlNode
 
 		@return TIXML_SUCCESS, TIXML_WRONG_TYPE, or TIXML_NO_ATTRIBUTE
 	*/
-	template <typename T> int QueryValueAttribute(const xr_string& name, T* outValue) const
+	template <typename T>
+	int QueryValueAttribute(const xr_string& name, T* outValue) const
 	{
 		const TiXmlAttribute* node = attributeSet.Find(name);
-		if (!node)
+		if(!node)
 			return TIXML_NO_ATTRIBUTE;
 
 		std::stringstream sstream(node->ValueStr());
 		sstream >> *outValue;
-		if (!sstream.fail())
+		if(!sstream.fail())
 			return TIXML_SUCCESS;
 		return TIXML_WRONG_TYPE;
 	}
@@ -2179,7 +2180,7 @@ class TiXmlPrinter : public TiXmlVisitor
   private:
 	void DoIndent()
 	{
-		for (int i = 0; i < depth; ++i)
+		for(int i = 0; i < depth; ++i)
 			buffer += indent;
 	}
 	void DoLineBreak()

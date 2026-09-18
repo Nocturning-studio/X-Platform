@@ -10,7 +10,7 @@
 
 IC CStalkerAnimationDataStorage& stalker_animation_data_storage()
 {
-	if (g_stalker_animation_data_storage)
+	if(g_stalker_animation_data_storage)
 		return (*g_stalker_animation_data_storage);
 
 	g_stalker_animation_data_storage = xr_new<CStalkerAnimationDataStorage>();

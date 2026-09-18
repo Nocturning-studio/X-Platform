@@ -9,7 +9,7 @@
 
 void CUIRadioButton::Init(float x, float y, float width, float height)
 {
-	if (!m_pLines)
+	if(!m_pLines)
 		m_pLines = xr_new<CUILines>();
 	m_pLines->SetTextAlignment(CGameFont::alLeft);
 	CUI3tButton::InitTexture("ui_radio");

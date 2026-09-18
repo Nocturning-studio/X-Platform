@@ -128,21 +128,21 @@ void FTreeVisual::Render(float LOD)
 	PROFILE_FUNCTION();
 
 	static FTreeVisual_setup tvs;
-	if (tvs.dwFrame != Engine.TimeManager.GetFrameCount())
+	if(tvs.dwFrame != Engine.TimeManager.GetFrameCount())
 		tvs.calculate();
 	// setup constants
 	fmat4x4 transform_v;
 	transform_v.mul_43(RenderBackend.get_transform_view(), transform);
 	RenderBackend.set_Constant(m_transform_v, transform_v); // matrix
 	float s = ps_r_Tree_SBC;
-	RenderBackend.set_Constant(m_transform, transform);						// matrix
+	RenderBackend.set_Constant(m_transform, transform);				  // matrix
 	RenderBackend.set_Constant(c_consts, tvs.scale, tvs.scale, 0, 0); // consts/scale
-	RenderBackend.set_Constant(c_wave, tvs.wave);						// wave
-	RenderBackend.set_Constant(c_wind, tvs.wind);						// wind
+	RenderBackend.set_Constant(c_wave, tvs.wave);					  // wave
+	RenderBackend.set_Constant(c_wind, tvs.wind);					  // wind
 	s *= 1.3333f;
 	RenderBackend.set_Constant(c_c_scale, s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi); // scale
-	RenderBackend.set_Constant(c_c_bias, s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);		// bias
-	RenderBackend.set_Constant(c_c_sun, s * c_scale.sun, s * c_bias.sun, 0, 0); // sun
+	RenderBackend.set_Constant(c_c_bias, s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);	  // bias
+	RenderBackend.set_Constant(c_c_sun, s * c_scale.sun, s * c_bias.sun, 0, 0);										  // sun
 }
 
 #define PCOPY(a) a = pFrom->a
@@ -155,14 +155,14 @@ void FTreeVisual::Copy(IRender_Visual* pSrc)
 	PCOPY(rm_geom);
 
 	PCOPY(p_rm_Vertices);
-	if (p_rm_Vertices)
+	if(p_rm_Vertices)
 		p_rm_Vertices->AddRef();
 
 	PCOPY(vBase);
 	PCOPY(vCount);
 
 	PCOPY(p_rm_Indices);
-	if (p_rm_Indices)
+	if(p_rm_Indices)
 		p_rm_Indices->AddRef();
 
 	PCOPY(iBase);
@@ -235,7 +235,7 @@ void FTreeVisual_PM::Render(float LOD)
 
 	inherited::Render(LOD);
 	int lod_id = last_lod;
-	if (LOD >= 0.f)
+	if(LOD >= 0.f)
 	{
 		lod_id = iFloor((1.f - LOD) * float(pSWI->count - 1) + 0.5f);
 		last_lod = lod_id;

@@ -24,7 +24,7 @@ void IGame_ObjectPool::prefetch()
 	// prefetch objects
 	strconcat(sizeof(section), section, "prefetch_objects_", g_pGamePersistent->m_game_params.m_game_type);
 	CInifile::Sect& sect = pSettings->r_section(section);
-	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+	for(CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 	{
 		const CInifile::Item& item = *I;
 		CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
@@ -44,7 +44,7 @@ void IGame_ObjectPool::clear()
 	// Clear POOL
 	ObjectVecIt it = m_PrefetchObjects.begin();
 	ObjectVecIt itE = m_PrefetchObjects.end();
-	for (; it != itE; it++)
+	for(; it != itE; it++)
 		xr_delete(*it);
 	m_PrefetchObjects.clear();
 }

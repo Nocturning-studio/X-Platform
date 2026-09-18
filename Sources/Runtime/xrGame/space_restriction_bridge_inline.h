@@ -40,11 +40,11 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 
 	// --- PHASE 1: Грубый поиск по границе ---
 	// Используем range-based for для чистоты и скорости
-	for (u32 vertex_id : border_list)
+	for(u32 vertex_id : border_list)
 	{
 		// vertex_position обычно возвращает значение, а не ссылку, но это легковесный fvec3
 		float distance_sqr = level_graph.vertex_position(vertex_id).distance_to_sqr(position);
-		if (distance_sqr < min_dist_sqr)
+		if(distance_sqr < min_dist_sqr)
 		{
 			min_dist_sqr = distance_sqr;
 			selected = vertex_id;
@@ -60,28 +60,28 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 		CLevelGraph::const_iterator I, E;
 		level_graph.begin(selected, I, E);
 
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			u32 current = level_graph.value(selected, I);
 
-			if (!level_graph.valid_vertex_id(current))
+			if(!level_graph.valid_vertex_id(current))
 				continue;
 
 			// Проверка ограничения
 			// Логика: если мы внутри, нам нужны соседи снаружи, и наоборот.
 			// restriction->inside возвращает bool.
-			if (restriction->inside(current, !out_restriction) != out_restriction)
+			if(restriction->inside(current, !out_restriction) != out_restriction)
 				continue;
 
 			float distance_sqr = level_graph.vertex_position(current).distance_to_sqr(position);
-			if (distance_sqr < current_min_dist)
+			if(distance_sqr < current_min_dist)
 			{
 				current_min_dist = distance_sqr;
 				new_selected = current;
 			}
 		}
 		// Если нашли лучшего соседа, обновляем selected
-		if (new_selected != u32(-1))
+		if(new_selected != u32(-1))
 			selected = new_selected;
 	}
 	VERIFY(level_graph.valid_vertex_id(selected));
@@ -102,7 +102,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 		bool found = false;
 
 		// 1. Проверяем 4 угла
-		for (int i = 0; i < 4; ++i)
+		for(int i = 0; i < 4; ++i)
 		{
 			fvec3 pt;
 			pt.x = center.x + offsets_x[i];
@@ -112,7 +112,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 
 			// Быстрая проверка расстояния без sqrt
 			float dist_sqr = pt.distance_to_sqr(position);
-			if (dist_sqr < min_dist_sqr)
+			if(dist_sqr < min_dist_sqr)
 			{
 				// Дорогие проверки делаем ТОЛЬКО если точка ближе текущего минимума
 				// В оригинале VERIFY выполнялись всегда, в Release их нет, но логика осталась бы
@@ -127,7 +127,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 		{
 			// center.y уже корректен из vertex_position
 			float dist_sqr = center.distance_to_sqr(position);
-			if (dist_sqr < min_dist_sqr)
+			if(dist_sqr < min_dist_sqr)
 			{
 				min_dist_sqr = dist_sqr;
 				result = center;
@@ -138,7 +138,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(T& restriction, const fvec3& 
 #ifdef DEBUG
 		// Оставляем проверки для дебага, но только для финального результата,
 		// чтобы не тормозить цикл поиска
-		if (found)
+		if(found)
 		{
 			// Проверки немного избыточны для релиза, но важны для отладки AI
 			// VERIFY(level_graph.inside(selected, result)); // Может давать false из-за EPS

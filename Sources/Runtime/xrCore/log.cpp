@@ -19,9 +19,9 @@ void FlushLog(LPCSTR file_name)
 	logCS.Enter();
 
 	IWriter* f = FS.w_open(file_name);
-	if (f)
+	if(f)
 	{
-		for (u32 it = 0; it < LogFile->size(); it++)
+		for(u32 it = 0; it < LogFile->size(); it++)
 		{
 			LPCSTR s = *((*LogFile)[it]);
 			f->w_string(s ? s : "");
@@ -39,13 +39,13 @@ void FlushLog()
 
 void AddOne(const char* split)
 {
-	if (!LogFile)
+	if(!LogFile)
 		return;
 
 	logCS.Enter();
 
 	// #ifdef DEBUG
-	if (IsDebuggerPresent())
+	if(IsDebuggerPresent())
 	{
 		OutputDebugString(split);
 		OutputDebugString("\n");
@@ -60,7 +60,7 @@ void AddOne(const char* split)
 	}
 
 	// exec CallBack
-	if (LogCB)
+	if(LogCB)
 		LogCB(split);
 
 	logCS.Leave();
@@ -72,12 +72,12 @@ void Log(const char* s)
 	char split[1024];
 	const size_t max_len = sizeof(split) - 1;
 
-	for (i = 0, j = 0; s[i] != 0; i++)
+	for(i = 0, j = 0; s[i] != 0; i++)
 	{
-		if (s[i] == '\n')
+		if(s[i] == '\n')
 		{
 			split[j] = 0;
-			if (split[0] == 0)
+			if(split[0] == 0)
 			{
 				split[0] = ' ';
 				split[1] = 0;
@@ -87,11 +87,11 @@ void Log(const char* s)
 		}
 		else
 		{
-			if (j < max_len)
+			if(j < max_len)
 				split[j++] = s[i];
 		}
 	}
-	if (j > 0)
+	if(j > 0)
 	{
 		split[j] = 0;
 		AddOne(split);
@@ -108,7 +108,7 @@ void Msg(const char* format, ...)
 	buf.resize(4096);
 	int sz = _vsnprintf_s(&buf[0], buf.size(), _TRUNCATE, format, mark);
 	va_end(mark);
-	if (sz > 0)
+	if(sz > 0)
 		Log(buf.c_str());
 }
 
@@ -121,7 +121,7 @@ void DbgMsg(const char* format, ...)
 	buf.resize(4096);
 	int sz = _vsnprintf_s(&buf[0], buf.size(), _TRUNCATE, format, mark);
 	va_end(mark);
-	if (sz > 0)
+	if(sz > 0)
 		Log(buf.c_str());
 #endif
 }
@@ -130,7 +130,7 @@ void Log(const char* msg, const char* dop)
 {
 	char buf[1024];
 
-	if (dop)
+	if(dop)
 		sprintf_s(buf, sizeof(buf), "%s %s", msg, dop);
 	else
 		sprintf_s(buf, sizeof(buf), "%s", msg);
@@ -205,11 +205,11 @@ void CreateLog(BOOL nl)
 {
 	strconcat(sizeof(logFName), logFName, Core.ApplicationNameLog, ".log");
 
-	if (FS.path_exist("$logs$"))
+	if(FS.path_exist("$logs$"))
 		FS.update_path(logFName, "$logs$", logFName);
 
 	IWriter* f = FS.w_open(logFName);
-	if (f == NULL)
+	if(f == NULL)
 	{
 		MessageBox(NULL, "Can't create log file.", "Error", MB_ICONERROR);
 		abort();

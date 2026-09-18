@@ -20,7 +20,7 @@ class CBlender_bent_normals : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case 0:
 			C.begin_Pass("screen_quad", "bent_normals_stage");

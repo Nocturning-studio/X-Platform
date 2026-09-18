@@ -15,7 +15,7 @@ void CRender::downsample_scene_luminance()
 	RenderBackend.RenderViewportSurface(MipChain);
 
 	// Генерируем остальные mip-уровни
-	for (u32 i = 1; i < MipChain->get_levels_count(); i++)
+	for(u32 i = 1; i < MipChain->get_levels_count(); i++)
 	{
 		// Устанавливаем шейдер
 		RenderBackend.set_Element(RenderTarget->s_autoexposure->E[SE_PASS_AUTOEXPOSURE_GENERATE_MIP_CHAIN], 1);

@@ -58,7 +58,7 @@ void CBaseAction::setup(_object_type* object, CPropertyStorage* storage)
 	m_inertia_time = 0;
 #ifdef LOG_ACTION
 	m_switched = false;
-	if (m_use_log && xr_strlen(m_action_name))
+	if(m_use_log && xr_strlen(m_action_name))
 		debug_log(eActionStateSetup);
 #endif
 }
@@ -69,7 +69,7 @@ void CBaseAction::initialize()
 #ifdef LOG_ACTION
 	VERIFY3(!m_switched, m_action_name, "::initialize()");
 	m_switched = true;
-	if (m_use_log && xr_strlen(m_action_name))
+	if(m_use_log && xr_strlen(m_action_name))
 		debug_log(eActionStateInitialized);
 #endif
 	m_start_level_time = Engine.TimeManager.GetGlobalTimeMs();
@@ -81,7 +81,7 @@ void CBaseAction::execute()
 {
 	m_first_time = false;
 #ifdef LOG_ACTION
-	if (m_use_log && xr_strlen(m_action_name) && m_switched)
+	if(m_use_log && xr_strlen(m_action_name) && m_switched)
 		debug_log(eActionStateExecuted);
 	m_switched = false;
 #endif
@@ -92,7 +92,7 @@ void CBaseAction::finalize()
 {
 #ifdef LOG_ACTION
 	VERIFY3(!m_switched, m_action_name, "::finalize()");
-	if (m_use_log && xr_strlen(m_action_name))
+	if(m_use_log && xr_strlen(m_action_name))
 		debug_log(eActionStateFinalized);
 #endif
 }
@@ -125,25 +125,30 @@ IC void CBaseAction::set_inertia_time(u32 inertia_time)
 TEMPLATE_SPECIALIZATION
 IC void CBaseAction::debug_log(const EActionStates state_state) const
 {
-	switch (state_state)
+	switch(state_state)
 	{
-	case eActionStateConstructed: {
+	case eActionStateConstructed:
+	{
 		Msg("[%6d] action %s is constructed", Engine.TimeManager.GetGlobalTimeMs(), m_action_name);
 		break;
 	}
-	case eActionStateSetup: {
+	case eActionStateSetup:
+	{
 		Msg("[%6d] action %s is setup", Engine.TimeManager.GetGlobalTimeMs(), m_action_name);
 		break;
 	}
-	case eActionStateInitialized: {
+	case eActionStateInitialized:
+	{
 		Msg("[%6d] action %s is initialized", Engine.TimeManager.GetGlobalTimeMs(), m_action_name);
 		break;
 	}
-	case eActionStateExecuted: {
+	case eActionStateExecuted:
+	{
 		Msg("[%6d] action %s is executed", Engine.TimeManager.GetGlobalTimeMs(), m_action_name);
 		break;
 	}
-	case eActionStateFinalized: {
+	case eActionStateFinalized:
+	{
 		Msg("[%6d] action %s is finalized", Engine.TimeManager.GetGlobalTimeMs(), m_action_name);
 		break;
 	}
@@ -184,7 +189,7 @@ typename CBaseAction::_edge_value_type CBaseAction::weight(const CSConditionStat
 														   const CSConditionState& condition1) const
 {
 	_edge_value_type _min_weight = min_weight();
-	if (m_weight < _min_weight)
+	if(m_weight < _min_weight)
 		m_weight = _min_weight;
 	return (m_weight);
 }

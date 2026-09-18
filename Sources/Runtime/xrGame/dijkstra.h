@@ -16,19 +16,17 @@ template <
 	bool euclidian_heuristics = true, typename _data_storage_base = CVertexPath<euclidian_heuristics>,
 	template <typename _T> class _vertex = CEmptyClassTemplate,
 	template <typename _1, typename _2> class _builder_allocator_constructor = CBuilderAllocatorConstructor,
-	template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4>
-	class _manager_builder_allocator_constructor = CManagerBuilderAllocatorConstructor,
+	template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> class _manager_builder_allocator_constructor = CManagerBuilderAllocatorConstructor,
 	template <typename _algorithm, typename _manager, typename _builder, typename _allocator,
 			  template <typename _T> class _vertex,
 			  template <typename _1, typename _2> class _builder_allocator_constructor = CBuilderAllocatorConstructor,
-			  template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4>
-			  class _manager_builder_allocator_constructor = CManagerBuilderAllocatorConstructor>
-	class _data_storage_constructor = CDataStorageConstructor,
+			  template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> class _manager_builder_allocator_constructor = CManagerBuilderAllocatorConstructor> class _data_storage_constructor = CDataStorageConstructor,
 	typename _iteration_type = u32>
 class CDijkstra
 {
   public:
-	template <typename T1> struct _Vertex : public _vertex<T1>
+	template <typename T1>
+	struct _Vertex : public _vertex<T1>
 	{
 		typedef _dist_type _dist_type;
 
@@ -65,14 +63,18 @@ class CDijkstra
 	CDataStorage* m_data_storage;
 
   protected:
-	template <typename _PathManager> IC void initialize(_PathManager& path_manager);
-	template <typename _PathManager> IC bool step(_PathManager& path_manager);
-	template <typename _PathManager> IC void finalize(_PathManager& path_manager);
+	template <typename _PathManager>
+	IC void initialize(_PathManager& path_manager);
+	template <typename _PathManager>
+	IC bool step(_PathManager& path_manager);
+	template <typename _PathManager>
+	IC void finalize(_PathManager& path_manager);
 
   public:
 	IC CDijkstra(const u32 max_vertex_count);
 	virtual ~CDijkstra();
-	template <typename _PathManager> IC bool find(_PathManager& path_manager);
+	template <typename _PathManager>
+	IC bool find(_PathManager& path_manager);
 	IC CDataStorage& data_storage();
 	IC const CDataStorage& data_storage() const;
 };

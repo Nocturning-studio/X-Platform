@@ -18,7 +18,7 @@ CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes sound_type)
 	m_caSoundToPlay = caSoundName;
 	string_path l_caFileName;
 	VERIFY(::Sound);
-	if (FS.exist(l_caFileName, "$game_sounds$", caSoundName, ".ogg"))
+	if(FS.exist(l_caFileName, "$game_sounds$", caSoundName, ".ogg"))
 		m_sound.create(caSoundName, st_Effect, sound_type);
 	else
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "File not found \"%s\"!", l_caFileName);
@@ -35,7 +35,7 @@ fvec3 CScriptSound::GetPosition() const
 {
 	VERIFY(m_sound._handle());
 	const CSound_params* l_tpSoundParams = m_sound.get_params();
-	if (l_tpSoundParams)
+	if(l_tpSoundParams)
 		return (l_tpSoundParams->position);
 	else
 	{

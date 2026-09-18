@@ -77,7 +77,7 @@ void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
 
 	// sound
 	m_name = pIni.r_string(sect, "sound");
-	if (m_name && m_name[0])
+	if(m_name && m_name[0])
 		snd.create(m_name, st_Effect, sg_Undefined);
 }
 
@@ -92,16 +92,16 @@ void SThunderboltCollection::load(CInifile* pIni, CInifile* thunderbolts, LPCSTR
 {
 	section = sect;
 	int tb_count = pIni->line_count(sect);
-	for (int tb_idx = 0; tb_idx < tb_count; tb_idx++)
+	for(int tb_idx = 0; tb_idx < tb_count; tb_idx++)
 	{
 		LPCSTR N, V;
-		if (pIni->r_line(sect, tb_idx, &N, &V))
+		if(pIni->r_line(sect, tb_idx, &N, &V))
 			palette.push_back(g_pGamePersistent->Environment().thunderbolt_description(*thunderbolts, N));
 	}
 }
 SThunderboltCollection::~SThunderboltCollection()
 {
-	for (DescIt d_it = palette.begin(); d_it != palette.end(); d_it++)
+	for(DescIt d_it = palette.begin(); d_it != palette.end(); d_it++)
 		xr_delete(*d_it);
 
 	palette.clear();
@@ -125,7 +125,7 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
 
 CEffect_Thunderbolt::~CEffect_Thunderbolt()
 {
-	for (CollectionVecIt d_it = collection.begin(); d_it != collection.end(); d_it++)
+	for(CollectionVecIt d_it = collection.begin(); d_it != collection.end(); d_it++)
 		xr_delete(*d_it);
 	collection.clear();
 	hGeom_model.destroy();
@@ -135,10 +135,10 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
 shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts,
 										  LPCSTR sect)
 {
-	if (!sect || (0 == sect[0]))
+	if(!sect || (0 == sect[0]))
 		return "";
-	for (CollectionVecIt it = collection.begin(); it != collection.end(); it++)
-		if ((*it)->section == sect)
+	for(CollectionVecIt it = collection.begin(); it != collection.end(); it++)
+		if((*it)->section == sect)
 			return (*it)->section;
 	collection.push_back(environment.thunderbolt_collection(pIni, thunderbolts, sect));
 	return collection.back()->section;
@@ -153,7 +153,7 @@ BOOL CEffect_Thunderbolt::RayPick(const fvec3& s, const fvec3& d, float& dist)
 	collide::rq_result RQ;
 	CObject* E = g_pGameLevel->CurrentViewEntity();
 	bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, dist, collide::rqtBoth, RQ, E);
-	if (bRes)
+	if(bRes)
 		dist = RQ.range;
 	else
 	{
@@ -162,7 +162,7 @@ BOOL CEffect_Thunderbolt::RayPick(const fvec3& s, const fvec3& d, float& dist)
 		Fplane PL;
 		PL.build(P, N);
 		float dst = dist;
-		if (PL.intersectRayDist(s, d, dst) && (dst <= dist))
+		if(PL.intersectRayDist(s, d, dst) && (dst <= dist))
 		{
 			dist = dst;
 			return true;
@@ -213,7 +213,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 
 	float next_v = Random.randF();
 
-	if (next_v < environment.p_second_prop)
+	if(next_v < environment.p_second_prop)
 	{
 		next_lightning_time = Engine.TimeManager.GetGlobalTime() + lt + EPS_L;
 	}
@@ -229,19 +229,19 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 {
 	BOOL enabled = !!(id.size());
-	if (bEnabled != enabled)
+	if(bEnabled != enabled)
 	{
 		bEnabled = enabled;
 		next_lightning_time = Engine.TimeManager.GetGlobalTime() + period + Random.randF(-period * 0.5f, period * 0.5f);
 	}
-	else if (bEnabled && (Engine.TimeManager.GetGlobalTime() > next_lightning_time))
+	else if(bEnabled && (Engine.TimeManager.GetGlobalTime() > next_lightning_time))
 	{
-		if (state == stIdle && !!(id.size()))
+		if(state == stIdle && !!(id.size()))
 			Bolt(id, period, duration);
 	}
-	if (state == stWorking)
+	if(state == stWorking)
 	{
-		if (current_time > life_time)
+		if(current_time > life_time)
 			state = stIdle;
 		current_time += Engine.TimeManager.GetDeltaTime();
 		fvec3 fClr;
@@ -267,15 +267,15 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 		R_ASSERT(_valid(current_direction));
 		g_pGamePersistent->Environment().CurrentEnv->sun_dir = current_direction;
 		VERIFY2(g_pGamePersistent->Environment().CurrentEnv->sun_dir.y < 0,
-					"Invalid sun direction settings while CEffect_Thunderbolt");
+				"Invalid sun direction settings while CEffect_Thunderbolt");
 	}
 }
 
 void CEffect_Thunderbolt::Render()
 {
-	//OPTICK_EVENT("CEffect_Thunderbolt::Render");
+	// OPTICK_EVENT("CEffect_Thunderbolt::Render");
 
-	if (state == stWorking)
+	if(state == stWorking)
 	{
 		VERIFY(current);
 

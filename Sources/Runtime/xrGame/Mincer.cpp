@@ -22,18 +22,18 @@ CMincer::~CMincer(void)
 }
 void CMincer::OnStateSwitch(EZoneState new_state)
 {
-	if (m_eZoneState != eZoneStateBlowout && new_state == eZoneStateBlowout)
+	if(m_eZoneState != eZoneStateBlowout && new_state == eZoneStateBlowout)
 	{
 		OBJECT_INFO_VEC_IT it;
-		for (it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
+		for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		{
 			CPhysicsShellHolder* GO = smart_cast<CPhysicsShellHolder*>((*it).object);
-			if (GO)
+			if(GO)
 				Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
 		}
 	}
 
-	if (m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
+	if(m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
 	{
 		Telekinesis().clear_deactivate();
 	}
@@ -72,7 +72,7 @@ void CMincer::feel_touch_new(CObject* O)
 {
 
 	inherited::feel_touch_new(O);
-	if (m_eZoneState == eZoneStateBlowout && (m_dwBlowoutExplosionTime > (u32)m_iStateTime))
+	if(m_eZoneState == eZoneStateBlowout && (m_dwBlowoutExplosionTime > (u32)m_iStateTime))
 	{
 		CPhysicsShellHolder* GO = smart_cast<CPhysicsShellHolder*>(O);
 		Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
@@ -101,7 +101,7 @@ bool CMincer::BlowoutState()
 
 	//}
 
-	if (m_dwBlowoutExplosionTime < (u32)m_iPreviousStateTime || m_dwBlowoutExplosionTime >= (u32)m_iStateTime)
+	if(m_dwBlowoutExplosionTime < (u32)m_iPreviousStateTime || m_dwBlowoutExplosionTime >= (u32)m_iStateTime)
 		return ret;
 	Telekinesis().deactivate();
 	return ret;
@@ -127,7 +127,7 @@ void CMincer::NotificateDestroy(CPHDestroyableNotificate* dn)
 	CPhysicsShellHolder* obj = dn->PPhysicsShellHolder();
 	m_telekinetics.draw_out_impact(dir, impulse);
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(obj);
-	if (PP && *m_torn_particles)
+	if(PP && *m_torn_particles)
 	{
 		PP->StartParticles(m_torn_particles, fvec3().set(0, 1, 0), ID());
 	}
@@ -144,7 +144,7 @@ void CMincer::AffectPullAlife(CEntityAlive* EA, const fvec3& throw_in_dir, float
 	float power = Power(dist);
 	// fvec3 dir;
 	// dir.random_dir(throw_in_dir,2.f*PI);
-	if (EA->CLS_ID != CLSID_OBJECT_ACTOR)
+	if(EA->CLS_ID != CLSID_OBJECT_ACTOR)
 	{
 		fvec3 pos_in_bone_space;
 		pos_in_bone_space.set(0, 0, 0);

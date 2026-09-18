@@ -175,7 +175,7 @@ class game_GameState : public DLL_Pure
 	//	u8								teamInPossession;//ah,ZoneMap
   protected:
 	virtual void switch_Phase(u32 new_phase);
-	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase){};
+	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase) {};
 
   public:
 	game_GameState();
@@ -198,7 +198,7 @@ class game_GameState : public DLL_Pure
 	{
 		return m_start_time;
 	};
-	virtual void Create(shared_str& options){};
+	virtual void Create(shared_str& options) {};
 	virtual LPCSTR type_name() const
 	{
 		return "base game";

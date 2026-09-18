@@ -16,7 +16,7 @@
 
 IC void CStalkerAnimationManager::play_delayed_callbacks()
 {
-	if (!m_call_script_callback)
+	if(!m_call_script_callback)
 		return;
 
 	m_call_script_callback = false;
@@ -25,7 +25,7 @@ IC void CStalkerAnimationManager::play_delayed_callbacks()
 
 IC bool CStalkerAnimationManager::script_callback() const
 {
-	if (script_animations().empty())
+	if(script_animations().empty())
 		return (false);
 
 	return (object().callback(GameObject::eScriptAnimation));
@@ -33,7 +33,7 @@ IC bool CStalkerAnimationManager::script_callback() const
 
 IC bool CStalkerAnimationManager::need_update() const
 {
-	if (script_callback())
+	if(script_callback())
 		return (true);
 
 	return (non_script_need_update());
@@ -41,7 +41,7 @@ IC bool CStalkerAnimationManager::need_update() const
 
 IC void CStalkerAnimationManager::update_tracks()
 {
-	if (!need_update())
+	if(!need_update())
 		return;
 
 	m_skeleton_animated->UpdateTracks();
@@ -77,7 +77,7 @@ IC void CStalkerAnimationManager::play_script_impl()
 
 bool CStalkerAnimationManager::play_script()
 {
-	if (script_animations().empty())
+	if(script_animations().empty())
 	{
 		script().reset();
 		return (false);
@@ -115,7 +115,7 @@ IC void CStalkerAnimationManager::play_global_impl(const MotionID& animation)
 bool CStalkerAnimationManager::play_global()
 {
 	const MotionID& global_animation = assign_global_animation();
-	if (!global_animation)
+	if(!global_animation)
 	{
 		global().reset();
 		return (false);
@@ -144,7 +144,7 @@ void CStalkerAnimationManager::play_legs()
 	bool first_time = !legs().animation();
 	bool result = legs().animation(assign_legs_animation());
 
-	if (!first_time && !result && legs().blend())
+	if(!first_time && !result && legs().blend())
 	{
 		float amount = legs().blend()->blendAmount;
 		m_previous_speed = (m_current_speed - m_previous_speed) * amount + m_previous_speed;
@@ -152,16 +152,16 @@ void CStalkerAnimationManager::play_legs()
 
 	legs().play(m_skeleton_animated, legs_play_callback, &object(), !fis_zero(m_current_speed), false);
 
-	if (result && legs().blend())
+	if(result && legs().blend())
 	{
 		float amount = legs().blend()->blendAmount;
 		speed = (m_current_speed - m_previous_speed) * amount + m_previous_speed;
 	}
 
-	if (fis_zero(speed))
+	if(fis_zero(speed))
 		return;
 
-	if (!legs().blend())
+	if(!legs().blend())
 		return;
 
 	object().movement().setup_speed_from_animation(speed);
@@ -169,16 +169,16 @@ void CStalkerAnimationManager::play_legs()
 
 void CStalkerAnimationManager::update_impl()
 {
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	play_delayed_callbacks();
 	update_tracks();
 
-	if (play_script())
+	if(play_script())
 		return;
 
-	if (play_global())
+	if(play_global())
 		return;
 
 	play_head();
@@ -190,13 +190,13 @@ void CStalkerAnimationManager::update_impl()
 
 void CStalkerAnimationManager::update()
 {
-	//OPTICK_EVENT("CStalkerAnimationManager::update");
+	// OPTICK_EVENT("CStalkerAnimationManager::update");
 	START_PROFILE("stalker/client_update/animations")
 	try
 	{
 		update_impl();
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("! error in stalker with visual %s", *object().cNameVisual());
 		throw;

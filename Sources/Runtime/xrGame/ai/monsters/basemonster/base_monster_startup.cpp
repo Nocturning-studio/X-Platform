@@ -66,16 +66,16 @@ void CBaseMonster::Load(LPCSTR section)
 }
 
 // if sound is absent just do not load that one
-#define LOAD_SOUND(sound_name, _type, _prior, _mask, _int_type)                                                        \
-	if (pSettings->line_exist(section, sound_name))                                                                    \
-		sound().add(pSettings->r_string(section, sound_name), DEFAULT_SAMPLE_COUNT, _type, _prior, u32(_mask),         \
+#define LOAD_SOUND(sound_name, _type, _prior, _mask, _int_type)                                                \
+	if(pSettings->line_exist(section, sound_name))                                                             \
+		sound().add(pSettings->r_string(section, sound_name), DEFAULT_SAMPLE_COUNT, _type, _prior, u32(_mask), \
 					_int_type, "bip01_head");
 
 void CBaseMonster::reload(LPCSTR section)
 {
 	CCustomMonster::reload(section);
 
-	if (!CCustomMonster::use_simplified_visual())
+	if(!CCustomMonster::use_simplified_visual())
 		CStepManager::reload(section);
 
 	CInventoryOwner::reload(section);
@@ -111,11 +111,11 @@ void CBaseMonster::reload(LPCSTR section)
 
 	// load monster type
 	m_monster_type = eMonsterTypeUniversal;
-	if (pSettings->line_exist(section, "monster_type"))
+	if(pSettings->line_exist(section, "monster_type"))
 	{
-		if (xr_strcmp(pSettings->r_string(section, "monster_type"), "indoor") == 0)
+		if(xr_strcmp(pSettings->r_string(section, "monster_type"), "indoor") == 0)
 			m_monster_type = eMonsterTypeIndoor;
-		else if (xr_strcmp(pSettings->r_string(section, "monster_type"), "outdoor") == 0)
+		else if(xr_strcmp(pSettings->r_string(section, "monster_type"), "outdoor") == 0)
 			m_monster_type = eMonsterTypeOutdoor;
 	}
 
@@ -154,7 +154,7 @@ void CBaseMonster::reinit()
 	m_force_real_speed = false;
 	m_script_processing_active = false;
 
-	if (m_controlled)
+	if(m_controlled)
 		m_controlled->on_reinit();
 
 	ignore_collision_hit = false;
@@ -178,7 +178,7 @@ void CBaseMonster::reinit()
 
 BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
@@ -198,7 +198,7 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
 	settings_overrides();
 
 #ifdef PRIQUEL
-	if (GetScriptControl())
+	if(GetScriptControl())
 	{
 		m_control_manager->animation().reset_data();
 		ProcessScripts();
@@ -210,7 +210,7 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
 	//	if (ai().get_alife()) {
 	//
 	//		CSE_ALifeMonsterBase					*se_monster =
-	//smart_cast<CSE_ALifeMonsterBase*>(ai().alife().objects().object(ID())); 		VERIFY
+	// smart_cast<CSE_ALifeMonsterBase*>(ai().alife().objects().object(ID())); 		VERIFY
 	//(se_monster);
 	//
 	//		if (se_monster->m_flags.is(CSE_ALifeMonsterBase::flNeedCheckSpawnItem)) {
@@ -224,7 +224,7 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
 	//		if (!se_monster->m_flags.is(CSE_ALifeMonsterBase::flSkipSpawnItem)) {
 	//			CSE_Abstract	*object = Level().spawn_item
 	//(m_item_section,Position(),ai_location().level_vertex_id(),ID(),true); 			CSE_ALifeObject	*alife_object =
-	//smart_cast<CSE_ALifeObject*>(object); 			if (alife_object) 				alife_object->m_flags.set
+	// smart_cast<CSE_ALifeObject*>(object); 			if (alife_object) 				alife_object->m_flags.set
 	//(CSE_ALifeObject::flCanSave,FALSE);
 	//
 	//			{
@@ -242,9 +242,9 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
 void CBaseMonster::net_Destroy()
 {
 	// функция должена быть вызвана перед inherited
-	if (m_controlled)
+	if(m_controlled)
 		m_controlled->on_destroy();
-	if (StateMan)
+	if(StateMan)
 		StateMan->critical_finalize();
 
 	inherited::net_Destroy();
@@ -260,19 +260,19 @@ void CBaseMonster::net_Destroy()
 #endif
 }
 
-#define READ_SETTINGS(var, name, method, ltx, section)                                                                 \
-	{                                                                                                                  \
-		if (ltx == pSettings)                                                                                          \
-			var = ltx->method(section, name);                                                                          \
-		else if (ltx->line_exist(section, name))                                                                       \
-			var = ltx->method(section, name);                                                                          \
+#define READ_SETTINGS(var, name, method, ltx, section) \
+	{                                                  \
+		if(ltx == pSettings)                           \
+			var = ltx->method(section, name);          \
+		else if(ltx->line_exist(section, name))        \
+			var = ltx->method(section, name);          \
 	}
 
 void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings& data)
 {
 	READ_SETTINGS(data.m_fSoundThreshold, "SoundThreshold", r_float, ini, section);
 
-	if (ability_run_attack())
+	if(ability_run_attack())
 	{
 		READ_SETTINGS(data.m_run_attack_path_dist, "RunAttack_PathDistance", r_float, ini, section);
 		READ_SETTINGS(data.m_run_attack_start_dist, "RunAttack_StartDistance", r_float, ini, section);
@@ -301,7 +301,7 @@ void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings
 	READ_SETTINGS(data.m_max_hear_dist, "max_hear_dist", r_float, ini, section);
 
 	// Load attack postprocess
-	if (ini->line_exist(section, "attack_effector"))
+	if(ini->line_exist(section, "attack_effector"))
 	{
 
 		LPCSTR ppi_section = ini->r_string(section, "attack_effector");
@@ -316,13 +316,13 @@ void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings
 
 		VERIFY(!fis_zero(data.m_attack_effector.ppi.noise.fps));
 
-		if (ini->line_exist(ppi_section, "color_base"))
+		if(ini->line_exist(ppi_section, "color_base"))
 			sscanf(ini->r_string(ppi_section, "color_base"), "%f,%f,%f", &data.m_attack_effector.ppi.color_base.r,
 				   &data.m_attack_effector.ppi.color_base.g, &data.m_attack_effector.ppi.color_base.b);
-		if (ini->line_exist(ppi_section, "color_base"))
+		if(ini->line_exist(ppi_section, "color_base"))
 			sscanf(ini->r_string(ppi_section, "color_gray"), "%f,%f,%f", &data.m_attack_effector.ppi.color_gray.r,
 				   &data.m_attack_effector.ppi.color_gray.g, &data.m_attack_effector.ppi.color_gray.b);
-		if (ini->line_exist(ppi_section, "color_base"))
+		if(ini->line_exist(ppi_section, "color_base"))
 			sscanf(ini->r_string(ppi_section, "color_add"), "%f,%f,%f", &data.m_attack_effector.ppi.color_add.r,
 				   &data.m_attack_effector.ppi.color_add.g, &data.m_attack_effector.ppi.color_add.b);
 
@@ -352,7 +352,7 @@ void CBaseMonster::settings_overrides()
 	SMonsterSettings* data;
 	data = *m_base_settings;
 
-	if (spawn_ini() && spawn_ini()->section_exist("settings_overrides"))
+	if(spawn_ini() && spawn_ini()->section_exist("settings_overrides"))
 	{
 		settings_read(spawn_ini(), "settings_overrides", (*data));
 	}
@@ -367,26 +367,26 @@ void CBaseMonster::on_before_sell(CInventoryItem* item)
 	CSE_Abstract* object = Level().Server->game->get_entity_from_eid(item->object().ID());
 	VERIFY(object);
 	CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(object);
-	if (alife_object)
+	if(alife_object)
 		alife_object->m_flags.set(CSE_ALifeObject::flCanSave, TRUE);
 }
 
 void CBaseMonster::load_critical_wound_bones()
 {
 	// animation does not exist - no bones loaded
-	if (pSettings->line_exist(cNameSect(), "critical_wound_anim_head"))
+	if(pSettings->line_exist(cNameSect(), "critical_wound_anim_head"))
 	{
 		fill_bones_body_parts("critical_wound_bones_head", critical_wound_type_head);
 		m_critical_wound_anim_head = pSettings->r_string(cNameSect(), "critical_wound_anim_head");
 	}
 
-	if (pSettings->line_exist(cNameSect(), "critical_wound_anim_torso"))
+	if(pSettings->line_exist(cNameSect(), "critical_wound_anim_torso"))
 	{
 		fill_bones_body_parts("critical_wound_bones_torso", critical_wound_type_torso);
 		m_critical_wound_anim_torso = pSettings->r_string(cNameSect(), "critical_wound_anim_torso");
 	}
 
-	if (pSettings->line_exist(cNameSect(), "critical_wound_anim_legs"))
+	if(pSettings->line_exist(cNameSect(), "critical_wound_anim_legs"))
 	{
 		fill_bones_body_parts("critical_wound_bones_legs", critical_wound_type_legs);
 		m_critical_wound_anim_legs = pSettings->r_string(cNameSect(), "critical_wound_anim_legs");
@@ -403,6 +403,6 @@ void CBaseMonster::fill_bones_body_parts(LPCSTR body_part, CriticalWoundType wou
 	CInifile::Sect& body_part_section = pSettings->r_section(body_parts_section);
 	CInifile::SectCIt I = body_part_section.Data.begin();
 	CInifile::SectCIt E = body_part_section.Data.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		m_bones_body_parts.insert(std::make_pair(kinematics->LL_BoneID((*I).first), u32(wound_type)));
 }

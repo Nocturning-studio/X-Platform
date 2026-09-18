@@ -10,9 +10,9 @@
 // возвращает позицию объекта, если он находится на ноде, или центр его ноды
 fvec3 get_valid_position(const CEntity* entity, const fvec3& actual_position)
 {
-	if (ai().level_graph().valid_vertex_id(entity->ai_location().level_vertex_id()) &&
-		ai().level_graph().valid_vertex_position(entity->Position()) &&
-		ai().level_graph().inside(entity->ai_location().level_vertex_id(), entity->Position()))
+	if(ai().level_graph().valid_vertex_id(entity->ai_location().level_vertex_id()) &&
+	   ai().level_graph().valid_vertex_position(entity->Position()) &&
+	   ai().level_graph().inside(entity->ai_location().level_vertex_id(), entity->Position()))
 		return (actual_position);
 	else
 		return (ai().level_graph().vertex_position(entity->ai_location().level_vertex()));

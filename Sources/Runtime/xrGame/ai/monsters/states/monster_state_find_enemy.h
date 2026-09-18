@@ -2,7 +2,8 @@
 
 #include "../state.h"
 
-template <typename _Object> class CStateMonsterFindEnemy : public CState<_Object>
+template <typename _Object>
+class CStateMonsterFindEnemy : public CState<_Object>
 {
   protected:
 	typedef CState<_Object> inherited;

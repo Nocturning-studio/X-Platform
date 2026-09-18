@@ -48,7 +48,7 @@ class CArtefact : public CHudItemObject, public CPHUpdateObject
 	}
 
   protected:
-	virtual void UpdateCLChild(){};
+	virtual void UpdateCLChild() {};
 
 	u16 m_CarringBoneID;
 	shared_str m_sParticlesName;
@@ -78,7 +78,7 @@ class CArtefact : public CHudItemObject, public CPHUpdateObject
 	}; // does artefact can spawn anomaly zone
 
 	virtual void PhDataUpdate(dReal step);
-	virtual void PhTune(dReal step){};
+	virtual void PhTune(dReal step) {};
 
 	bool m_bCanSpawnZone;
 	float m_fHealthRestoreSpeed;
@@ -127,14 +127,14 @@ class CArtefact : public CHudItemObject, public CPHUpdateObject
 	BOOL o_fastmode;
 	IC void o_switch_2_fast()
 	{
-		if (o_fastmode)
+		if(o_fastmode)
 			return;
 		o_fastmode = TRUE;
 		// processing_activate		();
 	}
 	IC void o_switch_2_slow()
 	{
-		if (!o_fastmode)
+		if(!o_fastmode)
 			return;
 		o_fastmode = FALSE;
 		// processing_deactivate		();

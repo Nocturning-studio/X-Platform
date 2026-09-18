@@ -20,16 +20,16 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 	float v = fA01 * fB0 - fA00 * fB1;
 	float SqrDist;
 
-	if (u + v <= fDet)
+	if(u + v <= fDet)
 	{
-		if (u < 0.0f)
+		if(u < 0.0f)
 		{
-			if (v < 0.0f) // region 4
+			if(v < 0.0f) // region 4
 			{
-				if (fB0 < 0.0f)
+				if(fB0 < 0.0f)
 				{
 					v = 0.0f;
-					if (-fB0 >= fA00)
+					if(-fB0 >= fA00)
 					{
 						u = 1.0f;
 						SqrDist = fA00 + 2.0f * fB0 + fC;
@@ -43,12 +43,12 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 				else
 				{
 					u = 0.0f;
-					if (fB1 >= 0.0f)
+					if(fB1 >= 0.0f)
 					{
 						v = 0.0f;
 						SqrDist = fC;
 					}
-					else if (-fB1 >= fA11)
+					else if(-fB1 >= fA11)
 					{
 						v = 1.0f;
 						SqrDist = fA11 + 2.0f * fB1 + fC;
@@ -63,12 +63,12 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 			else // region 3
 			{
 				u = 0.0f;
-				if (fB1 >= 0.0f)
+				if(fB1 >= 0.0f)
 				{
 					v = 0.0f;
 					SqrDist = fC;
 				}
-				else if (-fB1 >= fA11)
+				else if(-fB1 >= fA11)
 				{
 					v = 1.0f;
 					SqrDist = fA11 + 2.0f * fB1 + fC;
@@ -80,15 +80,15 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 				}
 			}
 		}
-		else if (v < 0.0f) // region 5
+		else if(v < 0.0f) // region 5
 		{
 			v = 0.0f;
-			if (fB0 >= 0.0f)
+			if(fB0 >= 0.0f)
 			{
 				u = 0.0f;
 				SqrDist = fC;
 			}
-			else if (-fB0 >= fA00)
+			else if(-fB0 >= fA00)
 			{
 				u = 1.0f;
 				SqrDist = fA00 + 2.0f * fB0 + fC;
@@ -102,7 +102,7 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 		else // region 0
 		{
 			// minimum at interior point
-			if (fDet == 0.0f)
+			if(fDet == 0.0f)
 			{
 				u = 0.0f;
 				v = 0.0f;
@@ -121,15 +121,15 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 	{
 		float fTmp0, fTmp1, fNumer, fDenom;
 
-		if (u < 0.0f) // region 2
+		if(u < 0.0f) // region 2
 		{
 			fTmp0 = fA01 + fB0;
 			fTmp1 = fA11 + fB1;
-			if (fTmp1 > fTmp0)
+			if(fTmp1 > fTmp0)
 			{
 				fNumer = fTmp1 - fTmp0;
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					u = 1.0f;
 					v = 0.0f;
@@ -145,12 +145,12 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 			else
 			{
 				u = 0.0f;
-				if (fTmp1 <= 0.0f)
+				if(fTmp1 <= 0.0f)
 				{
 					v = 1.0f;
 					SqrDist = fA11 + 2.0f * fB1 + fC;
 				}
-				else if (fB1 >= 0.0f)
+				else if(fB1 >= 0.0f)
 				{
 					v = 0.0f;
 					SqrDist = fC;
@@ -162,15 +162,15 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 				}
 			}
 		}
-		else if (v < 0.0f) // region 6
+		else if(v < 0.0f) // region 6
 		{
 			fTmp0 = fA01 + fB1;
 			fTmp1 = fA00 + fB0;
-			if (fTmp1 > fTmp0)
+			if(fTmp1 > fTmp0)
 			{
 				fNumer = fTmp1 - fTmp0;
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					v = 1.0f;
 					u = 0.0f;
@@ -186,12 +186,12 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 			else
 			{
 				v = 0.0f;
-				if (fTmp1 <= 0.0f)
+				if(fTmp1 <= 0.0f)
 				{
 					u = 1.0f;
 					SqrDist = fA00 + 2.0f * fB0 + fC;
 				}
-				else if (fB0 >= 0.0f)
+				else if(fB0 >= 0.0f)
 				{
 					u = 0.0f;
 					SqrDist = fC;
@@ -206,7 +206,7 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 		else // region 1
 		{
 			fNumer = fA11 + fB1 - fA01 - fB0;
-			if (fNumer <= 0.0f)
+			if(fNumer <= 0.0f)
 			{
 				u = 0.0f;
 				v = 1.0f;
@@ -215,7 +215,7 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 			else
 			{
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					u = 1.0f;
 					v = 0.0f;

@@ -36,9 +36,9 @@ LPCSTR CUIMessageBoxEx::GetText()
 void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NULL */)
 {
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
-	if (pWnd == m_pMessageBox)
+	if(pWnd == m_pMessageBox)
 	{
-		switch (msg)
+		switch(msg)
 		{
 		case MESSAGE_BOX_OK_CLICKED:
 		case MESSAGE_BOX_YES_CLICKED:
@@ -51,7 +51,7 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NUL
 			break;
 		}
 
-		if (GetMessageTarget())
+		if(GetMessageTarget())
 			GetMessageTarget()->SendMessage(this, msg, pData);
 	}
 }

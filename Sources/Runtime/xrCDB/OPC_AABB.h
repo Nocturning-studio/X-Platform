@@ -15,9 +15,9 @@
 #define USE_MINMAX // if defined, use (Min, Max) AABBs, else use (Center, Extents) ones.
 
 //! Declarations of type-independent methods (implemented in the .cpp)
-#define AABB_COMMON_METHODS                                                                                            \
-	AABB& Add(const AABB& aabb);                                                                                       \
-	float CalculateBoxArea(const icePoint& eye, const Matrix4x4& mat, float width, float height, int& num) const;      \
+#define AABB_COMMON_METHODS                                                                                       \
+	AABB& Add(const AABB& aabb);                                                                                  \
+	float CalculateBoxArea(const icePoint& eye, const Matrix4x4& mat, float width, float height, int& num) const; \
 	bool IsInside(const AABB& box) const;
 
 enum AABBType
@@ -113,19 +113,19 @@ class MESHMERIZER_API AABB
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	void Extend(const Point& p)
 	{
-		if (p.x > mMax.x)
+		if(p.x > mMax.x)
 			mMax.x = p.x;
-		if (p.x < mMin.x)
+		if(p.x < mMin.x)
 			mMin.x = p.x;
 
-		if (p.y > mMax.y)
+		if(p.y > mMax.y)
 			mMax.y = p.y;
-		if (p.y < mMin.y)
+		if(p.y < mMin.y)
 			mMin.y = p.y;
 
-		if (p.z > mMax.z)
+		if(p.z > mMax.z)
 			mMax.z = p.z;
-		if (p.z < mMin.z)
+		if(p.z < mMin.z)
 			mMin.z = p.z;
 	}
 
@@ -208,8 +208,8 @@ class MESHMERIZER_API AABB
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	inline_ bool Intersect(const AABB& a) const
 	{
-		if (mMax.x < a.mMin.x || a.mMax.x < mMin.x || mMax.y < a.mMin.y || a.mMax.y < mMin.y || mMax.z < a.mMin.z ||
-			a.mMax.z < mMin.z)
+		if(mMax.x < a.mMin.x || a.mMax.x < mMin.x || mMax.y < a.mMin.y || a.mMax.y < mMin.y || mMax.z < a.mMin.z ||
+		   a.mMax.z < mMin.z)
 			return false;
 
 		return true;
@@ -225,8 +225,8 @@ class MESHMERIZER_API AABB
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	inline_ bool Intersect(const AABB& a, udword axis) const
 	{
-		if (((const float*)mMax)[axis] < ((const float*)a.mMin)[axis] ||
-			((const float*)a.mMax)[axis] < ((const float*)mMin)[axis])
+		if(((const float*)mMax)[axis] < ((const float*)a.mMin)[axis] ||
+		   ((const float*)a.mMax)[axis] < ((const float*)mMin)[axis])
 			return false;
 		return true;
 	}
@@ -256,39 +256,39 @@ class MESHMERIZER_API AABB
 
 		// Take the transformed min & axes and find _new_ extents
 		// Using CPU code in the right place is faster...
-		if (IS_NEGATIVE_FLOAT(vx.x))
+		if(IS_NEGATIVE_FLOAT(vx.x))
 			aabb.mMin.x += vx.x;
 		else
 			aabb.mMax.x += vx.x;
-		if (IS_NEGATIVE_FLOAT(vx.y))
+		if(IS_NEGATIVE_FLOAT(vx.y))
 			aabb.mMin.y += vx.y;
 		else
 			aabb.mMax.y += vx.y;
-		if (IS_NEGATIVE_FLOAT(vx.z))
+		if(IS_NEGATIVE_FLOAT(vx.z))
 			aabb.mMin.z += vx.z;
 		else
 			aabb.mMax.z += vx.z;
-		if (IS_NEGATIVE_FLOAT(vy.x))
+		if(IS_NEGATIVE_FLOAT(vy.x))
 			aabb.mMin.x += vy.x;
 		else
 			aabb.mMax.x += vy.x;
-		if (IS_NEGATIVE_FLOAT(vy.y))
+		if(IS_NEGATIVE_FLOAT(vy.y))
 			aabb.mMin.y += vy.y;
 		else
 			aabb.mMax.y += vy.y;
-		if (IS_NEGATIVE_FLOAT(vy.z))
+		if(IS_NEGATIVE_FLOAT(vy.z))
 			aabb.mMin.z += vy.z;
 		else
 			aabb.mMax.z += vy.z;
-		if (IS_NEGATIVE_FLOAT(vz.x))
+		if(IS_NEGATIVE_FLOAT(vz.x))
 			aabb.mMin.x += vz.x;
 		else
 			aabb.mMax.x += vz.x;
-		if (IS_NEGATIVE_FLOAT(vz.y))
+		if(IS_NEGATIVE_FLOAT(vz.y))
 			aabb.mMin.y += vz.y;
 		else
 			aabb.mMax.y += vz.y;
-		if (IS_NEGATIVE_FLOAT(vz.z))
+		if(IS_NEGATIVE_FLOAT(vz.z))
 			aabb.mMin.z += vz.z;
 		else
 			aabb.mMax.z += vz.z;
@@ -303,11 +303,11 @@ class MESHMERIZER_API AABB
 	inline_ bool IsValid() const
 	{
 		// Consistency condition for (Min, Max) boxes: min < max
-		if (mMin.x > mMax.x)
+		if(mMin.x > mMax.x)
 			return false;
-		if (mMin.y > mMax.y)
+		if(mMin.y > mMax.y)
 			return false;
-		if (mMin.z > mMax.z)
+		if(mMin.z > mMax.z)
 			return false;
 		return true;
 	}
@@ -434,19 +434,19 @@ class MESHMERIZER_API AABB
 		Point Max = mCenter + mExtents;
 		Point Min = mCenter - mExtents;
 
-		if (p.x > Max.x)
+		if(p.x > Max.x)
 			Max.x = p.x;
-		if (p.x < Min.x)
+		if(p.x < Min.x)
 			Min.x = p.x;
 
-		if (p.y > Max.y)
+		if(p.y > Max.y)
 			Max.y = p.y;
-		if (p.y < Min.y)
+		if(p.y < Min.y)
 			Min.y = p.y;
 
-		if (p.z > Max.z)
+		if(p.z > Max.z)
 			Max.z = p.z;
-		if (p.z < Min.z)
+		if(p.z < Min.z)
 			Min.z = p.z;
 
 		SetMinMax(Min, Max);
@@ -533,15 +533,15 @@ class MESHMERIZER_API AABB
 	{
 		float tx = mCenter.x - a.mCenter.x;
 		float ex = a.mExtents.x + mExtents.x;
-		if (AIR(tx) > IR(ex))
+		if(AIR(tx) > IR(ex))
 			return false;
 		float ty = mCenter.y - a.mCenter.y;
 		float ey = a.mExtents.y + mExtents.y;
-		if (AIR(ty) > IR(ey))
+		if(AIR(ty) > IR(ey))
 			return false;
 		float tz = mCenter.z - a.mCenter.z;
 		float ez = a.mExtents.z + mExtents.z;
-		if (AIR(tz) > IR(ez))
+		if(AIR(tz) > IR(ez))
 			return false;
 		return true;
 	}
@@ -572,7 +572,7 @@ class MESHMERIZER_API AABB
 	{
 		float t = mCenter[axis] - a.mCenter[axis];
 		float e = a.mExtents[axis] + mExtents[axis];
-		if (AIR(t) > IR(e))
+		if(AIR(t) > IR(e))
 			return false;
 		return true;
 	}
@@ -619,11 +619,11 @@ class MESHMERIZER_API AABB
 	inline_ bool IsValid() const
 	{
 		// Consistency condition for (Center, Extents) boxes: Extents >= 0
-		if (IS_NEGATIVE_FLOAT(mExtents.x))
+		if(IS_NEGATIVE_FLOAT(mExtents.x))
 			return false;
-		if (IS_NEGATIVE_FLOAT(mExtents.y))
+		if(IS_NEGATIVE_FLOAT(mExtents.y))
 			return false;
-		if (IS_NEGATIVE_FLOAT(mExtents.z))
+		if(IS_NEGATIVE_FLOAT(mExtents.z))
 			return false;
 		return true;
 	}
@@ -658,29 +658,29 @@ class MESHMERIZER_API AABB
 
 inline_ void ComputeMinMax(const Point& p, Point& min, Point& max)
 {
-	if (p.x > max.x)
+	if(p.x > max.x)
 		max.x = p.x;
-	if (p.x < min.x)
+	if(p.x < min.x)
 		min.x = p.x;
 
-	if (p.y > max.y)
+	if(p.y > max.y)
 		max.y = p.y;
-	if (p.y < min.y)
+	if(p.y < min.y)
 		min.y = p.y;
 
-	if (p.z > max.z)
+	if(p.z > max.z)
 		max.z = p.z;
-	if (p.z < min.z)
+	if(p.z < min.z)
 		min.z = p.z;
 }
 
 inline_ void ComputeAABB(AABB& aabb, const Point* list, udword nbpts)
 {
-	if (list)
+	if(list)
 	{
 		Point Maxi(flt_min, flt_min, flt_min);
 		Point Mini(flt_max, flt_max, flt_max);
-		while (nbpts--)
+		while(nbpts--)
 		{
 			ComputeMinMax(*list++, Mini, Maxi);
 		}

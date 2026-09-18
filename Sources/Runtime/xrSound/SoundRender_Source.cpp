@@ -23,7 +23,7 @@ CSoundRender_Source::~CSoundRender_Source()
 
 bool ov_error(int res)
 {
-	switch (res)
+	switch(res)
 	{
 	case 0:
 		return false;
@@ -73,17 +73,17 @@ void CSoundRender_Source::i_decompress_fr(OggVorbis_File* ovf, char* _dest, u32 
 	long TotalRet = 0, ret;
 
 	// Read loop
-	while (TotalRet < (long)left)
+	while(TotalRet < (long)left)
 	{
 		ret = ov_read(ovf, /*PCM*/ _dest + TotalRet, left - TotalRet, 0, 2, 1, &current_section);
 
 		// if end of file or read limit exceeded
-		if (!ret)
+		if(!ret)
 			break;
 
 		// ret < 0 means error in bitstream
 
-		if (ret >= 0)
+		if(ret >= 0)
 			TotalRet += ret;
 	}
 }

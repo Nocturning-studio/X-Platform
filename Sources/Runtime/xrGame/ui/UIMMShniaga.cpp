@@ -88,10 +88,10 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
 	strconcat(sizeof(_path), _path, path, ":shniaga:magnifire:y_offset");
 	m_offset = xml_doc.ReadFlt(_path, 0, 0);
 
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 	{
 
-		if (!*g_last_saved_game || !CSavedGameWrapper::valid_saved_game(g_last_saved_game))
+		if(!*g_last_saved_game || !CSavedGameWrapper::valid_saved_game(g_last_saved_game))
 			CreateList(m_buttons, xml_doc, "menu_main");
 		else
 			CreateList(m_buttons, xml_doc, "menu_main_last_save");
@@ -100,10 +100,10 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
 	}
 	else
 	{
-		if (GameID() == GAME_SINGLE)
+		if(GameID() == GAME_SINGLE)
 		{
 			VERIFY(Actor());
-			if (Actor() && !Actor()->g_Alive())
+			if(Actor() && !Actor()->g_Alive())
 				CreateList(m_buttons, xml_doc, "menu_main_single_dead");
 			else
 				CreateList(m_buttons, xml_doc, "menu_main_single");
@@ -124,7 +124,7 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
 
 void CUIMMShniaga::OnDeviceReset()
 {
-	if (UI()->is_16_9_mode())
+	if(UI()->is_16_9_mode())
 	{
 		m_anims[0]->SetWndSize(m_wheel_size[1]);
 		m_anims[1]->SetWndSize(m_wheel_size[1]);
@@ -157,7 +157,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
 
 	CUIStatic* st;
 
-	for (int i = 0; i < nodes_num; ++i)
+	for(int i = 0; i < nodes_num; ++i)
 	{
 		//		if (0 == xr_strcmp("btn_lastsave",xml_doc.ReadAttrib("btn", i, "name")))
 		//		{
@@ -168,7 +168,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
 		st->Init(0, 0, m_view->GetDesiredChildWidth(), height);
 		st->SetTextComplexMode(false);
 		st->SetTextST(xml_doc.ReadAttrib("btn", i, "caption"));
-		if (pF)
+		if(pF)
 			st->SetFont(pF);
 		st->SetTextColor(color);
 		st->SetTextAlignment(CGameFont::alCenter);
@@ -186,7 +186,7 @@ void CUIMMShniaga::ShowMain()
 {
 	m_page = 0;
 	m_view->Clear();
-	for (u32 i = 0; i < m_buttons.size(); i++)
+	for(u32 i = 0; i < m_buttons.size(); i++)
 		m_view->AddWindow(m_buttons[i], false);
 
 	SendMessage(m_buttons[0], STATIC_FOCUS_RECEIVED);
@@ -196,7 +196,7 @@ void CUIMMShniaga::ShowNewGame()
 {
 	m_page = 1;
 	m_view->Clear();
-	for (u32 i = 0; i < m_buttons_new.size(); i++)
+	for(u32 i = 0; i < m_buttons_new.size(); i++)
 		m_view->AddWindow(m_buttons_new[i], false);
 
 	SendMessage(m_buttons_new[0], STATIC_FOCUS_RECEIVED);
@@ -204,12 +204,12 @@ void CUIMMShniaga::ShowNewGame()
 
 bool CUIMMShniaga::IsButton(CUIWindow* st)
 {
-	for (u32 i = 0; i < m_buttons.size(); i++)
-		if (m_buttons[i] == st)
+	for(u32 i = 0; i < m_buttons.size(); i++)
+		if(m_buttons[i] == st)
 			return true;
 
-	for (u32 i = 0; i < m_buttons_new.size(); i++)
-		if (m_buttons_new[i] == st)
+	for(u32 i = 0; i < m_buttons_new.size(); i++)
+		if(m_buttons_new[i] == st)
 			return true;
 
 	return false;
@@ -218,9 +218,9 @@ bool CUIMMShniaga::IsButton(CUIWindow* st)
 void CUIMMShniaga::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWindow::SendMessage(pWnd, msg, pData);
-	if (IsButton(pWnd))
+	if(IsButton(pWnd))
 	{
-		switch (msg)
+		switch(msg)
 		{
 		case STATIC_FOCUS_RECEIVED:
 			SelectBtn(pWnd);
@@ -232,7 +232,7 @@ void CUIMMShniaga::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUIMMShniaga::SelectBtn(int btn)
 {
 	R_ASSERT(btn >= 0);
-	if (0 == m_page)
+	if(0 == m_page)
 		m_selected = m_buttons[btn];
 	else
 		m_selected = m_buttons_new[btn];
@@ -243,19 +243,19 @@ void CUIMMShniaga::SelectBtn(int btn)
 void CUIMMShniaga::SelectBtn(CUIWindow* btn)
 {
 	R_ASSERT(m_page >= 0);
-	for (int i = 0; i < (int)m_buttons.size(); i++)
+	for(int i = 0; i < (int)m_buttons.size(); i++)
 	{
-		if (0 == m_page)
+		if(0 == m_page)
 		{
-			if (m_buttons[i] == btn)
+			if(m_buttons[i] == btn)
 			{
 				SelectBtn(i);
 				return;
 			}
 		}
-		else if (1 == m_page)
+		else if(1 == m_page)
 		{
-			if (m_buttons_new[i] == btn)
+			if(m_buttons_new[i] == btn)
 			{
 				SelectBtn(i);
 				return;
@@ -272,7 +272,7 @@ void CUIMMShniaga::Draw()
 void CUIMMShniaga::Update()
 {
 	//	static bool playing = false;
-	if (m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time)
+	if(m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time)
 	{
 		//		playing = true;
 		fvec2 pos = m_shniaga->GetWndPos();
@@ -288,7 +288,7 @@ void CUIMMShniaga::Update()
 	else
 		ProcessEvent(E_Stop);
 
-	if (m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time * 10 / 100)
+	if(m_start_time > Engine.TimeManager.GetContinualTimeMs() - m_run_time * 10 / 100)
 		ProcessEvent(E_Finilize);
 
 	ProcessEvent(E_Update);
@@ -302,7 +302,7 @@ bool CUIMMShniaga::OnMouse(float x, float y, EUIMessages mouse_action)
 	fvec2 pos = UI()->GetUICursor()->GetCursorPosition();
 	Frect r;
 	m_magnifier->GetAbsoluteRect(r);
-	if (WINDOW_LBUTTON_DOWN == mouse_action && r.in(pos.x, pos.y))
+	if(WINDOW_LBUTTON_DOWN == mouse_action && r.in(pos.x, pos.y))
 	{
 		OnBtnClick();
 	}
@@ -312,9 +312,9 @@ bool CUIMMShniaga::OnMouse(float x, float y, EUIMessages mouse_action)
 
 void CUIMMShniaga::OnBtnClick()
 {
-	if (0 == xr_strcmp("btn_new_game", m_selected->WindowName()))
+	if(0 == xr_strcmp("btn_new_game", m_selected->WindowName()))
 		ShowNewGame();
-	else if (0 == xr_strcmp("btn_new_back", m_selected->WindowName()))
+	else if(0 == xr_strcmp("btn_new_back", m_selected->WindowName()))
 		ShowMain();
 	else
 		GetMessageTarget()->SendMessage(m_selected, BUTTON_CLICKED);
@@ -325,23 +325,23 @@ void CUIMMShniaga::OnBtnClick()
 bool CUIMMShniaga::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 
-	if (WINDOW_KEY_PRESSED == keyboard_action)
+	if(WINDOW_KEY_PRESSED == keyboard_action)
 	{
-		switch (dik)
+		switch(dik)
 		{
 		case DIK_UP:
-			if (m_selected_btn > 0)
+			if(m_selected_btn > 0)
 				SelectBtn(m_selected_btn - 1);
 			return true;
 		case DIK_DOWN:
-			if (m_selected_btn < BtnCount() - 1)
+			if(m_selected_btn < BtnCount() - 1)
 				SelectBtn(m_selected_btn + 1);
 			return true;
 		case DIK_RETURN:
 			OnBtnClick();
 			return true;
 		case DIK_ESCAPE:
-			if (1 == m_page)
+			if(1 == m_page)
 				ShowMain();
 			return true;
 		}
@@ -353,9 +353,9 @@ bool CUIMMShniaga::OnKeyboard(int dik, EUIMessages keyboard_action)
 int CUIMMShniaga::BtnCount()
 {
 	R_ASSERT(-1);
-	if (m_page == 0)
+	if(m_page == 0)
 		return (int)m_buttons.size();
-	else if (m_page == 1)
+	else if(m_page == 1)
 		return (int)m_buttons_new.size();
 	else
 		return -1;
@@ -365,16 +365,16 @@ float CUIMMShniaga::pos(float x1, float x2, u32 t)
 {
 	float x = 0;
 
-	if (t >= 0 && t <= m_run_time)
+	if(t >= 0 && t <= m_run_time)
 		x = logf(1 + (t * 10.0f) / m_run_time) / logf(11.0f);
-	else if (t <= 0)
+	else if(t <= 0)
 		x = 0;
-	else if (t > m_run_time)
+	else if(t > m_run_time)
 		x = 1;
 
 	x *= abs(x2 - x1);
 
-	if (x2 - x1 < 0)
+	if(x2 - x1 < 0)
 		return x1 - x;
 	else
 		return x1 + x;
@@ -385,7 +385,7 @@ void CUIMMShniaga::SetVisibleMagnifier(bool f)
 {
 	b_shniaganeed_pp = f;
 	fvec2 pos = m_magnifier->GetWndPos();
-	if (f)
+	if(f)
 		pos.x = m_mag_pos;
 	else
 		pos.x = 1025;
@@ -394,9 +394,10 @@ void CUIMMShniaga::SetVisibleMagnifier(bool f)
 
 void CUIMMShniaga::ProcessEvent(EVENT ev)
 {
-	switch (ev)
+	switch(ev)
 	{
-	case E_Begin: {
+	case E_Begin:
+	{
 		// init whell sound
 		m_sound->whell_Play();
 
@@ -409,7 +410,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 		m_destination = m_selected->GetWndPos().y - m_magnifier->GetWndPos().y;
 		m_destination += m_offset;
 		m_run_time = u32((log(1 + abs(m_origin - m_destination)) / log(GetHeight())) * 1000);
-		if (m_run_time < 100)
+		if(m_run_time < 100)
 			m_run_time = 100;
 
 		// reset flags
@@ -418,7 +419,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 	}
 	break;
 	case E_Finilize:
-		if (!m_flags.test(fl_SoundFinalized))
+		if(!m_flags.test(fl_SoundFinalized))
 		{
 			m_sound->whell_Click();
 
@@ -426,7 +427,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 		}
 		break;
 	case E_Stop:
-		if (!m_flags.test(fl_MovingStoped))
+		if(!m_flags.test(fl_MovingStoped))
 		{
 			m_sound->whell_Stop();
 

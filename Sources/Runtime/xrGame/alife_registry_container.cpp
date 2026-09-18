@@ -12,15 +12,18 @@
 #include "alife_space.h"
 #include "object_type_traits.h"
 
-template <typename T1, typename _T2, typename Head> struct CRegistryHelperLoad
+template <typename T1, typename _T2, typename Head>
+struct CRegistryHelperLoad
 {
 	typedef typename object_type_traits::remove_reference<_T2>::type T2;
 
-	template <bool loadable> IC static void do_load(T1* self, T2& p1)
+	template <bool loadable>
+	IC static void do_load(T1* self, T2& p1)
 	{
 	}
 
-	template <> IC static void do_load<true>(T1* self, T2& p1)
+	template <>
+	IC static void do_load<true>(T1* self, T2& p1)
 	{
 		self->Head::load(p1);
 	}
@@ -31,15 +34,18 @@ template <typename T1, typename _T2, typename Head> struct CRegistryHelperLoad
 	}
 };
 
-template <typename T1, typename _T2, typename Head> struct CRegistryHelperSave
+template <typename T1, typename _T2, typename Head>
+struct CRegistryHelperSave
 {
 	typedef typename object_type_traits::remove_reference<_T2>::type T2;
 
-	template <bool loadable> IC static void do_save(T1* self, T2& p1)
+	template <bool loadable>
+	IC static void do_save(T1* self, T2& p1)
 	{
 	}
 
-	template <> IC static void do_save<true>(T1* self, T2& p1)
+	template <>
+	IC static void do_save<true>(T1* self, T2& p1)
 	{
 		self->Head::save(p1);
 	}
@@ -60,12 +66,14 @@ class CRegistryHelperProcess
 	typedef typename TList::Tail Tail;
 
   public:
-	template <typename _1> IC static void go_process(T1* self, T2 p1)
+	template <typename _1>
+	IC static void go_process(T1* self, T2 p1)
 	{
 		CRegistryHelperProcess<helper, T1, T2, Tail>::process(self, p1);
 	}
 
-	template <> IC static void go_process<Loki::NullType>(T1* self, T2 p1)
+	template <>
+	IC static void go_process<Loki::NullType>(T1* self, T2 p1)
 	{
 	}
 

@@ -30,11 +30,11 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
 
-	if (dist > 30.f)
+	if(dist > 30.f)
 	{ // бежать к врагу
 		selected_point.mad(object->Position(), dir_to_enemy, DIST_QUANT);
 	}
-	else if ((dist < 20.f) && (dist > 4.f))
+	else if((dist < 20.f) && (dist > 4.f))
 	{ // убегать от врага
 		selected_point.mad(object->Position(), dir_from_enemy, DIST_QUANT);
 		dest_direction.sub(object->EnemyMan.get_enemy()->Position(), selected_point);
@@ -53,7 +53,7 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackRunAroundAbstract::execute()
 {
-	if (!fis_zero(dest_direction.square_magnitude()))
+	if(!fis_zero(dest_direction.square_magnitude()))
 	{
 		object->path().set_use_dest_orient(true);
 		object->path().set_dest_direction(dest_direction);
@@ -78,8 +78,8 @@ bool CStateBurerAttackRunAroundAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateBurerAttackRunAroundAbstract::check_completion()
 {
-	if ((time_started + TIME_RUN_AWAY < Engine.TimeManager.GetGlobalTimeMs()) ||
-		(object->control().path_builder().is_moving_on_path() && object->control().path_builder().is_path_end(2.f)))
+	if((time_started + TIME_RUN_AWAY < Engine.TimeManager.GetGlobalTimeMs()) ||
+	   (object->control().path_builder().is_moving_on_path() && object->control().path_builder().is_path_end(2.f)))
 	{
 
 		object->dir().face_target(object->EnemyMan.get_enemy());

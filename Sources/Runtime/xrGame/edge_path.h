@@ -10,12 +10,15 @@
 
 #include "vertex_path.h"
 
-template <typename _edge_type, bool bEuclidianHeuristics = true> struct CEdgePath
+template <typename _edge_type, bool bEuclidianHeuristics = true>
+struct CEdgePath
 {
 
-	template <template <typename _T> class T1> struct DataStorageEdgePath
+	template <template <typename _T> class T1>
+	struct DataStorageEdgePath
 	{
-		template <typename T2> struct _vertex : public T1<T2>
+		template <typename T2>
+		struct _vertex : public T1<T2>
 		{
 			_edge_type _edge;
 

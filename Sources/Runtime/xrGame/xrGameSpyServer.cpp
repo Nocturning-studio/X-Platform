@@ -60,20 +60,20 @@ xrGameSpyClientData::~xrGameSpyClientData()
 xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str& session_name)
 {
 	EConnect res = inherited::Connect(session_name);
-	if (res != ErrNoError)
+	if(res != ErrNoError)
 		return res;
 
-	if (0 == *(game->get_option_s(*session_name, "hname", NULL)))
+	if(0 == *(game->get_option_s(*session_name, "hname", NULL)))
 	{
 		string1024 CompName;
 		DWORD CompNameSize = 1024;
-		if (GetComputerName(CompName, &CompNameSize))
+		if(GetComputerName(CompName, &CompNameSize))
 			HostName._set(CompName);
 	}
 	else
 		HostName._set(game->get_option_s(*session_name, "hname", NULL));
 
-	if (0 != *(game->get_option_s(*session_name, "psw", NULL)))
+	if(0 != *(game->get_option_s(*session_name, "psw", NULL)))
 		Password._set(game->get_option_s(*session_name, "psw", NULL));
 
 	string4096 tMapName = "";
@@ -86,12 +86,12 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str& session_name)
 	m_bCheckCDKey = game->get_option_i(*session_name, "cdkey", 0) != 0;
 	//	m_bCheckCDKey = game->get_option_i		(*session_name,"public",0) != 0;
 	//--------------------------------------------//
-	if (game->Type() != GAME_SINGLE)
+	if(game->Type() != GAME_SINGLE)
 	{
 		//----- Check for Backend Services ---
 		CGameSpy_Available GSA;
 		shared_str result_string;
-		if (!GSA.CheckAvailableServices(result_string))
+		if(!GSA.CheckAvailableServices(result_string))
 		{
 			Msg(*result_string);
 		};
@@ -102,7 +102,7 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str& session_name)
 
 		//------ Init of CDKey SDK -----------
 
-		if (m_bCheckCDKey)
+		if(m_bCheckCDKey)
 			CDKey_Init();
 	};
 
@@ -113,17 +113,17 @@ void xrGameSpyServer::Update()
 {
 	inherited::Update();
 
-	if (m_bQR2_Initialized)
+	if(m_bQR2_Initialized)
 	{
 		m_QR2.Think(NULL);
 	};
 
-	if (m_bCDKey_Initialized)
+	if(m_bCDKey_Initialized)
 	{
 		m_GCDServer.Think();
 	};
 	static u32 next_send_time = Engine.TimeManager.GetGlobalTimeMs() + 10000;
-	if (Engine.TimeManager.GetGlobalTimeMs() >= next_send_time)
+	if(Engine.TimeManager.GetGlobalTimeMs() >= next_send_time)
 	{
 		next_send_time = Engine.TimeManager.GetGlobalTimeMs() + 5000;
 		NET_Packet Packet;
@@ -136,14 +136,14 @@ void xrGameSpyServer::Update()
 int xrGameSpyServer::GetPlayersCount()
 {
 	int NumPlayers = client_Count();
-	if (!g_dedicated_server || NumPlayers < 1)
+	if(!g_dedicated_server || NumPlayers < 1)
 		return NumPlayers;
 	return NumPlayers - 1;
 };
 
 bool xrGameSpyServer::NeedToCheckClient_GameSpy_CDKey(IClient* CL)
 {
-	if (!m_bCDKey_Initialized || (CL == GetServerClient() && g_dedicated_server))
+	if(!m_bCDKey_Initialized || (CL == GetServerClient() && g_dedicated_server))
 	{
 		return false;
 	};
@@ -159,7 +159,7 @@ void xrGameSpyServer::OnCL_Disconnected(IClient* _CL)
 
 	csPlayers.Enter();
 
-	if (m_bCDKey_Initialized)
+	if(m_bCDKey_Initialized)
 	{
 		Msg("xrGS::CDKey::Server : Disconnecting Client");
 		m_GCDServer.DisconnectUser(int(_CL->ID.value()));
@@ -175,13 +175,14 @@ u32 xrGameSpyServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 
 	xrGameSpyClientData* CL = (xrGameSpyClientData*)ID_to_client(sender);
 
-	switch (type)
+	switch(type)
 	{
-	case M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND: {
+	case M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND:
+	{
 		string128 ResponseStr;
 		P.r_stringZ(ResponseStr);
 
-		if (!CL->m_bCDKeyAuth)
+		if(!CL->m_bCDKeyAuth)
 		{
 
 			Msg("xrGS::CDKey::Server : Respond accepted, Authenticate client.");
@@ -205,7 +206,7 @@ u32 xrGameSpyServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 
 bool xrGameSpyServer::Check_ServerAccess(IClient* CL, string512& reason)
 {
-	if (!HasProtected())
+	if(!HasProtected())
 	{
 		strcpy_s(reason, "Access successful by server. ");
 		return true;
@@ -213,28 +214,28 @@ bool xrGameSpyServer::Check_ServerAccess(IClient* CL, string512& reason)
 
 	string_path fn;
 	FS.update_path(fn, "$app_data_root$", "server_users.ltx");
-	if (FS.exist(fn) == NULL)
+	if(FS.exist(fn) == NULL)
 	{
 		strcpy_s(reason, "Access denied by server. ");
 		return false;
 	}
 
 	CInifile inif(fn);
-	if (inif.section_exist("users") == FALSE)
+	if(inif.section_exist("users") == FALSE)
 	{
 		strcpy_s(reason, "Access denied by server. ");
 		return false;
 	}
 
-	if (inif.line_count("users") == 0)
+	if(inif.line_count("users") == 0)
 	{
 		strcpy_s(reason, "Access denied by server. ");
 		return false;
 	}
 
-	if (CL != NULL && inif.line_exist("users", CL->name))
+	if(CL != NULL && inif.line_exist("users", CL->name))
 	{
-		if (game->NewPlayerName_Exists(CL, CL->name.c_str()))
+		if(game->NewPlayerName_Exists(CL, CL->name.c_str()))
 		{
 			strcpy_s(reason, "! Access denied by server. Login \"");
 			strcat_s(reason, CL->name.c_str());
@@ -243,7 +244,7 @@ bool xrGameSpyServer::Check_ServerAccess(IClient* CL, string512& reason)
 		}
 
 		shared_str pass1 = inif.r_string_wb("users", CL->name.c_str());
-		if (xr_strcmp(pass1, CL->pass) == 0)
+		if(xr_strcmp(pass1, CL->pass) == 0)
 		{
 			strcpy_s(reason, "- User \"");
 			strcat_s(reason, CL->name.c_str());
@@ -259,12 +260,12 @@ void xrGameSpyServer::Assign_ServerType(string512& res)
 {
 	string_path fn;
 	FS.update_path(fn, "$app_data_root$", "server_users.ltx");
-	if (FS.exist(fn))
+	if(FS.exist(fn))
 	{
 		CInifile inif(fn);
-		if (inif.section_exist("users"))
+		if(inif.section_exist("users"))
 		{
-			if (inif.line_count("users") != 0)
+			if(inif.line_count("users") != 0)
 			{
 				ServerFlags.set(server_flag_protected, 1);
 				strcpy_s(res, "# Server started as protected, using users list.");
@@ -308,18 +309,18 @@ void xrGameSpyServer::GetServerInfo(CServerInfo* si)
 	si->AddItem("Game version", QR2()->GetGameVersion(res), RGB(0, 158, 255));
 
 	strcpy_s(res, "");
-	if (HasProtected() || Password.size() > 0 || HasBattlEye())
+	if(HasProtected() || Password.size() > 0 || HasBattlEye())
 	{
-		if (HasProtected())
+		if(HasProtected())
 			strcat_s(res, "protected  ");
-		if (Password.size() > 0)
+		if(Password.size() > 0)
 			strcat_s(res, "password  ");
-		if (HasBattlEye())
+		if(HasBattlEye())
 			strcat_s(res, "battleye  ");
 	}
 	else
 	{
-		if (xr_strlen(res) == 0)
+		if(xr_strlen(res) == 0)
 			strcat_s(res, "free");
 	}
 	si->AddItem("Access to server", res, RGB(200, 155, 155));

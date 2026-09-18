@@ -35,12 +35,12 @@ struct ParticleEffect
 	IC int Resize(u32 max_count)
 	{
 		// Reducing max.
-		if (particles_allocated >= max_count)
+		if(particles_allocated >= max_count)
 		{
 			max_particles = max_count;
 
 			// May have to kill particles.
-			if (p_count > max_particles)
+			if(p_count > max_particles)
 				p_count = max_particles;
 
 			return max_count;
@@ -48,7 +48,7 @@ struct ParticleEffect
 
 		// Allocate particles.
 		Particle* new_particles = xr_alloc<Particle>(max_count);
-		if (new_particles == NULL)
+		if(new_particles == NULL)
 		{
 			// ERROR - Not enough memory. Just give all we've got.
 			max_particles = particles_allocated;
@@ -65,10 +65,10 @@ struct ParticleEffect
 	}
 	IC void Remove(int i)
 	{
-		if (0 == p_count)
+		if(0 == p_count)
 			return;
 		Particle& m = particles[i];
-		if (d_cb)
+		if(d_cb)
 			d_cb(owner, param, m, i);
 		m = particles[--p_count]; // не менять правило удаления !!! (dependence ParticleGroup)
 	}
@@ -76,7 +76,7 @@ struct ParticleEffect
 	IC BOOL Add(const pVector& pos, const pVector& posB, const pVector& size, const pVector& rot, const pVector& vel,
 				u32 color, const float age = 0.0f, u16 frame = 0, u16 flags = 0)
 	{
-		if (p_count >= max_particles)
+		if(p_count >= max_particles)
 			return FALSE;
 		else
 		{
@@ -90,7 +90,7 @@ struct ParticleEffect
 			P.age = age;
 			P.frame = frame;
 			P.flags.assign(flags);
-			if (b_cb)
+			if(b_cb)
 				b_cb(owner, param, P, p_count);
 			p_count++;
 			return TRUE;

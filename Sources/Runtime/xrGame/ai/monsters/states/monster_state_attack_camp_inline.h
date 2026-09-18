@@ -47,20 +47,20 @@ void CStateMonsterAttackCampAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterAttackCampAbstract::check_completion()
 {
-	if (current_substate == eStateAttackCamp_StealOut)
+	if(current_substate == eStateAttackCamp_StealOut)
 	{
 		return get_state_current()->check_completion();
 	}
 
-	if (current_substate == eStateAttackCamp_Camp)
+	if(current_substate == eStateAttackCamp_Camp)
 	{
-		if (object->EnemyMan.see_enemy_now())
+		if(object->EnemyMan.see_enemy_now())
 			return true;
-		if (object->HitMemory.get_last_hit_time() > get_state_current()->time_started())
+		if(object->HitMemory.get_last_hit_time() > get_state_current()->time_started())
 			return true;
 	}
 
-	if (object->EnemyMan.get_enemy()->Position().distance_to(object->Position()) < 5.f)
+	if(object->EnemyMan.get_enemy()->Position().distance_to(object->Position()) < 5.f)
 		return true;
 
 	return false;
@@ -71,15 +71,15 @@ bool CStateMonsterAttackCampAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterAttackCampAbstract::check_start_conditions()
 {
-	if (!object->ability_distant_feel())
+	if(!object->ability_distant_feel())
 		return false;
 
 	// check enemy
-	if (!object->EnemyMan.get_enemy())
+	if(!object->EnemyMan.get_enemy())
 		return false;
 
 	// check distance to enemy
-	if (object->Position().distance_to(object->EnemyMan.get_enemy_position()) < MIN_DISTANCE_TO_ENEMY)
+	if(object->Position().distance_to(object->EnemyMan.get_enemy_position()) < MIN_DISTANCE_TO_ENEMY)
 		return false;
 
 	// check if enemy see me
@@ -87,7 +87,7 @@ bool CStateMonsterAttackCampAbstract::check_start_conditions()
 
 	// try to get cover
 	const CCoverPoint* point = object->CoverMan->find_cover(object->EnemyMan.get_enemy_position(), 10.f, 30.f);
-	if (!point)
+	if(!point)
 		return false;
 
 	m_target_node = point->level_vertex_id();
@@ -98,28 +98,28 @@ bool CStateMonsterAttackCampAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterAttackCampAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
 		select_state(eStateAttackCamp_Hide);
 		return;
 	}
 
-	if (prev_substate == eStateAttackCamp_Hide)
+	if(prev_substate == eStateAttackCamp_Hide)
 	{
 		select_state(eStateAttackCamp_Camp);
 		return;
 	}
 
-	if (prev_substate == eStateAttackCamp_Camp)
+	if(prev_substate == eStateAttackCamp_Camp)
 	{
-		if (get_state(eStateAttackCamp_StealOut)->check_start_conditions())
+		if(get_state(eStateAttackCamp_StealOut)->check_start_conditions())
 			select_state(eStateAttackCamp_StealOut);
 		else
 			select_state(eStateAttackCamp_Hide);
 		return;
 	}
 
-	if (prev_substate == eStateAttackCamp_StealOut)
+	if(prev_substate == eStateAttackCamp_StealOut)
 	{
 		select_state(eStateAttackCamp_Camp);
 		return;
@@ -131,7 +131,7 @@ void CStateMonsterAttackCampAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateAttackCamp_Hide)
+	if(current_substate == eStateAttackCamp_Hide)
 	{
 		SStateDataMoveToPointEx data;
 
@@ -151,7 +151,7 @@ void CStateMonsterAttackCampAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateAttackCamp_Camp)
+	if(current_substate == eStateAttackCamp_Camp)
 	{
 
 		SStateDataLookToPoint data;

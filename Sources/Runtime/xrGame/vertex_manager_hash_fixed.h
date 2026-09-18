@@ -8,12 +8,15 @@
 
 #pragma once
 
-template <typename _path_id_type, typename _index_type, u32 hash_size, u32 fix_size> struct CVertexManagerHashFixed
+template <typename _path_id_type, typename _index_type, u32 hash_size, u32 fix_size>
+struct CVertexManagerHashFixed
 {
 
-	template <template <typename _T> class T1> struct VertexManager
+	template <template <typename _T> class T1>
+	struct VertexManager
 	{
-		template <typename T2> struct _vertex : public T1<T2>
+		template <typename T2>
+		struct _vertex : public T1<T2>
 		{
 			typedef _index_type _index_type;
 			_index_type _index;

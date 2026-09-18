@@ -17,7 +17,7 @@ class CDeviceResetNotifier : public pureDeviceReset
 	{
 		Engine.Events.DeviceReset.Remove(this);
 	};
-	virtual void OnDeviceReset(){};
+	virtual void OnDeviceReset() {};
 };
 
 //---------------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ CALifeSmartTerrainRegistry::~CALifeSmartTerrainRegistry()
 void CALifeSmartTerrainRegistry::add(CSE_ALifeDynamicObject* object)
 {
 	CSE_ALifeSmartZone* zone = smart_cast<CSE_ALifeSmartZone*>(object);
-	if (!zone)
+	if(!zone)
 		return;
 
 	OBJECTS::const_iterator I = objects().find(object->ID);
@@ -28,7 +28,7 @@ void CALifeSmartTerrainRegistry::add(CSE_ALifeDynamicObject* object)
 void CALifeSmartTerrainRegistry::remove(CSE_ALifeDynamicObject* object)
 {
 	CSE_ALifeSmartZone* zone = smart_cast<CSE_ALifeSmartZone*>(object);
-	if (!zone)
+	if(!zone)
 		return;
 
 	OBJECTS::iterator I = m_objects.find(object->ID);

@@ -28,25 +28,25 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 	CScriptMovementAction& l_tMovementAction = tpEntityAction->m_tMovementAction;
 
 	// check if completed
-	if (l_tMovementAction.m_bCompleted)
+	if(l_tMovementAction.m_bCompleted)
 		return (false);
 
 	// check if alive
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(this);
-	if (entity_alive && !entity_alive->g_Alive())
+	if(entity_alive && !entity_alive->g_Alive())
 	{
 		l_tMovementAction.m_bCompleted = true;
 		return (false);
 	}
 
-	if (control().path_builder().detail().time_path_built() >= tpEntityAction->m_tActionCondition.m_tStartTime)
+	if(control().path_builder().detail().time_path_built() >= tpEntityAction->m_tActionCondition.m_tStartTime)
 	{
-		if ((l_tMovementAction.m_fDistToEnd > 0) &&
-			control().path_builder().is_path_end(l_tMovementAction.m_fDistToEnd))
+		if((l_tMovementAction.m_fDistToEnd > 0) &&
+		   control().path_builder().is_path_end(l_tMovementAction.m_fDistToEnd))
 		{
 			l_tMovementAction.m_bCompleted = true;
 		}
-		if (control().path_builder().actual_all() && control().path_builder().path_completed())
+		if(control().path_builder().actual_all() && control().path_builder().path_completed())
 		{
 			l_tMovementAction.m_bCompleted = true;
 			return false;
@@ -54,7 +54,7 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 	}
 
 	// translate script.action into anim().action
-	switch (l_tMovementAction.m_tMoveAction)
+	switch(l_tMovementAction.m_tMoveAction)
 	{
 	case eMA_WalkFwd:
 		anim().m_tAction = ACT_WALK_FWD;
@@ -75,10 +75,11 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 
 	m_force_real_speed = (l_tMovementAction.m_tSpeedParam == eSP_ForceSpeed);
 
-	switch (l_tMovementAction.m_tGoalType)
+	switch(l_tMovementAction.m_tGoalType)
 	{
 
-	case CScriptMovementAction::eGoalTypeObject: {
+	case CScriptMovementAction::eGoalTypeObject:
+	{
 		CGameObject* l_tpGameObject = smart_cast<CGameObject*>(l_tMovementAction.m_tpObjectToGo);
 		path().set_target_point(l_tpGameObject->Position(), l_tpGameObject->ai_location().level_vertex_id());
 		break;
@@ -90,7 +91,7 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 		control().path_builder().patrol().set_start_type(l_tMovementAction.m_tPatrolPathStart);
 		control().path_builder().patrol().set_route_type(l_tMovementAction.m_tPatrolPathStop);
 		control().path_builder().patrol().set_random(l_tMovementAction.m_bRandom);
-		if (l_tMovementAction.m_previous_patrol_point != u32(-1))
+		if(l_tMovementAction.m_previous_patrol_point != u32(-1))
 		{
 			control().path_builder().patrol().set_previous_point(l_tMovementAction.m_previous_patrol_point);
 		}
@@ -111,7 +112,7 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 ///////////////////////////////////////////////////////////////////////////
 bool CBaseMonster::bfAssignObject(CScriptEntityAction* tpEntityAction)
 {
-	if (!inherited::bfAssignObject(tpEntityAction))
+	if(!inherited::bfAssignObject(tpEntityAction))
 		return (false);
 
 	//	CScriptObjectAction	&l_tObjectAction = tpEntityAction->m_tObjectAction;
@@ -136,18 +137,18 @@ bool CBaseMonster::bfAssignObject(CScriptEntityAction* tpEntityAction)
 
 bool CBaseMonster::bfAssignWatch(CScriptEntityAction* tpEntityAction)
 {
-	if (!inherited::bfAssignWatch(tpEntityAction))
+	if(!inherited::bfAssignWatch(tpEntityAction))
 		return (false);
 
 	// Инициализировать action
 	anim().m_tAction = ACT_STAND_IDLE;
 
 	CScriptWatchAction& l_tWatchAction = tpEntityAction->m_tWatchAction;
-	if (l_tWatchAction.completed())
+	if(l_tWatchAction.completed())
 		return false;
 
 	fvec3 new_pos;
-	switch (l_tWatchAction.m_tWatchType)
+	switch(l_tWatchAction.m_tWatchType)
 	{
 	case SightManager::eSightTypePosition:
 		LookPosition(l_tWatchAction.m_tWatchVector);
@@ -158,7 +159,7 @@ bool CBaseMonster::bfAssignWatch(CScriptEntityAction* tpEntityAction)
 		break;
 	}
 
-	if (!control().direction().is_turning())
+	if(!control().direction().is_turning())
 		l_tWatchAction.m_bCompleted = true;
 	else
 		l_tWatchAction.m_bCompleted = false;
@@ -168,15 +169,15 @@ bool CBaseMonster::bfAssignWatch(CScriptEntityAction* tpEntityAction)
 
 bool CBaseMonster::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
 {
-	if (!inherited::bfAssignAnimation(tpEntityAction))
+	if(!inherited::bfAssignAnimation(tpEntityAction))
 		return (false);
 
 	CScriptAnimationAction& l_tAnimAction = tpEntityAction->m_tAnimationAction;
-	if (l_tAnimAction.completed())
+	if(l_tAnimAction.completed())
 		return false;
 
 	// translate animation.action into anim().action
-	switch (l_tAnimAction.m_tAnimAction)
+	switch(l_tAnimAction.m_tAnimAction)
 	{
 	case eAA_StandIdle:
 		anim().m_tAction = ACT_STAND_IDLE;
@@ -210,16 +211,16 @@ bool CBaseMonster::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
 bool CBaseMonster::bfAssignSound(CScriptEntityAction* tpEntityAction)
 {
 	CScriptSoundAction& l_tAction = tpEntityAction->m_tSoundAction;
-	if (l_tAction.completed())
+	if(l_tAction.completed())
 		return false;
 
-	if (l_tAction.m_monster_sound == MonsterSound::eMonsterSoundDummy)
+	if(l_tAction.m_monster_sound == MonsterSound::eMonsterSoundDummy)
 	{
-		if (!inherited::bfAssignSound(tpEntityAction))
+		if(!inherited::bfAssignSound(tpEntityAction))
 			return (false);
 	}
 
-	switch (l_tAction.m_monster_sound)
+	switch(l_tAction.m_monster_sound)
 	{
 	case eMonsterSoundIdle:
 		sound().play(eMonsterSoundIdle, 0, 0,
@@ -267,22 +268,22 @@ bool CBaseMonster::bfAssignSound(CScriptEntityAction* tpEntityAction)
 
 bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
 {
-	if (!inherited::bfAssignMonsterAction(tpEntityAction))
+	if(!inherited::bfAssignMonsterAction(tpEntityAction))
 		return false;
 
 	CScriptMonsterAction& l_tAction = tpEntityAction->m_tMonsterAction;
-	if (l_tAction.completed())
+	if(l_tAction.completed())
 		return false;
 
 	CEntityAlive* pE = smart_cast<CEntityAlive*>(l_tAction.m_tObject);
 
-	switch (l_tAction.m_tAction)
+	switch(l_tAction.m_tAction)
 	{
 	case eGA_Rest:
 		StateMan->force_script_state(eStateRest);
 		break;
 	case eGA_Eat:
-		if (pE && !pE->getDestroy() && !pE->g_Alive())
+		if(pE && !pE->getDestroy() && !pE->g_Alive())
 		{
 			CorpseMan.force_corpse(pE);
 			StateMan->force_script_state(eStateEat);
@@ -292,7 +293,7 @@ bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
 
 		break;
 	case eGA_Attack:
-		if (pE && !pE->getDestroy() && pE->g_Alive())
+		if(pE && !pE->getDestroy() && pE->g_Alive())
 		{
 			EnemyMan.force_enemy(pE);
 			StateMan->force_script_state(eStateAttack);
@@ -302,7 +303,7 @@ bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
 
 		break;
 	case eGA_Panic:
-		if (pE && !pE->getDestroy() && pE->g_Alive())
+		if(pE && !pE->getDestroy() && pE->g_Alive())
 		{
 			EnemyMan.force_enemy(pE);
 			StateMan->force_script_state(eStatePanic);
@@ -318,9 +319,9 @@ bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
 
 void CBaseMonster::ProcessScripts()
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
-	if (m_script_processing_active)
+	if(m_script_processing_active)
 		return;
 
 	m_script_processing_active = true;
@@ -337,7 +338,7 @@ void CBaseMonster::ProcessScripts()
 	anim().accel_deactivate();
 
 	// если из скрипта выбрано действие по универсальной схеме, выполнить его
-	if (m_script_state_must_execute)
+	if(m_script_state_must_execute)
 		StateMan->execute_script_state();
 
 	TranslateActionToPathParams();
@@ -352,7 +353,7 @@ void CBaseMonster::ProcessScripts()
 
 	// Удалить все враги и объекты, которые были принудительно установлены
 	// во время выполнения скриптового действия
-	if (m_script_state_must_execute)
+	if(m_script_state_must_execute)
 	{
 		EnemyMan.unforce_enemy();
 		CorpseMan.unforce_corpse();
@@ -362,7 +363,7 @@ void CBaseMonster::ProcessScripts()
 	m_script_processing_active = false;
 
 #ifdef DEBUG
-	if (psAI_Flags.test(aiMonsterDebug))
+	if(psAI_Flags.test(aiMonsterDebug))
 	{
 		DBG().object_info(this, this).remove_item(u32(0));
 		DBG().object_info(this, this).remove_item(u32(1));
@@ -380,10 +381,10 @@ CEntity* CBaseMonster::GetCurrentEnemy()
 {
 	CEntity* enemy = 0;
 
-	if (EnemyMan.get_enemy())
+	if(EnemyMan.get_enemy())
 		enemy = const_cast<CEntity*>(smart_cast<const CEntity*>(EnemyMan.get_enemy()));
 
-	if (!enemy || enemy->getDestroy() || !enemy->g_Alive())
+	if(!enemy || enemy->getDestroy() || !enemy->g_Alive())
 		enemy = 0;
 
 	return (enemy);
@@ -393,10 +394,10 @@ CEntity* CBaseMonster::GetCurrentCorpse()
 {
 	CEntity* corpse = 0;
 
-	if (CorpseMan.get_corpse())
+	if(CorpseMan.get_corpse())
 		corpse = const_cast<CEntity*>(smart_cast<const CEntity*>(CorpseMan.get_corpse()));
 
-	if (!corpse || corpse->getDestroy() || corpse->g_Alive())
+	if(!corpse || corpse->getDestroy() || corpse->g_Alive())
 		corpse = 0;
 
 	return (corpse);
@@ -404,7 +405,7 @@ CEntity* CBaseMonster::GetCurrentCorpse()
 
 void CBaseMonster::SetScriptControl(const bool bScriptControl, shared_str caScriptName)
 {
-	if (StateMan)
+	if(StateMan)
 		StateMan->critical_finalize();
 
 	CScriptEntity::SetScriptControl(bScriptControl, caScriptName);
@@ -412,9 +413,9 @@ void CBaseMonster::SetScriptControl(const bool bScriptControl, shared_str caScri
 
 int CBaseMonster::get_enemy_strength()
 {
-	if (EnemyMan.get_enemy())
+	if(EnemyMan.get_enemy())
 	{
-		switch (EnemyMan.get_danger_type())
+		switch(EnemyMan.get_danger_type())
 		{
 		case eVeryStrong:
 			return (4);

@@ -24,7 +24,7 @@ void CRadioactiveZone::Load(LPCSTR section)
 bool CRadioactiveZone::BlowoutState()
 {
 	bool result = inherited::BlowoutState();
-	if (!result)
+	if(!result)
 		UpdateBlowout();
 	return result;
 }
@@ -32,13 +32,13 @@ bool CRadioactiveZone::BlowoutState()
 void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 {
 	// верм€ срабатывани€ не чаще, чем заданный период
-	if (m_dwDeltaTime < m_dwPeriod)
+	if(m_dwDeltaTime < m_dwPeriod)
 		return;
 	//.	m_dwDeltaTime = 0;
 
 	CGameObject* GO = O->object;
 
-	if (GO)
+	if(GO)
 	{
 		fvec3 pos;
 		Transform().transform_tiny(pos, CFORM()->getSphere().P);
@@ -46,7 +46,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 #ifdef DEBUG
 		char pow[255];
 		sprintf_s(pow, "zone hit. %.3f", Power(GO->Position().distance_to(pos)));
-		if (bDebug)
+		if(bDebug)
 			Msg("%s %s", *GO->cName(), pow);
 #endif
 
@@ -56,7 +56,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 		fvec3 position_in_bone_space;
 		float power = (GameID() == GAME_SINGLE) ? Power(GO->Position().distance_to(pos)) : 0.0f;
 		float impulse = 0.f;
-		if (power > EPS)
+		if(power > EPS)
 		{
 			//.			m_dwDeltaTime = 0;
 			position_in_bone_space.set(0.f, 0.f, 0.f);
@@ -69,9 +69,9 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 void CRadioactiveZone::feel_touch_new(CObject* O)
 {
 	inherited::feel_touch_new(O);
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 	{
-		if (O->CLS_ID == CLSID_OBJECT_ACTOR)
+		if(O->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
 			CreateHit(O->ID(), ID(), fvec3().set(0, 0, 0), 0.0f, BI_NONE, fvec3().set(0, 0, 0), 0.0f,
 					  ALife::eHitTypeRadiation);
@@ -83,10 +83,10 @@ void CRadioactiveZone::feel_touch_new(CObject* O)
 BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 {
 	CActor* A = smart_cast<CActor*>(O);
-	if (A)
+	if(A)
 	{
 		// ƒополнительна€ проверка на валидность объекта
-		if (A->getDestroy())
+		if(A->getDestroy())
 			return FALSE;
 
 		// "Failsafe": ѕроверка по дистанции.
@@ -97,10 +97,10 @@ BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 
 		// ≈сли мы дальше радиуса зоны + 2.5 метра (запас на гистерезис),
 		// то принудительно считаем, что контакта нет.
-		if (fDist > (fZoneRadius + 2.5f))
+		if(fDist > (fZoneRadius + 2.5f))
 			return FALSE;
 
-		if (!((CCF_Shape*)CFORM())->Contact(O))
+		if(!((CCF_Shape*)CFORM())->Contact(O))
 			return FALSE;
 
 		return A->feel_touch_on_contact(this);
@@ -111,14 +111,14 @@ BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 
 void CRadioactiveZone::UpdateWorkload(u32 dt)
 {
-	if (IsEnabled() && GameID() != GAME_SINGLE)
+	if(IsEnabled() && GameID() != GAME_SINGLE)
 	{
 		OBJECT_INFO_VEC_IT it;
 		fvec3 pos;
 		Transform().transform_tiny(pos, CFORM()->getSphere().P);
-		for (it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
+		for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		{
-			if (!(*it).object->getDestroy() && (*it).object->CLS_ID == CLSID_OBJECT_ACTOR)
+			if(!(*it).object->getDestroy() && (*it).object->CLS_ID == CLSID_OBJECT_ACTOR)
 			{
 				//=====================================
 				NET_Packet l_P;

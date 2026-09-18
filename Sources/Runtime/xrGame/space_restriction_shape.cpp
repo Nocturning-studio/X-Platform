@@ -29,8 +29,8 @@ struct CBorderMergePredicate
 
 	IC void operator()(const CLevelGraph::CVertex& vertex) const
 	{
-		if (m_restriction->inside(ai().level_graph().vertex_id(&vertex), true) &&
-			!m_restriction->inside(ai().level_graph().vertex_id(&vertex), false))
+		if(m_restriction->inside(ai().level_graph().vertex_id(&vertex), true) &&
+		   !m_restriction->inside(ai().level_graph().vertex_id(&vertex), false))
 			m_restriction->m_border.push_back(ai().level_graph().vertex_id(&vertex));
 	}
 
@@ -52,7 +52,7 @@ struct CShapeTestPredicate
 
 	IC void operator()(const CLevelGraph::CVertex& vertex) const
 	{
-		if (m_restriction->inside(ai().level_graph().vertex_id(&vertex), false))
+		if(m_restriction->inside(ai().level_graph().vertex_id(&vertex), false))
 			m_restriction->m_test_storage.push_back(ai().level_graph().vertex_id(&vertex));
 	}
 };
@@ -61,26 +61,28 @@ struct CShapeTestPredicate
 void CSpaceRestrictionShape::fill_shape(const CCF_Shape::shape_def& shape)
 {
 	fvec3 start, dest;
-	switch (shape.type)
+	switch(shape.type)
 	{
-	case 0: {
+	case 0:
+	{
 		start.sub(fvec3().set(shape.data.sphere.P), fvec3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
 		dest.add(fvec3().set(shape.data.sphere.P), fvec3().set(shape.data.sphere.R, 0.f, shape.data.sphere.R));
 		start.add(m_restrictor->Position());
 		dest.add(m_restrictor->Position());
 		break;
 	}
-	case 1: {
+	case 1:
+	{
 		fvec3 points[8] = {fvec3().set(-.5f, -.5f, -.5f), fvec3().set(-.5f, -.5f, +.5f),
-							 fvec3().set(-.5f, +.5f, -.5f), fvec3().set(-.5f, +.5f, +.5f),
-							 fvec3().set(+.5f, -.5f, -.5f), fvec3().set(+.5f, -.5f, +.5f),
-							 fvec3().set(+.5f, +.5f, -.5f), fvec3().set(+.5f, +.5f, +.5f)};
+						   fvec3().set(-.5f, +.5f, -.5f), fvec3().set(-.5f, +.5f, +.5f),
+						   fvec3().set(+.5f, -.5f, -.5f), fvec3().set(+.5f, -.5f, +.5f),
+						   fvec3().set(+.5f, +.5f, -.5f), fvec3().set(+.5f, +.5f, +.5f)};
 		start = fvec3().set(flt_max, flt_max, flt_max);
 		dest = fvec3().set(flt_min, flt_min, flt_min);
 		fmat4x4 Q;
 		Q.mul_43(m_restrictor->Transform(), shape.data.box);
 		fvec3 temp;
-		for (int i = 0; i < 8; ++i)
+		for(int i = 0; i < 8; ++i)
 		{
 			Q.transform_tiny(temp, points[i]);
 			start.x = _min(start.x, temp.x);
@@ -109,7 +111,7 @@ void CSpaceRestrictionShape::build_border()
 	VERIFY(shape);
 	xr_vector<CCF_Shape::shape_def>::const_iterator I = shape->Shapes().begin();
 	xr_vector<CCF_Shape::shape_def>::const_iterator E = shape->Shapes().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		fill_shape(*I);
 
 	{
@@ -130,7 +132,7 @@ void CSpaceRestrictionShape::test_correctness()
 {
 	m_correct = true;
 
-	if (m_test_storage.empty())
+	if(m_test_storage.empty())
 		return;
 
 	// leave only unique nodes in m_test_storage
@@ -190,7 +192,7 @@ void CSpaceRestrictionShape::test_correctness()
 
 	//		if (!b_found) {
 	//			Msg("Node%u :: index[%u]:: position[%f,%f,%f]", index, (*I),
-	//VPUSH(ai().level_graph().vertex_position((*I)))); 			index ++;
+	// VPUSH(ai().level_graph().vertex_position((*I)))); 			index ++;
 	//		}
 
 	//	}

@@ -46,26 +46,26 @@ void CStateBloodsuckerVampireAbstract::reselect_state()
 	u32 state_id = u32(-1);
 
 	// check if we can start execute
-	if (prev_substate == eStateVampire_ApproachEnemy)
+	if(prev_substate == eStateVampire_ApproachEnemy)
 	{
-		if (get_state(eStateVampire_Execute)->check_start_conditions())
+		if(get_state(eStateVampire_Execute)->check_start_conditions())
 			state_id = eStateVampire_Execute;
 	}
 
 	// check if we executed
-	if (prev_substate == eStateVampire_Execute)
+	if(prev_substate == eStateVampire_Execute)
 		state_id = eStateVampire_Hide;
 
 	// check if reach time in vampire state is out - then hide
-	if (prev_substate == eStateVampire_ApproachEnemy)
+	if(prev_substate == eStateVampire_ApproachEnemy)
 		state_id = eStateVampire_Hide;
 
 	// check if we hiding - then hide again
-	if (prev_substate == eStateVampire_Hide)
+	if(prev_substate == eStateVampire_Hide)
 		state_id = eStateVampire_Hide;
 
 	// else just
-	if (state_id == u32(-1))
+	if(state_id == u32(-1))
 		state_id = eStateVampire_ApproachEnemy;
 
 	select_state(state_id);
@@ -75,9 +75,9 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireAbstract::check_force_state()
 {
 	// check if we can start execute
-	if (prev_substate == eStateVampire_ApproachEnemy)
+	if(prev_substate == eStateVampire_ApproachEnemy)
 	{
-		if (get_state(eStateVampire_Execute)->check_start_conditions())
+		if(get_state(eStateVampire_Execute)->check_start_conditions())
 			current_substate = u32(-1);
 	}
 }
@@ -103,26 +103,26 @@ void CStateBloodsuckerVampireAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 {
-	if (!object->WantVampire())
+	if(!object->WantVampire())
 		return false;
-	if (object->berserk_always)
+	if(object->berserk_always)
 		return false;
 
 	// является ли враг актером
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
-	if (enemy->CLS_ID != CLSID_OBJECT_ACTOR)
+	if(enemy->CLS_ID != CLSID_OBJECT_ACTOR)
 		return false;
-	if (!object->EnemyMan.see_enemy_now())
+	if(!object->EnemyMan.see_enemy_now())
 		return false;
-	if (object->CControlledActor::is_controlling())
+	if(object->CControlledActor::is_controlling())
 		return false;
 
 	const CActor* actor = smart_cast<const CActor*>(enemy);
 	VERIFY(actor);
-	if (actor->input_external_handler_installed())
+	if(actor->input_external_handler_installed())
 		return false;
 
-	if (m_time_last_vampire + object->m_vampire_min_delay > Engine.TimeManager.GetGlobalTimeMs())
+	if(m_time_last_vampire + object->m_vampire_min_delay > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	return true;
@@ -132,15 +132,15 @@ TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerVampireAbstract::check_completion()
 {
 	// если убежал
-	if ((current_substate == eStateVampire_Hide) && get_state_current()->check_completion())
+	if((current_substate == eStateVampire_Hide) && get_state_current()->check_completion())
 		return true;
 
 	// если враг изменился
-	if (enemy != object->EnemyMan.get_enemy())
+	if(enemy != object->EnemyMan.get_enemy())
 		return true;
 
 	// если актера уже контролит другой кровосос
-	if ((current_substate != eStateVampire_Execute) && object->CControlledActor::is_controlling())
+	if((current_substate != eStateVampire_Execute) && object->CControlledActor::is_controlling())
 		return true;
 
 	return false;
@@ -151,7 +151,7 @@ void CStateBloodsuckerVampireAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateVampire_RunAway)
+	if(current_substate == eStateVampire_RunAway)
 	{
 
 		SStateHideFromPoint data;

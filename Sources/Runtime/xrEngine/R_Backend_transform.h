@@ -5,13 +5,13 @@
 class ENGINE_API R_transforms
 {
   public:
-	fmat4x4 m_World;	// Basic	- world
-	fmat4x4 m_InvWorld; // derived	- world2local, cached
-	fmat4x4 m_View;	// Basic	- view
-	fmat4x4 m_Project;	// Basic	- projection
-	fmat4x4 m_WorldView;	// Derived	- world2view
-	fmat4x4 m_ViewProject;	// Derived	- view2projection
-	fmat4x4 m_WorldViewProject;	// Derived	- world2view2projection
+	fmat4x4 m_World;			// Basic	- world
+	fmat4x4 m_InvWorld;			// derived	- world2local, cached
+	fmat4x4 m_View;				// Basic	- view
+	fmat4x4 m_Project;			// Basic	- projection
+	fmat4x4 m_WorldView;		// Derived	- world2view
+	fmat4x4 m_ViewProject;		// Derived	- view2projection
+	fmat4x4 m_WorldViewProject; // Derived	- world2view2projection
 
 	R_constant* c_World;
 	R_constant* c_InvWorld;

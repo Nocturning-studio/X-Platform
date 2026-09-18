@@ -8,7 +8,8 @@
 
 #pragma once
 
-template <typename _condition_type, typename _value_type> class COperatorConditionAbstract
+template <typename _condition_type, typename _value_type>
+class COperatorConditionAbstract
 {
   public:
 	typedef _condition_type _condition_type;

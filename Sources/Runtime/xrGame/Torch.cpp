@@ -69,11 +69,11 @@ CTorch::~CTorch(void)
 
 inline bool CTorch::can_use_dynamic_lights()
 {
-	if (!H_Parent())
+	if(!H_Parent())
 		return (true);
 
 	CInventoryOwner* owner = smart_cast<CInventoryOwner*>(H_Parent());
-	if (!owner)
+	if(!owner)
 		return (true);
 
 	return (owner->can_use_dynamic_lights());
@@ -85,7 +85,7 @@ void CTorch::Load(LPCSTR section)
 	light_trace_bone = pSettings->r_string(section, "light_trace_bone");
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section, "night_vision");
-	if (m_bNightVisionEnabled)
+	if(m_bNightVisionEnabled)
 	{
 		HUD_SOUND::LoadSound(section, "snd_night_vision_on", m_NightVisionOnSnd, SOUND_TYPE_ITEM_USING);
 		HUD_SOUND::LoadSound(section, "snd_night_vision_off", m_NightVisionOffSnd, SOUND_TYPE_ITEM_USING);
@@ -101,17 +101,17 @@ void CTorch::Load(LPCSTR section)
 
 void CTorch::SwitchNightVision()
 {
-	if (OnClient())
+	if(OnClient())
 		return;
 	SwitchNightVision(!m_bNightVisionOn);
 }
 
 void CTorch::SwitchNightVision(bool vision_on)
 {
-	if (!m_bNightVisionEnabled)
+	if(!m_bNightVisionEnabled)
 		return;
 
-	if (vision_on /*&& (m_NightVisionChargeTime > m_NightVisionRechargeTimeMin || OnClient())*/)
+	if(vision_on /*&& (m_NightVisionChargeTime > m_NightVisionRechargeTimeMin || OnClient())*/)
 	{
 		// m_NightVisionChargeTime = m_NightVisionDischargeTime*m_NightVisionChargeTime/m_NightVisionRechargeTime;
 		m_bNightVisionOn = true;
@@ -123,7 +123,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 
 	CActor* pA = smart_cast<CActor*>(H_Parent());
 
-	if (!pA)
+	if(!pA)
 		return;
 	bool bPlaySoundFirstPerson = (pA == Level().CurrentViewEntity());
 
@@ -132,10 +132,10 @@ void CTorch::SwitchNightVision(bool vision_on)
 	u32 cnt = _GetItemCount(disabled_names);
 	bool b_allow = true;
 	string512 tmp;
-	for (u32 i = 0; i < cnt; ++i)
+	for(u32 i = 0; i < cnt; ++i)
 	{
 		_GetItem(disabled_names, i, tmp);
-		if (0 == xr_stricmp(tmp, curr_map))
+		if(0 == xr_stricmp(tmp, curr_map))
 		{
 			b_allow = false;
 			break;
@@ -143,17 +143,17 @@ void CTorch::SwitchNightVision(bool vision_on)
 	}
 
 	CCustomOutfit* pCO = pA->GetOutfit();
-	if (pCO && pCO->m_NightVisionSect.size() && !b_allow)
+	if(pCO && pCO->m_NightVisionSect.size() && !b_allow)
 	{
 		HUD_SOUND::PlaySound(m_NightVisionBrokenSnd, pA->Position(), pA, bPlaySoundFirstPerson);
 		return;
 	}
 
-	if (m_bNightVisionOn)
+	if(m_bNightVisionOn)
 	{
-		if (!m_bNightVisionPostprocessEnabled)
+		if(!m_bNightVisionPostprocessEnabled)
 		{
-			if (pCO && pCO->m_NightVisionSect.size())
+			if(pCO && pCO->m_NightVisionSect.size())
 			{
 				m_bNightVisionPostprocessEnabled = true;
 				g_pGamePersistent->SetNightVisionState(m_bNightVisionPostprocessEnabled);
@@ -164,7 +164,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 	}
 	else
 	{
-		if (m_bNightVisionPostprocessEnabled)
+		if(m_bNightVisionPostprocessEnabled)
 		{
 			m_bNightVisionPostprocessEnabled = false;
 			g_pGamePersistent->SetNightVisionState(m_bNightVisionPostprocessEnabled);
@@ -176,9 +176,9 @@ void CTorch::SwitchNightVision(bool vision_on)
 
 void CTorch::UpdateSwitchNightVision()
 {
-	if (!m_bNightVisionEnabled)
+	if(!m_bNightVisionEnabled)
 		return;
-	if (OnClient())
+	if(OnClient())
 		return;
 
 	/*if(m_bNightVisionOn)
@@ -197,7 +197,7 @@ void CTorch::UpdateSwitchNightVision()
 
 void CTorch::Switch()
 {
-	if (OnClient())
+	if(OnClient())
 		return;
 	bool bActive = !m_switched_on;
 	Switch(bActive);
@@ -206,17 +206,17 @@ void CTorch::Switch()
 void CTorch::Switch(bool light_on)
 {
 	m_switched_on = light_on;
-	if (can_use_dynamic_lights())
+	if(can_use_dynamic_lights())
 	{
 		light_render->set_active(light_on);
 
 		CActor* pA = smart_cast<CActor*>(H_Parent());
-		if (!pA)
+		if(!pA)
 			light_omni->set_active(light_on);
 	}
 	glow_render->set_active(light_on);
 
-	if (*light_trace_bone)
+	if(*light_trace_bone)
 	{
 		CKinematics* pVisual = smart_cast<CKinematics*>(Visual());
 		VERIFY(pVisual);
@@ -240,7 +240,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT(smart_cast<CKinematics*>(Visual()));
 	collidable.model = xr_new<CCF_Skeleton>(this);
 
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
@@ -314,20 +314,20 @@ void CTorch::UpdateCL()
 
 	UpdateSwitchNightVision();
 
-	if (!m_switched_on)
+	if(!m_switched_on)
 		return;
 
 	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
 	fmat4x4 M;
 
-	if (H_Parent())
+	if(H_Parent())
 	{
 		CActor* actor = smart_cast<CActor*>(H_Parent());
-		if (actor)
+		if(actor)
 			smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate();
 
-		if (H_Parent()->Transform().c.distance_to_sqr(Engine.RenderView.Position) < _sqr(OPTIMIZATION_DISTANCE) ||
-			GameID() != GAME_SINGLE)
+		if(H_Parent()->Transform().c.distance_to_sqr(Engine.RenderView.Position) < _sqr(OPTIMIZATION_DISTANCE) ||
+		   GameID() != GAME_SINGLE)
 		{
 			// near camera
 			smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones();
@@ -341,7 +341,7 @@ void CTorch::UpdateCL()
 			M.c.y += H_Parent()->Radius() * 2.f / 3.f;
 		}
 
-		if (actor)
+		if(actor)
 		{
 			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_FirstEye()->yaw, TORCH_INERTION_SPEED_MIN,
 											 TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Engine.TimeManager.GetDeltaTime());
@@ -352,7 +352,7 @@ void CTorch::UpdateCL()
 			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
 			fvec3::generate_orthonormal_basis_normalized(dir, up, right);
 
-			if (true)
+			if(true)
 			{
 				fvec3 offset = M.c;
 				offset.mad(M.i, TORCH_OFFSET.x);
@@ -360,7 +360,7 @@ void CTorch::UpdateCL()
 				offset.mad(M.k, TORCH_OFFSET.z);
 				light_render->set_position(offset);
 
-				if (false)
+				if(false)
 				{
 					offset = M.c;
 					offset.mad(M.i, OMNI_OFFSET.x);
@@ -371,11 +371,11 @@ void CTorch::UpdateCL()
 			} // if (true)
 			glow_render->set_position(M.c);
 
-			if (true)
+			if(true)
 			{
 				light_render->set_rotation(dir, right);
 
-				if (false)
+				if(false)
 				{
 					light_omni->set_rotation(dir, right);
 				}
@@ -385,7 +385,7 @@ void CTorch::UpdateCL()
 		} // if(actor)
 		else
 		{
-			if (can_use_dynamic_lights())
+			if(can_use_dynamic_lights())
 			{
 				light_render->set_position(M.c);
 				light_render->set_rotation(M.k, M.i);
@@ -404,7 +404,7 @@ void CTorch::UpdateCL()
 	} // if(HParent())
 	else
 	{
-		if (getVisible() && m_pPhysicsShell)
+		if(getVisible() && m_pPhysicsShell)
 		{
 			M.mul(Transform(), BI.mTransform);
 
@@ -427,11 +427,11 @@ void CTorch::UpdateCL()
 		} // if (getVisible() && m_pPhysicsShell)
 	}
 
-	if (!m_switched_on)
+	if(!m_switched_on)
 		return;
 
 	// calc color animator
-	if (!lanim)
+	if(!lanim)
 		return;
 
 	int frame;
@@ -441,7 +441,7 @@ void CTorch::UpdateCL()
 	Fcolor fclr;
 	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
 	fclr.mul_rgb(fBrightness / 255.f);
-	if (can_use_dynamic_lights())
+	if(can_use_dynamic_lights())
 	{
 		light_render->set_color(fclr);
 		light_omni->set_color(fclr);
@@ -473,9 +473,9 @@ void CTorch::net_Export(NET_Packet& P)
 	F |= (m_switched_on ? eTorchActive : 0);
 	F |= (m_bNightVisionOn ? eNightVisionActive : 0);
 	const CActor* pA = smart_cast<const CActor*>(H_Parent());
-	if (pA)
+	if(pA)
 	{
-		if (pA->attached(this))
+		if(pA->attached(this))
 			F |= eAttached;
 	}
 	P.w_u8(F);
@@ -490,9 +490,9 @@ void CTorch::net_Import(NET_Packet& P)
 	bool new_m_switched_on = !!(F & eTorchActive);
 	bool new_m_bNightVisionOn = !!(F & eNightVisionActive);
 
-	if (new_m_switched_on != m_switched_on)
+	if(new_m_switched_on != m_switched_on)
 		Switch(new_m_switched_on);
-	if (new_m_bNightVisionOn != m_bNightVisionOn)
+	if(new_m_bNightVisionOn != m_bNightVisionOn)
 	{
 		//		Msg("CTorch::net_Import - NV[%d]", new_m_bNightVisionOn);
 
@@ -505,10 +505,10 @@ bool CTorch::can_be_attached() const
 	//	if( !inherited::can_be_attached() ) return false;
 
 	const CActor* pA = smart_cast<const CActor*>(H_Parent());
-	if (pA)
+	if(pA)
 	{
 		//		if(pA->inventory().Get(ID(), false))
-		if ((const CTorch*)smart_cast<CTorch*>(pA->inventory().m_slots[GetSlot()].m_pIItem) == this)
+		if((const CTorch*)smart_cast<CTorch*>(pA->inventory().m_slots[GetSlot()].m_pIItem) == this)
 			return true;
 		else
 			return false;

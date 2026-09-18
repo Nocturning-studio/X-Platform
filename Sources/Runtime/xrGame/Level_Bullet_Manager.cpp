@@ -108,7 +108,7 @@ void CBulletManager::Load()
 	LPCSTR whine_sounds = pSettings->r_string(BULLET_MANAGER_SECTION, "whine_sounds");
 	int cnt = _GetItemCount(whine_sounds);
 	xr_string tmp;
-	for (int k = 0; k < cnt; ++k)
+	for(int k = 0; k < cnt; ++k)
 	{
 		m_WhineSounds.push_back(ref_sound());
 		m_WhineSounds.back().create(_GetItem(whine_sounds, k, tmp), st_Effect, sg_SourceType);
@@ -116,13 +116,13 @@ void CBulletManager::Load()
 
 	LPCSTR explode_particles = pSettings->r_string(BULLET_MANAGER_SECTION, "explode_particles");
 	cnt = _GetItemCount(explode_particles);
-	for (int k = 0; k < cnt; ++k)
+	for(int k = 0; k < cnt; ++k)
 		m_ExplodeParticles.push_back(_GetItem(explode_particles, k, tmp));
 }
 
 void CBulletManager::PlayExplodePS(const fmat4x4& xf)
 {
-	if (!m_ExplodeParticles.empty())
+	if(!m_ExplodeParticles.empty())
 	{
 		const shared_str& ps_name = m_ExplodeParticles[Random.randI(0, m_ExplodeParticles.size())];
 
@@ -134,11 +134,11 @@ void CBulletManager::PlayExplodePS(const fmat4x4& xf)
 
 void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const fvec3& pos)
 {
-	if (m_WhineSounds.empty())
+	if(m_WhineSounds.empty())
 		return;
-	if (bullet->m_whine_snd._feedback() != NULL)
+	if(bullet->m_whine_snd._feedback() != NULL)
 		return;
-	if (bullet->hit_type != ALife::eHitTypeFireWound)
+	if(bullet->hit_type != ALife::eHitTypeFireWound)
 		return;
 
 	bullet->m_whine_snd = m_WhineSounds[Random.randI(0, m_WhineSounds.size())];
@@ -165,7 +165,7 @@ void CBulletManager::AddBullet(const fvec3& position, const fvec3& direction, fl
 				maximum_distance, cartridge, SendHit);
 	bullet.frame_num = Engine.TimeManager.GetFrameCount();
 	bullet.flags.aim_bullet = AimBullet;
-	if (SendHit && GameID() != GAME_SINGLE)
+	if(SendHit && GameID() != GAME_SINGLE)
 		Game().m_WeaponUsageStatistic->OnBullet_Fire(&bullet, cartridge);
 	m_Lock.Leave();
 }
@@ -182,7 +182,7 @@ void CBulletManager::UpdateWorkload()
 	rq_storage.r_clear();
 	rq_spatial.clear_not_free();
 
-	for (int k = m_Bullets.size() - 1; k >= 0; k--)
+	for(int k = m_Bullets.size() - 1; k >= 0; k--)
 	{
 		SBullet& bullet = m_Bullets[k];
 		// для пули пущенной на этом же кадре считаем только 1 шаг
@@ -193,15 +193,15 @@ void CBulletManager::UpdateWorkload()
 		u32 cur_step_num = step_num;
 
 		u32 frames_pass = Engine.TimeManager.GetFrameCount() - bullet.frame_num;
-		if (frames_pass == 0)
+		if(frames_pass == 0)
 			cur_step_num = 1;
-		else if (frames_pass == 1 && step_num > 0)
+		else if(frames_pass == 1 && step_num > 0)
 			cur_step_num -= 1;
 
 		// calculate bullet
-		for (u32 i = 0; i < cur_step_num; i++)
+		for(u32 i = 0; i < cur_step_num; i++)
 		{
-			if (!CalcBullet(rq_storage, rq_spatial, &bullet, m_dwStepTime))
+			if(!CalcBullet(rq_storage, rq_spatial, &bullet, m_dwStepTime))
 			{
 				collide::rq_result res;
 				RegisterEvent(EVENT_REMOVE, FALSE, &bullet, fvec3().set(0, 0, 0), res, (u16)k);
@@ -225,7 +225,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 	float range = bullet->speed * delta_time_sec;
 
 	float max_range = bullet->max_dist - bullet->fly_dist;
-	if (range > max_range)
+	if(range > max_range)
 		range = max_range;
 
 	// запомнить текущую скорость пули, т.к. в
@@ -243,7 +243,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 	VERIFY(!fis_zero(RD.dir.square_magnitude()));
 	result = Level().ObjectSpace.RayQuery(rq_storage, RD, firetrace_callback, &bullet_data, test_callback, NULL);
 
-	if (result && bullet_data.bStopTracing)
+	if(result && bullet_data.bStopTracing)
 	{
 		range = (rq_storage.r_begin() + rq_storage.r_count() - 1)->range;
 	}
@@ -251,13 +251,13 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 
 	bullet->flags.skipped_frame = (Engine.TimeManager.GetFrameCount() >= bullet->frame_num);
 
-	if (!bullet->flags.ricochet_was)
+	if(!bullet->flags.ricochet_was)
 	{
 		// изменить положение пули
 		bullet->pos.mad(bullet->pos, cur_dir, range);
 		bullet->fly_dist += range;
 
-		if (bullet->fly_dist >= bullet->max_dist)
+		if(bullet->fly_dist >= bullet->max_dist)
 			return false;
 
 		Fbox level_box = Level().ObjectSpace.GetBoundingVolume();
@@ -265,9 +265,9 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 		/*		if(!level_box.contains(bullet->pos))
 					return false;
 		*/
-		if (!((bullet->pos.x >= level_box.x1) && (bullet->pos.x <= level_box.x2) && (bullet->pos.y >= level_box.y1) &&
-			  //			 (bullet->pos.y<=level_box.y2) &&
-			  (bullet->pos.z >= level_box.z1) && (bullet->pos.z <= level_box.z2)))
+		if(!((bullet->pos.x >= level_box.x1) && (bullet->pos.x <= level_box.x2) && (bullet->pos.y >= level_box.y1) &&
+			 //			 (bullet->pos.y<=level_box.y2) &&
+			 (bullet->pos.z >= level_box.z1) && (bullet->pos.z <= level_box.z2)))
 			return false;
 
 		// изменить скорость и направление ее полета
@@ -275,12 +275,12 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 		bullet->dir.mul(bullet->speed);
 
 		fvec3 air_resistance = bullet->dir;
-		if (GameID() == GAME_SINGLE)
+		if(GameID() == GAME_SINGLE)
 			air_resistance.mul(-m_fAirResistanceK * delta_time_sec);
 		else
 			air_resistance.mul(-bullet->air_resistance * (bullet->speed) / (bullet->max_speed) * delta_time_sec);
 		///		Msg("Speed - %f; ar - %f, %f", bullet->dir.magnitude(), air_resistance.magnitude(),
-		///air_resistance.magnitude()/bullet->dir.magnitude()*100);
+		/// air_resistance.magnitude()/bullet->dir.magnitude()*100);
 
 		bullet->dir.add(air_resistance);
 		bullet->dir.y -= m_fGravityConst * delta_time_sec;
@@ -296,7 +296,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 		bullet->dir.z /= BulletSpeedSafe;
 	}
 
-	if (bullet->speed < m_fMinBulletSpeed)
+	if(bullet->speed < m_fMinBulletSpeed)
 		return false;
 
 	return true;
@@ -312,14 +312,14 @@ float SqrDistancePointToSegment(const fvec3& pt, const fvec3& orig, const fvec3&
 	diff.sub(pt, orig);
 	float fT = diff.dotproduct(dir);
 
-	if (fT <= 0.0f)
+	if(fT <= 0.0f)
 	{
 		fT = 0.0f;
 	}
 	else
 	{
 		float fSqrLen = dir.square_magnitude();
-		if (fT >= fSqrLen)
+		if(fT >= fSqrLen)
 		{
 			fT = 1.0f;
 			diff.sub(dir);
@@ -336,27 +336,27 @@ float SqrDistancePointToSegment(const fvec3& pt, const fvec3& orig, const fvec3&
 
 void CBulletManager::Render()
 {
-	//OPTICK_EVENT("CBulletManager::Render");
+	// OPTICK_EVENT("CBulletManager::Render");
 
 #ifdef DEBUG
 	// 0-рикошет
 	// 1-застрявание пули в материале
 	// 2-пробивание материала
-	if (g_bDrawBulletHit)
+	if(g_bDrawBulletHit)
 	{
 		extern FvectorVec g_hit[];
 		FvectorIt it;
 		u32 C[3] = {0xffff0000, 0xff00ff00, 0xff0000ff};
 		RenderBackend.set_transform_world(Fidentity);
-		for (int i = 0; i < 3; ++i)
-			for (it = g_hit[i].begin(); it != g_hit[i].end(); ++it)
+		for(int i = 0; i < 3; ++i)
+			for(it = g_hit[i].begin(); it != g_hit[i].end(); ++it)
 			{
 				Level().debug_renderer().draw_aabb(*it, 0.01f, 0.01f, 0.01f, C[i]);
 			}
 	}
 #endif
 
-	if (m_BulletsRendered.empty())
+	if(m_BulletsRendered.empty())
 		return;
 
 	u32 vOffset = 0;
@@ -365,20 +365,20 @@ void CBulletManager::Render()
 	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock((u32)bullet_num * 8, tracers.sh_Geom->vb_stride, vOffset);
 	FVF::LIT* start = verts;
 
-	for (BulletVecIt it = m_BulletsRendered.begin(); it != m_BulletsRendered.end(); it++)
+	for(BulletVecIt it = m_BulletsRendered.begin(); it != m_BulletsRendered.end(); it++)
 	{
 		SBullet* bullet = &(*it);
-		if (!bullet->flags.allow_tracer)
+		if(!bullet->flags.allow_tracer)
 			continue;
-		if (!bullet->flags.skipped_frame)
+		if(!bullet->flags.skipped_frame)
 			continue;
 
 		float length = bullet->speed * float(m_dwStepTime) / 1000.f; // dist.magnitude();
 
-		if (length < m_fTracerLengthMin)
+		if(length < m_fTracerLengthMin)
 			continue;
 
-		if (length > m_fTracerLengthMax)
+		if(length > m_fTracerLengthMax)
 			length = m_fTracerLengthMax;
 
 		float width = m_fTracerWidth;
@@ -387,14 +387,14 @@ void CBulletManager::Render()
 		//---------------------------------------------
 		float MaxDistSqr = 1.0f;
 		float MinDistSqr = 0.09f;
-		if (dist2segSqr < MaxDistSqr)
+		if(dist2segSqr < MaxDistSqr)
 		{
-			if (dist2segSqr < MinDistSqr)
+			if(dist2segSqr < MinDistSqr)
 				dist2segSqr = MinDistSqr;
 
 			width *= std::sqrt(dist2segSqr / MaxDistSqr); //*MaxDistWidth/0.08f;
 		}
-		if (Engine.RenderView.Position.distance_to_sqr(bullet->pos) < (length * length))
+		if(Engine.RenderView.Position.distance_to_sqr(bullet->pos) < (length * length))
 		{
 			length = Engine.RenderView.Position.distance_to(bullet->pos) - 0.3f;
 		}
@@ -422,7 +422,7 @@ void CBulletManager::Render()
 	u32 vCount = (u32)(verts - start);
 	RenderBackend.Vertex.Unlock(vCount, tracers.sh_Geom->vb_stride);
 
-	if (vCount)
+	if(vCount)
 	{
 		RenderBackend.set_CullMode(CULL_DISABLE);
 		RenderBackend.set_transform_world(Fidentity);
@@ -442,20 +442,22 @@ void CBulletManager::CommitRenderSet() // @ the end of frame
 void CBulletManager::CommitEvents() // @ the start of frame
 {
 	PROFILE_FUNCTION();
-	for (u32 _it = 0; _it < m_Events.size(); _it++)
+	for(u32 _it = 0; _it < m_Events.size(); _it++)
 	{
 		_event& E = m_Events[_it];
-		switch (E.Type)
+		switch(E.Type)
 		{
-		case EVENT_HIT: {
-			if (E.dynamic)
+		case EVENT_HIT:
+		{
+			if(E.dynamic)
 				DynamicObjectHit(E);
 			else
 				StaticObjectHit(E);
 		}
 		break;
-		case EVENT_REMOVE: {
-			if (E.bullet.flags.allow_sendhit && GameID() != GAME_SINGLE)
+		case EVENT_REMOVE:
+		{
+			if(E.bullet.flags.allow_sendhit && GameID() != GAME_SINGLE)
 				Game().m_WeaponUsageStatistic->OnBullet_Remove(&E.bullet);
 			m_Bullets[E.tgt_material] = m_Bullets.back();
 			m_Bullets.pop_back();
@@ -474,37 +476,39 @@ void CBulletManager::RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bulle
 	E.Type = Type;
 	E.bullet = *bullet;
 
-	switch (Type)
+	switch(Type)
 	{
-	case EVENT_HIT: {
+	case EVENT_HIT:
+	{
 		E.dynamic = _dynamic;
 		E.result = ObjectHit(bullet, end_point, R, tgt_material, E.normal);
 		E.point = end_point;
 		E.R = R;
 		E.tgt_material = tgt_material;
-		if (_dynamic)
+		if(_dynamic)
 		{
 			//	E.Repeated = (R.O->ID() == E.bullet.targetID);
 			//	bullet->targetID = R.O->ID();
 
 			E.Repeated = (R.O->ID() == E.bullet.targetID);
-			if (GameID() == GAME_SINGLE)
+			if(GameID() == GAME_SINGLE)
 			{
 				bullet->targetID = R.O->ID();
 			}
 			else
 			{
-				if (bullet->targetID != R.O->ID())
+				if(bullet->targetID != R.O->ID())
 				{
 					CGameObject* pGO = smart_cast<CGameObject*>(R.O);
-					if (!pGO || !pGO->BonePassBullet(R.element))
+					if(!pGO || !pGO->BonePassBullet(R.element))
 						bullet->targetID = R.O->ID();
 				}
 			}
 		};
 	}
 	break;
-	case EVENT_REMOVE: {
+	case EVENT_REMOVE:
+	{
 		E.tgt_material = tgt_material;
 	}
 	break;

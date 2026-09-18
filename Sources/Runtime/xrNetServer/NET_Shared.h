@@ -51,15 +51,15 @@ class XRNETSERVER_API IClientStatistic
 
   public:
 	IClientStatistic(CTimer* timer)
-    : device_timer(timer),
-      dwBaseTime(TimeGlobal(timer)),
-      mps_recive(0),
-      mps_receive_base(0),
-      mps_send(0),
-      mps_send_base(0),
-      dwTimesBlocked(0),
-      dwBytesSended(0),
-      dwBytesPerSec(0)
+		: device_timer(timer),
+		  dwBaseTime(TimeGlobal(timer)),
+		  mps_recive(0),
+		  mps_receive_base(0),
+		  mps_send(0),
+		  mps_send_base(0),
+		  dwTimesBlocked(0),
+		  dwBytesSended(0),
+		  dwBytesPerSec(0)
 	{
 		std::memset(&ci_last, 0, sizeof(ci_last));
 	}

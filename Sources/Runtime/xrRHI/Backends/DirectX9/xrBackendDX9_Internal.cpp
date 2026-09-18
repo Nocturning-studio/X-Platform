@@ -5,7 +5,7 @@ RHI_BEGIN
 
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt)
 {
-	switch (fmt)
+	switch(fmt)
 	{
 	case RHI_Format::RGBA8_UNORM:
 		return D3DFMT_A8R8G8B8;
@@ -46,7 +46,7 @@ D3DFORMAT RHIToD3DFormat(RHI_Format fmt)
 
 RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 {
-	switch (fmt)
+	switch(fmt)
 	{
 	// Стандартные форматы бэкбуфера/текстур
 	case D3DFMT_A8R8G8B8:
@@ -151,7 +151,7 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 
 D3DTEXTUREADDRESS RHIAddressToD3D(RHI_TextureAddress addr)
 {
-	switch (addr)
+	switch(addr)
 	{
 	case RHI_TextureAddress::Wrap:
 		return D3DTADDRESS_WRAP;
@@ -170,7 +170,7 @@ D3DTEXTUREADDRESS RHIAddressToD3D(RHI_TextureAddress addr)
 
 D3DTEXTUREFILTERTYPE RHIFilterToD3D(RHI_Filter f)
 {
-	switch (f)
+	switch(f)
 	{
 	case RHI_Filter::Point:
 		return D3DTEXF_POINT;
@@ -189,7 +189,7 @@ D3DTEXTUREFILTERTYPE RHIFilterToD3D(RHI_Filter f)
 
 size_t GetPixelSize(RHI_Format fmt)
 {
-	switch (fmt)
+	switch(fmt)
 	{
 	case RHI_Format::RGBA8_UNORM:
 		return 4;

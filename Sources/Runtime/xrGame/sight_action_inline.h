@@ -43,23 +43,23 @@ IC CSightAction::CSightAction(const ESightType& sight_type, const fvec3* vector3
 	m_sight_type = sight_type;
 	m_path = false;
 	m_object_to_look = 0;
-	if (sight_type == SightManager::eSightTypeFirePosition)
+	if(sight_type == SightManager::eSightTypeFirePosition)
 	{
 		m_sight_type = SightManager::eSightTypePosition;
 		m_torso_look = true;
 	}
 	else
 		m_torso_look = false;
-	if (vector3d)
+	if(vector3d)
 		m_vector3d = *vector3d;
 }
 
 IC bool CSightAction::operator==(const CSightAction& sight_action) const
 {
-	if (m_sight_type != sight_action.m_sight_type)
+	if(m_sight_type != sight_action.m_sight_type)
 		return (false);
 
-	switch (m_sight_type)
+	switch(m_sight_type)
 	{
 	case SightManager::eSightTypeCurrentDirection:
 		return (m_torso_look == sight_action.m_torso_look);

@@ -100,7 +100,7 @@ static void _BuildCollisionTree(AABBCollisionNode* linear, const udword boxid, u
 	curnode->GetAABB()->GetCenter(linear[boxid].mAABB.mCenter);
 	curnode->GetAABB()->GetExtents(linear[boxid].mAABB.mExtents);
 	// Store remaining info
-	if (curnode->IsLeaf())
+	if(curnode->IsLeaf())
 	{
 		// The input tree must be complete => i.e. one primitive/leaf
 		ASSERT(curnode->GetNbPrimitives() == 1);
@@ -154,7 +154,7 @@ static void _BuildNoLeafTree(AABBNoLeafNode* linear, const udword boxid, udword&
 	curnode->GetAABB()->GetCenter(linear[boxid].mAABB.mCenter);
 	curnode->GetAABB()->GetExtents(linear[boxid].mAABB.mExtents);
 
-	if (P->IsLeaf())
+	if(P->IsLeaf())
 	{
 		// The input tree must be complete => i.e. one primitive/leaf
 		ASSERT(P->GetNbPrimitives() == 1);
@@ -175,7 +175,7 @@ static void _BuildNoLeafTree(AABBNoLeafNode* linear, const udword boxid, udword&
 		_BuildNoLeafTree(linear, PosID, curid, P);
 	}
 
-	if (N->IsLeaf())
+	if(N->IsLeaf())
 	{
 		// The input tree must be complete => i.e. one primitive/leaf
 		ASSERT(N->GetNbPrimitives() == 1);
@@ -226,12 +226,12 @@ AABBCollisionTree::~AABBCollisionTree()
 bool AABBCollisionTree::Build(AABBTree* tree)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 	// Check the input tree is complete
 	udword NbTriangles = tree->GetNbPrimitives();
 	udword NbNodes = tree->GetNbNodes();
-	if (NbNodes != NbTriangles * 2 - 1)
+	if(NbNodes != NbTriangles * 2 - 1)
 		return false;
 
 	// Get nodes
@@ -283,12 +283,12 @@ AABBNoLeafTree::~AABBNoLeafTree()
 bool AABBNoLeafTree::Build(AABBTree* tree)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 	// Check the input tree is complete
 	udword NbTriangles = tree->GetNbPrimitives();
 	udword NbNodes = tree->GetNbNodes();
-	if (NbNodes != NbTriangles * 2 - 1)
+	if(NbNodes != NbTriangles * 2 - 1)
 		return false;
 
 	// Get nodes
@@ -325,95 +325,95 @@ bool AABBNoLeafTree::Build(AABBTree* tree)
 //   number of quantization bits. Even better, could probably be best delta-encoded.
 
 // Find max values (could use the first node only with min/max boxes)
-#define FIND_MAX_VALUES                                                                                                \
-	/* Get max values */                                                                                               \
-	Point CMax(flt_min, flt_min, flt_min);                                                                             \
-	Point EMax(flt_min, flt_min, flt_min);                                                                             \
-	for (udword i = 0; i < mNbNodes; i++)                                                                              \
-	{                                                                                                                  \
-		if (_abs(Nodes[i].mAABB.mCenter.x) > CMax.x)                                                                   \
-			CMax.x = _abs(Nodes[i].mAABB.mCenter.x);                                                                   \
-		if (_abs(Nodes[i].mAABB.mCenter.y) > CMax.y)                                                                   \
-			CMax.y = _abs(Nodes[i].mAABB.mCenter.y);                                                                   \
-		if (_abs(Nodes[i].mAABB.mCenter.z) > CMax.z)                                                                   \
-			CMax.z = _abs(Nodes[i].mAABB.mCenter.z);                                                                   \
-		if (_abs(Nodes[i].mAABB.mExtents.x) > EMax.x)                                                                  \
-			EMax.x = _abs(Nodes[i].mAABB.mExtents.x);                                                                  \
-		if (_abs(Nodes[i].mAABB.mExtents.y) > EMax.y)                                                                  \
-			EMax.y = _abs(Nodes[i].mAABB.mExtents.y);                                                                  \
-		if (_abs(Nodes[i].mAABB.mExtents.z) > EMax.z)                                                                  \
-			EMax.z = _abs(Nodes[i].mAABB.mExtents.z);                                                                  \
+#define FIND_MAX_VALUES                               \
+	/* Get max values */                              \
+	Point CMax(flt_min, flt_min, flt_min);            \
+	Point EMax(flt_min, flt_min, flt_min);            \
+	for(udword i = 0; i < mNbNodes; i++)              \
+	{                                                 \
+		if(_abs(Nodes[i].mAABB.mCenter.x) > CMax.x)   \
+			CMax.x = _abs(Nodes[i].mAABB.mCenter.x);  \
+		if(_abs(Nodes[i].mAABB.mCenter.y) > CMax.y)   \
+			CMax.y = _abs(Nodes[i].mAABB.mCenter.y);  \
+		if(_abs(Nodes[i].mAABB.mCenter.z) > CMax.z)   \
+			CMax.z = _abs(Nodes[i].mAABB.mCenter.z);  \
+		if(_abs(Nodes[i].mAABB.mExtents.x) > EMax.x)  \
+			EMax.x = _abs(Nodes[i].mAABB.mExtents.x); \
+		if(_abs(Nodes[i].mAABB.mExtents.y) > EMax.y)  \
+			EMax.y = _abs(Nodes[i].mAABB.mExtents.y); \
+		if(_abs(Nodes[i].mAABB.mExtents.z) > EMax.z)  \
+			EMax.z = _abs(Nodes[i].mAABB.mExtents.z); \
 	}
 
-#define INIT_QUANTIZATION                                                                                              \
-	udword nbc = 15; /* Keep one bit for sign */                                                                       \
-	udword nbe = 15; /* Keep one bit for fix */                                                                        \
-	if (!gFixQuantized)                                                                                                \
-		nbe++;                                                                                                         \
-                                                                                                                       \
-	/* Compute quantization coeffs */                                                                                  \
-	Point CQuantCoeff, EQuantCoeff;                                                                                    \
-	CQuantCoeff.x = float((1 << nbc) - 1) / CMax.x;                                                                    \
-	CQuantCoeff.y = float((1 << nbc) - 1) / CMax.y;                                                                    \
-	CQuantCoeff.z = float((1 << nbc) - 1) / CMax.z;                                                                    \
-	EQuantCoeff.x = float((1 << nbe) - 1) / EMax.x;                                                                    \
-	EQuantCoeff.y = float((1 << nbe) - 1) / EMax.y;                                                                    \
-	EQuantCoeff.z = float((1 << nbe) - 1) / EMax.z;                                                                    \
-	/* Compute and save dequantization coeffs */                                                                       \
-	mCenterCoeff.x = 1.0f / CQuantCoeff.x;                                                                             \
-	mCenterCoeff.y = 1.0f / CQuantCoeff.y;                                                                             \
-	mCenterCoeff.z = 1.0f / CQuantCoeff.z;                                                                             \
-	mExtentsCoeff.x = 1.0f / EQuantCoeff.x;                                                                            \
-	mExtentsCoeff.y = 1.0f / EQuantCoeff.y;                                                                            \
+#define INIT_QUANTIZATION                           \
+	udword nbc = 15; /* Keep one bit for sign */    \
+	udword nbe = 15; /* Keep one bit for fix */     \
+	if(!gFixQuantized)                              \
+		nbe++;                                      \
+                                                    \
+	/* Compute quantization coeffs */               \
+	Point CQuantCoeff, EQuantCoeff;                 \
+	CQuantCoeff.x = float((1 << nbc) - 1) / CMax.x; \
+	CQuantCoeff.y = float((1 << nbc) - 1) / CMax.y; \
+	CQuantCoeff.z = float((1 << nbc) - 1) / CMax.z; \
+	EQuantCoeff.x = float((1 << nbe) - 1) / EMax.x; \
+	EQuantCoeff.y = float((1 << nbe) - 1) / EMax.y; \
+	EQuantCoeff.z = float((1 << nbe) - 1) / EMax.z; \
+	/* Compute and save dequantization coeffs */    \
+	mCenterCoeff.x = 1.0f / CQuantCoeff.x;          \
+	mCenterCoeff.y = 1.0f / CQuantCoeff.y;          \
+	mCenterCoeff.z = 1.0f / CQuantCoeff.z;          \
+	mExtentsCoeff.x = 1.0f / EQuantCoeff.x;         \
+	mExtentsCoeff.y = 1.0f / EQuantCoeff.y;         \
 	mExtentsCoeff.z = 1.0f / EQuantCoeff.z;
 
-#define PERFORM_QUANTIZATION                                                                                           \
-	/* Quantize */                                                                                                     \
-	((float*)mNodes[i].mAABB.mCenter)[0] = sword(Nodes[i].mAABB.mCenter.x * CQuantCoeff.x);                            \
-	((float*)mNodes[i].mAABB.mCenter)[1] = sword(Nodes[i].mAABB.mCenter.y * CQuantCoeff.y);                            \
-	((float*)mNodes[i].mAABB.mCenter)[2] = sword(Nodes[i].mAABB.mCenter.z * CQuantCoeff.z);                            \
-	((float*)mNodes[i].mAABB.mExtents)[0] = uword(Nodes[i].mAABB.mExtents.x * EQuantCoeff.x);                          \
-	((float*)mNodes[i].mAABB.mExtents)[1] = uword(Nodes[i].mAABB.mExtents.y * EQuantCoeff.y);                          \
-	((float*)mNodes[i].mAABB.mExtents)[2] = uword(Nodes[i].mAABB.mExtents.z * EQuantCoeff.z);                          \
-	/* Fix quantized boxes */                                                                                          \
-	if (gFixQuantized)                                                                                                 \
-	{                                                                                                                  \
-		/* Make sure the quantized box is still valid */                                                               \
-		Point Max = Nodes[i].mAABB.mCenter + Nodes[i].mAABB.mExtents;                                                  \
-		Point Min = Nodes[i].mAABB.mCenter - Nodes[i].mAABB.mExtents;                                                  \
-		/* For each axis */                                                                                            \
-		for (udword j = 0; j < 3; j++)                                                                                 \
-		{ /* Dequantize the box center */                                                                              \
-			float qc = float(((float*)mNodes[i].mAABB.mCenter)[j]) * ((float*)mCenterCoeff)[j];                        \
-			bool FixMe = true;                                                                                         \
-			do                                                                                                         \
-			{ /* Dequantize the box extent */                                                                          \
-				float qe = float(((float*)mNodes[i].mAABB.mExtents)[j]) * ((float*)mExtentsCoeff)[j];                  \
-				/* Compare real & dequantized values */                                                                \
-				if (qc + qe < ((float*)Max)[j] || qc - qe > ((float*)Min)[j])                                          \
-					((float*)mNodes[i].mAABB.mExtents)[j]++;                                                           \
-				else                                                                                                   \
-					FixMe = false;                                                                                     \
-				/* Prevent wrapping */                                                                                 \
-				if (!((float*)mNodes[i].mAABB.mExtents)[j])                                                            \
-				{                                                                                                      \
-					((float*)mNodes[i].mAABB.mExtents)[j] = 0xffff;                                                    \
-					FixMe = false;                                                                                     \
-				}                                                                                                      \
-			} while (FixMe);                                                                                           \
-		}                                                                                                              \
+#define PERFORM_QUANTIZATION                                                                          \
+	/* Quantize */                                                                                    \
+	((float*)mNodes[i].mAABB.mCenter)[0] = sword(Nodes[i].mAABB.mCenter.x * CQuantCoeff.x);           \
+	((float*)mNodes[i].mAABB.mCenter)[1] = sword(Nodes[i].mAABB.mCenter.y * CQuantCoeff.y);           \
+	((float*)mNodes[i].mAABB.mCenter)[2] = sword(Nodes[i].mAABB.mCenter.z * CQuantCoeff.z);           \
+	((float*)mNodes[i].mAABB.mExtents)[0] = uword(Nodes[i].mAABB.mExtents.x * EQuantCoeff.x);         \
+	((float*)mNodes[i].mAABB.mExtents)[1] = uword(Nodes[i].mAABB.mExtents.y * EQuantCoeff.y);         \
+	((float*)mNodes[i].mAABB.mExtents)[2] = uword(Nodes[i].mAABB.mExtents.z * EQuantCoeff.z);         \
+	/* Fix quantized boxes */                                                                         \
+	if(gFixQuantized)                                                                                 \
+	{                                                                                                 \
+		/* Make sure the quantized box is still valid */                                              \
+		Point Max = Nodes[i].mAABB.mCenter + Nodes[i].mAABB.mExtents;                                 \
+		Point Min = Nodes[i].mAABB.mCenter - Nodes[i].mAABB.mExtents;                                 \
+		/* For each axis */                                                                           \
+		for(udword j = 0; j < 3; j++)                                                                 \
+		{ /* Dequantize the box center */                                                             \
+			float qc = float(((float*)mNodes[i].mAABB.mCenter)[j]) * ((float*)mCenterCoeff)[j];       \
+			bool FixMe = true;                                                                        \
+			do                                                                                        \
+			{ /* Dequantize the box extent */                                                         \
+				float qe = float(((float*)mNodes[i].mAABB.mExtents)[j]) * ((float*)mExtentsCoeff)[j]; \
+				/* Compare real & dequantized values */                                               \
+				if(qc + qe < ((float*)Max)[j] || qc - qe > ((float*)Min)[j])                          \
+					((float*)mNodes[i].mAABB.mExtents)[j]++;                                          \
+				else                                                                                  \
+					FixMe = false;                                                                    \
+				/* Prevent wrapping */                                                                \
+				if(!((float*)mNodes[i].mAABB.mExtents)[j])                                            \
+				{                                                                                     \
+					((float*)mNodes[i].mAABB.mExtents)[j] = 0xffff;                                   \
+					FixMe = false;                                                                    \
+				}                                                                                     \
+			} while(FixMe);                                                                           \
+		}                                                                                             \
 	}
 
-#define REMAP_DATA(member)                                                                                             \
-	/* Fix data */                                                                                                     \
-	Data = Nodes[i].member;                                                                                            \
-	if (!(Data & 1))                                                                                                   \
-	{                                                                                                                  \
-		/* Compute box number */                                                                                       \
-		size_t Nb = (Data - uintptr_t(Nodes)) / Nodes[i].GetNodeSize();                                                \
-		Data = uintptr_t(&mNodes[Nb]);                                                                                 \
-	}                                                                                                                  \
-	/* ...remapped */                                                                                                  \
+#define REMAP_DATA(member)                                              \
+	/* Fix data */                                                      \
+	Data = Nodes[i].member;                                             \
+	if(!(Data & 1))                                                     \
+	{                                                                   \
+		/* Compute box number */                                        \
+		size_t Nb = (Data - uintptr_t(Nodes)) / Nodes[i].GetNodeSize(); \
+		Data = uintptr_t(&mNodes[Nb]);                                  \
+	}                                                                   \
+	/* ...remapped */                                                   \
 	mNodes[i].member = Data;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -445,12 +445,12 @@ AABBQuantizedTree::~AABBQuantizedTree()
 bool AABBQuantizedTree::Build(AABBTree* tree)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 	// Check the input tree is complete
 	udword NbTriangles = tree->GetNbPrimitives();
 	udword NbNodes = tree->GetNbNodes();
-	if (NbNodes != NbTriangles * 2 - 1)
+	if(NbNodes != NbTriangles * 2 - 1)
 		return false;
 
 	// Get nodes
@@ -477,7 +477,7 @@ bool AABBQuantizedTree::Build(AABBTree* tree)
 
 		// Quantize
 		uintptr_t Data;
-		for (udword i = 0; i < mNbNodes; i++)
+		for(udword i = 0; i < mNbNodes; i++)
 		{
 			PERFORM_QUANTIZATION
 			REMAP_DATA(mData)
@@ -523,12 +523,12 @@ AABBQuantizedNoLeafTree::~AABBQuantizedNoLeafTree()
 bool AABBQuantizedNoLeafTree::Build(AABBTree* tree)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 	// Check the input tree is complete
 	udword NbTriangles = tree->GetNbPrimitives();
 	udword NbNodes = tree->GetNbNodes();
-	if (NbNodes != NbTriangles * 2 - 1)
+	if(NbNodes != NbTriangles * 2 - 1)
 		return false;
 
 	// Get nodes
@@ -556,7 +556,7 @@ bool AABBQuantizedNoLeafTree::Build(AABBTree* tree)
 
 		// Quantize
 		uintptr_t Data;
-		for (udword i = 0; i < mNbNodes; i++)
+		for(udword i = 0; i < mNbNodes; i++)
 		{
 			PERFORM_QUANTIZATION
 			REMAP_DATA(mData)

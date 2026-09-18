@@ -48,9 +48,9 @@ class CWeaponMagazined : public CWeapon
 		MotionSVec mhud_reload; //
 		MotionSVec mhud_reload_partial;
 		MotionSVec mhud_reload_misfire;
-		MotionSVec mhud_hide;	//
-		MotionSVec mhud_show;	//
-		MotionSVec mhud_shots;	//
+		MotionSVec mhud_hide;  //
+		MotionSVec mhud_show;  //
+		MotionSVec mhud_shots; //
 		MotionSVec mhud_idle_sprint;
 	};
 	SWMmotions mhud;

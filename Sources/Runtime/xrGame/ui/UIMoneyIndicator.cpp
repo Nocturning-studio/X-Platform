@@ -56,8 +56,8 @@ void CUIMoneyIndicator::AddBonusMoney(KillMessageStruct& msg)
 
 void CUIMoneyIndicator::Update()
 {
-	if (m_money_change.GetVisible())
-		if (!m_pAnimChange->Done())
+	if(m_money_change.GetVisible())
+		if(!m_pAnimChange->Done())
 		{
 			m_pAnimChange->Update();
 			m_money_change.SetTextColor(subst_alpha(m_money_change.GetTextColor(), m_pAnimChange->GetColor()));

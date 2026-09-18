@@ -147,7 +147,7 @@ class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 	// Check state
 	virtual bool ContactWas()
 	{
-		if (b_meet_control)
+		if(b_meet_control)
 		{
 			b_meet_control = false;
 			return true;

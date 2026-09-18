@@ -13,7 +13,7 @@ constexpr float FOCAL_DEPTH_MUL = 1000.0f; // Перевод игровых единиц в метры/мил
 double fov_to_length(double fov)
 {
 	// Защита от некорректных углов
-	if (fov < 1.0 || fov > 179.0)
+	if(fov < 1.0 || fov > 179.0)
 		return 35.0;
 
 	return (SENSOR_DIAGONAL / (2.0 * tan(PI * fov / 360.0)));
@@ -29,9 +29,9 @@ void CRender::render_depth_of_field()
 	float FocusDist = DofParams.x * FOCAL_DEPTH_MUL;
 	float FocalLen = (float)fov_to_length(Engine.RenderView.Fov);
 
-	if (FocalLen < 10.0f)
+	if(FocalLen < 10.0f)
 		FocalLen = 35.0f;
-	if (FocusDist < FocalLen + 10.0f)
+	if(FocusDist < FocalLen + 10.0f)
 		FocusDist = FocalLen + 10.0f;
 
 	float FStop = (DofParams.z < 0.1f) ? 1.4f : DofParams.z;

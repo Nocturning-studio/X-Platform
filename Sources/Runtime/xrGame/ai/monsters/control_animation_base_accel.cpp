@@ -24,10 +24,10 @@ void CControlAnimationBase::accel_activate(EAccelType type)
 
 float CControlAnimationBase::accel_get(EAccelValue val)
 {
-	if (!accel_active(val))
+	if(!accel_active(val))
 		return flt_max;
 
-	switch (m_accel.type)
+	switch(m_accel.type)
 	{
 	case eAT_Calm:
 		return m_accel.calm;
@@ -58,7 +58,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 	VELOCITY_CHAIN_VEC_IT E = m_accel.chain.end();
 
 	// пройти по всем Chain-векторам
-	for (I = B; I != E; I++)
+	for(I = B; I != E; I++)
 	{
 		SEQ_VECTOR_IT IT_B = I->begin(), IT;
 		SEQ_VECTOR_IT IT_E = I->end();
@@ -68,7 +68,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 		bool found = false;
 
 		// Пройти по текущему вектору
-		for (IT = IT_B; IT != IT_E; IT++)
+		for(IT = IT_B; IT != IT_E; IT++)
 		{
 
 			SAnimItem* item_it = m_anim_storage[*IT];
@@ -78,20 +78,20 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 			float from = param->velocity.linear * param->min_factor;
 			float to = param->velocity.linear * param->max_factor;
 
-			if (((from <= cur_speed + EPS_L) && (cur_speed <= to + EPS_L)) ||
-				((cur_speed < from) && (IT == I->begin())) || ((cur_speed + EPS_L >= to) && (IT + 1 == I->end())))
+			if(((from <= cur_speed + EPS_L) && (cur_speed <= to + EPS_L)) ||
+			   ((cur_speed < from) && (IT == I->begin())) || ((cur_speed + EPS_L >= to) && (IT + 1 == I->end())))
 			{
 				best_anim = IT;
 				best_param = &item_it->velocity;
 			}
 
-			if ((*IT) == target_anim)
+			if((*IT) == target_anim)
 				found = true;
-			if (found && best_param)
+			if(found && best_param)
 				break;
 		}
 
-		if (!found)
+		if(!found)
 			continue;
 
 		R_ASSERT2(best_param, "probably incompatible speed ranges");
@@ -111,7 +111,7 @@ bool CControlAnimationBase::accel_chain_test()
 	string256 error_msg;
 
 	// пройти по всем Chain-векторам
-	for (VELOCITY_CHAIN_VEC_IT I = m_accel.chain.begin(); I != m_accel.chain.end(); I++)
+	for(VELOCITY_CHAIN_VEC_IT I = m_accel.chain.begin(); I != m_accel.chain.end(); I++)
 	{
 
 		VERIFY2(I->size() >= 2, error_msg);
@@ -121,7 +121,7 @@ bool CControlAnimationBase::accel_chain_test()
 		VERIFY(anim_from);
 
 		// Пройти по текущему вектору
-		for (SEQ_VECTOR_IT IT = I->begin() + 1; IT != I->end(); IT++)
+		for(SEQ_VECTOR_IT IT = I->begin() + 1; IT != I->end(); IT++)
 		{
 			anim_to = m_anim_storage[*IT];
 
@@ -141,9 +141,9 @@ bool CControlAnimationBase::accel_chain_test()
 
 bool CControlAnimationBase::accel_check_braking(float before_interval, float nominal_speed)
 {
-	if (!m_man->path_builder().is_moving_on_path())
+	if(!m_man->path_builder().is_moving_on_path())
 		return (braking_mode = false);
-	if (!accel_active(eAV_Braking))
+	if(!accel_active(eAV_Braking))
 		return (braking_mode = false);
 
 	float acceleration = accel_get(eAV_Braking);
@@ -151,20 +151,20 @@ bool CControlAnimationBase::accel_check_braking(float before_interval, float nom
 		(nominal_speed * ((braking_mode) ? nominal_speed : m_man->movement().velocity_current())) / (2 * acceleration);
 
 	braking_dist += before_interval;
-	if (m_man->path_builder().is_path_end(braking_dist))
+	if(m_man->path_builder().is_path_end(braking_dist))
 		return (braking_mode = true);
 
 	// проверить точки пути, где необходимо остановиться
 	float dist = 0.f; // дистанция до найденной точки
-	for (u32 i = m_man->path_builder().detail().curr_travel_point_index() + 1;
-		 i < m_man->path_builder().detail().path().size(); i++)
+	for(u32 i = m_man->path_builder().detail().curr_travel_point_index() + 1;
+		i < m_man->path_builder().detail().path().size(); i++)
 	{
 		dist += m_man->path_builder().detail().path()[i].position.distance_to(
 			m_man->path_builder().detail().path()[i - 1].position);
 
-		if (m_man->path_builder().detail().path()[i].velocity == MonsterMovement::eVelocityParameterStand)
+		if(m_man->path_builder().detail().path()[i].velocity == MonsterMovement::eVelocityParameterStand)
 		{
-			if (dist < braking_dist)
+			if(dist < braking_dist)
 				return (braking_mode = true);
 			else
 				break;

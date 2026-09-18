@@ -7,7 +7,7 @@
 IC u32 convert(float c)
 {
 	u32 C = iFloor(c);
-	if (C > 255)
+	if(C > 255)
 		C = 255;
 	return C;
 }
@@ -33,7 +33,7 @@ IC void MouseRayFromPoint(fvec3& direction, int x, int y, fmat4x4& m_CamMat)
 
 void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 {
-	if (!Device.b_is_Ready)
+	if(!Device.b_is_Ready)
 		return;
 
 	R_CHK(RenderBackend.GetDevice()->GetRenderTargetData(RenderBackend.GetBaseRT(), RenderTarget->surf_screenshot_normal));
@@ -44,7 +44,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	u32* pPixel = (u32*)rect.pBits;
 	u32* pEnd = pPixel + (Device.dwWidth * Device.dwHeight);
 
-	for (; pPixel != pEnd; pPixel++)
+	for(; pPixel != pEnd; pPixel++)
 	{
 		u32 p = *pPixel;
 		*pPixel = color_xrgb(color_get_R(p), color_get_G(p), color_get_B(p));
@@ -55,19 +55,19 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	string64 t_stemp;
 	string_path file_name;
 
-	switch (mode)
+	switch(mode)
 	{
-	case IRender_interface::SM_FOR_GAMESAVE: 
+	case IRender_interface::SM_FOR_GAMESAVE:
 	{
-		R_CHK(D3DXLoadSurfaceFromSurface(RenderTarget->surf_screenshot_gamesave, NULL, NULL, 
-			RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
+		R_CHK(D3DXLoadSurfaceFromSurface(RenderTarget->surf_screenshot_gamesave, NULL, NULL,
+										 RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
 
 		ID3DXBuffer* saved = 0;
 		R_CHK(D3DXSaveTextureToFileInMemory(&saved, D3DXIFF_DDS, RenderTarget->tex_screenshot_gamesave, NULL));
 
 		IWriter* fs = FS.w_open(name);
 
-		if (fs)
+		if(fs)
 		{
 			fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
 			FS.w_close(fs);
@@ -76,11 +76,11 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		_RELEASE(saved);
 
 		return;
-	} 
+	}
 	break;
-	case IRender_interface::SM_NORMAL: 
+	case IRender_interface::SM_NORMAL:
 	{
-		if (!name)
+		if(!name)
 		{
 #ifdef BENCHMARK_BUILD
 			sprintf_s(file_name, sizeof(file_name), "X-Ray Benchmark (time - %s) (%s)", timestamp(t_stemp), g_pGameLevel->name().c_str());
@@ -97,7 +97,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 
 		bool UsePngFormat = true;
 
-		if (UsePngFormat)
+		if(UsePngFormat)
 		{
 			strconcat(sizeof(file_name), file_name, file_name, ".png");
 			R_CHK(D3DXSaveSurfaceToFileInMemory(&saved, D3DXIFF_PNG, RenderTarget->surf_screenshot_normal, NULL, NULL));
@@ -117,24 +117,24 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		_RELEASE(saved);
 
 		return;
-	} 
+	}
 	break;
 	case IRender_interface::SM_FOR_LEVELMAP:
 	{
-		if (!g_pGameLevel)
+		if(!g_pGameLevel)
 		{
 			Msg("! Can't capture level map, level does no loaded");
 			return;
 		}
-		
+
 		sprintf_s(file_name, sizeof(string_path), "level_map_%s_%s.dds", g_pGameLevel->name().c_str(), timestamp(t_stemp));
-		
+
 		IDirect3DTexture9* texture;
 		R_CHK(RenderBackend.GetDevice()->CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, NULL));
 
 		IDirect3DSurface9* surface;
 		R_CHK(texture->GetSurfaceLevel(0, &surface));
-		
+
 		R_CHK(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
 
 		ID3DXBuffer* saved = 0;
@@ -152,9 +152,9 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		_RELEASE(saved);
 
 		return;
-	} 
+	}
 	break;
-	case IRender_interface::SM_FOR_CUBEMAP: 
+	case IRender_interface::SM_FOR_CUBEMAP:
 	{
 		u32 face_size = ps_r_cubemap_size / 4;
 
@@ -164,7 +164,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		u32 id = (int)name[0] - (int)'1';
 
 		// begin
-		if (id == 0)
+		if(id == 0)
 		{
 			RenderBackend.GetDevice()->CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, NULL);
 		}
@@ -174,7 +174,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 		R_CHK(D3DXLoadSurfaceFromSurface(surface[id], NULL, NULL, RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
 
 		// end
-		if (id == 5)
+		if(id == 5)
 		{
 			sprintf_s(file_name, sizeof(string_path), "cubemap_%s_%s.dds", Core.UserName, timestamp(t_stemp));
 

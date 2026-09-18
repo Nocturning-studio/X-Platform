@@ -37,14 +37,14 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 	pda->m_specific_character = specific_character();
 #endif
 
-	if (m_SpecificCharacter.size())
+	if(m_SpecificCharacter.size())
 	{
 		// если в custom data объекта есть
 		// секция [dont_spawn_character_supplies]
 		// то не вызывать spawn из selected_char.SupplySpawn()
 		bool specific_character_supply = true;
 
-		if (xr_strlen(dynamic_object->m_ini_string))
+		if(xr_strlen(dynamic_object->m_ini_string))
 		{
 #pragma warning(push)
 #pragma warning(disable : 4238)
@@ -52,11 +52,11 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 						 FS.get_path("$game_config$")->m_Path);
 #pragma warning(pop)
 
-			if (ini.section_exist("dont_spawn_character_supplies"))
+			if(ini.section_exist("dont_spawn_character_supplies"))
 				specific_character_supply = false;
 		}
 
-		if (specific_character_supply)
+		if(specific_character_supply)
 		{
 			CSpecificCharacter selected_char;
 			selected_char.Load(m_SpecificCharacter);
@@ -111,12 +111,12 @@ bool CSE_ALifeTraderAbstract::check_inventory_consistency	()
 
 void CSE_ALifeDynamicObject::attach(CSE_ALifeInventoryItem* tpALifeInventoryItem, bool bALifeRequest, bool bAddChildren)
 {
-	if (!bALifeRequest)
+	if(!bALifeRequest)
 		return;
 
 	tpALifeInventoryItem->base()->ID_Parent = ID;
 
-	if (!bAddChildren)
+	if(!bAddChildren)
 		return;
 
 	R_ASSERT2(std::find(children.begin(), children.end(), tpALifeInventoryItem->base()->ID) == children.end(),
@@ -134,18 +134,18 @@ void CSE_ALifeDynamicObject::detach(CSE_ALifeInventoryItem* tpALifeInventoryItem
 	l_tpALifeDynamicObject1->m_tGraphID = m_tGraphID;
 	l_tpALifeDynamicObject1->m_fDistance = m_fDistance;
 
-	if (!bALifeRequest)
+	if(!bALifeRequest)
 		return;
 
 	tpALifeInventoryItem->base()->ID_Parent = 0xffff;
 
-	if (I)
+	if(I)
 	{
 		children.erase(*I);
 		return;
 	}
 
-	if (!bRemoveChildren)
+	if(!bRemoveChildren)
 		return;
 
 	ALife::OBJECT_IT i = std::find(children.begin(), children.end(), tpALifeInventoryItem->base()->ID);
@@ -162,7 +162,7 @@ void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registri
 
 	ALife::OBJECT_IT I = object->children.begin();
 	ALife::OBJECT_IT E = object->children.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		//	this was for the car only
 		//		if (*I == ai().alife().graph().actor()->ID)
@@ -194,7 +194,7 @@ void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registri
 		l_tpALifeDynamicObject->m_bOnline = true;
 	}
 
-	if (!update_registries)
+	if(!update_registries)
 		return;
 
 	object->alife().scheduled().remove(object);
@@ -212,7 +212,7 @@ void CSE_ALifeTraderAbstract::add_online(const bool& update_registries)
 void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OBJECT_ID>& saved_children,
 					  const bool& update_registries)
 {
-	for (u32 i = 0, n = saved_children.size(); i < n; ++i)
+	for(u32 i = 0, n = saved_children.size(); i < n; ++i)
 	{
 		CSE_ALifeDynamicObject* child =
 			smart_cast<CSE_ALifeDynamicObject*>(ai().alife().objects().object(saved_children[i], true));
@@ -233,7 +233,7 @@ void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OB
 		ALife::_OBJECT_ID item_id = inventory_item->base()->ID;
 		inventory_item->base()->ID = object->alife().server().PerformIDgen(item_id);
 
-		if (!child->can_save())
+		if(!child->can_save())
 		{
 			object->alife().release(child);
 			--i;
@@ -242,17 +242,17 @@ void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OB
 		}
 
 #ifdef DEBUG
-		if (!child->client_data.empty())
+		if(!child->client_data.empty())
 			Msg("CSE_ALifeTraderAbstract::add_offline: client_data is cleared for [%d][%s]", child->ID,
 				child->name_replace());
 #endif // DEBUG
-		if (!child->keep_saved_data_anyway())
+		if(!child->keep_saved_data_anyway())
 			child->client_data.clear();
 		object->alife().graph().add(child, child->m_tGraphID, false);
 		object->alife().graph().attach(*object, inventory_item, child->m_tGraphID, true);
 	}
 
-	if (!update_registries)
+	if(!update_registries)
 		return;
 
 	object->alife().scheduled().add(object);

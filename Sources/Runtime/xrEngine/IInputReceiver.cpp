@@ -25,11 +25,11 @@ void IInputReceiver::IR_GetLastMouseDelta(ivec2& p)
 void IInputReceiver::IR_OnDeactivate(void)
 {
 	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
-		if (IR_GetKeyState(i))
+	for(i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+		if(IR_GetKeyState(i))
 			IR_OnKeyboardRelease(i);
-	for (i = 0; i < CInput::COUNT_MOUSE_BUTTONS; i++)
-		if (IR_GetBtnState(i))
+	for(i = 0; i < CInput::COUNT_MOUSE_BUTTONS; i++)
+		if(IR_GetBtnState(i))
 			IR_OnMouseRelease(i);
 	IR_OnMouseStop(DIMOFS_X, 0);
 	IR_OnMouseStop(DIMOFS_Y, 0);
@@ -58,7 +58,7 @@ void IInputReceiver::IR_GetMousePosScreen(ivec2& p)
 void IInputReceiver::IR_GetMousePosReal(HWND hwnd, ivec2& p)
 {
 	IR_GetMousePosScreen(p);
-	if (hwnd)
+	if(hwnd)
 		ScreenToClient(hwnd, (LPPOINT)&p);
 }
 void IInputReceiver::IR_GetMousePosReal(ivec2& p)
@@ -74,12 +74,12 @@ void IInputReceiver::IR_GetMousePosIndependent(fvec2& f)
 void IInputReceiver::IR_GetMousePosIndependentCrop(fvec2& f)
 {
 	IR_GetMousePosIndependent(f);
-	if (f.x < -1.f)
+	if(f.x < -1.f)
 		f.x = -1.f;
-	if (f.x > 1.f)
+	if(f.x > 1.f)
 		f.x = 1.f;
-	if (f.y < -1.f)
+	if(f.y < -1.f)
 		f.y = -1.f;
-	if (f.y > 1.f)
+	if(f.y > 1.f)
 		f.y = 1.f;
 }

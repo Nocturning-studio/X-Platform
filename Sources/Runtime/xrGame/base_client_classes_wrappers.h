@@ -23,13 +23,16 @@
 #include <loki\hierarchygenerators.h>
 #include "xrServer_Object_Base.h"
 
-template <typename _1, typename _2> struct heritage
+template <typename _1, typename _2>
+struct heritage
 {
-	template <typename _type, typename _base> struct linear_registrator : public _base, public _type
+	template <typename _type, typename _base>
+	struct linear_registrator : public _base, public _type
 	{
 	};
 
-	template <typename _type> struct linear_registrator<_type, Loki::EmptyType> : public _type
+	template <typename _type>
+	struct linear_registrator<_type, Loki::EmptyType> : public _type
 	{
 	};
 
@@ -42,8 +45,8 @@ template <typename base, typename luabind_base = Loki::EmptyType>
 class DLL_PureWrapper : public heritage<base, luabind_base>::result
 {
   public:
-	IC DLL_PureWrapper(){};
-	virtual ~DLL_PureWrapper(){};
+	IC DLL_PureWrapper() {};
+	virtual ~DLL_PureWrapper() {};
 
 	virtual DLL_Pure* _construct()
 	{
@@ -142,8 +145,8 @@ template <typename base, typename luabind_base = Loki::EmptyType>
 class ISheduledWrapper : public heritage<base, luabind_base>::result
 {
   public:
-	IC ISheduledWrapper(){};
-	virtual ~ISheduledWrapper(){};
+	IC ISheduledWrapper() {};
+	virtual ~ISheduledWrapper() {};
 
 	virtual float shedule_Scale()
 	{
@@ -176,8 +179,8 @@ template <typename base, typename luabind_base = Loki::EmptyType>
 class IRenderableWrapper : public heritage<base, luabind_base>::result
 {
   public:
-	IC IRenderableWrapper(){};
-	virtual ~IRenderableWrapper(){};
+	IC IRenderableWrapper() {};
+	virtual ~IRenderableWrapper() {};
 
 	/*
 		virtual	void	renderable_Render				()
@@ -259,8 +262,8 @@ typedef IRenderableWrapper<CGameObjectISheduled> CGameObjectIRenderable;
 class CGameObjectWrapper : public CGameObjectIRenderable
 {
   public:
-	IC CGameObjectWrapper(){};
-	virtual ~CGameObjectWrapper(){};
+	IC CGameObjectWrapper() {};
+	virtual ~CGameObjectWrapper() {};
 	virtual bool use(CGameObject* who_use)
 	{
 		return call<bool>("use", who_use);

@@ -12,7 +12,7 @@ ENGINE_API string512 g_sLaunchOnExit_app;
 ////////////////////////////////////////////////////////////////////////////////
 int stack_overflow_exception_filter(int exception_code)
 {
-	if (exception_code == EXCEPTION_STACK_OVERFLOW)
+	if(exception_code == EXCEPTION_STACK_OVERFLOW)
 		return EXCEPTION_EXECUTE_HANDLER;
 	else
 		return EXCEPTION_CONTINUE_SEARCH;
@@ -21,7 +21,7 @@ int stack_overflow_exception_filter(int exception_code)
 void OnApplicationExit()
 {
 	// check for need to execute something external
-	if (xr_strlen(g_sLaunchOnExit_app))
+	if(xr_strlen(g_sLaunchOnExit_app))
 	{
 		char* _args[3];
 		string4096 ModuleFileName = "";
@@ -53,7 +53,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLi
 
 		OnApplicationExit();
 	}
-	__except (stack_overflow_exception_filter(GetExceptionCode()))
+	__except(stack_overflow_exception_filter(GetExceptionCode()))
 	{
 		_resetstkoflw();
 		FATAL("stack overflow");

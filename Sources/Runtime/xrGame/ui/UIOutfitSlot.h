@@ -12,8 +12,8 @@ class CUIOutfitDragDropList : public CUIDragDropListEx
 	CUIOutfitDragDropList();
 	virtual ~CUIOutfitDragDropList();
 
-	virtual void SetItem(CUICellItem* itm);					   // auto
-	virtual void SetItem(CUICellItem* itm, fvec2 abs_pos);  // start at cursor pos
+	virtual void SetItem(CUICellItem* itm);					// auto
+	virtual void SetItem(CUICellItem* itm, fvec2 abs_pos);	// start at cursor pos
 	virtual void SetItem(CUICellItem* itm, ivec2 cell_pos); // start at cell
 	virtual CUICellItem* RemoveItem(CUICellItem* itm, bool force_root);
 	virtual void Draw();

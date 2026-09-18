@@ -31,7 +31,7 @@ class CObjectContactCallback
 		VERIFY(c);
 		VERIFY(callback != c);
 
-		if (next)
+		if(next)
 		{
 			next->Add(c);
 		}
@@ -42,10 +42,10 @@ class CObjectContactCallback
 	}
 	bool HasCallback(ObjectContactCallbackFun* c)
 	{
-		for (CObjectContactCallback* i = this; i; i = i->next)
+		for(CObjectContactCallback* i = this; i; i = i->next)
 		{
 			VERIFY(i->callback);
-			if (c == i->callback)
+			if(c == i->callback)
 				return true;
 		}
 		return false;
@@ -53,12 +53,12 @@ class CObjectContactCallback
 
 	static void RemoveCallback(CObjectContactCallback*& callbacks, ObjectContactCallbackFun* c)
 	{
-		if (!callbacks)
+		if(!callbacks)
 			return;
 		VERIFY(c);
 		VERIFY(callbacks->callback);
 
-		if (c == callbacks->callback)
+		if(c == callbacks->callback)
 		{
 			CObjectContactCallback* del = callbacks;
 			callbacks = callbacks->next;
@@ -68,14 +68,14 @@ class CObjectContactCallback
 		}
 		else
 		{
-			for (CObjectContactCallback *i = callbacks->next, *p = callbacks; i;)
+			for(CObjectContactCallback *i = callbacks->next, *p = callbacks; i;)
 			{
 
 				VERIFY(p->callback);
 				VERIFY(i->callback);
 				VERIFY(i);
 				VERIFY(p);
-				if (c == i->callback)
+				if(c == i->callback)
 				{
 					CObjectContactCallback* del = i;
 					p->next = i->next;
@@ -93,7 +93,7 @@ class CObjectContactCallback
 
 	void Call(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 	{
-		for (CObjectContactCallback* i = this; i; i = i->next)
+		for(CObjectContactCallback* i = this; i; i = i->next)
 		{
 			VERIFY(i->callback);
 			i->callback(do_colide, bo1, c, material_1, material_2);
@@ -139,7 +139,7 @@ IC dxGeomUserData* dGeomGetUserData(dxGeom* geom)
 
 IC dGeomID retrieveGeom(dGeomID geom)
 {
-	if (dGeomGetClass(geom) == dGeomTransformClass)
+	if(dGeomGetClass(geom) == dGeomTransformClass)
 		return dGeomTransformGetGeom(geom);
 	else
 		return geom;
@@ -157,14 +157,14 @@ IC dxGeomUserData* retrieveGeomUserData(dGeomID geom)
 IC CPhysicsShellHolder* retrieveRefObject(dGeomID geom)
 {
 	dxGeomUserData* ud = dGeomGetUserData(retrieveGeom(geom));
-	if (ud)
+	if(ud)
 		return ud->ph_ref_object;
 	else
 		return NULL;
 }
 IC void dGeomCreateUserData(dxGeom* geom)
 {
-	if (!geom)
+	if(!geom)
 		return;
 	dGeomSetData(geom, xr_new<dxGeomUserData>());
 	(dGeomGetUserData(geom))->pushing_neg = false;
@@ -191,10 +191,10 @@ IC void dGeomCreateUserData(dxGeom* geom)
 
 IC void dGeomDestroyUserData(dxGeom* geom)
 {
-	if (!geom)
+	if(!geom)
 		return;
 	dxGeomUserData* P = dGeomGetUserData(geom);
-	if (P)
+	if(P)
 	{
 #ifdef DEBUG
 		dbg_total_saved_tries -= P->cashed_tries.size();
@@ -228,13 +228,13 @@ IC void dGeomUserDataSetContactCallback(dxGeom* geom, ContactCallbackFun* callba
 IC void dGeomUserDataSetObjectContactCallback(dxGeom* geom, ObjectContactCallbackFun* obj_callback)
 {
 	xr_delete((dGeomGetUserData(geom))->object_callbacks);
-	if (obj_callback)
+	if(obj_callback)
 		(dGeomGetUserData(geom))->object_callbacks = xr_new<CObjectContactCallback>(obj_callback);
 }
 
 IC void dGeomUserDataAddObjectContactCallback(dxGeom* geom, ObjectContactCallbackFun* obj_callback)
 {
-	if ((dGeomGetUserData(geom))->object_callbacks)
+	if((dGeomGetUserData(geom))->object_callbacks)
 	{
 		(dGeomGetUserData(geom))->object_callbacks->Add(obj_callback);
 	}
@@ -250,7 +250,7 @@ IC void dGeomUserDataRemoveObjectContactCallback(dxGeom* geom, ObjectContactCall
 IC bool dGeomUserDataHasCallback(dxGeom* geom, ObjectContactCallbackFun* obj_callback)
 {
 	geom = retrieveGeom(geom);
-	if (geom && dGeomGetUserData(geom) && (dGeomGetUserData(geom))->object_callbacks)
+	if(geom && dGeomGetUserData(geom) && (dGeomGetUserData(geom))->object_callbacks)
 		return (dGeomGetUserData(geom))->object_callbacks->HasCallback(obj_callback);
 	else
 		return false;

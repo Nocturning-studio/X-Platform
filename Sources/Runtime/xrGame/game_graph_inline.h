@@ -73,8 +73,8 @@ IC const CGameGraph::CHeader& CGameGraph::header() const
 IC bool CGameGraph::mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M,
 						 const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
 {
-	for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
-		if ((M[i] != E[i]) && (255 != M[i]))
+	for(int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
+		if((M[i] != E[i]) && (255 != M[i]))
 			return (false);
 	return (true);
 }
@@ -82,8 +82,8 @@ IC bool CGameGraph::mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_CO
 IC bool CGameGraph::mask(const _LOCATION_ID M[GameGraph::LOCATION_TYPE_COUNT],
 						 const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
 {
-	for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
-		if ((M[i] != E[i]) && (255 != M[i]))
+	for(int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
+		if((M[i] != E[i]) && (255 != M[i]))
 			return (false);
 	return (true);
 }
@@ -92,8 +92,8 @@ IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphI
 {
 	const_iterator i, e;
 	begin(tGraphID0, i, e);
-	for (; i != e; ++i)
-		if (value(tGraphID0, i) == tGraphID1)
+	for(; i != e; ++i)
+		if(value(tGraphID0, i) == tGraphID1)
 			return (edge_weight(i));
 	R_ASSERT2(false, "There is no proper graph point neighbour!");
 	return (_GRAPH_ID(-1));
@@ -179,8 +179,8 @@ IC const GameGraph::SLevel& GameGraph::CHeader::level(LPCSTR level_name) const
 {
 	LEVEL_MAP::const_iterator I = levels().begin();
 	LEVEL_MAP::const_iterator E = levels().end();
-	for (; I != E; ++I)
-		if (!xr_strcmp((*I).second.name(), level_name))
+	for(; I != E; ++I)
+		if(!xr_strcmp((*I).second.name(), level_name))
 			return ((*I).second);
 
 #ifdef DEBUG
@@ -196,8 +196,8 @@ IC const GameGraph::SLevel* GameGraph::CHeader::level(LPCSTR level_name, bool) c
 {
 	LEVEL_MAP::const_iterator I = levels().begin();
 	LEVEL_MAP::const_iterator E = levels().end();
-	for (; I != E; ++I)
-		if (!xr_strcmp((*I).second.name(), level_name))
+	for(; I != E; ++I)
+		if(!xr_strcmp((*I).second.name(), level_name))
 			return (&(*I).second);
 
 	return (0);
@@ -317,7 +317,7 @@ IC void GameGraph::CHeader::load(IReader* reader)
 	u32 level_count = reader->r_u8();
 
 	m_levels.clear();
-	for (u32 i = 0; i < level_count; ++i)
+	for(u32 i = 0; i < level_count; ++i)
 	{
 		SLevel l_tLevel;
 		l_tLevel.load(reader);
@@ -338,7 +338,7 @@ IC void GameGraph::CHeader::save(IWriter* writer)
 
 	LEVEL_MAP::iterator I = m_levels.begin();
 	LEVEL_MAP::iterator E = m_levels.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I).second.save(writer);
 }
 
@@ -349,9 +349,9 @@ IC void CGameGraph::set_current_level(const u32& level_id)
 	u32* current_cross_table = m_cross_tables;
 	GameGraph::LEVEL_MAP::const_iterator I = header().levels().begin();
 	GameGraph::LEVEL_MAP::const_iterator E = header().levels().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (level_id != (*I).first)
+		if(level_id != (*I).first)
 		{
 			current_cross_table = (u32*)((u8*)current_cross_table + *current_cross_table);
 			continue;
@@ -365,9 +365,9 @@ IC void CGameGraph::set_current_level(const u32& level_id)
 #endif // PRIQUEL
 
 	m_current_level_some_vertex_id = _GRAPH_ID(-1);
-	for (_GRAPH_ID i = 0, n = header().vertex_count(); i < n; ++i)
+	for(_GRAPH_ID i = 0, n = header().vertex_count(); i < n; ++i)
 	{
-		if (level_id != vertex(i)->level_id())
+		if(level_id != vertex(i)->level_id())
 			continue;
 
 		m_current_level_some_vertex_id = i;
@@ -402,7 +402,7 @@ IC void CGameGraph::save(IWriter& stream)
 	VERIFY((u8*)m_cross_tables == buffer);
 	GameGraph::LEVEL_MAP::const_iterator I = header().levels().begin();
 	GameGraph::LEVEL_MAP::const_iterator E = header().levels().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		u32 size = *(u32*)buffer;
 		stream.w(buffer, size);

@@ -40,7 +40,7 @@ void CSpaceRestrictionHolder::clear()
 shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictors)
 {
 	u32 n = xr_strlen(space_restrictors);
-	if (!n)
+	if(!n)
 		return ("");
 
 	// 1. parse the string, copying to temp buffer with leading zeroes, storing pointers in vector
@@ -50,9 +50,9 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 	LPSTR temp_string = (LPSTR)_alloca((n + 1) * sizeof(char));
 	LPCSTR I = *space_restrictors;
 	LPSTR i = temp_string, j = i;
-	for (; *I; ++I, ++i)
+	for(; *I; ++I, ++i)
 	{
-		if (*I != ',')
+		if(*I != ',')
 		{
 			*i = *I;
 			continue;
@@ -64,7 +64,7 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 		++string_current;
 		j = i + 1;
 	}
-	if (string_current == strings)
+	if(string_current == strings)
 		return (space_restrictors);
 
 	*i = 0;
@@ -81,9 +81,9 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 	{
 		LPSTR* I = strings;
 		LPSTR* E = string_current;
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			for (LPSTR i = *I; *i; ++i, ++pointer)
+			for(LPSTR i = *I; *i; ++i, ++pointer)
 				*pointer = *i;
 
 			*pointer = ',';
@@ -98,13 +98,13 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 
 SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction(shared_str space_restrictors)
 {
-	if (!xr_strlen(space_restrictors))
+	if(!xr_strlen(space_restrictors))
 		return (0);
 
 	space_restrictors = normalize_string(space_restrictors);
 
 	RESTRICTIONS::const_iterator I = m_restrictions.find(space_restrictors);
-	if (I != m_restrictions.end())
+	if(I != m_restrictions.end())
 		return ((*I).second);
 
 	collect_garbage();
@@ -120,32 +120,32 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
 {
 	string4096 m_temp_string;
 	shared_str space_restrictors = space_restrictor->cName();
-	if (restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone)
+	if(restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone)
 	{
 		shared_str *temp = 0, temp1;
-		if (restrictor_type == RestrictionSpace::eDefaultRestrictorTypeOut)
+		if(restrictor_type == RestrictionSpace::eDefaultRestrictorTypeOut)
 			temp = &m_default_out_restrictions;
-		else if (restrictor_type == RestrictionSpace::eDefaultRestrictorTypeIn)
+		else if(restrictor_type == RestrictionSpace::eDefaultRestrictorTypeIn)
 			temp = &m_default_in_restrictions;
 		else
 			NODEFAULT;
 		temp1 = *temp;
 
-		if (xr_strlen(*temp) && xr_strlen(space_restrictors))
+		if(xr_strlen(*temp) && xr_strlen(space_restrictors))
 			strconcat(sizeof(m_temp_string), m_temp_string, **temp, ",", *space_restrictors);
 		else
 			strconcat(sizeof(m_temp_string), m_temp_string, **temp, *space_restrictors);
 
 		*temp = normalize_string(m_temp_string);
 
-		if (xr_strcmp(*temp, temp1))
+		if(xr_strcmp(*temp, temp1))
 			on_default_restrictions_changed();
 	}
 
 	CSpaceRestrictionShape* shape = xr_new<CSpaceRestrictionShape>(
 		space_restrictor, restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
 	RESTRICTIONS::iterator I = m_restrictions.find(space_restrictors);
-	if (I == m_restrictions.end())
+	if(I == m_restrictions.end())
 	{
 		CSpaceRestrictionBridge* bridge = xr_new<CSpaceRestrictionBridge>(shape);
 		m_restrictions.insert(std::make_pair(space_restrictors, bridge));
@@ -161,11 +161,11 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
 	string256 temp;
 	string4096 temp1;
 	*temp1 = 0;
-	for (int i = 0, j = 0, n = _GetItemCount(*search_string); i < n; ++i, ++j)
+	for(int i = 0, j = 0, n = _GetItemCount(*search_string); i < n; ++i, ++j)
 	{
-		if (xr_strcmp(string_to_search, _GetItem(*search_string, i, temp)))
+		if(xr_strcmp(string_to_search, _GetItem(*search_string, i, temp)))
 		{
-			if (j)
+			if(j)
 				strcat(temp1, ",");
 			strcat(temp1, temp);
 			continue;
@@ -175,7 +175,7 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
 		--j;
 	}
 
-	if (!found)
+	if(!found)
 		return (false);
 
 	search_string = temp1;
@@ -189,11 +189,11 @@ void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_rest
 	VERIFY(I != m_restrictions.end());
 	m_restrictions.erase(I);
 
-	if (try_remove_string(m_default_out_restrictions, restrictor_id))
+	if(try_remove_string(m_default_out_restrictions, restrictor_id))
 		on_default_restrictions_changed();
 	else
 	{
-		if (try_remove_string(m_default_in_restrictions, restrictor_id))
+		if(try_remove_string(m_default_in_restrictions, restrictor_id))
 			on_default_restrictions_changed();
 	}
 
@@ -208,10 +208,10 @@ IC void CSpaceRestrictionHolder::collect_garbage()
 {
 	RESTRICTIONS::iterator I = m_restrictions.begin(), J;
 	RESTRICTIONS::iterator E = m_restrictions.end();
-	for (; I != E;)
+	for(; I != E;)
 	{
-		if (!(*I).second->shape() && !(*I).second->m_ref_count &&
-			(Engine.TimeManager.GetGlobalTimeMs() >= (*I).second->m_last_time_dec + time_to_delete))
+		if(!(*I).second->shape() && !(*I).second->m_ref_count &&
+		   (Engine.TimeManager.GetGlobalTimeMs() >= (*I).second->m_last_time_dec + time_to_delete))
 		{
 			J = I;
 			++I;

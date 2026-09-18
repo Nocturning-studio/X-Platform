@@ -39,7 +39,7 @@ class ENGINE_API IRender_Light : public xr_resource
 	virtual void set_active(bool) = 0;
 	virtual bool get_active() = 0;
 	virtual void set_shadow(bool) = 0;
-	virtual void set_indirect(bool){};
+	virtual void set_indirect(bool) {};
 	virtual void set_position(const fvec3& P) = 0;
 	virtual void set_rotation(const fvec3& D, const fvec3& R) = 0;
 	virtual void set_cone(float angle) = 0;
@@ -101,7 +101,7 @@ class ENGINE_API IRender_ObjectSpecific
 	virtual float get_luminocity() = 0;
 	virtual float get_luminocity_ao() = 0;
 
-	virtual ~IRender_ObjectSpecific(){};
+	virtual ~IRender_ObjectSpecific() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ class ENGINE_API IRender_ObjectSpecific
 class ENGINE_API IRender_Portal
 {
   public:
-	virtual ~IRender_Portal(){};
+	virtual ~IRender_Portal() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ class ENGINE_API IRender_Portal
 class ENGINE_API IRender_Sector
 {
   public:
-	virtual ~IRender_Sector(){};
+	virtual ~IRender_Sector() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ class ENGINE_API IRender_Target
   public:
 	virtual u32 get_width() = 0;
 	virtual u32 get_height() = 0;
-	virtual ~IRender_Target(){};
+	virtual ~IRender_Target() {};
 };
 
 class ENGINE_API IEffectorsManager
@@ -201,7 +201,7 @@ class ENGINE_API IRender_interface
 	virtual CShaderMacros FetchShaderMacros() = 0;
 
 	// Information
-	virtual void Statistics(CGameFont* F){};
+	virtual void Statistics(CGameFont* F) {};
 
 	virtual LPCSTR getShaderPath() = 0;
 	virtual ref_shader getShader(int id) = 0;
@@ -238,9 +238,9 @@ class ENGINE_API IRender_interface
 
 	// Lighting/glowing
 	virtual IRender_Light* light_create() = 0;
-	virtual void light_destroy(IRender_Light* p_){};
+	virtual void light_destroy(IRender_Light* p_) {};
 	virtual IRender_Glow* glow_create() = 0;
-	virtual void glow_destroy(IRender_Glow* p_){};
+	virtual void glow_destroy(IRender_Glow* p_) {};
 
 	// Models
 	virtual IRender_Visual* model_CreateParticles(LPCSTR name) = 0;

@@ -58,8 +58,8 @@ void CStateControllerHideLiteAbstract::finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateControllerHideLiteAbstract::check_completion()
 {
-	if ((object->ai_location().level_vertex_id() == target.node) &&
-		!object->control().path_builder().is_moving_on_path())
+	if((object->ai_location().level_vertex_id() == target.node) &&
+	   !object->control().path_builder().is_moving_on_path())
 		return true;
 
 	return (!object->EnemyMan.see_enemy_now());
@@ -74,7 +74,7 @@ void CStateControllerHideLiteAbstract::select_target_point()
 
 	const CCoverPoint* point = object->CoverMan->find_cover(object->EnemyMan.get_enemy_position(), 10.f, 30.f);
 	// VERIFY(point);
-	if (point)
+	if(point)
 	{
 		target.node = point->level_vertex_id();
 		target.position = point->position();

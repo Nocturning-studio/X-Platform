@@ -10,7 +10,7 @@
 
 IC fvec3 CSpaceRestrictionShape::position(const CCF_Shape::shape_def& data) const
 {
-	switch (data.type)
+	switch(data.type)
 	{
 	case 0:
 		return (data.data.sphere.P);
@@ -26,7 +26,7 @@ IC fvec3 CSpaceRestrictionShape::position(const CCF_Shape::shape_def& data) cons
 
 IC float CSpaceRestrictionShape::radius(const CCF_Shape::shape_def& data) const
 {
-	switch (data.type)
+	switch(data.type)
 	{
 	case 0:
 		return (data.data.sphere.R);

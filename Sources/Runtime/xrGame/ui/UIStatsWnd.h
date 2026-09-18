@@ -16,7 +16,7 @@ class CUIStatsListItem : public CUIListItem
 	typedef CUIListItem inherited;
 
   public:
-	virtual ~CUIStatsListItem(){};
+	virtual ~CUIStatsListItem() {};
 	void XmlInit(const char* path, CUIXml& uiXml);
 	void Highlight(bool bHighlight);
 	void SetSubItemColor(u32 uItemIndex, u32 uColor);

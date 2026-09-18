@@ -26,7 +26,7 @@ void CWalmarkManager::AddWallmark(const fvec3& dir, const fvec3& start_pos, floa
 	CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + t; // result.element;
 	SGameMtl* pMaterial = GMLib.GetMaterialByIdx(pTri->material);
 
-	if (pMaterial->Flags.is(SGameMtl::flBloodmark))
+	if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 	{
 		// вычислить нормаль к пораженной поверхности
 		fvec3* pVerts = Level().ObjectSpace.GetStaticVerts();
@@ -39,7 +39,7 @@ void CWalmarkManager::AddWallmark(const fvec3& dir, const fvec3& start_pos, floa
 		ref_shader* pWallmarkShader =
 			wallmarks_vector.empty() ? NULL : &wallmarks_vector[::Random.randI(0, wallmarks_vector.size())];
 
-		if (pWallmarkShader)
+		if(pWallmarkShader)
 		{
 			// добавить отметку на материале
 			::Render->add_StaticWallmark(*pWallmarkShader, end_point, wallmark_size, pTri, pVerts);
@@ -119,11 +119,11 @@ void CWalmarkManager::StartWorkflow()
 
 		CTimer T; T.Start();
 	*/
-	for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
+	for(CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
 	{
 		//.		DBG_DrawTri(Res, D3DCOLOR_XRGB(0,255,0) );
 
-		if (wm_count >= max_wallmarks_count)
+		if(wm_count >= max_wallmarks_count)
 			break;
 
 		//.		Triangle					tri;
@@ -154,21 +154,21 @@ void CWalmarkManager::StartWorkflow()
 		*/
 		float test = dist - EPS_L;
 
-		if (test > 0.f)
+		if(test > 0.f)
 		{
-			if (Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, NULL, m_owner))
+			if(Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, NULL, m_owner))
 			{
 				++_ray_test;
 				continue;
 			}
 		}
-		if (fis_zero(pfSParam) || fis_zero(pfTParam) || fsimilar(pfSParam, 1.0f) || fsimilar(pfTParam, 1.0f))
+		if(fis_zero(pfSParam) || fis_zero(pfTParam) || fsimilar(pfSParam, 1.0f) || fsimilar(pfTParam, 1.0f))
 		{
 			++_tri_not_plane;
 			continue;
 		}
 
-		if (dist <= m_trace_dist)
+		if(dist <= m_trace_dist)
 		{
 			ref_shader wallmarkShader = m_wallmarks[::Random.randI(m_wallmarks.size())];
 			::Render->add_StaticWallmark(wallmarkShader, end_point, m_wallmark_size, _t, V_array);
@@ -210,7 +210,7 @@ void CWalmarkManager::Load(LPCSTR section)
 	int cnt = _GetItemCount(wallmarks_name);
 	VERIFY(cnt);
 	ref_shader s;
-	for (int k = 0; k < cnt; ++k)
+	for(int k = 0; k < cnt; ++k)
 	{
 		s.create("effects\\wallmark", _GetItem(wallmarks_name, k, tmp));
 		m_wallmarks.push_back(s);
@@ -254,16 +254,16 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 	float fT = fA01 * fB0 - fA00 * fB1;
 	float fSqrDist;
 
-	if (fS + fT <= fDet)
+	if(fS + fT <= fDet)
 	{
-		if (fS < 0.0f)
+		if(fS < 0.0f)
 		{
-			if (fT < 0.0f) // region 4
+			if(fT < 0.0f) // region 4
 			{
-				if (fB0 < 0.0f)
+				if(fB0 < 0.0f)
 				{
 					fT = 0.0f;
-					if (-fB0 >= fA00)
+					if(-fB0 >= fA00)
 					{
 						fS = 1.0f;
 						fSqrDist = fA00 + 2.0f * fB0 + fC;
@@ -277,12 +277,12 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 				else
 				{
 					fS = 0.0f;
-					if (fB1 >= 0.0f)
+					if(fB1 >= 0.0f)
 					{
 						fT = 0.0f;
 						fSqrDist = fC;
 					}
-					else if (-fB1 >= fA11)
+					else if(-fB1 >= fA11)
 					{
 						fT = 1.0f;
 						fSqrDist = fA11 + 2.0f * fB1 + fC;
@@ -297,12 +297,12 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 			else // region 3
 			{
 				fS = 0.0f;
-				if (fB1 >= 0.0f)
+				if(fB1 >= 0.0f)
 				{
 					fT = 0.0f;
 					fSqrDist = fC;
 				}
-				else if (-fB1 >= fA11)
+				else if(-fB1 >= fA11)
 				{
 					fT = 1.0f;
 					fSqrDist = fA11 + 2.0f * fB1 + fC;
@@ -314,15 +314,15 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 				}
 			}
 		}
-		else if (fT < 0.0f) // region 5
+		else if(fT < 0.0f) // region 5
 		{
 			fT = 0.0f;
-			if (fB0 >= 0.0f)
+			if(fB0 >= 0.0f)
 			{
 				fS = 0.0f;
 				fSqrDist = fC;
 			}
-			else if (-fB0 >= fA00)
+			else if(-fB0 >= fA00)
 			{
 				fS = 1.0f;
 				fSqrDist = fA00 + 2.0f * fB0 + fC;
@@ -346,15 +346,15 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 	{
 		float fTmp0, fTmp1, fNumer, fDenom;
 
-		if (fS < 0.0f) // region 2
+		if(fS < 0.0f) // region 2
 		{
 			fTmp0 = fA01 + fB0;
 			fTmp1 = fA11 + fB1;
-			if (fTmp1 > fTmp0)
+			if(fTmp1 > fTmp0)
 			{
 				fNumer = fTmp1 - fTmp0;
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					fS = 1.0f;
 					fT = 0.0f;
@@ -371,12 +371,12 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 			else
 			{
 				fS = 0.0f;
-				if (fTmp1 <= 0.0f)
+				if(fTmp1 <= 0.0f)
 				{
 					fT = 1.0f;
 					fSqrDist = fA11 + 2.0f * fB1 + fC;
 				}
-				else if (fB1 >= 0.0f)
+				else if(fB1 >= 0.0f)
 				{
 					fT = 0.0f;
 					fSqrDist = fC;
@@ -388,15 +388,15 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 				}
 			}
 		}
-		else if (fT < 0.0f) // region 6
+		else if(fT < 0.0f) // region 6
 		{
 			fTmp0 = fA01 + fB1;
 			fTmp1 = fA00 + fB0;
-			if (fTmp1 > fTmp0)
+			if(fTmp1 > fTmp0)
 			{
 				fNumer = fTmp1 - fTmp0;
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					fT = 1.0f;
 					fS = 0.0f;
@@ -413,12 +413,12 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 			else
 			{
 				fT = 0.0f;
-				if (fTmp1 <= 0.0f)
+				if(fTmp1 <= 0.0f)
 				{
 					fS = 1.0f;
 					fSqrDist = fA00 + 2.0f * fB0 + fC;
 				}
-				else if (fB0 >= 0.0f)
+				else if(fB0 >= 0.0f)
 				{
 					fS = 0.0f;
 					fSqrDist = fC;
@@ -433,7 +433,7 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 		else // region 1
 		{
 			fNumer = fA11 + fB1 - fA01 - fB0;
-			if (fNumer <= 0.0f)
+			if(fNumer <= 0.0f)
 			{
 				fS = 0.0f;
 				fT = 1.0f;
@@ -442,7 +442,7 @@ float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, floa
 			else
 			{
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					fS = 1.0f;
 					fT = 0.0f;

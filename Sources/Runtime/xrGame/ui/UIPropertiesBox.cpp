@@ -42,9 +42,9 @@ void CUIPropertiesBox::Init(float x, float y, float width, float height)
 
 void CUIPropertiesBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == &m_UIListWnd)
+	if(pWnd == &m_UIListWnd)
 	{
-		if (msg == LIST_ITEM_CLICKED)
+		if(msg == LIST_ITEM_CLICKED)
 		{
 			GetMessageTarget()->SendMessage(this, PROPERTY_CLICKED);
 			Hide();
@@ -76,15 +76,15 @@ void CUIPropertiesBox::Show(const Frect& parent_rect, const fvec2& point)
 	fvec2 prop_pos;
 	fvec2 prop_size = GetWndSize();
 
-	if (point.x - prop_size.x > parent_rect.x1 && point.y + prop_size.y < parent_rect.y2)
+	if(point.x - prop_size.x > parent_rect.x1 && point.y + prop_size.y < parent_rect.y2)
 	{
 		prop_pos.set(point.x - prop_size.x, point.y);
 	}
-	else if (point.x - prop_size.x > parent_rect.x1 && point.y - prop_size.y > parent_rect.y1)
+	else if(point.x - prop_size.x > parent_rect.x1 && point.y - prop_size.y > parent_rect.y1)
 	{
 		prop_pos.set(point.x - prop_size.x, point.y - prop_size.y);
 	}
-	else if (point.x + prop_size.x < parent_rect.x2 && point.y - prop_size.y > parent_rect.y1)
+	else if(point.x + prop_size.x < parent_rect.x2 && point.y - prop_size.y > parent_rect.y1)
 	{
 		prop_pos.set(point.x, point.y - prop_size.y);
 	}
@@ -110,7 +110,7 @@ void CUIPropertiesBox::Hide()
 
 	m_pMouseCapturer = NULL;
 
-	if (GetParent()->GetMouseCapturer() == this)
+	if(GetParent()->GetMouseCapturer() == this)
 		GetParent()->SetCapture(this, false);
 }
 
@@ -118,12 +118,12 @@ bool CUIPropertiesBox::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	bool cursor_on_box;
 
-	if (x >= 0 && x < GetWidth() && y >= 0 && y < GetHeight())
+	if(x >= 0 && x < GetWidth() && y >= 0 && y < GetHeight())
 		cursor_on_box = true;
 	else
 		cursor_on_box = false;
 
-	if (mouse_action == WINDOW_LBUTTON_DOWN && !cursor_on_box)
+	if(mouse_action == WINDOW_LBUTTON_DOWN && !cursor_on_box)
 	{
 		Hide();
 		return true;

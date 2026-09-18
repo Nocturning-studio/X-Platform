@@ -71,24 +71,24 @@ void CStateMonsterEatAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterEatAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
 		select_state(eStateEat_CorpseApproachRun);
 		return;
 	}
-	if (prev_substate == eStateEat_CorpseApproachRun)
+	if(prev_substate == eStateEat_CorpseApproachRun)
 	{
 		select_state(eStateEat_CheckCorpse);
 		return;
 	}
 
-	if (prev_substate == eStateEat_CheckCorpse)
+	if(prev_substate == eStateEat_CheckCorpse)
 	{
-		if (object->ability_can_drag())
+		if(object->ability_can_drag())
 			select_state(eStateEat_Drag);
 		else
 		{
-			if (get_state(eStateEat_Eat)->check_start_conditions())
+			if(get_state(eStateEat_Eat)->check_start_conditions())
 				select_state(eStateEat_Eat);
 			else
 				select_state(eStateEat_CorpseApproachWalk);
@@ -96,41 +96,41 @@ void CStateMonsterEatAbstract::reselect_state()
 		return;
 	}
 
-	if (prev_substate == eStateEat_Drag)
+	if(prev_substate == eStateEat_Drag)
 	{
-		if (get_state(eStateEat_Eat)->check_start_conditions())
+		if(get_state(eStateEat_Eat)->check_start_conditions())
 			select_state(eStateEat_Eat);
 		else
 			select_state(eStateEat_CorpseApproachWalk);
 		return;
 	}
 
-	if (prev_substate == eStateEat_Eat)
+	if(prev_substate == eStateEat_Eat)
 	{
 		m_time_last_eat = time();
 
-		if (!hungry())
+		if(!hungry())
 			select_state(eStateEat_WalkAway);
 		else
 			select_state(eStateEat_CorpseApproachWalk);
 		return;
 	}
 
-	if (prev_substate == eStateEat_CorpseApproachWalk)
+	if(prev_substate == eStateEat_CorpseApproachWalk)
 	{
-		if (get_state(eStateEat_Eat)->check_start_conditions())
+		if(get_state(eStateEat_Eat)->check_start_conditions())
 			select_state(eStateEat_Eat);
 		else
 			select_state(eStateEat_CorpseApproachWalk);
 		return;
 	}
 
-	if (prev_substate == eStateEat_WalkAway)
+	if(prev_substate == eStateEat_WalkAway)
 	{
 		select_state(eStateEat_Rest);
 		return;
 	}
-	if (prev_substate == eStateEat_Rest)
+	if(prev_substate == eStateEat_Rest)
 	{
 		select_state(eStateEat_Rest);
 		return;
@@ -142,13 +142,13 @@ void CStateMonsterEatAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateEat_CorpseApproachRun)
+	if(current_substate == eStateEat_CorpseApproachRun)
 	{
 
 		// Определить позицию ближайшей боны у трупа
 		fvec3 nearest_bone_pos;
 		const CEntityAlive* corpse = object->CorpseMan.get_corpse();
-		if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
+		if((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
 		{
 			nearest_bone_pos = corpse->Position();
 		}
@@ -178,7 +178,7 @@ void CStateMonsterEatAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateEat_CheckCorpse)
+	if(current_substate == eStateEat_CheckCorpse)
 	{
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;
@@ -192,7 +192,7 @@ void CStateMonsterEatAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateEat_WalkAway)
+	if(current_substate == eStateEat_WalkAway)
 	{
 		SStateHideFromPoint data;
 
@@ -213,7 +213,7 @@ void CStateMonsterEatAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateEat_Rest)
+	if(current_substate == eStateEat_Rest)
 	{
 		SStateDataAction data;
 		data.action = ACT_REST;
@@ -226,13 +226,13 @@ void CStateMonsterEatAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateEat_CorpseApproachWalk)
+	if(current_substate == eStateEat_CorpseApproachWalk)
 	{
 
 		// Определить позицию ближайшей боны у трупа
 		fvec3 nearest_bone_pos;
 		const CEntityAlive* corpse = object->CorpseMan.get_corpse();
-		if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
+		if((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
 		{
 			nearest_bone_pos = corpse->Position();
 		}
@@ -258,9 +258,9 @@ void CStateMonsterEatAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterEatAbstract::check_completion()
 {
-	if (corpse != object->CorpseMan.get_corpse())
+	if(corpse != object->CorpseMan.get_corpse())
 		return true;
-	if (!hungry())
+	if(!hungry())
 		return true;
 
 	return false;

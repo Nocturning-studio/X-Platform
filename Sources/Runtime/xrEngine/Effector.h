@@ -23,7 +23,7 @@ class ENGINE_API CEffectorCam : public SBaseEffector
 		fLifeTime = 0.0f;
 		bHudAffect = true;
 	};
-	virtual ~CEffectorCam(){};
+	virtual ~CEffectorCam() {};
 	void SetType(ECamEffectorType type)
 	{
 		eType = type;
@@ -52,7 +52,7 @@ class ENGINE_API CEffectorCam : public SBaseEffector
 	};
 	;
 
-	virtual void ProcessIfInvalid(SCamEffectorInfo& info){};
+	virtual void ProcessIfInvalid(SCamEffectorInfo& info) {};
 	virtual BOOL AllowProcessingIfInvalid()
 	{
 		return FALSE;

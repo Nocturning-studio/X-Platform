@@ -23,7 +23,7 @@ void CStateMonsterHitObjectAbstract::execute()
 	object->set_action(ACT_STAND_IDLE);
 	object->anim().SetSpecParams(ASP_CHECK_CORPSE);
 
-	if (!m_hitted && (time_state_started + TIME_POINTBREAK < Engine.TimeManager.GetGlobalTimeMs()))
+	if(!m_hitted && (time_state_started + TIME_POINTBREAK < Engine.TimeManager.GetGlobalTimeMs()))
 	{
 		m_hitted = true;
 
@@ -46,10 +46,10 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
 	xr_vector<CObject*>::iterator B = m_nearest_objects.begin();
 	xr_vector<CObject*>::iterator E = m_nearest_objects.end();
 
-	for (xr_vector<CObject*>::iterator I = B; I != E; I++)
+	for(xr_vector<CObject*>::iterator I = B; I != E; I++)
 	{
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(*I);
-		if (!obj || !obj->m_pPhysicsShell)
+		if(!obj || !obj->m_pPhysicsShell)
 			continue;
 
 		// определить дистанцию до врага
@@ -66,13 +66,13 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
 		float from = angle_normalize(my_h - TEST_ANGLE);
 		float to = angle_normalize(my_h + TEST_ANGLE);
 
-		if (!is_angle_between(h, from, to))
+		if(!is_angle_between(h, from, to))
 			continue;
 
 		from = angle_normalize(my_p - TEST_ANGLE);
 		to = angle_normalize(my_p + TEST_ANGLE);
 
-		if (!is_angle_between(p, from, to))
+		if(!is_angle_between(p, from, to))
 			continue;
 
 		target = obj;
@@ -85,7 +85,7 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterHitObjectAbstract::check_completion()
 {
-	if (time_state_started + TIME_OUT_STATE < Engine.TimeManager.GetGlobalTimeMs())
+	if(time_state_started + TIME_OUT_STATE < Engine.TimeManager.GetGlobalTimeMs())
 		return true;
 	return false;
 }

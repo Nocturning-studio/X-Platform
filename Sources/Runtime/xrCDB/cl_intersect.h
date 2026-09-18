@@ -37,17 +37,17 @@ IC bool TestRayTri(const fvec3& C, const fvec3& D, fvec3** p, float& u, float& v
 	pvec.crossproduct(D, edge2);
 	// if determinant is near zero, ray lies in plane of triangle
 	det = edge1.dotproduct(pvec);
-	if (bCull)
+	if(bCull)
 	{ // define TEST_CULL if culling is desired
-		if (det < EPS)
+		if(det < EPS)
 			return false;
 		tvec.sub(C, *p[0]);		   // calculate distance from vert0 to ray origin
 		u = tvec.dotproduct(pvec); // calculate U parameter and test bounds
-		if (u < 0.0 || u > det)
+		if(u < 0.0 || u > det)
 			return false;
 		qvec.crossproduct(tvec, edge1); // prepare to test V parameter
 		v = D.dotproduct(qvec);			// calculate V parameter and test bounds
-		if (v < 0.0 || u + v > det)
+		if(v < 0.0 || u + v > det)
 			return false;
 		range = edge2.dotproduct(qvec); // calculate t, scale parameters, ray intersects triangle
 		inv_det = 1.0f / det;
@@ -57,16 +57,16 @@ IC bool TestRayTri(const fvec3& C, const fvec3& D, fvec3** p, float& u, float& v
 	}
 	else
 	{ // the non-culling branch
-		if (det > -EPS && det < EPS)
+		if(det > -EPS && det < EPS)
 			return false;
 		inv_det = 1.0f / det;
 		tvec.sub(C, *p[0]);					 // calculate distance from vert0 to ray origin
 		u = tvec.dotproduct(pvec) * inv_det; // calculate U parameter and test bounds
-		if (u < 0.0f || u > 1.0f)
+		if(u < 0.0f || u > 1.0f)
 			return false;
 		qvec.crossproduct(tvec, edge1);	  // prepare to test V parameter
 		v = D.dotproduct(qvec) * inv_det; // calculate V parameter and test bounds
-		if (v < 0.0f || u + v > 1.0f)
+		if(v < 0.0f || u + v > 1.0f)
 			return false;
 		range = edge2.dotproduct(qvec) * inv_det; // calculate t, ray intersects triangle
 	}
@@ -84,17 +84,17 @@ IC bool TestRayTri(const fvec3& C, const fvec3& D, fvec3* p, float& u, float& v,
 	pvec.crossproduct(D, edge2);
 	// if determinant is near zero, ray lies in plane of triangle
 	det = edge1.dotproduct(pvec);
-	if (bCull)
+	if(bCull)
 	{ // define TEST_CULL if culling is desired
-		if (det < EPS)
+		if(det < EPS)
 			return false;
 		tvec.sub(C, p[0]);		   // calculate distance from vert0 to ray origin
 		u = tvec.dotproduct(pvec); // calculate U parameter and test bounds
-		if (u < 0.0f || u > det)
+		if(u < 0.0f || u > det)
 			return false;
 		qvec.crossproduct(tvec, edge1); // prepare to test V parameter
 		v = D.dotproduct(qvec);			// calculate V parameter and test bounds
-		if (v < 0.0f || u + v > det)
+		if(v < 0.0f || u + v > det)
 			return false;
 		range = edge2.dotproduct(qvec); // calculate t, scale parameters, ray intersects triangle
 		inv_det = 1.0f / det;
@@ -104,16 +104,16 @@ IC bool TestRayTri(const fvec3& C, const fvec3& D, fvec3* p, float& u, float& v,
 	}
 	else
 	{ // the non-culling branch
-		if (det > -EPS && det < EPS)
+		if(det > -EPS && det < EPS)
 			return false;
 		inv_det = 1.0f / det;
 		tvec.sub(C, p[0]);					 // calculate distance from vert0 to ray origin
 		u = tvec.dotproduct(pvec) * inv_det; // calculate U parameter and test bounds
-		if (u < 0.0f || u > 1.0f)
+		if(u < 0.0f || u > 1.0f)
 			return false;
 		qvec.crossproduct(tvec, edge1);	  // prepare to test V parameter
 		v = D.dotproduct(qvec) * inv_det; // calculate V parameter and test bounds
-		if (v < 0.0f || u + v > 1.0f)
+		if(v < 0.0f || u + v > 1.0f)
 			return false;
 		range = edge2.dotproduct(qvec) * inv_det; // calculate t, ray intersects triangle
 	}
@@ -134,7 +134,7 @@ IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3* p, float& range)
 	// if determinant is near zero, ray lies in plane of triangle
 	det = edge1.dotproduct(pvec);
 
-	if (_abs(det) < EPS_S)
+	if(_abs(det) < EPS_S)
 	{
 		range = -1;
 		return false;
@@ -144,10 +144,10 @@ IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3* p, float& range)
 	u = tvec.dotproduct(pvec) * inv_det;	  // calculate U parameter and test bounds
 	qvec.crossproduct(tvec, edge1);			  // prepare to test V parameter
 	range = edge2.dotproduct(qvec) * inv_det; // calculate t, ray intersects plane
-	if (u < 0.0f || u > 1.0f)
+	if(u < 0.0f || u > 1.0f)
 		return false;
 	v = D.dotproduct(qvec) * inv_det; // calculate V parameter and test bounds
-	if (v < 0.0f || u + v > 1.0f)
+	if(v < 0.0f || u + v > 1.0f)
 		return false;
 	return true;
 }
@@ -164,7 +164,7 @@ IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3** p, float& range)
 	// if determinant is near zero, ray lies in plane of triangle
 	det = edge1.dotproduct(pvec);
 
-	if (_abs(det) < EPS_S)
+	if(_abs(det) < EPS_S)
 	{
 		range = -1;
 		return false;
@@ -174,10 +174,10 @@ IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3** p, float& range)
 	u = tvec.dotproduct(pvec) * inv_det;	  // calculate U parameter and test bounds
 	qvec.crossproduct(tvec, edge1);			  // prepare to test V parameter
 	range = edge2.dotproduct(qvec) * inv_det; // calculate t, ray intersects plane
-	if (u < 0.0f || u > 1.0f)
+	if(u < 0.0f || u > 1.0f)
 		return false;
 	v = D.dotproduct(qvec) * inv_det; // calculate V parameter and test bounds
-	if (v < 0.0f || u + v > 1.0f)
+	if(v < 0.0f || u + v > 1.0f)
 		return false;
 	return true;
 }
@@ -186,94 +186,94 @@ IC bool TestRayTri2(const fvec3& C, const fvec3& D, fvec3** p, float& range)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 // compare [-r,r] to [NdD+dt*NdW]
-#define TESTV0(NdD, R)                                                                                                 \
-	if (NdD > R)                                                                                                       \
-		return false;                                                                                                  \
-	else if (NdD < -R)                                                                                                 \
+#define TESTV0(NdD, R) \
+	if(NdD > R)        \
+		return false;  \
+	else if(NdD < -R)  \
 		return false;
 //---------------------------------------------------------------------------
 // compare [-r,r] to [min{p,p+d0,p+d1},max{p,p+d0,p+d1}]
-#define TESTV1(p, d0, d1, r)                                                                                           \
-	{                                                                                                                  \
-		if ((p) > (r))                                                                                                 \
-		{                                                                                                              \
-			if ((d0) >= 0.0f)                                                                                          \
-			{                                                                                                          \
-				if ((d1) >= 0.0f)                                                                                      \
-				{                                                                                                      \
-					return false;                                                                                      \
-				}                                                                                                      \
-				else                                                                                                   \
-				{                                                                                                      \
-					if ((p) + (d1) > (r))                                                                              \
-						return false;                                                                                  \
-				}                                                                                                      \
-			}                                                                                                          \
-			else if ((d1) <= (d0))                                                                                     \
-			{                                                                                                          \
-				if ((p) + (d1) > (r))                                                                                  \
-					return false;                                                                                      \
-			}                                                                                                          \
-			else                                                                                                       \
-			{                                                                                                          \
-				if ((p) + (d0) > (r))                                                                                  \
-					return false;                                                                                      \
-			}                                                                                                          \
-		}                                                                                                              \
-		else if ((p) < -(r))                                                                                           \
-		{                                                                                                              \
-			if ((d0) <= 0.0f)                                                                                          \
-			{                                                                                                          \
-				if ((d1) <= 0.0f)                                                                                      \
-				{                                                                                                      \
-					return false;                                                                                      \
-				}                                                                                                      \
-				else                                                                                                   \
-				{                                                                                                      \
-					if ((p) + (d1) < -(r))                                                                             \
-						return false;                                                                                  \
-				}                                                                                                      \
-			}                                                                                                          \
-			else if ((d1) >= (d0))                                                                                     \
-			{                                                                                                          \
-				if ((p) + (d1) < -(r))                                                                                 \
-					return false;                                                                                      \
-			}                                                                                                          \
-			else                                                                                                       \
-			{                                                                                                          \
-				if ((p) + (d0) < -(r))                                                                                 \
-					return false;                                                                                      \
-			}                                                                                                          \
-		}                                                                                                              \
+#define TESTV1(p, d0, d1, r)              \
+	{                                     \
+		if((p) > (r))                     \
+		{                                 \
+			if((d0) >= 0.0f)              \
+			{                             \
+				if((d1) >= 0.0f)          \
+				{                         \
+					return false;         \
+				}                         \
+				else                      \
+				{                         \
+					if((p) + (d1) > (r))  \
+						return false;     \
+				}                         \
+			}                             \
+			else if((d1) <= (d0))         \
+			{                             \
+				if((p) + (d1) > (r))      \
+					return false;         \
+			}                             \
+			else                          \
+			{                             \
+				if((p) + (d0) > (r))      \
+					return false;         \
+			}                             \
+		}                                 \
+		else if((p) < -(r))               \
+		{                                 \
+			if((d0) <= 0.0f)              \
+			{                             \
+				if((d1) <= 0.0f)          \
+				{                         \
+					return false;         \
+				}                         \
+				else                      \
+				{                         \
+					if((p) + (d1) < -(r)) \
+						return false;     \
+				}                         \
+			}                             \
+			else if((d1) >= (d0))         \
+			{                             \
+				if((p) + (d1) < -(r))     \
+					return false;         \
+			}                             \
+			else                          \
+			{                             \
+				if((p) + (d0) < -(r))     \
+					return false;         \
+			}                             \
+		}                                 \
 	}
 //---------------------------------------------------------------------------
 // compare [-r,r] to [min{p,p+d},max{p,p+d}]
-#define TESTV2(p, d, r)                                                                                                \
-	{                                                                                                                  \
-		if ((p) > (r))                                                                                                 \
-		{                                                                                                              \
-			if ((d) >= 0.0f)                                                                                           \
-			{                                                                                                          \
-				return false;                                                                                          \
-			}                                                                                                          \
-			else                                                                                                       \
-			{                                                                                                          \
-				if ((p) + (d) > (r))                                                                                   \
-					return false;                                                                                      \
-			}                                                                                                          \
-		}                                                                                                              \
-		else if ((p) < -(r))                                                                                           \
-		{                                                                                                              \
-			if ((d) <= 0.0f)                                                                                           \
-			{                                                                                                          \
-				return false;                                                                                          \
-			}                                                                                                          \
-			else                                                                                                       \
-			{                                                                                                          \
-				if ((p) + (d) < -(r))                                                                                  \
-					return false;                                                                                      \
-			}                                                                                                          \
-		}                                                                                                              \
+#define TESTV2(p, d, r)              \
+	{                                \
+		if((p) > (r))                \
+		{                            \
+			if((d) >= 0.0f)          \
+			{                        \
+				return false;        \
+			}                        \
+			else                     \
+			{                        \
+				if((p) + (d) > (r))  \
+					return false;    \
+			}                        \
+		}                            \
+		else if((p) < -(r))          \
+		{                            \
+			if((d) <= 0.0f)          \
+			{                        \
+				return false;        \
+			}                        \
+			else                     \
+			{                        \
+				if((p) + (d) < -(r)) \
+					return false;    \
+			}                        \
+		}                            \
 	}
 //---------------------------------------------------------------------------
 
@@ -285,7 +285,7 @@ IC bool TestBBoxTri(const fmat3x3& A, const fvec3& T, const fvec3& extA, fvec3**
 	E[1].sub(*p[2], *p[0]);
 	N.crossproduct(E[0], E[1]);
 
-	if (bCulling && (A.k.dotproduct(N) >= 0))
+	if(bCulling && (A.k.dotproduct(N) >= 0))
 		return false;
 
 	D.sub(*p[0], T);
@@ -387,7 +387,7 @@ IC bool TestBBoxTri(const fmat3x3& A, const fvec3& T, const fvec3& extA, fvec3* 
 	E[1].sub(p[2], p[0]);
 	N.crossproduct(E[0], E[1]);
 
-	if (bCulling && (A.k.dotproduct(N) >= 0))
+	if(bCulling && (A.k.dotproduct(N) >= 0))
 		return false;
 
 	D.sub(p[0], T);
@@ -500,16 +500,16 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 	float fT = fA01 * fB0 - fA00 * fB1;
 	float fSqrDist;
 
-	if (fS + fT <= fDet)
+	if(fS + fT <= fDet)
 	{
-		if (fS < 0.0f)
+		if(fS < 0.0f)
 		{
-			if (fT < 0.0f)
+			if(fT < 0.0f)
 			{ // region 4
-				if (fB0 < 0.0f)
+				if(fB0 < 0.0f)
 				{
 					fT = 0.0f;
-					if (-fB0 >= fA00)
+					if(-fB0 >= fA00)
 					{
 						fS = 1.0f;
 						fSqrDist = fA00 + 2.0f * fB0 + fC;
@@ -523,12 +523,12 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 				else
 				{
 					fS = 0.0f;
-					if (fB1 >= 0.0f)
+					if(fB1 >= 0.0f)
 					{
 						fT = 0.0f;
 						fSqrDist = fC;
 					}
-					else if (-fB1 >= fA11)
+					else if(-fB1 >= fA11)
 					{
 						fT = 1.0f;
 						fSqrDist = fA11 + 2.0f * fB1 + fC;
@@ -543,12 +543,12 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 			else
 			{ // region 3
 				fS = 0.0f;
-				if (fB1 >= 0.0f)
+				if(fB1 >= 0.0f)
 				{
 					fT = 0.0f;
 					fSqrDist = fC;
 				}
-				else if (-fB1 >= fA11)
+				else if(-fB1 >= fA11)
 				{
 					fT = 1;
 					fSqrDist = fA11 + 2.0f * fB1 + fC;
@@ -560,15 +560,15 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 				}
 			}
 		}
-		else if (fT < 0.0f)
+		else if(fT < 0.0f)
 		{ // region 5
 			fT = 0.0f;
-			if (fB0 >= 0.0f)
+			if(fB0 >= 0.0f)
 			{
 				fS = 0.0f;
 				fSqrDist = fC;
 			}
-			else if (-fB0 >= fA00)
+			else if(-fB0 >= fA00)
 			{
 				fS = 1.0;
 				fSqrDist = fA00 + 2.0f * fB0 + fC;
@@ -580,7 +580,7 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 			}
 		}
 		else
-		{	// region 0
+		{ // region 0
 			// minimum at interior point
 			float fInvDet = 1.0f / fDet;
 			fS *= fInvDet;
@@ -592,15 +592,15 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 	{
 		float fTmp0, fTmp1, fNumer, fDenom;
 
-		if (fS < 0.0f)
+		if(fS < 0.0f)
 		{ // region 2
 			fTmp0 = fA01 + fB0;
 			fTmp1 = fA11 + fB1;
-			if (fTmp1 > fTmp0)
+			if(fTmp1 > fTmp0)
 			{
 				fNumer = fTmp1 - fTmp0;
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					fS = 1.0f;
 					fT = 0.0f;
@@ -617,12 +617,12 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 			else
 			{
 				fS = 0.0f;
-				if (fTmp1 <= 0.0f)
+				if(fTmp1 <= 0.0f)
 				{
 					fT = 1.0f;
 					fSqrDist = fA11 + 2.0f * fB1 + fC;
 				}
-				else if (fB1 >= 0.0f)
+				else if(fB1 >= 0.0f)
 				{
 					fT = 0.0f;
 					fSqrDist = fC;
@@ -634,15 +634,15 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 				}
 			}
 		}
-		else if (fT < 0.0)
+		else if(fT < 0.0)
 		{ // region 6
 			fTmp0 = fA01 + fB1;
 			fTmp1 = fA00 + fB0;
-			if (fTmp1 > fTmp0)
+			if(fTmp1 > fTmp0)
 			{
 				fNumer = fTmp1 - fTmp0;
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					fT = 1.0f;
 					fS = 0.0f;
@@ -659,12 +659,12 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 			else
 			{
 				fT = 0.0f;
-				if (fTmp1 <= 0.0f)
+				if(fTmp1 <= 0.0f)
 				{
 					fS = 1.0f;
 					fSqrDist = fA00 + 2.0f * fB0 + fC;
 				}
-				else if (fB0 >= 0.0f)
+				else if(fB0 >= 0.0f)
 				{
 					fS = 0.0f;
 					fSqrDist = fC;
@@ -679,7 +679,7 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 		else
 		{ // region 1
 			fNumer = fA11 + fB1 - fA01 - fB0;
-			if (fNumer <= 0.0f)
+			if(fNumer <= 0.0f)
 			{
 				fS = 0.0f;
 				fT = 1.0f;
@@ -688,7 +688,7 @@ IC float MgcSqrDistance(const fvec3& rkPoint, const fvec3& orig, const fvec3& e0
 			else
 			{
 				fDenom = fA00 - 2.0f * fA01 + fA11;
-				if (fNumer >= fDenom)
+				if(fNumer >= fDenom)
 				{
 					fS = 1.0f;
 					fT = 0.0f;
@@ -726,26 +726,26 @@ IC EST_Result TestSphereTri(const fvec3& sphereOrigin, float sphereRadius, const
 	int iInside = 0;
 
 	// test if v0 is inside the sphere
-	if (kV0mC.square_magnitude() <= fRSqr)
+	if(kV0mC.square_magnitude() <= fRSqr)
 		iInside++;
 
 	// test if v1 is inside the sphere
 	fvec3 kDiff;
 	kDiff.add(kV0mC, e0);
-	if (kDiff.square_magnitude() <= fRSqr)
+	if(kDiff.square_magnitude() <= fRSqr)
 		iInside++;
 
 	// test if v2 is inside the sphere
 	kDiff.add(kV0mC, e1);
-	if (kDiff.square_magnitude() <= fRSqr)
+	if(kDiff.square_magnitude() <= fRSqr)
 		iInside++;
 
 	// triangle does not traversely intersect sphere
-	if (iInside == 3)
+	if(iInside == 3)
 		return stInside;
 
 	// triangle transversely intersects sphere
-	if (iInside > 0)
+	if(iInside > 0)
 		return stIntersect;
 
 	// All vertices are outside the sphere, but the triangle might still
@@ -785,11 +785,11 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 	float fDy = fAy - rkBox.m_halfsize[1];
 	float fDz = fAz - rkBox.m_halfsize[2];
 
-	if (fAx <= rkBox.m_halfsize[0])
+	if(fAx <= rkBox.m_halfsize[0])
 	{
-		if (fAy <= rkBox.m_halfsize[1])
+		if(fAy <= rkBox.m_halfsize[1])
 		{
-			if (fAz <= rkBox.m_halfsize[2])
+			if(fAz <= rkBox.m_halfsize[2])
 			{
 				// sphere center inside box
 				return true;
@@ -802,7 +802,7 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 		}
 		else
 		{
-			if (fAz <= rkBox.m_halfsize[2])
+			if(fAz <= rkBox.m_halfsize[2])
 			{
 				// potential sphere-face intersection with face y
 				return fDy <= rkSphere.R;
@@ -818,9 +818,9 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 	}
 	else
 	{
-		if (fAy <= rkBox.m_halfsize[1])
+		if(fAy <= rkBox.m_halfsize[1])
 		{
-			if (fAz <= rkBox.m_halfsize[2])
+			if(fAz <= rkBox.m_halfsize[2])
 			{
 				// potential sphere-face intersection with face x
 				return fDx <= rkSphere.R;
@@ -835,7 +835,7 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 		}
 		else
 		{
-			if (fAz <= rkBox.m_halfsize[2])
+			if(fAz <= rkBox.m_halfsize[2])
 			{
 				// potential sphere-edge intersection with edge formed
 				// by faces x and y
@@ -864,21 +864,21 @@ IC bool TestRayOBB(const fvec3& origin, const fvec3& direction, const Fobb& rkBo
 	fAWdU[0] = _abs(fWdU[0]);
 	fDdU[0] = kDiff.dotproduct(rkBox.m_rotate.i);
 	fADdU[0] = _abs(fDdU[0]);
-	if (fADdU[0] > rkBox.m_halfsize[0] && fDdU[0] * fWdU[0] >= (float)0.0)
+	if(fADdU[0] > rkBox.m_halfsize[0] && fDdU[0] * fWdU[0] >= (float)0.0)
 		return false;
 
 	fWdU[1] = direction.dotproduct(rkBox.m_rotate.j);
 	fAWdU[1] = _abs(fWdU[1]);
 	fDdU[1] = kDiff.dotproduct(rkBox.m_rotate.j);
 	fADdU[1] = _abs(fDdU[1]);
-	if (fADdU[1] > rkBox.m_halfsize[1] && fDdU[1] * fWdU[1] >= (float)0.0)
+	if(fADdU[1] > rkBox.m_halfsize[1] && fDdU[1] * fWdU[1] >= (float)0.0)
 		return false;
 
 	fWdU[2] = direction.dotproduct(rkBox.m_rotate.k);
 	fAWdU[2] = _abs(fWdU[2]);
 	fDdU[2] = kDiff.dotproduct(rkBox.m_rotate.k);
 	fADdU[2] = _abs(fDdU[2]);
-	if (fADdU[2] > rkBox.m_halfsize[2] && fDdU[2] * fWdU[2] >= (float)0.0)
+	if(fADdU[2] > rkBox.m_halfsize[2] && fDdU[2] * fWdU[2] >= (float)0.0)
 		return false;
 
 	fvec3 kWxD;
@@ -886,17 +886,17 @@ IC bool TestRayOBB(const fvec3& origin, const fvec3& direction, const Fobb& rkBo
 
 	fAWxDdU[0] = _abs(kWxD.dotproduct(rkBox.m_rotate.i));
 	fRhs = rkBox.m_halfsize[1] * fAWdU[2] + rkBox.m_halfsize[2] * fAWdU[1];
-	if (fAWxDdU[0] > fRhs)
+	if(fAWxDdU[0] > fRhs)
 		return false;
 
 	fAWxDdU[1] = _abs(kWxD.dotproduct(rkBox.m_rotate.j));
 	fRhs = rkBox.m_halfsize[0] * fAWdU[2] + rkBox.m_halfsize[2] * fAWdU[0];
-	if (fAWxDdU[1] > fRhs)
+	if(fAWxDdU[1] > fRhs)
 		return false;
 
 	fAWxDdU[2] = _abs(kWxD.dotproduct(rkBox.m_rotate.k));
 	fRhs = rkBox.m_halfsize[0] * fAWdU[1] + rkBox.m_halfsize[1] * fAWdU[0];
-	if (fAWxDdU[2] > fRhs)
+	if(fAWxDdU[2] > fRhs)
 		return false;
 
 	return true;

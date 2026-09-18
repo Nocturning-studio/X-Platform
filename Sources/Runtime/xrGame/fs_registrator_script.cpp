@@ -84,21 +84,24 @@ struct FS_item
 	}
 };
 
-template <bool b> bool sizeSorter(const FS_item& itm1, const FS_item& itm2)
+template <bool b>
+bool sizeSorter(const FS_item& itm1, const FS_item& itm2)
 {
-	if (b)
+	if(b)
 		return (itm1.size < itm2.size);
 	return (itm2.size < itm1.size);
 }
-template <bool b> bool modifSorter(const FS_item& itm1, const FS_item& itm2)
+template <bool b>
+bool modifSorter(const FS_item& itm1, const FS_item& itm2)
 {
-	if (b)
+	if(b)
 		return (itm1.modif < itm2.modif);
 	return (itm2.modif < itm1.modif);
 }
-template <bool b> bool nameSorter(const FS_item& itm1, const FS_item& itm2)
+template <bool b>
+bool nameSorter(const FS_item& itm1, const FS_item& itm2)
 {
-	if (b)
+	if(b)
 		return (xr_strcmp(itm1.name, itm2.name) < 0);
 	return (xr_strcmp(itm2.name, itm1.name) < 0);
 }
@@ -140,7 +143,7 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 	FS_FileSet files;
 	FS.file_list(files, path, flags, mask);
 
-	for (FS_FileSetIt it = files.begin(); it != files.end(); ++it)
+	for(FS_FileSetIt it = files.begin(); it != files.end(); ++it)
 	{
 		m_file_items.push_back(FS_item());
 		FS_item& itm = m_file_items.back();
@@ -155,17 +158,17 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 
 void FS_file_list_ex::Sort(u32 flags)
 {
-	if (flags == eSortByNameUp)
+	if(flags == eSortByNameUp)
 		concurrency::parallel_sort(m_file_items.begin(), m_file_items.end(), nameSorter<true>);
-	else if (flags == eSortByNameDown)
+	else if(flags == eSortByNameDown)
 		concurrency::parallel_sort(m_file_items.begin(), m_file_items.end(), nameSorter<false>);
-	else if (flags == eSortBySizeUp)
+	else if(flags == eSortBySizeUp)
 		concurrency::parallel_sort(m_file_items.begin(), m_file_items.end(), sizeSorter<true>);
-	else if (flags == eSortBySizeDown)
+	else if(flags == eSortBySizeDown)
 		concurrency::parallel_sort(m_file_items.begin(), m_file_items.end(), sizeSorter<false>);
-	else if (flags == eSortByModifUp)
+	else if(flags == eSortByModifUp)
 		concurrency::parallel_sort(m_file_items.begin(), m_file_items.end(), modifSorter<true>);
-	else if (flags == eSortByModifDown)
+	else if(flags == eSortByModifDown)
 		concurrency::parallel_sort(m_file_items.begin(), m_file_items.end(), modifSorter<false>);
 }
 
@@ -252,8 +255,8 @@ void fs_registrator::script_register(lua_State* L)
 			   .def("get_path", &CLocatorAPI::get_path)
 			   .def("append_path", &CLocatorAPI::append_path)
 
-			   .def("file_delete", (void(CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::file_delete))
-			   .def("file_delete", (void(CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::file_delete))
+			   .def("file_delete", (void (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::file_delete))
+			   .def("file_delete", (void (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::file_delete))
 
 			   .def("dir_delete", &dir_delete_script)
 			   .def("dir_delete", &dir_delete_script_2)
@@ -269,7 +272,7 @@ void fs_registrator::script_register(lua_State* L)
 			   .def("get_file_age_str", &get_file_age_str)
 			   .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::r_open))
 			   .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::r_open))
-			   .def("r_close", (void(CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
+			   .def("r_close", (void (CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
 
 			   .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::w_open))
 			   .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::w_close))

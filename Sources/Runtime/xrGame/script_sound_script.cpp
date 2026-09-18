@@ -32,14 +32,14 @@ void CScriptSound::script_register(lua_State* L)
 				  .def(constructor<LPCSTR, ESoundTypes>())
 				  .def("get_position", &CScriptSound::GetPosition)
 				  .def("set_position", &CScriptSound::SetPosition)
-				  .def("play", (void(CScriptSound::*)(CScriptGameObject*))(&CScriptSound::Play))
-				  .def("play", (void(CScriptSound::*)(CScriptGameObject*, float))(&CScriptSound::Play))
-				  .def("play", (void(CScriptSound::*)(CScriptGameObject*, float, int))(&CScriptSound::Play))
+				  .def("play", (void (CScriptSound::*)(CScriptGameObject*))(&CScriptSound::Play))
+				  .def("play", (void (CScriptSound::*)(CScriptGameObject*, float))(&CScriptSound::Play))
+				  .def("play", (void (CScriptSound::*)(CScriptGameObject*, float, int))(&CScriptSound::Play))
 				  .def("play_at_pos",
-					   (void(CScriptSound::*)(CScriptGameObject*, const fvec3&))(&CScriptSound::PlayAtPos))
+					   (void (CScriptSound::*)(CScriptGameObject*, const fvec3&))(&CScriptSound::PlayAtPos))
 				  .def("play_at_pos",
-					   (void(CScriptSound::*)(CScriptGameObject*, const fvec3&, float))(&CScriptSound::PlayAtPos))
-				  .def("play_at_pos", (void(CScriptSound::*)(CScriptGameObject*, const fvec3&, float, int))(
+					   (void (CScriptSound::*)(CScriptGameObject*, const fvec3&, float))(&CScriptSound::PlayAtPos))
+				  .def("play_at_pos", (void (CScriptSound::*)(CScriptGameObject*, const fvec3&, float, int))(
 										  &CScriptSound::PlayAtPos))
 				  .def("play_no_feedback", &CScriptSound::PlayNoFeedback)
 				  .def("stop", &CScriptSound::Stop)

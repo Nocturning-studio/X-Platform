@@ -119,7 +119,7 @@ class ICEMATHS_API Matrix4x4
 	}
 	//! Sets the translation part of the matrix, from a HPoint.
 	//		inline_	void				SetTrans(const HPoint& p)					{ m[3][0]=p.x;	m[3][1]=p.y;
-	//m[3][2]=p.z;	m[3][3]=p.w;	}
+	// m[3][2]=p.z;	m[3][3]=p.w;	}
 	//! Sets the translation part of the matrix, from floats.
 	inline_ void SetTrans(float tx, float ty, float tz)
 	{
@@ -179,7 +179,7 @@ class ICEMATHS_API Matrix4x4
 	// Row-column access
 	//! Returns a row.
 	//		inline_	void				GetRow(const udword r, HPoint& p)	const	{ p.x=m[r][0];	p.y=m[r][1];
-	//p.z=m[r][2];	p.w=m[r][3];		}
+	// p.z=m[r][2];	p.w=m[r][3];		}
 	//! Returns a row.
 	inline_ void GetRow(const udword r, Point& p) const
 	{
@@ -189,7 +189,7 @@ class ICEMATHS_API Matrix4x4
 	}
 	//! Sets a row.
 	//		inline_	void				SetRow(const udword r, const HPoint& p)		{ m[r][0]=p.x;	m[r][1]=p.y;
-	//m[r][2]=p.z;	m[r][3]=p.w;		}
+	// m[r][2]=p.z;	m[r][3]=p.w;		}
 	//! Sets a row.
 	inline_ void SetRow(const udword r, const Point& p)
 	{
@@ -200,7 +200,7 @@ class ICEMATHS_API Matrix4x4
 	}
 	//! Returns a column.
 	//		inline_	void				GetCol(const udword c, HPoint& p)	const	{ p.x=m[0][c];	p.y=m[1][c];
-	//p.z=m[2][c];	p.w=m[3][c];		}
+	// p.z=m[2][c];	p.w=m[3][c];		}
 	//! Returns a column.
 	inline_ void GetCol(const udword c, Point& p) const
 	{
@@ -210,7 +210,7 @@ class ICEMATHS_API Matrix4x4
 	}
 	//! Sets a column.
 	//		inline_	void				SetCol(const udword c, const HPoint& p)		{ m[0][c]=p.x;	m[1][c]=p.y;
-	//m[2][c]=p.z;	m[3][c]=p.w;		}
+	// m[2][c]=p.z;	m[3][c]=p.w;		}
 	//! Sets a column.
 	inline_ void SetCol(const udword c, const Point& p)
 	{
@@ -289,40 +289,40 @@ class ICEMATHS_API Matrix4x4
 	//! Checks for identity
 	inline_ bool IsIdentity() const
 	{
-		if (IR(m[0][0]) != IEEE_1_0)
+		if(IR(m[0][0]) != IEEE_1_0)
 			return false;
-		if (IR(m[0][1]) != 0)
+		if(IR(m[0][1]) != 0)
 			return false;
-		if (IR(m[0][2]) != 0)
+		if(IR(m[0][2]) != 0)
 			return false;
-		if (IR(m[0][3]) != 0)
-			return false;
-
-		if (IR(m[1][0]) != 0)
-			return false;
-		if (IR(m[1][1]) != IEEE_1_0)
-			return false;
-		if (IR(m[1][2]) != 0)
-			return false;
-		if (IR(m[1][3]) != 0)
+		if(IR(m[0][3]) != 0)
 			return false;
 
-		if (IR(m[2][0]) != 0)
+		if(IR(m[1][0]) != 0)
 			return false;
-		if (IR(m[2][1]) != 0)
+		if(IR(m[1][1]) != IEEE_1_0)
 			return false;
-		if (IR(m[2][2]) != IEEE_1_0)
+		if(IR(m[1][2]) != 0)
 			return false;
-		if (IR(m[2][3]) != 0)
+		if(IR(m[1][3]) != 0)
 			return false;
 
-		if (IR(m[3][0]) != 0)
+		if(IR(m[2][0]) != 0)
 			return false;
-		if (IR(m[3][1]) != 0)
+		if(IR(m[2][1]) != 0)
 			return false;
-		if (IR(m[3][2]) != 0)
+		if(IR(m[2][2]) != IEEE_1_0)
 			return false;
-		if (IR(m[3][3]) != IEEE_1_0)
+		if(IR(m[2][3]) != 0)
+			return false;
+
+		if(IR(m[3][0]) != 0)
+			return false;
+		if(IR(m[3][1]) != 0)
+			return false;
+		if(IR(m[3][2]) != 0)
+			return false;
+		if(IR(m[3][3]) != IEEE_1_0)
 			return false;
 		return true;
 	}
@@ -461,7 +461,7 @@ class ICEMATHS_API Matrix4x4
 
 	//! Operator for HPoint Mul = Matrix4x4 * HPoint;
 	//		inline_	HPoint				operator*(const HPoint& v)		const	{ return HPoint(ROW[0]|v, ROW[1]|v,
-	//ROW[2]|v, ROW[3]|v); }
+	// ROW[2]|v, ROW[3]|v); }
 
 	//! Operator for Point Mul = Matrix4x4 * Point;
 	inline_ Point operator*(const Point& v) const
@@ -491,7 +491,7 @@ class ICEMATHS_API Matrix4x4
 	//! Operator for Matrix4x4 Div = Matrix4x4 / float;
 	inline_ Matrix4x4 operator/(float s) const
 	{
-		if (s)
+		if(s)
 			s = 1.0f / s;
 
 		return Matrix4x4(m[0][0] * s, m[0][1] * s, m[0][2] * s, m[0][3] * s, m[1][0] * s, m[1][1] * s, m[1][2] * s,
@@ -613,7 +613,7 @@ class ICEMATHS_API Matrix4x4
 	//! Operator for Matrix4x4 /= float;
 	inline_ Matrix4x4& operator/=(float s)
 	{
-		if (s)
+		if(s)
 			s = 1.0f / s;
 		m[0][0] *= s;
 		m[0][1] *= s;

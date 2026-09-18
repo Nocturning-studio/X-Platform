@@ -89,14 +89,15 @@ struct SceneGraphPacket
 
 	IC void AddVisualRef(IRender_Visual* V)
 	{
-		if (!V) return;
+		if(!V)
+			return;
 		V->AddRef();
 		m_visual_refs.push_back(V);
 	}
 
 	void ReleaseVisualRefs()
 	{
-		for (IRender_Visual* V : m_visual_refs)
+		for(IRender_Visual* V : m_visual_refs)
 			V->ReleaseRef();
 		m_visual_refs.clear();
 	}
@@ -215,7 +216,7 @@ struct SceneTraversalContext
 	BOOL is_hud_pass;
 	BOOL is_invisible_mode;
 	u32 traversal_marker_id;
-	u32 render_phase; 
+	u32 render_phase;
 	CRenderView RenderView;
 	bool use_hom;
 	bool use_feedback;
@@ -224,18 +225,19 @@ struct SceneTraversalContext
 
 	SceneTraversalContext()
 		: owner(nullptr),
-		transform(nullptr),
-		frustum(nullptr),
-		is_hud_pass(FALSE),
-		is_invisible_mode(FALSE),
-		traversal_marker_id(0),
-		render_phase(0),
-		RenderView(),
-		use_hom(true),
-		use_feedback(false),
-		fetch_config(true, true, false),
-		culling_bounds(nullptr)
-	{}
+		  transform(nullptr),
+		  frustum(nullptr),
+		  is_hud_pass(FALSE),
+		  is_invisible_mode(FALSE),
+		  traversal_marker_id(0),
+		  render_phase(0),
+		  RenderView(),
+		  use_hom(true),
+		  use_feedback(false),
+		  fetch_config(true, true, false),
+		  culling_bounds(nullptr)
+	{
+	}
 };
 
 class CurrentRenderContext

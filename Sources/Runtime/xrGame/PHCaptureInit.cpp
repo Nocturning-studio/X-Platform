@@ -26,15 +26,15 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 	b_character_feedback = false;
 	e_state = cstPulling;
 
-	if (!a_taget_object || !a_taget_object->m_pPhysicsShell || !a_taget_object->m_pPhysicsShell->isActive() ||
-		smart_cast<CInventoryItem*>(a_taget_object))
+	if(!a_taget_object || !a_taget_object->m_pPhysicsShell || !a_taget_object->m_pPhysicsShell->isActive() ||
+	   smart_cast<CInventoryItem*>(a_taget_object))
 	{
 		m_taget_object = NULL;
 		b_failed = true;
 		return;
 	}
 
-	if (!a_character || !a_character->b_exist)
+	if(!a_character || !a_character->b_exist)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -45,7 +45,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CObject* capturer_object = smart_cast<CObject*>(m_character->PhysicsRefObject());
 
-	if (!capturer_object)
+	if(!capturer_object)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -54,7 +54,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CKinematics* p_kinematics = smart_cast<CKinematics*>(capturer_object->Visual());
 
-	if (!p_kinematics)
+	if(!p_kinematics)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -63,14 +63,14 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CInifile* ini = p_kinematics->LL_UserData();
 
-	if (!ini)
+	if(!ini)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
 		return;
 	}
 
-	if (!ini->section_exist("capture"))
+	if(!ini->section_exist("capture"))
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -99,15 +99,15 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 	b_character_feedback = false;
 	m_taget_object = NULL;
 	m_character = NULL;
-	if (!a_taget_object || !a_taget_object->m_pPhysicsShell || !a_taget_object->m_pPhysicsShell->isActive() ||
-		smart_cast<CInventoryItem*>(a_taget_object))
+	if(!a_taget_object || !a_taget_object->m_pPhysicsShell || !a_taget_object->m_pPhysicsShell->isActive() ||
+	   smart_cast<CInventoryItem*>(a_taget_object))
 	{
 		m_taget_object = NULL;
 		b_failed = true;
 		return;
 	}
 
-	if (!a_character || !a_character->b_exist)
+	if(!a_character || !a_character->b_exist)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -118,7 +118,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CObject* capturer_object = smart_cast<CObject*>(m_character->PhysicsRefObject());
 
-	if (!capturer_object)
+	if(!capturer_object)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -127,7 +127,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CKinematics* p_kinematics = smart_cast<CKinematics*>(capturer_object->Visual());
 
-	if (!p_kinematics)
+	if(!p_kinematics)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -136,21 +136,21 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CInifile* ini = p_kinematics->LL_UserData();
 
-	if (!ini)
+	if(!ini)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
 		return;
 	}
 
-	if (a_taget_element == BI_NONE)
+	if(a_taget_element == BI_NONE)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
 		return;
 	}
 
-	if (!ini->section_exist("capture"))
+	if(!ini->section_exist("capture"))
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -163,7 +163,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	IRender_Visual* V = m_taget_object->Visual();
 
-	if (!V)
+	if(!V)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -172,7 +172,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CKinematics* K = smart_cast<CKinematics*>(V);
 
-	if (!K)
+	if(!K)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -181,7 +181,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	CBoneInstance& tag_bone = K->LL_GetBoneInstance(a_taget_element);
 
-	if (!tag_bone.Callback_Param)
+	if(!tag_bone.Callback_Param)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -190,7 +190,7 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, CPhysicsShellHolder* a_taget_o
 
 	m_taget_element = (CPhysicsElement*)tag_bone.Callback_Param;
 
-	if (!m_taget_element)
+	if(!m_taget_element)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -212,7 +212,7 @@ void CPHCapture::Init(CInifile* ini)
 	dir.sub(capture_bone_position, dir);
 
 	m_pull_distance = ini->r_float("capture", "pull_distance");
-	if (dir.magnitude() > m_pull_distance)
+	if(dir.magnitude() > m_pull_distance)
 	{
 		m_taget_object = NULL;
 		b_failed = true;
@@ -227,7 +227,7 @@ void CPHCapture::Init(CInifile* ini)
 	m_time_start = Engine.TimeManager.GetGlobalTimeMs();
 	float max_pull_force = ini->r_float("capture", "pull_force"); // pull force
 	m_pull_force = pool_force_factor * ph_world->Gravity() * m_taget_element->PhysicsShell()->getMass();
-	if (m_pull_force > max_pull_force)
+	if(m_pull_force > max_pull_force)
 		m_pull_force = max_pull_force;
 
 	float pulling_vel_scale = ini->r_float("capture", "velocity_scale"); //
@@ -236,7 +236,7 @@ void CPHCapture::Init(CInifile* ini)
 	m_character->SetObjectContactCallback(object_contactCallbackFun);
 	m_island.Init();
 	CActor* A = smart_cast<CActor*>(m_character->PhysicsRefObject());
-	if (A)
+	if(A)
 	{
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
 	}
@@ -244,32 +244,32 @@ void CPHCapture::Init(CInifile* ini)
 
 void CPHCapture::Release()
 {
-	if (b_failed)
+	if(b_failed)
 		return;
-	if (e_state == cstReleased)
+	if(e_state == cstReleased)
 		return;
-	if (m_joint)
+	if(m_joint)
 	{
 		m_island.RemoveJoint(m_joint);
 
 		dJointDestroy(m_joint);
 	}
 	m_joint = NULL;
-	if (m_ajoint)
+	if(m_ajoint)
 	{
 		m_island.RemoveJoint(m_ajoint);
 		dJointDestroy(m_ajoint);
 	}
 	m_ajoint = NULL;
-	if (m_body)
+	if(m_body)
 	{
 		m_island.RemoveBody(m_body);
 		dBodyDestroy(m_body);
 	}
 	m_body = NULL;
 
-	if (e_state == cstPulling && m_taget_element && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() &&
-		m_taget_object->PPhysicsShell()->isActive())
+	if(e_state == cstPulling && m_taget_element && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() &&
+	   m_taget_object->PPhysicsShell()->isActive())
 	{
 		m_taget_element->set_DynamicLimits();
 	}
@@ -277,7 +277,7 @@ void CPHCapture::Release()
 	e_state = cstReleased;
 	b_collide = true;
 	CActor* A = smart_cast<CActor*>(m_character->PhysicsRefObject());
-	if (A)
+	if(A)
 	{
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 		//.		A->inventory().setSlotsBlocked(false);
@@ -292,7 +292,7 @@ void CPHCapture::Deactivate()
 	//	m_taget_element->set_ObjectContactCallback(0);
 
 	//}
-	if (m_character)
+	if(m_character)
 		m_character->SetObjectContactCallback(0);
 	CPHUpdateObject::Deactivate();
 	m_character = NULL;

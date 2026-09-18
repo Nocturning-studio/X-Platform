@@ -101,9 +101,11 @@ class CDangerObject;
 class CScriptGameObject;
 
 #ifdef DEBUG
-template <typename _object_type> class CActionBase;
+template <typename _object_type>
+class CActionBase;
 
-template <typename _object_type> class CPropertyEvaluator;
+template <typename _object_type>
+class CPropertyEvaluator;
 
 template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator,
 		  typename _world_operator_ptr, typename _condition_evaluator_ptr>
@@ -246,7 +248,8 @@ class CScriptGameObject
 	void external_sound_start(LPCSTR sound);
 	void external_sound_stop();
 
-	template <typename T> IC T* action_planner();
+	template <typename T>
+	IC T* action_planner();
 
 	// CProjector
 	fvec3 GetCurrentDirection();

@@ -32,9 +32,9 @@ void CControlCriticalWound::on_release()
 
 bool CControlCriticalWound::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
+	if(m_man->is_captured_pure())
 		return false;
 
 	return true;
@@ -42,7 +42,7 @@ bool CControlCriticalWound::check_start_conditions()
 
 void CControlCriticalWound::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eventAnimationEnd:
 		m_man->notify(ControlCom::eventCriticalWoundEnd, 0);

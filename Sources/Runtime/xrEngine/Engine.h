@@ -81,7 +81,7 @@ class ENGINE_API CEngine
 	CTimeManager TimeManager;
 	CThreadManager ThreadManager;
 	CEngineEvents Events;
-	CRenderView RenderView; 
+	CRenderView RenderView;
 
 	CGameStateManager* GameStateManager;
 	CLevelLoadingScreen* LoadingScreen;
@@ -89,7 +89,7 @@ class ENGINE_API CEngine
 	CStats* Statistic;
 	CResourceManager* ResourceManager;
 
-	public:
+  public:
 	CEngine();
 	~CEngine();
 
@@ -130,7 +130,7 @@ class ENGINE_API CEngine
 		m_loading_events.pop_front();
 	}
 
-	private:
+  private:
 	bool Initialize();
 	void ProcessEventLoop();
 	void ProcessFrame();
@@ -144,9 +144,9 @@ extern ENGINE_API CEngine* g_Engine;
 #define Engine (*g_Engine)
 
 #define NEW_INSTANCE(a) Engine.pCreate(a)
-#define DEL_INSTANCE(a)                                                                                                \
-	{                                                                                                                  \
-		Engine.pDestroy(a);                                                                                            \
-		a = NULL;                                                                                                      \
+#define DEL_INSTANCE(a)     \
+	{                       \
+		Engine.pDestroy(a); \
+		a = NULL;           \
 	}
 ////////////////////////////////////////////////////////////////////////////////

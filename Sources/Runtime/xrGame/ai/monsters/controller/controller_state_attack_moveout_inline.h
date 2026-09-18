@@ -48,7 +48,7 @@ void CStateControlMoveOutAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateControlMoveOutAbstract::check_start_conditions()
 {
-	if (object->EnemyMan.see_enemy_now())
+	if(object->EnemyMan.see_enemy_now())
 		return false;
 
 	return true;
@@ -57,14 +57,14 @@ bool CStateControlMoveOutAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateControlMoveOutAbstract::check_completion()
 {
-	if (object->EnemyMan.see_enemy_now())
+	if(object->EnemyMan.see_enemy_now())
 		return true;
-	if (time_state_started + 10000 < time())
+	if(time_state_started + 10000 < time())
 		return true;
-	if (object->HitMemory.is_hit() && object->HitMemory.get_last_hit_time() > time_state_started)
+	if(object->HitMemory.is_hit() && object->HitMemory.get_last_hit_time() > time_state_started)
 		return true;
 
-	if (object->EnemyMan.get_enemy_position().distance_to(object->Position()) < 1.f)
+	if(object->EnemyMan.get_enemy_position().distance_to(object->Position()) < 1.f)
 		return true;
 
 	return false;
@@ -73,15 +73,15 @@ bool CStateControlMoveOutAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateControlMoveOutAbstract::update_target_point()
 {
-	if (m_state == eMoveToNodeEnemyLastSeen)
+	if(m_state == eMoveToNodeEnemyLastSeen)
 	{
-		if (object->Position().similar(m_target_position, 0.05f))
+		if(object->Position().similar(m_target_position, 0.05f))
 			m_state = eMoveToLastEnemyLocation;
 	}
 
-	if (m_state == eMoveToNodeEnemyLastSeen)
+	if(m_state == eMoveToNodeEnemyLastSeen)
 	{
-		if (object->EnemyMan.get_my_vertex_enemy_last_seen() != u32(-1))
+		if(object->EnemyMan.get_my_vertex_enemy_last_seen() != u32(-1))
 			m_target_node = object->EnemyMan.get_my_vertex_enemy_last_seen();
 		else
 			m_target_node = m_enemy_vertex;
@@ -97,7 +97,7 @@ void CStateControlMoveOutAbstract::update_target_point()
 TEMPLATE_SPECIALIZATION
 void CStateControlMoveOutAbstract::update_look_point()
 {
-	if (object->HitMemory.get_last_hit_time() > object->EnemyMan.get_enemy_time_last_seen())
+	if(object->HitMemory.get_last_hit_time() > object->EnemyMan.get_enemy_time_last_seen())
 	{
 		m_look_point.mad(object->Position(), object->HitMemory.get_last_hit_dir(), 5.f);
 		m_look_point.y += 1.5f;
@@ -105,10 +105,10 @@ void CStateControlMoveOutAbstract::update_look_point()
 		return;
 	}
 
-	if (m_last_time_look_point_updated + m_current_delay > time())
+	if(m_last_time_look_point_updated + m_current_delay > time())
 		return;
 
-	if ((Random.randI(100) < LOOK_COVER_PROBABILITY) && (m_last_time_look_point_updated != 0))
+	if((Random.randI(100) < LOOK_COVER_PROBABILITY) && (m_last_time_look_point_updated != 0))
 	{
 		float angle = ai().level_graph().vertex_cover_angle(object->ai_location().level_vertex_id(), deg(10),
 															std::greater<float>());

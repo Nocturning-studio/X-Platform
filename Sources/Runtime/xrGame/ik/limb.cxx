@@ -58,8 +58,8 @@ void Limb::init(const Matrix T, const Matrix S, int s1, int s2, const float* pro
 
 	solver.init(T, S, proj_axis, pos_axis);
 
-	if (mmin && mmax)
-		for (int i = 0; i < 7; i++)
+	if(mmin && mmax)
+		for(int i = 0; i < 7; i++)
 		{
 			min[i] = mmin[i];
 			max[i] = mmax[i];
@@ -74,12 +74,12 @@ void Limb::init(const Matrix T, const Matrix S, int s1, int s2, const float* pro
 
 int Limb::check_r_joint(float& v)
 {
-	if (jt_limits[3].InRange(v))
+	if(jt_limits[3].InRange(v))
 	{
 		// Put v in correct range
-		if (v < min[3])
+		if(v < min[3])
 			v += 2 * PI;
-		if (v > max[3])
+		if(v > max[3])
 			v -= 2 * PI;
 		return 1;
 	}
@@ -105,17 +105,17 @@ void select_best_family(const AngleInt jt_limits[], const float f1[], const floa
 	float d1, d2, u;
 
 	d1 = d2 = 0.0;
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
-		if ((u = jt_limits[i].Distance(f1[i])) > 0.0)
+		if((u = jt_limits[i].Distance(f1[i])) > 0.0)
 			d1 += u;
 
-		if ((u = jt_limits[i].Distance(f2[i])) > 0.0)
+		if((u = jt_limits[i].Distance(f2[i])) > 0.0)
 			d2 += u;
 	}
 
 	// Select family with minimum displacement from joint limits
-	if (d1 <= d2)
+	if(d1 <= d2)
 	{
 		soln[0] = f1[0];
 		soln[1] = f1[1];
@@ -137,14 +137,14 @@ inline float put_angle_in_range(float low, float high, float v)
 {
 	float d1, d2, v2;
 
-	if (low <= v && v <= high)
+	if(low <= v && v <= high)
 		return v;
 	else
 		d1 = std::min(_abs(v - low), _abs(v - high));
 
 	v2 = v - 2 * PI;
 
-	if (low <= v2 && v2 <= high)
+	if(low <= v2 && v2 <= high)
 		return v2;
 	else
 		d2 = std::min(_abs(v2 - low), _abs(v2 - high));
@@ -235,9 +235,9 @@ void Limb::extract_s1s2_family(const Matrix R1, const Matrix R2, int f1, int f2,
 //
 int Limb::set_goal(const Matrix G)
 {
-	if (!solver.SetGoal(G, x3))
+	if(!solver.SetGoal(G, x3))
 		return 0;
-	if (!check_r_joint(x3))
+	if(!check_r_joint(x3))
 		return 0;
 
 	return 1;
@@ -248,9 +248,9 @@ int Limb::set_goal(const Matrix G)
 //
 int Limb::set_goal_pos(const float g[3], const Matrix E)
 {
-	if (!solver.SetGoalPos(g, E, x3))
+	if(!solver.SetGoalPos(g, E, x3))
 		return 0;
-	if (!check_r_joint(x3))
+	if(!check_r_joint(x3))
 		return 0;
 	return 1;
 }
@@ -353,7 +353,7 @@ void Limb::get_R1R2psi(AngleIntList psi[])
 	psi[1].Clear();
 	psi[2].Clear();
 	psi[3].Clear();
-	if (ff1.IsEmpty() && ff2.IsEmpty())
+	if(ff1.IsEmpty() && ff2.IsEmpty())
 		return;
 
 	Intersect(ff1, gg1, psi[0]);
@@ -367,7 +367,7 @@ int Limb::GetJointIntervals(Matrix G, AngleIntList f1[6], AngleIntList f2[6])
 	float low[3], high[3];
 	Matrix c, s, o, c2, s2, o2;
 
-	if (!set_goal(G))
+	if(!set_goal(G))
 		return 0;
 
 	solver.R1R2Psi(c, s, o, c2, s2, o2);
@@ -404,7 +404,7 @@ int Limb::SetGoalPos(const float g[3], const Matrix E, int limits)
 
 	int success = set_goal_pos(g, E);
 
-	if (limits && success)
+	if(limits && success)
 		get_R1psi(PSI);
 
 	return success;
@@ -420,7 +420,7 @@ int Limb::SetGoal(const Matrix G, int limits)
 	check_limits = (short)(!!limits);
 
 	solve = SolvePosAndOrientation;
-	if (limits && success)
+	if(limits && success)
 		get_R1R2psi(PSI);
 
 	return success;
@@ -437,7 +437,7 @@ static void init_error(char* msg)
 //
 float Limb::PosToAngle(const float elbow[3])
 {
-	if (!solve)
+	if(!solve)
 		init_error("Limb::PosToAngle");
 
 	return solver.PosToAngle(elbow);
@@ -464,8 +464,8 @@ inline int find_min(int n, float d[])
 	float min = d[0];
 	int min_i = 0;
 
-	for (int i = 1; i < n; i++)
-		if (d[i] < min)
+	for(int i = 1; i < n; i++)
+		if(d[i] < min)
 		{
 			min = d[i];
 			min_i = i;
@@ -489,7 +489,7 @@ int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const Ang
 
 	// Take the union of all the intervals
 
-	if (f21 && f22)
+	if(f21 && f22)
 	{
 		AngleIntList t1, t2;
 
@@ -505,25 +505,25 @@ int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const Ang
 	// find the largest continous interval and take its midpoint.
 	AngleInt* a = all.Largest();
 
-	if ((!a) || a->IsEmpty())
+	if((!a) || a->IsEmpty())
 		return 0;
 
 	swivel_angle = a->Mid();
 
 	// One of the psi intervals should contain the swivel angle
 
-	if (f11->InRange(swivel_angle))
+	if(f11->InRange(swivel_angle))
 		return 1;
 
-	if (f12->InRange(swivel_angle))
+	if(f12->InRange(swivel_angle))
 		return 2;
 
-	if (f21)
+	if(f21)
 	{
-		if (f21->InRange(swivel_angle))
+		if(f21->InRange(swivel_angle))
 			return 3;
 
-		if (f22->InRange(swivel_angle))
+		if(f22->InRange(swivel_angle))
 			return 4;
 	}
 
@@ -538,7 +538,7 @@ int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const Ang
 	d[0] = f11->Distance(swivel_angle);
 	d[1] = f12->Distance(swivel_angle);
 
-	if (f21)
+	if(f21)
 	{
 		d[2] = f21->Distance(swivel_angle);
 		d[3] = f22->Distance(swivel_angle);
@@ -554,7 +554,7 @@ int update_closest_boundary(AngleInt& a, float v, float& dist, float& boundary)
 	float d1 = angle_distance(a.Low(), v);
 	float d2 = angle_distance(a.High(), v);
 	float angle;
-	if (d1 < d2)
+	if(d1 < d2)
 		angle = a.Low();
 	else
 	{
@@ -562,7 +562,7 @@ int update_closest_boundary(AngleInt& a, float v, float& dist, float& boundary)
 		d1 = d2;
 	}
 
-	if (d1 < dist)
+	if(d1 < dist)
 	{
 		dist = d1;
 		boundary = angle;
@@ -578,16 +578,16 @@ int inspect_range(const AngleIntList& f, float swivel_angle, int index, float& n
 	AngleIntListIterator a;
 	AngleInt* ap;
 
-	for (a.Start(f), ap = a.Next(); ap; ap = a.Next())
+	for(a.Start(f), ap = a.Next(); ap; ap = a.Next())
 	{
 
-		if (ap->IsEmpty())
+		if(ap->IsEmpty())
 			continue;
 
-		if (ap->InRange(swivel_angle))
+		if(ap->InRange(swivel_angle))
 			return (1);
 
-		if (!update_closest_boundary(*ap, swivel_angle, distance, new_angle))
+		if(!update_closest_boundary(*ap, swivel_angle, distance, new_angle))
 			continue;
 
 		new_index = index;
@@ -613,22 +613,22 @@ int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const Ang
 	float d = 2 * PI;
 	float angle;
 
-	if (inspect_range(*f11, swivel_angle, 1, angle, i, d))
+	if(inspect_range(*f11, swivel_angle, 1, angle, i, d))
 		return 1;
 
-	if (inspect_range(*f12, swivel_angle, 2, angle, i, d))
+	if(inspect_range(*f12, swivel_angle, 2, angle, i, d))
 		return 2;
 
-	if (f21)
+	if(f21)
 	{
-		if (inspect_range(*f21, swivel_angle, 3, angle, i, d))
+		if(inspect_range(*f21, swivel_angle, 3, angle, i, d))
 			return 3;
 
-		if (inspect_range(*f22, swivel_angle, 4, angle, i, d))
+		if(inspect_range(*f22, swivel_angle, 4, angle, i, d))
 			return 4;
 	}
 
-	if (i)
+	if(i)
 		swivel_angle = angle;
 
 	return i;
@@ -661,7 +661,7 @@ void Limb::solve_aux_family(int family_set, float swivel_angle, float x[])
 	Matrix R1, R2;
 
 	solver.SolveR1R2(swivel_angle, R1, R2);
-	switch (family_set)
+	switch(family_set)
 	{
 	case 1:
 		extract_s1s2_family(R1, R2, 1, 1, x, x + 4);
@@ -710,17 +710,17 @@ void Limb::solve_pos_aux(float swivel_angle, float x[])
 //
 int Limb::try_swivel_angle(int solvea, float swivel_angle, float x[])
 {
-	if (solvea == SolvePosOnly)
+	if(solvea == SolvePosOnly)
 	{
 		solve_pos_aux(swivel_angle, x);
-		if (jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]))
+		if(jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]))
 			return 1;
 	}
 	else
 	{
 		solve_aux(swivel_angle, x);
-		if (jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]) &&
-			jt_limits[4].InRange(x[4]) && jt_limits[5].InRange(x[5]) && jt_limits[6].InRange(x[6]))
+		if(jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]) &&
+		   jt_limits[4].InRange(x[4]) && jt_limits[5].InRange(x[5]) && jt_limits[6].InRange(x[6]))
 			return 1;
 	}
 
@@ -734,8 +734,8 @@ int Limb::try_swivel_angle(int solvea, float swivel_angle, float x[])
 
 int Limb::try_singularities(int solves, float& swivel_angle, float x[])
 {
-	for (int i = 0; i < num_singular; i++)
-		if (try_swivel_angle(solves, singular_pts[i], x))
+	for(int i = 0; i < num_singular; i++)
+		if(try_swivel_angle(solves, singular_pts[i], x))
 		{
 			swivel_angle = singular_pts[i];
 			return 1;
@@ -757,15 +757,15 @@ int Limb::Solve(float x[], float* new_swivel, float* new_pos)
 
 	x[3] = x3;
 
-	if (check_limits)
+	if(check_limits)
 	{
 		int f_set;
 
-		switch (solve)
+		switch(solve)
 		{
 		case SolvePosOnly:
 			f_set = choose_largest_range(swivel_angle, PSI, PSI + 1);
-			if (f_set)
+			if(f_set)
 				solve_pos_aux_family(f_set, swivel_angle, x);
 			else
 				f_set = try_singularities(solve, swivel_angle, x);
@@ -773,7 +773,7 @@ int Limb::Solve(float x[], float* new_swivel, float* new_pos)
 
 		case SolvePosAndOrientation:
 			f_set = choose_largest_range(swivel_angle, PSI, PSI + 1, PSI + 2, PSI + 3);
-			if (f_set)
+			if(f_set)
 				solve_aux_family(f_set, swivel_angle, x);
 			else
 				f_set = try_singularities(solve, swivel_angle, x);
@@ -795,9 +795,9 @@ int Limb::Solve(float x[], float* new_swivel, float* new_pos)
 		success = SolveByAngle(swivel_angle, x);
 	}
 	VERIFY(swivel_angle != -dInfinity);
-	if (new_swivel)
+	if(new_swivel)
 		*new_swivel = swivel_angle;
-	if (new_pos)
+	if(new_pos)
 		solver.AngleToPos(swivel_angle, new_pos);
 
 	return success;
@@ -813,14 +813,14 @@ int Limb::try_closeby_singularity(int solves, float& swivel_angle, float x[])
 {
 	// First try the swivel angle
 
-	if (try_swivel_angle(solves, swivel_angle, x))
+	if(try_swivel_angle(solves, swivel_angle, x))
 		return 1;
 
-	for (int i = 0; i < num_singular; i++)
-		if (_abs(swivel_angle - singular_pts[i]) < DTOR(1.0))
+	for(int i = 0; i < num_singular; i++)
+		if(_abs(swivel_angle - singular_pts[i]) < DTOR(1.0))
 		{
 			// Try the singularity
-			if (try_swivel_angle(solves, singular_pts[i], x))
+			if(try_swivel_angle(solves, singular_pts[i], x))
 			{
 				swivel_angle = singular_pts[i];
 				return 1;
@@ -837,35 +837,35 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
 {
 	int success;
 
-	if (swivel_angle < 0)
+	if(swivel_angle < 0)
 		swivel_angle += 2 * PI;
-	if (swivel_angle > 2 * PI)
+	if(swivel_angle > 2 * PI)
 		swivel_angle -= 2 * PI;
 
 	x[3] = x3;
 
-	if (check_limits)
+	if(check_limits)
 	{
 		int f_set;
 
-		switch (solve)
+		switch(solve)
 		{
 		case SolvePosOnly:
 			f_set = try_closeby_singularity(solve, swivel_angle, x);
-			if (!f_set)
+			if(!f_set)
 			{
 				f_set = choose_closest_range(swivel_angle, PSI, PSI + 1);
-				if (f_set)
+				if(f_set)
 					solve_pos_aux_family(f_set, swivel_angle, x);
 			}
 			break;
 
 		case SolvePosAndOrientation:
 			f_set = try_closeby_singularity(solve, swivel_angle, x);
-			if (!f_set)
+			if(!f_set)
 			{
 				f_set = choose_closest_range(swivel_angle, PSI, PSI + 1, PSI + 2, PSI + 3);
-				if (f_set)
+				if(f_set)
 					solve_aux_family(f_set, swivel_angle, x);
 			}
 			break;
@@ -881,7 +881,7 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
 	{
 		success = 1;
 
-		switch (solve)
+		switch(solve)
 		{
 		case SolvePosOnly:
 			solve_pos_aux(swivel_angle, x);
@@ -897,9 +897,9 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
 		}
 	}
 
-	if (new_swivel)
+	if(new_swivel)
 		*new_swivel = swivel_angle;
-	if (new_pos)
+	if(new_pos)
 		solver.AngleToPos(swivel_angle, new_pos);
 
 	return success;
@@ -913,8 +913,8 @@ int Limb::SolveByPos(const float pos[3], float x[], float* new_swivel, float* ne
 
 int Limb::InLimits(const float x[7]) const
 {
-	for (int i = 0; i < 7; i++)
-		if (!jt_limits[i].InRange(x[i]))
+	for(int i = 0; i < 7; i++)
+		if(!jt_limits[i].InRange(x[i]))
 			return 0;
 
 	return 1;
@@ -922,7 +922,7 @@ int Limb::InLimits(const float x[7]) const
 
 float roundup(float x)
 {
-	if (x < 0)
+	if(x < 0)
 		x += 2 * PI;
 	return x;
 }
@@ -935,11 +935,11 @@ void dump_file(char* file, int euler_type, float min[], float max[], Matrix c, M
 	fprintf(fp, "%f %f %f \n", max[2], max[1], max[0]);
 
 	int i = 0;
-	for (; i < 4; i++)
+	for(; i < 4; i++)
 		fprintf(fp, "%f %f %f %f\n", c[i][0], c[i][1], c[i][2], c[i][3]);
-	for (i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 		fprintf(fp, "%f %f %f %f\n", s[i][0], s[i][1], s[i][2], s[i][3]);
-	for (i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 		fprintf(fp, "%f %f %f %f\n", o[i][0], o[i][1], o[i][2], o[i][3]);
 
 	fclose(fp);

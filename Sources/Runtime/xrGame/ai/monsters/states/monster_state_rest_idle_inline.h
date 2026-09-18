@@ -27,10 +27,10 @@ void CStateMonsterRestIdleAbstract::initialize()
 
 	// try to get cover
 	const CCoverPoint* point = object->CoverMan->find_cover(object->Position(), 5.f, 10.f);
-	if (!point)
+	if(!point)
 	{
 		point = object->CoverMan->find_cover(object->Position(), 10.f, 30.f);
-		if (!point)
+		if(!point)
 			return;
 	}
 
@@ -60,13 +60,13 @@ void CStateMonsterRestIdleAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterRestIdleAbstract::reselect_state()
 {
-	if ((prev_substate == u32(-1)) && (m_target_node != u32(-1)))
+	if((prev_substate == u32(-1)) && (m_target_node != u32(-1)))
 	{
 		select_state(eStateRest_WalkToCover);
 		return;
 	}
 
-	if ((prev_substate == eStateRest_WalkToCover) || (prev_substate == u32(-1)))
+	if((prev_substate == eStateRest_WalkToCover) || (prev_substate == u32(-1)))
 	{
 		select_state(eStateRest_LookOpenPlace);
 		return;
@@ -80,7 +80,7 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateRest_WalkToCover)
+	if(current_substate == eStateRest_WalkToCover)
 	{
 		SStateDataMoveToPointEx data;
 
@@ -100,7 +100,7 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateRest_LookOpenPlace)
+	if(current_substate == eStateRest_LookOpenPlace)
 	{
 
 		SStateDataLookToPoint data;
@@ -119,7 +119,7 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateRest_Idle)
+	if(current_substate == eStateRest_Idle)
 	{
 		SStateDataAction data;
 

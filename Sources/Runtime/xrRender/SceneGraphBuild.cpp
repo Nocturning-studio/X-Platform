@@ -96,19 +96,19 @@ float r_dtex_range = 50.f;
 
 ShaderElement* SelectShaderElementForStaticVis(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
 {
-	if (!pVisual)
+	if(!pVisual)
 	{
 		return 0;
 	}
 
-	if (!pVisual->shader._get())
+	if(!pVisual->shader._get())
 	{
 		return 0;
 	}
 
 	int id = SE_R1_NORMAL_HQ;
 
-	switch (ctx.render_phase)
+	switch(ctx.render_phase)
 	{
 	case CRender::PHASE_HUD:	// HUD Forward Base Pass
 	case CRender::PHASE_NORMAL: // Forward Base Pass
@@ -136,19 +136,19 @@ ShaderElement* SelectShaderElementForStaticVis(IRender_Visual* pVisual, float cd
 
 ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float cdist_sq, const SceneTraversalContext& ctx)
 {
-	if (!pVisual)
+	if(!pVisual)
 	{
 		return 0;
 	}
 
-	if (!pVisual->shader._get())
+	if(!pVisual->shader._get())
 	{
 		return 0;
 	}
 
 	int id = SE_R1_NORMAL_HQ;
 
-	switch (ctx.render_phase)
+	switch(ctx.render_phase)
 	{
 	case CRender::PHASE_HUD:	// HUD Forward Base Pass
 	case CRender::PHASE_NORMAL: // Forward Base Pass
@@ -185,13 +185,13 @@ ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float c
 // ===============================================================================================
 void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
-	if (!pVisual || !pVisual->shader._get())
+	if(!pVisual || !pVisual->shader._get())
 		return;
 
 	// -------------------------------------------------------------------------
 	// Проверка уникальности (Traversal Marker)
 	// -------------------------------------------------------------------------
-	if (pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
+	if(pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
 		return;
 	pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
@@ -203,7 +203,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	float screen_space_area = CalcScreenSpaceArea(distance_sq, object_center, pVisual, ctx);
 
 	// Отсечение слишком мелких объектов (Small Object Culling)
-	if (screen_space_area <= r_ssaDISCARD)
+	if(screen_space_area <= r_ssaDISCARD)
 		return;
 
 	// -------------------------------------------------------------------------
@@ -211,19 +211,19 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 	ShaderElement* shader_element = SelectShaderElementForDynamicVis(pVisual, distance_sq, ctx);
 
-	if (!shader_element)
+	if(!shader_element)
 		return;
 
 	// -------------------------------------------------------------------------
 	// Фильтрация по приоритету
 	// -------------------------------------------------------------------------
 	u32 priority = shader_element->flags.iPriority / 2;
-	if (priority == 0 && !ctx.fetch_config.fetch_priority_0)
+	if(priority == 0 && !ctx.fetch_config.fetch_priority_0)
 		return;
-	if (priority == 1 && !ctx.fetch_config.fetch_priority_1)
+	if(priority == 1 && !ctx.fetch_config.fetch_priority_1)
 		return;
 
-	if (priority > 1)
+	if(priority > 1)
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] shader priority %d > 1, clamped to 1", priority);
@@ -234,16 +234,16 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	dest.AddVisualRef(pVisual);
 
 	CROS_impl::AOCube ao_cube = {};
-	if (ctx.render_phase == CRender::PHASE_NORMAL)
+	if(ctx.render_phase == CRender::PHASE_NORMAL)
 	{
 		ao_cube = RenderImplementation.compute_object_ao_cube(ctx.owner);
 		SceneGraphPacket::DReuseItem item = {pVisual, *ctx.transform};
 		dest.m_visuals_dynamic_visible.push_back(item);
 
-		for (int i = 0; i < pVisual->shader->elements_count; ++i)
+		for(int i = 0; i < pVisual->shader->elements_count; ++i)
 		{
 			ShaderElement* se = pVisual->shader->E[i]._get();
-			if (se && se->flags.bDistort)
+			if(se && se->flags.bDistort)
 			{
 				auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
 				node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -253,15 +253,15 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	}
 
 	// Проверка флага из контекста
-	if (ctx.is_invisible_mode)
+	if(ctx.is_invisible_mode)
 		return;
 
 	// -------------------------------------------------------------------------
 	// Маршрутизация (Routing)
 	// -------------------------------------------------------------------------
-	if (ctx.is_hud_pass)
+	if(ctx.is_hud_pass)
 	{
-		if (shader_element->flags.bStrictB2F)
+		if(shader_element->flags.bStrictB2F)
 		{
 			auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
 			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -277,7 +277,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	}
 
 	// --- B. Transparent (Alpha Blending) ---
-	if (shader_element->flags.bStrictB2F)
+	if(shader_element->flags.bStrictB2F)
 	{
 		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
 		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -285,16 +285,16 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 		return;
 	}
 
-	if (ctx.render_phase == CRender::PHASE_NORMAL)
+	if(ctx.render_phase == CRender::PHASE_NORMAL)
 	{
-		if (shader_element->flags.bEmissive)
+		if(shader_element->flags.bEmissive)
 		{
 			auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
 			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = pVisual->shader->E[4]._get();
 		}
 
-		if (shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
+		if(shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
 		{
 			auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
 			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -308,9 +308,9 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 
 	// Создаем узел, используя данные из ctx
-	DynamicRenderNode item = {screen_space_area, pVisual, *ctx.transform, ao_cube.data() };
+	DynamicRenderNode item = {screen_space_area, pVisual, *ctx.transform, ao_cube.data()};
 
-	if (shader_element->passes.empty())
+	if(shader_element->passes.empty())
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] shader_element has no passes, skipping visual [%s]", pVisual->dbg_name.c_str());
@@ -336,7 +336,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 #else
 	target_map.insert(pass.vs->sh);
 	auto* node_vs = target_map.find(pass.vs->sh);
-	if (!node_vs)
+	if(!node_vs)
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] Failed to find vertex shader node");
@@ -346,7 +346,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 
 	node_vs->val.insert(pass.ps->sh);
 	auto* node_ps = node_vs->val.find(pass.ps->sh);
-	if (!node_ps)
+	if(!node_ps)
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] Failed to find pixel shader node");
@@ -357,36 +357,36 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 
 	node_ps->val.insert(pass.constants._get());
 	auto* node_cs = node_ps->val.find(pass.constants._get());
-	if (!node_cs)
+	if(!node_cs)
 		return;
 
 	node_cs->val.insert(pass.state->state);
 	auto* node_state = node_cs->val.find(pass.state->state);
-	if (!node_state)
+	if(!node_state)
 		return;
 
 	node_state->val.insert(pass.T._get());
 	auto* node_tex = node_state->val.find(pass.T._get());
-	if (!node_tex)
+	if(!node_tex)
 		return;
 
 	// Добавляем объект в конечный лист
 	node_tex->val.push_back(item);
 
 	// Пробрасываем максимальный SSA вверх по иерархии для сортировки групп (Early Z)
-	if (screen_space_area > node_tex->val.screenSpaceArea)
+	if(screen_space_area > node_tex->val.screenSpaceArea)
 	{
 		node_tex->val.screenSpaceArea = screen_space_area;
-		if (screen_space_area > node_state->val.screenSpaceArea)
+		if(screen_space_area > node_state->val.screenSpaceArea)
 		{
 			node_state->val.screenSpaceArea = screen_space_area;
-			if (screen_space_area > node_cs->val.screenSpaceArea)
+			if(screen_space_area > node_cs->val.screenSpaceArea)
 			{
 				node_cs->val.screenSpaceArea = screen_space_area;
-				if (screen_space_area > node_ps->val.screenSpaceArea)
+				if(screen_space_area > node_ps->val.screenSpaceArea)
 				{
 					node_ps->val.screenSpaceArea = screen_space_area;
-					if (screen_space_area > node_vs->val.screenSpaceArea)
+					if(screen_space_area > node_vs->val.screenSpaceArea)
 					{
 						node_vs->val.screenSpaceArea = screen_space_area;
 					}
@@ -398,7 +398,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 	// 8. Сбор данных для теней (Cascaded Shadow Maps Culling)
 	// -------------------------------------------------------------------------
-	if (ctx.culling_bounds)
+	if(ctx.culling_bounds)
 	{
 		Fbox3 temp_box;
 		// Трансформируем AABB матрицей из ctx
@@ -417,14 +417,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 // ===============================================================================================
 void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
-	if (!pVisual || !pVisual->shader._get())
+	if(!pVisual || !pVisual->shader._get())
 		return;
 
 	// Проверка уникальности
 	// Предотвращает дублирование объекта, если он виден через несколько порталов.
 	// atomic_exchange возвращает старое значение.
 	// Если старое значение уже равно текущему, значит другой поток успел нас опередить.
-	if (pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
+	if(pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
 		return;
 	pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
@@ -432,23 +432,23 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	float distance_sq;
 	float screen_space_area = CalcScreenSpaceArea(distance_sq, pVisual->vis.sphere.P, pVisual, ctx);
 
-	if (screen_space_area <= r_ssaDISCARD)
+	if(screen_space_area <= r_ssaDISCARD)
 		return;
 
 	// Выбор шейдера
 	ShaderElement* shader_element = SelectShaderElementForStaticVis(pVisual, distance_sq, ctx);
 
-	if (!shader_element)
+	if(!shader_element)
 		return;
 
 	// Фильтрация по приоритету
 	u32 priority = shader_element->flags.iPriority / 2;
-	if (priority == 0 && !ctx.fetch_config.fetch_priority_0)
+	if(priority == 0 && !ctx.fetch_config.fetch_priority_0)
 		return;
-	if (priority == 1 && !ctx.fetch_config.fetch_priority_1)
+	if(priority == 1 && !ctx.fetch_config.fetch_priority_1)
 		return;
 
-	if (priority > 1)
+	if(priority > 1)
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] shader priority %d > 1, clamped to 1", priority);
@@ -459,15 +459,15 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	dest.AddVisualRef(pVisual);
 
 	CROS_impl::AOCube ao_cube = {};
-	if (ctx.render_phase == CRender::PHASE_NORMAL)
+	if(ctx.render_phase == CRender::PHASE_NORMAL)
 	{
 		ao_cube = RenderImplementation.compute_object_ao_cube(ctx.owner);
 		dest.m_visuals_static_visible.push_back(pVisual);
 
-		for (int i = 0; i < pVisual->shader->elements_count; ++i)
+		for(int i = 0; i < pVisual->shader->elements_count; ++i)
 		{
 			ShaderElement* se = pVisual->shader->E[i]._get();
-			if (se && se->flags.bDistort)
+			if(se && se->flags.bDistort)
 			{
 				auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
 				node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -479,7 +479,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	// Маршрутизация
 
 	// --- Strict Sorting ---
-	if (shader_element->flags.bStrictB2F)
+	if(shader_element->flags.bStrictB2F)
 	{
 		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
 		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -487,16 +487,16 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		return;
 	}
 
-	if (ctx.render_phase == CRender::PHASE_NORMAL)
+	if(ctx.render_phase == CRender::PHASE_NORMAL)
 	{
-		if (shader_element->flags.bEmissive)
+		if(shader_element->flags.bEmissive)
 		{
 			auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
 			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 			node->val.se = pVisual->shader->E[4]._get();
 		}
 
-		if (shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
+		if(shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
 		{
 			auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
 			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -506,7 +506,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	}
 
 	// Обратная связь (Feedback)
-	if (ctx.use_feedback && m_feedback_interface && counter_S == val_feedback_breakp)
+	if(ctx.use_feedback && m_feedback_interface && counter_S == val_feedback_breakp)
 	{
 		m_feedback_interface->rfeedback_static(pVisual);
 	}
@@ -514,7 +514,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	// Opaque Geometry
 	counter_S++;
 
-	if (shader_element->passes.empty())
+	if(shader_element->passes.empty())
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] shader_element has no passes, skipping visual [%s]", pVisual->dbg_name.c_str());
@@ -539,7 +539,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 #else
 	target_map.insert(pass.vs->sh);
 	auto* node_vs = target_map.find(pass.vs->sh);
-	if (!node_vs)
+	if(!node_vs)
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] Failed to find vertex shader node");
@@ -549,7 +549,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	node_vs->val.insert(pass.ps->sh);
 	auto* node_ps = node_vs->val.find(pass.ps->sh);
-	if (!node_ps)
+	if(!node_ps)
 	{
 #ifdef DEBUG
 		Msg("! [SceneGraph] Failed to find pixel shader node");
@@ -560,36 +560,36 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	node_ps->val.insert(pass.constants._get());
 	auto* node_cs = node_ps->val.find(pass.constants._get());
-	if (!node_cs)
+	if(!node_cs)
 		return;
 
 	node_cs->val.insert(pass.state->state);
 	auto* node_state = node_cs->val.find(pass.state->state);
-	if (!node_state)
+	if(!node_state)
 		return;
 
 	node_state->val.insert(pass.T._get());
 	auto* node_tex = node_state->val.find(pass.T._get());
-	if (!node_tex)
+	if(!node_tex)
 		return;
 
 	StaticRenderNode item = {screen_space_area, pVisual};
 	node_tex->val.push_back(item);
 
 	// Обновление SSA
-	if (screen_space_area > node_tex->val.screenSpaceArea)
+	if(screen_space_area > node_tex->val.screenSpaceArea)
 	{
 		node_tex->val.screenSpaceArea = screen_space_area;
-		if (screen_space_area > node_state->val.screenSpaceArea)
+		if(screen_space_area > node_state->val.screenSpaceArea)
 		{
 			node_state->val.screenSpaceArea = screen_space_area;
-			if (screen_space_area > node_cs->val.screenSpaceArea)
+			if(screen_space_area > node_cs->val.screenSpaceArea)
 			{
 				node_cs->val.screenSpaceArea = screen_space_area;
-				if (screen_space_area > node_ps->val.screenSpaceArea)
+				if(screen_space_area > node_ps->val.screenSpaceArea)
 				{
 					node_ps->val.screenSpaceArea = screen_space_area;
-					if (screen_space_area > node_vs->val.screenSpaceArea)
+					if(screen_space_area > node_vs->val.screenSpaceArea)
 					{
 						node_vs->val.screenSpaceArea = screen_space_area;
 					}
@@ -599,7 +599,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	}
 
 	// 9. Сбор данных для теней
-	if (ctx.culling_bounds)
+	if(ctx.culling_bounds)
 	{
 		// Для статики просто берем AABB, так как она не трансформируется
 		ctx.culling_bounds->push_back(pVisual->vis.box);
@@ -622,46 +622,46 @@ struct CullLevel
 };
 
 // Массив уровней оптимизации для СТАТИКИ (12 уровней)
-static const CullLevel s_static_cull_levels[] = 
-{
-	// Level 1
-	{{150.f, 50.f, 50.f, 40.f}, {10.f, 25.f, 50.f, 50.f}},
-	// Level 2
-	{{200.f, 150.f, 150.f, 125.f}, {100.f, 200.f, 400.f, 500.f}},
-	// Level 3
-	{{250.f, 200.f, 200.f, 175.f}, {500.f, 1000.f, 1500.f, 1750.f}},
-	// Level 4
-	{{350.f, 300.f, 300.f, 250.f}, {2500.f, 2500.f, 5000.f, 5250.f}},
-	// Level 5
-	{{400.f, 400.f, 350.f, 300.f}, {7000.f, 7000.f, 20000.f, 25000.f}},
-	// Level 6
-	{{800.f, 750.f, 700.f, 600.f}, {12000.f, 15000.f, 30000.f, 40000.f}},
-	// Level 7
-	{{1000.f, 900.f, 900.f, 800.f}, {18000.f, 20000.f, 45000.f, 50000.f}},
-	// Level 8
-	{{1200.f, 1100.f, 1100.f, 1000.f}, {25000.f, 35000.f, 55000.f, 65000.f}},
-	// Level 9
-	{{1500.f, 1250.f, 1250.f, 1200.f}, {40000.f, 55000.f, 70000.f, 85000.f}},
-	// Level 10
-	{{1800.f, 1500.f, 1500.f, 1500.f}, {60000.f, 75000.f, 90000.f, 150000.f}},
-	// Level 11
-	{{2000.f, 1750.f, 1750.f, 1750.f}, {100000.f, 120000.f, 150000.f, 250000.f}},
-	// Level 12
-	{{2500.f, 2000.f, 2000.f, 2000.f}, {150000.f, 200000.f, 250000.f, 500000.f}}};
+static const CullLevel s_static_cull_levels[] =
+	{
+		// Level 1
+		{{150.f, 50.f, 50.f, 40.f}, {10.f, 25.f, 50.f, 50.f}},
+		// Level 2
+		{{200.f, 150.f, 150.f, 125.f}, {100.f, 200.f, 400.f, 500.f}},
+		// Level 3
+		{{250.f, 200.f, 200.f, 175.f}, {500.f, 1000.f, 1500.f, 1750.f}},
+		// Level 4
+		{{350.f, 300.f, 300.f, 250.f}, {2500.f, 2500.f, 5000.f, 5250.f}},
+		// Level 5
+		{{400.f, 400.f, 350.f, 300.f}, {7000.f, 7000.f, 20000.f, 25000.f}},
+		// Level 6
+		{{800.f, 750.f, 700.f, 600.f}, {12000.f, 15000.f, 30000.f, 40000.f}},
+		// Level 7
+		{{1000.f, 900.f, 900.f, 800.f}, {18000.f, 20000.f, 45000.f, 50000.f}},
+		// Level 8
+		{{1200.f, 1100.f, 1100.f, 1000.f}, {25000.f, 35000.f, 55000.f, 65000.f}},
+		// Level 9
+		{{1500.f, 1250.f, 1250.f, 1200.f}, {40000.f, 55000.f, 70000.f, 85000.f}},
+		// Level 10
+		{{1800.f, 1500.f, 1500.f, 1500.f}, {60000.f, 75000.f, 90000.f, 150000.f}},
+		// Level 11
+		{{2000.f, 1750.f, 1750.f, 1750.f}, {100000.f, 120000.f, 150000.f, 250000.f}},
+		// Level 12
+		{{2500.f, 2000.f, 2000.f, 2000.f}, {150000.f, 200000.f, 250000.f, 500000.f}}};
 
 // Массив уровней оптимизации для ДИНАМИКИ (5 уровней)
-static const CullLevel s_dynamic_cull_levels[] = 
-{
-	// Level 1
-	{{80.f, 40.f, 30.f, 30.f}, {1.f, 2.f, 5.0f, 7.5f}},
-	// Level 2
-	{{150.f, 100.f, 80.f, 50.f}, {3.f, 4.f, 10.f, 15.f}},
-	// Level 3
-	{{250.f, 200.f, 150.f, 110.f}, {4000.f, 4000.f, 4000.f, 4000.f}},
-	// Level 4
-	{{500.f, 400.f, 300.f, 250.f}, {10000.f, 10000.f, 10000.f, 10000.f}},
-	// Level 5
-	{{750.f, 600.f, 500.f, 400.f}, {25000.f, 25000.f, 25000.f, 25000.f}}};
+static const CullLevel s_dynamic_cull_levels[] =
+	{
+		// Level 1
+		{{80.f, 40.f, 30.f, 30.f}, {1.f, 2.f, 5.0f, 7.5f}},
+		// Level 2
+		{{150.f, 100.f, 80.f, 50.f}, {3.f, 4.f, 10.f, 15.f}},
+		// Level 3
+		{{250.f, 200.f, 150.f, 110.f}, {4000.f, 4000.f, 4000.f, 4000.f}},
+		// Level 4
+		{{500.f, 400.f, 300.f, 250.f}, {10000.f, 10000.f, 10000.f, 10000.f}},
+		// Level 5
+		{{750.f, 600.f, 500.f, 400.f}, {25000.f, 25000.f, 25000.f, 25000.f}}};
 
 const float BASE_FOV = 67.f;
 
@@ -684,7 +684,7 @@ IC int GetQualityIndex()
 	// else      -> .x (Low)
 	// Это немного странно, но сохраняем логику оригинала.
 
-	switch (ps_geometry_quality_mode)
+	switch(ps_geometry_quality_mode)
 	{
 	case 2:
 		return 2; // .z (High)
@@ -702,14 +702,14 @@ IC int GetQualityIndex()
 
 bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize, const SceneTraversalContext& ctx)
 {
-	if (ignore_optimize)
+	if(ignore_optimize)
 		return true;
 
 	// Вычисляем параметры объекта
 	float sphere_volume = pVisual->vis.sphere.volume();
 	float adjusted_distance = 0.f;
 
-	if (isStatic)
+	if(isStatic)
 	{
 		adjusted_distance = GetDistFromCamera(pVisual->vis.sphere.P, ctx);
 	}
@@ -723,18 +723,18 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	}
 
 	// Отсечение для Shadow Map
-	if (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH)
+	if(ctx.render_phase == CRender::PHASE_SHADOW_DEPTH)
 	{
-		if (sphere_volume < 50000.f && adjusted_distance > ps_r_sun_far)
+		if(sphere_volume < 50000.f && adjusted_distance > ps_r_sun_far)
 			return false;
 
 		const int shadow_quality_idx = 2; // .z component
 
 		const u32 static_count = sizeof(s_static_cull_levels) / sizeof(CullLevel);
-		for (u32 i = 0; i < static_count; ++i)
+		for(u32 i = 0; i < static_count; ++i)
 		{
 			const CullLevel& L = s_static_cull_levels[i];
-			if (sphere_volume < L.size[shadow_quality_idx] && adjusted_distance > L.dist[shadow_quality_idx])
+			if(sphere_volume < L.size[shadow_quality_idx] && adjusted_distance > L.dist[shadow_quality_idx])
 				return false;
 		}
 	}
@@ -745,10 +745,10 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	const CullLevel* levels = isStatic ? s_static_cull_levels : s_dynamic_cull_levels;
 	const u32 count = isStatic ? (sizeof(s_static_cull_levels) / sizeof(CullLevel)) : (sizeof(s_dynamic_cull_levels) / sizeof(CullLevel));
 
-	for (u32 i = 0; i < count; ++i)
+	for(u32 i = 0; i < count; ++i)
 	{
 		const CullLevel& L = levels[i];
-		if (sphere_volume < L.size[q_idx] && adjusted_distance > L.dist[q_idx])
+		if(sphere_volume < L.size[q_idx] && adjusted_distance > L.dist[q_idx])
 			return false;
 	}
 
@@ -765,58 +765,58 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 // ===============================================================================================
 void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
-	if (!pVisual)
+	if(!pVisual)
 		return;
 
 	// Проверка на значимость (Distance / Size Culling)
 	// Несмотря на то, что объект "видим" по фрустуму, он может быть слишком маленьким.
 	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx для корректного расчета дистанции
-	if (!ShouldRenderVisual(pVisual, false, is_shadow_phase, ctx))
+	if(!ShouldRenderVisual(pVisual, false, is_shadow_phase, ctx))
 		return;
 
 	// Итераторы для обхода детей
 	xr_vector<IRender_Visual*>::iterator I, E;
 
 	// Разбор типа объекта
-	switch (pVisual->Type)
+	switch(pVisual->Type)
 	{
-	case MT_PARTICLE_GROUP: 
+	case MT_PARTICLE_GROUP:
 	{
 		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
+		for(PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
 		{
 			PS::CParticleGroup::SItem& PE_It = *i_it;
-			if (PE_It._effect)
+			if(PE_It._effect)
 				ProcessDynamicVisual(PE_It._effect, ctx, dest); // Рекурсия с ctx и dest
-			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
-				 pit != PE_It._children_related.end(); pit++)
+			for(xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
+				pit != PE_It._children_related.end(); pit++)
 				ProcessDynamicVisual(*pit, ctx, dest); // Рекурсия с ctx и dest
-			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-				 pit != PE_It._children_free.end(); pit++)
+			for(xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
+				pit != PE_It._children_free.end(); pit++)
 				ProcessDynamicVisual(*pit, ctx, dest); // Рекурсия с ctx и dest
 		}
 	}
 		return;
 
-	case MT_HIERRARHY: 
+	case MT_HIERRARHY:
 	{
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		I = pV->children.begin();
 		E = pV->children.end();
-		for (; I != E; I++)
+		for(; I != E; I++)
 			ProcessDynamicVisual(*I, ctx, dest); // Рекурсия с ctx и dest
 	}
 		return;
 
 	case MT_SKELETON_ANIM:
-	case MT_SKELETON_RIGID: 
+	case MT_SKELETON_RIGID:
 	{
 		CKinematics* pV = (CKinematics*)pVisual;
 		BOOL _use_lod = FALSE;
 
 		// Проверка на использование LOD-модели
-		if (pV->m_lod)
+		if(pV->m_lod)
 		{
 			fvec3 Tpos;
 			float D;
@@ -825,11 +825,11 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 
 			// Вычисляем SSA для переключения на LOD
 			float screenSpaceArea = CalcScreenSpaceArea(D, Tpos, pV->vis.sphere.R / 2.f, ctx);
-			if (screenSpaceArea < r_ssaLOD_A)
+			if(screenSpaceArea < r_ssaLOD_A)
 				_use_lod = TRUE;
 		}
 
-		if (_use_lod)
+		if(_use_lod)
 		{
 			// Если объект далеко - рисуем упрощенную модель (LOD)
 			ProcessDynamicVisual(pV->m_lod, ctx, dest); // Передаем ctx и dest
@@ -845,7 +845,7 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 			float switch_distance = 100.0f;
 
 			// Настройки качества геометрии
-			switch (ps_geometry_quality_mode)
+			switch(ps_geometry_quality_mode)
 			{
 			case 3:
 				switch_distance = 100.0f;
@@ -863,22 +863,22 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 
 			// Wallmarks считаем только вблизи и только для основного прохода (оптимизация)
 			//    Для теней воллмарки обычно не нужны (они плоские).
-			if (bExact && !ctx.is_invisible_mode)
+			if(bExact && !ctx.is_invisible_mode)
 			{
-				if (ctx.render_phase == CRender::PHASE_NORMAL)
+				if(ctx.render_phase == CRender::PHASE_NORMAL)
 					pV->CalculateWallmarks();
 			}
 
 			// Рекурсивно обрабатываем части скелета (кости/меши)
 			I = pV->children.begin();
 			E = pV->children.end();
-			for (; I != E; I++)
+			for(; I != E; I++)
 				ProcessDynamicVisual(*I, ctx, dest); // Передаем ctx и dest
 		}
 	}
 		return;
 
-	default: 
+	default:
 	{
 		// Листовой узел (Mesh) - конечная геометрия
 
@@ -904,49 +904,49 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 // ===============================================================================================
 void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
-	if (!pVisual)
+	if(!pVisual)
 		return;
 
 	// Проверка на значимость
 	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx
-	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
+	if(!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
 	xr_vector<IRender_Visual*>::iterator I, E;
 
-	switch (pVisual->Type)
+	switch(pVisual->Type)
 	{
-	case MT_PARTICLE_GROUP: 
+	case MT_PARTICLE_GROUP:
 	{
 		PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-		for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
+		for(PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++)
 		{
 			PS::CParticleGroup::SItem& PE_It = *i_it;
-			if (PE_It._effect)
+			if(PE_It._effect)
 				ProcessDynamicVisual(PE_It._effect, ctx, dest); // Рекурсия с ctx и dest
-			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
-				 pit != PE_It._children_related.end(); pit++)
+			for(xr_vector<IRender_Visual*>::iterator pit = PE_It._children_related.begin();
+				pit != PE_It._children_related.end(); pit++)
 				ProcessDynamicVisual(*pit, ctx, dest); // Рекурсия с ctx и dest
-			for (xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
-				 pit != PE_It._children_free.end(); pit++)
+			for(xr_vector<IRender_Visual*>::iterator pit = PE_It._children_free.begin();
+				pit != PE_It._children_free.end(); pit++)
 				ProcessDynamicVisual(*pit, ctx, dest); // Рекурсия с ctx и dest
 		}
 	}
 		return;
 
-	case MT_HIERRARHY: 
+	case MT_HIERRARHY:
 	{
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		I = pV->children.begin();
 		E = pV->children.end();
-		for (; I != E; I++)
+		for(; I != E; I++)
 			ProcessStaticVisual(*I, ctx, dest); // Рекурсия с ctx и dest
 	}
 		return;
 
 	case MT_SKELETON_ANIM:
-	case MT_SKELETON_RIGID: 
+	case MT_SKELETON_RIGID:
 	{
 		// Скелетная статика (трупы, декорации)
 		fvec3 pos;
@@ -956,7 +956,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		float adjusted_distane = GetDistFromCamera(pos, ctx);
 		float switch_distance = 100.0f;
 
-		switch (ps_geometry_quality_mode)
+		switch(ps_geometry_quality_mode)
 		{
 		case 3:
 			switch_distance = 100.0f;
@@ -970,17 +970,17 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		}
 
 		CKinematics* pV = (CKinematics*)pVisual;
-		if (adjusted_distane < switch_distance)
+		if(adjusted_distane < switch_distance)
 			pV->CalculateBones(TRUE); // Обновляем кости, если близко
 
 		I = pV->children.begin();
 		E = pV->children.end();
-		for (; I != E; I++)
+		for(; I != E; I++)
 			ProcessStaticVisual(*I, ctx, dest); // Рекурсия с ctx и dest
 	}
 		return;
 
-	case MT_LOD: 
+	case MT_LOD:
 	{
 		// Статические деревья и объекты с билборд-LODами
 		FLOD* pV = (FLOD*)pVisual;
@@ -991,18 +991,18 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		screenSpaceArea *= pV->lod_factor;
 
 		// Если далеко - добавляем в список LOD-ов (билбордов)
-		if (screenSpaceArea < r_ssaLOD_A)
+		if(screenSpaceArea < r_ssaLOD_A)
 		{
-			if (pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
+			if(pVisual->vis.m_traversal_marker == ctx.traversal_marker_id)
 				return;
 			pVisual->vis.m_traversal_marker = ctx.traversal_marker_id;
 
 			dest.AddVisualRef(pVisual);
 
-			if (screenSpaceArea < r_ssaDISCARD)
+			if(screenSpaceArea < r_ssaDISCARD)
 				return;
 
-			if (ctx.render_phase == CRender::PHASE_NORMAL)
+			if(ctx.render_phase == CRender::PHASE_NORMAL)
 			{
 				dest.m_visuals_static_visible.push_back(pVisual);
 
@@ -1013,18 +1013,18 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 		}
 
 		// Если близко - рендерим детальную геометрию (детей)
-		if (screenSpaceArea > r_ssaLOD_B)
+		if(screenSpaceArea > r_ssaLOD_B)
 		{
 			I = pV->children.begin();
 			E = pV->children.end();
-			for (; I != E; I++)
+			for(; I != E; I++)
 				ProcessStaticVisual(*I, ctx, dest); // Рекурсия с ctx и dest
 		}
 	}
 		return;
 
 	case MT_TREE_PM:
-	case MT_TREE_ST: 
+	case MT_TREE_ST:
 	{
 		// Вычисляем позицию для сортировки
 		fvec3 Tpos;
@@ -1036,7 +1036,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	}
 	break;
 
-	default: 
+	default:
 	{
 		// Обычная геометрия (стены, террейн) - Identity матрица ок
 		EnqueueStatic(pVisual, ctx, dest);
@@ -1067,90 +1067,90 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 	EFC_Visible visibility_status = ctx.frustum->testSphere(world_position, pVisual->vis.sphere.R, planes);
 
 	// Если объект полностью вне экрана - выходим
-	if (visibility_status == fcvNone)
+	if(visibility_status == fcvNone)
 		return FALSE;
 
-	if (ctx.use_hom && !RenderImplementation.HOM.visible(pVisual->vis))
+	if(ctx.use_hom && !RenderImplementation.HOM.visible(pVisual->vis))
 		return FALSE;
 
 	// Проверка на значимость (Distance / Size Culling)
 	// ShouldRenderVisual теперь тоже принимает ctx
 	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
-	if (!ShouldRenderVisual(pVisual, false, is_shadow_phase, ctx))
+	if(!ShouldRenderVisual(pVisual, false, is_shadow_phase, ctx))
 		return FALSE;
 
 	// Разбор типа объекта и рекурсия
-	switch (pVisual->Type)
+	switch(pVisual->Type)
 	{
-	case MT_PARTICLE_GROUP: 
+	case MT_PARTICLE_GROUP:
 	{
 		PS::CParticleGroup* pGroup = (PS::CParticleGroup*)pVisual;
 
 		// Если родитель виден частично (fcvPartial), нужно проверять фрустум для детей (add_Dynamic).
 		// Если родитель виден полностью (fcvFully), детей можно добавлять без проверки (ProcessDynamicVisual).
 
-		if (visibility_status == fcvPartial)
+		if(visibility_status == fcvPartial)
 		{
-			for (PS::CParticleGroup::SItem& item : pGroup->items)
+			for(PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (item._effect)
+				if(item._effect)
 					add_Dynamic(item._effect, planes, ctx, dest); // Рекурсия с проверкой
-				for (IRender_Visual* child : item._children_related)
+				for(IRender_Visual* child : item._children_related)
 					add_Dynamic(child, planes, ctx, dest);
-				for (IRender_Visual* child : item._children_free)
+				for(IRender_Visual* child : item._children_free)
 					add_Dynamic(child, planes, ctx, dest);
 			}
 		}
 		else // fcvFully
 		{
-			for (PS::CParticleGroup::SItem& item : pGroup->items)
+			for(PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (item._effect)
+				if(item._effect)
 					ProcessDynamicVisual(item._effect, ctx, dest); // Быстрое добавление
-				for (IRender_Visual* child : item._children_related)
+				for(IRender_Visual* child : item._children_related)
 					ProcessDynamicVisual(child, ctx, dest);
-				for (IRender_Visual* child : item._children_free)
+				for(IRender_Visual* child : item._children_free)
 					ProcessDynamicVisual(child, ctx, dest);
 			}
 		}
 	}
 	break;
 
-	case MT_HIERRARHY: 
+	case MT_HIERRARHY:
 	{
 		FHierrarhyVisual* pHierarchy = (FHierrarhyVisual*)pVisual;
 
-		if (visibility_status == fcvPartial)
+		if(visibility_status == fcvPartial)
 		{
-			for (IRender_Visual* child : pHierarchy->children)
+			for(IRender_Visual* child : pHierarchy->children)
 				add_Dynamic(child, planes, ctx, dest); // Рекурсия с проверкой
 		}
 		else
 		{
-			for (IRender_Visual* child : pHierarchy->children)
+			for(IRender_Visual* child : pHierarchy->children)
 				ProcessDynamicVisual(child, ctx, dest); // Быстрое добавление
 		}
 	}
 	break;
 
 	case MT_SKELETON_ANIM:
-	case MT_SKELETON_RIGID: 
+	case MT_SKELETON_RIGID:
 	{
 		CKinematics* pKinematics = (CKinematics*)pVisual;
 
 		// Логика LOD для скелетов
 		bool use_lod = false;
-		if (pKinematics->m_lod)
+		if(pKinematics->m_lod)
 		{
 			float dist_sq;
 			// Используем уже вычисленную world_position
 			float screen_space_area = CalcScreenSpaceArea(dist_sq, world_position, pVisual->vis.sphere.R / 2.f, ctx);
 
-			if (screen_space_area < r_ssaLOD_A)
+			if(screen_space_area < r_ssaLOD_A)
 				use_lod = true;
 		}
 
-		if (use_lod)
+		if(use_lod)
 		{
 			// Рендерим LOD вместо реальной геометрии
 			ProcessDynamicVisual(pKinematics->m_lod, ctx, dest);
@@ -1161,7 +1161,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 			float dist_from_camera = GetDistFromCamera(world_position, ctx);
 			float switch_distance = 100.0f;
 
-			switch (ps_geometry_quality_mode)
+			switch(ps_geometry_quality_mode)
 			{
 			case 3:
 				switch_distance = 100.0f;
@@ -1177,22 +1177,22 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 			// Если близко - обновляем кости (Software Skinning / Wallmarks update)
 			// Примечание: Это изменяет состояние объекта, что в идеале должно быть вынесено из фазы сбора,
 			// но для legacy поддержки оставляем здесь. В многопотоке это место требует внимания (мьютекс в Kinematics).
-			if (dist_from_camera < switch_distance)
+			if(dist_from_camera < switch_distance)
 			{
 				pKinematics->CalculateBones(TRUE);
 
-				if (ctx.render_phase != CRender::PHASE_SHADOW_DEPTH)
+				if(ctx.render_phase != CRender::PHASE_SHADOW_DEPTH)
 					pKinematics->CalculateWallmarks();
 			}
 
 			// Скелеты всегда добавляем через Process, так как части (children) обычно внутри AABB родителя
-			for (IRender_Visual* child : pKinematics->children)
+			for(IRender_Visual* child : pKinematics->children)
 				ProcessDynamicVisual(child, ctx, dest);
 		}
 	}
 	break;
 
-	default: 
+	default:
 	{
 		// Листовой объект (Mesh) - отправляем в низкоуровневую очередь
 		EnqueueDynamic(pVisual, world_position, ctx, dest);
@@ -1221,73 +1221,73 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 	VERIFY(ctx.frustum);
 	EFC_Visible visibility_status = ctx.frustum->testSAABB(vis_data.sphere.P, vis_data.sphere.R, vis_data.box.data(), planes);
 
-	if (visibility_status == fcvNone)
+	if(visibility_status == fcvNone)
 		return;
 
 	// Occlusion Culling (HOM - Hierarchical Occlusion Maps)
 	// Пропускаем невидимые за стенами/холмами объекты
-	if (!RenderImplementation.HOM.visible(vis_data))
+	if(!RenderImplementation.HOM.visible(vis_data))
 		return;
 
 	// Проверка на значимость (Distance / Size Culling)
 	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
 	// Передаем ctx для корректного расчета дистанции
-	if (!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
+	if(!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
 	// Разбор типа объекта
-	switch (pVisual->Type)
+	switch(pVisual->Type)
 	{
-	case MT_PARTICLE_GROUP: 
+	case MT_PARTICLE_GROUP:
 	{
 		PS::CParticleGroup* pGroup = (PS::CParticleGroup*)pVisual;
 
-		if (visibility_status == fcvPartial)
+		if(visibility_status == fcvPartial)
 		{
-			for (PS::CParticleGroup::SItem& item : pGroup->items)
+			for(PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (item._effect)
+				if(item._effect)
 					add_Dynamic(item._effect, planes, ctx, dest); // Статика может содержать динамические эффекты
-				for (auto* c : item._children_related)
+				for(auto* c : item._children_related)
 					add_Dynamic(c, planes, ctx, dest);
-				for (auto* c : item._children_free)
+				for(auto* c : item._children_free)
 					add_Dynamic(c, planes, ctx, dest);
 			}
 		}
 		else
 		{
-			for (PS::CParticleGroup::SItem& item : pGroup->items)
+			for(PS::CParticleGroup::SItem& item : pGroup->items)
 			{
-				if (item._effect)
+				if(item._effect)
 					ProcessDynamicVisual(item._effect, ctx, dest);
-				for (auto* c : item._children_related)
+				for(auto* c : item._children_related)
 					ProcessDynamicVisual(c, ctx, dest);
-				for (auto* c : item._children_free)
+				for(auto* c : item._children_free)
 					ProcessDynamicVisual(c, ctx, dest);
 			}
 		}
 	}
 	break;
 
-	case MT_HIERRARHY: 
+	case MT_HIERRARHY:
 	{
 		FHierrarhyVisual* pHierarchy = (FHierrarhyVisual*)pVisual;
 
-		if (visibility_status == fcvPartial)
+		if(visibility_status == fcvPartial)
 		{
-			for (IRender_Visual* child : pHierarchy->children)
+			for(IRender_Visual* child : pHierarchy->children)
 				add_Static(child, planes, ctx, dest); // Рекурсия
 		}
 		else
 		{
-			for (IRender_Visual* child : pHierarchy->children)
+			for(IRender_Visual* child : pHierarchy->children)
 				ProcessStaticVisual(child, ctx, dest); // Быстрое добавление
 		}
 	}
 	break;
 
 	case MT_SKELETON_ANIM:
-	case MT_SKELETON_RIGID: 
+	case MT_SKELETON_RIGID:
 	{
 		// Скелетная статика (трупы как часть уровня и т.д.)
 		fvec3 object_pos;
@@ -1297,7 +1297,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 		float dist_from_camera = GetDistFromCamera(object_pos, ctx);
 		float switch_distance = 100.0f;
 
-		switch (ps_geometry_quality_mode)
+		switch(ps_geometry_quality_mode)
 		{
 		case 3:
 			switch_distance = 100.0f;
@@ -1312,23 +1312,23 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 
 		CKinematics* pKinematics = (CKinematics*)pVisual;
 
-		if (dist_from_camera < switch_distance)
+		if(dist_from_camera < switch_distance)
 			pKinematics->CalculateBones(TRUE);
 
-		if (visibility_status == fcvPartial)
+		if(visibility_status == fcvPartial)
 		{
-			for (IRender_Visual* child : pKinematics->children)
+			for(IRender_Visual* child : pKinematics->children)
 				add_Static(child, planes, ctx, dest);
 		}
 		else
 		{
-			for (IRender_Visual* child : pKinematics->children)
+			for(IRender_Visual* child : pKinematics->children)
 				ProcessStaticVisual(child, ctx, dest);
 		}
 	}
 	break;
 
-	case MT_LOD: 
+	case MT_LOD:
 	{
 		// Обработка деревьев и крупных объектов с LOD-ами
 		FLOD* pLod = (FLOD*)pVisual;
@@ -1338,9 +1338,9 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 		screen_space_area *= pLod->lod_factor;
 
 		// Если объект далеко - рисуем его как Imposter (LOD, билборд)
-		if (screen_space_area < r_ssaLOD_A)
+		if(screen_space_area < r_ssaLOD_A)
 		{
-			if (screen_space_area < r_ssaDISCARD)
+			if(screen_space_area < r_ssaDISCARD)
 				return;
 
 			// Вставляем в mapLOD целевого пакета
@@ -1348,16 +1348,16 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 			node->val.screenSpaceArea = screen_space_area;
 			node->val.pVisual = pVisual;
 		}
-		else if (screen_space_area > r_ssaLOD_B) // Если объект близко - рисуем его детальную геометрию (детей)
+		else if(screen_space_area > r_ssaLOD_B) // Если объект близко - рисуем его детальную геометрию (детей)
 		{
-			for (IRender_Visual* child : pLod->children)
+			for(IRender_Visual* child : pLod->children)
 				ProcessStaticVisual(child, ctx, dest);
 		}
 	}
 	break;
 
 	case MT_TREE_ST:
-	case MT_TREE_PM: 
+	case MT_TREE_PM:
 	{
 		// Получаем мировую позицию
 		fvec3 world_pos;
@@ -1368,7 +1368,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 	}
 	break;
 
-	default: 
+	default:
 	{
 		// Обычная статика
 		EnqueueStatic(pVisual, ctx, dest);
@@ -1385,9 +1385,9 @@ void CSceneGraph::PrepareDynamicInstances(SceneGraphPacket& packet, const SceneT
 
 	CurrentRenderContext::Scope tls_scope(packet, ctx);
 
-	for (IRenderable* renderable : packet.m_culled_dynamics)
+	for(IRenderable* renderable : packet.m_culled_dynamics)
 	{
-		if (!renderable)
+		if(!renderable)
 			continue;
 
 		ctx.owner = renderable;
@@ -1399,12 +1399,13 @@ void CSceneGraph::PrepareDynamicInstances(SceneGraphPacket& packet, const SceneT
 void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 {
 	// Вспомогательная лямбда для проверки вектора узлов
-	auto check_batch = [](auto& batch, const char* context) {
+	auto check_batch = [](auto& batch, const char* context)
+	{
 		std::unordered_set<IRender_Visual*> unique_set;
-		for (const auto& node : batch)
+		for(const auto& node : batch)
 		{
 			IRender_Visual* v = node.pVisual;
-			if (!unique_set.insert(v).second)
+			if(!unique_set.insert(v).second)
 			{
 				Msg("[DUPLICATE] visual 0x%p in %s", v, context);
 				R_ASSERT2(false, "Duplicate visual detected in render packet");
@@ -1413,22 +1414,22 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 	};
 
 	// --- Статическая геометрия (queue_static[0] и queue_static[1]) ---
-	for (int priority = 0; priority < 2; ++priority)
+	for(int priority = 0; priority < 2; ++priority)
 	{
 		auto& mapVS = packet.queue_static[priority];
-		for (auto itVS = mapVS.begin(); itVS != mapVS.end(); ++itVS)
+		for(auto itVS = mapVS.begin(); itVS != mapVS.end(); ++itVS)
 		{
 			auto& mapPS = itVS->val;
-			for (auto itPS = mapPS.begin(); itPS != mapPS.end(); ++itPS)
+			for(auto itPS = mapPS.begin(); itPS != mapPS.end(); ++itPS)
 			{
 				auto& mapCS = itPS->val;
-				for (auto itCS = mapCS.begin(); itCS != mapCS.end(); ++itCS)
+				for(auto itCS = mapCS.begin(); itCS != mapCS.end(); ++itCS)
 				{
 					auto& mapState = itCS->val;
-					for (auto itState = mapState.begin(); itState != mapState.end(); ++itState)
+					for(auto itState = mapState.begin(); itState != mapState.end(); ++itState)
 					{
 						auto& mapTex = itState->val;
-						for (auto itTex = mapTex.begin(); itTex != mapTex.end(); ++itTex)
+						for(auto itTex = mapTex.begin(); itTex != mapTex.end(); ++itTex)
 						{
 							check_batch(itTex->val, "static opaque batch");
 						}
@@ -1439,22 +1440,22 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 	}
 
 	// --- Динамическая геометрия (queue_dynamic[0] и queue_dynamic[1]) ---
-	for (int priority = 0; priority < 2; ++priority)
+	for(int priority = 0; priority < 2; ++priority)
 	{
 		auto& mapVS = packet.queue_dynamic[priority];
-		for (auto itVS = mapVS.begin(); itVS != mapVS.end(); ++itVS)
+		for(auto itVS = mapVS.begin(); itVS != mapVS.end(); ++itVS)
 		{
 			auto& mapPS = itVS->val;
-			for (auto itPS = mapPS.begin(); itPS != mapPS.end(); ++itPS)
+			for(auto itPS = mapPS.begin(); itPS != mapPS.end(); ++itPS)
 			{
 				auto& mapCS = itPS->val;
-				for (auto itCS = mapCS.begin(); itCS != mapCS.end(); ++itCS)
+				for(auto itCS = mapCS.begin(); itCS != mapCS.end(); ++itCS)
 				{
 					auto& mapState = itCS->val;
-					for (auto itState = mapState.begin(); itState != mapState.end(); ++itState)
+					for(auto itState = mapState.begin(); itState != mapState.end(); ++itState)
 					{
 						auto& mapTex = itState->val;
-						for (auto itTex = mapTex.begin(); itTex != mapTex.end(); ++itTex)
+						for(auto itTex = mapTex.begin(); itTex != mapTex.end(); ++itTex)
 						{
 							check_batch(itTex->val, "dynamic opaque batch");
 						}
@@ -1465,13 +1466,13 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 	}
 
 	// --- Sorted-контейнеры (transparent, distortion, wallmarks, emissive, HUD) ---
-	auto check_sorted = [](auto& sortedMap, const char* context) 
+	auto check_sorted = [](auto& sortedMap, const char* context)
 	{
 		std::unordered_set<IRender_Visual*> unique_set;
-		for (auto it = sortedMap.begin(); it != sortedMap.end(); ++it)
+		for(auto it = sortedMap.begin(); it != sortedMap.end(); ++it)
 		{
 			IRender_Visual* v = it->val.pVisual;
-			if (!unique_set.insert(v).second)
+			if(!unique_set.insert(v).second)
 			{
 				Msg("[DUPLICATE] visual 0x%p in %s", v, context);
 				R_ASSERT2(false, "Duplicate visual detected in render packet");
@@ -1488,10 +1489,10 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 	// --- LOD map ---
 	{
 		std::unordered_set<IRender_Visual*> unique_set;
-		for (auto it = packet.mapLOD.begin(); it != packet.mapLOD.end(); ++it)
+		for(auto it = packet.mapLOD.begin(); it != packet.mapLOD.end(); ++it)
 		{
 			IRender_Visual* v = it->val.pVisual;
-			if (!unique_set.insert(v).second)
+			if(!unique_set.insert(v).second)
 			{
 				Msg("[DUPLICATE] visual 0x%p in LOD map", v);
 				R_ASSERT2(false, "Duplicate visual detected in render packet");
@@ -1506,11 +1507,11 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 // ===============================================================================================
 
 // Shortcut (создание фрустума из матрицы)
-void CSceneGraph::BuildScene(CSector* _sector, 
-							 fmat4x4& mCombined, 
-							 fvec3& _cop, 
-							 BOOL _dynamic, 
-							 BOOL _precise_portals, 
+void CSceneGraph::BuildScene(CSector* _sector,
+							 fmat4x4& mCombined,
+							 fvec3& _cop,
+							 BOOL _dynamic,
+							 BOOL _precise_portals,
 							 SceneGraphPacket& dest,
 							 const SceneTraversalContext& ctx)
 {
@@ -1523,10 +1524,10 @@ void CSceneGraph::BuildScene(CSector* _sector,
 
 // Main Implementation (Основная логика)
 void CSceneGraph::BuildScene(CSector* start_sector,
-							 CFrustum* view_frustum, 
+							 CFrustum* view_frustum,
 							 fmat4x4& mCombined,
-							 fvec3& camera_pos, 
-							 BOOL render_dynamic, 
+							 fvec3& camera_pos,
+							 BOOL render_dynamic,
 							 BOOL precise_portals,
 							 SceneGraphPacket& dest,
 							 const SceneTraversalContext& ctx)
@@ -1584,7 +1585,7 @@ void CSceneGraph::BuildScene(CSector* start_sector,
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
 	dest.visible_sectors_map.clear();
-	for (const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
+	for(const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
 	{
 		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
 	}
@@ -1593,7 +1594,7 @@ void CSceneGraph::BuildScene(CSector* start_sector,
 	// Сбор СТАТИКИ (Static Geometry)
 	// -------------------------------------------------------------------------
 	// Проходим по результатам обхода
-	for (const auto& sec_vis : visible_sectors)
+	for(const auto& sec_vis : visible_sectors)
 	{
 		CSector* sector = sec_vis.sector;
 		IRender_Visual* root_visual = sector->GetRootVisual();
@@ -1606,18 +1607,18 @@ void CSceneGraph::BuildScene(CSector* start_sector,
 	// -------------------------------------------------------------------------
 	// Сбор ДИНАМИКИ (Dynamic Geometry)
 	// -------------------------------------------------------------------------
-	if (render_dynamic)
+	if(render_dynamic)
 	{
 		// Делаем запрос к пространственному дереву, используя ОБЩИЙ фрустум каскада
 		// Результат пишется в dest.m_spatial_query_results
 		g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
 
-		for (u32 o_it = 0; o_it < dest.m_spatial_query_results.size(); o_it++)
+		for(u32 o_it = 0; o_it < dest.m_spatial_query_results.size(); o_it++)
 		{
 			ISpatial* spatial = dest.m_spatial_query_results[o_it];
 			CSector* sector = (CSector*)spatial->spatial.sector;
 
-			if (0 == sector)
+			if(0 == sector)
 				continue;
 
 			// --- ПРОВЕРКА ВИДИМОСТИ СЕКТОРА ---
@@ -1626,23 +1627,23 @@ void CSceneGraph::BuildScene(CSector* start_sector,
 			// Мы должны найти этот сектор в списке visible_sectors нашего траверсера.
 
 			auto it = dest.visible_sectors_map.find(sector);
-			if (it == dest.visible_sectors_map.end()) 
+			if(it == dest.visible_sectors_map.end())
 				continue;
 
 			const auto* active_vis_data = it->second;
-			if (!active_vis_data)
+			if(!active_vis_data)
 				continue;
 
 			// --- ПРОВЕРКА ПО ФРУСТУМАМ СЕКТОРА ---
 			// Берем фрустумы из найденной структуры данных
-			for (const auto& frustum : active_vis_data->frustums)
+			for(const auto& frustum : active_vis_data->frustums)
 			{
 				// Быстрый тест сферы с конкретным фрустумом
-				if (!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+				if(!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 					continue;
 
 				IRenderable* renderable = spatial->dcast_Renderable();
-				if (0 == renderable)
+				if(0 == renderable)
 					continue;
 
 				// Настраиваем контекст для отрисовки

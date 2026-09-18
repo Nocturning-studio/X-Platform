@@ -38,7 +38,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::initialize()
 	m_target_node = object->Home->get_place_in_cover();
 	m_skip_camp = false;
 
-	if (m_target_node == u32(-1))
+	if(m_target_node == u32(-1))
 	{
 		m_target_node = object->Home->get_place();
 		m_skip_camp = true;
@@ -78,9 +78,9 @@ bool CStateMonsterDangerMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterDangerMoveToHomePointAbstract::check_completion()
 {
-	if (object->HitMemory.get_last_hit_time() > time_state_started)
+	if(object->HitMemory.get_last_hit_time() > time_state_started)
 		return true;
-	if (m_skip_camp && (prev_substate != u32(-1)) && (prev_substate != eStatePanic_HomePoint_Hide))
+	if(m_skip_camp && (prev_substate != u32(-1)) && (prev_substate != eStatePanic_HomePoint_Hide))
 		return true;
 
 	return false;
@@ -93,13 +93,13 @@ bool CStateMonsterDangerMoveToHomePointAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterDangerMoveToHomePointAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
 		select_state(eStatePanic_HomePoint_Hide);
 		return;
 	}
 
-	if (prev_substate == eStatePanic_HomePoint_Hide)
+	if(prev_substate == eStatePanic_HomePoint_Hide)
 	{
 		select_state(eStatePanic_HomePoint_LookOpenPlace);
 		return;
@@ -117,7 +117,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStatePanic_HomePoint_Hide)
+	if(current_substate == eStatePanic_HomePoint_Hide)
 	{
 		SStateDataMoveToPointEx data;
 
@@ -137,7 +137,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStatePanic_HomePoint_LookOpenPlace)
+	if(current_substate == eStatePanic_HomePoint_LookOpenPlace)
 	{
 
 		SStateDataLookToPoint data;
@@ -156,7 +156,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStatePanic_HomePoint_Camp)
+	if(current_substate == eStatePanic_HomePoint_Camp)
 	{
 		SStateDataAction data;
 
@@ -175,11 +175,11 @@ fvec3& CStateMonsterDangerMoveToHomePointAbstract::get_most_danger_pos()
 {
 	m_danger_pos.set(0, 0, 0);
 
-	if (object->HitMemory.is_hit())
+	if(object->HitMemory.is_hit())
 	{
 		m_danger_pos = object->HitMemory.get_last_hit_position();
 	}
-	else if (object->hear_dangerous_sound)
+	else if(object->hear_dangerous_sound)
 	{
 		m_danger_pos = object->SoundMemory.GetSound().position;
 	}

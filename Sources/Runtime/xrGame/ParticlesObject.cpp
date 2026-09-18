@@ -26,7 +26,7 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 	m_bAutoRemove = bAutoRemove;
 	float time_limit = 0.0f;
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		// create visual
 		renderable.visual = Render->model_CreateParticles(p_name);
@@ -40,13 +40,13 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 		time_limit = 1.0f;
 	}
 
-	if (time_limit > 0.f)
+	if(time_limit > 0.f)
 	{
 		m_iLifeTime = iFloor(time_limit * 1000.f);
 	}
 	else
 	{
-		if (bAutoRemove)
+		if(bAutoRemove)
 		{
 			R_ASSERT3(!m_bAutoRemove, "Can't set auto-remove flag for looped particle system.", p_name);
 		}
@@ -81,17 +81,17 @@ CParticlesObject::~CParticlesObject()
 
 void CParticlesObject::UpdateSpatial()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	// spatial	(+ workaround occasional bug inside particle-system)
-	if (_valid(renderable.visual->vis.sphere))
+	if(_valid(renderable.visual->vis.sphere))
 	{
 		fvec3 P;
 		float R;
 		renderable.transform.transform_tiny(P, renderable.visual->vis.sphere.P);
 		R = renderable.visual->vis.sphere.R;
-		if (0 == spatial.type)
+		if(0 == spatial.type)
 		{
 			// First 'valid' update - register
 			spatial.type = STYPE_RENDERABLE;
@@ -101,11 +101,11 @@ void CParticlesObject::UpdateSpatial()
 		else
 		{
 			BOOL bMove = FALSE;
-			if (!P.similar(spatial.sphere.P, EPS_L * 10.f))
+			if(!P.similar(spatial.sphere.P, EPS_L * 10.f))
 				bMove = TRUE;
-			if (!fsimilar(R, spatial.sphere.R, 0.15f))
+			if(!fsimilar(R, spatial.sphere.R, 0.15f))
 				bMove = TRUE;
-			if (bMove)
+			if(bMove)
 			{
 				spatial.sphere.set(P, R);
 				spatial_move();
@@ -116,7 +116,7 @@ void CParticlesObject::UpdateSpatial()
 
 const shared_str CParticlesObject::Name()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return "";
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
@@ -127,7 +127,7 @@ const shared_str CParticlesObject::Name()
 //----------------------------------------------------
 void CParticlesObject::Play()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
@@ -141,7 +141,7 @@ void CParticlesObject::Play()
 
 void CParticlesObject::play_at_pos(const fvec3& pos, BOOL transform)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
@@ -158,7 +158,7 @@ void CParticlesObject::play_at_pos(const fvec3& pos, BOOL transform)
 
 void CParticlesObject::Stop(BOOL bDefferedStop)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
@@ -171,16 +171,16 @@ void CParticlesObject::shedule_Update(u32 _dt)
 {
 	inherited::shedule_Update(_dt);
 
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	// Update
-	if (m_bDead)
+	if(m_bDead)
 		return;
 	u32 dt = Engine.TimeManager.GetGlobalTimeMs() - dwLastTime;
-	if (dt)
+	if(dt)
 	{
-		if (0)
+		if(0)
 		{ //.psDeviceFlags.test(mtParticles))	{    //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
 			mt_dt = dt;
 			Engine.ThreadManager.AddParallelTask(
@@ -200,12 +200,12 @@ void CParticlesObject::shedule_Update(u32 _dt)
 
 void CParticlesObject::PerformAllTheWork(u32 _dt)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	// Update
 	u32 dt = Engine.TimeManager.GetGlobalTimeMs() - dwLastTime;
-	if (dt)
+	if(dt)
 	{
 		IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
 		VERIFY(V);
@@ -219,10 +219,10 @@ void CParticlesObject::PerformAllTheWork_mt()
 {
 	PROFILE_FUNCTION();
 
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
-	if (0 == mt_dt)
+	if(0 == mt_dt)
 		return; //???
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
 	VERIFY(V);
@@ -232,7 +232,7 @@ void CParticlesObject::PerformAllTheWork_mt()
 
 void CParticlesObject::SetTransform(const fmat4x4& m)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
@@ -244,7 +244,7 @@ void CParticlesObject::SetTransform(const fmat4x4& m)
 
 void CParticlesObject::UpdateParent(const fmat4x4& m, const fvec3& vel)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
@@ -255,7 +255,7 @@ void CParticlesObject::UpdateParent(const fmat4x4& m, const fvec3& vel)
 
 fvec3& CParticlesObject::Position()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 	{
 		static fvec3 _pos = fvec3().set(0, 0, 0);
 		return _pos;
@@ -265,7 +265,7 @@ fvec3& CParticlesObject::Position()
 
 float CParticlesObject::shedule_Scale()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return 5.0f;
 
 	return Engine.RenderView.Position.distance_to(Position()) / 200.f;
@@ -275,7 +275,7 @@ void CParticlesObject::renderable_Render()
 {
 	VERIFY(renderable.visual);
 	u32 dt = Engine.TimeManager.GetGlobalTimeMs() - dwLastTime;
-	if (dt)
+	if(dt)
 	{
 		IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
 		VERIFY(V);
@@ -287,7 +287,7 @@ void CParticlesObject::renderable_Render()
 }
 bool CParticlesObject::IsAutoRemove()
 {
-	if (m_bAutoRemove)
+	if(m_bAutoRemove)
 		return true;
 	else
 		return false;
@@ -302,7 +302,7 @@ void CParticlesObject::SetAutoRemove(bool auto_remove)
 // остановки Stop партиклы могут еще доигрывать анимацию IsPlaying = true
 bool CParticlesObject::IsPlaying()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return false;
 
 	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);

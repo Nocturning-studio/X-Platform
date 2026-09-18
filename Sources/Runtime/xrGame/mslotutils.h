@@ -130,7 +130,7 @@ inline BOOL CheckExisting(LPSTR slotName)
 
 	res = (hFile != INVALID_HANDLE_VALUE);
 
-	if (res)
+	if(res)
 		CloseHandle(hFile);
 
 	return res;
@@ -147,7 +147,7 @@ inline BOOL SendMailslotMessage(LPSTR slotName, CMailSlotMsg& msg)
 
 	R_ASSERT(hFile != INVALID_HANDLE_VALUE);
 
-	if (hFile == INVALID_HANDLE_VALUE)
+	if(hFile == INVALID_HANDLE_VALUE)
 		return false;
 
 	fResult = WriteFile(hFile, msg.GetBuffer(), msg.GetLen(), &cbWritten, (LPOVERLAPPED)NULL);
@@ -168,7 +168,7 @@ inline BOOL CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg)
 	cbMessage = cMessage = cbRead = 0;
 
 	hEvent = CreateEvent(NULL, FALSE, FALSE, "__Slot");
-	if (NULL == hEvent)
+	if(NULL == hEvent)
 		return FALSE;
 	ov.Offset = 0;
 	ov.OffsetHigh = 0;
@@ -182,7 +182,7 @@ inline BOOL CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg)
 
 	R_ASSERT(fResult);
 
-	if (!fResult || cbMessage == MAILSLOT_NO_MESSAGE)
+	if(!fResult || cbMessage == MAILSLOT_NO_MESSAGE)
 	{
 		CloseHandle(hEvent);
 		return false;

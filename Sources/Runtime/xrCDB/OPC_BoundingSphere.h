@@ -119,32 +119,32 @@ class MESHMERIZER_API Sphere
 		p.x = Max.x;
 		p.y = Max.y;
 		p.z = Max.z;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Min.x;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Max.x;
 		p.y = Min.y;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Min.x;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Max.x;
 		p.y = Max.y;
 		p.z = Min.z;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Min.x;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Max.x;
 		p.y = Min.y;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 		p.x = Min.x;
-		if (mCenter.SquareDistance(p) >= R2)
+		if(mCenter.SquareDistance(p) >= R2)
 			return FALSE;
 
 		return TRUE;

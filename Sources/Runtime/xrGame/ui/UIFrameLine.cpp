@@ -46,7 +46,7 @@ void CUIFrameLine::InitTexture(const char* texture)
 
 void CUIFrameLine::SetColor(u32 cl)
 {
-	for (int i = 0; i < flMax; ++i)
+	for(int i = 0; i < flMax; ++i)
 		elements[i].SetColor(cl);
 }
 
@@ -68,7 +68,7 @@ void CUIFrameLine::UpdateSize()
 							 : elements[flSecond].SetPos(iPos.x, iPos.y + iSize - s_height);
 
 	// Dimentions of element textures must be the same
-	if (bHorizontalOrientation)
+	if(bHorizontalOrientation)
 		R_ASSERT(s_height == f_height);
 	else
 		R_ASSERT(f_width == s_width);
@@ -76,7 +76,7 @@ void CUIFrameLine::UpdateSize()
 	// Now stretch back texture to remaining space
 	float back_width, back_height;
 
-	if (bHorizontalOrientation)
+	if(bHorizontalOrientation)
 	{
 		back_width = iSize - f_width - s_width;
 		back_height = f_height;
@@ -100,7 +100,7 @@ void CUIFrameLine::UpdateSize()
 	float b_width = elements[flBack].GetOriginalRect().width();
 	float b_height = elements[flBack].GetOriginalRect().height();
 
-	if (bHorizontalOrientation)
+	if(bHorizontalOrientation)
 	{
 		rem = fmodf(back_width, b_width);
 		tile = iFloor(back_width / b_width);
@@ -122,13 +122,13 @@ void CUIFrameLine::UpdateSize()
 
 void CUIFrameLine::Render()
 {
-	//OPTICK_EVENT("CUIFrameLine::Render");
+	// OPTICK_EVENT("CUIFrameLine::Render");
 
 	// If size changed - update size
-	if (!(uFlags & flValidSize))
+	if(!(uFlags & flValidSize))
 		UpdateSize();
 	// Now render all statics
-	for (int i = 0; i < flMax; ++i)
+	for(int i = 0; i < flMax; ++i)
 	{
 		elements[i].Render();
 	}

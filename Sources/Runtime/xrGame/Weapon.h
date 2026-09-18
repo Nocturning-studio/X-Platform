@@ -307,8 +307,8 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	{
 		return m_bZoomEnabled;
 	}
-	virtual void ZoomInc(){};
-	virtual void ZoomDec(){};
+	virtual void ZoomInc() {};
+	virtual void ZoomDec() {};
 	virtual void OnZoomIn();
 	virtual void OnZoomOut();
 	bool IsZoomed() const
@@ -386,9 +386,9 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	struct _firedeps
 	{
 		fmat4x4 m_FireParticlesTransform; // направление для партиклов огня и дыма
-		fvec3 vLastFP, vLastFP2;	  // огня
-		fvec3 vLastFD;			  // direction
-		fvec3 vLastSP;			  // гильз
+		fvec3 vLastFP, vLastFP2;		  // огня
+		fvec3 vLastFD;					  // direction
+		fvec3 vLastSP;					  // гильз
 
 		_firedeps()
 		{
@@ -407,7 +407,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	virtual void UpdateHudAdditonal(fmat4x4&);
 	IC void UpdateFireDependencies()
 	{
-		if (dwFP_Frame == Engine.TimeManager.GetFrameCount())
+		if(dwFP_Frame == Engine.TimeManager.GetFrameCount())
 			return;
 		UpdateFireDependencies_internal();
 	};
@@ -475,7 +475,7 @@ class CWeapon : public CHudItemObject, public CShootingObject
 	void StopShooting();
 
 	// обработка визуализации выстрела
-	virtual void OnShot(){};
+	virtual void OnShot() {};
 	virtual void AddShotEffector();
 	virtual void RemoveShotEffector();
 	virtual void ClearShotEffector();

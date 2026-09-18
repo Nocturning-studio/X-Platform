@@ -25,7 +25,7 @@ class CBlender_accum_point : public IBlender
 		PassDescription.BlendSRC = D3DBLEND_ONE;
 		PassDescription.BlendDST = D3DBLEND_ONE;
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_L_FILL: // fill projective
 			C.begin_Pass("null", "simple_image");
@@ -74,6 +74,5 @@ class CBlender_accum_point : public IBlender
 			break;
 		}
 	}
-
 };
 ///////////////////////////////////////////////////////////////////////////////////

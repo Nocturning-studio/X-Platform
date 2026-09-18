@@ -19,28 +19,31 @@ class NET_Event
 	{
 		data.clear();
 		P.r_begin(ID); // VERIFY(M_EVENT==ID);
-		switch (ID)
+		switch(ID)
 		{
-		case M_SPAWN: {
+		case M_SPAWN:
+		{
 			P.read_start();
 			//				timestamp = P->
 		}
 		break;
-		case M_EVENT: {
+		case M_EVENT:
+		{
 			P.r_u32(timestamp);
 			timestamp += u32(g_dwEventDelay);
 			P.r_u16(type);
 			P.r_u16(destination);
 		}
 		break;
-		default: {
+		default:
+		{
 			VERIFY(0);
 		}
 		break;
 		}
 
 		u32 size = P.r_elapsed();
-		if (size)
+		if(size)
 		{
 			data.resize(size);
 			P.r(&*data.begin(), size);
@@ -53,12 +56,12 @@ class NET_Event
 		P.w_u32(timestamp);
 		P.w_u16(type);
 		P.w_u16(destination);
-		if (data.size())
+		if(data.size())
 			P.w(&*data.begin(), (u32)data.size());
 	}
 	void implication(NET_Packet& P) const
 	{
-		if (!data.empty())
+		if(!data.empty())
 		{
 			CopyMemory(P.B.data, &data[0], (u32)data.size());
 			P.B.count = (u32)data.size();
@@ -113,7 +116,7 @@ class NET_Queue_Event
 	{
 		//		if (queue.empty()/* || (T<queue.begin()->timestamp)*/)	return FALSE;
 		//		else												return TRUE;
-		if (queue.empty())
+		if(queue.empty())
 			return FALSE;
 		/**
 		else

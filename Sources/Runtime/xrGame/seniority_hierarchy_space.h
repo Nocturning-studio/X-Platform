@@ -19,12 +19,13 @@ IC shared_str to_string(u32 number)
 	return (shared_str(S));
 }
 
-template <typename T1> IC void assign_svector(T1& container, u32 count, const typename T1::value_type& value)
+template <typename T1>
+IC void assign_svector(T1& container, u32 count, const typename T1::value_type& value)
 {
 	container.resize(count);
 	typename T1::iterator I = container.begin();
 	typename T1::iterator E = container.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		*I = value;
 }
 } // namespace SeniorityHierarchy

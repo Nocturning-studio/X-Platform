@@ -79,14 +79,14 @@ IC u8 CConditionStateAbstract::weight(const CConditionState& condition) const
 	xr_vector<COperatorCondition>::const_iterator E = conditions().end();
 	xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
-	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+	for(; (I != E) && (i != e);)
+		if((*I).condition() < (*i).condition())
 			++I;
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 			++i;
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				++result;
 			++I;
 			++i;
@@ -101,13 +101,13 @@ IC bool CConditionStateAbstract::operator<(const CConditionState& condition) con
 	xr_vector<COperatorCondition>::const_iterator E = conditions().end();
 	xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
-	for (; (I != E) && (i != e); ++I, ++i)
-		if (*I < *i)
+	for(; (I != E) && (i != e); ++I, ++i)
+		if(*I < *i)
 			return (true);
-		else if (*i < *I)
+		else if(*i < *I)
 			return (false);
-	if (I == E)
-		if (i == e)
+	if(I == E)
+		if(i == e)
 			return (false);
 		else
 			return (true);
@@ -118,16 +118,16 @@ IC bool CConditionStateAbstract::operator<(const CConditionState& condition) con
 TEMPLATE_SPECIALIZATION
 IC bool CConditionStateAbstract::operator==(const CConditionState& condition)
 {
-	if (hash_value() != condition.hash_value())
+	if(hash_value() != condition.hash_value())
 		return (false);
 	xr_vector<COperatorCondition>::const_iterator I = conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator E = conditions().end();
 	xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
-	for (; (I != E) && (i != e); ++I, ++i)
-		if (!(*I == *i))
+	for(; (I != E) && (i != e); ++I, ++i)
+		if(!(*I == *i))
 			return (false);
-	if ((I == E) && (i == e))
+	if((I == E) && (i == e))
 		return (true);
 	return (false);
 }
@@ -141,14 +141,14 @@ IC CConditionState<_world_property>& CConditionStateAbstract::operator-=(const C
 	xr_vector<COperatorCondition>::const_iterator E = conditions().end();
 	xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
-	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+	for(; (I != E) && (i != e);)
+		if((*I).condition() < (*i).condition())
 			++I;
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 			++i;
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 			{
 				temp.push_back(*I);
 				m_hash ^= (*I).hash_value();
@@ -167,12 +167,12 @@ IC bool CConditionStateAbstract::includes(const CConditionState& condition) cons
 	xr_vector<COperatorCondition>::const_iterator E = conditions().end();
 	xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
-	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+	for(; (I != E) && (i != e);)
+		if((*I).condition() < (*i).condition())
 			++I;
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 			return (false);
-		else if ((*I).value() != (*i).value())
+		else if((*I).value() != (*i).value())
 			return (false);
 		else
 		{
@@ -200,7 +200,7 @@ IC const typename CConditionStateAbstract::COperatorCondition* CConditionStateAb
 {
 	xr_vector<COperatorCondition>::const_iterator I = std::lower_bound(
 		conditions().begin(), conditions().end(), COperatorCondition(condition, COperatorCondition::_value_type(0)));
-	if (I == m_conditions.end())
+	if(I == m_conditions.end())
 		return (0);
 	else
 		return (&*I);

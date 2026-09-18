@@ -166,39 +166,48 @@ class ENGINE_API CResourceManager
 	void DestroyNecessaryTextures();
 	void Dump(bool bBrief);
 
-	template <typename T> T& GetShaderMap();
-	template <typename T> T* FindShader(const char* _name);
-	template <typename T> T* RegisterShader(const char* _name);
 	template <typename T>
-	HRESULT CompileShader(	LPCSTR name, 
-							LPCSTR ext, 
-							LPCSTR src, 
-							UINT size, 
-							LPCSTR target, 
-							LPCSTR entry,
-							CShaderMacros& macros, 
-							T*& result	);
+	T& GetShaderMap();
+	template <typename T>
+	T* FindShader(const char* _name);
+	template <typename T>
+	T* RegisterShader(const char* _name);
+	template <typename T>
+	HRESULT CompileShader(LPCSTR name,
+						  LPCSTR ext,
+						  LPCSTR src,
+						  UINT size,
+						  LPCSTR target,
+						  LPCSTR entry,
+						  CShaderMacros& macros,
+						  T*& result);
 
 	// [ИЗМЕНЕНО] Добавлен аргумент const char* _entry = "main"
-	template <typename T> T* CreateShader(const char* _name, const char* _entry, CShaderMacros& macros);
+	template <typename T>
+	T* CreateShader(const char* _name, const char* _entry, CShaderMacros& macros);
 
 	// Для обратной совместимости можно добавить перегрузку (не обязательно, если везде обновили)
-	template <typename T> T* CreateShader(const char* _name, CShaderMacros& macros)
+	template <typename T>
+	T* CreateShader(const char* _name, CShaderMacros& macros)
 	{
 		return CreateShader<T>(_name, "main", macros);
 	}
-	template <typename T> void DestroyShader(const T* sh);
-	template <typename T> HRESULT ReadShaderCache(string_path name, T*& result, time_t sourceModTime);
-	template <typename T> HRESULT ReflectShader(DWORD const* src, UINT size, T*& result);
+	template <typename T>
+	void DestroyShader(const T* sh);
+	template <typename T>
+	HRESULT ReadShaderCache(string_path name, T*& result, time_t sourceModTime);
+	template <typename T>
+	HRESULT ReflectShader(DWORD const* src, UINT size, T*& result);
 	void RecompileDependentShaders(const std::string& changedHeader);
 };
 
-template <class T> BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
+template <class T>
+BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
 {
 	xr_vector<T*>::iterator it = vec.begin();
 	xr_vector<T*>::iterator end = vec.end();
-	for (; it != end; it++)
-		if (*it == ptr)
+	for(; it != end; it++)
+		if(*it == ptr)
 		{
 			vec.erase(it);
 			return TRUE;

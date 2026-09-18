@@ -21,7 +21,7 @@ class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver
 
 	static fvec3 cmNorm[6];
 	static fvec3 cmDir[6];
-	
+
 	static Flags32 s_hud_flag;
 	static Flags32 s_dev_flags;
 

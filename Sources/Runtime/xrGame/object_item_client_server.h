@@ -15,7 +15,8 @@
 #include "object_item_abstract.h"
 #include "object_factory.h"
 
-template <typename _client_type, typename _server_type> class CObjectItemClientServer : public CObjectItemAbstract
+template <typename _client_type, typename _server_type>
+class CObjectItemClientServer : public CObjectItemAbstract
 {
   protected:
 	typedef CObjectItemAbstract inherited;

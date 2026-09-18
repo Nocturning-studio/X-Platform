@@ -35,13 +35,13 @@ LPCSTR CMapSpot::GetHint()
 
 void CMapSpot::Update()
 {
-	//OPTICK_EVENT("CMapSpot::update");
+	// OPTICK_EVENT("CMapSpot::update");
 
 	inherited::Update();
-	if (m_bCursorOverWindow)
+	if(m_bCursorOverWindow)
 	{
 		VERIFY(m_dwFocusReceiveTime >= 0);
-		if (Engine.TimeManager.GetGlobalTimeMs() > (m_dwFocusReceiveTime + 500))
+		if(Engine.TimeManager.GetGlobalTimeMs() > (m_dwFocusReceiveTime + 500))
 		{
 			GetMessageTarget()->SendMessage(this, MAP_SHOW_HINT, NULL);
 		}
@@ -117,11 +117,11 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 	strconcat(sizeof(buf), buf, path, ":texture_above");
 	n = xml->NavigateToNode(buf, 0);
-	if (n)
+	if(n)
 	{
 		LPCSTR texture = xml->Read(buf, 0, NULL);
 		CUITextureMaster::InitTexture(texture, "hud\\default", &m_UIStaticItem);
-		if (strchr(texture, '\\'))
+		if(strchr(texture, '\\'))
 		{
 			float x = xml->ReadAttribFlt(buf, 0, "x", base_rect.x1);
 			float y = xml->ReadAttribFlt(buf, 0, "y", base_rect.y1);
@@ -137,11 +137,11 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 	strconcat(sizeof(buf), buf, path, ":texture_below");
 	n = xml->NavigateToNode(buf, 0);
-	if (n)
+	if(n)
 	{
 		LPCSTR texture = xml->Read(buf, 0, NULL);
 		CUITextureMaster::InitTexture(texture, "hud\\default", &m_UIStaticItem);
-		if (strchr(texture, '\\'))
+		if(strchr(texture, '\\'))
 		{
 			float x = xml->ReadAttribFlt(buf, 0, "x", base_rect.x1);
 			float y = xml->ReadAttribFlt(buf, 0, "y", base_rect.y1);
@@ -156,11 +156,11 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 	}
 	strconcat(sizeof(buf), buf, path, ":texture");
 	n = xml->NavigateToNode(buf, 0);
-	if (n)
+	if(n)
 	{
 		LPCSTR texture = xml->Read(buf, 0, NULL);
 		CUITextureMaster::InitTexture(texture, "hud\\default", &m_UIStaticItem);
-		if (strchr(texture, '\\'))
+		if(strchr(texture, '\\'))
 		{
 			float x = xml->ReadAttribFlt(buf, 0, "x", base_rect.x1);
 			float y = xml->ReadAttribFlt(buf, 0, "y", base_rect.y1);
@@ -180,18 +180,18 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 void CMiniMapSpot::Draw()
 {
 	CObject* O = Level().CurrentViewEntity();
-	if (O && m_icon_above && m_icon_below)
+	if(O && m_icon_above && m_icon_below)
 	{
 		float ml_y = MapLocation()->GetLastPosition().y;
 		float d = O->Position().y - ml_y;
 
-		if (d > 1.8f)
+		if(d > 1.8f)
 		{
 			GetUIStaticItem().SetShader(m_icon_below);
 			GetUIStaticItem().SetOriginalRect(m_tex_rect_below.x1, m_tex_rect_below.y1, m_tex_rect_below.width(),
 											  m_tex_rect_below.height());
 		}
-		else if (d < -1.8f)
+		else if(d < -1.8f)
 		{
 			GetUIStaticItem().SetShader(m_icon_above);
 			GetUIStaticItem().SetOriginalRect(m_tex_rect_above.x1, m_tex_rect_above.y1, m_tex_rect_above.width(),

@@ -5,7 +5,7 @@
 float SBoneProtections::getBoneProtection(s16 bone_id)
 {
 	storage_it it = m_bones_koeff.find(bone_id);
-	if (it != m_bones_koeff.end())
+	if(it != m_bones_koeff.end())
 		return it->second.koeff;
 	else
 		return m_default.koeff;
@@ -14,7 +14,7 @@ float SBoneProtections::getBoneProtection(s16 bone_id)
 float SBoneProtections::getBoneArmour(s16 bone_id)
 {
 	storage_it it = m_bones_koeff.find(bone_id);
-	if (it != m_bones_koeff.end())
+	if(it != m_bones_koeff.end())
 		return it->second.armour;
 	else
 		return m_default.armour;
@@ -23,7 +23,7 @@ float SBoneProtections::getBoneArmour(s16 bone_id)
 BOOL SBoneProtections::getBonePassBullet(s16 bone_id)
 {
 	storage_it it = m_bones_koeff.find(bone_id);
-	if (it != m_bones_koeff.end())
+	if(it != m_bones_koeff.end())
 		return it->second.BonePassBullet;
 	else
 		return m_default.BonePassBullet;
@@ -41,7 +41,7 @@ void SBoneProtections::reload(const shared_str& bone_sect, CKinematics* kinemati
 	m_default.BonePassBullet = FALSE;
 
 	CInifile::Sect& protections = pSettings->r_section(bone_sect);
-	for (CInifile::SectCIt i = protections.Data.begin(); protections.Data.end() != i; ++i)
+	for(CInifile::SectCIt i = protections.Data.begin(); protections.Data.end() != i; ++i)
 	{
 		string256 buffer;
 		float Koeff = (float)atof(_GetItem(*(*i).second, 0, buffer));
@@ -53,13 +53,13 @@ void SBoneProtections::reload(const shared_str& bone_sect, CKinematics* kinemati
 		BP.armour = Armour;
 		BP.BonePassBullet = BonePassBullet;
 
-		if (!xr_strcmp(*(*i).first, "default"))
+		if(!xr_strcmp(*(*i).first, "default"))
 		{
 			m_default = BP;
 		}
 		else
 		{
-			if (!xr_strcmp(*(*i).first, "hit_fraction"))
+			if(!xr_strcmp(*(*i).first, "hit_fraction"))
 				continue;
 
 			s16 bone_id = kinematics->LL_BoneID(i->first);

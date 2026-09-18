@@ -30,7 +30,7 @@ void CStoreHierarchy::LoadLevel(CUIXml& xml, int index, item* _item, int depth_l
 	_item->m_name = xml.ReadAttrib("level", index, "name", NULL);
 	_item->m_btn_xml_name = xml.ReadAttrib("level", index, "btn_ref", NULL);
 
-	if (depth_level > 0 && _item->m_btn_xml_name.size())
+	if(depth_level > 0 && _item->m_btn_xml_name.size())
 	{
 		CUITabButtonMP* btn = xr_new<CUITabButtonMP>();
 		_item->m_button = btn;
@@ -46,12 +46,12 @@ void CStoreHierarchy::LoadLevel(CUIXml& xml, int index, item* _item, int depth_l
 
 	string1024 buff;
 	buff[0] = 0;
-	for (int c = 0; c < depth_level; ++c)
+	for(int c = 0; c < depth_level; ++c)
 		strcat(buff, "-");
 	Msg("%s%s", buff, _item->m_name.c_str());
 
 	int cnt = xml.GetNodesNum("level", index, "level");
-	for (int i = 0; i < cnt; ++i)
+	for(int i = 0; i < cnt; ++i)
 	{
 		xml.SetLocalRoot(node);
 		item* it = xr_new<CStoreHierarchy::item>();
@@ -77,7 +77,7 @@ void CStoreHierarchy::Init(CUIXml& xml, LPCSTR path)
 
 void CStoreHierarchy::InitItemsInGroup(const shared_str& sect, item* _itm)
 {
-	if (!_itm)
+	if(!_itm)
 	{
 		_itm = m_root;
 		VERIFY2(!pSettings->line_exist(sect, "team_name"),
@@ -86,13 +86,13 @@ void CStoreHierarchy::InitItemsInGroup(const shared_str& sect, item* _itm)
 	}
 	u32 cnt = _itm->ChildCount();
 
-	if (!_itm->HasSubLevels())
+	if(!_itm->HasSubLevels())
 	{
 		shared_str v = pSettings->r_string(sect, _itm->m_name.c_str());
 		u32 n = _GetItemCount(v.c_str());
 		string512 buff;
 
-		for (u32 i = 0; i < n; ++i)
+		for(u32 i = 0; i < n; ++i)
 		{
 			_GetItem(v.c_str(), i, buff);
 			_itm->m_items_in_group.push_back(buff);
@@ -103,7 +103,7 @@ void CStoreHierarchy::InitItemsInGroup(const shared_str& sect, item* _itm)
 		Msg("");
 	}
 	else
-		for (u32 i = 0; i < cnt; ++i)
+		for(u32 i = 0; i < cnt; ++i)
 			InitItemsInGroup(sect, _itm->m_childs[i]);
 }
 
@@ -111,9 +111,9 @@ bool CStoreHierarchy::item::HasItem(const shared_str& name_sect) const
 {
 	xr_vector<shared_str>::const_iterator it = m_items_in_group.begin();
 	xr_vector<shared_str>::const_iterator it_e = m_items_in_group.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (*it == name_sect)
+		if(*it == name_sect)
 			return true;
 	}
 	return false;
@@ -124,9 +124,9 @@ int CStoreHierarchy::item::GetItemIdx(const shared_str& name_sect) const
 	xr_vector<shared_str>::const_iterator it = m_items_in_group.begin();
 	xr_vector<shared_str>::const_iterator it_e = m_items_in_group.end();
 
-	for (int idx = 0; it != it_e; ++it, ++idx)
+	for(int idx = 0; it != it_e; ++it, ++idx)
 	{
-		if (*it == name_sect)
+		if(*it == name_sect)
 			return idx;
 	}
 	return -1;
@@ -134,17 +134,17 @@ int CStoreHierarchy::item::GetItemIdx(const shared_str& name_sect) const
 
 CStoreHierarchy::item* CStoreHierarchy::FindItem(const shared_str& name_sect, CStoreHierarchy::item* recurse_from)
 {
-	if (!recurse_from)
+	if(!recurse_from)
 		recurse_from = m_root;
 
-	if (recurse_from->HasSubLevels())
+	if(recurse_from->HasSubLevels())
 	{ // recurse
 		VERIFY(recurse_from->m_items_in_group.size() == 0);
 		xr_vector<CStoreHierarchy::item*>::const_iterator it = recurse_from->m_childs.begin();
 		xr_vector<CStoreHierarchy::item*>::const_iterator it_e = recurse_from->m_childs.end();
 
-		for (; it != it_e; ++it)
-			if (FindItem(name_sect, *it))
+		for(; it != it_e; ++it)
+			if(FindItem(name_sect, *it))
 				return *it;
 	}
 	else
@@ -152,8 +152,8 @@ CStoreHierarchy::item* CStoreHierarchy::FindItem(const shared_str& name_sect, CS
 		xr_vector<shared_str>::const_iterator it = recurse_from->m_items_in_group.begin();
 		xr_vector<shared_str>::const_iterator it_e = recurse_from->m_items_in_group.end();
 
-		for (; it != it_e; ++it)
-			if (*it == name_sect)
+		for(; it != it_e; ++it)
+			if(*it == name_sect)
 				return recurse_from;
 	}
 	return NULL;
@@ -162,7 +162,7 @@ CStoreHierarchy::item* CStoreHierarchy::FindItem(const shared_str& name_sect, CS
 bool CStoreHierarchy::MoveUp()
 {
 	VERIFY(m_current_level);
-	if (m_current_level == m_root)
+	if(m_current_level == m_root)
 		return false;
 
 	m_current_level = m_current_level->m_parent;

@@ -28,9 +28,9 @@ xrBuildInfo ComputeBuildIdentificator()
 	strcpy_s(buffer, __DATE__);
 	(void)sscanf(buffer, "%s %d %d", month, &days, &years);
 
-	for (int i = 0; i < 12; i++)
+	for(int i = 0; i < 12; i++)
 	{
-		if (_stricmp(month_id[i], month))
+		if(_stricmp(month_id[i], month))
 			continue;
 
 		months = i;
@@ -39,10 +39,10 @@ xrBuildInfo ComputeBuildIdentificator()
 
 	BuildID.ID = (years - start_year) * 365 + days - start_day;
 
-	for (int i = 0; i < months; ++i)
+	for(int i = 0; i < months; ++i)
 		BuildID.ID += days_in_month[i];
 
-	for (int i = 0; i < start_month - 1; ++i)
+	for(int i = 0; i < start_month - 1; ++i)
 		BuildID.ID -= days_in_month[i];
 
 	BuildID.Type =

@@ -80,7 +80,7 @@ CODEGeom::CODEGeom()
 
 CODEGeom::~CODEGeom()
 {
-	if (m_geom_transform)
+	if(m_geom_transform)
 		destroy();
 }
 
@@ -117,9 +117,9 @@ void CODEGeom::add_self_mass(dMass& m, const fvec3& ref_point)
 
 void CODEGeom::get_local_center_bt(fvec3& center)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (!geom()) // geom is not transformed
+	if(!geom()) // geom is not transformed
 	{
 		center.set(0.f, 0.f, 0.f);
 	}
@@ -163,26 +163,26 @@ void CODEGeom::set_position(const fvec3& /*ref_point*/)
 
 void CODEGeom::set_body(dBodyID body)
 {
-	if (m_geom_transform)
+	if(m_geom_transform)
 		dGeomSetBody(m_geom_transform, body);
 }
 
 void CODEGeom::add_to_space(dSpaceID space)
 {
-	if (m_geom_transform)
+	if(m_geom_transform)
 		dSpaceAdd(space, m_geom_transform);
 }
 void CODEGeom::remove_from_space(dSpaceID space)
 {
-	if (m_geom_transform)
+	if(m_geom_transform)
 		dSpaceRemove(space, m_geom_transform);
 }
 void CODEGeom::clear_cashed_tries()
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
 	dGeomID g = geom();
-	if (g)
+	if(g)
 	{
 		VERIFY(dGeomGetUserData(g));
 		dGeomUserDataClearCashedTries(g);
@@ -195,9 +195,9 @@ void CODEGeom::clear_cashed_tries()
 }
 void CODEGeom::set_material(u16 ul_material)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomGetUserData(geom())->material = ul_material;
@@ -211,9 +211,9 @@ void CODEGeom::set_material(u16 ul_material)
 
 void CODEGeom::set_contact_cb(ContactCallbackFun* ccb)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomUserDataSetContactCallback(geom(), ccb);
@@ -227,9 +227,9 @@ void CODEGeom::set_contact_cb(ContactCallbackFun* ccb)
 
 void CODEGeom::set_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomUserDataSetObjectContactCallback(geom(), occb);
@@ -242,9 +242,9 @@ void CODEGeom::set_obj_contact_cb(ObjectContactCallbackFun* occb)
 }
 void CODEGeom::add_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomUserDataAddObjectContactCallback(geom(), occb);
@@ -257,9 +257,9 @@ void CODEGeom::add_obj_contact_cb(ObjectContactCallbackFun* occb)
 }
 void CODEGeom::remove_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomUserDataRemoveObjectContactCallback(geom(), occb);
@@ -272,9 +272,9 @@ void CODEGeom::remove_obj_contact_cb(ObjectContactCallbackFun* occb)
 }
 void CODEGeom::set_callback_data(void* cd)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomUserDataSetCallbackData(geom(), cd);
@@ -287,9 +287,9 @@ void CODEGeom::set_callback_data(void* cd)
 }
 void* CODEGeom::get_callback_data()
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return NULL;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		return dGeomGetUserData(geom())->callback_data;
@@ -302,9 +302,9 @@ void* CODEGeom::get_callback_data()
 }
 void CODEGeom::set_ref_object(CPhysicsShellHolder* ro)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomUserDataSetPhysicsRefObject(geom(), ro);
@@ -318,9 +318,9 @@ void CODEGeom::set_ref_object(CPhysicsShellHolder* ro)
 
 void CODEGeom::set_ph_object(CPHObject* o)
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		VERIFY(dGeomGetUserData(geom()));
 		dGeomGetUserData(geom())->ph_object = o;
@@ -356,9 +356,9 @@ void CODEGeom::init()
 }
 void CODEGeom::destroy()
 {
-	if (!m_geom_transform)
+	if(!m_geom_transform)
 		return;
-	if (geom())
+	if(geom())
 	{
 		dGeomDestroyUserData(geom());
 		dGeomDestroy(geom());
@@ -400,7 +400,7 @@ void CODEGeom::get_final_tx_bt(const dReal*& p, const dReal*& R, dReal* bufV, dR
 }
 void CODEGeom::get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM)
 {
-	if (is_transform(g))
+	if(is_transform(g))
 	{
 		computeFinalTx(g, bufV, bufM);
 		R = bufM;
@@ -431,9 +431,9 @@ void CBoxGeom::get_max_area_dir_bt(fvec3& dir)
 	dGeomBoxGetLengths(geometry(), length);
 	dReal S1 = length[0] * length[1], S2 = length[0] * length[2], S3 = length[1] * length[2];
 	const dReal* R = dGeomGetRotation(geometry());
-	if (S1 > S2)
+	if(S1 > S2)
 	{
-		if (S1 > S3)
+		if(S1 > S3)
 		{
 			ddir[0] = R[2];
 			ddir[1] = R[6];
@@ -448,7 +448,7 @@ void CBoxGeom::get_max_area_dir_bt(fvec3& dir)
 	}
 	else
 	{
-		if (S2 > S3)
+		if(S2 > S3)
 		{
 			ddir[0] = R[1];
 			ddir[1] = R[5];
@@ -462,7 +462,7 @@ void CBoxGeom::get_max_area_dir_bt(fvec3& dir)
 		}
 	}
 
-	if (geom())
+	if(geom())
 	{
 		const dReal* TR = dGeomGetRotation(geometry_transform());
 		dir.x = dDOT(ddir, TR);

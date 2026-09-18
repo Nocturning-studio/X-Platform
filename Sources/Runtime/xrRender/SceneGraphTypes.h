@@ -4,7 +4,7 @@
 #include "doug_lea_allocator_wrapper.h"
 #include "LightTrack.h"
 
-//#define USE_RESOURCE_DEBUGGER
+// #define USE_RESOURCE_DEBUGGER
 
 namespace SceneGraphTypes
 {
@@ -20,40 +20,37 @@ struct StaticRenderNode
 
 struct DynamicRenderNode
 {
-    float           screenSpaceArea;
-    IRender_Visual* pVisual;
-    fmat4x4         transform;
-    CROS_impl::AOCube ao_cube;
+	float screenSpaceArea;
+	IRender_Visual* pVisual;
+	fmat4x4 transform;
+	CROS_impl::AOCube ao_cube;
 
-    // ƒефолтный Ч чтобы ноды в контейнерах не содержали мусора
-    // до того, как их заполн€т через Copy()/конструктор.
-    DynamicRenderNode()
-        : screenSpaceArea(0.f)
-        , pVisual(nullptr)
-    {
-        transform.identity();
-        ZeroMemory(ao_cube.data(), sizeof(ao_cube));
-    }
+	// ƒефолтный Ч чтобы ноды в контейнерах не содержали мусора
+	// до того, как их заполн€т через Copy()/конструктор.
+	DynamicRenderNode()
+		: screenSpaceArea(0.f), pVisual(nullptr)
+	{
+		transform.identity();
+		ZeroMemory(ao_cube.data(), sizeof(ao_cube));
+	}
 
-    //  онструктор "на месте" Ч то, что чаще всего нужно
-    // в EnqueueDynamic / EnqueueStatic.
-    DynamicRenderNode(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
-        : screenSpaceArea(ssa)
-        , pVisual(pVis)
-        , transform(trans)
-    {
-        CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
-    }
+	//  онструктор "на месте" Ч то, что чаще всего нужно
+	// в EnqueueDynamic / EnqueueStatic.
+	DynamicRenderNode(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
+		: screenSpaceArea(ssa), pVisual(pVis), transform(trans)
+	{
+		CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
+	}
 
-    // ”ниверсальный заполнитель, если нода уже создана
-    // (например, в FixedMAP вернулась из insert()).
-    IC void Copy(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
-    {
-        screenSpaceArea = ssa;
-        pVisual = pVis;
-        transform = trans;
-        CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
-    }
+	// ”ниверсальный заполнитель, если нода уже создана
+	// (например, в FixedMAP вернулась из insert()).
+	IC void Copy(float ssa, IRender_Visual* pVis, const fmat4x4& trans, const float* hcube)
+	{
+		screenSpaceArea = ssa;
+		pVisual = pVis;
+		transform = trans;
+		CopyMemory(ao_cube.data(), hcube, sizeof(ao_cube));
+	}
 };
 
 struct _MatrixItemS : public DynamicRenderNode

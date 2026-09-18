@@ -2,7 +2,8 @@
 #include "../state.h"
 #include "state_data.h"
 
-template <typename _Object> class CStateMonsterMoveToPoint : public CState<_Object>
+template <typename _Object>
+class CStateMonsterMoveToPoint : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 
@@ -22,7 +23,8 @@ template <typename _Object> class CStateMonsterMoveToPoint : public CState<_Obje
 	virtual bool check_completion();
 };
 
-template <typename _Object> class CStateMonsterMoveToPointEx : public CState<_Object>
+template <typename _Object>
+class CStateMonsterMoveToPointEx : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 

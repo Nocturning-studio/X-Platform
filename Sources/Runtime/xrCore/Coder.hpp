@@ -73,8 +73,8 @@ static DWORD low = 0, code = 0, range = 0;
 
 inline void rcEncNormalize(_PPMD_FILE* stream)
 {
-	while ((low ^ (low + range)) < TOP ||
-		   range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Исправлено: ~low + 1 вместо -low
+	while((low ^ (low + range)) < TOP ||
+		  range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Исправлено: ~low + 1 вместо -low
 	{
 		_PPMD_E_PUTC(low >> 24, stream);
 		range <<= 8;
@@ -104,7 +104,7 @@ static inline void rcEncodeSymbol()
 
 static inline void rcFlushEncoder(_PPMD_FILE* stream)
 {
-	for (UINT i = 0; i < 4; i++)
+	for(UINT i = 0; i < 4; i++)
 	{
 		_PPMD_E_PUTC(low >> 24, stream);
 		low <<= 8;
@@ -115,14 +115,14 @@ static inline void rcInitDecoder(_PPMD_FILE* stream)
 {
 	low = code = 0;
 	range = ~0U; // Исправлено: ~0U вместо DWORD(-1)
-	for (UINT i = 0; i < 4; i++)
+	for(UINT i = 0; i < 4; i++)
 		code = (code << 8) | _PPMD_D_GETC(stream);
 }
 
 inline void rcDecNormalize(_PPMD_FILE* stream)
 {
-	while ((low ^ (low + range)) < TOP ||
-		   range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Исправлено: ~low + 1 вместо -low
+	while((low ^ (low + range)) < TOP ||
+		  range < BOT && ((range = (~low + 1) & (BOT - 1)), 1)) // Исправлено: ~low + 1 вместо -low
 	{
 		code = (code << 8) | _PPMD_D_GETC(stream);
 		range <<= 8;

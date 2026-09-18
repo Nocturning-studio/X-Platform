@@ -182,7 +182,8 @@ IC shared_str* CALifeSimulatorBase::server_command_line() const
 	return (m_server_command_line);
 }
 
-template <typename T> IC T& CALifeSimulatorBase::registry(T* t) const
+template <typename T>
+IC T& CALifeSimulatorBase::registry(T* t) const
 {
 	return (registry()(t));
 }

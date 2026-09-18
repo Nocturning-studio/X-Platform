@@ -24,7 +24,7 @@ void dump_list_sublines()
 {
 	Msg("------Total  SubLines %d", dbg_list_sublines.size());
 	xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
-	for (; _it != dbg_list_sublines.end(); ++_it)
+	for(; _it != dbg_list_sublines.end(); ++_it)
 		Msg("--leak detected ---- SubLine = %d", (*_it).num);
 }
 #else
@@ -76,16 +76,16 @@ CUISubLine::~CUISubLine()
 #ifdef LOG_ALL_LINES
 	xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
 	bool bOK = false;
-	for (; _it != dbg_list_sublines.end(); ++_it)
+	for(; _it != dbg_list_sublines.end(); ++_it)
 	{
-		if ((*_it).wnd == this)
+		if((*_it).wnd == this)
 		{
 			bOK = true;
 			dbg_list_sublines.erase(_it);
 			break;
 		}
 	}
-	if (!bOK)
+	if(!bOK)
 		Msg("CUISubLine::~CUISubLine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
 #endif
 }
@@ -96,7 +96,7 @@ const CUISubLine* CUISubLine::Cut2Pos(int i)
 			  make_string("CUISubLine::Cut2Pos - invalid parameter [%d][%d]", i, m_text.size()).c_str());
 
 	//	xr_delete(m_pTempLine);
-	if (!m_pTempLine)
+	if(!m_pTempLine)
 		m_pTempLine = xr_new<CUISubLine>();
 	m_pTempLine->m_color = m_color;
 	m_pTempLine->m_text.assign(m_text, 0, i + 1);

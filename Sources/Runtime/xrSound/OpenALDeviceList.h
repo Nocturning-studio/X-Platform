@@ -9,7 +9,8 @@ struct ALDeviceDesc
 	xr_string name;
 	int minor_ver;
 	int major_ver;
-	union ESndProps {
+	union ESndProps
+	{
 		struct
 		{
 			u16 selected : 1;

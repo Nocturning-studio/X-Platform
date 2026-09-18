@@ -20,7 +20,7 @@ void CBolt::OnH_A_Chield()
 {
 	inherited::OnH_A_Chield();
 	CObject* o = H_Parent()->H_Parent();
-	if (o)
+	if(o)
 		SetInitiator(o->ID());
 }
 
@@ -43,7 +43,7 @@ void CBolt::Deactivate()
 void CBolt::Throw()
 {
 	CMissile* l_pBolt = smart_cast<CMissile*>(m_fake_missile);
-	if (!l_pBolt)
+	if(!l_pBolt)
 		return;
 	l_pBolt->set_destroy_time(u32(m_dwDestroyTimeMax / phTimefactor));
 	inherited::Throw();
@@ -57,7 +57,7 @@ bool CBolt::Useful() const
 
 bool CBolt::Action(s32 cmd, u32 flags)
 {
-	if (inherited::Action(cmd, flags))
+	if(inherited::Action(cmd, flags))
 		return true;
 	/*
 		switch(cmd)

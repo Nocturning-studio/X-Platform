@@ -76,17 +76,19 @@ void vision_client::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
-	switch (m_state)
+	switch(m_state)
 	{
-	case 0: {
+	case 0:
+	{
 		m_state = 1;
 		eye_pp_s01();
 		break;
 	}
-	case 1: {
+	case 1:
+	{
 		m_state = 0;
 		eye_pp_s2();
 		break;

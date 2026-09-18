@@ -16,9 +16,9 @@ CStateBloodsuckerVampireHideAbstract::CStateBloodsuckerVampireHide(_Object* obj)
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireHideAbstract::reselect_state()
 {
-	if (prev_substate == eStateVampire_RunAway)
+	if(prev_substate == eStateVampire_RunAway)
 	{
-		if (get_state(eStatePredator)->check_start_conditions())
+		if(get_state(eStatePredator)->check_start_conditions())
 		{
 			select_state(eStatePredator);
 			return;
@@ -33,7 +33,7 @@ void CStateBloodsuckerVampireHideAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateVampire_RunAway)
+	if(current_substate == eStateVampire_RunAway)
 	{
 		SStateHideFromPoint data;
 		data.point = object->EnemyMan.get_enemy_position();
@@ -55,7 +55,7 @@ void CStateBloodsuckerVampireHideAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerVampireHideAbstract::check_completion()
 {
-	if ((current_substate == eStatePredator) && get_state_current()->check_completion())
+	if((current_substate == eStatePredator) && get_state_current()->check_completion())
 		return true;
 
 	return false;

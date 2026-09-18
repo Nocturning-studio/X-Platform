@@ -25,9 +25,9 @@ void CAnimationSequencer::activate()
 
 void CAnimationSequencer::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
 {
-	if (type == ControlCom::eventAnimationEnd)
+	if(type == ControlCom::eventAnimationEnd)
 	{
-		if (m_index + 1 < m_data.motions.size())
+		if(m_index + 1 < m_data.motions.size())
 		{
 			m_index++;
 			play_selected();
@@ -58,9 +58,9 @@ void CAnimationSequencer::play_selected()
 
 bool CAnimationSequencer::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
+	if(m_man->is_captured_pure())
 		return false;
 
 	return true;

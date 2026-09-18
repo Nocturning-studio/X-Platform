@@ -21,12 +21,12 @@ u32 CPHSkeleton::existence_time = 5000;
 bool IC CheckObjectSize(CKinematics* K)
 {
 	u16 bcount = K->LL_BoneCount();
-	for (u16 i = 0; i < bcount; ++i)
+	for(u16 i = 0; i < bcount; ++i)
 	{
-		if (K->LL_GetBoneVisible(i))
+		if(K->LL_GetBoneVisible(i))
 		{
 			Fobb obb = K->LL_GetBox(i);
-			if (check_obb_sise(obb))
+			if(check_obb_sise(obb))
 				return true;
 		}
 	}
@@ -46,7 +46,7 @@ CPHSkeleton::~CPHSkeleton()
 void CPHSkeleton::RespawnInit()
 {
 	CKinematics* K = smart_cast<CKinematics*>(PPhysicsShellHolder()->Visual());
-	if (K)
+	if(K)
 	{
 		K->LL_SetBoneRoot(0);
 		K->LL_SetBonesVisible(0xffffffffffffffffL);
@@ -75,7 +75,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 	VERIFY(visual);
 	m_startup_anim = visual->startup_animation;
 
-	if (po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
+	if(po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
 	{
 		CPHSkeleton* source = smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
 		R_ASSERT2(source, "no source");
@@ -89,10 +89,10 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 	{
 		CPhysicsShellHolder* obj = PPhysicsShellHolder();
 		CKinematics* K = NULL;
-		if (obj->Visual())
+		if(obj->Visual())
 		{
 			K = smart_cast<CKinematics*>(obj->Visual());
-			if (K)
+			if(K)
 			{
 				K->LL_SetBoneRoot(po->saved_bones.root_bone);
 				K->LL_SetBonesVisible(po->saved_bones.bones_mask);
@@ -100,29 +100,29 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 		}
 		SpawnInitPhysics(D);
 		RestoreNetState(po);
-		if (obj->PPhysicsShell() && obj->PPhysicsShell()->isFullActive())
+		if(obj->PPhysicsShell() && obj->PPhysicsShell()->isFullActive())
 			obj->PPhysicsShell()->GetGlobalTransformDynamic(&obj->Transform());
 
 		CPHDestroyableNotificate::spawn_notificate(D);
 
-		if (K)
+		if(K)
 		{
 			CInifile* ini = K->LL_UserData();
-			if (ini && ini->section_exist("collide"))
+			if(ini && ini->section_exist("collide"))
 			{
-				if (ini->line_exist("collide", "not_collide_parts"))
+				if(ini->line_exist("collide", "not_collide_parts"))
 				{
 					CGID gr = CPHCollideValidator::RegisterGroup();
 					obj->PPhysicsShell()->RegisterToCLGroup(gr);
 				}
 			}
-			if (ini && ini->section_exist("collide_parts"))
+			if(ini && ini->section_exist("collide_parts"))
 			{
-				if (ini->line_exist("collide_parts", "small_object"))
+				if(ini->line_exist("collide_parts", "small_object"))
 				{
 					obj->PPhysicsShell()->SetSmall();
 				}
-				if (ini->line_exist("collide_parts", "ignore_small_objects"))
+				if(ini->line_exist("collide_parts", "ignore_small_objects"))
 				{
 					obj->PPhysicsShell()->SetIgnoreSmall();
 				}
@@ -141,16 +141,16 @@ void CPHSkeleton::Update(u32 dt)
 {
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	CPhysicsShell* pPhysicsShell = obj->PPhysicsShell();
-	if (pPhysicsShell && pPhysicsShell->isFractured()) //! ai().get_alife() &&
+	if(pPhysicsShell && pPhysicsShell->isFractured()) //! ai().get_alife() &&
 	{
 		PHSplit();
 	}
 
-	if (b_removing && Engine.TimeManager.GetGlobalTimeMs() > m_remove_time &&
-		//(Engine.TimeManager.GetGlobalTimeMs()-m_unsplit_time)*phTimefactor>remove_time&&
-		m_unsplited_shels.empty())
+	if(b_removing && Engine.TimeManager.GetGlobalTimeMs() > m_remove_time &&
+	   //(Engine.TimeManager.GetGlobalTimeMs()-m_unsplit_time)*phTimefactor>remove_time&&
+	   m_unsplited_shels.empty())
 	{
-		if (obj->Local())
+		if(obj->Local())
 			obj->DestroyObject();
 		b_removing = false;
 	}
@@ -161,11 +161,11 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	CPhysicsShell* pPhysicsShell = obj->PPhysicsShell();
 	CKinematics* K = smart_cast<CKinematics*>(obj->Visual());
-	if (pPhysicsShell && pPhysicsShell->isActive())
+	if(pPhysicsShell && pPhysicsShell->isActive())
 		m_flags.set(CSE_PHSkeleton::flActive, pPhysicsShell->isEnabled());
 
 	P.w_u8(m_flags.get());
-	if (K)
+	if(K)
 	{
 		P.w_u64(K->LL_GetBonesVisible());
 		P.w_u16(K->LL_GetBoneRoot());
@@ -183,23 +183,23 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	/////////////////////////////////////
 
 	u16 bones_number = obj->PHGetSyncItemsNumber();
-	for (u16 i = 0; i < bones_number; i++)
+	for(u16 i = 0; i < bones_number; i++)
 	{
 		SPHNetState state;
 		obj->PHGetSyncItem(i)->get_State(state);
 		fvec3& p = state.position;
-		if (p.x < min.x)
+		if(p.x < min.x)
 			min.x = p.x;
-		if (p.y < min.y)
+		if(p.y < min.y)
 			min.y = p.y;
-		if (p.z < min.z)
+		if(p.z < min.z)
 			min.z = p.z;
 
-		if (p.x > max.x)
+		if(p.x > max.x)
 			max.x = p.x;
-		if (p.y > max.y)
+		if(p.y > max.y)
 			max.y = p.y;
-		if (p.z > max.z)
+		if(p.z > max.z)
 			max.z = p.z;
 	}
 
@@ -211,7 +211,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 
 	P.w_u16(bones_number);
 
-	for (u16 i = 0; i < bones_number; i++)
+	for(u16 i = 0; i < bones_number; i++)
 	{
 		SPHNetState state;
 		obj->PHGetSyncItem(i)->get_State(state);
@@ -224,14 +224,14 @@ void CPHSkeleton::LoadNetState(NET_Packet& P)
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	CKinematics* K = smart_cast<CKinematics*>(obj->Visual());
 	P.r_u8(m_flags.flags);
-	if (K)
+	if(K)
 	{
 		K->LL_SetBonesVisible(P.r_u64());
 		K->LL_SetBoneRoot(P.r_u16());
 	}
 
 	u16 bones_number = P.r_u16();
-	for (u16 i = 0; i < bones_number; i++)
+	for(u16 i = 0; i < bones_number; i++)
 	{
 		SPHNetState state;
 		state.net_Load(P);
@@ -240,16 +240,16 @@ void CPHSkeleton::LoadNetState(NET_Packet& P)
 }
 void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 {
-	if (!po->_flags.test(CSE_PHSkeleton::flSavedData))
+	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))
 		return;
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	PHNETSTATE_VECTOR& saved_bones = po->saved_bones.bones;
 	PHNETSTATE_I i = saved_bones.begin(), e = saved_bones.end();
-	if (obj->PPhysicsShell() && obj->PPhysicsShell()->isActive())
+	if(obj->PPhysicsShell() && obj->PPhysicsShell()->isActive())
 	{
 		obj->PPhysicsShell()->Disable();
 	}
-	for (u16 bone = 0; e != i; i++, bone++)
+	for(u16 bone = 0; e != i; i++, bone++)
 	{
 		R_ASSERT(bone < obj->PHGetSyncItemsNumber());
 		obj->PHGetSyncItem(bone)->set_State(*i);
@@ -262,7 +262,7 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 void CPHSkeleton::ClearUnsplited()
 {
 	SHELL_PAIR_I i = m_unsplited_shels.begin(), e = m_unsplited_shels.end();
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		i->first->Deactivate();
 		xr_delete(i->first);
@@ -272,7 +272,7 @@ void CPHSkeleton::ClearUnsplited()
 
 void CPHSkeleton::SpawnCopy()
 {
-	if (PPhysicsShellHolder()->Local())
+	if(PPhysicsShellHolder()->Local())
 	{
 		CSE_Abstract* D = F_entity_Create("ph_skeleton_object"); //*cNameSect()
 		R_ASSERT(D);
@@ -298,14 +298,14 @@ void CPHSkeleton::PHSplit()
 	PPhysicsShellHolder()->PPhysicsShell()->SplitProcess(m_unsplited_shels);
 	u16 i = u16(m_unsplited_shels.size()) - spawned;
 	//	Msg("%o,spawned,%d",this,i);
-	for (; i; --i)
+	for(; i; --i)
 		SpawnCopy();
 }
 
 void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 {
 	// Msg("%o,received has %d,",this,m_unsplited_shels.size());
-	if (0 == m_unsplited_shels.size())
+	if(0 == m_unsplited_shels.size())
 		return; //. hack
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	CPhysicsShellHolder* O = SO->PPhysicsShellHolder();
@@ -328,7 +328,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	mask0.assign(pKinematics->LL_GetBonesVisible()); // first part mask
 	VERIFY2(mask0.flags, "mask0 -Zero");
 	mask0.invert();
-	mask1.bit_and (mask0.flags); // second part mask
+	mask1.bit_and(mask0.flags); // second part mask
 
 	newKinematics->LL_SetBoneRoot(split_bone);
 	VERIFY2(mask1.flags, "mask1 -Zero");
@@ -344,7 +344,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 
 	newPhysicsShell->ObjectInRoot().identity();
 
-	if (!newPhysicsShell->isEnabled())
+	if(!newPhysicsShell->isEnabled())
 		O->processing_deactivate();
 	newPhysicsShell->set_PhysicsRefObject(O);
 
@@ -360,7 +360,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 
 void CPHSkeleton::CopySpawnInit()
 {
-	if (ReadyForRemove())
+	if(ReadyForRemove())
 		SetAutoRemove();
 }
 
@@ -375,7 +375,7 @@ void CPHSkeleton::SetAutoRemove(u32 time /*=CSE_PHSkeleton::existence_time*/)
 static bool removable; // for RecursiveBonesCheck
 void CPHSkeleton::RecursiveBonesCheck(u16 id)
 {
-	if (!removable)
+	if(!removable)
 		return;
 	CPhysicsShellHolder* obj = PPhysicsShellHolder();
 	CKinematics* K = smart_cast<CKinematics*>(obj->Visual());
@@ -384,13 +384,13 @@ void CPHSkeleton::RecursiveBonesCheck(u16 id)
 	Flags64 mask;
 	mask.assign(K->LL_GetBonesVisible());
 	///////////////////////////////////////////
-	if (mask.is(1ui64 << (u64)id) && !(BD.shape.flags.is(SBoneShape::sfRemoveAfterBreak)))
+	if(mask.is(1ui64 << (u64)id) && !(BD.shape.flags.is(SBoneShape::sfRemoveAfterBreak)))
 	{
 		removable = false;
 		return;
 	}
 	///////////////////////////////////////////////
-	for (vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
+	for(vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
 	{
 		RecursiveBonesCheck((*it)->GetSelfID());
 	}
@@ -425,7 +425,7 @@ void CPHSkeleton::InitServerObject(CSE_Abstract* D)
 	D->ID_Parent = 0xffff; // u16(ID());//
 	D->ID_Phantom = 0xffff;
 	D->o_Position = obj->Position();
-	if (ai().get_alife())
+	if(ai().get_alife())
 		l_tpALifeDynamicObject->m_tGraphID = ai().game_graph().current_level_vertex();
 	else
 		l_tpALifeDynamicObject->m_tGraphID = 0xffff;

@@ -37,7 +37,7 @@
 
 void CActorMP::fill_state(actor_mp_state& state)
 {
-	if (OnClient())
+	if(OnClient())
 	{
 		R_ASSERT(g_Alive());
 		R_ASSERT2(PHGetSyncItemsNumber() == 1, make_string("PHGetSyncItemsNumber() returned %d, health = %.2f",
@@ -74,16 +74,16 @@ void CActorMP::fill_state(actor_mp_state& state)
 
 BOOL CActorMP::net_Relevant()
 {
-	if (OnClient())
+	if(OnClient())
 	{
-		if (!g_Alive())
+		if(!g_Alive())
 			return (false);
 
-		if (m_i_am_dead)
+		if(m_i_am_dead)
 			return (false);
 	}
 
-	if (character_physics_support()->IsRemoved())
+	if(character_physics_support()->IsRemoved())
 		return (false);
 
 	actor_mp_state state;
@@ -93,7 +93,7 @@ BOOL CActorMP::net_Relevant()
 
 void CActorMP::net_Export(NET_Packet& packet)
 {
-	if (OnClient())
+	if(OnClient())
 	{
 		R_ASSERT(g_Alive());
 		R_ASSERT(PHGetSyncItemsNumber() == 1);

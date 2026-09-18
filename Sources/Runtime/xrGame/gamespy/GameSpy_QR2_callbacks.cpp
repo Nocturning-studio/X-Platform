@@ -6,34 +6,34 @@
 
 #include "../game_sv_artefacthunt.h"
 //--------------------------- QR2 callbacks ---------------------------------------
-#define ADD_KEY_VAL(g, q, qf, o, gf)                                                                                   \
-	{                                                                                                                  \
-		if (g)                                                                                                         \
-		{                                                                                                              \
-			q->qf(o, g->gf);                                                                                           \
-		}                                                                                                              \
-		else                                                                                                           \
-			q->BufferAdd(o, "");                                                                                       \
+#define ADD_KEY_VAL(g, q, qf, o, gf) \
+	{                                \
+		if(g)                        \
+		{                            \
+			q->qf(o, g->gf);         \
+		}                            \
+		else                         \
+			q->BufferAdd(o, "");     \
 	}
-#define ADD_KEY_VAL_INT(g, q, qf, o, gf)                                                                               \
-	{                                                                                                                  \
-		if (g)                                                                                                         \
-		{                                                                                                              \
-			q->qf(o, int(g->gf));                                                                                      \
-		}                                                                                                              \
-		else                                                                                                           \
-			q->BufferAdd(o, "");                                                                                       \
+#define ADD_KEY_VAL_INT(g, q, qf, o, gf) \
+	{                                    \
+		if(g)                            \
+		{                                \
+			q->qf(o, int(g->gf));        \
+		}                                \
+		else                             \
+			q->BufferAdd(o, "");         \
 	}
 extern u32 g_sv_dwMaxClientPing;
 void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 {
-	if (!userdata)
+	if(!userdata)
 		return;
 	xrGameSpyServer* pServer = (xrGameSpyServer*)userdata;
-	if (!pServer)
+	if(!pServer)
 		return;
 	CGameSpy_QR2* pQR2 = pServer->QR2();
-	if (!pQR2)
+	if(!pQR2)
 		return;
 
 	game_sv_mp* gmMP = smart_cast<game_sv_mp*>(pServer->game);
@@ -43,7 +43,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 
 	string4096 game_version;
 
-	switch (keyid)
+	switch(keyid)
 	{
 	case HOSTNAME_KEY:
 		pQR2->BufferAdd(outbuf, pServer->HostName.c_str());
@@ -67,7 +67,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 		pQR2->BufferAdd(outbuf, "openplaying");
 		break;
 	case PASSWORD_KEY:
-		if (0 == *(pServer->Password))
+		if(0 == *(pServer->Password))
 		{
 			pQR2->BufferAdd_Int(outbuf, 0);
 		}
@@ -77,7 +77,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 		}
 		break;
 	case G_USER_PASSWORD_KEY:
-		if (pServer->HasProtected())
+		if(pServer->HasProtected())
 		{
 			pQR2->BufferAdd_Int(outbuf, 1);
 		}
@@ -88,7 +88,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 		break;
 	case G_BATTLEYE_KEY:
 #ifdef BATTLEYE
-		if (g_pGameLevel && Level().battleye_system.server)
+		if(g_pGameLevel && Level().battleye_system.server)
 		{
 			pQR2->BufferAdd_Int(outbuf, 1);
 		}
@@ -127,7 +127,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 		ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetSpectatorModes());
 		break; // if (gmDM) pQR2->BufferAdd_Int(outbuf, gmDM->GetSpectatorModes());	else pQR2->BufferAdd(outbuf, "");
 			   // break;
-		//------- deathmatch -------//
+			   //------- deathmatch -------//
 	case G_FRAG_LIMIT_KEY:
 		ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetFragLimit());
 		break; // if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->GetFragLimit());			else pQR2->BufferAdd(outbuf,
@@ -160,7 +160,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 		ADD_KEY_VAL(gmDM, pQR2, BufferAdd_Int, outbuf, GetForceRespawn());
 		break; // if (gmDM)pQR2->BufferAdd_Int(outbuf, gmDM->GetForceRespawn());		else pQR2->BufferAdd(outbuf,
 			   // "");	break;
-		//---- game_sv_teamdeathmatch ----
+			   //---- game_sv_teamdeathmatch ----
 	case G_AUTO_TEAM_BALANCE_KEY:
 		ADD_KEY_VAL(gmTDM, pQR2, BufferAdd_Int, outbuf, Get_AutoTeamBalance());
 		break; // if (gmTDM)pQR2->BufferAdd_Int(outbuf, gmTDM->Get_AutoTeamBalance	());			break;
@@ -176,7 +176,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 	case G_FRIENDLY_FIRE_KEY:
 		ADD_KEY_VAL_INT(gmTDM, pQR2, BufferAdd_Int, outbuf, GetFriendlyFire() * 100.0f);
 		break; // if (gmTDM)pQR2->BufferAdd_Int(outbuf, int(gmTDM->GetFriendlyFire()*100.0f));		break;
-		//---- game_sv_artefacthunt ----
+			   //---- game_sv_artefacthunt ----
 	case G_ARTEFACTS_COUNT_KEY:
 		ADD_KEY_VAL(gmAhunt, pQR2, BufferAdd_Int, outbuf, Get_ArtefactsCount());
 		break; // if (gmAhunt) pQR2->BufferAdd_Int(outbuf, gmAhunt->Get_ArtefactsCount		());			break;
@@ -198,7 +198,8 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 	case G_BEARER_CANT_SPRINT_KEY:
 		ADD_KEY_VAL(gmAhunt, pQR2, BufferAdd_Int, outbuf, Get_BearerCantSprint());
 		break; // if (gmAhunt) pQR2->BufferAdd_Int(outbuf, gmAhunt->Get_BearerCantSprint		());			break;
-	default: {
+	default:
+	{
 		//			R_ASSERT2(0, "Unknown GameSpy Server key ");
 		pQR2->BufferAdd(outbuf, "");
 	}
@@ -210,28 +211,28 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 void __cdecl callback_playerkey(int keyid, int index, void* outbuf, void* userdata)
 {
 	xrGameSpyServer* pServer = (xrGameSpyServer*)userdata;
-	if (!pServer)
+	if(!pServer)
 		return;
-	if (u32(index) >= pServer->client_Count())
+	if(u32(index) >= pServer->client_Count())
 		return;
 	CGameSpy_QR2* pQR2 = pServer->QR2();
-	if (!pQR2)
+	if(!pQR2)
 		return;
 
 	xrGameSpyClientData* pCD = NULL;
 
-	if (pServer->IsDedicated())
+	if(pServer->IsDedicated())
 	{
-		if (u32(index + 1) >= pServer->client_Count())
+		if(u32(index + 1) >= pServer->client_Count())
 			return;
 		pCD = (xrGameSpyClientData*)pServer->client_Get(index + 1);
 	}
 	else
 		pCD = (xrGameSpyClientData*)pServer->client_Get(index);
-	if (!pCD || !pCD->ps)
+	if(!pCD || !pCD->ps)
 		return;
 
-	switch (keyid)
+	switch(keyid)
 	{
 	case PLAYER__KEY:
 		pQR2->BufferAdd(outbuf, pCD->ps->getName());
@@ -255,11 +256,12 @@ void __cdecl callback_playerkey(int keyid, int index, void* outbuf, void* userda
 		pQR2->BufferAdd_Int(outbuf, pCD->ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR));
 		break;
 	case P_ARTEFACTS__KEY:
-		if (pServer->game->Type() == GAME_ARTEFACTHUNT)
+		if(pServer->game->Type() == GAME_ARTEFACTHUNT)
 			pQR2->BufferAdd_Int(outbuf, pCD->ps->af_count);
 		break;
 		break;
-	default: {
+	default:
+	{
 		pQR2->BufferAdd(outbuf, "");
 	}
 	break;
@@ -269,24 +271,25 @@ void __cdecl callback_playerkey(int keyid, int index, void* outbuf, void* userda
 void __cdecl callback_teamkey(int keyid, int index, void* outbuf, void* userdata)
 {
 	xrGameSpyServer* pServer = (xrGameSpyServer*)userdata;
-	if (!pServer)
+	if(!pServer)
 		return;
 
 	CGameSpy_QR2* pQR2 = pServer->QR2();
-	if (!pQR2)
+	if(!pQR2)
 		return;
 
 	game_sv_Deathmatch* gmDM = smart_cast<game_sv_Deathmatch*>(pServer->game);
-	if (!gmDM || u32(index) >= gmDM->GetNumTeams())
+	if(!gmDM || u32(index) >= gmDM->GetNumTeams())
 		return;
 
-	switch (keyid)
+	switch(keyid)
 	{
 	case T_SCORE_T_KEY:
-		if (gmDM)
+		if(gmDM)
 			pQR2->BufferAdd_Int(outbuf, gmDM->GetTeamScore(index));
 		break;
-	default: {
+	default:
+	{
 		pQR2->BufferAdd(outbuf, "");
 	}
 	break;
@@ -295,16 +298,17 @@ void __cdecl callback_teamkey(int keyid, int index, void* outbuf, void* userdata
 
 void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void* userdata)
 {
-	if (!userdata)
+	if(!userdata)
 		return;
 	xrGameSpyServer* pServer = (xrGameSpyServer*)userdata;
 	CGameSpy_QR2* pQR2 = pServer->QR2();
-	if (!pQR2)
+	if(!pQR2)
 		return;
 
-	switch (keytype)
+	switch(keytype)
 	{
-	case key_server: {
+	case key_server:
+	{
 		pQR2->KeyBufferAdd(keybuffer, HOSTNAME_KEY);
 		pQR2->KeyBufferAdd(keybuffer, MAPNAME_KEY);
 		pQR2->KeyBufferAdd(keybuffer, GAMEVER_KEY);
@@ -355,7 +359,8 @@ void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void* userd
 		pQR2->KeyBufferAdd(keybuffer, G_BEARER_CANT_SPRINT_KEY);
 	}
 	break;
-	case key_player: {
+	case key_player:
+	{
 		//			pQR2->KeyBufferAdd(keybuffer, P_NAME__KEY);
 		//			pQR2->KeyBufferAdd(keybuffer, P_FRAGS__KEY);
 		//			pQR2->KeyBufferAdd(keybuffer, P_DEATH__KEY);
@@ -370,7 +375,8 @@ void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void* userd
 		pQR2->KeyBufferAdd(keybuffer, P_ARTEFACTS__KEY);
 	}
 	break;
-	case key_team: {
+	case key_team:
+	{
 		pQR2->KeyBufferAdd(keybuffer, T_SCORE_T_KEY);
 	}
 	break;
@@ -381,19 +387,21 @@ void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void* userd
 
 int __cdecl callback_count(qr2_key_type keytype, void* userdata)
 {
-	if (!userdata)
+	if(!userdata)
 		return 0;
 	xrGameSpyServer* pServer = (xrGameSpyServer*)userdata;
-	switch (keytype)
+	switch(keytype)
 	{
-	case key_player: {
+	case key_player:
+	{
 		return pServer->GetPlayersCount();
 	}
 	break;
-	case key_team: {
-		if (!pServer->game)
+	case key_team:
+	{
+		if(!pServer->game)
 			return 0;
-		switch (pServer->game->Type())
+		switch(pServer->game->Type())
 		{
 		case GAME_DEATHMATCH:
 			return 1;
@@ -417,10 +425,10 @@ void __cdecl callback_adderror(qr2_error_t error, char* errmsg, void* userdata)
 {
 	Msg("! Error while adding this server to master list ->%s.", errmsg);
 	xrGameSpyServer* pServer = (xrGameSpyServer*)userdata;
-	if (pServer)
+	if(pServer)
 		pServer->OnError_Add(error);
 };
 
-void __cdecl callback_nn(int cookie, void* userdata){};
+void __cdecl callback_nn(int cookie, void* userdata) {};
 
-void __cdecl callback_cm(char* data, int len, void* userdata){};
+void __cdecl callback_cm(char* data, int len, void* userdata) {};

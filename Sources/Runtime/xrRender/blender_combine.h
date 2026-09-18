@@ -28,7 +28,7 @@ class CBlender_combine : public IBlender
 		PassDescription.VertexShader = "screen_quad";
 		PassDescription.PixelShader = "scene_combine_stage";
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_PRECOMBINE_SCENE:
 			C.set_Define("USE_FOR_PRECOMBINE", 1);

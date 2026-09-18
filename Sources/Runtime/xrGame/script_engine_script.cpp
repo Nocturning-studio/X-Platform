@@ -18,7 +18,7 @@ void LuaLog(LPCSTR caMessage)
 {
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeMessage, "%s", caMessage);
 #ifdef USE_DEBUGGER
-	if (ai().script_engine().debugger())
+	if(ai().script_engine().debugger())
 	{
 		ai().script_engine().debugger()->Write(caMessage);
 	}
@@ -29,7 +29,7 @@ void ErrorLog(LPCSTR caMessage)
 {
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s", caMessage);
 #ifdef USE_DEBUGGER
-	if (ai().script_engine().debugger())
+	if(ai().script_engine().debugger())
 	{
 		ai().script_engine().debugger()->Write(caMessage);
 	}
@@ -131,7 +131,7 @@ struct profile_timer_script
 
 	IC void start()
 	{
-		if (m_recurse_mark)
+		if(m_recurse_mark)
 		{
 			++m_recurse_mark;
 			return;
@@ -147,11 +147,11 @@ struct profile_timer_script
 		THROW(m_recurse_mark);
 		--m_recurse_mark;
 
-		if (m_recurse_mark)
+		if(m_recurse_mark)
 			return;
 
 		u64 finish = CPU::GetCLK();
-		if (finish > m_start_cpu_tick_count)
+		if(finish > m_start_cpu_tick_count)
 			m_accumulator += finish - m_start_cpu_tick_count;
 	}
 

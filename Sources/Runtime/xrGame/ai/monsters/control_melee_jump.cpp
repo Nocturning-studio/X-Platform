@@ -17,21 +17,21 @@ void CControlMeleeJump::reinit()
 
 bool CControlMeleeJump::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
+	if(m_man->is_captured_pure())
 		return false;
 
-	if (!m_object->EnemyMan.get_enemy())
+	if(!m_object->EnemyMan.get_enemy())
 		return false;
-	if (m_time_next_melee_jump > Engine.TimeManager.GetGlobalTimeMs())
+	if(m_time_next_melee_jump > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	fvec3 enemy_position;
 	enemy_position.set(m_object->EnemyMan.get_enemy()->Position());
-	if (m_man->direction().is_face_target(enemy_position, MELEE_JMP_CHECK_YAW))
+	if(m_man->direction().is_face_target(enemy_position, MELEE_JMP_CHECK_YAW))
 		return false;
-	if (enemy_position.distance_to(m_object->Position()) > MELEE_JMP_MAX_DISTANCE_TO_ENEMY)
+	if(enemy_position.distance_to(m_object->Position()) > MELEE_JMP_MAX_DISTANCE_TO_ENEMY)
 		return false;
 
 	return true;
@@ -91,7 +91,7 @@ void CControlMeleeJump::on_release()
 
 void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eventAnimationEnd:
 		m_man->notify(ControlCom::eventMeleeJumpEnd, 0);

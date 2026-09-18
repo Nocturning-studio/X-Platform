@@ -89,7 +89,7 @@ void CPHElement::build()
 	// dBodySetFiniteRotationMode(m_body,1);
 	// dBodySetFiniteRotationAxis(m_body,0,0,0);
 	VERIFY2(dMass_valide(&m_mass), "Element has bad mass");
-	if (m_geoms.empty())
+	if(m_geoms.empty())
 	{
 		Fix();
 	}
@@ -114,11 +114,11 @@ void CPHElement::RunSimulation()
 	// if(push_untill)
 	// push_untill+=Engine.TimeManager.GetGlobalTimeMs();
 
-	if (m_group)
+	if(m_group)
 		dSpaceAdd(m_shell->dSpace(), (dGeomID)m_group);
-	else if (!m_geoms.empty())
+	else if(!m_geoms.empty())
 		(*m_geoms.begin())->add_to_space(m_shell->dSpace());
-	if (!m_body->world)
+	if(!m_body->world)
 	{
 		// dWorldAddBody(phWorld, m_body);
 		m_shell->Island().AddBody(m_body);
@@ -130,15 +130,15 @@ void CPHElement::destroy()
 {
 	// dJointGroupDestroy(m_saved_contacts);
 	CPHGeometryOwner::destroy();
-	if (m_body) //&&m_body->world
+	if(m_body) //&&m_body->world
 	{
-		if (m_body->world)
+		if(m_body->world)
 			m_shell->Island().RemoveBody(m_body);
 		dBodyDestroy(m_body);
 		m_body = NULL;
 	}
 
-	if (m_group)
+	if(m_group)
 	{
 		dGeomDestroy(m_group);
 		m_group = NULL;
@@ -165,12 +165,12 @@ dMass CPHElement::recursive_mass_summ(u16 start_geom, FRACTURE_I cur_fracture)
 	dMass end_mass;
 	dMassSetZero(&end_mass);
 	GEOM_I i_geom = m_geoms.begin() + start_geom, e = m_geoms.begin() + cur_fracture->m_start_geom_num;
-	for (; i_geom != e; ++i_geom)
+	for(; i_geom != e; ++i_geom)
 		(*i_geom)->add_self_mass(end_mass, m_mass_center, static_dencity);
 	dMassAdd(&m_mass, &end_mass);
 	start_geom = cur_fracture->m_start_geom_num;
 	++cur_fracture;
-	if (m_fratures_holder->m_fractures.end() != cur_fracture)
+	if(m_fratures_holder->m_fractures.end() != cur_fracture)
 		cur_fracture->SetMassParts(m_mass, recursive_mass_summ(start_geom, cur_fracture));
 	return end_mass;
 }
@@ -215,7 +215,7 @@ void CPHElement::Deactivate()
 	// bActive=false;
 	// bActivating=false;
 	CKinematics* K = m_shell->PKinematics();
-	if (K)
+	if(K)
 	{
 		K->LL_GetBoneInstance(m_SelfID).reset_callback();
 	}
@@ -243,7 +243,7 @@ void CPHElement::SetTransform(const fmat4x4& m0)
 
 void CPHElement::getQuaternion(Fquaternion& quaternion)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	const float* q = dBodyGetQuaternion(m_body);
 	quaternion.set(-q[0], q[1], q[2], q[3]);
@@ -252,7 +252,7 @@ void CPHElement::getQuaternion(Fquaternion& quaternion)
 void CPHElement::setQuaternion(const Fquaternion& quaternion)
 {
 	VERIFY(_valid(quaternion));
-	if (!isActive())
+	if(!isActive())
 		return;
 	dQuaternion q = {-quaternion.w, quaternion.x, quaternion.y, quaternion.z};
 	dBodySetQuaternion(m_body, q);
@@ -262,7 +262,7 @@ void CPHElement::setQuaternion(const Fquaternion& quaternion)
 }
 void CPHElement::GetGlobalPositionDynamic(fvec3* v)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	v->set((*(fvec3*)dBodyGetPosition(m_body)));
 	VERIFY(_valid(*v));
@@ -270,7 +270,7 @@ void CPHElement::GetGlobalPositionDynamic(fvec3* v)
 
 void CPHElement::SetGlobalPositionDynamic(const fvec3& position)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	VERIFY(_valid(position));
 	VERIFY_BOUNDARIES2(position, phBoundaries, PhysicsRefObject(), "SetGlobalPosition argument ");
@@ -282,7 +282,7 @@ void CPHElement::SetGlobalPositionDynamic(const fvec3& position)
 
 void CPHElement::TransformPosition(const fmat4x4& form)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	VERIFY(_valid(form));
 	R_ASSERT2(m_body, "body is not created");
@@ -324,12 +324,12 @@ void CPHElement::Activate(const fmat4x4& transform, const fvec3& lin_vel, const 
 
 	m_body_interpolation.SetBody(m_body);
 
-	if (disable)
+	if(disable)
 		dBodyDisable(m_body);
 	m_flags.set(flActive, TRUE);
 	m_flags.set(flActivating, TRUE);
 	CKinematics* K = m_shell->PKinematics();
-	if (K)
+	if(K)
 	{
 		K->LL_GetBoneInstance(m_SelfID).set_callback(bctPhysics, m_shell->GetBonesCallback(),
 													 static_cast<CPhysicsElement*>(this));
@@ -367,11 +367,11 @@ void CPHElement::Activate(const fmat4x4& start_from, bool disable)
 
 void CPHElement::Update()
 {
-	if (!isActive())
+	if(!isActive())
 		return;
-	if (m_flags.test(flActivating))
+	if(m_flags.test(flActivating))
 		m_flags.set(flActivating, FALSE);
-	if (!dBodyIsEnabled(m_body) && !m_flags.test(flUpdate) /*!bUpdate*/)
+	if(!dBodyIsEnabled(m_body) && !m_flags.test(flUpdate) /*!bUpdate*/)
 		return;
 
 	InterpolateGlobalTransform(&mTransform);
@@ -380,32 +380,32 @@ void CPHElement::Update()
 
 void CPHElement::PhTune(dReal step)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	CPHContactBodyEffector* contact_effector = (CPHContactBodyEffector*)dBodyGetData(m_body);
-	if (contact_effector)
+	if(contact_effector)
 		contact_effector->Apply();
 	VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)), phBoundaries, PhysicsRefObject(), "PhTune body position");
 }
 void CPHElement::PhDataUpdate(dReal step)
 {
 
-	if (!isActive())
+	if(!isActive())
 		return;
 
-		///////////////skip for disabled elements////////////////////////////////////////////////////////////
-		// b_enabled_onstep=!!dBodyIsEnabled(m_body);
-		// VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate begin,
-		// body position");
+	///////////////skip for disabled elements////////////////////////////////////////////////////////////
+	// b_enabled_onstep=!!dBodyIsEnabled(m_body);
+	// VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate begin,
+	// body position");
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgDrawMassCenters))
+	if(ph_dbg_draw_mask.test(phDbgDrawMassCenters))
 	{
 		DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)), 0.03f, D3DCOLOR_XRGB(255, 0, 0));
 	}
 #endif
 
 	m_flags.set(flEnabledOnStep, !!dBodyIsEnabled(m_body));
-	if (!m_flags.test(flEnabledOnStep) /*!b_enabled_onstep*/)
+	if(!m_flags.test(flEnabledOnStep) /*!b_enabled_onstep*/)
 		return;
 
 	//////////////////////////////////base pointers/////////////////////////////////////////////////
@@ -417,7 +417,7 @@ void CPHElement::PhDataUpdate(dReal step)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	VERIFY(dV_valid(linear_velocity));
 #ifdef DEBUG
-	if (!dV_valid(angular_velocity))
+	if(!dV_valid(angular_velocity))
 	{
 		Msg("angular vel %f,%f,%f", angular_velocity[0], angular_velocity[1], angular_velocity[2]);
 		Msg("linear vel %f,%f,%f", linear_velocity[0], linear_velocity[1], linear_velocity[2]);
@@ -457,10 +457,10 @@ void CPHElement::PhDataUpdate(dReal step)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	////////////////limit linear
-	///vel////////////////////////////////////////////////////////////////////////////////////////
+	/// vel////////////////////////////////////////////////////////////////////////////////////////
 
 	VERIFY(dV_valid(linear_velocity));
-	if (linear_velocity_mag > m_l_limit)
+	if(linear_velocity_mag > m_l_limit)
 	{
 		CutVelocity(m_l_limit, m_w_limit);
 		VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)), phBoundaries, PhysicsRefObject(),
@@ -474,10 +474,10 @@ void CPHElement::PhDataUpdate(dReal step)
 	const dReal* position = dBodyGetPosition(m_body);
 	VERIFY(dV_valid(position));
 	/////////////////limit & secure angular
-	///vel///////////////////////////////////////////////////////////////////////////////
+	/// vel///////////////////////////////////////////////////////////////////////////////
 	VERIFY(dV_valid(angular_velocity));
 
-	if (angular_velocity_mag > m_w_limit)
+	if(angular_velocity_mag > m_w_limit)
 	{
 		CutVelocity(m_l_limit, m_w_limit);
 		angular_velocity_smag = dDOT(angular_velocity, angular_velocity);
@@ -487,7 +487,7 @@ void CPHElement::PhDataUpdate(dReal step)
 	}
 
 	////////////////secure
-	///rotation////////////////////////////////////////////////////////////////////////////////////////
+	/// rotation////////////////////////////////////////////////////////////////////////////////////////
 	{
 
 		VERIFY(dQ_valid(dBodyGetQuaternion(m_body)));
@@ -496,26 +496,26 @@ void CPHElement::PhDataUpdate(dReal step)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////disable///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (dBodyIsEnabled(m_body))
+	if(dBodyIsEnabled(m_body))
 		Disabling();
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		return;
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////air
-	///resistance/////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// resistance/////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	if (!fis_zero(k_w))
+	if(!fis_zero(k_w))
 		dBodyAddTorque(m_body, -angular_velocity[0] * k_w, -angular_velocity[1] * k_w, -angular_velocity[2] * k_w);
 
 	dMass mass;
 	dBodyGetMass(m_body, &mass);
 	dReal l_air = linear_velocity_mag * k_l; // force/velocity !!!
-	if (l_air > mass.mass / fixed_step)
+	if(l_air > mass.mass / fixed_step)
 		l_air = mass.mass / fixed_step; // validate
 
-	if (!fis_zero(l_air))
+	if(!fis_zero(l_air))
 		dBodyAddForce(m_body, -linear_velocity[0] * l_air, -linear_velocity[1] * l_air, -linear_velocity[2] * l_air);
 	VERIFY(dBodyStateValide(m_body));
 	VERIFY2(dV_valid(dBodyGetPosition(m_body)), "invalid body position");
@@ -535,10 +535,10 @@ void CPHElement::PhDataUpdate(dReal step)
 
 void CPHElement::Enable()
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	m_shell->EnableObject(0);
-	if (dBodyIsEnabled(m_body))
+	if(dBodyIsEnabled(m_body))
 		return;
 	dBodyEnable(m_body);
 }
@@ -547,7 +547,7 @@ void CPHElement::Disable()
 {
 
 	//	return;
-	if (!isActive() || !dBodyIsEnabled(m_body))
+	if(!isActive() || !dBodyIsEnabled(m_body))
 		return;
 	FillInterpolation();
 
@@ -563,7 +563,7 @@ void CPHElement::ReEnable()
 
 void CPHElement::Freeze()
 {
-	if (!m_body)
+	if(!m_body)
 		return;
 
 	m_flags.set(flWasEnabledBeforeFreeze, !!dBodyIsEnabled(m_body));
@@ -571,16 +571,16 @@ void CPHElement::Freeze()
 }
 void CPHElement::UnFreeze()
 {
-	if (!m_body)
+	if(!m_body)
 		return;
-	if (m_flags.test(flWasEnabledBeforeFreeze) /*was_enabled_before_freeze*/)
+	if(m_flags.test(flWasEnabledBeforeFreeze) /*was_enabled_before_freeze*/)
 		dBodyEnable(m_body);
 }
 void CPHElement::applyImpulseVsMC(const fvec3& pos, const fvec3& dir, float val)
 {
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		dBodyEnable(m_body);
 	/////////////////////////////////////////////////////////////////////////
 	fvec3 impulse;
@@ -594,9 +594,9 @@ void CPHElement::applyImpulseVsMC(const fvec3& pos, const fvec3& dir, float val)
 void CPHElement::applyImpulseVsGF(const fvec3& pos, const fvec3& dir, float val)
 {
 	VERIFY(_valid(pos) && _valid(dir) && _valid(val));
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		dBodyEnable(m_body);
 	/////////////////////////////////////////////////////////////////////////
 	fvec3 impulse;
@@ -612,19 +612,19 @@ void CPHElement::applyImpulseTrace(const fvec3& pos, const fvec3& dir, float val
 {
 
 	VERIFY(_valid(pos) && _valid(dir) && _valid(val));
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
 	fvec3 body_pos;
-	if (id != BI_NONE)
+	if(id != BI_NONE)
 	{
-		if (id == m_SelfID)
+		if(id == m_SelfID)
 		{
 			body_pos.sub(pos, m_mass_center);
 		}
 		else
 		{
 			CKinematics* K = m_shell->PKinematics();
-			if (K)
+			if(K)
 			{
 				fmat4x4 m;
 				m.set(K->LL_GetTransform(m_SelfID));
@@ -644,7 +644,7 @@ void CPHElement::applyImpulseTrace(const fvec3& pos, const fvec3& dir, float val
 		body_pos.set(0.f, 0.f, 0.f);
 	}
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phHitApplicationPoints))
+	if(ph_dbg_draw_mask.test(phHitApplicationPoints))
 	{
 		DBG_OpenCashedDraw();
 		fvec3 dbg_position;
@@ -658,7 +658,7 @@ void CPHElement::applyImpulseTrace(const fvec3& pos, const fvec3& dir, float val
 	}
 #endif
 	applyImpulseVsMC(body_pos, dir, val);
-	if (m_fratures_holder)
+	if(m_fratures_holder)
 	{
 		/// impulse.add(*((fvec3*)dBodyGetPosition(m_body)));
 		fvec3 impulse;
@@ -675,7 +675,7 @@ void CPHElement::applyImpact(const SPHImpact& I)
 	dir.set(I.force);
 	float val = I.force.magnitude();
 
-	if (!fis_zero(val) && GeomByBoneID(I.geom))
+	if(!fis_zero(val) && GeomByBoneID(I.geom))
 	{
 
 		dir.mul(1.f / val);
@@ -684,7 +684,7 @@ void CPHElement::applyImpact(const SPHImpact& I)
 }
 void CPHElement::InterpolateGlobalTransform(fmat4x4* m)
 {
-	if (!m_flags.test(flUpdate))
+	if(!m_flags.test(flUpdate))
 	{
 		GetGlobalTransformDynamic(m);
 		VERIFY(_valid(*m));
@@ -712,7 +712,7 @@ void CPHElement::InterpolateGlobalPosition(fvec3* v)
 void CPHElement::build(bool disable)
 {
 
-	if (isActive())
+	if(isActive())
 		return;
 	// bActive=true;
 	// bActivating=true;
@@ -727,7 +727,7 @@ void CPHElement::build(bool disable)
 
 	m_body_interpolation.SetBody(m_body);
 	// previous_f[0]=dInfinity;
-	if (disable)
+	if(disable)
 		dBodyDisable(m_body);
 }
 
@@ -754,7 +754,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 	// VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback resive 0 matrix");
 	VERIFY_RMATRIX(B->mTransform);
 	VERIFY(valid_pos(B->mTransform.c, phBoundaries));
-	if (m_flags.test(flActivating))
+	if(m_flags.test(flActivating))
 	{
 		// if(!dBodyIsEnabled(m_body))
 		//	dBodyEnable(m_body);
@@ -771,7 +771,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 		FillInterpolation();
 		// bActivating=false;
 		m_flags.set(flActivating, FALSE);
-		if (!m_parent_element)
+		if(!m_parent_element)
 		{
 			m_shell->m_object_in_root.set(mTransform);
 			m_shell->m_object_in_root.invert();
@@ -823,7 +823,7 @@ void CPHElement::GetAnimBonePos(fmat4x4& bp)
 	CKinematicsAnimated* ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
 	VERIFY(ak);
 	CBoneInstance* BI = &ak->LL_GetBoneInstance(m_SelfID);
-	if (!BI->Callback) //.
+	if(!BI->Callback) //.
 	{
 		bp.set(BI->mTransform);
 		return;
@@ -836,7 +836,7 @@ IC bool put_in_range(fvec3& v, float range)
 {
 	VERIFY(range > EPS_S);
 	float sq_mag = v.square_magnitude();
-	if (sq_mag > range * range)
+	if(sq_mag > range * range)
 	{
 		float mag = std::sqrt(sq_mag);
 		v.mul(range / mag);
@@ -869,7 +869,7 @@ bool CPHElement::AnimToVel(float dt, float l_limit, float a_limit)
 	cp.invert();
 	fmat4x4 diff;
 	diff.mul_43(cp, bp);
-	if (dt < EPS_S)
+	if(dt < EPS_S)
 		dt = EPS_S;
 	fvec3 mc1;
 	CPHGeometryOwner::get_mc_vs_transform(mc1, bp);
@@ -926,11 +926,11 @@ void CPHElement::BonesCallBack(CBoneInstance* B)
 	// VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback receive 0 matrix");
 	VERIFY_RMATRIX(B->mTransform);
 	VERIFY_BOUNDARIES2(B->mTransform.c, phBoundaries, PhysicsRefObject(), "BonesCallBack incoming bone position");
-	if (m_flags.test(flActivating))
+	if(m_flags.test(flActivating))
 	{
 		ToBonePos(B);
 		m_flags.set(flActivating, FALSE);
-		if (!m_parent_element)
+		if(!m_parent_element)
 		{
 			m_shell->m_object_in_root.set(mTransform);
 			m_shell->m_object_in_root.invert();
@@ -1016,7 +1016,7 @@ dMass* CPHElement::getMassTensor() // aux
 void CPHElement::setInertia(const dMass& M)
 {
 	m_mass = M;
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
 	dBodySetMass(m_body, &M);
 }
@@ -1024,13 +1024,13 @@ void CPHElement::setInertia(const dMass& M)
 void CPHElement::addInertia(const dMass& M)
 {
 	dMassAdd(&m_mass, &M);
-	if (!isActive())
+	if(!isActive())
 		return;
 	dBodySetMass(m_body, &m_mass);
 }
 void CPHElement::get_LinearVel(fvec3& velocity)
 {
-	if (!isActive() || !dBodyIsEnabled(m_body))
+	if(!isActive() || !dBodyIsEnabled(m_body))
 	{
 		velocity.set(0, 0, 0);
 		return;
@@ -1039,7 +1039,7 @@ void CPHElement::get_LinearVel(fvec3& velocity)
 }
 void CPHElement::get_AngularVel(fvec3& velocity)
 {
-	if (!isActive() || !dBodyIsEnabled(m_body))
+	if(!isActive() || !dBodyIsEnabled(m_body))
 	{
 		velocity.set(0, 0, 0);
 		return;
@@ -1050,12 +1050,12 @@ void CPHElement::get_AngularVel(fvec3& velocity)
 void CPHElement::set_LinearVel(const fvec3& velocity)
 {
 
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
 	VERIFY2(_valid(velocity), "not valid arqument velocity");
 	fvec3 vel = velocity;
 #ifdef DEBUG
-	if (velocity.magnitude() > m_l_limit)
+	if(velocity.magnitude() > m_l_limit)
 		Msg(" CPHElement::set_LinearVel set velocity magnitude is too large %f", velocity.magnitude());
 #endif
 	put_in_range(vel, m_l_limit);
@@ -1066,12 +1066,12 @@ void CPHElement::set_LinearVel(const fvec3& velocity)
 void CPHElement::set_AngularVel(const fvec3& velocity)
 {
 	VERIFY(_valid(velocity));
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
 
 	fvec3 vel = velocity;
 #ifdef DEBUG
-	if (velocity.magnitude() > m_w_limit)
+	if(velocity.magnitude() > m_w_limit)
 		Msg("CPHElement::set_AngularVel set velocity magnitude is too large %f", velocity.magnitude());
 #endif
 	put_in_range(vel, m_w_limit);
@@ -1080,23 +1080,23 @@ void CPHElement::set_AngularVel(const fvec3& velocity)
 
 void CPHElement::getForce(fvec3& force)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	force.set(*(fvec3*)dBodyGetForce(m_body));
 	VERIFY(dBodyStateValide(m_body));
 }
 void CPHElement::getTorque(fvec3& torque)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	torque.set(*(fvec3*)dBodyGetTorque(m_body));
 	VERIFY(dBodyStateValide(m_body));
 }
 void CPHElement::setForce(const fvec3& force)
 {
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		dBodyEnable(m_body);
 	m_shell->EnableObject(0);
 	dBodySetForce(m_body, force.x, force.y, force.z);
@@ -1105,9 +1105,9 @@ void CPHElement::setForce(const fvec3& force)
 }
 void CPHElement::setTorque(const fvec3& torque)
 {
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		dBodyEnable(m_body);
 	m_shell->EnableObject(0);
 	dBodySetTorque(m_body, torque.x, torque.y, torque.z);
@@ -1122,11 +1122,11 @@ void CPHElement::applyForce(const fvec3& dir, float val) // aux
 void CPHElement::applyForce(float x, float y, float z) // called anywhere ph state influent
 {
 	VERIFY(_valid(x) && _valid(y) && _valid(z));
-	if (!isActive())
+	if(!isActive())
 		return; // hack??
-	if (m_flags.test(flFixed))
+	if(m_flags.test(flFixed))
 		return;
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		dBodyEnable(m_body);
 	m_shell->EnableObject(0);
 	dBodyAddForce(m_body, x, y, z);
@@ -1156,9 +1156,10 @@ void CPHElement::add_Mass(const SBoneShape& shape, const fmat4x4& offset, const 
 	dMass m;
 	dMatrix3 DMatx;
 
-	switch (shape.type)
+	switch(shape.type)
 	{
-	case SBoneShape::stBox: {
+	case SBoneShape::stBox:
+	{
 		dMassSetBox(&m, 1.f, shape.box.m_halfsize.x * 2.f, shape.box.m_halfsize.y * 2.f, shape.box.m_halfsize.z * 2.f);
 		dMassAdjust(&m, mass);
 
@@ -1170,7 +1171,8 @@ void CPHElement::add_Mass(const SBoneShape& shape, const fmat4x4& offset, const 
 					   shape.box.m_translate.z - mass_center.z);
 		break;
 	}
-	case SBoneShape::stSphere: {
+	case SBoneShape::stSphere:
+	{
 		dMassSetSphere(&m, 1.f, shape.sphere.R);
 		dMassAdjust(&m, mass);
 		dMassTranslate(&m, shape.sphere.P.x - mass_center.x, shape.sphere.P.y - mass_center.y,
@@ -1178,7 +1180,8 @@ void CPHElement::add_Mass(const SBoneShape& shape, const fmat4x4& offset, const 
 		break;
 	}
 
-	case SBoneShape::stCylinder: {
+	case SBoneShape::stCylinder:
+	{
 		const fvec3& pos = shape.cylinder.m_center;
 		fvec3 l;
 		l.sub(pos, mass_center);
@@ -1221,7 +1224,7 @@ void CPHElement::add_Mass(const SBoneShape& shape, const fmat4x4& offset, const 
 	fvec3 new_mc;
 	new_mc.add(tmp1, tmp2);
 
-	if (mass + m_mass.mass > EPS)
+	if(mass + m_mass.mass > EPS)
 		new_mc.mul(1.f / (mass + m_mass.mass));
 
 	mc.sub(new_mc);
@@ -1229,11 +1232,11 @@ void CPHElement::add_Mass(const SBoneShape& shape, const fmat4x4& offset, const 
 	m_mass_center.sub(new_mc);
 	dMassTranslate(&m_mass, m_mass_center.x, m_mass_center.y, m_mass_center.z);
 
-	if (m_fratures_holder)
+	if(m_fratures_holder)
 	{
 		m_fratures_holder->DistributeAdditionalMass(u16(m_geoms.size() - 1), m);
 	}
-	if (fracture)
+	if(fracture)
 	{
 		fracture->MassAddToSecond(m);
 	}
@@ -1260,7 +1263,7 @@ void CPHElement::calculate_it_data_use_density(const fvec3& mc, float density)
 {
 	dMassSetZero(&m_mass);
 	GEOM_I i_geom = m_geoms.begin(), e = m_geoms.end();
-	for (; i_geom != e; ++i_geom)
+	for(; i_geom != e; ++i_geom)
 		(*i_geom)->add_self_mass(m_mass, mc, density);
 	VERIFY2(dMass_valide(&m_mass), "non valide mass obtained!");
 }
@@ -1309,12 +1312,12 @@ CPHShell* CPHElement::PHShell()
 }
 void CPHElement::SetShell(CPHShell* p)
 {
-	if (!m_body || !m_shell)
+	if(!m_body || !m_shell)
 	{
 		m_shell = p;
 		return;
 	}
-	if (m_shell != p)
+	if(m_shell != p)
 	{
 		m_shell->Island().RemoveBody(m_body);
 		p->Island().AddBody(m_body);
@@ -1326,7 +1329,7 @@ void CPHElement::PassEndGeoms(u16 from, u16 to, CPHElement* dest)
 	GEOM_I i_from = m_geoms.begin() + from, e = m_geoms.begin() + to;
 	u16 shift = to - from;
 	GEOM_I i = i_from;
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		(*i)->remove_from_space(m_group);
 		//(*i)->add_to_space(dest->m_group);
@@ -1336,7 +1339,7 @@ void CPHElement::PassEndGeoms(u16 from, u16 to, CPHElement* dest)
 		element_pos = element_pos - shift;
 	}
 	GEOM_I last = m_geoms.end();
-	for (; i != last; ++i)
+	for(; i != last; ++i)
 	{
 		u16& element_pos = (*i)->element_position();
 		element_pos = element_pos - shift;
@@ -1349,7 +1352,7 @@ void CPHElement::PassEndGeoms(u16 from, u16 to, CPHElement* dest)
 void CPHElement::SplitProcess(ELEMENT_PAIR_VECTOR& new_elements)
 {
 	m_fratures_holder->SplitProcess(this, new_elements);
-	if (!m_fratures_holder->m_fractures.size())
+	if(!m_fratures_holder->m_fractures.size())
 		xr_delete(m_fratures_holder);
 }
 void CPHElement::DeleteFracturesHolder()
@@ -1370,11 +1373,11 @@ void CPHElement::ReAdjustMassPositions(const fmat4x4& shift_pivot, float density
 {
 
 	GEOM_I i = m_geoms.begin(), e = m_geoms.end();
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		(*i)->move_local_basis(shift_pivot);
 	}
-	if (m_shell->PKinematics())
+	if(m_shell->PKinematics())
 	{
 		float mass;
 		get_mc_kinematics(m_shell->PKinematics(), m_mass_center, mass);
@@ -1415,13 +1418,13 @@ void CPHElement::ReInitDynamics(const fmat4x4& shift_pivot, float density)
 	VERIFY(_valid(shift_pivot) && _valid(density));
 	ReAdjustMassPositions(shift_pivot, density);
 	GEOM_I i = m_geoms.begin(), e = m_geoms.end();
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		(*i)->set_position(m_mass_center);
 		(*i)->set_body(m_body);
 		// if(object_contact_callback)geom.set_obj_contact_cb(object_contact_callback);
 		// if(m_phys_ref_object) geom.set_ref_object(m_phys_ref_object);
-		if (m_group)
+		if(m_group)
 		{
 			(*i)->add_to_space((dSpaceID)m_group);
 		}
@@ -1430,7 +1433,7 @@ void CPHElement::ReInitDynamics(const fmat4x4& shift_pivot, float density)
 
 void CPHElement::PresetActive()
 {
-	if (isActive())
+	if(isActive())
 		return;
 
 	CBoneInstance& B = m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID);
@@ -1440,7 +1443,7 @@ void CPHElement::PresetActive()
 	global_transform.mul_43(m_shell->mTransform, mTransform);
 	SetTransform(global_transform);
 
-	if (!m_parent_element)
+	if(!m_parent_element)
 	{
 		m_shell->m_object_in_root.set(mTransform);
 		m_shell->m_object_in_root.invert();
@@ -1467,7 +1470,7 @@ bool CPHElement::isBreakable()
 }
 u16 CPHElement::setGeomFracturable(CPHFracture& fracture)
 {
-	if (!m_fratures_holder)
+	if(!m_fratures_holder)
 		m_fratures_holder = xr_new<CPHFracturesHolder>();
 	return m_fratures_holder->AddFracture(fracture);
 }
@@ -1501,7 +1504,7 @@ void CPHElement::cv2obj_Xfrom(const Fquaternion& q, const fvec3& pos, fmat4x4& t
 
 void CPHElement::set_ApplyByGravity(bool flag)
 {
-	if (!isActive() || m_flags.test(flFixed))
+	if(!isActive() || m_flags.test(flFixed))
 		return;
 	dBodySetGravityMode(m_body, flag);
 }
@@ -1517,19 +1520,19 @@ void CPHElement::Fix()
 }
 void CPHElement::ReleaseFixed()
 {
-	if (!isFixed())
+	if(!isFixed())
 		return;
 	m_flags.set(flFixed, FALSE);
-	if (!isActive())
+	if(!isActive())
 		return;
 	dBodySetMass(m_body, &m_mass);
 }
 void CPHElement::applyGravityAccel(const fvec3& accel)
 {
 	VERIFY(_valid(accel));
-	if (m_flags.test(flFixed))
+	if(m_flags.test(flFixed))
 		return;
-	if (!dBodyIsEnabled(m_body))
+	if(!dBodyIsEnabled(m_body))
 		dBodyEnable(m_body);
 	m_shell->EnableObject(0);
 	fvec3 val;
@@ -1542,14 +1545,14 @@ void CPHElement::applyGravityAccel(const fvec3& accel)
 void CPHElement::CutVelocity(float l_limit, float a_limit)
 {
 
-	if (!isActive())
+	if(!isActive())
 		return;
 	VERIFY(_valid(l_limit) && _valid(a_limit));
 	dVector3 limitedl, limiteda, diffl, diffa;
 	bool blimitl = dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl);
 	bool blimita = dVectorLimit(dBodyGetAngularVel(m_body), a_limit, limiteda);
 
-	if (blimitl || blimita)
+	if(blimitl || blimita)
 	{
 		dVectorSub(diffl, limitedl, dBodyGetLinearVel(m_body));
 		dVectorSub(diffa, limiteda, dBodyGetAngularVel(m_body));

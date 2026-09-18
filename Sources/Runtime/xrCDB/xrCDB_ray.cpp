@@ -55,51 +55,51 @@ ICF BOOL isect_fpu(const fvec3& min, const fvec3& max, const ray_t& ray, fvec3& 
 	BOOL Inside = TRUE;
 
 	// Find candidate planes.
-	if (ray.pos[0] < min[0])
+	if(ray.pos[0] < min[0])
 	{
 		coord[0] = min[0];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[0]))
+		if(uf(ray.inv_dir[0]))
 			MaxT[0] = (min[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
 	}
-	else if (ray.pos[0] > max[0])
+	else if(ray.pos[0] > max[0])
 	{
 		coord[0] = max[0];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[0]))
+		if(uf(ray.inv_dir[0]))
 			MaxT[0] = (max[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
 	}
-	if (ray.pos[1] < min[1])
+	if(ray.pos[1] < min[1])
 	{
 		coord[1] = min[1];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[1]))
+		if(uf(ray.inv_dir[1]))
 			MaxT[1] = (min[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
 	}
-	else if (ray.pos[1] > max[1])
+	else if(ray.pos[1] > max[1])
 	{
 		coord[1] = max[1];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[1]))
+		if(uf(ray.inv_dir[1]))
 			MaxT[1] = (max[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
 	}
-	if (ray.pos[2] < min[2])
+	if(ray.pos[2] < min[2])
 	{
 		coord[2] = min[2];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[2]))
+		if(uf(ray.inv_dir[2]))
 			MaxT[2] = (min[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
 	}
-	else if (ray.pos[2] > max[2])
+	else if(ray.pos[2] > max[2])
 	{
 		coord[2] = max[2];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[2]))
+		if(uf(ray.inv_dir[2]))
 			MaxT[2] = (max[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
 	}
 
 	// Ray ray.pos inside bounding box
-	if (Inside)
+	if(Inside)
 	{
 		coord = ray.pos;
 		return true;
@@ -107,42 +107,42 @@ ICF BOOL isect_fpu(const fvec3& min, const fvec3& max, const ray_t& ray, fvec3& 
 
 	// Get largest of the maxT's for final choice of intersection
 	u32 WhichPlane = 0;
-	if (MaxT[1] > MaxT[0])
+	if(MaxT[1] > MaxT[0])
 		WhichPlane = 1;
-	if (MaxT[2] > MaxT[WhichPlane])
+	if(MaxT[2] > MaxT[WhichPlane])
 		WhichPlane = 2;
 
 	// Check final candidate actually inside box (if max < 0)
-	if (uf(MaxT[WhichPlane]) & 0x80000000)
+	if(uf(MaxT[WhichPlane]) & 0x80000000)
 		return false;
 
-	if (0 == WhichPlane)
+	if(0 == WhichPlane)
 	{ // 1 & 2
 		coord[1] = ray.pos[1] + MaxT[0] * ray.fwd_dir[1];
-		if ((coord[1] < min[1]) || (coord[1] > max[1]))
+		if((coord[1] < min[1]) || (coord[1] > max[1]))
 			return false;
 		coord[2] = ray.pos[2] + MaxT[0] * ray.fwd_dir[2];
-		if ((coord[2] < min[2]) || (coord[2] > max[2]))
+		if((coord[2] < min[2]) || (coord[2] > max[2]))
 			return false;
 		return true;
 	}
-	if (1 == WhichPlane)
+	if(1 == WhichPlane)
 	{ // 0 & 2
 		coord[0] = ray.pos[0] + MaxT[1] * ray.fwd_dir[0];
-		if ((coord[0] < min[0]) || (coord[0] > max[0]))
+		if((coord[0] < min[0]) || (coord[0] > max[0]))
 			return false;
 		coord[2] = ray.pos[2] + MaxT[1] * ray.fwd_dir[2];
-		if ((coord[2] < min[2]) || (coord[2] > max[2]))
+		if((coord[2] < min[2]) || (coord[2] > max[2]))
 			return false;
 		return true;
 	}
-	if (2 == WhichPlane)
+	if(2 == WhichPlane)
 	{ // 0 & 1
 		coord[0] = ray.pos[0] + MaxT[2] * ray.fwd_dir[0];
-		if ((coord[0] < min[0]) || (coord[0] > max[0]))
+		if((coord[0] < min[0]) || (coord[0] > max[0]))
 			return false;
 		coord[1] = ray.pos[1] + MaxT[2] * ray.fwd_dir[1];
-		if ((coord[1] < min[1]) || (coord[1] > max[1]))
+		if((coord[1] < min[1]) || (coord[1] > max[1]))
 			return false;
 		return true;
 	}
@@ -210,7 +210,8 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 	return ret;
 }
 
-template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN16 ray_collider
+template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
+class _MM_ALIGN16 ray_collider
 {
   public:
 	COLLIDER* dest;
@@ -231,20 +232,20 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		ray.fwd_dir.set(D);
 		rRange = R;
 		rRange2 = R * R;
-		if (!bUseSSE)
+		if(!bUseSSE)
 		{
 			// for FPU - zero out inf
-			if (_abs(D.x) > flt_eps)
+			if(_abs(D.x) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.x = 0;
-			if (_abs(D.y) > flt_eps)
+			if(_abs(D.y) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.y = 0;
-			if (_abs(D.z) > flt_eps)
+			if(_abs(D.z) > flt_eps)
 			{
 			}
 			else
@@ -286,17 +287,17 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		// if determinant is near zero, ray lies in plane of triangle
 		pvec.crossproduct(ray.fwd_dir, edge2);
 		det = edge1.dotproduct(pvec);
-		if (bCull)
+		if(bCull)
 		{
-			if (det < EPS)
+			if(det < EPS)
 				return false;
 			tvec.sub(ray.pos, p0);	   // calculate distance from vert0 to ray origin
 			u = tvec.dotproduct(pvec); // calculate U parameter and test bounds
-			if (u < 0.f || u > det)
+			if(u < 0.f || u > det)
 				return false;
 			qvec.crossproduct(tvec, edge1);	  // prepare to test V parameter
 			v = ray.fwd_dir.dotproduct(qvec); // calculate V parameter and test bounds
-			if (v < 0.f || u + v > det)
+			if(v < 0.f || u + v > det)
 				return false;
 			range = edge2.dotproduct(qvec); // calculate t, scale parameters, ray intersects triangle
 			inv_det = 1.0f / det;
@@ -306,16 +307,16 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 		}
 		else
 		{
-			if (det > -EPS && det < EPS)
+			if(det > -EPS && det < EPS)
 				return false;
 			inv_det = 1.0f / det;
 			tvec.sub(ray.pos, p0);				 // calculate distance from vert0 to ray origin
 			u = tvec.dotproduct(pvec) * inv_det; // calculate U parameter and test bounds
-			if (u < 0.0f || u > 1.0f)
+			if(u < 0.0f || u > 1.0f)
 				return false;
 			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
 			v = ray.fwd_dir.dotproduct(qvec) * inv_det; // calculate V parameter and test bounds
-			if (v < 0.0f || u + v > 1.0f)
+			if(v < 0.0f || u + v > 1.0f)
 				return false;
 			range = edge2.dotproduct(qvec) * inv_det; // calculate t, ray intersects triangle
 		}
@@ -325,17 +326,17 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 	void _prim(DWORD prim)
 	{
 		float u, v, r;
-		if (!_tri(tris[prim].verts, u, v, r))
+		if(!_tri(tris[prim].verts, u, v, r))
 			return;
-		if (r <= 0 || r > rRange)
+		if(r <= 0 || r > rRange)
 			return;
 
-		if (bNearest)
+		if(bNearest)
 		{
-			if (dest->r_count())
+			if(dest->r_count())
 			{
 				RESULT& R = *dest->r_begin();
-				if (r < R.range)
+				if(r < R.range)
 				{
 					R.id = prim;
 					R.range = r;
@@ -380,37 +381,37 @@ template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest> class _MM_ALIGN1
 	void _stab(const AABBNoLeafNode* node)
 	{
 		// Actual ray/aabb test
-		if (bUseSSE)
+		if(bUseSSE)
 		{
 			// use SSE
 			float d;
-			if (!_box_sse((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, d))
+			if(!_box_sse((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, d))
 				return;
-			if (d > rRange)
+			if(d > rRange)
 				return;
 		}
 		else
 		{
 			// use FPU
 			fvec3 P;
-			if (!_box_fpu((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, P))
+			if(!_box_fpu((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents, P))
 				return;
-			if (P.distance_to_sqr(ray.pos) > rRange2)
+			if(P.distance_to_sqr(ray.pos) > rRange2)
 				return;
 		}
 
 		// 1st chield
-		if (node->HasLeaf())
+		if(node->HasLeaf())
 			_prim(node->GetPrimitive());
 		else
 			_stab(node->GetPos());
 
 		// Early exit for "only first"
-		if (bFirst && dest->r_count())
+		if(bFirst && dest->r_count())
 			return;
 
 		// 2nd chield
-		if (node->HasLeaf2())
+		if(node->HasLeaf2())
 			_prim(node->GetPrimitive2());
 		else
 			_stab(node->GetNeg());
@@ -426,15 +427,15 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 	const AABBNoLeafNode* N = T->GetNodes();
 	r_clear();
 
-	if (CPU::ID.hasFeature(CpuFeature::Sse))
+	if(CPU::ID.hasFeature(CpuFeature::Sse))
 	{
 		// SSE
 		// Binary dispatcher
-		if (ray_mode & OPT_CULL)
+		if(ray_mode & OPT_CULL)
 		{
-			if (ray_mode & OPT_ONLYFIRST)
+			if(ray_mode & OPT_ONLYFIRST)
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<true, true, true, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -449,7 +450,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 			}
 			else
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<true, true, false, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -465,9 +466,9 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 		}
 		else
 		{
-			if (ray_mode & OPT_ONLYFIRST)
+			if(ray_mode & OPT_ONLYFIRST)
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<true, false, true, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -482,7 +483,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 			}
 			else
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<true, false, false, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -501,11 +502,11 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 	{
 		// FPU
 		// Binary dispatcher
-		if (ray_mode & OPT_CULL)
+		if(ray_mode & OPT_CULL)
 		{
-			if (ray_mode & OPT_ONLYFIRST)
+			if(ray_mode & OPT_ONLYFIRST)
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<false, true, true, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -520,7 +521,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 			}
 			else
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<false, true, false, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -536,9 +537,9 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 		}
 		else
 		{
-			if (ray_mode & OPT_ONLYFIRST)
+			if(ray_mode & OPT_ONLYFIRST)
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<false, false, true, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
@@ -553,7 +554,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const fvec3& r_start, const fvec3& 
 			}
 			else
 			{
-				if (ray_mode & OPT_ONLYNEAREST)
+				if(ray_mode & OPT_ONLYNEAREST)
 				{
 					ray_collider<false, false, false, true> RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);

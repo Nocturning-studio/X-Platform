@@ -14,7 +14,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	// create server entity
 	xrClientData* CL = ID_to_client(sender);
 	CSE_Abstract* E = tpExistedEntity;
-	if (!E)
+	if(!E)
 	{
 		// read spawn information
 		string64 s_name;
@@ -23,8 +23,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 		E = entity_Create(s_name);
 		R_ASSERT3(E, "Can't create entity.", s_name);
 		E->Spawn_Read(P);
-		if (!((game->Type() == E->s_gameid) || (GAME_ANY == E->s_gameid)) || !E->match_configuration() ||
-			!game->OnPreCreate(E))
+		if(!((game->Type() == E->s_gameid) || (GAME_ANY == E->s_gameid)) || !E->match_configuration() ||
+		   !game->OnPreCreate(E))
 		{
 			// Msg			("- SERVER: Entity [%s] incompatible with current game type.",*E->s_name);
 			F_entity_Destroy(E);
@@ -46,10 +46,10 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	}
 
 	CSE_Abstract* e_parent = 0;
-	if (E->ID_Parent != 0xffff)
+	if(E->ID_Parent != 0xffff)
 	{
 		e_parent = ID_to_entity(E->ID_Parent);
-		if (!e_parent)
+		if(!e_parent)
 		{
 			R_ASSERT(!tpExistedEntity);
 			//			VERIFY3			(smart_cast<CSE_ALifeItemBolt*>(E) ||
@@ -60,13 +60,13 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	}
 
 	// check if we can assign entity to some client
-	if (0 == CL && !net_Players.empty())
+	if(0 == CL && !net_Players.empty())
 	{
 		CL = SelectBestClientToMigrateTo(E);
 	}
 
 	// check for respawn-capability and create phantom as needed
-	if (E->RespawnTime && (0xffff == E->ID_Phantom))
+	if(E->RespawnTime && (0xffff == E->ID_Phantom))
 	{
 		// Create phantom
 		CSE_Abstract* Phantom = entity_Create(*E->s_name);
@@ -87,7 +87,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	}
 	else
 	{
-		if (E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))
+		if(E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))
 		{
 			// Clone from Phantom
 			E->ID = PerformIDgen(0xffff);
@@ -98,7 +98,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 		else
 		{
 			// Simple spawn
-			if (bSpawnWithClientsMainEntityAsParent)
+			if(bSpawnWithClientsMainEntityAsParent)
 			{
 				R_ASSERT(CL);
 				CSE_Abstract* P = CL->owner;
@@ -112,7 +112,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	}
 
 	// PROCESS NAME; Name this entity
-	if (CL && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
+	if(CL && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
 	{
 		CL->owner = E;
 		//		E->set_name_replace	(CL->name);
@@ -123,15 +123,15 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 	E->s_RP = 0xFE; // Use supplied
 
 	// Parent-Connect
-	if (!tpExistedEntity)
+	if(!tpExistedEntity)
 	{
 		game->OnCreate(E->ID);
 
-		if (0xffff != E->ID_Parent)
+		if(0xffff != E->ID_Parent)
 		{
 			VERIFY(e_parent);
 
-			if (!smart_cast<game_sv_mp_script*>(game))
+			if(!smart_cast<game_sv_mp_script*>(game))
 				game->OnTouch(E->ID_Parent, E->ID);
 
 			e_parent->children.push_back(E->ID);
@@ -140,30 +140,30 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 
 	// create packet and broadcast packet to everybody
 	NET_Packet Packet;
-	if (CL)
+	if(CL)
 	{
 		// For local ONLY
 		E->Spawn_Write(Packet, TRUE);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
+		if(E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write(Packet);
 		SendTo(CL->ID, Packet, net_flags(TRUE, TRUE));
 
 		// For everybody, except client, which contains authorative copy
 		E->Spawn_Write(Packet, FALSE);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
+		if(E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write(Packet);
 		SendBroadcast(CL->ID, Packet, net_flags(TRUE, TRUE));
 	}
 	else
 	{
 		E->Spawn_Write(Packet, FALSE);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
+		if(E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write(Packet);
 		ClientID clientID;
 		clientID.set(0);
 		SendBroadcast(clientID, Packet, net_flags(TRUE, TRUE));
 	}
-	if (!tpExistedEntity)
+	if(!tpExistedEntity)
 	{
 		game->OnPostCreate(E->ID);
 	};

@@ -25,7 +25,7 @@ void FProgressive::Release()
 {
 	Fvisual::Release();
 	xr_free(nSWI.sw);
-	if (xSWI)
+	if(xSWI)
 	{
 		xr_free(xSWI->sw);
 		xr_delete(xSWI);
@@ -48,7 +48,7 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
 	lods().r(nSWI.sw, nSWI.count * sizeof(FSlideWindow));
 
 	// fast
-	if (m_fast)
+	if(m_fast)
 	{
 		destructor<IReader> geomdef(data->open_chunk(OGF_FASTPATH));
 		destructor<IReader> def(geomdef().open_chunk(OGF_SWIDATA));
@@ -69,7 +69,7 @@ void FProgressive::Render(float LOD)
 {
 	PROFILE_FUNCTION();
 
-	if (m_fast && RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH)
+	if(m_fast && RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH)
 	{
 		int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);
 		VERIFY(lod_id >= 0 && lod_id < int(xSWI->count));
@@ -81,7 +81,7 @@ void FProgressive::Render(float LOD)
 	else
 	{
 		int lod_id = last_lod;
-		if (LOD >= 0.f)
+		if(LOD >= 0.f)
 		{
 			clamp(LOD, 0.f, 1.f);
 			lod_id = iFloor((1.f - LOD) * float(nSWI.count - 1) + 0.5f);

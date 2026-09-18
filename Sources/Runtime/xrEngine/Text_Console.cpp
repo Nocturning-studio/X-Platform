@@ -35,14 +35,14 @@ void CTextConsole::Initialize()
 {
 	inherited::Initialize();
 
-	if (!Console)
+	if(!Console)
 		Console = this;
 
 	bool bHasConsole = (GetConsoleWindow() != NULL);
-	if (!bHasConsole && AllocConsole())
+	if(!bHasConsole && AllocConsole())
 		bHasConsole = true;
 
-	if (bHasConsole)
+	if(bHasConsole)
 	{
 		freopen("CONIN$", "r", stdin);
 		freopen("CONOUT$", "w", stdout);
@@ -73,7 +73,7 @@ void CTextConsole::Initialize()
 		WriteConsole(m_hStdOut, ioc_prompt, (DWORD)xr_strlen(ioc_prompt), &written, NULL);
 	}
 
-	if (LogFile)
+	if(LogFile)
 		m_dwLastLogIndex = LogFile->size();
 
 	m_bConsoleRunning = true;
@@ -91,7 +91,7 @@ void CTextConsole::Destroy()
 	inherited::Destroy();
 
 	m_bConsoleRunning = false;
-	if (m_hConsoleThread)
+	if(m_hConsoleThread)
 	{
 		TerminateThread(m_hConsoleThread, 0);
 		CloseHandle(m_hConsoleThread);
@@ -111,7 +111,7 @@ void CTextConsole::AddString(LPCSTR string)
 
 WORD CTextConsole::GetColorByTag(char tag)
 {
-	switch (tag)
+	switch(tag)
 	{
 	case '!':
 		return C_RED;
@@ -142,19 +142,19 @@ void CTextConsole::ThreadLoop()
 {
 	char buffer[1024];
 
-	while (m_bConsoleRunning)
+	while(m_bConsoleRunning)
 	{
-		if (fgets(buffer, 1024, stdin))
+		if(fgets(buffer, 1024, stdin))
 		{
 			// Чистим любые спецсимволы в конце строки
 			size_t len = strlen(buffer);
-			while (len > 0 && (unsigned char)buffer[len - 1] <= 32)
+			while(len > 0 && (unsigned char)buffer[len - 1] <= 32)
 			{
 				buffer[len - 1] = 0;
 				len--;
 			}
 
-			if (len > 0)
+			if(len > 0)
 			{
 				EnterCriticalSection(&m_csCmdQueue);
 				m_cmd_queue.push_back(buffer);
@@ -170,13 +170,13 @@ void CTextConsole::ThreadLoop()
 // -----------------------------------------------------------
 void CTextConsole::ProcessOutput()
 {
-	if (!LogFile)
+	if(!LogFile)
 		return;
 
 	u32 curSize = LogFile->size();
 	bool hasNewData = curSize > m_dwLastLogIndex;
 
-	if (hasNewData)
+	if(hasNewData)
 	{
 		// Если пришли новые логи - нужно "перебить" текущую строку ввода
 		// Стандартный способ в консолях:
@@ -189,15 +189,15 @@ void CTextConsole::ProcessOutput()
 		WriteConsole(m_hStdOut, "\r", 1, &written, NULL);
 		// Просто перезатираем текущую строку вывода логами
 
-		for (u32 i = m_dwLastLogIndex; i < curSize; ++i)
+		for(u32 i = m_dwLastLogIndex; i < curSize; ++i)
 		{
 			const shared_str& msg = (*LogFile)[i];
-			if (!msg.size())
+			if(!msg.size())
 				continue;
 
 			LPCSTR str = msg.c_str();
 			WORD color = GetColorByTag(str[0]);
-			if (str[0] == ' ' && msg.size() > 1)
+			if(str[0] == ' ' && msg.size() > 1)
 				color = GetColorByTag(str[1]);
 
 			SetConsoleTextAttribute(m_hStdOut, color);
@@ -231,7 +231,7 @@ void CTextConsole::OnFrame()
 	// Используем обычный EnterCriticalSection, так как он очень быстрый (мьютекс в user-space)
 	EnterCriticalSection(&m_csCmdQueue);
 
-	if (!m_cmd_queue.empty())
+	if(!m_cmd_queue.empty())
 	{
 		// Быстро копируем очередь себе
 		xr_vector<shared_str> todo = m_cmd_queue;
@@ -239,7 +239,7 @@ void CTextConsole::OnFrame()
 		LeaveCriticalSection(&m_csCmdQueue);
 
 		// Выполняем команды
-		for (u32 i = 0; i < todo.size(); ++i)
+		for(u32 i = 0; i < todo.size(); ++i)
 		{
 			LPCSTR cmd_str = todo[i].c_str();
 

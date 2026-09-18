@@ -38,7 +38,7 @@ CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload
 	try
 	{
 		string256 S;
-		if (!do_string)
+		if(!do_string)
 		{
 			m_script_name = caNamespaceName;
 			ai().script_engine().process_file(caNamespaceName, reload);
@@ -48,10 +48,10 @@ CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload
 			m_script_name = "console command";
 			sprintf_s(S, "function %s()\n%s\nend\n", main_function, caNamespaceName);
 			int l_iErrorCode = luaL_loadbuffer(ai().script_engine().lua(), S, xr_strlen(S), "@console_command");
-			if (!l_iErrorCode)
+			if(!l_iErrorCode)
 			{
 				l_iErrorCode = lua_pcall(ai().script_engine().lua(), 0, 0, 0);
-				if (l_iErrorCode)
+				if(l_iErrorCode)
 				{
 					ai().script_engine().print_output(ai().script_engine().lua(), *m_script_name, l_iErrorCode);
 					return;
@@ -82,24 +82,24 @@ CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload
 
 #ifdef DEBUG
 #ifdef USE_DEBUGGER
-		if (ai().script_engine().debugger() && ai().script_engine().debugger()->Active())
+		if(ai().script_engine().debugger() && ai().script_engine().debugger()->Active())
 			lua_sethook(lua(), CDbgLuaHelper::hookLua, LUA_MASKLINE | LUA_MASKCALL | LUA_MASKRET, 0);
 		else
 #endif
 			lua_sethook(lua(), CScriptEngine::lua_hook_call, LUA_MASKLINE | LUA_MASKCALL | LUA_MASKRET, 0);
 #endif
 
-		if (!do_string)
+		if(!do_string)
 			sprintf_s(S, "%s.main()", caNamespaceName);
 		else
 			sprintf_s(S, "%s()", main_function);
 
-		if (!ai().script_engine().load_buffer(lua(), S, xr_strlen(S), "@_thread_main"))
+		if(!ai().script_engine().load_buffer(lua(), S, xr_strlen(S), "@_thread_main"))
 			return;
 
 		m_active = true;
 	}
-	catch (...)
+	catch(...)
 	{
 		m_active = false;
 	}
@@ -116,14 +116,14 @@ CScriptThread::~CScriptThread()
 		luaL_unref(ai().script_engine().lua(), LUA_REGISTRYINDEX, m_thread_reference);
 #endif
 	}
-	catch (...)
+	catch(...)
 	{
 	}
 }
 
 bool CScriptThread::update()
 {
-	if (!m_active)
+	if(!m_active)
 		R_ASSERT2(false, "Cannot resume dead Lua thread!");
 
 	try
@@ -132,7 +132,7 @@ bool CScriptThread::update()
 
 		int l_iErrorCode = lua_resume(lua(), 0);
 
-		if (l_iErrorCode && (l_iErrorCode != LUA_YIELD))
+		if(l_iErrorCode && (l_iErrorCode != LUA_YIELD))
 		{
 			ai().script_engine().print_output(lua(), *script_name(), l_iErrorCode);
 #ifdef DEBUG
@@ -142,10 +142,10 @@ bool CScriptThread::update()
 		}
 		else
 		{
-			if (l_iErrorCode != LUA_YIELD)
+			if(l_iErrorCode != LUA_YIELD)
 			{
 #ifdef DEBUG
-				if (m_current_stack_level)
+				if(m_current_stack_level)
 				{
 					ai().script_engine().print_output(lua(), *script_name(), l_iErrorCode);
 					//					print_stack		(lua());
@@ -161,7 +161,7 @@ bool CScriptThread::update()
 			{
 #ifdef DEBUG
 #ifdef USE_DEBUGGER
-				if (!ai().script_engine().debugger() || !ai().script_engine().debugger()->Active())
+				if(!ai().script_engine().debugger() || !ai().script_engine().debugger()->Active())
 #endif
 				{
 					//					VERIFY2		(m_current_stack_level,*script_name());
@@ -175,7 +175,7 @@ bool CScriptThread::update()
 
 		ai().script_engine().current_thread(0);
 	}
-	catch (...)
+	catch(...)
 	{
 		ai().script_engine().current_thread(0);
 		m_active = false;

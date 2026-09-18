@@ -10,12 +10,13 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 {
 	float magdt = magnitude * dt;
 
-	switch (position.type)
+	switch(position.type)
 	{
-	case PDPlane: {
-		if (look_ahead < P_MAXFLOAT)
+	case PDPlane:
+	{
+		if(look_ahead < P_MAXFLOAT)
 		{
-			for (u32 i = 0; i < effect->p_count; i++)
+			for(u32 i = 0; i < effect->p_count; i++)
 			{
 				Particle& m = effect->particles[i];
 
@@ -24,7 +25,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 				// radius1 stores -n*p, which is d.
 				float dist = m.pos * position.p2 + position.radius1;
 
-				if (dist < look_ahead)
+				if(dist < look_ahead)
 				{
 					float vm = m.vel.length();
 					pVector Vn = m.vel / vm;
@@ -37,7 +38,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		}
 		else
 		{
-			for (u32 i = 0; i < effect->p_count; i++)
+			for(u32 i = 0; i < effect->p_count; i++)
 			{
 				Particle& m = effect->particles[i];
 
@@ -56,7 +57,8 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 	break;
-	case PDRectangle: {
+	case PDRectangle:
+	{
 		// Compute the inverse matrix of the plane basis.
 		pVector& u = position.u;
 		pVector& v = position.v;
@@ -79,7 +81,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		s2 *= -det;
 
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -95,7 +97,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 
 			// Opposite signs if product < 0
 			// There is no faster way to do this.
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			float nv = position.p2 * m.vel;
@@ -113,7 +115,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 			float vpos = offset * s2;
 
 			// Did it cross plane outside triangle?
-			if (upos < 0 || vpos < 0 || upos > 1 || vpos > 1)
+			if(upos < 0 || vpos < 0 || upos > 1 || vpos > 1)
 				continue;
 
 			// A hit! A most palpable hit!
@@ -130,11 +132,11 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 			float gdistSqr = gofs.length2();
 
 			pVector S;
-			if (udistSqr <= vdistSqr && udistSqr <= fdistSqr && udistSqr <= gdistSqr)
+			if(udistSqr <= vdistSqr && udistSqr <= fdistSqr && udistSqr <= gdistSqr)
 				S = uofs;
-			else if (vdistSqr <= fdistSqr && vdistSqr <= gdistSqr)
+			else if(vdistSqr <= fdistSqr && vdistSqr <= gdistSqr)
 				S = vofs;
-			else if (fdistSqr <= gdistSqr)
+			else if(fdistSqr <= gdistSqr)
 				S = fofs;
 			else
 				S = gofs;
@@ -151,7 +153,8 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 	break;
-	case PDTriangle: {
+	case PDTriangle:
+	{
 		// Compute the inverse matrix of the plane basis.
 		pVector& u = position.u;
 		pVector& v = position.v;
@@ -179,7 +182,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		s2 *= -det;
 
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -195,7 +198,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 
 			// Opposite signs if product < 0
 			// Is there a faster way to do this?
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			float nv = position.p2 * m.vel;
@@ -213,7 +216,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 			float vpos = offset * s2;
 
 			// Did it cross plane outside triangle?
-			if (upos < 0 || vpos < 0 || (upos + vpos) > 1)
+			if(upos < 0 || vpos < 0 || (upos + vpos) > 1)
 				continue;
 
 			// A hit! A most palpable hit!
@@ -226,9 +229,9 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 			pVector fofs = (fn * (fn * foffset)) - foffset;
 			float fdistSqr = fofs.length2();
 			pVector S;
-			if (udistSqr <= vdistSqr && udistSqr <= fdistSqr)
+			if(udistSqr <= vdistSqr && udistSqr <= fdistSqr)
 				S = uofs;
-			else if (vdistSqr <= fdistSqr)
+			else if(vdistSqr <= fdistSqr)
 				S = vofs;
 			else
 				S = fofs;
@@ -245,12 +248,13 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 	break;
-	case PDDisc: {
+	case PDDisc:
+	{
 		float r1Sqr = _sqr(position.radius1);
 		float r2Sqr = _sqr(position.radius2);
 
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -266,7 +270,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 
 			// Opposite signs if product < 0
 			// Is there a faster way to do this?
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			// Find position at the crossing point by parameterizing
@@ -290,7 +294,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 
 			float rad = offset.length2();
 
-			if (rad > r1Sqr || rad < r2Sqr)
+			if(rad > r1Sqr || rad < r2Sqr)
 				continue;
 
 			// A hit! A most palpable hit!
@@ -307,11 +311,12 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 		}
 	}
 	break;
-	case PDSphere: {
+	case PDSphere:
+	{
 		float rSqr = position.radius1 * position.radius1;
 
 		// See which particles are aimed toward the sphere.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -325,12 +330,12 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 			float v = L * Vn;
 
 			float disc = rSqr - (L * L) + v * v;
-			if (disc < 0)
+			if(disc < 0)
 				continue; // I'm not heading toward it.
 
 			// Compute length for second rejection test.
 			float t = v - std::sqrt(disc);
-			if (t < 0 || t > (vm * look_ahead))
+			if(t < 0 || t > (vm * look_ahead))
 				continue;
 
 			// Get a vector3 to safety.
@@ -354,9 +359,10 @@ void PAPI::PAAvoid::Transform(const fmat4x4& m)
 
 void PABounce::Execute(ParticleEffect* effect, float dt)
 {
-	switch (position.type)
+	switch(position.type)
 	{
-	case PDTriangle: {
+	case PDTriangle:
+	{
 		// Compute the inverse matrix of the plane basis.
 		pVector& u = position.u;
 		pVector& v = position.v;
@@ -375,7 +381,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 		s2 *= -det;
 
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -391,7 +397,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			// Opposite signs if product < 0
 			// Is there a faster way to do this?
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			// Find position at the crossing point by parameterizing
@@ -419,7 +425,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 			float vpos = offset * s2;
 
 			// Did it cross plane outside triangle?
-			if (upos < 0 || vpos < 0 || (upos + vpos) > 1)
+			if(upos < 0 || vpos < 0 || (upos + vpos) > 1)
 				continue;
 
 			// A hit! A most palpable hit!
@@ -430,19 +436,20 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			// Compute new velocity heading out:
 			// Don't apply friction if tangential velocity < cutoff
-			if (vt.length2() <= cutoffSqr)
+			if(vt.length2() <= cutoffSqr)
 				m.vel = vt - vn * resilience;
 			else
 				m.vel = vt * oneMinusFriction - vn * resilience;
 		}
 	}
 	break;
-	case PDDisc: {
+	case PDDisc:
+	{
 		float r1Sqr = _sqr(position.radius1);
 		float r2Sqr = _sqr(position.radius2);
 
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -458,7 +465,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			// Opposite signs if product < 0
 			// Is there a faster way to do this?
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			// Find position at the crossing point by parameterizing
@@ -482,7 +489,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			float rad = offset.length2();
 
-			if (rad > r1Sqr || rad < r2Sqr)
+			if(rad > r1Sqr || rad < r2Sqr)
 				continue;
 
 			// A hit! A most palpable hit!
@@ -493,16 +500,17 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			// Compute new velocity heading out:
 			// Don't apply friction if tangential velocity < cutoff
-			if (vt.length2() <= cutoffSqr)
+			if(vt.length2() <= cutoffSqr)
 				m.vel = vt - vn * resilience;
 			else
 				m.vel = vt * oneMinusFriction - vn * resilience;
 		}
 	}
 	break;
-	case PDPlane: {
+	case PDPlane:
+	{
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -517,7 +525,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 			float distnew = pnext * position.p2 + position.radius1;
 
 			// Opposite signs if product < 0
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			// Compute tangential and normal components of velocity
@@ -527,14 +535,15 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			// Compute new velocity heading out:
 			// Don't apply friction if tangential velocity < cutoff
-			if (vt.length2() <= cutoffSqr)
+			if(vt.length2() <= cutoffSqr)
 				m.vel = vt - vn * resilience;
 			else
 				m.vel = vt * oneMinusFriction - vn * resilience;
 		}
 	}
 	break;
-	case PDRectangle: {
+	case PDRectangle:
+	{
 		// Compute the inverse matrix of the plane basis.
 		pVector& u = position.u;
 		pVector& v = position.v;
@@ -553,7 +562,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 		s2 *= -det;
 
 		// See which particles bounce.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -568,7 +577,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 			float distnew = pnext * position.p2 + position.radius1;
 
 			// Opposite signs if product < 0
-			if (distold * distnew >= 0)
+			if(distold * distnew >= 0)
 				continue;
 
 			// Find position at the crossing point by parameterizing
@@ -591,7 +600,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 			float vpos = offset * s2;
 
 			// Crossed plane outside bounce region if !(0<=[uv]pos<=1)
-			if (upos < 0 || upos > 1 || vpos < 0 || vpos > 1)
+			if(upos < 0 || upos > 1 || vpos < 0 || vpos > 1)
 				continue;
 
 			// A hit! A most palpable hit!
@@ -603,17 +612,18 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 			// Compute new velocity heading out:
 			// Don't apply friction if tangential velocity < cutoff
-			if (vt.length2() <= cutoffSqr)
+			if(vt.length2() <= cutoffSqr)
 				m.vel = vt - vn * resilience;
 			else
 				m.vel = vt * oneMinusFriction - vn * resilience;
 		}
 	}
 	break;
-	case PDSphere: {
+	case PDSphere:
+	{
 		// Sphere that particles bounce off
 		// The particles are always forced out of the sphere.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -621,7 +631,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 			// If so, bounce it.
 			pVector pnext(m.pos + m.vel * dt);
 
-			if (position.Within(pnext))
+			if(position.Within(pnext))
 			{
 				// See if we were inside on previous timestep.
 				BOOL pinside = position.Within(m.pos);
@@ -638,13 +648,13 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 				pVector vn(n * nmag);	 // Normal Vn = (V.N)N
 				pVector vt = m.vel - vn; // Tangent Vt = V - Vn
 
-				if (pinside)
+				if(pinside)
 				{
 					// Previous position was inside. If normal component of
 					// velocity points in, reverse it. This effectively
 					// repels particles which would otherwise be trapped
 					// in the sphere.
-					if (nmag < 0)
+					if(nmag < 0)
 						m.vel = vt - vn;
 				}
 				else
@@ -655,7 +665,7 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
 
 					// Compute new velocity heading out:
 					// Don't apply friction if tangential velocity < cutoff
-					if (vt.length2() <= cutoffSqr)
+					if(vt.length2() <= cutoffSqr)
 						m.vel = vt - vn * resilience;
 					else
 						m.vel = vt * oneMinusFriction - vn * resilience;
@@ -676,9 +686,9 @@ void PACopyVertexB::Execute(ParticleEffect* effect, float dt)
 {
 	u32 i;
 
-	if (copy_pos)
+	if(copy_pos)
 	{
-		for (i = 0; i < effect->p_count; i++)
+		for(i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 			m.posB = m.pos;
@@ -708,12 +718,12 @@ void PADamping::Execute(ParticleEffect* effect, float dt)
 	pVector one(1, 1, 1);
 	pVector scale(one - ((one - damping) * dt));
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 		float vSqr = m.vel.length2();
 
-		if (vSqr >= vlowSqr && vSqr <= vhighSqr)
+		if(vSqr >= vlowSqr && vSqr <= vhighSqr)
 		{
 			m.vel.x *= scale.x;
 			m.vel.y *= scale.y;
@@ -736,7 +746,7 @@ void PAExplosion::Execute(ParticleEffect* effect, float dt)
 	float inexp = -0.5f * _sqr(oneOverSigma);
 	float outexp = ONEOVERSQRT2PI * oneOverSigma;
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 
@@ -765,9 +775,9 @@ void PAFollow::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count - 1; i++)
+		for(u32 i = 0; i < effect->p_count - 1; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -775,7 +785,7 @@ void PAFollow::Execute(ParticleEffect* effect, float dt)
 			pVector tohim(effect->particles[i + 1].pos - m.pos); // tohim = p1 - p0
 			float tohimlenSqr = tohim.length2();
 
-			if (tohimlenSqr < max_radiusSqr)
+			if(tohimlenSqr < max_radiusSqr)
 			{
 				// Compute force exerted between the two bodies
 				m.vel += tohim * (magdt / (std::sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
@@ -784,7 +794,7 @@ void PAFollow::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (u32 i = 0; i < effect->p_count - 1; i++)
+		for(u32 i = 0; i < effect->p_count - 1; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -809,21 +819,21 @@ void PAGravitate::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
 			// Add interactions with other particles
-			for (u32 j = i + 1; j < effect->p_count; j++)
+			for(u32 j = i + 1; j < effect->p_count; j++)
 			{
 				Particle& mj = effect->particles[j];
 
 				pVector tohim(mj.pos - m.pos); // tohim = p1 - p0
 				float tohimlenSqr = tohim.length2() + EPS_S;
 
-				if (tohimlenSqr < max_radiusSqr)
+				if(tohimlenSqr < max_radiusSqr)
 				{
 					// Compute force exerted between the two bodies
 					pVector acc(tohim * (magdt / (std::sqrt(tohimlenSqr) * (tohimlenSqr + epsilon))));
@@ -836,12 +846,12 @@ void PAGravitate::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
 			// Add interactions with other particles
-			for (u32 j = i + 1; j < effect->p_count; j++)
+			for(u32 j = i + 1; j < effect->p_count; j++)
 			{
 				Particle& mj = effect->particles[j];
 
@@ -868,7 +878,7 @@ void PAGravity::Execute(ParticleEffect* effect, float dt)
 {
 	pVector ddir(direction * dt);
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		// Step velocity with acceleration
 		effect->particles[i].vel += ddir;
@@ -886,9 +896,9 @@ void PAJet::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -899,7 +909,7 @@ void PAJet::Execute(ParticleEffect* effect, float dt)
 			// Soften by epsilon to avoid tight encounters to infinity
 			float rSqr = dir.length2();
 
-			if (rSqr < max_radiusSqr)
+			if(rSqr < max_radiusSqr)
 			{
 				pVector accel;
 				acc.Generate(accel);
@@ -911,7 +921,7 @@ void PAJet::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -943,9 +953,9 @@ void PAScatter::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -956,7 +966,7 @@ void PAScatter::Execute(ParticleEffect* effect, float dt)
 			// Soften by epsilon to avoid tight encounters to infinity
 			float rSqr = dir.length2();
 
-			if (rSqr < max_radiusSqr)
+			if(rSqr < max_radiusSqr)
 			{
 				pVector accel;
 				accel = dir / std::sqrt(rSqr);
@@ -970,7 +980,7 @@ void PAScatter::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -999,11 +1009,11 @@ void PAScatter::Transform(const fmat4x4& m)
 void PAKillOld::Execute(ParticleEffect* effect, float dt)
 {
 	// Must traverse list in reverse order so Remove will work
-	for (int i = effect->p_count - 1; i >= 0; i--)
+	for(int i = effect->p_count - 1; i >= 0; i--)
 	{
 		Particle& m = effect->particles[i];
 
-		if (!((m.age < age_limit) ^ kill_less_than))
+		if(!((m.age < age_limit) ^ kill_less_than))
 			effect->Remove(i);
 	}
 }
@@ -1019,21 +1029,21 @@ void PAMatchVelocity::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
 			// Add interactions with other particles
-			for (u32 j = i + 1; j < effect->p_count; j++)
+			for(u32 j = i + 1; j < effect->p_count; j++)
 			{
 				Particle& mj = effect->particles[j];
 
 				pVector tohim(mj.pos - m.pos); // tohim = p1 - p0
 				float tohimlenSqr = tohim.length2();
 
-				if (tohimlenSqr < max_radiusSqr)
+				if(tohimlenSqr < max_radiusSqr)
 				{
 					// Compute force exerted between the two bodies
 					pVector acc(mj.vel * (magdt / (tohimlenSqr + epsilon)));
@@ -1046,12 +1056,12 @@ void PAMatchVelocity::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
 			// Add interactions with other particles
-			for (u32 j = i + 1; j < effect->p_count; j++)
+			for(u32 j = i + 1; j < effect->p_count; j++)
 			{
 				Particle& mj = effect->particles[j];
 
@@ -1076,7 +1086,7 @@ void PAMatchVelocity::Transform(const fmat4x4&)
 void PAMove::Execute(ParticleEffect* effect, float dt)
 {
 	// Step particle positions forward by dt, and age the particles.
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 		// move
@@ -1098,9 +1108,9 @@ void PAOrbitLine::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1116,7 +1126,7 @@ void PAOrbitLine::Execute(ParticleEffect* effect, float dt)
 			// Soften by epsilon to avoid tight encounters to infinity
 			float rSqr = into.length2();
 
-			if (rSqr < max_radiusSqr)
+			if(rSqr < max_radiusSqr)
 				// Step velocity with acceleration
 				m.vel += into * (magdt / (std::sqrt(rSqr) + (rSqr + epsilon)));
 		}
@@ -1124,7 +1134,7 @@ void PAOrbitLine::Execute(ParticleEffect* effect, float dt)
 	else
 	{
 		// Removed because it causes pipeline stalls.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1158,9 +1168,9 @@ void PAOrbitPoint::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1172,14 +1182,14 @@ void PAOrbitPoint::Execute(ParticleEffect* effect, float dt)
 			float rSqr = dir.length2();
 
 			// Step velocity with acceleration
-			if (rSqr < max_radiusSqr)
+			if(rSqr < max_radiusSqr)
 				m.vel += dir * (magdt / (std::sqrt(rSqr) + (rSqr + epsilon)));
 		}
 	}
 	else
 	{
 		// Avoids pipeline stalls.
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1204,7 +1214,7 @@ void PAOrbitPoint::Transform(const fmat4x4& m)
 // Accelerate in random direction each time step
 void PARandomAccel::Execute(ParticleEffect* effect, float dt)
 {
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 
@@ -1226,7 +1236,7 @@ void PARandomAccel::Transform(const fmat4x4& m)
 // Immediately displace position randomly
 void PARandomDisplace::Execute(ParticleEffect* effect, float dt)
 {
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 
@@ -1248,7 +1258,7 @@ void PARandomDisplace::Transform(const fmat4x4& m)
 // Immediately assign a random velocity
 void PARandomVelocity::Execute(ParticleEffect* effect, float dt)
 {
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 
@@ -1284,9 +1294,9 @@ static inline void _pconstrain(float x0, float v0, float xf, float vf,
 // and then suck the particles back to the original position. Cool!
 void PARestore::Execute(ParticleEffect* effect, float dt)
 {
-	if (time_left <= 0)
+	if(time_left <= 0)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1302,7 +1312,7 @@ void PARestore::Execute(ParticleEffect* effect, float dt)
 		float tSqrInv2dt = dt * 2.0f / (t * t);
 		float tCubInv3dtSqr = dtSqr * 3.0f / (t * t * t);
 
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 #if 1
 			Particle& m = effect->particles[i];
@@ -1368,12 +1378,12 @@ void PARestore::Transform(const fmat4x4&)
 void PASink::Execute(ParticleEffect* effect, float dt)
 {
 	// Must traverse list in reverse order so Remove will work
-	for (int i = effect->p_count - 1; i >= 0; i--)
+	for(int i = effect->p_count - 1; i >= 0; i--)
 	{
 		Particle& m = effect->particles[i];
 
 		// Remove if inside/outside flag matches object's flag
-		if (!(position.Within(m.pos) ^ kill_inside))
+		if(!(position.Within(m.pos) ^ kill_inside))
 			effect->Remove(i);
 	}
 }
@@ -1387,12 +1397,12 @@ void PASink::Transform(const fmat4x4& m)
 void PASinkVelocity::Execute(ParticleEffect* effect, float dt)
 {
 	// Must traverse list in reverse order so Remove will work
-	for (int i = effect->p_count - 1; i >= 0; i--)
+	for(int i = effect->p_count - 1; i >= 0; i--)
 	{
 		Particle& m = effect->particles[i];
 
 		// Remove if inside/outside flag matches object's flag
-		if (!(velocity.Within(m.vel) ^ kill_inside))
+		if(!(velocity.Within(m.vel) ^ kill_inside))
 			effect->Remove(i);
 	}
 }
@@ -1405,28 +1415,28 @@ void PASinkVelocity::Transform(const fmat4x4& m)
 // Randomly add particles to the system
 void PASource::Execute(ParticleEffect* effect, float dt)
 {
-	if (m_Flags.is(flSilent))
+	if(m_Flags.is(flSilent))
 		return;
 
 	int rate = int(floor(particle_rate * dt));
 
 	// Dither the fraction particle in time.
-	if (drand48() < particle_rate * dt - float(rate))
+	if(drand48() < particle_rate * dt - float(rate))
 		rate++;
 
 	// Don't emit more than it can hold.
-	if (effect->p_count + rate > effect->max_particles)
+	if(effect->p_count + rate > effect->max_particles)
 		rate = effect->max_particles - effect->p_count;
 
 	pVector pos, posB, vel, col, siz, rt;
 
-	if (m_Flags.is(u32(flVertexB_tracks)))
+	if(m_Flags.is(u32(flVertexB_tracks)))
 	{
-		for (int i = 0; i < rate; i++)
+		for(int i = 0; i < rate; i++)
 		{
 			position.Generate(pos);
 			size.Generate(siz);
-			if (m_Flags.is(flSingleSize))
+			if(m_Flags.is(flSingleSize))
 				siz.set(siz.x, siz.x, siz.x);
 			rot.Generate(rt);
 			velocity.Generate(vel);
@@ -1439,11 +1449,11 @@ void PASource::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (int i = 0; i < rate; i++)
+		for(int i = 0; i < rate; i++)
 		{
 			position.Generate(pos);
 			size.Generate(siz);
-			if (m_Flags.is(flSingleSize))
+			if(m_Flags.is(flSingleSize))
 				siz.set(siz.x, siz.x, siz.x);
 			rot.Generate(rt);
 			velocity.Generate(vel);
@@ -1467,16 +1477,16 @@ void PASpeedLimit::Execute(ParticleEffect* effect, float dt)
 	float min_sqr = min_speed * min_speed;
 	float max_sqr = max_speed * max_speed;
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 		float sSqr = m.vel.length2();
-		if (sSqr < min_sqr && sSqr)
+		if(sSqr < min_sqr && sSqr)
 		{
 			float s = std::sqrt(sSqr);
 			m.vel *= (min_speed / s);
 		}
-		else if (sSqr > max_sqr)
+		else if(sSqr > max_sqr)
 		{
 			float s = std::sqrt(sSqr);
 			m.vel *= (max_speed / s);
@@ -1492,21 +1502,21 @@ void PASpeedLimit::Transform(const fmat4x4&)
 // Change color of all particles toward the specified color
 void PATargetColor::Execute(ParticleEffect* effect, float dt)
 {
-	if (effect == nullptr || effect->p_count > effect->max_particles || effect->p_count == 0)
+	if(effect == nullptr || effect->p_count > effect->max_particles || effect->p_count == 0)
 		return;
 
 	float scaleFac = scale * dt;
 	Fcolor c_p, c_t;
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& partcle = effect->particles[i];
 
 		c_p.set(partcle.color);
 
-		c_t.set(c_p.r + (color.x - c_p.r) * scaleFac, 
+		c_t.set(c_p.r + (color.x - c_p.r) * scaleFac,
 				c_p.g + (color.y - c_p.g) * scaleFac,
-				c_p.b + (color.z - c_p.b) * scaleFac, 
+				c_p.b + (color.z - c_p.b) * scaleFac,
 				c_p.a + (alpha - c_p.a) * scaleFac);
 
 		partcle.color = c_t.get();
@@ -1524,7 +1534,7 @@ void PATargetSize::Execute(ParticleEffect* effect, float dt)
 	float scaleFac_y = scale.y * dt;
 	float scaleFac_z = scale.z * dt;
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 		pVector dif(size - m.size);
@@ -1547,7 +1557,7 @@ void PATargetRotate::Execute(ParticleEffect* effect, float dt)
 
 	pVector r = pVector(_abs(rot.x), _abs(rot.y), _abs(rot.z));
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 		//		m.rot += (r - m.rot) * scaleFac;
@@ -1568,7 +1578,7 @@ void PATargetVelocity::Execute(ParticleEffect* effect, float dt)
 {
 	float scaleFac = scale * dt;
 
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 		m.vel += (velocity - m.vel) * scaleFac;
@@ -1588,9 +1598,9 @@ void PAVortex::Execute(ParticleEffect* effect, float dt)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
-	if (max_radiusSqr < P_MAXFLOAT)
+	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1601,7 +1611,7 @@ void PAVortex::Execute(ParticleEffect* effect, float dt)
 			float rSqr = offset.length2();
 
 			// Don't do anything to particle if too close or too far.
-			if (rSqr > max_radiusSqr)
+			if(rSqr > max_radiusSqr)
 				continue;
 
 			float r = std::sqrt(rSqr);
@@ -1634,7 +1644,7 @@ void PAVortex::Execute(ParticleEffect* effect, float dt)
 	}
 	else
 	{
-		for (u32 i = 0; i < effect->p_count; i++)
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
 			Particle& m = effect->particles[i];
 
@@ -1689,7 +1699,7 @@ void PATurbulence::Execute(ParticleEffect* effect, float dt)
 	pVector vY;
 	pVector vZ;
 	age += dt;
-	for (u32 i = 0; i < effect->p_count; i++)
+	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
 

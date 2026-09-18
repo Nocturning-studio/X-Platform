@@ -115,10 +115,10 @@ class XRNETSERVER_API IPureClient : private MultipacketReciever, private Multipa
 	virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 	virtual void Flush_Send_Buffer();
 	virtual void OnMessage(void* data, u32 size);
-	virtual void OnInvalidHost(){};
-	virtual void OnInvalidPassword(){};
-	virtual void OnSessionFull(){};
-	virtual void OnConnectRejected(){};
+	virtual void OnInvalidHost() {};
+	virtual void OnInvalidPassword() {};
+	virtual void OnSessionFull() {};
+	virtual void OnConnectRejected() {};
 	BOOL net_HasBandwidth();
 	void ClearStatistic();
 	IClientStatistic GetStatistic() const
@@ -154,7 +154,7 @@ class XRNETSERVER_API IPureClient : private MultipacketReciever, private Multipa
 	{
 		return "";
 	}
-	virtual void OnSessionTerminate(LPCSTR reason){};
+	virtual void OnSessionTerminate(LPCSTR reason) {};
 
 	virtual bool TestLoadBEClient()
 	{

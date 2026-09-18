@@ -8,7 +8,7 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
 #define CLevelStraightLinePathManager                                                                                  \
@@ -31,7 +31,8 @@ IC void CLevelStraightLinePathManager::setup(const _Graph* _graph, _DataStorage*
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CLevelStraightLinePathManager::create_path(T& vertex)
+template <typename T>
+IC void CLevelStraightLinePathManager::create_path(T& vertex)
 {
 	inherited::create_path(vertex);
 
@@ -42,16 +43,16 @@ template <typename T> IC void CLevelStraightLinePathManager::create_path(T& vert
 	xr_vector<_index_type>::iterator I = path->begin();
 	xr_vector<_index_type>::iterator E = path->end();
 	_index_type& dwNode = *I;
-	for (++I; I != E; ++I)
+	for(++I; I != E; ++I)
 	{
 		u32 vertex_id = graph->check_position_in_direction(dwNode, tPosition, graph->vertex_position(*I));
-		if (graph->valid_vertex_id(vertex_id))
+		if(graph->valid_vertex_id(vertex_id))
 			fDirectDistance = tPosition.distance_to(graph->vertex_position(*I));
 		else
 			fDirectDistance = m_parameters->max_range;
-		if (fDirectDistance == m_parameters->max_range)
+		if(fDirectDistance == m_parameters->max_range)
 		{
-			if (fLastDirectDistance == 0)
+			if(fLastDirectDistance == 0)
 			{
 				fCumulativeDistance += graph->distance(dwNode, *I);
 				dwNode = *I;
@@ -66,7 +67,7 @@ template <typename T> IC void CLevelStraightLinePathManager::create_path(T& vert
 		}
 		else
 			fLastDirectDistance = fDirectDistance;
-		if (fCumulativeDistance + fLastDirectDistance >= m_parameters->max_range)
+		if(fCumulativeDistance + fLastDirectDistance >= m_parameters->max_range)
 		{
 			m_parameters->m_distance = m_parameters->max_range;
 			return;
@@ -74,11 +75,11 @@ template <typename T> IC void CLevelStraightLinePathManager::create_path(T& vert
 	}
 
 	u32 vertex_id = graph->check_position_in_direction(dwNode, tPosition, m_parameters->m_dest_point);
-	if (graph->valid_vertex_id(vertex_id))
+	if(graph->valid_vertex_id(vertex_id))
 		fDirectDistance = tPosition.distance_to(m_parameters->m_dest_point);
 	else
 		fDirectDistance = m_parameters->max_range;
-	if (fDirectDistance == m_parameters->max_range)
+	if(fDirectDistance == m_parameters->max_range)
 		m_parameters->m_distance =
 			fCumulativeDistance + fLastDirectDistance +
 			m_parameters->m_dest_point.distance_to(graph->vertex_position((*path)[path->size() - 1]));

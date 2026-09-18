@@ -66,7 +66,7 @@ Fsphere CSpaceRestrictionBridge::sphere() const
 
 bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside)
 {
-	//OPTICK_EVENT("CSpaceRestrictionBridge::inside");
+	// OPTICK_EVENT("CSpaceRestrictionBridge::inside");
 	START_PROFILE("Restricted Object/Bridge/Inside Vertex");
 	return (object().inside(level_vertex_id, partially_inside));
 	STOP_PROFILE;
@@ -74,7 +74,7 @@ bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside)
 
 bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside, float radius)
 {
-	//OPTICK_EVENT("CSpaceRestrictionBridge::inside");
+	// OPTICK_EVENT("CSpaceRestrictionBridge::inside");
 	START_PROFILE("Restricted Object/Bridge/Inside Vertex");
 	return (object().inside(level_vertex_id, partially_inside, radius));
 	STOP_PROFILE;
@@ -82,7 +82,7 @@ bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside,
 
 bool CSpaceRestrictionBridge::inside(const Fsphere& sphere)
 {
-	//OPTICK_EVENT("CSpaceRestrictionBridge::inside");
+	// OPTICK_EVENT("CSpaceRestrictionBridge::inside");
 	START_PROFILE("Restricted Object/Bridge/Inside Position");
 	return (object().inside(sphere));
 	STOP_PROFILE;
@@ -98,7 +98,7 @@ struct CFindByXZ_predicate
 
 bool CSpaceRestrictionBridge::on_border(const fvec3& position) const
 {
-	//OPTICK_EVENT("CSpaceRestrictionBridge::on_border");
+	// OPTICK_EVENT("CSpaceRestrictionBridge::on_border");
 	START_PROFILE("Restricted Object/Bridge/On Border");
 
 	VERIFY(ai().level_graph().valid_vertex_position(position));
@@ -109,15 +109,15 @@ bool CSpaceRestrictionBridge::on_border(const fvec3& position) const
 	xr_vector<u32>::const_iterator I =
 		std::lower_bound(object().border().begin(), object().border().end(), pos.xz(), CFindByXZ_predicate());
 
-	if ((I == E) || (ai().level_graph().vertex(*I)->position().xz() != pos.xz()))
+	if((I == E) || (ai().level_graph().vertex(*I)->position().xz() != pos.xz()))
 		return (false);
 
-	for (I; I != E; ++I)
+	for(I; I != E; ++I)
 	{
-		if (ai().level_graph().vertex(*I)->position().xz() != pos.xz())
+		if(ai().level_graph().vertex(*I)->position().xz() != pos.xz())
 			break;
 
-		if (_abs(ai().level_graph().vertex_plane_y(*I) - position.y) < 2.f)
+		if(_abs(ai().level_graph().vertex_plane_y(*I) - position.y) < 2.f)
 			return (true);
 	}
 
@@ -128,13 +128,13 @@ bool CSpaceRestrictionBridge::on_border(const fvec3& position) const
 
 bool CSpaceRestrictionBridge::out_of_border(const fvec3& position)
 {
-	//OPTICK_EVENT("CSpaceRestrictionBridge::out_of_border");
+	// OPTICK_EVENT("CSpaceRestrictionBridge::out_of_border");
 	START_PROFILE("Restricted Object/Bridge/Out Of Border");
 
 	VERIFY(ai().level_graph().valid_vertex_position(position));
 
 	u32 level_vertex_id = ai().level_graph().vertex_id(position);
-	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
+	if(!ai().level_graph().valid_vertex_id(level_vertex_id))
 		return (true);
 
 	Fsphere temp;

@@ -77,12 +77,12 @@ class CEntityCondition : public CEntityConditionSimple, public CHitImmunity
 
 	virtual bool IsLimping() const;
 
-	virtual void ChangeSatiety(float value){};
+	virtual void ChangeSatiety(float value) {};
 	void ChangeHealth(float value);
 	void ChangePower(float value);
 	void ChangeRadiation(float value);
 	void ChangePsyHealth(float value);
-	virtual void ChangeAlcohol(float value){};
+	virtual void ChangeAlcohol(float value) {};
 
 	IC void MaxPower()
 	{

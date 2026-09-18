@@ -55,7 +55,7 @@ class CUIScrollBar : public CUIWindow
 	void SetEnabled(bool b)
 	{
 		m_b_enabled = b;
-		if (!m_b_enabled)
+		if(!m_b_enabled)
 			Show(m_b_enabled);
 	}
 	bool GetEnabled()

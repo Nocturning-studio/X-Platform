@@ -10,7 +10,8 @@
 class CLevelDebug
 {
   public:
-	template <typename T> class CItemBase
+	template <typename T>
+	class CItemBase
 	{
 
 		xr_vector<T> m_data;
@@ -74,9 +75,10 @@ class CLevelDebug
 			m_data.clear();
 		}
 
-		template <class T> IC void process(T& process_pred)
+		template <class T>
+		IC void process(T& process_pred)
 		{
-			for (ITEM_STORAGE_VEC_IT it = m_data.begin(); it != m_data.end(); ++it)
+			for(ITEM_STORAGE_VEC_IT it = m_data.begin(); it != m_data.end(); ++it)
 			{
 				process_pred(*it);
 			}
@@ -216,22 +218,26 @@ class CLevelDebug
 	CLevelDebug();
 	~CLevelDebug();
 
-	template <class T> CObjectInfo& object_info(CObject* obj, T typed_class)
+	template <class T>
+	CObjectInfo& object_info(CObject* obj, T typed_class)
 	{
 		return object_info(obj, typeid((*typed_class)).name());
 	}
 
-	template <class T> CObjectInfo& object_info(T typed_class)
+	template <class T>
+	CObjectInfo& object_info(T typed_class)
 	{
 		return object_info(typed_class, typeid((*typed_class)).name());
 	}
 
-	template <class T> CTextInfo& text(T typed_class)
+	template <class T>
+	CTextInfo& text(T typed_class)
 	{
 		return text(typed_class, typeid((*typed_class)).name());
 	}
 
-	template <class T> CLevelInfo& level_info(T typed_class)
+	template <class T>
+	CLevelInfo& level_info(T typed_class)
 	{
 		return level_info(typed_class, typeid((*typed_class)).name());
 	}

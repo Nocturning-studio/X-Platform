@@ -162,7 +162,7 @@ void CPseudoGigant::reinit()
 
 	m_time_next_threaten = 0;
 
-	if (CCustomMonster::use_simplified_visual())
+	if(CCustomMonster::use_simplified_visual())
 		return;
 
 	move().load_velocity(*cNameSect(), "Velocity_JumpPrepare", MonsterMovement::eGiantVelocityParameterJumpPrepare);
@@ -180,11 +180,11 @@ void CPseudoGigant::event_on_step()
 	//////////////////////////////////////////////////////////////////////////
 	// Earthquake Effector	//////////////
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (pActor)
+	if(pActor)
 	{
 		float dist_to_actor = pActor->Position().distance_to(Position());
 		float max_dist = MAX_STEP_RADIUS;
-		if (dist_to_actor < max_dist)
+		if(dist_to_actor < max_dist)
 			Actor()->Cameras().AddCamEffector(xr_new<CPseudogigantStepEffector>(
 				step_effector.time, step_effector.amplitude, step_effector.period_number,
 				(max_dist - dist_to_actor) / (1.2f * max_dist)));
@@ -194,20 +194,20 @@ void CPseudoGigant::event_on_step()
 
 bool CPseudoGigant::check_start_conditions(ControlCom::EControlType type)
 {
-	if (!inherited::check_start_conditions(type))
+	if(!inherited::check_start_conditions(type))
 		return false;
 
-	if (type == ControlCom::eControlRunAttack)
+	if(type == ControlCom::eControlRunAttack)
 		return true;
 
-	if (type == ControlCom::eControlThreaten)
+	if(type == ControlCom::eControlThreaten)
 	{
-		if (m_time_next_threaten > time())
+		if(m_time_next_threaten > time())
 			return false;
 
 		// check distance to enemy
 		float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
-		if ((dist > m_threaten_dist_max) || (dist < m_threaten_dist_min))
+		if((dist > m_threaten_dist_max) || (dist < m_threaten_dist_min))
 			return false;
 	}
 
@@ -216,7 +216,7 @@ bool CPseudoGigant::check_start_conditions(ControlCom::EControlType type)
 
 void CPseudoGigant::on_activate_control(ControlCom::EControlType type)
 {
-	if (type == ControlCom::eControlThreaten)
+	if(type == ControlCom::eControlThreaten)
 	{
 		m_sound_start_threaten.play_at_pos(this, get_head_position(this));
 		m_time_next_threaten = time() + Random.randI(m_threaten_delay_min, m_threaten_delay_max);
@@ -228,10 +228,10 @@ void CPseudoGigant::on_threaten_execute()
 	// разбросить объекты
 	m_nearest.clear_not_free();
 	Level().ObjectSpace.GetNearest(m_nearest, Position(), 15.f, NULL);
-	for (u32 i = 0; i < m_nearest.size(); i++)
+	for(u32 i = 0; i < m_nearest.size(); i++)
 	{
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
-		if (!obj || !obj->m_pPhysicsShell)
+		if(!obj || !obj->m_pPhysicsShell)
 			continue;
 
 		fvec3 dir;
@@ -253,9 +253,9 @@ void CPseudoGigant::on_threaten_execute()
 	PlayParticles(m_kick_particles, pos, Direction());
 
 	CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(EnemyMan.get_enemy()));
-	if (!pA)
+	if(!pA)
 		return;
-	if (pA->is_jump())
+	if(pA->is_jump())
 		return;
 
 	float dist_to_enemy = pA->Position().distance_to(Position());
@@ -272,7 +272,7 @@ void CPseudoGigant::on_threaten_execute()
 															  m_threaten_effector.time_release, hit_value));
 
 	// развернуть камеру
-	if (pA->cam_Active())
+	if(pA->cam_Active())
 	{
 		pA->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, Random.randF(0.3f * hit_value));
 		pA->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, Random.randF(0.3f * hit_value));
@@ -284,13 +284,13 @@ void CPseudoGigant::on_threaten_execute()
 	NET_Packet l_P;
 	SHit HS;
 
-	HS.GenHeader(GE_HIT, pA->ID());			 //	u_EventGen	(l_P,GE_HIT, pA->ID());
-	HS.whoID = (ID());						 //	l_P.w_u16	(ID());
-	HS.weaponID = (ID());					 //	l_P.w_u16	(ID());
+	HS.GenHeader(GE_HIT, pA->ID());		   //	u_EventGen	(l_P,GE_HIT, pA->ID());
+	HS.whoID = (ID());					   //	l_P.w_u16	(ID());
+	HS.weaponID = (ID());				   //	l_P.w_u16	(ID());
 	HS.dir = (fvec3().set(0.f, 1.f, 0.f)); //	l_P.w_dir	(fvec3().set(0.f,1.f,0.f));
-	HS.power = (hit_value);					 //	l_P.w_float	(m_kick_damage);
+	HS.power = (hit_value);				   //	l_P.w_float	(m_kick_damage);
 	HS.boneID = (smart_cast<CKinematics*>(pA->Visual())
-					 ->LL_GetBoneRoot()); //	l_P.w_s16	(smart_cast<CKinematics*>(pA->Visual())->LL_GetBoneRoot());
+					 ->LL_GetBoneRoot());			   //	l_P.w_s16	(smart_cast<CKinematics*>(pA->Visual())->LL_GetBoneRoot());
 	HS.p_in_bone_space = (fvec3().set(0.f, 0.f, 0.f)); //	l_P.w_vec3	(fvec3().set(0.f,0.f,0.f));
 	HS.impulse = (80 * pA->character_physics_support()
 						   ->movement()
@@ -308,7 +308,7 @@ void CPseudoGigant::HitEntityInJump(const CEntity* pEntity)
 
 void CPseudoGigant::TranslateActionToPathParams()
 {
-	if ((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD))
+	if((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD))
 	{
 		inherited::TranslateActionToPathParams();
 		return;
@@ -318,7 +318,7 @@ void CPseudoGigant::TranslateActionToPathParams()
 	u32 des_mask =
 		(m_bDamaged ? MonsterMovement::eVelocityParameterWalkDamaged : MonsterMovement::eVelocityParameterWalkNormal);
 
-	if (m_force_real_speed)
+	if(m_force_real_speed)
 		vel_mask = des_mask;
 
 	path().set_velocity_mask(vel_mask);

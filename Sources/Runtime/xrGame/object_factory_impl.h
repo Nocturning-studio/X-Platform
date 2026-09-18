@@ -35,7 +35,8 @@ IC void CObjectFactory::add(const CLASS_ID& clsid, LPCSTR script_clsid)
 	add(xr_new<CObjectItemClientServer<_client_type, _server_type>>(clsid, script_clsid));
 }
 
-template <typename _unknown_type> IC void CObjectFactory::add(const CLASS_ID& clsid, LPCSTR script_clsid)
+template <typename _unknown_type>
+IC void CObjectFactory::add(const CLASS_ID& clsid, LPCSTR script_clsid)
 {
 	{
 		typedef object_type_traits::is_base_and_derived<CLIENT_BASE_CLASS, _unknown_type> a;
@@ -49,7 +50,8 @@ template <typename _unknown_type> IC void CObjectFactory::add(const CLASS_ID& cl
 
 #else // NO_XR_GAME
 
-template <typename _unknown_type> IC void CObjectFactory::add(const CLASS_ID& clsid, LPCSTR script_clsid)
+template <typename _unknown_type>
+IC void CObjectFactory::add(const CLASS_ID& clsid, LPCSTR script_clsid)
 {
 	add(xr_new<CObjectItemSingle<_unknown_type, false>>(clsid, script_clsid));
 }

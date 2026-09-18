@@ -26,10 +26,10 @@ void CUIFrameRect::InitTexture(const char* texture)
 {
 	string_path fn, buf;
 	strcpy(buf, texture);
-	if (strext(buf))
+	if(strext(buf))
 		*strext(buf) = 0;
 
-	if (FS.exist(fn, "$game_textures$", buf, ".ini"))
+	if(FS.exist(fn, "$game_textures$", buf, ".ini"))
 	{
 		fvec4 v;
 		// uFlags.set	(flSingleTex,TRUE);
@@ -164,11 +164,11 @@ void CUIFrameRect::UpdateSize()
 
 void CUIFrameRect::Draw()
 {
-	if (!uFlags.is(flValidSize))
+	if(!uFlags.is(flValidSize))
 		UpdateSize();
 
-	for (int k = 0; k < fmMax; ++k)
-		if (m_itm_mask.test(u16(1 << k)))
+	for(int k = 0; k < fmMax; ++k)
+		if(m_itm_mask.test(u16(1 << k)))
 			frame[k].Render();
 }
 
@@ -180,7 +180,7 @@ void CUIFrameRect::SetWndPos(float x, float y)
 {
 	fvec2 _old_pos = GetWndPos();
 	fvec2 _new_pos = fvec2().set(x, y);
-	if (_old_pos.similar(_new_pos, EPS, EPS))
+	if(_old_pos.similar(_new_pos, EPS, EPS))
 		return;
 
 	CUISimpleWindow::SetWndPos(_new_pos);
@@ -226,7 +226,7 @@ void CUIFrameRect::Draw(float x, float y)
 	fvec2 p = GetWndPos();
 	float dx = p.x - x;
 	float dy = p.y - y;
-	if (!fis_zero(dx) || !fis_zero(dy))
+	if(!fis_zero(dx) || !fis_zero(dy))
 		SetWndPos(x, y);
 
 	Draw();
@@ -234,6 +234,6 @@ void CUIFrameRect::Draw(float x, float y)
 
 void CUIFrameRect::SetTextureColor(u32 cl)
 {
-	for (int i = 0; i < fmMax; ++i)
+	for(int i = 0; i < fmMax; ++i)
 		frame[i].SetColor(cl);
 }

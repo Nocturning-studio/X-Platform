@@ -34,7 +34,7 @@ CUIWindow* CUIStats::Init(CUIXml& xml_doc, LPCSTR path, int team)
 	AddWindow(pWnd, true);
 	AddWindow(pPList, true);
 
-	if (xml_doc.NavigateToNode(strconcat(sizeof(_path), _path, path, ":spectator_list"), 0))
+	if(xml_doc.NavigateToNode(strconcat(sizeof(_path), _path, path, ":spectator_list"), 0))
 	{
 		// spectators
 		pPList = xr_new<CUIStatsPlayerList>();

@@ -36,7 +36,8 @@ class XRCDB_API TRI //*** 16 bytes total (was 32 :)
 {
   public:
 	u32 verts[3]; // 3*4 = 12b
-	union {
+	union
+	{
 		u32 dummy; // 4b
 		struct
 		{
@@ -102,7 +103,7 @@ class XRCDB_API MODEL
 	}
 	IC void syncronize() const
 	{
-		if (S_READY != status)
+		if(S_READY != status)
 		{
 			Log("! WARNING: syncronized CDB::query");
 			xrCriticalSection* C = (xrCriticalSection*)&cs;
@@ -121,7 +122,8 @@ class XRCDB_API MODEL
 struct XRCDB_API RESULT
 {
 	fvec3 verts[3];
-	union {
+	union
+	{
 		u32 dummy; // 4b
 		struct
 		{

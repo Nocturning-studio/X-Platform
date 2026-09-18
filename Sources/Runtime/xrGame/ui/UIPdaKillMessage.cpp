@@ -61,7 +61,7 @@ void CUIPdaKillMessage::Init(KillMessageStruct& msg)
 float CUIPdaKillMessage::InitText(CUIStatic& refStatic, float x, PlayerInfoKillMessage& info)
 {
 
-	if (0 == xr_strlen(info.m_name))
+	if(0 == xr_strlen(info.m_name))
 		return 0;
 
 	float y = 0;
@@ -101,10 +101,10 @@ void CUIPdaKillMessage::SetColor(u32 color)
 
 float CUIPdaKillMessage::InitIcon(CUIStatic& refStatic, float x, IconInfo& info)
 {
-	if (0 == info.m_rect.width())
+	if(0 == info.m_rect.width())
 		return 0;
 
-	if (info.m_shader == NULL)
+	if(info.m_shader == NULL)
 		return 0;
 
 	float y = 0;
@@ -116,7 +116,7 @@ float CUIPdaKillMessage::InitIcon(CUIStatic& refStatic, float x, IconInfo& info)
 	float height = rect.height();
 
 	scale = selfHeight / height;
-	if (scale > 1)
+	if(scale > 1)
 		scale = 1;
 	width = width * scale;
 	height = height * scale;

@@ -36,16 +36,16 @@ void CStateManagerBloodsucker::execute()
 
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-	if (enemy)
+	if(enemy)
 	{
-		if (check_state(eStateCustom_Vampire))
+		if(check_state(eStateCustom_Vampire))
 		{
 			state_id = eStateCustom_Vampire;
 		}
 		else
 		{
 
-			switch (object->EnemyMan.get_danger_type())
+			switch(object->EnemyMan.get_danger_type())
 			{
 			case eStrong:
 				state_id = eStatePanic;
@@ -56,17 +56,17 @@ void CStateManagerBloodsucker::execute()
 			}
 		}
 	}
-	else if (object->HitMemory.is_hit())
+	else if(object->HitMemory.is_hit())
 	{
 		state_id = eStateHitted;
 	}
-	else if (object->hear_dangerous_sound || object->hear_interesting_sound)
+	else if(object->hear_dangerous_sound || object->hear_interesting_sound)
 	{
 		state_id = eStateHearInterestingSound;
 	}
 	else
 	{
-		if (can_eat())
+		if(can_eat())
 			state_id = eStateEat;
 		else
 			state_id = eStateRest;
@@ -77,13 +77,13 @@ void CStateManagerBloodsucker::execute()
 	///////////////////////////////////////////////////////////////////////////////
 
 	// check if start interesting sound state
-	if ((prev_substate != eStateHearInterestingSound) && (state_id == eStateHearInterestingSound))
+	if((prev_substate != eStateHearInterestingSound) && (state_id == eStateHearInterestingSound))
 	{
 		object->predator_start();
 	}
 	else
 		// check if stop interesting sound state
-		if ((prev_substate == eStateHearInterestingSound) && (state_id != eStateHearInterestingSound))
+		if((prev_substate == eStateHearInterestingSound) && (state_id != eStateHearInterestingSound))
 		{
 			object->predator_stop();
 		}

@@ -10,7 +10,7 @@ CGameSpy_Patching::CGameSpy_Patching()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -24,7 +24,7 @@ CGameSpy_Patching::CGameSpy_Patching(HMODULE hGameSpyDLL)
 };
 CGameSpy_Patching::~CGameSpy_Patching()
 {
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -39,12 +39,12 @@ bool g_bInformUserThatNoPatchFound = true;
 void __cdecl GS_ptPatchCallback(PTBool available, PTBool mandatory, const char* versionName, int fileID,
 								const char* downloadURL, void* param)
 {
-	if (!MainMenu())
+	if(!MainMenu())
 		return;
-	if (!available)
+	if(!available)
 	{
 		// Msg("No new patches are available.");
-		if (g_bInformUserThatNoPatchFound)
+		if(g_bInformUserThatNoPatchFound)
 			MainMenu()->OnNoNewPatchFound();
 		return;
 	};
@@ -56,7 +56,7 @@ void CGameSpy_Patching::CheckForPatch(bool InformOfNoPatch)
 {
 	g_bInformUserThatNoPatchFound = InformOfNoPatch;
 	bool res = xrGS_ptCheckForPatch(GS_ptPatchCallback, PTFalse, this);
-	if (!res)
+	if(!res)
 	{
 		Msg("! Unable to send query for patch!");
 	}

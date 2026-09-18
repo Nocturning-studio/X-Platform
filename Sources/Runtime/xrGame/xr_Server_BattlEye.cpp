@@ -27,14 +27,14 @@ BattlEyeServer::BattlEyeServer(xrServer* Server)
 	Init = NULL;
 	m_succefull = false;
 
-	if (!Level().battleye_system.InitDir())
+	if(!Level().battleye_system.InitDir())
 	{
 		return;
 	}
 	m_pServer = Server;
 
 	m_module = LoadLibrary(Level().battleye_system.GetServerPath()); //=
-	if (!m_module)
+	if(!m_module)
 	{
 		Msg("! Error LoadLibrary %s", BATTLEYE_SERVER_DLL);
 		return;
@@ -44,10 +44,10 @@ BattlEyeServer::BattlEyeServer(xrServer* Server)
 	//	Level().battleye_system.SetServerPath( path_dll );
 
 	Init = (InitSrv_t)(GetProcAddress(m_module, "Init")); //=
-	if (!Init)
+	if(!Init)
 	{
 		Msg("! Error GetProcAddress <Init> from %s", BATTLEYE_SERVER_DLL);
-		if (!FreeLibrary(m_module))
+		if(!FreeLibrary(m_module))
 		{
 			Msg("! Error FreeLibrary for %s", BATTLEYE_SERVER_DLL);
 		}
@@ -63,10 +63,10 @@ BattlEyeServer::BattlEyeServer(xrServer* Server)
 					   &PrintMessage, &SendPacket, &KickPlayer, &pfnExit, &pfnRun, &pfnCommand, &pfnAddPlayer,
 					   &pfnRemovePlayer, &pfnNewPacket);
 
-	if (!m_succefull)
+	if(!m_succefull)
 	{
 		Msg("! Error initialization of %s (function Init return false)", BATTLEYE_SERVER_DLL);
-		if (!FreeLibrary(m_module))
+		if(!FreeLibrary(m_module))
 		{
 			Msg("! Error FreeLibrary for %s", BATTLEYE_SERVER_DLL);
 		}
@@ -84,10 +84,10 @@ void BattlEyeServer::AddConnectedPlayers() // if net_Ready
 {
 	Level().Server->clients_Lock();
 	u32 cnt = Level().Server->game->get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* CL = (xrClientData*)Level().Server->client_Get(it);
-		if (CL->net_Ready)
+		if(CL->net_Ready)
 		{
 			AddConnected_OnePlayer(CL);
 		}
@@ -97,12 +97,12 @@ void BattlEyeServer::AddConnectedPlayers() // if net_Ready
 
 void BattlEyeServer::AddConnected_OnePlayer(xrClientData* CL)
 {
-	if (g_dedicated_server && (CL->ID.value() == Level().Server->GetServerClient()->ID.value()))
+	if(g_dedicated_server && (CL->ID.value() == Level().Server->GetServerClient()->ID.value()))
 	{
 		return;
 	}
 
-	if (CL->m_guid[0] == 0)
+	if(CL->m_guid[0] == 0)
 	{
 		AddPlayer(CL->ID.value(), (char*)CL->ps->getName(), 0, 0);
 	}
@@ -120,9 +120,9 @@ void BattlEyeServer::PrintMessage(char* message)
 		sprintf_s(text, sizeof(text), "BattlEye Server: %s", message);
 		Msg("%s", text);
 
-		if (g_be_message_out) //==2
+		if(g_be_message_out) //==2
 		{
-			if (Level().game)
+			if(Level().game)
 			{
 				Level().game->CommonMessageOut(text);
 			}
@@ -145,12 +145,12 @@ void BattlEyeServer::KickPlayer(int player, char* reason)
 
 	u32 cnt = Level().Server->game->get_players_count();
 	u32 it = 0;
-	for (; it < cnt; ++it)
+	for(; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-		if (l_pC->ID.value() == (u32)player)
+		if(l_pC->ID.value() == (u32)player)
 		{
-			if (Level().Server->GetServerClient() != l_pC)
+			if(Level().Server->GetServerClient() != l_pC)
 			{
 				Msg("- Disconnecting : %s ! Kicked by BattlEye Server. Reason: %s", l_pC->ps->getName(), reason);
 				string512 reason2;
@@ -181,7 +181,7 @@ void BattlEyeServer::KickPlayer(int player, char* reason)
 			}
 		}
 	}
-	if (it == cnt)
+	if(it == cnt)
 	{
 		Msg("! No such player found : %i", player);
 	}
@@ -236,16 +236,16 @@ BattlEyeServer::~BattlEyeServer()
 
 void BattlEyeServer::ReleaseDLL()
 {
-	if (m_succefull)
+	if(m_succefull)
 	{
-		if (!pfnExit())
+		if(!pfnExit())
 		{
 			Msg("! Error unloading data in %s", BATTLEYE_SERVER_DLL);
 		}
 	}
-	if (m_module)
+	if(m_module)
 	{
-		if (!FreeLibrary(m_module))
+		if(!FreeLibrary(m_module))
 		{
 			Msg("! Error FreeLibrary for %s", BATTLEYE_SERVER_DLL);
 		}

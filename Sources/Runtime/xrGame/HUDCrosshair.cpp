@@ -60,7 +60,7 @@ void CHUDCrosshair::SetDispersion(float disp)
 extern ENGINE_API BOOL g_bRendering;
 void CHUDCrosshair::OnRender()
 {
-	//OPTICK_EVENT("CHUDCrosshair::OnRender");
+	// OPTICK_EVENT("CHUDCrosshair::OnRender");
 
 	VERIFY(g_bRendering);
 	fvec2 center;
@@ -119,14 +119,14 @@ void CHUDCrosshair::OnRender()
 	RenderBackend.set_Geometry(hGeomLine);
 	RenderBackend.Render(D3DPT_LINELIST, dwOffset, dwCount / 2);
 
-	if (!fsimilar(target_radius, radius))
+	if(!fsimilar(target_radius, radius))
 	{
 		float sp = radius_speed_perc * scr_size.x;
 		float radius_change = sp * Engine.TimeManager.GetDeltaTime();
 		clamp(radius_change, 0.0f, sp * 0.0165f); // clamp to 60 fps
 		clamp(radius_change, 0.0f, _abs(target_radius - radius));
 
-		if (target_radius < radius)
+		if(target_radius < radius)
 			radius -= radius_change;
 		else
 			radius += radius_change;

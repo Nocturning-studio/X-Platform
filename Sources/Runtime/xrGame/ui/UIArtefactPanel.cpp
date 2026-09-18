@@ -28,7 +28,7 @@ void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 	m_si.SetShader(GetEquipmentIconsShader());
 	m_vRects.clear();
 
-	for (xr_vector<const CArtefact*>::const_iterator it = artefacts.begin(); it != artefacts.end(); it++)
+	for(xr_vector<const CArtefact*>::const_iterator it = artefacts.begin(); it != artefacts.end(); it++)
 	{
 		const CArtefact* artefact = *it;
 		Frect rect;
@@ -42,7 +42,7 @@ void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 
 void CUIArtefactPanel::Draw()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_ARTEFACTS_PANEL))
+	if(!psHUD_Flags.is(HUD_DRAW_ARTEFACTS_PANEL))
 		return;
 
 	const float iIndent = 1.0f;
@@ -58,7 +58,7 @@ void CUIArtefactPanel::Draw()
 
 	float _s = m_cell_size.x / m_cell_size.y;
 
-	for (ITr it = m_vRects.begin(); it != m_vRects.end(); ++it)
+	for(ITr it = m_vRects.begin(); it != m_vRects.end(); ++it)
 	{
 		const Frect& r = *it;
 

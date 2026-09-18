@@ -67,7 +67,7 @@ class CPHCollideValidator
 
 	static IC bool DoCollide(const CPHObject& obj1, const CPHObject& obj2)
 	{
-		switch (CollideType(obj1.collide_class_bits().flags, obj2.collide_class_bits().flags))
+		switch(CollideType(obj1.collide_class_bits().flags, obj2.collide_class_bits().flags))
 		{
 		case cbNCGroupObject:
 			return DoCollideGroup(obj1, obj2);

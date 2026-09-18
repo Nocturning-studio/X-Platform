@@ -24,12 +24,12 @@ CPatrolPath& CPatrolPath::load_raw(const CLevelGraph* level_graph, const CGameLe
 {
 	R_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_POINTS));
 	u32 vertex_count = stream.r_u16();
-	for (u32 i = 0; i < vertex_count; ++i)
+	for(u32 i = 0; i < vertex_count; ++i)
 		add_vertex(CPatrolPoint(this).load_raw(level_graph, cross, game_graph, stream), i);
 
 	R_ASSERT(stream.find_chunk(WAYOBJECT_CHUNK_LINKS));
 	u32 edge_count = stream.r_u16();
-	for (u32 i = 0; i < edge_count; ++i)
+	for(u32 i = 0; i < edge_count; ++i)
 	{
 		u16 vertex0 = stream.r_u16();
 		u16 vertex1 = stream.r_u16();
@@ -50,7 +50,7 @@ void CPatrolPath::load(IReader& stream)
 	inherited::load(stream);
 	vertex_iterator I = vertices().begin();
 	vertex_iterator E = vertices().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I).second->data().path(this);
 }
 #endif

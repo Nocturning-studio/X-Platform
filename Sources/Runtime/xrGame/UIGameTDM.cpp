@@ -123,12 +123,13 @@ CUIGameTDM::~CUIGameTDM()
 //--------------------------------------------------------------------
 bool CUIGameTDM::IR_OnKeyboardPress(int dik)
 {
-	switch (dik)
+	switch(dik)
 	{
-	case DIK_CAPSLOCK: {
-		if (m_game)
+	case DIK_CAPSLOCK:
+	{
+		if(m_game)
 		{
-			if (m_game->Get_ShowPlayerNamesEnabled())
+			if(m_game->Get_ShowPlayerNamesEnabled())
 				m_game->Set_ShowPlayerNames(!m_game->Get_ShowPlayerNames());
 			else
 				m_game->Set_ShowPlayerNames(true);
@@ -137,26 +138,27 @@ bool CUIGameTDM::IR_OnKeyboardPress(int dik)
 	}
 	break;
 	}
-	if (inherited::IR_OnKeyboardPress(dik))
+	if(inherited::IR_OnKeyboardPress(dik))
 		return true;
 	return false;
 }
 
 bool CUIGameTDM::IR_OnKeyboardRelease(int dik)
 {
-	switch (dik)
+	switch(dik)
 	{
-	case DIK_CAPSLOCK: {
-		if (m_game)
+	case DIK_CAPSLOCK:
+	{
+		if(m_game)
 		{
-			if (!m_game->Get_ShowPlayerNamesEnabled())
+			if(!m_game->Get_ShowPlayerNamesEnabled())
 				m_game->Set_ShowPlayerNames(false);
 			return true;
 		};
 	}
 	break;
 	}
-	if (inherited::IR_OnKeyboardRelease(dik))
+	if(inherited::IR_OnKeyboardRelease(dik))
 		return true;
 
 	return false;
@@ -164,7 +166,7 @@ bool CUIGameTDM::IR_OnKeyboardRelease(int dik)
 
 void CUIGameTDM::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::OnFrame();
 	m_team1_icon->Update();
@@ -175,7 +177,7 @@ void CUIGameTDM::OnFrame()
 
 void CUIGameTDM::Render()
 {
-	//OPTICK_EVENT("CUIGameTDM::Render");
+	// OPTICK_EVENT("CUIGameTDM::Render");
 
 	inherited::Render();
 	m_team1_icon->Draw();
@@ -197,7 +199,7 @@ void CUIGameTDM::SetScoreCaption(int t1, int t2)
 void CUIGameTDM::SetFraglimit(int local_frags, int fraglimit)
 {
 	string64 str;
-	if (fraglimit)
+	if(fraglimit)
 		sprintf_s(str, "%d", fraglimit);
 	else
 		sprintf_s(str, "%s", "--");

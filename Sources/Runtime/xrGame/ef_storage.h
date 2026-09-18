@@ -51,7 +51,8 @@ class CEnemyMaxHealth;
 class CEnemyAnomalyType;
 class CEnemyDistanceToGraphPoint;
 
-template <typename T1, typename T2> class CEF_Params
+template <typename T1, typename T2>
+class CEF_Params
 {
   private:
 	T1* m_member;
@@ -99,13 +100,15 @@ typedef CEF_Params<CSE_ALifeSchedulable, const CSE_ALifeObject> CALifeParams;
 
 class CEF_Storage;
 
-template <typename T> struct CEnemyFunction : public T
+template <typename T>
+struct CEnemyFunction : public T
 {
 	IC CEnemyFunction(CEF_Storage* storage) : T(storage)
 	{
 	}
 
-	template <typename P> IC float get_value(P& params)
+	template <typename P>
+	IC float get_value(P& params)
 	{
 		P save = params;
 		params.member() = params.enemy();
@@ -117,7 +120,7 @@ template <typename T> struct CEnemyFunction : public T
 
 	virtual float ffGetValue()
 	{
-		if (ef_storage().non_alife().member())
+		if(ef_storage().non_alife().member())
 			return (get_value(ef_storage().non_alife()));
 		return (get_value(ef_storage().alife()));
 	}

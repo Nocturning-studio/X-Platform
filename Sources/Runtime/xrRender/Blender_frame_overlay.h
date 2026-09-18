@@ -26,7 +26,7 @@ class CBlender_frame_overlay : public IBlender
 
 		CBlender_Compile::PassDesc PassDescription;
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_OVERLAYS_MAIN:
 			PassDescription.VertexShader = "screen_quad";
@@ -34,7 +34,7 @@ class CBlender_frame_overlay : public IBlender
 			C.begin_Pass(PassDescription);
 			C.set_Sampler_point("s_image", r_RT_generic1);
 			C.end_Pass();
-			break;		
+			break;
 		case SE_OVERLAYS_WATERMARK:
 			PassDescription.VertexShader = "screen_quad";
 			PassDescription.PixelShader = "simple_image";

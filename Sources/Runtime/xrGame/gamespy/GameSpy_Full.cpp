@@ -38,7 +38,7 @@ CGameSpy_Full::~CGameSpy_Full()
 	delete_data(m_pGS_HTTP);
 	delete_data(m_pGS_SB);
 
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -50,7 +50,7 @@ void CGameSpy_Full::LoadGameSpy()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -60,7 +60,7 @@ void CGameSpy_Full::LoadGameSpy()
 
 void CGameSpy_Full::Update()
 {
-	if (!m_bServicesAlreadyChecked)
+	if(!m_bServicesAlreadyChecked)
 	{
 		m_bServicesAlreadyChecked = true;
 		MainMenu()->SetErrorDialog(CMainMenu::ErrGSServiceFailed);

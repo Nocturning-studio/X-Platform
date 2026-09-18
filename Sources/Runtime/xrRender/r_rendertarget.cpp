@@ -42,8 +42,8 @@ void CRenderTarget::create_textures()
 
 	rt_Hi_z.create(r_RT_Hi_z, dwWidth, dwHeight, RHI_Format::R16_FLOAT, 9);
 
-	//rt_Bent_Normals.create(r_RT_Bent_Normals, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
-	
+	// rt_Bent_Normals.create(r_RT_Bent_Normals, dwWidth, dwHeight, RHI_Format::RGBA16_FLOAT);
+
 	// DOF Resources
 	// G16R16F: R = Real CoC, G = Dilated (Max) CoC
 	rt_dof_coc.create(r_RT_dof_coc, dwWidth, dwHeight, RHI_Format::RG16_FLOAT);
@@ -158,7 +158,7 @@ void CRenderTarget::CompileShaders()
 
 void CRenderTarget::delete_textures()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	Msg("Destroying render target textures");
@@ -169,11 +169,11 @@ void CRenderTarget::delete_textures()
 	_RELEASE(tex_screenshot_gamesave);
 
 	// G-Buffer
-	for (int i = 0; i < 4; ++i)
+	for(int i = 0; i < 4; ++i)
 		rt_GBuffer[i].destroy();
 
 	rt_Hi_z.destroy();
-	//rt_Bent_Normals.destroy();
+	// rt_Bent_Normals.destroy();
 
 	// DOF
 	rt_dof_coc.destroy();
@@ -185,7 +185,7 @@ void CRenderTarget::delete_textures()
 	rt_Light_Accumulator.destroy();
 	rt_Distortion_Mask.destroy();
 
-	for (int i = 0; i < 2; ++i)
+	for(int i = 0; i < 2; ++i)
 		rt_Generic[i].destroy();
 
 	rt_Motion_Blur_Previous_Frame_Depth.destroy();
@@ -195,7 +195,7 @@ void CRenderTarget::delete_textures()
 	rt_BackbufferMip.destroy();
 	rt_Reflections.destroy();
 
-	for (int i = 0; i < 3; ++i)
+	for(int i = 0; i < 3; ++i)
 		rt_Radiation_Noise[i].destroy();
 
 	rt_ao.destroy();
@@ -206,10 +206,10 @@ void CRenderTarget::delete_textures()
 	t_LUT_0.destroy();
 	t_LUT_1.destroy();
 
-	for (int i = 0; i < 2; ++i)
+	for(int i = 0; i < 2; ++i)
 		rt_Bloom[i].destroy();
 
-	for (int i = 0; i < 2; ++i)
+	for(int i = 0; i < 2; ++i)
 		rt_Bloom_Blades[i].destroy();
 
 	rt_LUM_Mip_Chain.destroy();
@@ -269,7 +269,7 @@ CRenderTarget::CRenderTarget()
 
 	g_cuboid.create(FVF::F_L, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
 
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	u32 size = RenderImplementation.o.smapsize;
@@ -298,7 +298,7 @@ CRenderTarget::~CRenderTarget()
 	accum_omnip_geom_destroy();
 	accum_point_geom_destroy();
 
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 #ifdef DEBUG

@@ -46,7 +46,8 @@ class CUIListWnd : public CUIWindow
 
 	virtual bool AddItem_script(CUIListItem* item);
 
-	template <class Element> bool AddItem(Element* pItem, int insertBeforeIdx = -1);
+	template <class Element>
+	bool AddItem(Element* pItem, int insertBeforeIdx = -1);
 
 	void RemoveItem(int index);
 	void RemoveAll();

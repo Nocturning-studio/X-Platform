@@ -66,7 +66,7 @@ class CChangeLevelWnd : public CUIDialogWnd
 	bool m_b_position_cancel;
 
 	CChangeLevelWnd();
-	virtual ~CChangeLevelWnd(){};
+	virtual ~CChangeLevelWnd() {};
 	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
 	virtual bool WorkInPause() const
 	{

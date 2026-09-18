@@ -19,7 +19,7 @@ CScriptProcess* CScriptEngine::script_process(const EScriptProcessors& process_i
 {
 	PROFILE_FUNCTION();
 	CScriptProcessStorage::const_iterator I = m_script_processes.find(process_id);
-	if ((I != m_script_processes.end()))
+	if((I != m_script_processes.end()))
 		return ((*I).second);
 	return (0);
 }
@@ -27,14 +27,14 @@ CScriptProcess* CScriptEngine::script_process(const EScriptProcessors& process_i
 IC void CScriptEngine::parse_script_namespace(LPCSTR function_to_call, LPSTR name_space, LPSTR function)
 {
 	LPCSTR I = function_to_call, J = 0;
-	for (;; J = I, ++I)
+	for(;; J = I, ++I)
 	{
 		I = strchr(I, '.');
-		if (!I)
+		if(!I)
 			break;
 	}
 	strcpy(name_space, "_G");
-	if (!J)
+	if(!J)
 		strcpy(function, function_to_call);
 	else
 	{
@@ -48,14 +48,14 @@ template <typename _result_type>
 IC bool CScriptEngine::functor(LPCSTR function_to_call, luabind::functor<_result_type>& lua_function)
 {
 	luabind::object object;
-	if (!function_object(function_to_call, object))
+	if(!function_object(function_to_call, object))
 		return (false);
 
 	try
 	{
 		lua_function = luabind::object_cast<luabind::functor<_result_type>>(object);
 	}
-	catch (...)
+	catch(...)
 	{
 		return (false);
 	}

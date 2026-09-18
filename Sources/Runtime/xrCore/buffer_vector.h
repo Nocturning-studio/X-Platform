@@ -9,7 +9,8 @@
 #ifndef BUFFER_VECTOR_H_INCLUDED
 #define BUFFER_VECTOR_H_INCLUDED
 
-template <typename T> class buffer_vector
+template <typename T>
+class buffer_vector
 {
   public:
 	typedef T const* const_iterator;
@@ -40,7 +41,8 @@ template <typename T> class buffer_vector
 
 	inline self_type& operator=(self_type const& other);
 
-	template <typename input_iterator> inline void assign(input_iterator begin, input_iterator const& end);
+	template <typename input_iterator>
+	inline void assign(input_iterator begin, input_iterator const& end);
 	inline void assign(size_type const& count, const_reference value);
 
 	inline void swap(self_type& other);
@@ -105,7 +107,8 @@ template <typename T> class buffer_vector
 	pointer m_max_end;
 };
 
-template <typename T> inline void swap(buffer_vector<T>& left, buffer_vector<T>& right);
+template <typename T>
+inline void swap(buffer_vector<T>& left, buffer_vector<T>& right);
 
 #include "buffer_vector_inline.h"
 

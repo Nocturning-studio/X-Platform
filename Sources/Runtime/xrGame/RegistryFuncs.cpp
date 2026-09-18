@@ -9,13 +9,13 @@ bool ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value)
 	HKEY hKey = 0;
 	long res = RegOpenKeyEx(REGISTRY_BASE, REGISTRY_PATH, 0, KEY_READ, &hKey);
 
-	if (res != ERROR_SUCCESS)
+	if(res != ERROR_SUCCESS)
 	{
 		// Msg ("! Unable to find %s in registry", REGISTRY_PATH);
 		return false;
 	}
 
-	if (!hKey)
+	if(!hKey)
 	{
 		// Msg ("! Unable to find %s entry in registry", REGISTRY_PATH);
 		return false;
@@ -23,17 +23,20 @@ bool ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value)
 
 	string64 rBuf;
 	DWORD KeyValueSize = 0;
-	switch (rKeyType)
+	switch(rKeyType)
 	{
-	case REG_DWORD: {
+	case REG_DWORD:
+	{
 		KeyValueSize = 4;
 	}
 	break;
-	case REG_SZ: {
+	case REG_SZ:
+	{
 		KeyValueSize = 64;
 	}
 	break;
-	default: {
+	default:
+	{
 		Msg("! Unknown registry data type.");
 		return false;
 	}
@@ -41,10 +44,10 @@ bool ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value)
 	};
 
 	res = RegQueryValueEx(hKey, rKeyName, NULL, &rKeyType, (LPBYTE)rBuf, &KeyValueSize);
-	if (hKey != 0)
+	if(hKey != 0)
 		RegCloseKey(hKey);
 
-	if (res != ERROR_SUCCESS)
+	if(res != ERROR_SUCCESS)
 	{
 		Msg("! Unable to find %s entry in registry", rKeyName);
 		return false;
@@ -60,30 +63,33 @@ bool WriteRegistryValue(LPCSTR rKeyName, DWORD rKeyType, const void* value)
 
 	long res = RegOpenKeyEx(REGISTRY_BASE, REGISTRY_PATH, 0, KEY_WRITE, &hKey);
 
-	if (res != ERROR_SUCCESS)
+	if(res != ERROR_SUCCESS)
 	{
 		Msg("! Unable to find %s in registry", REGISTRY_PATH);
 		return false;
 	}
 
-	if (!hKey)
+	if(!hKey)
 	{
 		Msg("! Unable to find %s entry in registry", REGISTRY_PATH);
 		return false;
 	}
 
 	DWORD KeyValueSize = 0;
-	switch (rKeyType)
+	switch(rKeyType)
 	{
-	case REG_DWORD: {
+	case REG_DWORD:
+	{
 		KeyValueSize = 4;
 	}
 	break;
-	case REG_SZ: {
+	case REG_SZ:
+	{
 		KeyValueSize = 64;
 	}
 	break;
-	default: {
+	default:
+	{
 		Msg("! Unknown registry data type.");
 		return false;
 	}
@@ -92,7 +98,7 @@ bool WriteRegistryValue(LPCSTR rKeyName, DWORD rKeyType, const void* value)
 
 	res = RegSetValueEx(hKey, rKeyName, NULL, rKeyType, (LPBYTE)value, KeyValueSize);
 
-	if (hKey)
+	if(hKey)
 		RegCloseKey(hKey);
 	return true;
 };

@@ -66,7 +66,7 @@ void CUIMessageBox::Init(LPCSTR box_template)
 	xml_init.InitStatic(uiXml, str, 0, m_UIStaticPicture);
 
 	strconcat(sizeof(str), str, box_template, ":message_text");
-	if (uiXml.NavigateToNode(str, 0))
+	if(uiXml.NavigateToNode(str, 0))
 	{
 		m_UIStaticText = xr_new<CUIStatic>();
 		AttachChild(m_UIStaticText);
@@ -80,50 +80,52 @@ void CUIMessageBox::Init(LPCSTR box_template)
 	R_ASSERT(_type);
 
 	m_eMessageBoxStyle = MESSAGEBOX_OK;
-	if (0 == xr_stricmp(_type, "ok"))
+	if(0 == xr_stricmp(_type, "ok"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_OK;
 	}
-	else if (0 == xr_stricmp(_type, "yes_no"))
+	else if(0 == xr_stricmp(_type, "yes_no"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_YES_NO;
 	}
-	else if (0 == xr_stricmp(_type, "yes_no_cancel"))
+	else if(0 == xr_stricmp(_type, "yes_no_cancel"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_YES_NO_CANCEL;
 	}
-	else if (0 == xr_stricmp(_type, "direct_ip"))
+	else if(0 == xr_stricmp(_type, "direct_ip"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_DIRECT_IP;
 	}
-	else if (0 == xr_stricmp(_type, "password"))
+	else if(0 == xr_stricmp(_type, "password"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_PASSWORD;
 	}
-	else if (0 == xr_stricmp(_type, "quit_windows"))
+	else if(0 == xr_stricmp(_type, "quit_windows"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_QUIT_WINDOWS;
 	}
-	else if (0 == xr_stricmp(_type, "quit_game"))
+	else if(0 == xr_stricmp(_type, "quit_game"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_QUIT_GAME;
 	}
-	else if (0 == xr_stricmp(_type, "info"))
+	else if(0 == xr_stricmp(_type, "info"))
 	{
 		m_eMessageBoxStyle = MESSAGEBOX_INFO;
 	};
 
-	switch (m_eMessageBoxStyle)
+	switch(m_eMessageBoxStyle)
 	{
 
-	case MESSAGEBOX_OK: {
+	case MESSAGEBOX_OK:
+	{
 		strconcat(sizeof(str), str, box_template, ":button_ok");
 		m_UIButtonYesOk = xr_new<CUI3tButton>();
 		AttachChild(m_UIButtonYesOk);
 		xml_init.Init3tButton(uiXml, str, 0, m_UIButtonYesOk);
 	}
 	break;
-	case MESSAGEBOX_INFO: {
+	case MESSAGEBOX_INFO:
+	{
 	}
 	break;
 
@@ -182,7 +184,8 @@ void CUIMessageBox::Init(LPCSTR box_template)
 
 	case MESSAGEBOX_QUIT_WINDOWS:
 	case MESSAGEBOX_QUIT_GAME:
-	case MESSAGEBOX_YES_NO: {
+	case MESSAGEBOX_YES_NO:
+	{
 		strconcat(sizeof(str), str, box_template, ":button_yes");
 		m_UIButtonYesOk = xr_new<CUI3tButton>();
 		AttachChild(m_UIButtonYesOk);
@@ -195,7 +198,8 @@ void CUIMessageBox::Init(LPCSTR box_template)
 	}
 	break;
 
-	case MESSAGEBOX_YES_NO_CANCEL: {
+	case MESSAGEBOX_YES_NO_CANCEL:
+	{
 		strconcat(sizeof(str), str, box_template, ":button_yes");
 		m_UIButtonYesOk = xr_new<CUI3tButton>();
 		AttachChild(m_UIButtonYesOk);
@@ -217,12 +221,12 @@ void CUIMessageBox::Init(LPCSTR box_template)
 
 void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (msg == BUTTON_CLICKED)
+	if(msg == BUTTON_CLICKED)
 	{
-		switch (m_eMessageBoxStyle)
+		switch(m_eMessageBoxStyle)
 		{
 		case MESSAGEBOX_OK:
-			if (pWnd == m_UIButtonYesOk)
+			if(pWnd == m_UIButtonYesOk)
 				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_OK_CLICKED);
 			break;
 		case MESSAGEBOX_DIRECT_IP:
@@ -230,30 +234,30 @@ void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 		case MESSAGEBOX_YES_NO:
 		case MESSAGEBOX_QUIT_GAME:
 		case MESSAGEBOX_QUIT_WINDOWS:
-			if (pWnd == m_UIButtonYesOk)
+			if(pWnd == m_UIButtonYesOk)
 			{
-				if (MESSAGEBOX_QUIT_GAME == m_eMessageBoxStyle)
+				if(MESSAGEBOX_QUIT_GAME == m_eMessageBoxStyle)
 					GetMessageTarget()->SendMessage(this, MESSAGE_BOX_QUIT_GAME_CLICKED);
-				else if (MESSAGEBOX_QUIT_WINDOWS == m_eMessageBoxStyle)
+				else if(MESSAGEBOX_QUIT_WINDOWS == m_eMessageBoxStyle)
 					GetMessageTarget()->SendMessage(this, MESSAGE_BOX_QUIT_WIN_CLICKED);
 				else
 					GetMessageTarget()->SendMessage(this, MESSAGE_BOX_YES_CLICKED);
 			}
-			else if (pWnd == m_UIButtonNo)
+			else if(pWnd == m_UIButtonNo)
 			{
 				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
 			}
 			break;
 		case MESSAGEBOX_YES_NO_CANCEL:
-			if (pWnd == m_UIButtonYesOk)
+			if(pWnd == m_UIButtonYesOk)
 			{
 				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_YES_CLICKED);
 			}
-			else if (pWnd == m_UIButtonNo)
+			else if(pWnd == m_UIButtonNo)
 			{
 				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
 			}
-			else if (pWnd == m_UIButtonCancel)
+			else if(pWnd == m_UIButtonCancel)
 			{
 				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_CANCEL_CLICKED);
 			}
@@ -275,13 +279,13 @@ LPCSTR CUIMessageBox::GetText()
 
 LPCSTR CUIMessageBox::GetHost()
 {
-	if (m_UIEditHost)
+	if(m_UIEditHost)
 	{
 		m_ret_val.clear();
 		xr_string tmp = m_UIEditHost->GetText();
 		xr_string::size_type pos = tmp.find(":");
 
-		if (xr_string::npos != pos)
+		if(xr_string::npos != pos)
 		{
 			m_ret_val.assign(tmp.begin(), tmp.begin() + pos);
 			tmp.erase(tmp.begin(), tmp.begin() + pos + 1);
@@ -298,7 +302,7 @@ LPCSTR CUIMessageBox::GetHost()
 
 LPCSTR CUIMessageBox::GetPassword()
 {
-	if (m_UIEditPass)
+	if(m_UIEditPass)
 		return m_UIEditPass->GetText();
 	else
 		return NULL;
@@ -306,7 +310,7 @@ LPCSTR CUIMessageBox::GetPassword()
 
 LPCSTR CUIMessageBox::GetUserPassword()
 {
-	if (m_UIEditUserPass)
+	if(m_UIEditUserPass)
 		return m_UIEditUserPass->GetText();
 	else
 		return NULL;
@@ -314,15 +318,15 @@ LPCSTR CUIMessageBox::GetUserPassword()
 
 void CUIMessageBox::SetUserPasswordMode(bool b)
 {
-	if (m_UIEditUserPass)
+	if(m_UIEditUserPass)
 		m_UIEditUserPass->Show(b);
-	if (m_UIStaticUserPass)
+	if(m_UIStaticUserPass)
 		m_UIStaticUserPass->Show(b);
 }
 void CUIMessageBox::SetPasswordMode(bool b)
 {
-	if (m_UIEditPass)
+	if(m_UIEditPass)
 		m_UIEditPass->Show(b);
-	if (m_UIStaticPass)
+	if(m_UIStaticPass)
 		m_UIStaticPass->Show(b);
 }

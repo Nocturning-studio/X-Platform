@@ -9,7 +9,7 @@ class ENGINE_API CEnvWind
 	float m_wind_strength;
 	float m_wind_direction;
 	float m_wind_gusting;
-	float m_wind_tilt; // ”гол наклона (в градусах, положительный = вверх, отрицательный = вниз)
+	float m_wind_tilt;	   // ”гол наклона (в градусах, положительный = вверх, отрицательный = вниз)
 	float m_wind_velocity; // —корость прохождени€ волны ветра
 
   public:

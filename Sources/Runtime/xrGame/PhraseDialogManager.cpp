@@ -31,10 +31,10 @@ const DIALOG_SHARED_PTR& CPhraseDialogManager::GetDialogByID(const shared_str& d
 	DIALOG_VECTOR::const_iterator it = m_AvailableDialogs.begin();
 	DIALOG_VECTOR::const_iterator it_e = m_AvailableDialogs.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		const DIALOG_SHARED_PTR& dialog = *it;
-		if (dialog->GetDialogID() == dialog_id)
+		if(dialog->GetDialogID() == dialog_id)
 			return dialog;
 	}
 	return m_AvailableDialogs.front();
@@ -45,10 +45,10 @@ bool CPhraseDialogManager::HaveAvailableDialog(const shared_str& dialog_id) cons
 	DIALOG_VECTOR::const_iterator it = m_AvailableDialogs.begin();
 	DIALOG_VECTOR::const_iterator it_e = m_AvailableDialogs.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		const DIALOG_SHARED_PTR& dialog = *it;
-		if (dialog->GetDialogID() == dialog_id)
+		if(dialog->GetDialogID() == dialog_id)
 			return true;
 	}
 
@@ -81,13 +81,13 @@ void CPhraseDialogManager::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const sha
 	THROW(phrase_dialog->IsWeSpeaking(this));
 	bool coninue_talking = CPhraseDialog::SayPhrase(phrase_dialog, phrase_id);
 
-	if (!coninue_talking)
+	if(!coninue_talking)
 		m_ActiveDialogs.erase(it);
 }
 
 static bool dialog_priority(DIALOG_SHARED_PTR dialog1, DIALOG_SHARED_PTR dialog2)
 {
-	if (dialog1->Priority() > dialog2->Priority())
+	if(dialog1->Priority() > dialog2->Priority())
 		return true;
 	else
 		return false;
@@ -101,7 +101,7 @@ void CPhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 bool CPhraseDialogManager::AddAvailableDialog(shared_str dialog_id, CPhraseDialogManager* partner)
 {
 	//	PHRASE_DIALOG_INDEX dialog_index =  CPhraseDialog::IdToIndex(dialog_id);
-	if (std::find(m_CheckedDialogs.begin(), m_CheckedDialogs.end(), dialog_id) != m_CheckedDialogs.end())
+	if(std::find(m_CheckedDialogs.begin(), m_CheckedDialogs.end(), dialog_id) != m_CheckedDialogs.end())
 		return false;
 	m_CheckedDialogs.push_back(dialog_id);
 
@@ -116,7 +116,7 @@ bool CPhraseDialogManager::AddAvailableDialog(shared_str dialog_id, CPhraseDialo
 	VERIFY(pSpeakerGO2);
 
 	bool predicate_result = phrase_dialog->Precondition(pSpeakerGO1, pSpeakerGO2);
-	if (predicate_result)
+	if(predicate_result)
 		m_AvailableDialogs.push_back(phrase_dialog);
 	return predicate_result;
 }

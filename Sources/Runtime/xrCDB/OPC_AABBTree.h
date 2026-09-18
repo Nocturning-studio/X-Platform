@@ -23,42 +23,42 @@
 class AABBTreeBuilder;
 
 //! TO BE DOCUMENTED
-#define IMPLEMENT_TREE(baseclass, volume)                                                                              \
-  public:                                                                                                              \
-	/* Constructor / Destructor */                                                                                     \
-	baseclass();                                                                                                       \
-	~baseclass();                                                                                                      \
-	/* Data access */                                                                                                  \
-	inline_ const volume* Get##volume() const                                                                          \
-	{                                                                                                                  \
-		return &mBV;                                                                                                   \
-	}                                                                                                                  \
-	inline_ const baseclass* GetPos() const                                                                            \
-	{                                                                                                                  \
-		return mP;                                                                                                     \
-	}                                                                                                                  \
-	inline_ const baseclass* GetNeg() const                                                                            \
-	{                                                                                                                  \
-		return mN;                                                                                                     \
-	}                                                                                                                  \
-                                                                                                                       \
-	inline_ bool IsLeaf() const                                                                                        \
-	{                                                                                                                  \
-		return (!mP && !mN);                                                                                           \
-	}                                                                                                                  \
-                                                                                                                       \
-	/* Stats */                                                                                                        \
-	inline_ udword GetNodeSize() const                                                                                 \
-	{                                                                                                                  \
-		return SIZEOFOBJECT;                                                                                           \
-	}                                                                                                                  \
-                                                                                                                       \
-  protected:                                                                                                           \
-	/* Tree-independent data */                                                                                        \
-	/* Following data always belong to the BV-tree, regardless of what the tree actually contains.*/                   \
-	/* Whatever happens we need the two children and the enclosing volume.*/                                           \
-	volume mBV; /* Global bounding-volume enclosing all the node-related primitives */                                 \
-	baseclass* mP;                                                                                                     \
+#define IMPLEMENT_TREE(baseclass, volume)                                                            \
+  public:                                                                                            \
+	/* Constructor / Destructor */                                                                   \
+	baseclass();                                                                                     \
+	~baseclass();                                                                                    \
+	/* Data access */                                                                                \
+	inline_ const volume* Get##volume() const                                                        \
+	{                                                                                                \
+		return &mBV;                                                                                 \
+	}                                                                                                \
+	inline_ const baseclass* GetPos() const                                                          \
+	{                                                                                                \
+		return mP;                                                                                   \
+	}                                                                                                \
+	inline_ const baseclass* GetNeg() const                                                          \
+	{                                                                                                \
+		return mN;                                                                                   \
+	}                                                                                                \
+                                                                                                     \
+	inline_ bool IsLeaf() const                                                                      \
+	{                                                                                                \
+		return (!mP && !mN);                                                                         \
+	}                                                                                                \
+                                                                                                     \
+	/* Stats */                                                                                      \
+	inline_ udword GetNodeSize() const                                                               \
+	{                                                                                                \
+		return SIZEOFOBJECT;                                                                         \
+	}                                                                                                \
+                                                                                                     \
+  protected:                                                                                         \
+	/* Tree-independent data */                                                                      \
+	/* Following data always belong to the BV-tree, regardless of what the tree actually contains.*/ \
+	/* Whatever happens we need the two children and the enclosing volume.*/                         \
+	volume mBV; /* Global bounding-volume enclosing all the node-related primitives */               \
+	baseclass* mP;                                                                                   \
 	baseclass* mN;
 
 class OPCODE_API AABBTreeNode

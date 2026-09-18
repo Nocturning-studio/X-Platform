@@ -35,7 +35,7 @@ void ISheduled::shedule_Update(u32 dt)
 {
 #ifdef DEBUG
 	u32 current_frame = Engine.TimeManager.GetFrameCount();
-	if (dbg_update_frame == current_frame)
+	if(dbg_update_frame == current_frame)
 		return;
 	dbg_update_frame = current_frame;
 #endif

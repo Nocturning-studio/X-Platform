@@ -38,8 +38,10 @@ class CPathManager<CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>, _DataStorage,
 						   const typename inherited::const_iterator& i) const;
 	IC _dist_type estimate(const _index_type& vertex_id) const;
 	IC void init_path();
-	template <typename T> IC void create_path(T& vertex, _DataStorage& data_storage, bool reverse_order);
-	template <typename T> IC void create_path(T& vertex);
+	template <typename T>
+	IC void create_path(T& vertex, _DataStorage& data_storage, bool reverse_order);
+	template <typename T>
+	IC void create_path(T& vertex);
 };
 
 #include "path_manager_solver_inline.h"

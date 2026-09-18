@@ -13,10 +13,10 @@
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return SDebugInfo();
 
-	if (m_show_debug_info == 0)
+	if(m_show_debug_info == 0)
 	{
 		DBG().text(this).clear();
 		return SDebugInfo();
@@ -46,7 +46,7 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 
 	DBG().text(this).add_item("-----------   MEMORY   ----------------", x, y += delta_y, delimiter_color);
 
-	if (EnemyMan.get_enemy())
+	if(EnemyMan.get_enemy())
 	{
 		sprintf_s(text, "Current Enemy = [%s]", *EnemyMan.get_enemy()->cName());
 	}
@@ -54,14 +54,14 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 		sprintf_s(text, "Current Enemy = [NONE]");
 	DBG().text(this).add_item(text, x, y += delta_y, color);
 
-	if (EnemyMan.get_enemy())
+	if(EnemyMan.get_enemy())
 	{
 		sprintf_s(text, "SeeEnemy[%u] EnemySeeMe[%u] TimeLastSeen[%u]", EnemyMan.see_enemy_now(),
 				  EnemyMan.enemy_see_me_now(), EnemyMan.get_enemy_time_last_seen());
 		DBG().text(this).add_item(text, x, y += delta_y, color);
 	}
 
-	if (CorpseMan.get_corpse())
+	if(CorpseMan.get_corpse())
 	{
 		sprintf_s(text, "Current Corpse = [%s] Satiety = [%.2f]", *CorpseMan.get_corpse()->cName(), GetSatiety());
 	}
@@ -71,7 +71,7 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 	DBG().text(this).add_item(text, x, y += delta_y, color);
 
 	// Sound
-	if (SoundMemory.IsRememberSound())
+	if(SoundMemory.IsRememberSound())
 	{
 		SoundElem sound_elem;
 		bool dangerous_sound;
@@ -79,7 +79,7 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 
 		string128 s_type;
 
-		switch (sound_elem.type)
+		switch(sound_elem.type)
 		{
 		case WEAPON_SHOOTING:
 			strcpy(s_type, "WEAPON_SHOOTING");
@@ -143,7 +143,7 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 			break;
 		}
 
-		if (sound_elem.who)
+		if(sound_elem.who)
 			sprintf_s(text, "Sound: type[%s] time[%u] power[%.3f] val[%i] src[+]", s_type, sound_elem.time,
 					  sound_elem.power, sound_elem.value);
 		else
@@ -156,9 +156,9 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 	DBG().text(this).add_item(text, x, y += delta_y, color);
 
 	// Hit
-	if (HitMemory.is_hit())
+	if(HitMemory.is_hit())
 	{
-		if (HitMemory.get_last_hit_object())
+		if(HitMemory.get_last_hit_object())
 		{
 			sprintf_s(text, "Hit Info: object=[%s] time=[%u]", *(HitMemory.get_last_hit_object()->cName()),
 					  HitMemory.get_last_hit_time());
@@ -187,7 +187,7 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 			  MeleeChecker.get_max_distance(), MeleeChecker.dbg_as_step(), MeleeChecker.dbg_as_min_dist());
 	DBG().text(this).add_item(text, x, y += delta_y, color);
 
-	if (EnemyMan.get_enemy())
+	if(EnemyMan.get_enemy())
 	{
 		sprintf_s(text, "Current Enemy = [%s]", *EnemyMan.get_enemy()->cName());
 	}
@@ -200,10 +200,10 @@ CBaseMonster::SDebugInfo CBaseMonster::show_debug_info()
 
 void CBaseMonster::debug_fsm()
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
 
-	if (!psAI_Flags.test(aiMonsterDebug))
+	if(!psAI_Flags.test(aiMonsterDebug))
 	{
 		DBG().object_info(this, this).clear();
 		return;
@@ -213,7 +213,7 @@ void CBaseMonster::debug_fsm()
 
 	string128 st;
 
-	switch (state)
+	switch(state)
 	{
 	case eStateRest_WalkGraphPoint:
 		sprintf_s(st, "Rest :: Walk Graph");
@@ -494,7 +494,7 @@ void CBaseMonster::debug_fsm()
 	DBG().object_info(this, this).add_item(st, D3DCOLOR_XRGB(255, 0, 0), 2);
 
 	CEntityAlive* entity = smart_cast<CEntityAlive*>(Level().CurrentEntity());
-	if (entity && entity->character_physics_support()->movement())
+	if(entity && entity->character_physics_support()->movement())
 	{
 		sprintf_s(st, "VELOCITY [%f,%f,%f] Value[%f]",
 				  VPUSH(entity->character_physics_support()->movement()->GetVelocity()),

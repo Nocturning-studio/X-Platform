@@ -36,9 +36,9 @@ void C2DFrustum::CreateFromRect(const Frect& rect)
 sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 {
 	bool bFullTest = false;
-	for (u32 j = 0; j < S.size(); j++)
+	for(u32 j = 0; j < S.size(); j++)
 	{
-		if (!m_rect.in(S[j].pt))
+		if(!m_rect.in(S[j].pt))
 		{
 			bFullTest = true;
 			break;
@@ -47,10 +47,10 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 
 	sPoly2D* src = &D;
 	sPoly2D* dest = &S;
-	if (!bFullTest)
+	if(!bFullTest)
 		return dest;
 
-	for (u32 i = 0; i < planes.size(); i++)
+	for(u32 i = 0; i < planes.size(); i++)
 	{
 		// cache plane and swap lists
 		const Fplane2& P = planes[i];
@@ -60,7 +60,7 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 		// classify all points relative to plane #i
 		float cls[UI_FRUSTUM_SAFE];
 		u32 j = 0;
-		for (; j < src->size(); j++)
+		for(; j < src->size(); j++)
 			cls[j] = P.classify((*src)[j].pt);
 
 		// clip everything to this plane
@@ -68,20 +68,20 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 		src->push_back((*src)[0]);
 		fvec2 dir_pt, dir_uv;
 		float denum, t;
-		for (j = 0; j < src->size() - 1; j++)
+		for(j = 0; j < src->size() - 1; j++)
 		{
-			if ((*src)[j].pt.similar((*src)[j + 1].pt, EPS_S))
+			if((*src)[j].pt.similar((*src)[j + 1].pt, EPS_S))
 				continue;
-			if (negative(cls[j]))
+			if(negative(cls[j]))
 			{
 				dest->push_back((*src)[j]);
-				if (positive(cls[j + 1]))
+				if(positive(cls[j + 1]))
 				{
 					// segment intersects plane
 					dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
 					dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
 					denum = P.n.dotproduct(dir_pt);
-					if (denum != 0)
+					if(denum != 0)
 					{
 						t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
 						dest->last().pt.mad((*src)[j].pt, dir_pt, t);
@@ -93,14 +93,14 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 			else
 			{
 				// J - outside
-				if (negative(cls[j + 1]))
+				if(negative(cls[j + 1]))
 				{
 					// J+1  - inside
 					// segment intersects plane
 					dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
 					dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
 					denum = P.n.dotproduct(dir_pt);
-					if (denum != 0)
+					if(denum != 0)
 					{
 						t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
 						dest->last().pt.mad((*src)[j].pt, dir_pt, t);
@@ -112,7 +112,7 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 		}
 
 		// here we end up with complete polygon in 'dest' which is inside plane #i
-		if (dest->size() < 3)
+		if(dest->size() < 3)
 			return 0;
 	}
 	return dest;
@@ -158,14 +158,14 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 	//.	return;
 	Frect r_top = ScreenRect();
 	Frect result = r_tgt;
-	if (!m_Scissors.empty() && !overlapped)
+	if(!m_Scissors.empty() && !overlapped)
 	{
 		r_top = m_Scissors.top();
 	}
-	if (!result.intersection(r_top, r_tgt))
+	if(!result.intersection(r_top, r_tgt))
 		result.set(0.0f, 0.0f, 0.0f, 0.0f);
 
-	if (!(result.x1 >= 0 && result.y1 >= 0 && result.x2 <= UI_BASE_WIDTH && result.y2 <= UI_BASE_HEIGHT))
+	if(!(result.x1 >= 0 && result.y1 >= 0 && result.x2 <= UI_BASE_WIDTH && result.y2 <= UI_BASE_HEIGHT))
 	{
 		Msg("! r_tgt [%.3f][%.3f][%.3f][%.3f]", r_tgt.x1, r_tgt.y1, r_tgt.x2, r_tgt.y2);
 		Msg("! result [%.3f][%.3f][%.3f][%.3f]", result.x1, result.y1, result.x2, result.y2);
@@ -192,7 +192,7 @@ void ui_core::PopScissor()
 	VERIFY(!m_Scissors.empty());
 	m_Scissors.pop();
 
-	if (m_Scissors.empty())
+	if(m_Scissors.empty())
 		RenderBackend.set_Scissor(NULL);
 	else
 	{
@@ -209,10 +209,10 @@ void ui_core::PopScissor()
 
 ui_core::ui_core()
 {
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		m_pUICursor = xr_new<CUICursor>();
-		m_pFontManager = &Engine.FontManager; 
+		m_pFontManager = &Engine.FontManager;
 	}
 	else
 	{
@@ -278,17 +278,17 @@ bool ui_core::is_16_9_mode()
 shared_str ui_core::get_xml_name(LPCSTR fn)
 {
 	string_path str;
-	if (!is_16_9_mode())
+	if(!is_16_9_mode())
 	{
 		sprintf_s(str, "%s", fn);
-		if (NULL == strext(fn))
+		if(NULL == strext(fn))
 			strcat(str, ".xml");
 	}
 	else
 	{
 
 		string_path str_;
-		if (strext(fn))
+		if(strext(fn))
 		{
 			strcpy(str, fn);
 			*strext(str) = 0;
@@ -297,10 +297,10 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
 		else
 			sprintf_s(str, "%s_16", fn);
 
-		if (NULL == FS.exist(str_, "$game_config$", "ui\\", str))
+		if(NULL == FS.exist(str_, "$game_config$", "ui\\", str))
 		{
 			sprintf_s(str, "%s", fn);
-			if (NULL == strext(fn))
+			if(NULL == strext(fn))
 				strcat(str, ".xml");
 		}
 #ifdef DEBUG

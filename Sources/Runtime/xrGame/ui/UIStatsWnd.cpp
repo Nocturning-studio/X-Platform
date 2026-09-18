@@ -27,7 +27,7 @@ CUIStatsWnd::~CUIStatsWnd()
 void CUIStatsWnd::Init(LPCSTR XML)
 {
 	CUIXml uiXml;
-	if (XML)
+	if(XML)
 		strcpy(XML_NAME, XML);
 	else
 		strcpy(XML_NAME, STATS_XML);
@@ -73,13 +73,13 @@ CUIStatsListItem* CUIStatsWnd::AddItem()
 
 CUIStatsListItem* CUIStatsWnd::FindFrom(const u32 beg_pos, const char* strCaption)
 {
-	for (int i = 0; i < UIStatsList.GetItemsCount(); ++i)
+	for(int i = 0; i < UIStatsList.GetItemsCount(); ++i)
 	{
 		CUIStatsListItem* pSLItem = smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(i));
 		R_ASSERT(beg_pos < pSLItem->FieldsVector.size());
-		for (FIELDS_VECTOR_it it = pSLItem->FieldsVector.begin() + beg_pos; it < pSLItem->FieldsVector.end(); ++it)
+		for(FIELDS_VECTOR_it it = pSLItem->FieldsVector.begin() + beg_pos; it < pSLItem->FieldsVector.end(); ++it)
 		{
-			if (0 == xr_strcmp(strCaption, (*it)->GetText()))
+			if(0 == xr_strcmp(strCaption, (*it)->GetText()))
 			{
 				return pSLItem;
 			}
@@ -92,7 +92,7 @@ CUIStatsListItem* CUIStatsWnd::FindFrom(const u32 beg_pos, const char* strCaptio
 
 void CUIStatsWnd::RemoveItemFrom(const u32 beg_pos, const char* strCaption)
 {
-	if (CUIStatsListItem* pSLItem = FindFrom(beg_pos, strCaption))
+	if(CUIStatsListItem* pSLItem = FindFrom(beg_pos, strCaption))
 	{
 		UIStatsList.RemoveItem(pSLItem->GetIndex());
 	}
@@ -103,11 +103,11 @@ void CUIStatsWnd::RemoveItemFrom(const u32 beg_pos, const char* strCaption)
 void CUIStatsWnd::HighlightItem(const u32 uItem)
 {
 	R_ASSERT(static_cast<int>(uItem) < UIStatsList.GetItemsCount());
-	if (m_uHighlightedItem != uItem)
+	if(m_uHighlightedItem != uItem)
 	{
-		if (m_uHighlightedItem != 0xffffffff)
+		if(m_uHighlightedItem != 0xffffffff)
 			smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(m_uHighlightedItem))->Highlight(false);
-		if (uItem != 0xffffffff)
+		if(uItem != 0xffffffff)
 			smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(uItem))->Highlight(true);
 		m_uHighlightedItem = uItem;
 	}
@@ -146,7 +146,7 @@ void CUIStatsListItem::XmlInit(const char* path, CUIXml& uiXml)
 	XML_NODE* tab_node = uiXml.NavigateToNode(path, 0);
 	uiXml.SetLocalRoot(tab_node);
 
-	for (int i = 0; i < tabsCount; ++i)
+	for(int i = 0; i < tabsCount; ++i)
 	{
 		pButton = xr_new<CUIButton>();
 		pButton->SetAutoDelete(true);
@@ -163,7 +163,7 @@ void CUIStatsListItem::XmlInit(const char* path, CUIXml& uiXml)
 
 void CUIStatsListItem::Highlight(bool bHighlight)
 {
-	for (FIELDS_VECTOR_it it = FieldsVector.begin(); it != FieldsVector.end(); ++it)
+	for(FIELDS_VECTOR_it it = FieldsVector.begin(); it != FieldsVector.end(); ++it)
 	{
 		(*it)->HighlightItem(bHighlight);
 	}

@@ -43,7 +43,7 @@ void CCameraFirstEye::Update(fvec3& point, fvec3& noise_dangle)
 	vDirection.set(mR.k);
 	vNormal.set(mR.j);
 
-	if (m_Flags.is(flRelativeLink))
+	if(m_Flags.is(flRelativeLink))
 	{
 		parent->Transform().transform_dir(vDirection);
 		parent->Transform().transform_dir(vNormal);
@@ -54,14 +54,14 @@ void CCameraFirstEye::Update(fvec3& point, fvec3& noise_dangle)
 
 void CCameraFirstEye::Move(int cmd, float val, float factor)
 {
-	if (bClampPitch)
+	if(bClampPitch)
 	{
-		while (pitch < lim_pitch[0])
+		while(pitch < lim_pitch[0])
 			pitch += PI_MUL_2;
-		while (pitch > lim_pitch[1])
+		while(pitch > lim_pitch[1])
 			pitch -= PI_MUL_2;
 	};
-	switch (cmd)
+	switch(cmd)
 	{
 	case kDOWN:
 		pitch -= val ? val : (rot_speed.y * Engine.TimeManager.GetDeltaTime() / factor);
@@ -76,14 +76,14 @@ void CCameraFirstEye::Move(int cmd, float val, float factor)
 		yaw += val ? val : (rot_speed.x * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	}
-	if (bClampYaw)
+	if(bClampYaw)
 		clamp(yaw, lim_yaw[0], lim_yaw[1]);
-	if (bClampPitch)
+	if(bClampPitch)
 		clamp(pitch, lim_pitch[0], lim_pitch[1]);
 }
 
 void CCameraFirstEye::OnActivate(CCameraBase* old_cam)
 {
-	if (old_cam && (m_Flags.is(flRelativeLink) == old_cam->m_Flags.is(flRelativeLink)))
+	if(old_cam && (m_Flags.is(flRelativeLink) == old_cam->m_Flags.is(flRelativeLink)))
 		yaw = (old_cam)->yaw;
 }

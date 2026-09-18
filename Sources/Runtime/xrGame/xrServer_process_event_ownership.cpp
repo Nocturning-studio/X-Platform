@@ -23,10 +23,10 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time,
 		ent_name_safe(id_entity).c_str(), Engine.TimeManager.GetFrameCount());
 #endif
 
-	if (!e_entity)
+	if(!e_entity)
 		return;
 	R_ASSERT(/*e_entity &&*/ e_parent);
-	if (0xffff != e_entity->ID_Parent)
+	if(0xffff != e_entity->ID_Parent)
 	{
 #ifdef DEBUG
 		Msg("sv !ownership (entity already has parent) new_parent %s id_parent %s id_entity %s [%d]",
@@ -40,25 +40,25 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time,
 	xrClientData* c_entity = e_entity->owner;
 	xrClientData* c_from = ID_to_client(sender);
 
-	if ((GetServerClient() != c_from) && (c_parent != c_from))
+	if((GetServerClient() != c_from) && (c_parent != c_from))
 	{
 		// trust only ServerClient or new_ownerClient
 		return;
 	}
 
 	// Game allows ownership of entity
-	if (game->OnTouch(id_parent, id_entity, bForced))
+	if(game->OnTouch(id_parent, id_entity, bForced))
 	{
 
 		// Perform migration if needed
-		if (c_parent != c_entity)
+		if(c_parent != c_entity)
 			PerformMigration(e_entity, c_entity, c_parent);
 
 		// Rebuild parentness
 		e_entity->ID_Parent = id_parent;
 		e_parent->children.push_back(id_entity);
 
-		if (bForced)
+		if(bForced)
 		{
 			ReplaceOwnershipHeader(P);
 		}

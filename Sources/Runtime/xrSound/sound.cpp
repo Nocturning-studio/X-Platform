@@ -11,7 +11,7 @@ void CSound_manager_interface::_create(u64 window)
 	SoundRender = xr_new<CSoundRender_Core>();
 	Sound = SoundRender;
 
-	if (strstr(Core.Params, "-nosound"))
+	if(strstr(Core.Params, "-nosound"))
 	{
 		psSoundVEffects = 0.0f;
 		psSoundVFactor = 0.0f;

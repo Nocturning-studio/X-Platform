@@ -73,27 +73,27 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 	float v_smag = v.square_magnitude();
 	const float sq_r = r * r;
 
-	if (sq_sin < EPS) // paralel
+	if(sq_sin < EPS) // paralel
 	{
 		float tr1, tr2;
 		float sq_dist = v_smag - Lr * Lr; //
-		if (sq_dist > sq_r)
+		if(sq_dist > sq_r)
 			return false;
 		float r_dist = std::sqrt(sq_r - sq_dist) + h;
 		tr1 = Lr - r_dist;
 
-		if (tr1 > R)
+		if(tr1 > R)
 			return false; //
-		if (tr1 < 0.f)
+		if(tr1 < 0.f)
 		{
-			if (bCull)
+			if(bCull)
 				return false;
 			else
 			{
 				tr2 = Lr + r_dist;
-				if (tr2 < 0.f)
+				if(tr2 < 0.f)
 					return false; //
-				if (tr2 < R)
+				if(tr2 < R)
 				{
 					R = tr2;
 					return true;
@@ -105,36 +105,36 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		return true;
 	}
 
-	if (sq_cos < EPS)
+	if(sq_cos < EPS)
 	{
 		float tr1, tr2;
 		// perp//
 		float abs_c_dist = _abs(Lc);
-		if (abs_c_dist > h + r)
+		if(abs_c_dist > h + r)
 			return false;
 		float sq_dist = v_smag - Lr * Lr - Lc * Lc;
-		if (sq_dist > sq_r)
+		if(sq_dist > sq_r)
 			return false;
 		float lc_h = abs_c_dist - h;
-		if (lc_h > 0.f)
+		if(lc_h > 0.f)
 		{
 			float sq_sphere_dist = lc_h * lc_h + sq_dist * sq_dist;
-			if (sq_sphere_dist > sq_r)
+			if(sq_sphere_dist > sq_r)
 				return false;
 			float diff = std::sqrt(sq_r - sq_sphere_dist);
 			tr1 = Lr - diff;
-			if (tr1 > R)
+			if(tr1 > R)
 				return false; //
-			if (tr1 < 0.f)
+			if(tr1 < 0.f)
 			{
-				if (bCull)
+				if(bCull)
 					return false;
 				else
 				{
 					tr2 = Lr + diff;
-					if (tr2 < 0.f)
+					if(tr2 < 0.f)
 						return false; //
-					if (tr2 < R)
+					if(tr2 < R)
 					{
 						R = tr2;
 						return true;
@@ -146,18 +146,18 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		float diff = std::sqrt(sq_r - sq_dist);
 		tr1 = Lr - diff;
 
-		if (tr1 > R)
+		if(tr1 > R)
 			return false; //
-		if (tr1 < 0.f)
+		if(tr1 < 0.f)
 		{
-			if (bCull)
+			if(bCull)
 				return false;
 			else
 			{
 				tr2 = Lr + diff;
-				if (tr2 < 0.f)
+				if(tr2 < 0.f)
 					return false; //
-				if (tr2 < R)
+				if(tr2 < R)
 				{
 					R = tr2;
 					return true;
@@ -179,7 +179,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 
 	float sq_nearest_dist = v_smag + tr * tr + tc * tc - 2 * (cs * tc * tr - Lc * tc + Lr * tr);
 
-	if (sq_nearest_dist > sq_r)
+	if(sq_nearest_dist > sq_r)
 		return false;
 	// float max_c_diff=//;
 
@@ -192,28 +192,28 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 	float cp2 = tc + c_diff;
 
 	// cp1<cp2
-	if (cp1 > h)
+	if(cp1 > h)
 	{
 		// sphere
 		float tc_h = tc - h; //!! hi					(=)/;
 		float sq_sphere_dist = sq_sin * tc_h * tc_h;
-		if (sq_sphere_dist > sq_horde)
+		if(sq_sphere_dist > sq_horde)
 			return false;
 		float tr_c = tr - tc_h * cs; //
 		float diff = std::sqrt(sq_horde - sq_sphere_dist);
 		tr1 = tr_c - diff;
-		if (tr1 > R)
+		if(tr1 > R)
 			return false; //
-		if (tr1 < 0.f)
+		if(tr1 < 0.f)
 		{
-			if (bCull)
+			if(bCull)
 				return false;
 			else
 			{
 				tr2 = tr_c + diff;
-				if (tr2 < 0.f)
+				if(tr2 < 0.f)
 					return false; //
-				if (tr2 < R)
+				if(tr2 < R)
 				{
 					R = tr2;
 					return true;
@@ -224,28 +224,28 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		return true;
 	}
 
-	if (cp2 < -h)
+	if(cp2 < -h)
 	{
 		// sphere lo								/(=)
 		float tc_h = tc + h; //!!
 		float sq_sphere_dist = sq_sin * tc_h * tc_h;
-		if (sq_sphere_dist > sq_horde)
+		if(sq_sphere_dist > sq_horde)
 			return false;
 		float tr_c = tr - tc_h * cs; //!!
 		float diff = std::sqrt(sq_horde - sq_sphere_dist);
 		tr1 = tr_c - diff;
-		if (tr1 > R)
+		if(tr1 > R)
 			return false; //
-		if (tr1 < 0.f)
+		if(tr1 < 0.f)
 		{
-			if (bCull)
+			if(bCull)
 				return false;
 			else
 			{
 				tr2 = tr_c + diff;
-				if (tr2 < 0.f)
+				if(tr2 < 0.f)
 					return false; //
-				if (tr2 < R)
+				if(tr2 < R)
 				{
 					R = tr2;
 					return true;
@@ -256,27 +256,27 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		return true;
 	}
 	////////////////////////////////////////////////////////////////
-	if (cs > 0.f)
+	if(cs > 0.f)
 	{
-		if (cp1 > -h)
+		if(cp1 > -h)
 		{
-			if (cp2 < h)
+			if(cp2 < h)
 			{
 				// cylinder							(=/=)
 				float diff = c_diff / cs;
 				tr1 = tr - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
 						tr2 = tr + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -291,11 +291,11 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				// mixed//cyl hi sphere					(=/)
 				float diff = c_diff / cs;
 				tr1 = tr - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
@@ -305,9 +305,9 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 						float tr_c = tr - tc_h * cs;
 						float diff = std::sqrt(sq_horde - sq_sphere_dist);
 						tr2 = tr_c + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -320,7 +320,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		}
 		else // cp1<=-h
 		{
-			if (cp2 < h)
+			if(cp2 < h)
 			{
 				// mixed//lo sphere	cyl						(/=)
 
@@ -330,19 +330,19 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				float diff = std::sqrt(sq_horde - sq_sphere_dist);
 				float tr_c = tr - tc_h * cs;
 				tr1 = tr_c - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
 						float diff = c_diff / cs;
 						tr2 = tr + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -361,11 +361,11 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				float tr_c = tr - tc_h * cs;
 				float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 				tr1 = tr_c - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
@@ -373,7 +373,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 						float tr_c = tr - tc_h * cs;
 						float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 						tr2 = tr_c + diff;
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -387,25 +387,25 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 	}
 	else
 	{
-		if (cp1 > -h)
+		if(cp1 > -h)
 		{
-			if (cp2 < h)
+			if(cp2 < h)
 			{
 				// cylinder
 				float diff = -c_diff / cs;
 				tr1 = tr - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
 						tr2 = tr + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -422,19 +422,19 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				float tr_c = tr - tc_h * cs;
 				float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 				tr1 = tr_c - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
 						diff = -c_diff / cs;
 						tr2 = tr + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -447,16 +447,16 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 		}
 		else // cp1<-h
 		{
-			if (cp2 < h)
+			if(cp2 < h)
 			{
 				// cyl/lo sphere
 				float diff = -c_diff / cs;
 				tr1 = tr - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
@@ -465,9 +465,9 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 						float tr_c = tr - tc_h * cs;
 						diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 						tr2 = tr_c + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -485,12 +485,12 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 				float tr_c = tr - tc_h * cs;
 				float diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 				tr1 = tr_c - diff;
-				if (tr1 > R)
+				if(tr1 > R)
 					return false; //
 				/////////////////////////////////////////////
-				if (tr1 < 0.f)
+				if(tr1 < 0.f)
 				{
-					if (bCull)
+					if(bCull)
 						return false;
 					else
 					{
@@ -498,9 +498,9 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const fvec3& S, const fvec3& 
 						tr_c = tr - tc_h * cs;
 						diff = std::sqrt(sq_horde - sq_sin * tc_h * tc_h);
 						tr2 = tr_c + diff;
-						if (tr2 < 0.f)
+						if(tr2 < 0.f)
 							return false; //
-						if (tr2 < R)
+						if(tr2 < R)
 						{
 							R = tr2;
 							return true;
@@ -563,7 +563,7 @@ void capped_cylinder_ray_collision_test()
 	RAYvsCYLINDER(c, pos, dir, R, TRUE); // false
 	CTimer t;
 	t.Start();
-	for (int i = 0; i < 1000000; i++)
+	for(int i = 0; i < 1000000; i++)
 	{
 		Fcylinder c;
 		c.m_center.random_point(fvec3().set(2, 2, 2));
@@ -579,7 +579,7 @@ void capped_cylinder_ray_collision_test()
 	}
 	Msg("my RAYvsCYLINDE time %f ms", t.GetElapsed_sec() * 1000.f);
 	t.Start();
-	for (int i = 0; i < 1000000; i++)
+	for(int i = 0; i < 1000000; i++)
 	{
 		Fcylinder c;
 		c.m_center.random_point(fvec3().set(2, 2, 2));

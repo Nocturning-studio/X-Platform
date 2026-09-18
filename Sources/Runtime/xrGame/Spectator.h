@@ -66,7 +66,7 @@ class CSpectator : public CGameObject, public IInputReceiver
 		return EPS;
 	}
 	//	virtual const Fbox&		BoundingBox				()				const	{ VERIFY2(renderable.visual,*cName());
-	//return renderable.visual->vis.box;									}
+	// return renderable.visual->vis.box;									}
 	virtual CGameObject* cast_game_object()
 	{
 		return this;

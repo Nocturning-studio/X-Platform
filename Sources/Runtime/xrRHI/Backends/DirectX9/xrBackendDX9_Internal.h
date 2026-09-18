@@ -26,7 +26,8 @@ struct DX9Sampler
 
 struct DX9Shader
 {
-	union {
+	union
+	{
 		IDirect3DVertexShader9* vs = nullptr;
 		IDirect3DPixelShader9* ps;
 	};
@@ -35,12 +36,12 @@ struct DX9Shader
 
 	void Release()
 	{
-		if (type == ShaderType::Vertex && vs)
+		if(type == ShaderType::Vertex && vs)
 		{
 			vs->Release();
 			vs = nullptr;
 		}
-		if (type == ShaderType::Pixel && ps)
+		if(type == ShaderType::Pixel && ps)
 		{
 			ps->Release();
 			ps = nullptr;

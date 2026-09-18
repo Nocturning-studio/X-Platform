@@ -44,7 +44,7 @@ IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(con
 {
 	LOCATIONS::iterator I =
 		std::find_if(m_danger_locations.begin(), m_danger_locations.end(), CRemoveDangerObject(object));
-	if (I != m_danger_locations.end())
+	if(I != m_danger_locations.end())
 		return (*I);
 	return (0);
 }

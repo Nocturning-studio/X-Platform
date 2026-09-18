@@ -9,10 +9,10 @@ XRSOUND_API extern float psSoundCull;
 
 inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTimeTotal, const WAVEFORMATEX& wfx)
 {
-	if (fTime < fTimeStarted)
+	if(fTime < fTimeStarted)
 		fTime = fTimeStarted;
 
-	while ((fTime - fTimeStarted) > fTimeTotal) // looped
+	while((fTime - fTimeStarted) > fTimeTotal) // looped
 		fTime -= fTimeTotal;
 
 	u32 curr_sample_num = iFloor((fTime - fTimeStarted) * wfx.nSamplesPerSec);
@@ -27,28 +27,28 @@ void CSoundRender_Emitter::update(float dt)
 	VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
 	VERIFY2(owner_data ? *(int*)(&owner_data->feedback) : 1, "owner");
 
-	if (bRewind)
+	if(bRewind)
 	{
-		if (target)
+		if(target)
 			SoundRender->i_rewind(this);
 		bRewind = FALSE;
 	}
 
-	switch (m_current_state)
+	switch(m_current_state)
 	{
 	case stStopped:
 		break;
 
 	case stStartingDelayed:
-		if (iPaused)
+		if(iPaused)
 			break;
 		starting_delay -= dt;
-		if (starting_delay <= 0)
+		if(starting_delay <= 0)
 			m_current_state = stStarting;
 		break;
 
 	case stStarting:
-		if (iPaused)
+		if(iPaused)
 			break;
 
 		fTimeStarted = fTime;
@@ -67,7 +67,7 @@ void CSoundRender_Emitter::update(float dt)
 			float fSomOcclusion = SoundRender->get_occlusion_to(l_pos, s_pos);
 
 			// Если SOM блокирует звук почти полностью (коэффициент < 0.01)
-			if (fSomOcclusion < 0.01f)
+			if(fSomOcclusion < 0.01f)
 			{
 				// Сразу глушим звук в 0, Presence Audio не вызываем (оптимизация)
 				occluder_volume = 0.0f;
@@ -75,7 +75,7 @@ void CSoundRender_Emitter::update(float dt)
 			else
 			{
 				// 2. Если проход открыт, считаем детальную физику звука
-				if (SoundRender->m_pOcclusion)
+				if(SoundRender->m_pOcclusion)
 				{
 					Presence::float3 listener(l_pos.x, l_pos.y, l_pos.z);
 					Presence::float3 source(s_pos.x, s_pos.y, s_pos.z);
@@ -98,7 +98,7 @@ void CSoundRender_Emitter::update(float dt)
 						(owner_data->s_type == st_Effect ? psSoundVEffects : psSoundVMusic) * psSoundVFactor *
 						psSoundVMaster * (b2D ? 1.f : occluder_volume);
 
-		if (update_culling(dt))
+		if(update_culling(dt))
 		{
 			m_current_state = stPlaying;
 			set_cursor(0);
@@ -110,15 +110,15 @@ void CSoundRender_Emitter::update(float dt)
 		break;
 
 	case stStartingLoopedDelayed:
-		if (iPaused)
+		if(iPaused)
 			break;
 		starting_delay -= dt;
-		if (starting_delay <= 0)
+		if(starting_delay <= 0)
 			m_current_state = stStartingLooped;
 		break;
 
 	case stStartingLooped:
-		if (iPaused)
+		if(iPaused)
 			break;
 
 		fTimeStarted = fTime;
@@ -135,13 +135,13 @@ void CSoundRender_Emitter::update(float dt)
 
 			float fSomOcclusion = SoundRender->get_occlusion_to(l_pos, s_pos);
 
-			if (fSomOcclusion < 0.01f)
+			if(fSomOcclusion < 0.01f)
 			{
 				occluder_volume = 0.0f;
 			}
 			else
 			{
-				if (SoundRender->m_pOcclusion)
+				if(SoundRender->m_pOcclusion)
 				{
 					Presence::float3 listener(l_pos.x, l_pos.y, l_pos.z);
 					Presence::float3 source(s_pos.x, s_pos.y, s_pos.z);
@@ -159,7 +159,7 @@ void CSoundRender_Emitter::update(float dt)
 						(owner_data->s_type == st_Effect ? psSoundVEffects : psSoundVMusic) * psSoundVFactor *
 						psSoundVMaster * (b2D ? 1.f : occluder_volume);
 
-		if (update_culling(dt))
+		if(update_culling(dt))
 		{
 			m_current_state = stPlayingLooped;
 			set_cursor(0);
@@ -170,9 +170,9 @@ void CSoundRender_Emitter::update(float dt)
 		break;
 
 	case stPlaying:
-		if (iPaused)
+		if(iPaused)
 		{
-			if (target)
+			if(target)
 			{
 				SoundRender->i_stop(this);
 				m_current_state = stSimulating;
@@ -184,7 +184,7 @@ void CSoundRender_Emitter::update(float dt)
 			break;
 		}
 
-		if (fTime >= fTimeToStop)
+		if(fTime >= fTimeToStop)
 		{
 			// STOP
 			m_current_state = stStopped;
@@ -192,7 +192,7 @@ void CSoundRender_Emitter::update(float dt)
 		}
 		else
 		{
-			if (!update_culling(dt))
+			if(!update_culling(dt))
 			{
 				// switch to: SIMULATE
 				m_current_state = stSimulating; // switch state
@@ -205,7 +205,7 @@ void CSoundRender_Emitter::update(float dt)
 		}
 		break;
 	case stSimulating:
-		if (iPaused)
+		if(iPaused)
 		{
 			fTimeStarted += fDeltaTime;
 			fTimeToStop += fDeltaTime;
@@ -213,7 +213,7 @@ void CSoundRender_Emitter::update(float dt)
 			break;
 		}
 
-		if (fTime >= fTimeToStop)
+		if(fTime >= fTimeToStop)
 		{
 			// STOP
 			m_current_state = stStopped;
@@ -223,7 +223,7 @@ void CSoundRender_Emitter::update(float dt)
 			u32 ptr = calc_cursor(fTimeStarted, fTime, get_length_sec(), source()->m_wformat);
 			set_cursor(ptr);
 
-			if (update_culling(dt))
+			if(update_culling(dt))
 			{
 				// switch to: PLAY
 				m_current_state = stPlaying;
@@ -232,9 +232,9 @@ void CSoundRender_Emitter::update(float dt)
 		}
 		break;
 	case stPlayingLooped:
-		if (iPaused)
+		if(iPaused)
 		{
-			if (target)
+			if(target)
 			{
 				SoundRender->i_stop(this);
 				m_current_state = stSimulatingLooped;
@@ -243,7 +243,7 @@ void CSoundRender_Emitter::update(float dt)
 			fTimeToPropagade += fDeltaTime;
 			break;
 		}
-		if (!update_culling(dt))
+		if(!update_culling(dt))
 		{
 			// switch to: SIMULATE
 			m_current_state = stSimulatingLooped; // switch state
@@ -256,14 +256,14 @@ void CSoundRender_Emitter::update(float dt)
 		break;
 
 	case stSimulatingLooped:
-		if (iPaused)
+		if(iPaused)
 		{
 			fTimeStarted += fDeltaTime;
 			fTimeToPropagade += fDeltaTime;
 			break;
 		}
 
-		if (update_culling(dt))
+		if(update_culling(dt))
 		{
 			// switch to: PLAY
 			m_current_state = stPlayingLooped; // switch state
@@ -275,7 +275,7 @@ void CSoundRender_Emitter::update(float dt)
 	}
 
 	// if deffered stop active and volume==0 -> physically stop sound
-	if (bStopping && fis_zero(fade_volume))
+	if(bStopping && fis_zero(fade_volume))
 		i_stop();
 
 	VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
@@ -283,12 +283,12 @@ void CSoundRender_Emitter::update(float dt)
 
 	// footer
 	bMoved = FALSE;
-	if (m_current_state != stStopped)
+	if(m_current_state != stStopped)
 	{
-		if (fTime >= fTimeToPropagade)
+		if(fTime >= fTimeToPropagade)
 			Event_Propagade();
 	}
-	else if (owner_data)
+	else if(owner_data)
 	{
 		VERIFY(this == owner_data->feedback);
 		owner_data->feedback = 0;
@@ -300,10 +300,10 @@ IC void volume_lerp(float& c, float t, float s, float dt)
 {
 	float diff = t - c;
 	float diff_a = _abs(diff);
-	if (diff_a < EPS_S)
+	if(diff_a < EPS_S)
 		return;
 	float mot = s * dt;
-	if (mot > diff_a)
+	if(mot > diff_a)
 		mot = diff_a;
 	c += (diff / diff_a) * mot;
 }
@@ -312,7 +312,7 @@ IC void volume_lerp(float& c, float t, float s, float dt)
 
 BOOL CSoundRender_Emitter::update_culling(float dt)
 {
-	if (b2D)
+	if(b2D)
 	{
 		occluder_volume = 1.f;
 		fade_volume += dt * 10.f * (bStopping ? -1.f : 1.f);
@@ -321,7 +321,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 	{
 		// Check range
 		float dist = SoundRender->listener_position().distance_to(p_source.position);
-		if (dist > p_source.max_distance)
+		if(dist > p_source.max_distance)
 		{
 			smooth_volume = 0;
 			return FALSE;
@@ -338,14 +338,14 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 				? -1.f
 				: 1.f;
 
-		if (owner_data->g_type == SOUND_TYPE_WEAPON || owner_data->g_type == SOUND_TYPE_SHOOTING ||
-			owner_data->g_type == SOUND_TYPE_EMPTY_CLICKING || owner_data->g_type == SOUND_TYPE_BULLET_HIT ||
-			owner_data->g_type == SOUND_TYPE_RECHARGING || owner_data->g_type == SOUND_TYPE_WEAPON_SHOOTING ||
-			owner_data->g_type == SOUND_TYPE_WEAPON_EMPTY_CLICKING ||
-			owner_data->g_type == SOUND_TYPE_WEAPON_BULLET_HIT || owner_data->g_type == SOUND_TYPE_WEAPON_RECHARGING)
+		if(owner_data->g_type == SOUND_TYPE_WEAPON || owner_data->g_type == SOUND_TYPE_SHOOTING ||
+		   owner_data->g_type == SOUND_TYPE_EMPTY_CLICKING || owner_data->g_type == SOUND_TYPE_BULLET_HIT ||
+		   owner_data->g_type == SOUND_TYPE_RECHARGING || owner_data->g_type == SOUND_TYPE_WEAPON_SHOOTING ||
+		   owner_data->g_type == SOUND_TYPE_WEAPON_EMPTY_CLICKING ||
+		   owner_data->g_type == SOUND_TYPE_WEAPON_BULLET_HIT || owner_data->g_type == SOUND_TYPE_WEAPON_RECHARGING)
 			fade_scale *= psSoundVWeaponShooting;
 
-		if (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT)
+		if(owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT)
 			fade_scale *= psSoundVAmbient;
 
 		fade_volume += dt * 10.f * fade_scale;
@@ -363,7 +363,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 		float fSomOcclusion = SoundRender->get_occlusion_to(l_pos, s_pos);
 
 		// Если SOM перекрывает путь звука (коэфф. прохождения очень мал)
-		if (fSomOcclusion < 0.01f)
+		if(fSomOcclusion < 0.01f)
 		{
 			// ОПТИМИЗАЦИЯ:
 			// Мы считаем, что звук полностью блокирован геометрией (например, звук под землей, а игрок на поверхности).
@@ -373,7 +373,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 		else
 		{
 			// Шаг 2: Если SOM пропускает звук, считаем "честную" дифракцию/окклюзию
-			if (SoundRender->m_pOcclusion)
+			if(SoundRender->m_pOcclusion)
 			{
 				// Конвертация координат X-Ray -> Presence
 				Presence::float3 listener(l_pos.x, l_pos.y, l_pos.z);
@@ -404,20 +404,20 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 												 (owner_data->s_type == st_Effect ? psSoundVEffects : psSoundVMusic) *
 												 psSoundVFactor * psSoundVMaster * occluder_volume * fade_volume);
 
-	if (owner_data->g_type == SOUND_TYPE_WEAPON || owner_data->g_type == SOUND_TYPE_SHOOTING ||
-		owner_data->g_type == SOUND_TYPE_EMPTY_CLICKING || owner_data->g_type == SOUND_TYPE_BULLET_HIT ||
-		owner_data->g_type == SOUND_TYPE_RECHARGING || owner_data->g_type == SOUND_TYPE_WEAPON_SHOOTING ||
-		owner_data->g_type == SOUND_TYPE_WEAPON_EMPTY_CLICKING || owner_data->g_type == SOUND_TYPE_WEAPON_BULLET_HIT ||
-		owner_data->g_type == SOUND_TYPE_WEAPON_RECHARGING)
+	if(owner_data->g_type == SOUND_TYPE_WEAPON || owner_data->g_type == SOUND_TYPE_SHOOTING ||
+	   owner_data->g_type == SOUND_TYPE_EMPTY_CLICKING || owner_data->g_type == SOUND_TYPE_BULLET_HIT ||
+	   owner_data->g_type == SOUND_TYPE_RECHARGING || owner_data->g_type == SOUND_TYPE_WEAPON_SHOOTING ||
+	   owner_data->g_type == SOUND_TYPE_WEAPON_EMPTY_CLICKING || owner_data->g_type == SOUND_TYPE_WEAPON_BULLET_HIT ||
+	   owner_data->g_type == SOUND_TYPE_WEAPON_RECHARGING)
 		smooth_volume *= psSoundVWeaponShooting;
 
-	if (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT)
+	if(owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT)
 		smooth_volume *= psSoundVAmbient;
 
-	if (smooth_volume < psSoundCull)
+	if(smooth_volume < psSoundCull)
 		return FALSE; // allow volume to go up
 
-	if (target)
+	if(target)
 		return TRUE;
 	else
 		return SoundRender->i_allow_play(this);

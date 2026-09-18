@@ -32,19 +32,19 @@ void CUIProgressBar::Init(float x, float y, float width, float height, bool bIsH
 
 void CUIProgressBar::UpdateProgressBar()
 {
-	if (fsimilar(m_MaxPos, m_MinPos))
+	if(fsimilar(m_MaxPos, m_MinPos))
 		m_MaxPos += EPS;
 
 	float progressbar_unit = 1 / (m_MaxPos - m_MinPos);
 
 	float fCurrentLength = m_ProgressPos.x * progressbar_unit;
 
-	if (m_bIsHorizontal)
+	if(m_bIsHorizontal)
 		m_CurrentLength = GetWidth() * fCurrentLength;
 	else
 		m_CurrentLength = GetHeight() * fCurrentLength;
 
-	if (m_bUseColor)
+	if(m_bUseColor)
 	{
 		Fcolor curr;
 		curr.lerp(m_minColor, m_maxColor, fCurrentLength);
@@ -57,7 +57,7 @@ void CUIProgressBar::SetProgressPos(float _Pos)
 	m_ProgressPos.y = _Pos;
 	clamp(m_ProgressPos.y, m_MinPos, m_MaxPos);
 
-	if (m_last_render_frame + 1 != Engine.TimeManager.GetFrameCount())
+	if(m_last_render_frame + 1 != Engine.TimeManager.GetFrameCount())
 		m_ProgressPos.x = m_ProgressPos.y;
 
 	UpdateProgressBar();
@@ -70,9 +70,9 @@ float _sign(const float& v)
 void CUIProgressBar::Update()
 {
 	inherited::Update();
-	if (!fsimilar(m_ProgressPos.x, m_ProgressPos.y))
+	if(!fsimilar(m_ProgressPos.x, m_ProgressPos.y))
 	{
-		if (fsimilar(m_MaxPos, m_MinPos))
+		if(fsimilar(m_MaxPos, m_MinPos))
 			m_MaxPos += EPS; // hack ^(
 		float _diff = m_ProgressPos.y - m_ProgressPos.x;
 
@@ -91,7 +91,7 @@ void CUIProgressBar::Draw()
 	Frect rect;
 	GetAbsoluteRect(rect);
 
-	if (m_bBackgroundPresent)
+	if(m_bBackgroundPresent)
 	{
 		UI()->PushScissor(rect);
 		m_UIBackgroundItem.Draw();
@@ -100,7 +100,7 @@ void CUIProgressBar::Draw()
 
 	Frect progress_rect;
 
-	if (m_bIsHorizontal)
+	if(m_bIsHorizontal)
 	{
 		progress_rect.set(0, 0, m_CurrentLength, GetHeight());
 	}
@@ -109,7 +109,7 @@ void CUIProgressBar::Draw()
 		progress_rect.set(0, GetHeight() - m_CurrentLength, GetWidth(), GetHeight());
 	}
 
-	if (m_CurrentLength > 0)
+	if(m_CurrentLength > 0)
 	{
 		fvec2 pos = m_UIProgressItem.GetWndPos();
 		progress_rect.add(rect.left + pos.x, rect.top + pos.y);

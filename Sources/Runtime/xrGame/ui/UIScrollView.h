@@ -85,14 +85,14 @@ class CUIScrollView : public CUIWindow, public CUIWndCallback
 	}
 };
 
-#define ADD_TEXT_TO_VIEW3(txt, st, view)                                                                               \
-	st = xr_new<CUIStatic>();                                                                                          \
-	st->SetText(txt);                                                                                                  \
-	st->SetTextComplexMode(true);                                                                                      \
-	st->SetWidth(view->GetDesiredChildWidth());                                                                        \
-	st->AdjustHeightToText();                                                                                          \
+#define ADD_TEXT_TO_VIEW3(txt, st, view)        \
+	st = xr_new<CUIStatic>();                   \
+	st->SetText(txt);                           \
+	st->SetTextComplexMode(true);               \
+	st->SetWidth(view->GetDesiredChildWidth()); \
+	st->AdjustHeightToText();                   \
 	view->AddWindow(st, true)
 
-#define ADD_TEXT_TO_VIEW2(txt, view)                                                                                   \
-	CUIStatic* pSt;                                                                                                    \
+#define ADD_TEXT_TO_VIEW2(txt, view) \
+	CUIStatic* pSt;                  \
 	ADD_TEXT_TO_VIEW3(txt, pSt, view)

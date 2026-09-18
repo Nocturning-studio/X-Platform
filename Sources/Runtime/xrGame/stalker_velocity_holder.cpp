@@ -21,7 +21,7 @@ CStalkerVelocityHolder::~CStalkerVelocityHolder()
 const CStalkerVelocityHolder::COLLECTION& CStalkerVelocityHolder::collection(const shared_str& section)
 {
 	COLLECTIONS::const_iterator I = m_collections.find(section);
-	if (I != m_collections.end())
+	if(I != m_collections.end())
 		return (*(*I).second);
 
 	COLLECTION* collection = xr_new<COLLECTION>(section);

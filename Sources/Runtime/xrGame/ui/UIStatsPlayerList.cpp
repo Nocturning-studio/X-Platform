@@ -60,12 +60,12 @@ void CUIStatsPlayerList::Init(CUIXml& xml_doc, LPCSTR path)
 	XML_NODE* tab_node = xml_doc.NavigateToNode(path, 0);
 	xml_doc.SetLocalRoot(tab_node);
 
-	for (int i = 0; i < tabsCount; ++i)
+	for(int i = 0; i < tabsCount; ++i)
 	{
 		LPCSTR name = xml_doc.ReadAttrib("field", i, "name");
 		float width = xml_doc.ReadAttribFlt("field", i, "width");
 
-		if (0 == xr_strcmp(name, "artefacts") && GameID() != GAME_ARTEFACTHUNT)
+		if(0 == xr_strcmp(name, "artefacts") && GameID() != GAME_ARTEFACTHUNT)
 			continue;
 
 		AddField(name, width);
@@ -77,11 +77,11 @@ void CUIStatsPlayerList::Init(CUIXml& xml_doc, LPCSTR path)
 	m_i.h = xml_doc.ReadAttribFlt(strconcat(sizeof(_path), _path, path, ":text_format"), 0, "height", 25);
 
 	// init list header
-	switch (GameID())
+	switch(GameID())
 	{
 	case GAME_ARTEFACTHUNT:
 	case GAME_TEAMDEATHMATCH:
-		if (!m_bSpectator || m_bStatus_mode)
+		if(!m_bSpectator || m_bStatus_mode)
 			InitTeamHeader(xml_doc, path);
 	case GAME_DEATHMATCH:
 		InitHeader(xml_doc, path);
@@ -99,17 +99,17 @@ LPCSTR CUIStatsPlayerList::GetST_entry(LPCSTR itm)
 	static LPCSTR mp_artefacts = "mp_artefacts";
 	static LPCSTR mp_status = "mp_status";
 
-	if (0 == xr_strcmp(itm, "name"))
+	if(0 == xr_strcmp(itm, "name"))
 		return mp_name;
-	else if (0 == xr_strcmp(itm, "frags"))
+	else if(0 == xr_strcmp(itm, "frags"))
 		return mp_frags;
-	else if (0 == xr_strcmp(itm, "deaths"))
+	else if(0 == xr_strcmp(itm, "deaths"))
 		return mp_deaths;
-	else if (0 == xr_strcmp(itm, "ping"))
+	else if(0 == xr_strcmp(itm, "ping"))
 		return mp_ping;
-	else if (0 == xr_strcmp(itm, "artefacts"))
+	else if(0 == xr_strcmp(itm, "artefacts"))
 		return mp_artefacts;
-	else if (0 == xr_strcmp(itm, "status"))
+	else if(0 == xr_strcmp(itm, "status"))
 		return mp_status;
 	else
 		NODEFAULT;
@@ -128,9 +128,9 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 
 	CUIXmlInit::InitFont(xml_doc, strconcat(sizeof(_path), _path, path, ":list_header:text_format"), 0, m_h.c, m_h.f);
 	float indent = 5;
-	if (!m_bSpectator || m_bStatus_mode)
+	if(!m_bSpectator || m_bStatus_mode)
 	{
-		for (u32 i = 0; i < m_field_info.size(); i++)
+		for(u32 i = 0; i < m_field_info.size(); i++)
 		{
 			CUIStatic* st = xr_new<CUIStatic>();
 			st->SetAutoDelete(true);
@@ -138,9 +138,9 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 			st->Init(indent, 10, m_field_info[i].width, m_header->GetHeight());
 			indent += m_field_info[i].width;
 
-			if (0 == xr_strcmp(m_field_info[i].name, "rank"))
+			if(0 == xr_strcmp(m_field_info[i].name, "rank"))
 				st->SetText("");
-			else if (0 == xr_strcmp(m_field_info[i].name, "death_atf"))
+			else if(0 == xr_strcmp(m_field_info[i].name, "death_atf"))
 				st->SetText("");
 			else
 			{
@@ -148,11 +148,11 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 				st->SetTextST(GetST_entry(*m_field_info[i].name));
 			}
 
-			if (m_h.f)
+			if(m_h.f)
 				st->SetFont(m_h.f);
 			st->SetTextColor(m_h.c);
 			st->SetTextComplexMode(false);
-			if (0 != i)
+			if(0 != i)
 				st->SetTextAlignment(CGameFont::alCenter);
 			m_header->AttachChild(st);
 		}
@@ -162,7 +162,7 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 		CUIStatic* st = xr_new<CUIStatic>();
 		st->SetAutoDelete(true);
 		st->Init(10, 0, this->GetDesiredChildWidth(), m_h.h);
-		if (m_h.f)
+		if(m_h.f)
 			m_header->SetFont(m_h.f);
 		st->SetTextColor(m_h.c);
 		st->SetVTextAlignment(valCenter);
@@ -185,9 +185,9 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path)
 	CUIXmlInit::InitStatic(xml_doc, strconcat(sizeof(_path), _path, path, ":team_header:logo"), 0, logo);
 	m_header_team->AttachChild(logo);
 
-	if (1 == m_CurTeam)
+	if(1 == m_CurTeam)
 		logo->InitTexture(pSettings->r_string("team_logo_small", "team1"));
-	else if (2 == m_CurTeam)
+	else if(2 == m_CurTeam)
 		logo->InitTexture(pSettings->r_string("team_logo_small", "team2"));
 	else
 		R_ASSERT2(false, "invalid team");
@@ -202,7 +202,7 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path)
 	m_header_text->SetWidth(GetDesiredChildWidth());
 	m_header_text->SetVTextAlignment(valCenter);
 	m_header_team->AttachChild(m_header_text);
-	if (t.f)
+	if(t.f)
 		m_header_text->SetFont(t.f);
 	m_header_text->SetTextColor(t.c);
 }
@@ -211,7 +211,7 @@ void CUIStatsPlayerList::Update()
 {
 
 	static string512 teaminfo;
-	if (m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 100)
+	if(m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 100)
 		return;
 
 	DEFINE_VECTOR(game_PlayerState*, ItemVec, ItemIt);
@@ -225,13 +225,13 @@ void CUIStatsPlayerList::Update()
 	u32 pl_count = 0;
 	int pl_frags = 0;
 	u32 pl_artefacts = 0;
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		game_PlayerState* p = (game_PlayerState*)I->second;
-		if (!p || p->team != m_CurTeam)
+		if(!p || p->team != m_CurTeam)
 			continue;
-		if (m_bStatus_mode || m_bSpectator && p->testFlag(GAME_PLAYER_FLAG_SPECTATOR) ||
-			!m_bSpectator && !p->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+		if(m_bStatus_mode || m_bSpectator && p->testFlag(GAME_PLAYER_FLAG_SPECTATOR) ||
+		   !m_bSpectator && !p->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 		{
 			items.push_back(I->second);
 			// add to team info
@@ -241,7 +241,7 @@ void CUIStatsPlayerList::Update()
 	pl_count = items.size();
 
 	CStringTable st;
-	if (GameID() == GAME_ARTEFACTHUNT && !m_bSpectator)
+	if(GameID() == GAME_ARTEFACTHUNT && !m_bSpectator)
 	{
 		game_cl_ArtefactHunt* game = static_cast<game_cl_ArtefactHunt*>(&Game());
 		pl_artefacts = game->teams[m_CurTeam - 1].score;
@@ -249,7 +249,7 @@ void CUIStatsPlayerList::Update()
 				  *st.translate("mp_players"), pl_count, *st.translate("mp_frags_upcase"), pl_frags);
 		m_header_text->SetText(teaminfo);
 	}
-	else if (GameID() == GAME_TEAMDEATHMATCH && !m_bSpectator)
+	else if(GameID() == GAME_TEAMDEATHMATCH && !m_bSpectator)
 	{
 		game_cl_TeamDeathmatch* game = static_cast<game_cl_TeamDeathmatch*>(&Game());
 		pl_frags = game->teams[m_CurTeam - 1].score;
@@ -258,9 +258,9 @@ void CUIStatsPlayerList::Update()
 		m_header_text->SetText(teaminfo);
 	}
 
-	if (m_bSpectator)
+	if(m_bSpectator)
 	{
-		if (items.empty())
+		if(items.empty())
 		{
 			Clear();
 			ShowHeader(false);
@@ -275,16 +275,16 @@ void CUIStatsPlayerList::Update()
 	int n = (int)items.size();
 	n -= m_pad->GetChildWndList().size();
 
-	if (n < 0)
+	if(n < 0)
 	{
 		n = abs(n);
-		for (int i = 0; i < n; i++)
+		for(int i = 0; i < n; i++)
 			m_pad->DetachChild(*(m_pad->GetChildWndList().begin()));
 		m_flags.set(eNeedRecalc, TRUE);
 	}
 	else
 	{
-		for (int i = 0; i < n; i++)
+		for(int i = 0; i < n; i++)
 		{
 			CUIStatsPlayerInfo* pi = xr_new<CUIStatsPlayerInfo>(&m_field_info, m_i.f, m_i.c);
 			pi->Init(0, 0, this->GetDesiredChildWidth(), m_i.h);
@@ -298,7 +298,7 @@ void CUIStatsPlayerList::Update()
 	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
 	ItemIt itit = items.begin();
 
-	for (; it != m_pad->GetChildWndList().end(); it++, itit++)
+	for(; it != m_pad->GetChildWndList().end(); it++, itit++)
 	{
 		CUIStatsPlayerInfo* pi = smart_cast<CUIStatsPlayerInfo*>(*it);
 		R_ASSERT(pi);
@@ -338,7 +338,7 @@ CUIWindow* CUIStatsPlayerList::GetTeamHeader()
 void CUIStatsPlayerList::RecalcSize()
 {
 	CUIScrollView::RecalcSize();
-	if (GetHeight() < m_pad->GetHeight())
+	if(GetHeight() < m_pad->GetHeight())
 	{
 		SetHeight(m_pad->GetHeight());
 		GetMessageTarget()->SendMessage(this, CHILD_CHANGED_SIZE, NULL);
@@ -347,7 +347,7 @@ void CUIStatsPlayerList::RecalcSize()
 
 void CUIStatsPlayerList::ShowHeader(bool bShow)
 {
-	if (m_header)
+	if(m_header)
 	{
 		m_header->Show(bShow);
 		m_header->SetHeight(bShow ? m_h.h : 0);

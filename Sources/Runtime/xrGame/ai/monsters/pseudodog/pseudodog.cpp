@@ -45,7 +45,7 @@ void CAI_PseudoDog::reinit()
 	m_time_became_angry = 0;
 	time_growling = 0;
 
-	if (CCustomMonster::use_simplified_visual())
+	if(CCustomMonster::use_simplified_visual())
 		return;
 	com_man().add_rotation_jump_data("1", "2", "3", "4", deg(90));
 }
@@ -138,7 +138,7 @@ void CAI_PseudoDog::reload(LPCSTR section)
 {
 	inherited::reload(section);
 
-	if (CCustomMonster::use_simplified_visual())
+	if(CCustomMonster::use_simplified_visual())
 		return;
 
 	// load additional sounds
@@ -152,12 +152,12 @@ void CAI_PseudoDog::reload(LPCSTR section)
 
 void CAI_PseudoDog::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_PSI_ATTACK) == ASP_PSI_ATTACK)
+	if((spec_params & ASP_PSI_ATTACK) == ASP_PSI_ATTACK)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimAttackPsi));
 	}
 
-	if ((spec_params & ASP_THREATEN) == ASP_THREATEN)
+	if((spec_params & ASP_THREATEN) == ASP_THREATEN)
 	{
 		anim().SetCurAnim(eAnimThreaten);
 	}

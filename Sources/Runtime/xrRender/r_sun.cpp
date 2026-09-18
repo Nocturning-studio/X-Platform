@@ -8,26 +8,25 @@ extern float ps_r_sun_far;
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static fvec3 corners[8] = 
-{
-	{-1, -1, 0},	
-	{-1, -1, +1}, 
-	{-1, +1, +1}, 
-	{-1, +1, 0},
-	{+1, +1, +1}, 
-	{+1, +1, 0},  
-	{+1, -1, +1}, 
-	{+1, -1, 0}
-};
+static fvec3 corners[8] =
+	{
+		{-1, -1, 0},
+		{-1, -1, +1},
+		{-1, +1, +1},
+		{-1, +1, 0},
+		{+1, +1, +1},
+		{+1, +1, 0},
+		{+1, -1, +1},
+		{+1, -1, 0}};
 
-static int facetable[6][4] = 
-{
-	{6, 7, 5, 4},   // right
-	{1, 0, 7, 6},   // bottom
-	{1, 2, 3, 0},   // left
-	{3, 2, 4, 5},   // top
-	{0, 3, 5, 7},   // near
-	{1, 2, 4, 6}    // far
+static int facetable[6][4] =
+	{
+		{6, 7, 5, 4}, // right
+		{1, 0, 7, 6}, // bottom
+		{1, 2, 3, 0}, // left
+		{3, 2, 4, 5}, // top
+		{0, 3, 5, 7}, // near
+		{1, 2, 4, 6}  // far
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,7 +37,8 @@ static int facetable[6][4] =
 const u32 LIGHT_CUBOIDSIDEPOLYS_COUNT = 4;
 const u32 LIGHT_CUBOIDVERTICES_COUNT = 2 * LIGHT_CUBOIDSIDEPOLYS_COUNT;
 
-template <bool _debug> class FixedConvexVolume
+template <bool _debug>
+class FixedConvexVolume
 {
   public:
 	struct _poly
@@ -56,14 +56,14 @@ template <bool _debug> class FixedConvexVolume
   public:
 	void compute_planes()
 	{
-		for (u32 it = 0; it < LIGHT_CUBOIDSIDEPOLYS_COUNT; it++)
+		for(u32 it = 0; it < LIGHT_CUBOIDSIDEPOLYS_COUNT; it++)
 		{
 			_poly& P = light_cuboid_polys[it];
 
 			P.plane.build(light_cuboid_points[P.points[0]], light_cuboid_points[P.points[2]], light_cuboid_points[P.points[1]]);
 
 			// verify
-			if (_debug)
+			if(_debug)
 			{
 				fvec3& p0 = light_cuboid_points[P.points[0]];
 				fvec3& p1 = light_cuboid_points[P.points[1]];
@@ -82,36 +82,36 @@ template <bool _debug> class FixedConvexVolume
 		}
 	}
 
-	void compute_caster_model_fixed(xr_vector<Fplane>& dest, 
-									fvec3& translation, 
+	void compute_caster_model_fixed(xr_vector<Fplane>& dest,
+									fvec3& translation,
 									float map_size,
 									bool clip_by_view_near)
 	{
 		translation.set(0.f, 0.f, 0.f);
 
-		if (fis_zero(1 - abs(view_ray.Direction.dotproduct(light_ray.Direction)), EPS_S))
+		if(fis_zero(1 - abs(view_ray.Direction.dotproduct(light_ray.Direction)), EPS_S))
 			return;
 
 		// compute planes for each polygon.
 		compute_planes();
 
-		for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
+		for(u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
 			VERIFY(light_cuboid_polys[i].plane.classify(light_ray.Position) > 0);
 
 		int align_planes[2];
 		int align_planes_count = 0;
 
 		// find one or two planes that align to view frustum from behind.
-		for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
+		for(u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
 		{
 			float tmp_dot = view_ray.Direction.dotproduct(light_cuboid_polys[i].plane.n);
-			if (tmp_dot <= EPS_L)
+			if(tmp_dot <= EPS_L)
 				continue;
 
 			align_planes[align_planes_count] = i;
 			++align_planes_count;
 
-			if (align_planes_count == 2)
+			if(align_planes_count == 2)
 				break;
 		}
 
@@ -119,11 +119,11 @@ template <bool _debug> class FixedConvexVolume
 		align_vector.set(0.f, 0.f, 0.f);
 
 		// Align ray points to the align planes.
-		for (int p = 0; p < align_planes_count; ++p)
+		for(int p = 0; p < align_planes_count; ++p)
 		{
 			// Hack !
 			float min_dist = 10000;
-			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+			for(u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
 				float tmp_dist = 0;
 				fvec3 tmp_point = view_frustum_rays[i].Position;
@@ -150,13 +150,13 @@ template <bool _debug> class FixedConvexVolume
 		align_vector.set(0.f, 0.f, 0.f);
 
 		// Check if view edges intersect, and push planes................
-		for (int p = 0; p < align_planes_count; ++p)
+		for(int p = 0; p < align_planes_count; ++p)
 		{
 			float max_mag = 0;
-			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+			for(u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
 				float plane_dot_ray = view_frustum_rays[i].Direction.dotproduct(light_cuboid_polys[align_planes[p]].plane.n);
-				if (plane_dot_ray < 0)
+				if(plane_dot_ray < 0)
 				{
 					fvec3 per_plane_view;
 					per_plane_view.crossproduct(light_cuboid_polys[align_planes[p]].plane.n, view_ray.Direction);
@@ -169,7 +169,7 @@ template <bool _debug> class FixedConvexVolume
 				}
 			}
 
-			if (fis_zero(max_mag))
+			if(fis_zero(max_mag))
 				continue;
 
 			VERIFY(max_mag <= 1.f);
@@ -183,20 +183,20 @@ template <bool _debug> class FixedConvexVolume
 		translate_light_model(translation);
 
 		// compute culling planes by rays as edges
-		for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+		for(u32 i = 0; i < view_frustum_rays.size(); ++i)
 		{
 			fvec3 tmp_vector;
 			tmp_vector.crossproduct(view_frustum_rays[i].Direction, light_ray.Direction);
 
 			// check if the vectors are parallel
-			if (fis_zero(tmp_vector.square_magnitude(), EPS))
+			if(fis_zero(tmp_vector.square_magnitude(), EPS))
 				continue;
 
 			Fplane tmp_plane;
 			tmp_plane.build(view_frustum_rays[i].Position, tmp_vector);
 
 			float sign = 0;
-			if (check_cull_plane_valid(tmp_plane, sign, 5))
+			if(check_cull_plane_valid(tmp_plane, sign, 5))
 			{
 				tmp_plane.n.mul(-sign);
 				tmp_plane.d *= -sign;
@@ -205,7 +205,7 @@ template <bool _debug> class FixedConvexVolume
 		}
 
 		// compute culling planes by ray points pairs as edges
-		if (clip_by_view_near && abs(view_ray.Direction.dotproduct(light_ray.Direction)) < 0.8)
+		if(clip_by_view_near && abs(view_ray.Direction.dotproduct(light_ray.Direction)) < 0.8)
 		{
 			fvec3 perp_light_view, perp_light_to_view;
 			perp_light_view.crossproduct(view_ray.Direction, light_ray.Direction);
@@ -215,29 +215,29 @@ template <bool _debug> class FixedConvexVolume
 			plane.build(view_ray.Position, perp_light_to_view);
 
 			float max_dist = -1000;
-			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+			for(u32 i = 0; i < view_frustum_rays.size(); ++i)
 				max_dist = _max(plane.classify(view_frustum_rays[i].Position), max_dist);
 
-			for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+			for(u32 i = 0; i < view_frustum_rays.size(); ++i)
 			{
 				fvec3 P = view_frustum_rays[i].Position;
 				P.mad(view_frustum_rays[i].Direction, 5);
 
-				if (plane.classify(P) > max_dist)
+				if(plane.classify(P) > max_dist)
 				{
 					max_dist = 0.f;
 					break;
 				}
 			}
 
-			if (max_dist > -1000)
+			if(max_dist > -1000)
 			{
 				plane.d += max_dist;
 				dest.push_back(plane);
 			}
 		}
 
-		for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
+		for(u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
 		{
 			dest.push_back(light_cuboid_polys[i].plane);
 			dest.back().n.mul(-1);
@@ -246,18 +246,18 @@ template <bool _debug> class FixedConvexVolume
 		}
 
 		// Compute ray intersection with light model, this is needed to next cascade to start it's placement.
-		for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+		for(u32 i = 0; i < view_frustum_rays.size(); ++i)
 		{
 			float min_dist = 2 * map_size;
-			for (int p = 0; p < 4; ++p)
+			for(int p = 0; p < 4; ++p)
 			{
 				float dist;
-				if ((light_cuboid_polys[p].plane.n.dotproduct(view_frustum_rays[i].Direction)) > -0.1)
+				if((light_cuboid_polys[p].plane.n.dotproduct(view_frustum_rays[i].Direction)) > -0.1)
 					dist = map_size;
 				else
 					light_cuboid_polys[p].plane.intersectRayDist(view_frustum_rays[i].Position, view_frustum_rays[i].Direction, dist);
 
-				if (dist > EPS_L && dist < min_dist)
+				if(dist > EPS_L && dist < min_dist)
 					min_dist = dist;
 			}
 
@@ -270,17 +270,17 @@ template <bool _debug> class FixedConvexVolume
 		bool valid = false;
 		bool oriented = false;
 		float orient = 0;
-		for (u32 j = 0; j < view_frustum_rays.size(); ++j)
+		for(u32 j = 0; j < view_frustum_rays.size(); ++j)
 		{
 			float tmp_dist = 0.f;
 			fvec3 tmp_pt = view_frustum_rays[j].Position;
 			tmp_pt.mad(view_frustum_rays[j].Direction, mad_factor);
 			tmp_dist = plane.classify(tmp_pt);
 
-			if (fis_zero(tmp_dist, EPS_L))
+			if(fis_zero(tmp_dist, EPS_L))
 				continue;
 
-			if (!oriented)
+			if(!oriented)
 			{
 				orient = tmp_dist > 0.f ? 1.f : -1.f;
 				valid = true;
@@ -288,7 +288,7 @@ template <bool _debug> class FixedConvexVolume
 				continue;
 			}
 
-			if (tmp_dist < 0 && orient < 0 || tmp_dist > 0 && orient > 0)
+			if(tmp_dist < 0 && orient < 0 || tmp_dist > 0 && orient > 0)
 				continue;
 
 			valid = false;
@@ -302,7 +302,7 @@ template <bool _debug> class FixedConvexVolume
 	{
 		fmat4x4 trans_mat;
 		trans_mat.translate(translate);
-		for (int i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; ++i)
+		for(int i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; ++i)
 			light_cuboid_polys[i].plane.d -= translate.dotproduct(light_cuboid_polys[i].plane.n);
 	}
 };
@@ -341,186 +341,186 @@ void CRender::init_cacades()
 
 void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx)
 {
-    light* sun = (light*)Lights.sun_adapted._get();
+	light* sun = (light*)Lights.sun_adapted._get();
 
-    // Calculate view-frustum bounds in world space
-    fmat4x4 ex_project, ex_full, ex_full_inverse;
-    {
-        ex_project = ctx.RenderView.Project;
-        ex_full.mul(ex_project, ctx.RenderView.View);
-        ex_full_inverse.invert_full(ex_full);
-    }
+	// Calculate view-frustum bounds in world space
+	fmat4x4 ex_project, ex_full, ex_full_inverse;
+	{
+		ex_project = ctx.RenderView.Project;
+		ex_full.mul(ex_project, ctx.RenderView.View);
+		ex_full_inverse.invert_full(ex_full);
+	}
 
-    // Local variables for calculation
-    CFrustum cull_frustum;
-    xr_vector<Fplane> cull_planes;
-    fvec3 cull_COP;
-    CSector* cull_sector;
-    fmat4x4 cull_transform;
+	// Local variables for calculation
+	CFrustum cull_frustum;
+	xr_vector<Fplane> cull_planes;
+	fvec3 cull_COP;
+	CSector* cull_sector;
+	fmat4x4 cull_transform;
 
-    {
-        fmat4x4 fulltransform_inv = ex_full_inverse;
+	{
+		fmat4x4 fulltransform_inv = ex_full_inverse;
 
-        // Search for default sector (largest)
-        CSector* largest_sector = 0;
-        float largest_sector_vol = 0;
-        for (u32 s = 0; s < Sectors.size(); s++)
-        {
-            CSector* S = (CSector*)Sectors[s];
-            IRender_Visual* V = S->root();
-            float vol = V->vis.box.getvolume();
-            if (vol > largest_sector_vol)
-            {
-                largest_sector_vol = vol;
-                largest_sector = S;
-            }
-        }
-        cull_sector = largest_sector;
+		// Search for default sector (largest)
+		CSector* largest_sector = 0;
+		float largest_sector_vol = 0;
+		for(u32 s = 0; s < Sectors.size(); s++)
+		{
+			CSector* S = (CSector*)Sectors[s];
+			IRender_Visual* V = S->root();
+			float vol = V->vis.box.getvolume();
+			if(vol > largest_sector_vol)
+			{
+				largest_sector_vol = vol;
+				largest_sector = S;
+			}
+		}
+		cull_sector = largest_sector;
 
-        // COP - 100 km away
-        cull_COP.mad(ctx.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
+		// COP - 100 km away
+		cull_COP.mad(ctx.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
 
-        // Create approximate ortho-transform
-        fmat4x4 mdir_View, mdir_Project;
-        fvec3 L_dir, L_up, L_right, L_pos;
-        L_pos.set(sun->get_position());
-        L_dir.set(sun->get_direction()).normalize();
-        L_right.set(1, 0, 0);
-        if (_abs(L_right.dotproduct(L_dir)) > .99f)
-            L_right.set(0, 0, 1);
-        L_up.crossproduct(L_dir, L_right).normalize();
-        L_right.crossproduct(L_up, L_dir).normalize();
-        mdir_View.build_camera_dir(L_pos, L_dir, L_up);
+		// Create approximate ortho-transform
+		fmat4x4 mdir_View, mdir_Project;
+		fvec3 L_dir, L_up, L_right, L_pos;
+		L_pos.set(sun->get_position());
+		L_dir.set(sun->get_direction()).normalize();
+		L_right.set(1, 0, 0);
+		if(_abs(L_right.dotproduct(L_dir)) > .99f)
+			L_right.set(0, 0, 1);
+		L_up.crossproduct(L_dir, L_right).normalize();
+		L_right.crossproduct(L_up, L_dir).normalize();
+		mdir_View.build_camera_dir(L_pos, L_dir, L_up);
 
 #ifdef _DEBUG
-        typedef FixedConvexVolume<true> t_cuboid;
+		typedef FixedConvexVolume<true> t_cuboid;
 #else
-        typedef FixedConvexVolume<false> t_cuboid;
+		typedef FixedConvexVolume<false> t_cuboid;
 #endif
 
-        t_cuboid light_cuboid;
-        {
-            // Initialize rays for this cascade
-            if (cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
-            {
-                fvec3 near_p, edge_vec;
-                for (int p = 0; p < 4; p++)
-                {
-                    near_p = project(fulltransform_inv, corners[facetable[4][p]]);
-                    edge_vec = project(fulltransform_inv, corners[facetable[5][p]]);
-                    edge_vec.sub(near_p);
-                    edge_vec.normalize();
+		t_cuboid light_cuboid;
+		{
+			// Initialize rays for this cascade
+			if(cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
+			{
+				fvec3 near_p, edge_vec;
+				for(int p = 0; p < 4; p++)
+				{
+					near_p = project(fulltransform_inv, corners[facetable[4][p]]);
+					edge_vec = project(fulltransform_inv, corners[facetable[5][p]]);
+					edge_vec.sub(near_p);
+					edge_vec.normalize();
 
-                    light_cuboid.view_frustum_rays.push_back(Sun::Ray(near_p, edge_vec));
-                }
-            }
-            else
-            {
-                light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
-            }
+					light_cuboid.view_frustum_rays.push_back(Sun::Ray(near_p, edge_vec));
+				}
+			}
+			else
+			{
+				light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
+			}
 
-            light_cuboid.view_ray.Position = ctx.RenderView.Position;
-            light_cuboid.view_ray.Direction = ctx.RenderView.Direction;
-            light_cuboid.light_ray.Position = L_pos;
-            light_cuboid.light_ray.Direction = L_dir;
-        }
+			light_cuboid.view_ray.Position = ctx.RenderView.Position;
+			light_cuboid.view_ray.Direction = ctx.RenderView.Direction;
+			light_cuboid.light_ray.Position = L_pos;
+			light_cuboid.light_ray.Direction = L_dir;
+		}
 
-        Fplane light_top_plane;
-        light_top_plane.build_unit_normal(L_pos, L_dir);
-        float dist = light_top_plane.classify(ctx.RenderView.Position);
+		Fplane light_top_plane;
+		light_top_plane.build_unit_normal(L_pos, L_dir);
+		float dist = light_top_plane.classify(ctx.RenderView.Position);
 
-        float map_size = m_sun_cascades[cascade_ind].size;
+		float map_size = m_sun_cascades[cascade_ind].size;
 		mdir_Project.build_projection_ortho(map_size, map_size, 0.1f, dist + map_size);
 
-        float view_dim = float(RenderImplementation.o.smapsize);
-        fmat4x4 m_viewport = { view_dim / 2.f,	0.0f,            0.0f, 0.0f,
-                               0.0f,			-view_dim / 2.f, 0.0f, 0.0f,
-                               0.0f,			0.0f,            1.0f, 0.0f,
-                               view_dim / 2.f,	view_dim / 2.f,  0.0f, 1.0f };
+		float view_dim = float(RenderImplementation.o.smapsize);
+		fmat4x4 m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f,
+							  0.0f, -view_dim / 2.f, 0.0f, 0.0f,
+							  0.0f, 0.0f, 1.0f, 0.0f,
+							  view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
 
-        fmat4x4 m_viewport_inv;
+		fmat4x4 m_viewport_inv;
 		m_viewport_inv.invert(m_viewport);
 
-        cull_transform.mul(mdir_Project, mdir_View);
-        fmat4x4 cull_transform_inv;
-        cull_transform_inv.invert(cull_transform);
+		cull_transform.mul(mdir_Project, mdir_View);
+		fmat4x4 cull_transform_inv;
+		cull_transform_inv.invert(cull_transform);
 
-        for (int p = 0; p < 8; p++)
-        {
-            fvec3 xf = project(cull_transform_inv, corners[p]);
-            light_cuboid.light_cuboid_points[p] = xf;
-        }
+		for(int p = 0; p < 8; p++)
+		{
+			fvec3 xf = project(cull_transform_inv, corners[p]);
+			light_cuboid.light_cuboid_points[p] = xf;
+		}
 
-        for (int plane = 0; plane < 4; plane++)
-            for (int pt = 0; pt < 4; pt++)
-            {
-                int asd = facetable[plane][pt];
-                light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
-            }
+		for(int plane = 0; plane < 4; plane++)
+			for(int pt = 0; pt < 4; pt++)
+			{
+				int asd = facetable[plane][pt];
+				light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
+			}
 
-        fvec3 lightXZshift;
-        light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size, m_sun_cascades[cascade_ind].reset_chain);
+		fvec3 lightXZshift;
+		light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size, m_sun_cascades[cascade_ind].reset_chain);
 
-        if (cascade_ind < m_sun_cascades.size() - 1)
-            m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
+		if(cascade_ind < m_sun_cascades.size() - 1)
+			m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
-        fvec3 proj_view = ctx.RenderView.Direction;
-        proj_view.y = 0;
-        proj_view.normalize();
+		fvec3 proj_view = ctx.RenderView.Direction;
+		proj_view.y = 0;
+		proj_view.normalize();
 
-        fvec3 cam_shifted = L_pos;
-        cam_shifted.add(lightXZshift);
+		fvec3 cam_shifted = L_pos;
+		cam_shifted.add(lightXZshift);
 
-        mdir_View.identity();
-        mdir_View.build_camera_dir(cam_shifted, L_dir, L_up);
-        cull_transform.identity();
-        cull_transform.mul(mdir_Project, mdir_View);
-        cull_transform_inv.invert(cull_transform);
+		mdir_View.identity();
+		mdir_View.build_camera_dir(cam_shifted, L_dir, L_up);
+		cull_transform.identity();
+		cull_transform.mul(mdir_Project, mdir_View);
+		cull_transform_inv.invert(cull_transform);
 
-        // Create frustum for query
-        cull_frustum._clear();
-        for (u32 p = 0; p < cull_planes.size(); p++)
-            cull_frustum._add(cull_planes[p]);
+		// Create frustum for query
+		cull_frustum._clear();
+		for(u32 p = 0; p < cull_planes.size(); p++)
+			cull_frustum._add(cull_planes[p]);
 
-        fvec3 cam_proj = ctx.RenderView.Position;
-        const float align_aim_step_coef = 4.f;
-        cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
-                     floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
-                     floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
-        cam_proj.mul(align_aim_step_coef);
-        fvec3 cam_pixel = project(cull_transform, cam_proj);
-        cam_pixel = project(m_viewport, cam_pixel);
-        fvec3 shift_proj = lightXZshift;
-        cull_transform.transform_dir(shift_proj);
-        m_viewport.transform_dir(shift_proj);
+		fvec3 cam_proj = ctx.RenderView.Position;
+		const float align_aim_step_coef = 4.f;
+		cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
+					 floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
+					 floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
+		cam_proj.mul(align_aim_step_coef);
+		fvec3 cam_pixel = project(cull_transform, cam_proj);
+		cam_pixel = project(m_viewport, cam_pixel);
+		fvec3 shift_proj = lightXZshift;
+		cull_transform.transform_dir(shift_proj);
+		m_viewport.transform_dir(shift_proj);
 
-        const float align_granularity = 4.f;
-        shift_proj.x = shift_proj.x > 0 ? align_granularity : -align_granularity;
-        shift_proj.y = shift_proj.y > 0 ? align_granularity : -align_granularity;
-        shift_proj.z = 0;
+		const float align_granularity = 4.f;
+		shift_proj.x = shift_proj.x > 0 ? align_granularity : -align_granularity;
+		shift_proj.y = shift_proj.y > 0 ? align_granularity : -align_granularity;
+		shift_proj.z = 0;
 
-        cam_pixel.x = cam_pixel.x / align_granularity - floorf(cam_pixel.x / align_granularity);
-        cam_pixel.y = cam_pixel.y / align_granularity - floorf(cam_pixel.y / align_granularity);
-        cam_pixel.x *= align_granularity;
-        cam_pixel.y *= align_granularity;
-        cam_pixel.z = 0;
+		cam_pixel.x = cam_pixel.x / align_granularity - floorf(cam_pixel.x / align_granularity);
+		cam_pixel.y = cam_pixel.y / align_granularity - floorf(cam_pixel.y / align_granularity);
+		cam_pixel.x *= align_granularity;
+		cam_pixel.y *= align_granularity;
+		cam_pixel.z = 0;
 
-        cam_pixel.sub(shift_proj);
+		cam_pixel.sub(shift_proj);
 
-        m_viewport_inv.transform_dir(cam_pixel);
-        cull_transform_inv.transform_dir(cam_pixel);
-        fvec3 diff = cam_pixel;
-        static float sign_test = -1.f;
-        diff.mul(sign_test);
-        fmat4x4 adjust;
-        adjust.translate(diff);
-        cull_transform.mulB_44(adjust);
-    }
+		m_viewport_inv.transform_dir(cam_pixel);
+		cull_transform_inv.transform_dir(cam_pixel);
+		fvec3 diff = cam_pixel;
+		static float sign_test = -1.f;
+		diff.mul(sign_test);
+		fmat4x4 adjust;
+		adjust.translate(diff);
+		cull_transform.mulB_44(adjust);
+	}
 
-    item.cull_transform = cull_transform;
-    item.cull_frustum = cull_frustum;
-    item.cull_sector = cull_sector;
-    item.cull_COP = cull_COP;
+	item.cull_transform = cull_transform;
+	item.cull_frustum = cull_frustum;
+	item.cull_sector = cull_sector;
+	item.cull_COP = cull_COP;
 }
 
 void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx)
@@ -550,7 +550,7 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	bool bNormal = item.packet.queue_static[0].size() || item.packet.queue_dynamic[0].size();
 	bool bSpecial = item.packet.queue_static[1].size() || item.packet.queue_dynamic[1].size() || item.packet.queue_transparent.size();
 
-	if (bNormal || bSpecial)
+	if(bNormal || bSpecial)
 	{
 		render_shadow_map_sun(sun, cascade_ind);
 
@@ -558,15 +558,15 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		RenderBackend.set_transform_view(Fidentity);
 		RenderBackend.set_transform_project(sun->TransformContext.Sun.combine);
 
-		if (m_SunOccluder)
+		if(m_SunOccluder)
 			m_SunOccluder->Render();
 
 		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
 
-		if (g_pGameLevel)
+		if(g_pGameLevel)
 			g_pGameLevel->pHUD->Render_Actor_Shadow();
 
-		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
+		if(ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 			Details->Render(DetailsRenderMode::DepthOnly, &item.cull_transform, &item.cull_frustum);
 
 		sun->TransformContext.Sun.transluent = FALSE;
@@ -574,26 +574,26 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 	set_light_accumulator();
 
-	accumulate_sun(	cascade_ind, 
-					item.cull_transform, 
-					item.cull_transform );
+	accumulate_sun(cascade_ind,
+				   item.cull_transform,
+				   item.cull_transform);
 }
 
 void __stdcall CRender::schedule_cascades()
 {
-    SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
-    writeBuffer.Clear();
+	SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
+	writeBuffer.Clear();
 
-    // Создаём контекст для фоновой сборки
-    SceneTraversalContext shadow_ctx;
-    shadow_ctx.RenderView = Engine.RenderView;
-    shadow_ctx.use_hom = false;
-    shadow_ctx.use_feedback = false;
-    shadow_ctx.fetch_config = SceneGraphFetchConfig(true, true, false);
-    shadow_ctx.culling_bounds = nullptr;
-    shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
+	// Создаём контекст для фоновой сборки
+	SceneTraversalContext shadow_ctx;
+	shadow_ctx.RenderView = Engine.RenderView;
+	shadow_ctx.use_hom = false;
+	shadow_ctx.use_feedback = false;
+	shadow_ctx.fetch_config = SceneGraphFetchConfig(true, true, false);
+	shadow_ctx.culling_bounds = nullptr;
+	shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
 
-	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+	for(u32 i = 0; i < m_sun_cascades.size(); ++i)
 	{
 		// Подготовка матриц каскадов
 		prepare_sun_cascade(i, *writeBuffer.items[i], shadow_ctx);
@@ -613,7 +613,8 @@ void __stdcall CRender::schedule_cascades()
 void CRender::wait_for_sun_task()
 {
 	std::unique_lock<std::mutex> lock(m_sun_gather_mutex);
-	m_sun_gather_cv.wait(lock, [this] { return m_sun_gather_done.load(); });
+	m_sun_gather_cv.wait(lock, [this]
+						 { return m_sun_gather_done.load(); });
 }
 
 void CRender::swap_sun_buffers()

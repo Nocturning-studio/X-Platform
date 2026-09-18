@@ -48,9 +48,12 @@ class CSightManager : public CSetupManager<CSightControlAction, CAI_Stalker, u32
 	IC bool GetDirectionAnglesByPrevPositions(float& yaw, float& pitch);
 	bool GetDirectionAngles(float& yaw, float& pitch);
 	IC bool use_torso_look() const;
-	template <typename T1, typename T2, typename T3> IC void setup(T1 _1, T2 _2, T3 _3);
-	template <typename T1, typename T2> IC void setup(T1 _1, T2 _2);
-	template <typename T1> IC void setup(T1 _1);
+	template <typename T1, typename T2, typename T3>
+	IC void setup(T1 _1, T2 _2, T3 _3);
+	template <typename T1, typename T2>
+	IC void setup(T1 _1, T2 _2);
+	template <typename T1>
+	IC void setup(T1 _1);
 	void setup(const CSightAction& sight_action);
 	virtual void update();
 	IC bool turning_in_place() const;

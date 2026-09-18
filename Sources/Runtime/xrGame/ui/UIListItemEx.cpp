@@ -26,7 +26,7 @@ void CUIListItemEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	// inherited::SendMessage(pWnd, msg, pData);
 
-	switch (msg)
+	switch(msg)
 	{
 	case LIST_ITEM_SELECT:
 		this->SetColor(m_dwSelectionColor);

@@ -15,7 +15,8 @@ IC CObjectPropertyEvaluatorBase<_item_type>::CObjectPropertyEvaluatorBase(_item_
 	m_item = item;
 }
 
-template <typename _item_type> IC CAI_Stalker& CObjectPropertyEvaluatorBase<_item_type>::object() const
+template <typename _item_type>
+IC CAI_Stalker& CObjectPropertyEvaluatorBase<_item_type>::object() const
 {
 	VERIFY(m_object);
 	return (*m_object);

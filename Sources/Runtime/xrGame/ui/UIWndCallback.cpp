@@ -30,17 +30,17 @@ void CUIWndCallback::Register(CUIWindow* pChild)
 
 void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (!pWnd)
+	if(!pWnd)
 		return;
 	event_comparer_callback_t ec(pWnd->WindowName(), msg);
 
 	CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
-	if (it == m_callbacks.end())
+	if(it == m_callbacks.end())
 		return;
 
 	(*it)->m_callback();
 
-	if ((*it)->m_cpp_callback)
+	if((*it)->m_cpp_callback)
 		(*it)->m_cpp_callback(pWnd, pData);
 }
 

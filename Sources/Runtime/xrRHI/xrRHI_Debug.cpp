@@ -10,10 +10,10 @@ XRRHI_API const char* WinErrorToString(long code)
 	DWORD result = FormatMessageA(flags, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer,
 								  sizeof(buffer), nullptr);
 
-	if (result == 0)
+	if(result == 0)
 		return "Unknown error";
 
-	while (result > 0 && (buffer[result - 1] == '\n' || buffer[result - 1] == '\r' || buffer[result - 1] == ' '))
+	while(result > 0 && (buffer[result - 1] == '\n' || buffer[result - 1] == '\r' || buffer[result - 1] == ' '))
 	{
 		buffer[--result] = '\0';
 	}
@@ -29,7 +29,7 @@ XRRHI_API void __cdecl Print(const char* format, ...)
 	int sz = _vsnprintf_s(buf, sizeof(buf), _TRUNCATE, format, mark);
 	buf[sizeof(buf) - 1] = 0;
 	va_end(mark);
-	if (sz)
+	if(sz)
 	{
 		OutputDebugStringA(buf);
 		printf("%s\n", buf);

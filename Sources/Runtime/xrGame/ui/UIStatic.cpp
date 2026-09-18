@@ -12,11 +12,11 @@
 #include "UIHint.h"
 
 const char* const clDefault = "default";
-#define CREATE_LINES                                                                                                   \
-	if (!m_pLines)                                                                                                     \
-	{                                                                                                                  \
-		m_pLines = xr_new<CUILines>();                                                                                 \
-		m_pLines->SetTextAlignment(CGameFont::alLeft);                                                                 \
+#define CREATE_LINES                                   \
+	if(!m_pLines)                                      \
+	{                                                  \
+		m_pLines = xr_new<CUILines>();                 \
+		m_pLines->SetTextAlignment(CGameFont::alLeft); \
 	}
 #define LA_CYCLIC (1 << 0)
 #define LA_ONLYALPHA (1 << 1)
@@ -67,7 +67,7 @@ CUIStatic::~CUIStatic()
 
 void CUIStatic::SetTransformLightAnim(LPCSTR lanim, bool bCyclic)
 {
-	if (lanim && lanim[0] != 0)
+	if(lanim && lanim[0] != 0)
 		m_lanim_transform.m_lanim = LALib.FindItem(lanim);
 	else
 		m_lanim_transform.m_lanim = NULL;
@@ -79,7 +79,7 @@ void CUIStatic::SetTransformLightAnim(LPCSTR lanim, bool bCyclic)
 
 void CUIStatic::SetClrLightAnim(LPCSTR lanim, bool bCyclic, bool bOnlyAlpha, bool bTextColor, bool bTextureColor)
 {
-	if (lanim && lanim[0] != 0)
+	if(lanim && lanim[0] != 0)
 		m_lanim_clr.m_lanim = LALib.FindItem(lanim);
 	else
 		m_lanim_clr.m_lanim = NULL;
@@ -96,7 +96,7 @@ void CUIStatic::Init(LPCSTR tex_name, float x, float y, float width, float heigh
 {
 	Init(x, y, width, height);
 	InitTexture(tex_name);
-	if (m_hint)
+	if(m_hint)
 	{
 		m_hint->SetOwner(this);
 	}
@@ -106,7 +106,7 @@ void CUIStatic::InitEx(LPCSTR tex_name, LPCSTR sh_name, float x, float y, float 
 {
 	Init(x, y, width, height);
 	InitTextureEx(tex_name, sh_name);
-	if (m_hint)
+	if(m_hint)
 	{
 		m_hint->SetOwner(this); // <--- ОБЯЗАТЕЛЬНО ДОБАВИТЬ
 	}
@@ -116,7 +116,7 @@ void CUIStatic::Init(float x, float y, float width, float height)
 {
 	CUIWindow::Init(x, y, width, height);
 	m_xxxRect.set(x, y, x + width, y + height);
-	if (m_hint)
+	if(m_hint)
 	{
 		m_hint->SetOwner(this); // <--- ОБЯЗАТЕЛЬНО ДОБАВИТЬ
 	}
@@ -151,7 +151,7 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 {
 	string_path buff;
 
-	if (FS.exist(buff, "$game_textures$", tex_name, ".ogm"))
+	if(FS.exist(buff, "$game_textures$", tex_name, ".ogm"))
 		CUITextureMaster::InitTexture(tex_name, "hud\\movie", &m_UIStaticItem);
 	else
 		CUITextureMaster::InitTexture(tex_name, sh_name, &m_UIStaticItem);
@@ -163,17 +163,17 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 
 void CUIStatic::Draw()
 {
-	if (m_bClipper)
+	if(m_bClipper)
 	{
 		Frect clip_rect;
-		if (-1 == m_ClipRect.left && -1 == m_ClipRect.right && -1 == m_ClipRect.top && -1 == m_ClipRect.left)
+		if(-1 == m_ClipRect.left && -1 == m_ClipRect.right && -1 == m_ClipRect.top && -1 == m_ClipRect.left)
 		{
 			Frect our_rect;
 			GetAbsoluteRect(our_rect);
 			clip_rect = our_rect;
 			Frect _r;
 			GetParent()->GetAbsoluteRect(_r);
-			if (GetParent())
+			if(GetParent())
 				clip_rect.intersection(our_rect, _r);
 		}
 		else
@@ -186,17 +186,17 @@ void CUIStatic::Draw()
 	inherited::Draw();
 	DrawText();
 
-	if (m_bClipper)
+	if(m_bClipper)
 		UI()->PopScissor();
 }
 
 void CUIStatic::DrawText()
 {
-	if (m_pLines)
+	if(m_pLines)
 	{
 		m_pLines->SetWndSize(m_wndSize);
 
-		if (IsHighlightText() && xr_strlen(m_pLines->GetText()) > 0 && m_bEnableTextHighlighting)
+		if(IsHighlightText() && xr_strlen(m_pLines->GetText()) > 0 && m_bEnableTextHighlighting)
 			DrawHighlightedText();
 		else
 		{
@@ -210,23 +210,23 @@ void CUIStatic::DrawText()
 void CUIStatic::DrawTexture()
 {
 
-	if (m_bAvailableTexture && m_bTextureEnable)
+	if(m_bAvailableTexture && m_bTextureEnable)
 	{
 		Frect rect;
 		GetAbsoluteRect(rect);
 		m_UIStaticItem.SetPos(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);
 
-		if (m_bStretchTexture)
+		if(m_bStretchTexture)
 			m_UIStaticItem.SetRect(0, 0, rect.width(), rect.height());
 		else
 		{
 			Frect r = {0.0f, 0.0f, m_UIStaticItem.GetOriginalRectScaled().width(),
 					   m_UIStaticItem.GetOriginalRectScaled().height()};
-			if (r.width() && r.height())
+			if(r.width() && r.height())
 				m_UIStaticItem.SetRect(r);
 		}
 
-		if (Heading())
+		if(Heading())
 		{
 			m_UIStaticItem.Render(GetHeading());
 		}
@@ -248,9 +248,9 @@ void CUIStatic::Update()
 	// Проходимся вверх по дереву окон. Если хоть один родитель скрыт -> bParentVisible = false
 	bool bParentVisible = true;
 	CUIWindow* parent = GetParent();
-	while (parent)
+	while(parent)
 	{
-		if (!parent->IsShown())
+		if(!parent->IsShown())
 		{
 			bParentVisible = false;
 			break;
@@ -259,28 +259,28 @@ void CUIStatic::Update()
 	}
 
 	// 2. ОБНОВЛЕНИЕ АНИМАЦИЙ (Light Animations)
-	if (m_lanim_clr.m_lanim)
+	if(m_lanim_clr.m_lanim)
 	{
-		if (m_lanim_clr.m_lanim_start_time < 0.0f)
+		if(m_lanim_clr.m_lanim_start_time < 0.0f)
 			ResetClrAnimation();
 		float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 
-		if (t >= m_lanim_clr.m_lanim_start_time)
+		if(t >= m_lanim_clr.m_lanim_start_time)
 		{
-			if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) ||
-				t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
+			if(m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) ||
+			   t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
 			{
 				int frame;
 				u32 clr = m_lanim_clr.m_lanim->CalculateRGB(t - m_lanim_clr.m_lanim_start_time, frame);
 
-				if (m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
-					if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
+				if(m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
+					if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
 						SetColor(subst_alpha(GetColor(), color_get_A(clr)));
 					else
 						SetColor(clr);
 
-				if (m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
-					if (m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
+				if(m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
+					if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
 						SetTextColor(subst_alpha(GetTextColor(), color_get_A(clr)));
 					else
 						SetTextColor(clr);
@@ -288,14 +288,14 @@ void CUIStatic::Update()
 		}
 	}
 
-	if (m_lanim_transform.m_lanim)
+	if(m_lanim_transform.m_lanim)
 	{
-		if (m_lanim_transform.m_lanim_start_time < 0.0f)
+		if(m_lanim_transform.m_lanim_start_time < 0.0f)
 			ResetTransformAnimation();
 		float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
 
-		if (m_lanim_transform.m_lanimFlags.test(LA_CYCLIC) ||
-			t - m_lanim_transform.m_lanim_start_time < m_lanim_transform.m_lanim->Length_sec())
+		if(m_lanim_transform.m_lanimFlags.test(LA_CYCLIC) ||
+		   t - m_lanim_transform.m_lanim_start_time < m_lanim_transform.m_lanim->Length_sec())
 		{
 			int frame;
 			u32 clr = m_lanim_transform.m_lanim->CalculateRGB(t - m_lanim_transform.m_lanim_start_time, frame);
@@ -320,8 +320,8 @@ void CUIStatic::Update()
 	// 3. ГЛОБАЛЬНЫЙ ХИНТ (g_btnHint)
 	// Показываем, ТОЛЬКО если:
 	// Родители видимы И мы видимы И курсор на нас И есть текст И никто другой не занял хинт
-	if (bParentVisible && GetVisible() && CursorOverWindow() && m_hint_text.size() && !g_btnHint->Owner() &&
-		Engine.TimeManager.GetGlobalTimeMs() > m_dwFocusReceiveTime + 500)
+	if(bParentVisible && GetVisible() && CursorOverWindow() && m_hint_text.size() && !g_btnHint->Owner() &&
+	   Engine.TimeManager.GetGlobalTimeMs() > m_dwFocusReceiveTime + 500)
 	{
 		g_btnHint->SetHintText(this, *m_hint_text);
 
@@ -334,30 +334,30 @@ void CUIStatic::Update()
 		r.add(c_pos.x, c_pos.y);
 
 		r.sub(0.0f, r.height());
-		if (false == is_in_2_(vis_rect, r))
+		if(false == is_in_2_(vis_rect, r))
 			r.sub(r.width(), 0.0f);
-		if (false == is_in_2_(vis_rect, r))
+		if(false == is_in_2_(vis_rect, r))
 			r.add(0.0f, r.height());
 
-		if (false == is_in_2_(vis_rect, r))
+		if(false == is_in_2_(vis_rect, r))
 			r.add(r.width(), 45.0f);
 
 		g_btnHint->SetWndPos(r.lt);
 	}
 	// Сброс глобального хинта: если мы им владеем, но условия нарушены
-	else if (g_btnHint->Owner() == this)
+	else if(g_btnHint->Owner() == this)
 	{
-		if (!bParentVisible || !GetVisible() || !CursorOverWindow())
+		if(!bParentVisible || !GetVisible() || !CursorOverWindow())
 		{
 			g_btnHint->Discard();
 		}
 	}
 
 	// 4. КАСТОМНЫЙ ХИНТ (m_hint)
-	if (m_hint && m_hint->HintStatic())
+	if(m_hint && m_hint->HintStatic())
 	{
 		// Страховка: если Owner не был задан при инициализации
-		if (!m_hint->Owner())
+		if(!m_hint->Owner())
 			m_hint->SetOwner(this);
 
 		// Можно ли показывать?
@@ -366,12 +366,12 @@ void CUIStatic::Update()
 
 		u32 hintColor;
 
-		if (bCanShow)
+		if(bCanShow)
 		{
 			// Показываем (Highlighted цвет)
 			hintColor = m_hint->HintStatic()->m_bUseTextColor[H] ? m_hint->HintStatic()->m_dwTextColor[H]
 																 : m_hint->HintStatic()->m_dwTextColor[E];
-			if (m_bChangeVis)
+			if(m_bChangeVis)
 				m_hint->HintStatic()->SetVisible(true);
 		}
 		else
@@ -380,18 +380,18 @@ void CUIStatic::Update()
 			hintColor = m_hint->HintStatic()->m_dwTextColor[E];
 
 			// Если включено скрытие (changeVisability) ИЛИ родитель вообще исчез - скрываем полностью
-			if (m_bChangeVis || !bParentVisible || !GetVisible())
+			if(m_bChangeVis || !bParentVisible || !GetVisible())
 				m_hint->HintStatic()->SetVisible(false);
 		}
 
 		m_hint->HintStatic()->SetTextColor(hintColor);
 
 		// Позиционирование рассчитываем только если родитель в принципе виден
-		if (bParentVisible)
+		if(bParentVisible)
 		{
 			fvec2 parentPos;
 			// Используем GetParent() самого хинта, так как он приаттачен к нам
-			if (m_hint->GetParent())
+			if(m_hint->GetParent())
 			{
 				m_hint->GetParent()->GetAbsolutePos(parentPos);
 				fvec2 cursosPos = GetUICursor()->GetCursorPosition();
@@ -399,11 +399,11 @@ void CUIStatic::Update()
 				float x = cursosPos.x - parentPos.x;
 				float y = cursosPos.y - parentPos.y - m_hint->GetHeight();
 
-				if (cursosPos.x + m_hint->GetWidth() > UI_BASE_WIDTH)
+				if(cursosPos.x + m_hint->GetWidth() > UI_BASE_WIDTH)
 				{
 					x = (UI_BASE_WIDTH - m_hint->GetWidth()) - parentPos.x;
 				}
-				else if (cursosPos.x + m_hint->GetWidth() > UI_BASE_WIDTH * 1.5)
+				else if(cursosPos.x + m_hint->GetWidth() > UI_BASE_WIDTH * 1.5)
 				{
 					x -= m_hint->GetWidth();
 				}
@@ -412,13 +412,12 @@ void CUIStatic::Update()
 			}
 		}
 	}
-	else if (m_hint && m_hint->HintStatic() && !bParentVisible)
+	else if(m_hint && m_hint->HintStatic() && !bParentVisible)
 	{
 		// Резервное скрытие, если мы не попали в основной блок
 		m_hint->HintStatic()->SetVisible(false);
 	}
 }
-
 
 void CUIStatic::ResetTransformAnimation()
 {
@@ -437,11 +436,11 @@ void CUIStatic::SetClrAnimDelay(float delay)
 
 bool CUIStatic::IsClrAnimStoped()
 {
-	if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || m_lanim_clr.m_lanim_start_time < 0.0f)
+	if(m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || m_lanim_clr.m_lanim_start_time < 0.0f)
 		return false;
 
 	float t = Engine.TimeManager.GetContinualTimeMs() / 1000.0f;
-	if (t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
+	if(t - m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
 		return false;
 	else
 		return true;
@@ -475,8 +474,8 @@ void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect,
 {
 	Frect parent_rect;
 
-	if (pClipRect == NULL)
-		if (GetParent())
+	if(pClipRect == NULL)
+		if(GetParent())
 			GetParent()->GetAbsoluteRect(parent_rect);
 		else
 			GetAbsoluteRect(parent_rect);
@@ -488,8 +487,8 @@ void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect,
 	Frect out_rect;
 
 	// проверить попадает ли изображение в окно
-	if (rect.left > parent_rect.right || rect.right < parent_rect.left || rect.top > parent_rect.bottom ||
-		rect.bottom < parent_rect.top)
+	if(rect.left > parent_rect.right || rect.right < parent_rect.left || rect.top > parent_rect.bottom ||
+	   rect.bottom < parent_rect.top)
 	{
 		Frect r;
 		r.set(0.0f, 0.0f, 0.0f, 0.0f);
@@ -511,7 +510,7 @@ void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect,
 	out_rect.right -= out_x;
 	out_rect.bottom -= out_y;
 
-	if (m_bStretchTexture)
+	if(m_bStretchTexture)
 		UIStaticItem.SetRect(out_rect);
 	else
 	{
@@ -574,7 +573,7 @@ void CUIStatic::SetShader(const ref_shader& sh)
 LPCSTR CUIStatic::GetText()
 {
 	static const char empty = 0;
-	if (m_pLines)
+	if(m_pLines)
 		return m_pLines->GetText();
 	else
 		return &empty;
@@ -599,7 +598,7 @@ u32& CUIStatic::GetTextColorRef()
 
 void CUIStatic::SetText(LPCSTR str)
 {
-	if (!str)
+	if(!str)
 		return;
 	CREATE_LINES;
 	m_pLines->SetText(str);
@@ -613,7 +612,7 @@ void CUIStatic::SetTextColor(u32 color, E4States state)
 
 Frect CUIStatic::GetClipperRect()
 {
-	if (m_bClipper)
+	if(m_bClipper)
 		return m_ClipRect;
 	else
 		return GetSelfClipRect();
@@ -622,7 +621,7 @@ Frect CUIStatic::GetClipperRect()
 Frect CUIStatic::GetSelfClipRect()
 {
 	Frect r;
-	if (m_bClipper)
+	if(m_bClipper)
 	{
 		r.set(GetUIStaticItem().GetRect());
 		r.add(GetUIStaticItem().GetPosX(), GetUIStaticItem().GetPosY());
@@ -637,7 +636,7 @@ void CUIStatic::SetMask(CUIFrameWindow* pMask)
 {
 	DetachChild(m_pMask);
 	m_pMask = pMask;
-	if (m_pMask)
+	if(m_pMask)
 	{
 		AttachChild(m_pMask);
 		Frect r = GetWndRect();
@@ -660,13 +659,13 @@ void CUIStatic::SetVisible(bool vis)
 	inherited::SetVisible(vis);
 
 	// Скрываем подсказки при скрытии элемента
-	if (!vis)
+	if(!vis)
 	{
-		if (m_hint && m_hint->HintStatic())
+		if(m_hint && m_hint->HintStatic())
 			m_hint->HintStatic()->SetVisible(false);
 
 		// Также скрываем глобальную подсказку если она наша
-		if (g_btnHint->Owner() == this)
+		if(g_btnHint->Owner() == this)
 			g_btnHint->Discard();
 	}
 }
@@ -728,7 +727,7 @@ void CUIStatic::SetClipRect(Frect r)
 void CUIStatic::OnFocusReceive()
 {
 	inherited::OnFocusReceive();
-	if (GetMessageTarget())
+	if(GetMessageTarget())
 		GetMessageTarget()->SendMessage(this, STATIC_FOCUS_RECEIVED, NULL);
 }
 
@@ -736,17 +735,17 @@ void CUIStatic::OnFocusLost()
 {
 	inherited::OnFocusLost();
 
-	if (GetMessageTarget())
+	if(GetMessageTarget())
 		GetMessageTarget()->SendMessage(this, STATIC_FOCUS_LOST, NULL);
 
 	// Если окно закрывается, фокус теряется. Принудительно убираем хинт.
-	if (g_btnHint->Owner() == this)
+	if(g_btnHint->Owner() == this)
 	{
 		g_btnHint->Discard();
 	}
 
 	// На случай, если кастомный хинт всё еще висит
-	if (m_hint && m_hint->HintStatic())
+	if(m_hint && m_hint->HintStatic())
 	{
 		m_hint->HintStatic()->SetVisible(false);
 	}
@@ -754,7 +753,7 @@ void CUIStatic::OnFocusLost()
 
 void CUIStatic::AdjustHeightToText()
 {
-	if (!m_pLines)
+	if(!m_pLines)
 		return;
 
 	// 1. Вычисляем РЕАЛЬНУЮ доступную ширину для текста.
@@ -763,7 +762,7 @@ void CUIStatic::AdjustHeightToText()
 	float available_width = GetWidth() - m_TextOffset.x;
 
 	// Защита от некорректных размеров (чтобы не крашнуть парсер)
-	if (available_width < 10.0f)
+	if(available_width < 10.0f)
 		available_width = 10.0f;
 
 	m_pLines->SetWidth(available_width);
@@ -790,7 +789,7 @@ void CUIStatic::AdjustWidthToText()
 {
 	float width = 0;
 
-	if (m_pLines->GetTextComplexMode())
+	if(m_pLines->GetTextComplexMode())
 	{
 		xr_vector<xr_string> tokens;
 		{
@@ -804,18 +803,18 @@ void CUIStatic::AdjustWidthToText()
 				tokens.push_back(token);
 
 				line.erase(0, token.size() + 2);
-			} while (pos != line.npos);
+			} while(pos != line.npos);
 
-			for (auto& it : tokens)
+			for(auto& it : tokens)
 			{
 				it.erase(std::remove(it.begin(), it.end(), '\n'), it.end());
 			}
 		}
 
-		for (const auto& it : tokens)
+		for(const auto& it : tokens)
 		{
 			float _len = m_pLines->GetFont()->SizeOf_(it.c_str());
-			if (_len > width)
+			if(_len > width)
 				width = _len;
 		}
 
@@ -838,14 +837,14 @@ void CUIStatic::RescaleRelative2Rect(const Frect& r)
 	float h_rel = my_r.width() / r.width();
 	float v_rel = my_r.height() / r.height();
 
-	if (ui_core::is_16_9_mode())
+	if(ui_core::is_16_9_mode())
 	{
 		h_rel *= (3.0f / 4.0f);
 	}
 
 	float w;
 	float h;
-	if (h_rel < v_rel)
+	if(h_rel < v_rel)
 	{
 		w = r.width() * h_rel;
 		h = r.height() * h_rel;

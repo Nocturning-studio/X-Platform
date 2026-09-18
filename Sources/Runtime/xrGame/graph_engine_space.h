@@ -8,23 +8,32 @@
 
 #pragma once
 
-template <typename _condition_type, typename _value_type> class COperatorConditionAbstract;
+template <typename _condition_type, typename _value_type>
+class COperatorConditionAbstract;
 
-template <typename _world_property> class CConditionState;
+template <typename _world_property>
+class CConditionState;
 
-template <typename _world_property, typename _edge_value_type> class COperatorAbstract;
+template <typename _world_property, typename _edge_value_type>
+class COperatorAbstract;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SBaseParameters;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SBaseParameters;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SFlooder;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SFlooder;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SStraightLineParams;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SStraightLineParams;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SNearestVertex;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SNearestVertex;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SGameLevel;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SGameLevel;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SGameVertex;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SGameVertex;
 
 namespace GraphEngineSpace
 {

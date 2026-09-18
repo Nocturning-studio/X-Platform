@@ -85,7 +85,7 @@ void CPolterFlame::load(LPCSTR section)
 void CPolterFlame::create_flame(const CObject* target_object)
 {
 	fvec3 position;
-	if (!get_valid_flame_position(target_object, position))
+	if(!get_valid_flame_position(target_object, position))
 		return;
 
 	SFlameElement* element = xr_new<SFlameElement>();
@@ -113,7 +113,7 @@ void CPolterFlame::select_state(SFlameElement* elem, EFlameState state)
 	elem->state = state;
 	elem->time_started = time();
 
-	switch (elem->state)
+	switch(elem->state)
 	{
 	case ePrepare:
 		// start prepare particles
@@ -125,7 +125,7 @@ void CPolterFlame::select_state(SFlameElement* elem, EFlameState state)
 		break;
 	case eStop:
 		// stop fire particles
-		if (elem->particles_object)
+		if(elem->particles_object)
 			CParticlesObject::Destroy(elem->particles_object);
 
 		// start finish particles
@@ -150,17 +150,17 @@ void CPolterFlame::update_schedule()
 	//---------------------------------------------------------------------
 	// Update Scanner
 
-	if (m_object->g_Alive())
+	if(m_object->g_Alive())
 	{
 
 		// check the start of scanning
-		if (!m_state_scanning && !m_object->EnemyMan.get_enemy())
+		if(!m_state_scanning && !m_object->EnemyMan.get_enemy())
 		{
 			// check radius
-			if (Actor()->Position().distance_to(m_object->Position()) < m_scan_radius)
+			if(Actor()->Position().distance_to(m_object->Position()) < m_scan_radius)
 			{
 				// check timing
-				if (m_scan_next_time < time())
+				if(m_scan_next_time < time())
 				{
 					// start here
 					m_state_scanning = true;
@@ -179,7 +179,7 @@ void CPolterFlame::update_schedule()
 		// check stop of scanning (it currently scans)
 		else
 		{
-			if (!m_scan_sound._feedback())
+			if(!m_scan_sound._feedback())
 			{
 				// stop here
 				m_state_scanning = false;
@@ -192,33 +192,33 @@ void CPolterFlame::update_schedule()
 	//---------------------------------------------------------------------
 
 	// check all flames
-	for (FLAME_ELEMS_IT it = m_flames.begin(); it != m_flames.end(); it++)
+	for(FLAME_ELEMS_IT it = m_flames.begin(); it != m_flames.end(); it++)
 	{
 		SFlameElement* elem = *it;
 
 		// test switches to states
-		switch (elem->state)
+		switch(elem->state)
 		{
 		case ePrepare:
 			// check if time_out
-			if (elem->time_started + m_time_fire_delay < time())
+			if(elem->time_started + m_time_fire_delay < time())
 				select_state(elem, eFire);
 			break;
 		case eFire:
-			if (elem->time_started + m_time_fire_play < time())
+			if(elem->time_started + m_time_fire_play < time())
 				select_state(elem, eStop);
 			else
 			{
 
 				// check if we need test hit to enemy
-				if (elem->time_last_hit + m_hit_delay < time())
+				if(elem->time_last_hit + m_hit_delay < time())
 				{
 					// test hit
 					collide::rq_result rq;
-					if (Level().ObjectSpace.RayPick(elem->position, elem->target_dir, m_length, collide::rqtBoth, rq,
-													NULL))
+					if(Level().ObjectSpace.RayPick(elem->position, elem->target_dir, m_length, collide::rqtBoth, rq,
+												   NULL))
 					{
-						if ((rq.O == elem->target_object) && (rq.range < m_length))
+						if((rq.O == elem->target_object) && (rq.range < m_length))
 						{
 							float hit_value;
 							hit_value = m_hit_value - m_hit_value * rq.range / m_length;
@@ -259,15 +259,15 @@ void CPolterFlame::update_schedule()
 	m_flames.erase(std::remove_if(m_flames.begin(), m_flames.end(), remove_predicate()), m_flames.end());
 
 	// check if we can create another flame
-	if (m_object->g_Alive() && m_object->EnemyMan.get_enemy() && (m_flames.size() < m_count))
+	if(m_object->g_Alive() && m_object->EnemyMan.get_enemy() && (m_flames.size() < m_count))
 	{
 		// check aura radius and accessibility
 		float dist = m_object->EnemyMan.get_enemy()->Position().distance_to(m_object->Position());
-		if ((dist < m_pmt_aura_radius) &&
-			m_object->control().path_builder().accessible(m_object->EnemyMan.get_enemy()->Position()))
+		if((dist < m_pmt_aura_radius) &&
+		   m_object->control().path_builder().accessible(m_object->EnemyMan.get_enemy()->Position()))
 		{
 			// check timing
-			if (m_time_flame_started + m_delay < time())
+			if(m_time_flame_started + m_delay < time())
 			{
 				create_flame(m_object->EnemyMan.get_enemy());
 			}
@@ -282,11 +282,11 @@ void CPolterFlame::on_destroy()
 	FLAME_ELEMS_IT E = m_flames.end();
 
 	// Пройти по всем объектам и проверить на хит врага
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((*I)->sound._feedback())
+		if((*I)->sound._feedback())
 			(*I)->sound.stop();
-		if ((*I)->particles_object)
+		if((*I)->particles_object)
 			CParticlesObject::Destroy((*I)->particles_object);
 
 		xr_delete((*I));
@@ -294,14 +294,14 @@ void CPolterFlame::on_destroy()
 
 	m_flames.clear();
 
-	if (m_scan_sound._feedback())
+	if(m_scan_sound._feedback())
 		m_scan_sound.stop();
 }
 
 void CPolterFlame::on_die()
 {
 	inherited::on_die();
-	if (m_scan_sound._feedback())
+	if(m_scan_sound._feedback())
 		m_scan_sound.stop();
 }
 
@@ -310,7 +310,7 @@ void CPolterFlame::on_die()
 bool CPolterFlame::get_valid_flame_position(const CObject* target_object, fvec3& res_pos)
 {
 	const CGameObject* Obj = smart_cast<const CGameObject*>(target_object);
-	if (!Obj)
+	if(!Obj)
 		return (false);
 
 	fvec3 dir;
@@ -319,7 +319,7 @@ bool CPolterFlame::get_valid_flame_position(const CObject* target_object, fvec3&
 	fvec3 vertex_position;
 	fvec3 new_pos;
 
-	for (u32 i = 0; i < FIND_POINT_ATTEMPT_COUNT; i++)
+	for(u32 i = 0; i < FIND_POINT_ATTEMPT_COUNT; i++)
 	{
 
 		target_object->Direction().getHP(h, p);
@@ -332,7 +332,7 @@ bool CPolterFlame::get_valid_flame_position(const CObject* target_object, fvec3&
 
 		u32 node = ai().level_graph().check_position_in_direction(Obj->ai_location().level_vertex_id(), vertex_position,
 																  new_pos);
-		if (node != u32(-1))
+		if(node != u32(-1))
 		{
 			res_pos = ai().level_graph().vertex_position(node);
 			res_pos.y += Random.randF(m_min_flame_height, m_max_flame_height);
@@ -352,7 +352,7 @@ bool CPolterFlame::get_valid_flame_position(const CObject* target_object, fvec3&
 
 	u32 node =
 		ai().level_graph().check_position_in_direction(Obj->ai_location().level_vertex_id(), vertex_position, new_pos);
-	if (node != u32(-1))
+	if(node != u32(-1))
 	{
 		res_pos = ai().level_graph().vertex_position(node);
 		res_pos.y += Random.randF(m_min_flame_height, m_max_flame_height);

@@ -35,13 +35,13 @@ void CStateManagerGigant::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!object->is_under_control())
+	if(!object->is_under_control())
 	{
 		const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-		if (enemy)
+		if(enemy)
 		{
-			switch (object->EnemyMan.get_danger_type())
+			switch(object->EnemyMan.get_danger_type())
 			{
 			case eStrong:
 				state_id = eStatePanic;
@@ -51,25 +51,25 @@ void CStateManagerGigant::execute()
 				break;
 			}
 		}
-		else if (object->HitMemory.is_hit())
+		else if(object->HitMemory.is_hit())
 		{
 			state_id = eStateHitted;
 		}
-		else if (check_state(eStateHearHelpSound))
+		else if(check_state(eStateHearHelpSound))
 		{
 			state_id = eStateHearHelpSound;
 		}
-		else if (object->hear_interesting_sound)
+		else if(object->hear_interesting_sound)
 		{
 			state_id = eStateHearInterestingSound;
 		}
-		else if (object->hear_dangerous_sound)
+		else if(object->hear_dangerous_sound)
 		{
 			state_id = eStateHearDangerousSound;
 		}
 		else
 		{
-			if (can_eat())
+			if(can_eat())
 				state_id = eStateEat;
 			else
 				state_id = eStateRest;

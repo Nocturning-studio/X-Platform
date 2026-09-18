@@ -33,7 +33,8 @@ class CPathManager<CGameGraph, _DataStorage, SGameLevel<_dist_type, _index_type,
 				  const _index_type& _start_node_index, const _index_type& _goal_node_index, _Parameters& params);
 	IC _dist_type estimate(const _index_type& node_index) const;
 	IC bool is_goal_reached(const _index_type& node_index);
-	template <typename T> IC void create_path(T& vertex);
+	template <typename T>
+	IC void create_path(T& vertex);
 };
 
 #include "path_manager_game_level_inline.h"

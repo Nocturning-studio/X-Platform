@@ -10,7 +10,7 @@
 
 IC CSoundCollectionStorage& sound_collection_storage()
 {
-	if (g_sound_collection_storage)
+	if(g_sound_collection_storage)
 		return (*g_sound_collection_storage);
 
 	g_sound_collection_storage = xr_new<CSoundCollectionStorage>();

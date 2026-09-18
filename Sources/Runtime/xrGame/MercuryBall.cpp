@@ -32,13 +32,13 @@ void CMercuryBall::Load(LPCSTR section)
 
 void CMercuryBall::UpdateCLChild()
 {
-	if (getVisible() && m_pPhysicsShell)
+	if(getVisible() && m_pPhysicsShell)
 	{
-		if (Engine.TimeManager.TimerAsync() - m_timeLastUpdate > m_timeToUpdate)
+		if(Engine.TimeManager.TimerAsync() - m_timeLastUpdate > m_timeToUpdate)
 		{
 			m_timeLastUpdate = Engine.TimeManager.TimerAsync();
 
-			if (::Random.randF(0.f, 1.0f) > 0.6f)
+			if(::Random.randF(0.f, 1.0f) > 0.6f)
 			{
 				fvec3 dir;
 				dir.set(::Random.randF(-0.5f, 0.5f), 0.0f, ::Random.randF(-0.5f, 0.5f));
@@ -47,6 +47,6 @@ void CMercuryBall::UpdateCLChild()
 			}
 		}
 	}
-	else if (H_Parent())
+	else if(H_Parent())
 		Transform().set(H_Parent()->Transform());
 }

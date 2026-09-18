@@ -21,20 +21,20 @@
 void CStalkerAnimationPair::synchronize(CKinematicsAnimated* skeleton_animated,
 										const CStalkerAnimationPair& stalker_animation) const
 {
-	if (!blend())
+	if(!blend())
 		return;
 
 	CMotionDef* motion0 = skeleton_animated->LL_GetMotionDef(animation());
 	VERIFY(motion0);
-	if (!(motion0->flags & esmSyncPart))
+	if(!(motion0->flags & esmSyncPart))
 		return;
 
-	if (!stalker_animation.blend())
+	if(!stalker_animation.blend())
 		return;
 
 	CMotionDef* motion1 = skeleton_animated->LL_GetMotionDef(stalker_animation.animation());
 	VERIFY(motion1);
-	if (!(motion1->flags & esmSyncPart))
+	if(!(motion1->flags & esmSyncPart))
 		return;
 
 	blend()->timeCurrent = stalker_animation.blend()->timeCurrent;
@@ -50,24 +50,24 @@ void CStalkerAnimationPair::play_global_animation(CKinematicsAnimated* skeleton_
 #endif
 {
 	m_blend = 0;
-	for (u16 i = 0; i < MAX_PARTS; ++i)
+	for(u16 i = 0; i < MAX_PARTS; ++i)
 	{
 #ifdef USE_HEAD_BONE_PART_FAKE
-		if (!(bone_part & (1 << i)))
+		if(!(bone_part & (1 << i)))
 			continue;
 #endif
 
 		CBlend* blend = 0;
-		if (!m_blend)
+		if(!m_blend)
 		{
 			blend = skeleton_animated->LL_PlayCycle(i, animation(), TRUE, callback, object);
-			if (use_animation_movement_control)
+			if(use_animation_movement_control)
 				object->create_anim_mov_ctrl(blend);
 		}
 		else
 			skeleton_animated->LL_PlayCycle(i, animation(), TRUE, 0, 0);
 
-		if (blend && !m_blend)
+		if(blend && !m_blend)
 			m_blend = blend;
 	}
 }
@@ -82,7 +82,7 @@ void CStalkerAnimationPair::play(CKinematicsAnimated* skeleton_animated, PlayCal
 #endif
 {
 	VERIFY(animation());
-	if (actual())
+	if(actual())
 	{
 #if 0
 #ifdef DEBUG
@@ -97,7 +97,7 @@ void CStalkerAnimationPair::play(CKinematicsAnimated* skeleton_animated, PlayCal
 		return;
 	}
 
-	if (animation() != m_array_animation)
+	if(animation() != m_array_animation)
 	{
 		m_array_animation.invalidate();
 		m_array = 0;
@@ -107,24 +107,24 @@ void CStalkerAnimationPair::play(CKinematicsAnimated* skeleton_animated, PlayCal
 	m_just_started = true;
 #endif // DEBUG
 
-	if (!global_animation())
+	if(!global_animation())
 	{
 
 		float pos = 0.f;
-		if (m_step_dependence && continue_interrupted_animation)
+		if(m_step_dependence && continue_interrupted_animation)
 		{
 			VERIFY(!m_blend || !fis_zero(m_blend->timeTotal));
-			if (m_step_dependence && m_blend)
+			if(m_step_dependence && m_blend)
 				pos = fmodf(m_blend->timeCurrent, m_blend->timeTotal) / m_blend->timeTotal;
 		}
 
 		m_blend = skeleton_animated->PlayCycle(animation(), TRUE, callback, object);
 
-		if (m_step_dependence && continue_interrupted_animation)
+		if(m_step_dependence && continue_interrupted_animation)
 		{
 			//			if (we were standing and now we are moving)
 			//				pos						= 0.5f*Random.randI(2);
-			if (m_blend)
+			if(m_blend)
 				m_blend->timeCurrent = m_blend->timeTotal * pos;
 		}
 	}
@@ -136,11 +136,11 @@ void CStalkerAnimationPair::play(CKinematicsAnimated* skeleton_animated, PlayCal
 #endif
 	m_actual = true;
 
-	if (m_step_dependence)
+	if(m_step_dependence)
 		object->CStepManager::on_animation_start(animation(), blend());
 
 #ifdef DEBUG
-	if (psAI_Flags.is(aiAnimation))
+	if(psAI_Flags.is(aiAnimation))
 	{
 		CMotionDef* motion = skeleton_animated->LL_GetMotionDef(animation());
 		VERIFY(motion);
@@ -155,15 +155,15 @@ void CStalkerAnimationPair::play(CKinematicsAnimated* skeleton_animated, PlayCal
 std::pair<LPCSTR, LPCSTR>* CStalkerAnimationPair::blend_id(CKinematicsAnimated* skeleton_animated,
 														   std::pair<LPCSTR, LPCSTR>& result) const
 {
-	if (!blend())
+	if(!blend())
 		return (0);
 
 	u32 bone_part_id = 0;
-	if (!global_animation())
+	if(!global_animation())
 		bone_part_id = blend()->bone_or_part;
 
 	const BlendSVec& blends = skeleton_animated->blend_cycle(bone_part_id);
-	if (blends.size() < 2)
+	if(blends.size() < 2)
 		return (0);
 
 #if 0
@@ -182,7 +182,7 @@ std::pair<LPCSTR, LPCSTR>* CStalkerAnimationPair::blend_id(CKinematicsAnimated* 
 
 void CStalkerAnimationPair::select_animation(const ANIM_VECTOR& array, const ANIMATION_WEIGHTS* weights)
 {
-	if (!weights)
+	if(!weights)
 	{
 		m_array_animation = array[::Random.randI(array.size())];
 		VERIFY(m_array_animation);
@@ -194,17 +194,17 @@ void CStalkerAnimationPair::select_animation(const ANIM_VECTOR& array, const ANI
 	ANIMATION_WEIGHTS::const_iterator E = weights->end();
 
 	u32 array_size = array.size();
-	if (array_size < weights->size())
+	if(array_size < weights->size())
 		E = B + array_size;
 
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		accumulator += *I;
 
 	float chosen = ::Random.randF() * accumulator;
 	accumulator = 0.f;
-	for (I = B; I != E; ++I)
+	for(I = B; I != E; ++I)
 	{
-		if ((accumulator + *I) >= chosen)
+		if((accumulator + *I) >= chosen)
 			break;
 
 		accumulator += *I;
@@ -221,7 +221,7 @@ MotionID CStalkerAnimationPair::select(const ANIM_VECTOR& array, const ANIMATION
 {
 	VERIFY(!array.empty());
 
-	if (m_array == &array)
+	if(m_array == &array)
 	{
 		VERIFY(animation());
 		return (animation());
@@ -236,7 +236,7 @@ void CStalkerAnimationPair::on_animation_end()
 {
 	make_inactual();
 
-	if (m_callbacks.empty())
+	if(m_callbacks.empty())
 		return;
 
 	u32 callback_count = m_callbacks.size();
@@ -244,12 +244,12 @@ void CStalkerAnimationPair::on_animation_end()
 	CALLBACK_ID* I = callbacks;
 	CALLBACK_ID* E = callbacks + callback_count;
 	CALLBACKS::iterator i = m_callbacks.begin();
-	for (; I != E; ++I, ++i)
-		new (I) CALLBACK_ID(*i);
+	for(; I != E; ++I, ++i)
+		new(I) CALLBACK_ID(*i);
 
-	for (I = callbacks; I != E; ++I)
+	for(I = callbacks; I != E; ++I)
 		(*I)();
 
-	for (I = callbacks; I != E; ++I)
+	for(I = callbacks; I != E; ++I)
 		I->~CALLBACK_ID();
 }

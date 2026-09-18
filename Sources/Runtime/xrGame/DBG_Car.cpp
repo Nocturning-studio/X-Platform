@@ -20,8 +20,8 @@ void CCar::InitDebug()
 }
 void CCar::DbgSheduleUpdate()
 {
-	if (ph_dbg_draw_mask.test(phDbgDrawCarPlots) && m_pPhysicsShell && OwnerActor() &&
-		static_cast<CObject*>(Owner()) == Level().CurrentViewEntity())
+	if(ph_dbg_draw_mask.test(phDbgDrawCarPlots) && m_pPhysicsShell && OwnerActor() &&
+	   static_cast<CObject*>(Owner()) == Level().CurrentViewEntity())
 	{
 		DbgCreatePlots();
 	}
@@ -36,7 +36,7 @@ static float rpm_pow_max_ratio = 1.f;
 
 void CCar::DbgCreatePlots()
 {
-	if (b_plots)
+	if(b_plots)
 		return;
 	eStateDrive state = e_state_drive;
 	e_state_drive = drive;
@@ -64,10 +64,10 @@ void CCar::DbgCreatePlots()
 
 	y_pos += y_w + 10;
 
-	if (b_auto_switch_transmission && ph_dbg_draw_mask.test(phDbgDrawCarAllTrnsm))
+	if(b_auto_switch_transmission && ph_dbg_draw_mask.test(phDbgDrawCarAllTrnsm))
 	{
 		xr_vector<fvec3>::iterator i = m_gear_ratious.begin() + 1, e = m_gear_ratious.end();
-		for (; i < e; i++)
+		for(; i < e; i++)
 		{
 			float r = 4 * m_dbg_torque_rpm.ResolutionX();
 			m_dbg_torque_rpm.AddMarker(CStatGraph::stVert, (*i)[1] + r, D3DCOLOR_XRGB(255, 255, 0));
@@ -89,7 +89,7 @@ void CCar::DbgCreatePlots()
 	//--------------------------------------
 	m_dbg_dynamic_plot->AddMarker(CStatGraph::stHor, 0, D3DCOLOR_XRGB(255, 0, 0));
 	xr_vector<fvec3>::iterator i = m_gear_ratious.begin() + 1, e = m_gear_ratious.end();
-	for (; i < e; i++)
+	for(; i < e; i++)
 	{
 		m_dbg_dynamic_plot->AddMarker(CStatGraph::stHor, (*i)[1] / rpm_pow_max_ratio, D3DCOLOR_XRGB(127, 0, 0));
 		m_dbg_dynamic_plot->AddMarker(CStatGraph::stHor, (*i)[2] / rpm_pow_max_ratio, D3DCOLOR_XRGB(0, 0, 127));
@@ -100,7 +100,7 @@ void CCar::DbgCreatePlots()
 }
 void CCar::DBgClearPlots()
 {
-	if (!b_plots)
+	if(!b_plots)
 		return;
 	////////////////////////////////
 	m_dbg_power_rpm.Clear();
@@ -113,9 +113,9 @@ void CCar::DBgClearPlots()
 void CCar::DbgUbdateCl()
 {
 
-	if (m_pPhysicsShell && OwnerActor() && static_cast<CObject*>(Owner()) == Level().CurrentViewEntity())
+	if(m_pPhysicsShell && OwnerActor() && static_cast<CObject*>(Owner()) == Level().CurrentViewEntity())
 	{
-		if (ph_dbg_draw_mask.test(phDbgDrawCarDynamics))
+		if(ph_dbg_draw_mask.test(phDbgDrawCarDynamics))
 		{
 			fvec3 v;
 			m_pPhysicsShell->get_LinearVel(v);
@@ -134,31 +134,31 @@ void CCar::DbgUbdateCl()
 			HUD().Font().pFontStat->OutNext("wheel torque:      [%3.2f]", RefWheelCurTorque());
 			HUD().Font().pFontStat->OutNext("engine torque:      [%3.2f]", EngineCurTorque());
 			HUD().Font().pFontStat->OutNext("fuel:      [%3.2f]", m_fuel);
-			if (b_clutch)
+			if(b_clutch)
 			{
 				HUD().Font().pFontStat->SetColor(D3DCOLOR_XRGB(0, 255, 0));
 				HUD().Font().pFontStat->OutNext("CLUTCH");
 				HUD().Font().pFontStat->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
 			}
-			if (b_engine_on)
+			if(b_engine_on)
 			{
 				HUD().Font().pFontStat->SetColor(D3DCOLOR_XRGB(0, 255, 0));
 				HUD().Font().pFontStat->OutNext("ENGINE ON");
 				HUD().Font().pFontStat->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
 			}
-			if (b_stalling)
+			if(b_stalling)
 			{
 				HUD().Font().pFontStat->SetColor(D3DCOLOR_XRGB(255, 0, 0));
 				HUD().Font().pFontStat->OutNext("STALLING");
 				HUD().Font().pFontStat->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
 			}
-			if (b_starting)
+			if(b_starting)
 			{
 				HUD().Font().pFontStat->SetColor(D3DCOLOR_XRGB(255, 0, 0));
 				HUD().Font().pFontStat->OutNext("STARTER");
 				HUD().Font().pFontStat->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
 			}
-			if (b_breaks)
+			if(b_breaks)
 			{
 				HUD().Font().pFontStat->SetColor(D3DCOLOR_XRGB(255, 0, 0));
 				HUD().Font().pFontStat->OutNext("BREAKS");
@@ -168,7 +168,7 @@ void CCar::DbgUbdateCl()
 			// HUD().pFontStat->OutNext("Vel Actual:    [%3.2f]",m_PhysicMovementControl->GetVelocityActual());
 		}
 
-		if (ph_dbg_draw_mask.test(phDbgDrawCarPlots) && b_plots)
+		if(ph_dbg_draw_mask.test(phDbgDrawCarPlots) && b_plots)
 		{
 			float cur_torque = EngineCurTorque();
 			m_dbg_dynamic_plot->AppendItem(m_current_engine_power, D3DCOLOR_XRGB(0, 0, 255));

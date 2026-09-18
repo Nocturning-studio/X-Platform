@@ -180,7 +180,7 @@ void CAI_Bloodsucker::reinit()
 	inherited::reinit();
 	CControlledActor::reinit();
 
-	if (CCustomMonster::use_simplified_visual())
+	if(CCustomMonster::use_simplified_visual())
 		return;
 
 	Bones.Reset();
@@ -261,7 +261,7 @@ void CAI_Bloodsucker::vfAssignBones()
 		smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine"));
 	bone_head = &smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(
 		smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
-	if (!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+	if(!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 	{
 		bone_spine->set_callback(bctCustom, BoneCallback, this);
 		bone_head->set_callback(bctCustom, BoneCallback, this);
@@ -293,7 +293,7 @@ void CAI_Bloodsucker::LookDirection(fvec3 to_dir, float bone_turn_speed)
 	//	bone_angle = dy;
 	// } else {													// torso & bone turn
 	//	if (movement().IsMoveAlongPathFinished() || !movement().enabled()) movement().m_body.target.yaw =
-	//angle_normalize(-yaw); 	if (dy / 2 < MAX_BONE_ANGLE) bone_angle = dy / 2; 	else bone_angle = MAX_BONE_ANGLE;
+	// angle_normalize(-yaw); 	if (dy / 2 < MAX_BONE_ANGLE) bone_angle = dy / 2; 	else bone_angle = MAX_BONE_ANGLE;
 	// }
 
 	// bone_angle /= 2;
@@ -319,18 +319,18 @@ void CAI_Bloodsucker::ActivateVampireEffector()
 
 void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
+	if((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
 	}
 
-	if ((spec_params & ASP_THREATEN) == ASP_THREATEN)
+	if((spec_params & ASP_THREATEN) == ASP_THREATEN)
 	{
 		anim().SetCurAnim(eAnimThreaten);
 		return;
 	}
 
-	if ((spec_params & ASP_STAND_SCARED) == ASP_STAND_SCARED)
+	if((spec_params & ASP_STAND_SCARED) == ASP_STAND_SCARED)
 	{
 		anim().SetCurAnim(eAnimLookAround);
 		return;
@@ -339,7 +339,7 @@ void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
 
 BOOL CAI_Bloodsucker::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	vfAssignBones();
@@ -349,7 +349,7 @@ BOOL CAI_Bloodsucker::net_Spawn(CSE_Abstract* DC)
 
 void CAI_Bloodsucker::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 	CControlledActor::frame_update();
@@ -363,10 +363,10 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (!g_Alive())
+	if(!g_Alive())
 		setVisible(TRUE);
 
-	if (m_alien_control.active())
+	if(m_alien_control.active())
 		sound().play(eAlien);
 }
 
@@ -390,10 +390,10 @@ void CAI_Bloodsucker::post_fsm_update()
 
 bool CAI_Bloodsucker::check_start_conditions(ControlCom::EControlType type)
 {
-	if (!inherited::check_start_conditions(type))
+	if(!inherited::check_start_conditions(type))
 		return false;
 
-	if (type == ControlCom::eControlRunAttack)
+	if(type == ControlCom::eControlRunAttack)
 		return (!state_invisible);
 
 	return true;
@@ -406,7 +406,7 @@ void CAI_Bloodsucker::set_alien_control(bool val)
 
 void CAI_Bloodsucker::predator_start()
 {
-	if (m_predator)
+	if(m_predator)
 		return;
 	cNameVisual_set(m_visual_predator);
 	CDamageManager::reload(*cNameSect(), "damage", pSettings);
@@ -422,7 +422,7 @@ void CAI_Bloodsucker::predator_start()
 
 void CAI_Bloodsucker::predator_stop()
 {
-	if (!m_predator)
+	if(!m_predator)
 		return;
 
 	cNameVisual_set(*m_visual_default);
@@ -450,7 +450,7 @@ void CAI_Bloodsucker::predator_unfreeze()
 void CAI_Bloodsucker::move_actor_cam()
 {
 	float turn_angle = PI_DIV_3;
-	if (Actor()->cam_Active())
+	if(Actor()->cam_Active())
 	{
 		Actor()->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, turn_angle); // Random.randF(turn_angle));
 		Actor()->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, turn_angle);	   // Random.randF(turn_angle));
@@ -462,7 +462,7 @@ void CAI_Bloodsucker::HitEntity(const CEntity* pEntity, float fDamage, float imp
 	inherited::HitEntity(pEntity, fDamage, impulse, dir);
 
 	EMonsterState state = StateMan->get_state_type();
-	if (is_state(state, eStateVampire_Execute))
+	if(is_state(state, eStateVampire_Execute))
 	{
 		VERIFY(Actor());
 
@@ -500,7 +500,7 @@ void CAI_Bloodsucker::manual_deactivate()
 CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
-	if (!info.active)
+	if(!info.active)
 		return CBaseMonster::SDebugInfo();
 
 	string128 text;
@@ -515,7 +515,7 @@ CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
 #ifdef _DEBUG
 void CAI_Bloodsucker::debug_on_key(int key)
 {
-	switch (key)
+	switch(key)
 	{
 	case DIK_MINUS:
 		Actor()->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, PI_DIV_2);

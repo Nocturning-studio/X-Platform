@@ -141,7 +141,8 @@ struct XRCORE_API xr_shortcut
 		flCtrl = 0x40,
 		flAlt = 0x80,
 	};
-	union {
+	union
+	{
 		struct
 		{
 			u8 key;
@@ -185,7 +186,8 @@ DEFINE_VECTOR(xr_rtoken, RTokenVec, RTokenVecIt);
 #include "intrusive_ptr.h"
 
 // destructor
-template <class T> class destructor
+template <class T>
+class destructor
 {
 	T* ptr;
 

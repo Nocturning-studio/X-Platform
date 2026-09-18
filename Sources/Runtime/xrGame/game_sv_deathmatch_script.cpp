@@ -5,7 +5,8 @@
 
 using namespace luabind;
 
-template <typename T> struct CWrapperBaseSVDeathmatch : public T, public luabind::wrap_base
+template <typename T>
+struct CWrapperBaseSVDeathmatch : public T, public luabind::wrap_base
 {
 	typedef T inherited;
 	typedef CWrapperBaseSVDeathmatch<T> self_type;

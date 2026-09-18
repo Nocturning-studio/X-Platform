@@ -35,7 +35,8 @@ class CPathManagerGeneric
 						   const const_iterator& i) const;
 	IC _dist_type estimate(const _index_type& vertex_id) const;
 	IC void init_path();
-	template <typename T> IC void create_path(T& vertex);
+	template <typename T>
+	IC void create_path(T& vertex);
 	IC const _index_type& start_node() const;
 	IC const _index_type& goal_node() const;
 	IC bool is_goal_reached(const _index_type& vertex_id) const;

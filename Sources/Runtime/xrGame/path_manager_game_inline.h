@@ -8,8 +8,8 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type,                  \
+#define TEMPLATE_SPECIALIZATION                                                                       \
+	template <typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type, \
 			  typename _iteration_type>
 
 #define CGamePathManager CPathManager<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>

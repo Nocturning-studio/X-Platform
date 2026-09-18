@@ -1,6 +1,7 @@
 #pragma once
 
-template <typename T> struct CWrapperBase : public T, public luabind::wrap_base
+template <typename T>
+struct CWrapperBase : public T, public luabind::wrap_base
 {
 	typedef T inherited;
 	typedef CWrapperBase<T> self_type;
@@ -36,11 +37,12 @@ template <typename T> struct CWrapperBase : public T, public luabind::wrap_base
 typedef CWrapperBase<CUIDialogWndEx> WrapType;
 typedef CUIDialogWndEx BaseType;
 
-template <typename T> IC T* CUIDialogWndEx::GetControl(LPCSTR name)
+template <typename T>
+IC T* CUIDialogWndEx::GetControl(LPCSTR name)
 {
 	shared_str n = name;
 	CUIWindow* pWnd = FindChild(n);
-	if (pWnd == NULL)
+	if(pWnd == NULL)
 		return NULL;
 
 	return smart_cast<T*>(pWnd);

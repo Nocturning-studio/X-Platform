@@ -66,7 +66,7 @@ class CPHShell : public CPhysicsShell, public CPHObject
 	virtual void SetAirResistance(dReal linear = default_k_l, dReal angular = default_k_w)
 	{
 		xr_vector<CPHElement*>::iterator i;
-		for (i = elements.begin(); elements.end() != i; ++i)
+		for(i = elements.begin(); elements.end() != i; ++i)
 			(*i)->SetAirResistance(linear, angular);
 	}
 	virtual void GetAirResistance(float& linear, float& angular)
@@ -87,7 +87,7 @@ class CPHShell : public CPhysicsShell, public CPHObject
 	virtual void Activate(const fmat4x4& transform, const fvec3& lin_vel, const fvec3& ang_vel,
 						  bool disable = false);
 	virtual void Activate(bool disable = false);
-	virtual void Activate(const fmat4x4& start_from, bool disable = false){};
+	virtual void Activate(const fmat4x4& start_from, bool disable = false) {};
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	virtual CPhysicsShellAnimator* PPhysicsShellAnimator()
@@ -143,7 +143,7 @@ class CPHShell : public CPhysicsShell, public CPHObject
 	virtual void set_JointResistance(float force)
 	{
 		JOINT_I i;
-		for (i = joints.begin(); joints.end() != i; ++i)
+		for(i = joints.begin(); joints.end() != i; ++i)
 		{
 			(*i)->SetForce(force);
 			(*i)->SetVelocity();
@@ -170,12 +170,12 @@ class CPHShell : public CPhysicsShell, public CPHObject
 	virtual void SplitProcess(PHSHELL_PAIR_VECTOR& out_shels);
 	virtual void BlockBreaking()
 	{
-		if (m_spliter_holder)
+		if(m_spliter_holder)
 			m_spliter_holder->SetUnbreakable();
 	}
 	virtual void UnblockBreaking()
 	{
-		if (m_spliter_holder)
+		if(m_spliter_holder)
 			m_spliter_holder->SetBreakable();
 	}
 	virtual bool IsBreakingBlocked()
@@ -254,7 +254,7 @@ class CPHShell : public CPhysicsShell, public CPHObject
 	virtual void CollideAll();
 	virtual void PhDataUpdate(dReal step);
 	virtual void PhTune(dReal step);
-	virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/){};
+	virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) {};
 	virtual void FreezeContent();
 	virtual void UnFreezeContent();
 	virtual void Freeze();
@@ -267,7 +267,7 @@ class CPHShell : public CPhysicsShell, public CPHObject
 	{
 		CPHObject::NetInterpolationOFF();
 	}
-	virtual void StepFrameUpdate(dReal step){};
+	virtual void StepFrameUpdate(dReal step) {};
 	virtual CPHMoveStorage* MoveStorage()
 	{
 		return &m_traced_geoms;

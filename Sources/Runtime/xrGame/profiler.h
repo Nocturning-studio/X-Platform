@@ -88,8 +88,8 @@ extern Flags32 psAI_Flags;
 
 IC CProfiler& profiler();
 
-#define START_PROFILE(a)                                                                                               \
-	{                                                                                                                  \
+#define START_PROFILE(a) \
+	{                    \
 		CProfilePortion __profile_portion__(a);
 #define STOP_PROFILE }
 

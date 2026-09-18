@@ -57,14 +57,14 @@ static int solve_trig1_aux(float c, float a2b2, float atan2ba, float theta[2])
 	float temp = a2b2 - c * c;
 	int num;
 
-	if (temp < 0.0f)
+	if(temp < 0.0f)
 		return 0;
 
 	temp = atan2f(std::sqrt(temp), c);
 	num = (_abs(temp) > 1e-6f) ? 2 : 1;
 
 	theta[0] = atan2ba;
-	if (num == 2)
+	if(num == 2)
 	{
 		theta[1] = theta[0] - temp;
 		theta[0] += temp;
@@ -72,7 +72,7 @@ static int solve_trig1_aux(float c, float a2b2, float atan2ba, float theta[2])
 		// theta[0] = angle_normalize(theta[0]);
 		// theta[1] = angle_normalize(theta[1]);
 
-		if (theta[0] > theta[1])
+		if(theta[0] > theta[1])
 		{
 			std::swap(theta[0], theta[1]);
 			//	temp = theta[0];
@@ -124,14 +124,14 @@ int consistency_check(double a, double b, double c,
 //
 int PsiEquation::crit_points(float* t) const
 {
-	if (!(*status_ptr & GOT_CRITS))
+	if(!(*status_ptr & GOT_CRITS))
 	{
 		// CANNOT use solve_trig1_aux here
 		*num_crits_ptr = (u8)solve_trig1(beta, -alpha, 0, (float*)crit_pts);
 		*status_ptr |= GOT_CRITS;
 	}
 
-	switch (num_crits)
+	switch(num_crits)
 	{
 	case 1:
 		t[0] = crit_pts[0];
@@ -151,13 +151,13 @@ int PsiEquation::crit_points(float* t) const
 //
 int PsiEquation::roots(float* t) const
 {
-	if (!(*status_ptr & GOT_ROOTS))
+	if(!(*status_ptr & GOT_ROOTS))
 	{
 		*num_roots_ptr = (u8)solve_trig1_aux(-xi, a2b2, atan2ba, (float*)root_pts);
 		*status_ptr |= GOT_ROOTS;
 	}
 
-	switch (num_roots)
+	switch(num_roots)
 	{
 	case 1:
 		t[0] = root_pts[0];

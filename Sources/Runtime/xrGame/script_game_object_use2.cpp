@@ -12,7 +12,7 @@
 void CScriptGameObject::set_invisible(bool val)
 {
 	CAI_Bloodsucker* monster = smart_cast<CAI_Bloodsucker*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CAI_Bloodsucker : cannot access class member set_invisible!");
@@ -25,7 +25,7 @@ void CScriptGameObject::set_invisible(bool val)
 void CScriptGameObject::set_manual_invisibility(bool val)
 {
 	CAI_Bloodsucker* monster = smart_cast<CAI_Bloodsucker*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CAI_Bloodsucker : cannot access class member set_manual_invisible!");
@@ -38,7 +38,7 @@ void CScriptGameObject::set_manual_invisibility(bool val)
 void CScriptGameObject::set_alien_control(bool val)
 {
 	CAI_Bloodsucker* monster = smart_cast<CAI_Bloodsucker*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CAI_Bloodsucker : cannot access class member alien_control_activate!");
@@ -53,9 +53,9 @@ CScriptSoundInfo CScriptGameObject::GetSoundInfo()
 	CScriptSoundInfo ret_val;
 
 	CBaseMonster* l_tpMonster = smart_cast<CBaseMonster*>(&object());
-	if (l_tpMonster)
+	if(l_tpMonster)
 	{
-		if (l_tpMonster->SoundMemory.IsRememberSound())
+		if(l_tpMonster->SoundMemory.IsRememberSound())
 		{
 			SoundElem se;
 			bool bDangerous;
@@ -79,9 +79,9 @@ CScriptMonsterHitInfo CScriptGameObject::GetMonsterHitInfo()
 	CScriptMonsterHitInfo ret_val;
 
 	CBaseMonster* l_tpMonster = smart_cast<CBaseMonster*>(&object());
-	if (l_tpMonster)
+	if(l_tpMonster)
 	{
-		if (l_tpMonster->HitMemory.is_hit())
+		if(l_tpMonster->HitMemory.is_hit())
 		{
 			CGameObject* pO = smart_cast<CGameObject*>(l_tpMonster->HitMemory.get_last_hit_object());
 			ret_val.set((pO && !pO->getDestroy()) ? pO->lua_game_object() : 0,
@@ -101,27 +101,27 @@ CScriptMonsterHitInfo CScriptGameObject::GetMonsterHitInfo()
 void CScriptGameObject::skip_transfer_enemy(bool val)
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
-	if (monster)
+	if(monster)
 		monster->skip_transfer_enemy(val);
 }
 
 void CScriptGameObject::set_home(LPCSTR name, float r_min, float r_max, bool aggressive)
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
-	if (monster)
+	if(monster)
 		monster->Home->setup(name, r_min, r_max, aggressive);
 }
 void CScriptGameObject::remove_home()
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
-	if (monster)
+	if(monster)
 		monster->Home->remove_home();
 }
 
 bool CScriptGameObject::fake_death_fall_down()
 {
 	CZombie* monster = smart_cast<CZombie*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CZombie : cannot access class member fake_death_fall_down!");
@@ -133,7 +133,7 @@ bool CScriptGameObject::fake_death_fall_down()
 void CScriptGameObject::fake_death_stand_up()
 {
 	CZombie* monster = smart_cast<CZombie*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CZombie : cannot access class member fake_death_fall_down!");
@@ -146,20 +146,20 @@ void CScriptGameObject::fake_death_stand_up()
 void CScriptGameObject::berserk()
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
-	if (monster)
+	if(monster)
 		monster->set_berserk();
 }
 
 void CScriptGameObject::set_custom_panic_threshold(float value)
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
-	if (monster)
+	if(monster)
 		monster->set_custom_panic_threshold(value);
 }
 
 void CScriptGameObject::set_default_panic_threshold()
 {
 	CBaseMonster* monster = smart_cast<CBaseMonster*>(&object());
-	if (monster)
+	if(monster)
 		monster->set_default_panic_threshold();
 }

@@ -24,7 +24,7 @@
 #include "xrEngine\fmesh.h"
 #include "xrRender_console.h"
 
-#include "SunOccluder.h" 
+#include "SunOccluder.h"
 #include "CPUOcclusion.h"
 #include "EffectorsManager.h"
 
@@ -155,7 +155,7 @@ class CRender : public IRender_interface, public pureFrame
 	SunCascadeBuffer m_sun_cascades_buffer[2];
 	u32 m_sun_write_ix;
 	u32 m_sun_read_ix;
-	std::atomic<bool> m_sun_gather_done{ true };
+	std::atomic<bool> m_sun_gather_done{true};
 	std::condition_variable m_sun_gather_cv;
 	std::mutex m_sun_gather_mutex;
 	IC SunCascadeBuffer& GetSunWriteBuffer()
@@ -169,7 +169,7 @@ class CRender : public IRender_interface, public pureFrame
 
 	MainSceneWorkItem m_scene_data;
 
-	//Motion blur
+	// Motion blur
 	fmat4x4 m_saved_viewproj;
 	fmat4x4 m_saved_invview;
 
@@ -215,11 +215,11 @@ class CRender : public IRender_interface, public pureFrame
 	CROS_impl::AOCube compute_object_ao_cube(IRenderable* O)
 	{
 		CROS_impl::AOCube cube{};
-		if (nullptr == O)
+		if(nullptr == O)
 			return cube;
 
 		IRender_ObjectSpecific* ros = O->renderable_ROS();
-		if (nullptr == ros)
+		if(nullptr == ros)
 			return cube;
 
 		CROS_impl& LT = *static_cast<CROS_impl*>(ros);
@@ -231,18 +231,18 @@ class CRender : public IRender_interface, public pureFrame
 	IC void apply_ao_lighting(const CROS_impl::AOCube& cube)
 	{
 		R_constant* C = &*RenderBackend.get_Constant(c_sbase);
-		if (0 == C)
+		if(0 == C)
 			return;
 		VERIFY(RC_dest_sampler == C->destination);
 		VERIFY(RC_sampler == C->type);
 		RenderBackend.set_Constant("ao_cube_pos_faces",
-			cube[CROS_impl::CUBE_FACE_POS_X],
-			cube[CROS_impl::CUBE_FACE_POS_Y],
-			cube[CROS_impl::CUBE_FACE_POS_Z]);
+								   cube[CROS_impl::CUBE_FACE_POS_X],
+								   cube[CROS_impl::CUBE_FACE_POS_Y],
+								   cube[CROS_impl::CUBE_FACE_POS_Z]);
 		RenderBackend.set_Constant("ao_cube_neg_faces",
-			cube[CROS_impl::CUBE_FACE_NEG_X],
-			cube[CROS_impl::CUBE_FACE_NEG_Y],
-			cube[CROS_impl::CUBE_FACE_NEG_Z]);
+								   cube[CROS_impl::CUBE_FACE_NEG_X],
+								   cube[CROS_impl::CUBE_FACE_NEG_Y],
+								   cube[CROS_impl::CUBE_FACE_NEG_Z]);
 	}
 
   public:
@@ -260,8 +260,8 @@ class CRender : public IRender_interface, public pureFrame
 
 	virtual IDirect3DBaseTexture9* TextureLoad(LPCSTR fname, u32& msize) override;
 
-	/**/
-	#pragma todo(Deathman to Deathman: Переписать передачу здоровья в рендер)
+/**/
+#pragma todo(Deathman to Deathman : Переписать передачу здоровья в рендер)
 	float m_actor_health;
 	virtual void set_actor_health(float health)
 	{
@@ -289,14 +289,14 @@ class CRender : public IRender_interface, public pureFrame
 
 	// Main
 	virtual void add_Occluder(Fbox2& bb_screenspace) override; // mask screen region as oclluded
-	virtual void add_Visual(IRender_Visual* V) override;		  // add visual leaf	(no culling performed at all)
-	virtual void add_Geometry(IRender_Visual* V) override;	  // add visual(s)	(all culling performed)
+	virtual void add_Visual(IRender_Visual* V) override;	   // add visual leaf	(no culling performed at all)
+	virtual void add_Geometry(IRender_Visual* V) override;	   // add visual(s)	(all culling performed)
 
 	SceneTraversalContext m_TraversalContext;
 
 	virtual void set_Transform(fmat4x4* M)
 	{
-		if (CurrentRenderContext::context)
+		if(CurrentRenderContext::context)
 			CurrentRenderContext::context->transform = M;
 		else
 			m_TraversalContext.transform = M;
@@ -304,7 +304,7 @@ class CRender : public IRender_interface, public pureFrame
 
 	virtual void set_HUD(BOOL V)
 	{
-		if (CurrentRenderContext::context)
+		if(CurrentRenderContext::context)
 			CurrentRenderContext::context->is_hud_pass = V;
 		else
 			m_TraversalContext.is_hud_pass = V;
@@ -312,14 +312,14 @@ class CRender : public IRender_interface, public pureFrame
 
 	virtual BOOL get_HUD()
 	{
-		if (CurrentRenderContext::context)
+		if(CurrentRenderContext::context)
 			return CurrentRenderContext::context->is_hud_pass;
 		return m_TraversalContext.is_hud_pass;
 	}
 
 	virtual void set_Invisible(BOOL V)
 	{
-		if (CurrentRenderContext::context)
+		if(CurrentRenderContext::context)
 			CurrentRenderContext::context->is_invisible_mode = V;
 		else
 			m_TraversalContext.is_invisible_mode = V;
@@ -328,16 +328,15 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void set_Frustum(CFrustum* O)
 	{
 		View = O;
-		if (CurrentRenderContext::context)
+		if(CurrentRenderContext::context)
 			CurrentRenderContext::context->frustum = O;
 		else
 			m_TraversalContext.frustum = O;
-
 	}
 
 	virtual void set_Object(IRenderable* O)
 	{
-		if (CurrentRenderContext::context)
+		if(CurrentRenderContext::context)
 			CurrentRenderContext::context->owner = O;
 		else
 			m_TraversalContext.owner = O;
@@ -394,7 +393,7 @@ class CRender : public IRender_interface, public pureFrame
 	BOOL enable_scissor(light* L); // true if intersects near plane
 	float hclip(float v, float dim);
 	void draw_volume(light* L);
-	void accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transform_prev);// , float fBias); //, float fSize);
+	void accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transform_prev); // , float fBias); //, float fSize);
 	void accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L_dir);
 	void accumulate_point_lights(light* L);
 	void accumulate_spot_lights(light* L);
@@ -499,6 +498,7 @@ class CRender : public IRender_interface, public pureFrame
 	CShaderMacros FetchShaderMacros();
 
 	HMODULE hCompiler;
+
   private:
 	FS_FileSet m_file_set;
 };

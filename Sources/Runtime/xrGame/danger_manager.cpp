@@ -27,10 +27,10 @@ struct CDangerPredicate
 
 	IC bool operator()(const CDangerObject& object) const
 	{
-		if (!m_object)
+		if(!m_object)
 			return (!object.object());
 
-		if (!object.object())
+		if(!object.object())
 			return (false);
 
 		return (object.object()->ID() == m_object->ID());
@@ -66,20 +66,20 @@ struct CRemoveByTimePredicate
 
 	IC bool operator()(const CDangerObject& object) const
 	{
-		if (object.time() < m_time_line)
+		if(object.time() < m_time_line)
 		{
-			if (object.object() && (object.type() == CDangerObject::eDangerTypeFreshEntityCorpse))
+			if(object.object() && (object.type() == CDangerObject::eDangerTypeFreshEntityCorpse))
 				m_manager->ignore(object.object());
 
 			return (true);
 		}
 
-		if (!object.object())
+		if(!object.object())
 			return (false);
 
-		if (!m_manager->useful(object))
+		if(!m_manager->useful(object))
 		{
-			if ((object.type() == CDangerObject::eDangerTypeFreshEntityCorpse))
+			if((object.type() == CDangerObject::eDangerTypeFreshEntityCorpse))
 				m_manager->ignore(object.object());
 
 			return (true);
@@ -111,7 +111,7 @@ void CDangerManager::reload(LPCSTR section)
 
 void CDangerManager::update()
 {
-	//OPTICK_EVENT("CDangerManager::update");
+	// OPTICK_EVENT("CDangerManager::update");
 
 	START_PROFILE("Memory Manager/dangers::update")
 	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), CRemoveByTimePredicate(time_line(), this)),
@@ -121,11 +121,11 @@ void CDangerManager::update()
 	m_selected = 0;
 	OBJECTS::const_iterator I = m_objects.begin();
 	OBJECTS::const_iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		//		Msg					("%6d : Danger : [%d][%d]",(*I).time(),(*I).type(),(*I).perceive_type());
 		float value = do_evaluate(*I);
-		if (result > value)
+		if(result > value)
 		{
 			result = value;
 			m_selected = &*I;
@@ -137,7 +137,7 @@ void CDangerManager::update()
 
 void CDangerManager::remove_links(const CObject* object)
 {
-	if (m_selected && m_selected->object() && (m_selected->object()->ID() == object->ID()))
+	if(m_selected && m_selected->object() && (m_selected->object()->ID() == object->ID()))
 		m_selected = 0;
 
 	{
@@ -148,12 +148,12 @@ void CDangerManager::remove_links(const CObject* object)
 	{
 		OBJECTS::iterator I = m_objects.begin();
 		OBJECTS::iterator E = m_objects.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			if (!(*I).dependent_object())
+			if(!(*I).dependent_object())
 				continue;
 
-			if ((*I).dependent_object()->ID() != object->ID())
+			if((*I).dependent_object()->ID() != object->ID())
 				continue;
 
 			(*I).clear_dependent_object();
@@ -161,20 +161,20 @@ void CDangerManager::remove_links(const CObject* object)
 	}
 
 	IGNORED::iterator I = std::find(m_ignored.begin(), m_ignored.end(), object->ID());
-	if (I != m_ignored.end())
+	if(I != m_ignored.end())
 		m_ignored.erase(I);
 }
 
 bool CDangerManager::useful(const CDangerObject& object) const
 {
-	if (object.object() && !object.dependent_object())
+	if(object.object() && !object.dependent_object())
 	{
 		IGNORED::const_iterator I = std::find(m_ignored.begin(), m_ignored.end(), object.object()->ID());
-		if (I != m_ignored.end())
+		if(I != m_ignored.end())
 			return (false);
 	}
 
-	if (object.time() >= time_line())
+	if(object.time() >= time_line())
 		return (true);
 
 	return (false);
@@ -193,37 +193,45 @@ float CDangerManager::evaluate(const CDangerObject& object) const
 float CDangerManager::do_evaluate(const CDangerObject& object) const
 {
 	float result = 0.f;
-	switch (object.type())
+	switch(object.type())
 	{
-	case CDangerObject::eDangerTypeBulletRicochet: { // I perceived bullet(knife) ricochet
+	case CDangerObject::eDangerTypeBulletRicochet:
+	{ // I perceived bullet(knife) ricochet
 		result += 3000.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeAttackSound: { // someone is shooting
+	case CDangerObject::eDangerTypeAttackSound:
+	{ // someone is shooting
 		result += 2500.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeEntityAttacked: { // someone is hit
+	case CDangerObject::eDangerTypeEntityAttacked:
+	{ // someone is hit
 		result += 2000.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeEntityDeath: { // someone becomes dead
+	case CDangerObject::eDangerTypeEntityDeath:
+	{ // someone becomes dead
 		result += 3000.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeFreshEntityCorpse: { // I see a corpse
+	case CDangerObject::eDangerTypeFreshEntityCorpse:
+	{ // I see a corpse
 		result += 2250.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeAttacked: { // someone is attacked
+	case CDangerObject::eDangerTypeAttacked:
+	{ // someone is attacked
 		result += 2000.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeGrenade: { // grenade to explode nearby
+	case CDangerObject::eDangerTypeGrenade:
+	{ // grenade to explode nearby
 		result += 1000.f;
 		break;
 	}
-	case CDangerObject::eDangerTypeEnemySound: { // grenade to explode nearby
+	case CDangerObject::eDangerTypeEnemySound:
+	{ // grenade to explode nearby
 		result += 1000.f;
 		break;
 	}
@@ -239,11 +247,11 @@ float CDangerManager::do_evaluate(const CDangerObject& object) const
 
 void CDangerManager::add(const CVisibleObject& object)
 {
-	if (!object.m_enabled)
+	if(!object.m_enabled)
 		return;
 
 	const CEntityAlive* obj = smart_cast<const CEntityAlive*>(object.m_object);
-	if (obj && !obj->g_Alive() && (obj->killer_id() != ALife::_OBJECT_ID(-1)))
+	if(obj && !obj->g_Alive() && (obj->killer_id() != ALife::_OBJECT_ID(-1)))
 	{
 		add(CDangerObject(obj, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse,
 						  CDangerObject::eDangerPerceiveTypeVisual));
@@ -253,48 +261,48 @@ void CDangerManager::add(const CVisibleObject& object)
 
 void CDangerManager::add(const CSoundObject& object)
 {
-	if (!object.m_enabled)
+	if(!object.m_enabled)
 		return;
 
 	const CEntityAlive* obj = smart_cast<const CEntityAlive*>(object.m_object);
 
-	if ((object.m_sound_type & SOUND_TYPE_BULLET_HIT) == SOUND_TYPE_BULLET_HIT)
+	if((object.m_sound_type & SOUND_TYPE_BULLET_HIT) == SOUND_TYPE_BULLET_HIT)
 	{
 		add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time,
 						  CDangerObject::eDangerTypeBulletRicochet, CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
 
-	if ((object.m_sound_type & SOUND_TYPE_WEAPON_SHOOTING) == SOUND_TYPE_WEAPON_SHOOTING)
+	if((object.m_sound_type & SOUND_TYPE_WEAPON_SHOOTING) == SOUND_TYPE_WEAPON_SHOOTING)
 	{
 		add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time,
 						  CDangerObject::eDangerTypeAttackSound, CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
 
-	if ((object.m_sound_type & SOUND_TYPE_INJURING) == SOUND_TYPE_INJURING)
+	if((object.m_sound_type & SOUND_TYPE_INJURING) == SOUND_TYPE_INJURING)
 	{
 		bool do_add = true;
-		if (object.m_object)
+		if(object.m_object)
 		{
 			const CActor* actor = smart_cast<const CActor*>(object.m_object);
-			if (actor && !m_object->is_relation_enemy(actor))
+			if(actor && !m_object->is_relation_enemy(actor))
 				do_add = false;
 		}
-		if (do_add)
+		if(do_add)
 			add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time,
 							  CDangerObject::eDangerTypeEntityAttacked, CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
 
-	if ((object.m_sound_type & SOUND_TYPE_DYING) == SOUND_TYPE_DYING)
+	if((object.m_sound_type & SOUND_TYPE_DYING) == SOUND_TYPE_DYING)
 	{
 		add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time,
 						  CDangerObject::eDangerTypeEntityDeath, CDangerObject::eDangerPerceiveTypeSound));
 		return;
 	}
 
-	if (obj && m_object->is_relation_enemy(obj))
+	if(obj && m_object->is_relation_enemy(obj))
 	{
 		add(CDangerObject(obj, object.m_object_params.m_position, object.m_level_time,
 						  CDangerObject::eDangerTypeEnemySound, CDangerObject::eDangerPerceiveTypeSound));
@@ -304,13 +312,13 @@ void CDangerManager::add(const CSoundObject& object)
 
 void CDangerManager::add(const CHitObject& object)
 {
-	if (!object.m_enabled)
+	if(!object.m_enabled)
 		return;
 
-	if (fis_zero(object.m_amount))
+	if(fis_zero(object.m_amount))
 		return;
 
-	if (object.m_object->ID() == m_object->ID())
+	if(object.m_object->ID() == m_object->ID())
 		return;
 
 	const CEntityAlive* obj = smart_cast<const CEntityAlive*>(object.m_object);
@@ -320,14 +328,14 @@ void CDangerManager::add(const CHitObject& object)
 
 void CDangerManager::add(const CDangerObject& object)
 {
-	if (m_object->memory().enemy().selected() && object.object()) // && !object.object()->g_Alive())
+	if(m_object->memory().enemy().selected() && object.object()) // && !object.object()->g_Alive())
 		ignore(object.object());
 
-	if (!is_useful(object))
+	if(!is_useful(object))
 		return;
 
 	OBJECTS::iterator I = std::find_if(m_objects.begin(), m_objects.end(), CFindPredicate(object));
-	if (I != m_objects.end())
+	if(I != m_objects.end())
 	{
 		*I = object;
 		return;
@@ -340,7 +348,7 @@ void CDangerManager::ignore(const CGameObject* object)
 {
 	VERIFY(object);
 	IGNORED::const_iterator I = std::find(m_ignored.begin(), m_ignored.end(), object->ID());
-	if (I != m_ignored.end())
+	if(I != m_ignored.end())
 		return;
 
 	m_ignored.push_back(object->ID());

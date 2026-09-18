@@ -7,8 +7,8 @@ class ClientID
 	u32 id;
 
   public:
-	ClientID() : id(0){};
-	ClientID(u32 val) : id(val){};
+	ClientID() : id(0) {};
+	ClientID(u32 val) : id(val) {};
 
 	u32 value() const
 	{

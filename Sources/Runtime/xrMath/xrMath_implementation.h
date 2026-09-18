@@ -1,6 +1,7 @@
 #pragma once
 
-template <class T> IC template_matrix4x4<T>& template_matrix4x4<T>::rotation(const template_quaternion<T>& Q)
+template <class T>
+IC template_matrix4x4<T>& template_matrix4x4<T>::rotation(const template_quaternion<T>& Q)
 {
 	T xx = Q.x * Q.x;
 	T yy = Q.y * Q.y;
@@ -31,7 +32,8 @@ template <class T> IC template_matrix4x4<T>& template_matrix4x4<T>::rotation(con
 	return *this;
 }
 
-template <class T> IC template_matrix4x4<T>& template_matrix4x4<T>::mk_transform(const template_quaternion<T>& Q, const Tvector& V)
+template <class T>
+IC template_matrix4x4<T>& template_matrix4x4<T>::mk_transform(const template_quaternion<T>& Q, const Tvector& V)
 {
 	T xx = Q.x * Q.x;
 	T yy = Q.y * Q.y;
@@ -63,12 +65,13 @@ template <class T> IC template_matrix4x4<T>& template_matrix4x4<T>::mk_transform
 }
 
 #define TRACE_QZERO_TOLERANCE 0.1f
-template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const template_matrix4x4<T>& M)
+template <class T>
+IC template_quaternion<T>& template_quaternion<T>::set(const template_matrix4x4<T>& M)
 {
 	float trace, s;
 
 	trace = M._11 + M._22 + M._33;
-	if (trace > 0.0f)
+	if(trace > 0.0f)
 	{
 		s = sqrt(trace + 1.0f);
 		w = s * 0.5f;
@@ -87,27 +90,27 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			E,
 			I
 		};
-		if (M._11 > M._22)
+		if(M._11 > M._22)
 		{
-			if (M._33 > M._11)
+			if(M._33 > M._11)
 				biggest = I;
 			else
 				biggest = A;
 		}
 		else
 		{
-			if (M._33 > M._11)
+			if(M._33 > M._11)
 				biggest = I;
 			else
 				biggest = E;
 		}
 
 		// in the unusual case the original trace fails to produce a good sqrt, try others...
-		switch (biggest)
+		switch(biggest)
 		{
 		case A:
 			s = std::sqrt(M._11 - (M._22 + M._33) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
 				s = 0.5f / s;
@@ -118,7 +121,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			// I
 			s = std::sqrt(M._33 - (M._11 + M._22) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
 				s = 0.5f / s;
@@ -129,7 +132,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			// E
 			s = std::sqrt(M._22 - (M._33 + M._11) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
 				s = 0.5f / s;
@@ -141,7 +144,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			break;
 		case E:
 			s = std::sqrt(M._22 - (M._33 + M._11) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
 				s = 0.5f / s;
@@ -152,7 +155,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			// I
 			s = std::sqrt(M._33 - (M._11 + M._22) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
 				s = 0.5f / s;
@@ -163,7 +166,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			// A
 			s = std::sqrt(M._11 - (M._22 + M._33) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
 				s = 0.5f / s;
@@ -175,7 +178,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			break;
 		case I:
 			s = std::sqrt(M._33 - (M._11 + M._22) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
 				s = 0.5f / s;
@@ -186,7 +189,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			// A
 			s = std::sqrt(M._11 - (M._22 + M._33) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
 				s = 0.5f / s;
@@ -197,7 +200,7 @@ template <class T> IC template_quaternion<T>& template_quaternion<T>::set(const 
 			}
 			// E
 			s = std::sqrt(M._22 - (M._33 + M._11) + 1.0f);
-			if (s > TRACE_QZERO_TOLERANCE)
+			if(s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
 				s = 0.5f / s;

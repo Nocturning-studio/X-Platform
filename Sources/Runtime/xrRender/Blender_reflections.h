@@ -31,7 +31,7 @@ class CBlender_reflections : public IBlender
 		// Имя единого шейдерного файла (без расширения)
 		LPCSTR sh_name = "postprocess_stage_reflections";
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_SSR_GENERATE_MIP_CHAIN_PASS:
 			// Pass 1: Simple Image (Initial copy if needed, preserved from original logic)

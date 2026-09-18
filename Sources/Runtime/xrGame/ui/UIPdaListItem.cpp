@@ -41,7 +41,7 @@ void CUIPdaListItem::Init(float x, float y, float width, float height)
 	AttachChild(UIInfo);
 	UIInfo->Init(0, 0, width, height, PDA_CONTACT_CHAR);
 
-	if (uiXml.NavigateToNode("mask_frame_window", 0))
+	if(uiXml.NavigateToNode("mask_frame_window", 0))
 	{
 		UIMask = xr_new<CUIFrameWindow>();
 		UIMask->SetAutoDelete(true);

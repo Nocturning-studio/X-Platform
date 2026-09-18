@@ -92,7 +92,7 @@ class CCar : public CEntity,
 		return GetfHealth();
 	}
 	virtual void ChangeCondition(float fDeltaCondition);
-	virtual void StartTimerEffects(){};
+	virtual void StartTimerEffects() {};
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual CPhysicsShellHolder* PPhysicsShellHolder()
 	{
@@ -596,7 +596,7 @@ class CCar : public CEntity,
 	virtual void OnAfterExplosion();
 	virtual void OnBeforeExplosion();
 	virtual void GetRayExplosionSourcePos(fvec3& pos);
-	virtual void ActivateExplosionBox(const fvec3& size, fvec3& in_out_pos){};
+	virtual void ActivateExplosionBox(const fvec3& size, fvec3& in_out_pos) {};
 	virtual void ResetScriptData(void* P = 0);
 
 	virtual void Action(int id, u32 flags);
@@ -618,9 +618,9 @@ class CCar : public CEntity,
 
 	// Hits
 	virtual void HitSignal(float /**HitAmount/**/, fvec3& /**local_dir/**/, CObject* /**who/**/,
-						   s16 /**element/**/){};
-	virtual void HitImpulse(float /**amount/**/, fvec3& /**vWorldDir/**/, fvec3& /**vLocalDir/**/){};
-	virtual void g_fireParams(const CHudItem* /**pHudItem/**/, fvec3& /**P/**/, fvec3& /**D/**/){};
+						   s16 /**element/**/) {};
+	virtual void HitImpulse(float /**amount/**/, fvec3& /**vWorldDir/**/, fvec3& /**vLocalDir/**/) {};
+	virtual void g_fireParams(const CHudItem* /**pHudItem/**/, fvec3& /**P/**/, fvec3& /**D/**/) {};
 	virtual u16 Initiator();
 	// HUD
 	virtual void OnHUDDraw(CCustomHUD* hud);
@@ -658,7 +658,8 @@ class CCar : public CEntity,
 	}
 
   private:
-	template <class T> IC void fill_wheel_vector(LPCSTR S, xr_vector<T>& type_wheels);
+	template <class T>
+	IC void fill_wheel_vector(LPCSTR S, xr_vector<T>& type_wheels);
 	IC void fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust>& exhausts);
 	IC void fill_doors_map(LPCSTR S, xr_map<u16, SDoor>& doors);
 

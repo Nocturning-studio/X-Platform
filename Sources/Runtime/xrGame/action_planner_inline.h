@@ -8,12 +8,12 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator,    \
+#define TEMPLATE_SPECIALIZATION                                                                                     \
+	template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, \
 			  typename _world_operator_ptr, typename _condition_evaluator_ptr>
 
-#define CPlanner                                                                                                       \
-	CActionPlanner<_object_type, _reverse_search, _world_operator, _condition_evaluator, _world_operator_ptr,          \
+#define CPlanner                                                                                              \
+	CActionPlanner<_object_type, _reverse_search, _world_operator, _condition_evaluator, _world_operator_ptr, \
 				   _condition_evaluator_ptr>
 
 TEMPLATE_SPECIALIZATION
@@ -52,28 +52,28 @@ IC _object_type& CPlanner::object() const
 TEMPLATE_SPECIALIZATION
 void CPlanner::update()
 {
-	//OPTICK_EVENT("CPlanner::update");
+	// OPTICK_EVENT("CPlanner::update");
 
 	solve();
 
 #ifdef LOG_ACTION
 	// printing solution
-	if (m_use_log)
+	if(m_use_log)
 	{
-		if (m_solution_changed)
+		if(m_solution_changed)
 		{
 			show_current_world_state();
 			show_target_world_state();
 			Msg("%6d : Solution for object %s [%d vertices searched]", Engine.TimeManager.GetGlobalTimeMs(), object_name(),
 				ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
-			for (int i = 0; i < (int)solution().size(); ++i)
+			for(int i = 0; i < (int)solution().size(); ++i)
 				Msg("%s", action2string(solution()[i]));
 		}
 	}
 #endif
 
 #ifdef LOG_ACTION
-	if (m_failed)
+	if(m_failed)
 	{
 		// printing current world state
 		show();
@@ -85,15 +85,15 @@ void CPlanner::update()
 		show_current_world_state();
 		show_target_world_state();
 		//		VERIFY2						(!m_failed,"Problem solver couldn't build a valid path - verify your
-		//conditions, effects and goals!");
+		// conditions, effects and goals!");
 	}
 #endif
 
 	THROW(!solution().empty());
 
-	if (initialized())
+	if(initialized())
 	{
-		if (current_action_id() != solution().front())
+		if(current_action_id() != solution().front())
 		{
 			current_action().finalize();
 			m_current_action_id = solution().front();
@@ -197,7 +197,7 @@ IC void CPlanner::set_use_log(bool value)
 	m_use_log = value;
 	OPERATOR_VECTOR::iterator I = m_operators.begin();
 	OPERATOR_VECTOR::iterator E = m_operators.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I).get_operator()->set_use_log(m_use_log);
 }
 
@@ -207,13 +207,13 @@ IC void CPlanner::show_current_world_state()
 	Msg("Current world state :");
 	EVALUATORS::const_iterator I = evaluators().begin();
 	EVALUATORS::const_iterator E = evaluators().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		xr_vector<COperatorCondition>::const_iterator J =
 			std::lower_bound(current_state().conditions().begin(), current_state().conditions().end(),
 							 CWorldProperty((*I).first, false));
 		char temp = '?';
-		if ((J != current_state().conditions().end()) && ((*J).condition() == (*I).first))
+		if((J != current_state().conditions().end()) && ((*J).condition() == (*I).first))
 		{
 			temp = (*J).value() ? '+' : '-';
 			Msg("%5c : [%d][%s]", temp, (*I).first, property2string((*I).first));
@@ -227,12 +227,12 @@ IC void CPlanner::show_target_world_state()
 	Msg("Target world state :");
 	EVALUATORS::const_iterator I = evaluators().begin();
 	EVALUATORS::const_iterator E = evaluators().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		xr_vector<COperatorCondition>::const_iterator J = std::lower_bound(
 			target_state().conditions().begin(), target_state().conditions().end(), CWorldProperty((*I).first, false));
 		char temp = '?';
-		if ((J != target_state().conditions().end()) && ((*J).condition() == (*I).first))
+		if((J != target_state().conditions().end()) && ((*J).condition() == (*I).first))
 		{
 			temp = (*J).value() ? '+' : '-';
 			Msg("%5c : [%d][%s]", temp, (*I).first, property2string((*I).first));
@@ -249,28 +249,28 @@ IC void CPlanner::show(LPCSTR offset)
 		Msg("\n%sEVALUATORS : %d\n", offset, evaluators().size());
 		EVALUATORS::const_iterator I = evaluators().begin();
 		EVALUATORS::const_iterator E = evaluators().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			Msg("%sevaluator   [%d][%s]", offset, (*I).first, property2string((*I).first));
 	}
 	{
 		Msg("\n%sOPERATORS : %d\n", offset, operators().size());
 		OPERATOR_VECTOR::const_iterator I = operators().begin();
 		OPERATOR_VECTOR::const_iterator E = operators().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			Msg("%soperator    [%d][%s]", offset, (*I).m_operator_id, (*I).m_operator->m_action_name);
 
 			{
 				xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->conditions().conditions().begin();
 				xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->conditions().conditions().end();
-				for (; i != e; ++i)
+				for(; i != e; ++i)
 					Msg("%s	condition [%d][%s] = %s", offset, (*i).condition(), property2string((*i).condition()),
 						(*i).value() ? "TRUE" : "FALSE");
 			}
 			{
 				xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->effects().conditions().begin();
 				xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->effects().conditions().end();
-				for (; i != e; ++i)
+				for(; i != e; ++i)
 					Msg("%s	effect    [%d][%s] = %s", offset, (*i).condition(), property2string((*i).condition()),
 						(*i).value() ? "TRUE" : "FALSE");
 			}
@@ -288,14 +288,14 @@ IC void CPlanner::save(NET_Packet& packet)
 	{
 		EVALUATORS::iterator I = m_evaluators.begin();
 		EVALUATORS::iterator E = m_evaluators.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			(*I).second->save(packet);
 	}
 
 	{
 		OPERATOR_VECTOR::iterator I = m_operators.begin();
 		OPERATOR_VECTOR::iterator E = m_operators.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			(*I).m_operator->save(packet);
 	}
 
@@ -304,7 +304,7 @@ IC void CPlanner::save(NET_Packet& packet)
 		typedef CPropertyStorage::CConditionStorage CConditionStorage;
 		CConditionStorage::const_iterator I = m_storage.m_storage.begin();
 		CConditionStorage::const_iterator E = m_storage.m_storage.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			packet.w(&(*I).m_condition, sizeof((*I).m_condition));
 			packet.w(&(*I).m_value, sizeof((*I).m_value));
@@ -318,14 +318,14 @@ IC void CPlanner::load(IReader& packet)
 	{
 		EVALUATORS::iterator I = m_evaluators.begin();
 		EVALUATORS::iterator E = m_evaluators.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			(*I).second->load(packet);
 	}
 
 	{
 		OPERATOR_VECTOR::iterator I = m_operators.begin();
 		OPERATOR_VECTOR::iterator E = m_operators.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			(*I).m_operator->load(packet);
 	}
 
@@ -333,7 +333,7 @@ IC void CPlanner::load(IReader& packet)
 		u32 count = packet.r_u32();
 		GraphEngineSpace::_solver_condition_type condition;
 		GraphEngineSpace::_solver_value_type value;
-		for (u32 i = 0; i < count; ++i)
+		for(u32 i = 0; i < count; ++i)
 		{
 			packet.r(&condition, sizeof(condition));
 			packet.r(&value, sizeof(value));

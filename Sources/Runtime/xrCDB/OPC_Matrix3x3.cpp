@@ -62,18 +62,18 @@ Matrix3x3& Matrix3x3::FromTo(const Point& from, const Point& to)
 	float e = from | to;
 
 	// "from" almost or equal to "to"-vector3?
-	if (e > 1.0f - EPSILON)
+	if(e > 1.0f - EPSILON)
 	{
 		// return identity
 		Identity();
 	}
 	// "from" almost or equal to negated "to"?
-	else if (e < -1.0f + EPSILON)
+	else if(e < -1.0f + EPSILON)
 	{
 		// Left= from ^ (1,0,0)
 		Point Left(0.0f, from.z, -from.y);
 		// Was left=CROSS(from,(1,0,0)) a good choice?
-		if ((Left | Left) < EPSILON)
+		if((Left | Left) < EPSILON)
 		{
 			// Here we now that left = CROSS(from, (1,0,0)) will be a good choice
 			Left = Point(-from.z, 0.0f, from.x);

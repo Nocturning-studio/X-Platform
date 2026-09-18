@@ -149,7 +149,7 @@ class CCustomMonster : public CEntityAlive,
 	virtual void Die(CObject* who);
 
 	virtual void HitSignal(float P, fvec3& vLocalDir, CObject* who);
-	virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/){};
+	virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/) {};
 	virtual void shedule_Update(u32 DT);
 	virtual void UpdateCL();
 

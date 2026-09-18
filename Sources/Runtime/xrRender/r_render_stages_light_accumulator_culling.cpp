@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 ////////////////////////////////////////////////////////////////////////////////
-//#define DEBUG_LIGHTS_CULLING
+// #define DEBUG_LIGHTS_CULLING
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::render_stage_lights_culling()
 {
@@ -25,24 +25,24 @@ void CRender::render_stage_lights_culling()
 	// --------------------------------------------------------------------
 	{
 		OPTICK_EVENT("collect_cpu_query_results");
-		if (CPUOCC.IsQueryReady())
+		if(CPUOCC.IsQueryReady())
 		{
 #ifdef DEBUG_LIGHTS_CULLING
 			Msg("[CPU-OCC] Query ready, processing %d pending lights", m_cpu_occ_pending_lights.size());
 #endif
-			for (light* L : m_cpu_occ_pending_lights)
+			for(light* L : m_cpu_occ_pending_lights)
 			{
-				if (!L || !L->VisibilityData.pending)
+				if(!L || !L->VisibilityData.pending)
 					continue;
 
 				u32 samples = CPUOCC.GetVisibleSamples(L->VisibilityData.query_id);
-				if (samples != 0xfffffffe)
+				if(samples != 0xfffffffe)
 				{
 					bool newVisible = (samples > ps_r_light_fragments_cull);
 					L->VisibilityData.visible = newVisible;
 					L->VisibilityData.pending = false;
 
-					if (newVisible)
+					if(newVisible)
 						L->VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
 					else
 						L->VisibilityData.frame2test = frame + ::Random.randI(5, 10);
@@ -102,7 +102,7 @@ void CRender::render_stage_lights_culling()
 	auto prepare_one = [&](light* L) -> LightPrepareResult
 	{
 		float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
-		if (dist_sq > max_dist_sq)
+		if(dist_sq > max_dist_sq)
 		{
 			L->VisibilityData.visible = false;
 			L->VisibilityData.pending = false;
@@ -111,7 +111,7 @@ void CRender::render_stage_lights_culling()
 			Msg("[CPU-OCC] PREP: light %p culled by distance (dist %.1f > max %.1f)",
 				L, sqrtf(dist_sq), sqrtf(max_dist_sq));
 #endif
-			return { L, false, false };
+			return {L, false, false};
 		}
 
 #ifdef DEBUG_LIGHTS_CULLING
@@ -124,35 +124,43 @@ void CRender::render_stage_lights_culling()
 #ifdef DEBUG_LIGHTS_CULLING
 		Msg("[CPU-OCC]   -> needs_q=%d pending=%d visible=%d", needs_q, L->VisibilityData.pending, L->VisibilityData.visible);
 #endif
-		return { L, needs_q, L->VisibilityData.pending };
+		return {L, needs_q, L->VisibilityData.pending};
 	};
 
 	const size_t total_lights = LP.v_point.size() + LP.v_spot.size() + LP.v_shadowed.size();
 	{
 		OPTICK_EVENT("Prepare lights (parallel/sequential)");
-		if (total_lights > 64)
+		if(total_lights > 64)
 		{
 			concurrency::parallel_invoke(
-				[&]() {
+				[&]()
+				{
 					OPTICK_EVENT("prepare_point");
-					for (light* L : LP.v_point) prepared_point.push_back(prepare_one(L));
+					for(light* L : LP.v_point)
+						prepared_point.push_back(prepare_one(L));
 				},
-				[&]() {
+				[&]()
+				{
 					OPTICK_EVENT("prepare_spot");
-					for (light* L : LP.v_spot) prepared_spot.push_back(prepare_one(L));
+					for(light* L : LP.v_spot)
+						prepared_spot.push_back(prepare_one(L));
 				},
-				[&]() {
+				[&]()
+				{
 					OPTICK_EVENT("prepare_shadowed");
-					for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L));
-				}
-				);
+					for(light* L : LP.v_shadowed)
+						prepared_shadowed.push_back(prepare_one(L));
+				});
 		}
 		else
 		{
 			OPTICK_EVENT("prepare_sequential");
-			for (light* L : LP.v_point)    prepared_point.push_back(prepare_one(L));
-			for (light* L : LP.v_spot)     prepared_spot.push_back(prepare_one(L));
-			for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L));
+			for(light* L : LP.v_point)
+				prepared_point.push_back(prepare_one(L));
+			for(light* L : LP.v_spot)
+				prepared_spot.push_back(prepare_one(L));
+			for(light* L : LP.v_shadowed)
+				prepared_shadowed.push_back(prepare_one(L));
 		}
 	}
 
@@ -171,9 +179,9 @@ void CRender::render_stage_lights_culling()
 #ifdef DEBUG_LIGHTS_CULLING
 			u32 issued = 0, fallback = 0;
 #endif
-			for (auto& item : prepared_list)
+			for(auto& item : prepared_list)
 			{
-				if (!item.needs_query)
+				if(!item.needs_query)
 					continue;
 
 				light* L = item.L;
@@ -181,7 +189,8 @@ void CRender::render_stage_lights_culling()
 				L->VisibilityData.query_id = qid;
 #ifdef DEBUG_LIGHTS_CULLING
 				++issued;
-				if (qid == UINT32_MAX) ++fallback;
+				if(qid == UINT32_MAX)
+					++fallback;
 #endif
 			}
 #ifdef DEBUG_LIGHTS_CULLING
@@ -207,9 +216,10 @@ void CRender::render_stage_lights_culling()
 		CPUOCC.EndOcclusionQueries();
 
 		m_cpu_occ_pending_lights.clear();
-		auto gather_pending = [&](const auto& src) {
-			for (auto& item : src)
-				if (item.pending)
+		auto gather_pending = [&](const auto& src)
+		{
+			for(auto& item : src)
+				if(item.pending)
 					m_cpu_occ_pending_lights.push_back(item.L);
 		};
 		gather_pending(prepared_point);
@@ -225,11 +235,11 @@ void CRender::render_stage_lights_culling()
 
 		auto distribute = [](auto& prepared_list, auto& normal_list, auto& pending_list)
 		{
-			for (auto& item : prepared_list)
+			for(auto& item : prepared_list)
 			{
-				if (item.pending)
+				if(item.pending)
 					pending_list.push_back(item.L);
-				else if (item.L->VisibilityData.visible)
+				else if(item.L->VisibilityData.visible)
 					normal_list.push_back(item.L);
 			}
 		};
@@ -266,15 +276,15 @@ void CRender::update_shadow_map_visibility()
 
 	auto process_list = [](xr_vector<light*>& list)
 	{
-		for (light* L : list)
+		for(light* L : list)
 		{
-			if (!L)
+			if(!L)
 				continue;
 			try
 			{
 				L->get_smapvis().flushoccq();
 			}
-			catch (...)
+			catch(...)
 			{
 				Msg("! Failed to flush-OCCq on light %p", L);
 			}

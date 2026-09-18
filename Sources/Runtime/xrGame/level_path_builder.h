@@ -45,7 +45,7 @@ class CLevelPathBuilder
 		m_object->m_wait_for_distributed_computation = false;
 		m_object->level_path().build_path(m_start_vertex_id, m_dest_vertex_id);
 
-		if (m_object->level_path().failed())
+		if(m_object->level_path().failed())
 			m_object->m_path_state = CMovementManager::ePathStateBuildLevelPath;
 		else
 			m_object->m_path_state = CMovementManager::ePathStateContinueLevelPath;
@@ -53,7 +53,7 @@ class CLevelPathBuilder
 
 	IC void remove()
 	{
-		if (m_object->m_wait_for_distributed_computation)
+		if(m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation = false;
 
 		Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CLevelPathBuilder::process));

@@ -19,7 +19,8 @@ class CWeapon;
 // CObjectActionBase
 //////////////////////////////////////////////////////////////////////////
 
-template <typename _item_type> class CObjectActionBase : public CActionBase<CAI_Stalker>
+template <typename _item_type>
+class CObjectActionBase : public CActionBase<CAI_Stalker>
 {
   protected:
 	typedef CActionBase<CAI_Stalker> inherited;
@@ -44,7 +45,8 @@ typedef CObjectActionBase<CGameObject> CSObjectActionBase;
 // CObjectActionMember
 //////////////////////////////////////////////////////////////////////////
 
-template <typename _item_type> class CObjectActionMember : public CObjectActionBase<_item_type>
+template <typename _item_type>
+class CObjectActionMember : public CObjectActionBase<_item_type>
 {
   protected:
 	typedef CObjectActionBase<_item_type> inherited;

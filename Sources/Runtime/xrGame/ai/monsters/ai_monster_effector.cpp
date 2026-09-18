@@ -30,9 +30,9 @@ BOOL CMonsterEffector::Process(SPPInfo& pp)
 	float time_past_perc = (m_total - fLifeTime) / m_total;
 
 	float factor;
-	if (time_past_perc < m_attack)
+	if(time_past_perc < m_attack)
 		factor = time_past_perc / m_attack;
-	else if ((time_past_perc >= m_attack) && (time_past_perc <= m_release))
+	else if((time_past_perc >= m_attack) && (time_past_perc <= m_release))
 		factor = 1.0f;
 	else
 		factor = (1.0f - time_past_perc) / (1.0f - m_release);
@@ -62,7 +62,7 @@ CMonsterEffectorHit::CMonsterEffectorHit(float time, float amp, float periods, f
 BOOL CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 {
 	fLifeTime -= Engine.TimeManager.GetDeltaTime();
-	if (fLifeTime < 0)
+	if(fLifeTime < 0)
 		return FALSE;
 
 	// процент оставшегося времени

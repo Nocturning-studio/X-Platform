@@ -38,10 +38,10 @@ struct CHitObjectPredicate
 
 	bool operator()(const MemorySpace::CHitObject& hit_object) const
 	{
-		if (!m_object)
+		if(!m_object)
 			return (!hit_object.m_object);
 
-		if (!hit_object.m_object)
+		if(!hit_object.m_object)
 			return (false);
 
 		return (m_object->ID() == hit_object.m_object->ID());
@@ -61,7 +61,7 @@ const CHitObject* CHitMemoryManager::hit(const CEntityAlive* object) const
 {
 	VERIFY(m_hits);
 	HITS::const_iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
-	if (m_hits->end() != I)
+	if(m_hits->end() != I)
 		return (&*I);
 
 	return (0);
@@ -93,18 +93,18 @@ void CHitMemoryManager::reload(LPCSTR section)
 void CHitMemoryManager::add(float amount, const fvec3& vLocalDir, const CObject* who, s16 element)
 {
 #ifndef MASTER_GOLD
-	if (who && (who->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
+	if(who && (who->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
 		return;
 #endif // MASTER_GOLD
 
 	VERIFY(m_hits);
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
-	if (who && (m_object->ID() == who->ID()))
+	if(who && (m_object->ID() == who->ID()))
 		return;
 
-	if (who && !fis_zero(amount))
+	if(who && !fis_zero(amount))
 		m_last_hit_object_id = who->ID();
 
 	object().callback(GameObject::eHit)(m_object->lua_game_object(), amount, vLocalDir,
@@ -114,11 +114,11 @@ void CHitMemoryManager::add(float amount, const fvec3& vLocalDir, const CObject*
 	m_object->Transform().transform_dir(direction, vLocalDir);
 
 	const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(who);
-	if (!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
+	if(!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
 		return;
 
 	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(who));
-	if (m_hits->end() == J)
+	if(m_hits->end() == J)
 	{
 		CHitObject hit_object;
 
@@ -133,7 +133,7 @@ void CHitMemoryManager::add(float amount, const fvec3& vLocalDir, const CObject*
 #endif
 		hit_object.m_amount = amount;
 
-		if (m_max_hit_count <= m_hits->size())
+		if(m_max_hit_count <= m_hits->size())
 		{
 			HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
 			VERIFY(m_hits->end() != I);
@@ -154,12 +154,12 @@ void CHitMemoryManager::add(float amount, const fvec3& vLocalDir, const CObject*
 void CHitMemoryManager::add(const CHitObject& _hit_object)
 {
 #ifndef MASTER_GOLD
-	if (_hit_object.m_object && (_hit_object.m_object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
+	if(_hit_object.m_object && (_hit_object.m_object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
 		return;
 #endif // MASTER_GOLD
 
 	VERIFY(m_hits);
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	CHitObject hit_object = _hit_object;
@@ -167,9 +167,9 @@ void CHitMemoryManager::add(const CHitObject& _hit_object)
 
 	const CEntityAlive* entity_alive = hit_object.m_object;
 	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(entity_alive));
-	if (m_hits->end() == J)
+	if(m_hits->end() == J)
 	{
-		if (m_max_hit_count <= m_hits->size())
+		if(m_max_hit_count <= m_hits->size())
 		{
 			HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
 			VERIFY(m_hits->end() != I);
@@ -196,7 +196,7 @@ struct CRemoveOfflinePredicate
 
 void CHitMemoryManager::update()
 {
-	//OPTICK_EVENT("CHitMemoryManager::update");
+	// OPTICK_EVENT("CHitMemoryManager::update");
 	START_PROFILE("Memory Manager/hits::update")
 
 	clear_delayed_objects();
@@ -209,9 +209,9 @@ void CHitMemoryManager::update()
 	u32 level_time = 0;
 	HITS::const_iterator I = m_hits->begin();
 	HITS::const_iterator E = m_hits->end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((*I).m_level_time > level_time)
+		if((*I).m_level_time > level_time)
 		{
 			xr_delete(m_selected_hit);
 			m_selected_hit = xr_new<CHitObject>(*I);
@@ -225,7 +225,7 @@ void CHitMemoryManager::update()
 void CHitMemoryManager::enable(const CObject* object, bool enable)
 {
 	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(object));
-	if (J == m_hits->end())
+	if(J == m_hits->end())
 		return;
 
 	(*J).m_enabled = enable;
@@ -235,17 +235,17 @@ void CHitMemoryManager::remove_links(CObject* object)
 {
 	VERIFY(m_hits);
 	HITS::iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
-	if (I != m_hits->end())
+	if(I != m_hits->end())
 		m_hits->erase(I);
 
 #ifdef USE_SELECTED_HIT
-	if (!m_selected_hit)
+	if(!m_selected_hit)
 		return;
 
-	if (!m_selected_hit->m_object)
+	if(!m_selected_hit->m_object)
 		return;
 
-	if (m_selected_hit->m_object->ID() != object->ID())
+	if(m_selected_hit->m_object->ID() != object->ID())
 		return;
 
 	xr_delete(m_selected_hit);
@@ -254,14 +254,14 @@ void CHitMemoryManager::remove_links(CObject* object)
 
 void CHitMemoryManager::save(NET_Packet& packet) const
 {
-	if (!m_object->g_Alive())
+	if(!m_object->g_Alive())
 		return;
 
 	packet.w_u8((u8)objects().size());
 
 	HITS::const_iterator I = objects().begin();
 	HITS::const_iterator E = objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		VERIFY((*I).m_object);
 		packet.w_u16((*I).m_object->ID());
@@ -298,7 +298,7 @@ void CHitMemoryManager::save(NET_Packet& packet) const
 
 void CHitMemoryManager::load(IReader& packet)
 {
-	if (!m_object->g_Alive())
+	if(!m_object->g_Alive())
 		return;
 
 	typedef CClientSpawnManager::CALLBACK_TYPE CALLBACK_TYPE;
@@ -306,7 +306,7 @@ void CHitMemoryManager::load(IReader& packet)
 	callback.bind(&m_object->memory(), &CMemoryManager::on_requested_spawn);
 
 	int count = packet.r_u8();
-	for (int i = 0; i < count; ++i)
+	for(int i = 0; i < count; ++i)
 	{
 		CDelayedHitObject delayed_object;
 		delayed_object.m_object_id = packet.r_u16();
@@ -348,7 +348,7 @@ void CHitMemoryManager::load(IReader& packet)
 		object.m_bone_index = packet.r_u16();
 		object.m_amount = packet.r_float();
 
-		if (object.m_object)
+		if(object.m_object)
 		{
 			add(object);
 			continue;
@@ -358,13 +358,13 @@ void CHitMemoryManager::load(IReader& packet)
 
 		const CClientSpawnManager::CSpawnCallback* spawn_callback =
 			Level().client_spawn_manager().callback(delayed_object.m_object_id, m_object->ID());
-		if (!spawn_callback || !spawn_callback->m_object_callback)
-			if (!g_dedicated_server)
+		if(!spawn_callback || !spawn_callback->m_object_callback)
+			if(!g_dedicated_server)
 				Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
 #ifdef DEBUG
 			else
 			{
-				if (spawn_callback && spawn_callback->m_object_callback)
+				if(spawn_callback && spawn_callback->m_object_callback)
 				{
 					VERIFY(spawn_callback->m_object_callback == callback);
 				}
@@ -375,14 +375,14 @@ void CHitMemoryManager::load(IReader& packet)
 
 void CHitMemoryManager::clear_delayed_objects()
 {
-	if (m_delayed_objects.empty())
+	if(m_delayed_objects.empty())
 		return;
 
 	CClientSpawnManager& manager = Level().client_spawn_manager();
 	DELAYED_HIT_OBJECTS::const_iterator I = m_delayed_objects.begin();
 	DELAYED_HIT_OBJECTS::const_iterator E = m_delayed_objects.end();
-	for (; I != E; ++I)
-		if (manager.callback((*I).m_object_id, m_object->ID()))
+	for(; I != E; ++I)
+		if(manager.callback((*I).m_object_id, m_object->ID()))
 			manager.remove((*I).m_object_id, m_object->ID());
 
 	m_delayed_objects.clear();
@@ -392,12 +392,12 @@ void CHitMemoryManager::on_requested_spawn(CObject* object)
 {
 	DELAYED_HIT_OBJECTS::iterator I = m_delayed_objects.begin();
 	DELAYED_HIT_OBJECTS::iterator E = m_delayed_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((*I).m_object_id != object->ID())
+		if((*I).m_object_id != object->ID())
 			continue;
 
-		if (m_object->g_Alive())
+		if(m_object->g_Alive())
 		{
 			(*I).m_hit_object.m_object = smart_cast<CEntityAlive*>(object);
 			VERIFY((*I).m_hit_object.m_object);

@@ -24,27 +24,27 @@ u64 generate_time(u32 years, u32 months, u32 days, u32 hours, u32 minutes, u32 s
 	t4 = a3 && (!a2 || a1) ? 1 : 0;
 	u64 result = u64(years - 1) * u64(365) + t1 - t2 + t3;
 
-	if (months > 1)
+	if(months > 1)
 		result += u64(31);
-	if (months > 2)
+	if(months > 2)
 		result += u64(28 + t4);
-	if (months > 3)
+	if(months > 3)
 		result += u64(31);
-	if (months > 4)
+	if(months > 4)
 		result += u64(30);
-	if (months > 5)
+	if(months > 5)
 		result += u64(31);
-	if (months > 6)
+	if(months > 6)
 		result += u64(30);
-	if (months > 7)
+	if(months > 7)
 		result += u64(31);
-	if (months > 8)
+	if(months > 8)
 		result += u64(31);
-	if (months > 9)
+	if(months > 9)
 		result += u64(30);
-	if (months > 10)
+	if(months > 10)
 		result += u64(31);
-	if (months > 11)
+	if(months > 11)
 		result += u64(30);
 	result += u64(days - 1);
 	result = result * u64(24) + u64(hours);
@@ -91,47 +91,47 @@ void split_time(u64 time, u32& years, u32& months, u32& days, u32& hours, u32& m
 	time -= result;
 	++time;
 	months = 1;
-	if (time > 31)
+	if(time > 31)
 	{
 		++months;
 		time -= 31;
-		if (time > 28 + t4)
+		if(time > 28 + t4)
 		{
 			++months;
 			time -= 28 + t4;
-			if (time > 31)
+			if(time > 31)
 			{
 				++months;
 				time -= 31;
-				if (time > 30)
+				if(time > 30)
 				{
 					++months;
 					time -= 30;
-					if (time > 31)
+					if(time > 31)
 					{
 						++months;
 						time -= 31;
-						if (time > 30)
+						if(time > 30)
 						{
 							++months;
 							time -= 30;
-							if (time > 31)
+							if(time > 31)
 							{
 								++months;
 								time -= 31;
-								if (time > 31)
+								if(time > 31)
 								{
 									++months;
 									time -= 31;
-									if (time > 30)
+									if(time > 30)
 									{
 										++months;
 										time -= 30;
-										if (time > 31)
+										if(time > 31)
 										{
 											++months;
 											time -= 31;
-											if (time > 30)
+											if(time > 30)
 											{
 												++months;
 												time -= 30;

@@ -10,7 +10,7 @@
 
 IC void CEF_Storage::alife_evaluation(bool value)
 {
-	if (value)
+	if(value)
 		non_alife().clear();
 	else
 		alife().clear();

@@ -25,10 +25,10 @@ void CAmebaZone::Load(LPCSTR section)
 bool CAmebaZone::BlowoutState()
 {
 	bool result = inherited::BlowoutState();
-	if (!result)
+	if(!result)
 		UpdateBlowout();
 
-	for (OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
+	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		Affect(&(*it));
 
 	return result;
@@ -37,16 +37,16 @@ bool CAmebaZone::BlowoutState()
 void CAmebaZone::Affect(SZoneObjectInfo* O)
 {
 	CPhysicsShellHolder* pGameObject = smart_cast<CPhysicsShellHolder*>(O->object);
-	if (!pGameObject)
+	if(!pGameObject)
 		return;
 
-	if (O->zone_ignore)
+	if(O->zone_ignore)
 		return;
 
 #ifdef DEBUG
 	char l_pow[255];
 	sprintf_s(l_pow, "zone hit. %.1f", Power(distance_to_center(O->object)));
-	if (bDebug)
+	if(bDebug)
 		Msg("%s %s", *pGameObject->cName(), l_pow);
 #endif
 	fvec3 hit_dir;
@@ -62,7 +62,7 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
 	O->total_damage += power;
 	O->hit_num++;
 
-	if (power > 0.01f)
+	if(power > 0.01f)
 	{
 		m_dwDeltaTime = 0;
 		position_in_bone_space.set(0.f, 0.f, 0.f);
@@ -76,19 +76,19 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
 void CAmebaZone::PhTune(dReal step)
 {
 	OBJECT_INFO_VEC_IT it;
-	for (it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
+	for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 	{
 		CEntityAlive* EA = smart_cast<CEntityAlive*>((*it).object);
-		if (EA)
+		if(EA)
 		{
 			CPHMovementControl* mc = EA->character_physics_support()->movement();
-			if (mc)
+			if(mc)
 			{
 				// fvec3 vel;
 				// mc->GetCharacterVelocity(vel);
 				// vel.invert();
 				// vel.mul(mc->GetMass());
-				if (distance_to_center(EA) < effective_radius())
+				if(distance_to_center(EA) < effective_radius())
 					mc->SetVelocityLimit(m_fVelocityLimit);
 			}
 		}
@@ -97,12 +97,12 @@ void CAmebaZone::PhTune(dReal step)
 
 void CAmebaZone::SwitchZoneState(EZoneState new_state)
 {
-	if (new_state == eZoneStateBlowout && m_eZoneState != eZoneStateBlowout)
+	if(new_state == eZoneStateBlowout && m_eZoneState != eZoneStateBlowout)
 	{
 		CPHUpdateObject::Activate();
 	}
 
-	if (new_state != eZoneStateBlowout && m_eZoneState == eZoneStateBlowout)
+	if(new_state != eZoneStateBlowout && m_eZoneState == eZoneStateBlowout)
 	{
 		CPHUpdateObject::Deactivate();
 	}

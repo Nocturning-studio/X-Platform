@@ -30,7 +30,7 @@ class CPHGeometryOwner
 	void add_Shape(const SBoneShape& shape, const fmat4x4& offset); // aux
 	CODEGeom* last_geom()
 	{
-		if (m_geoms.empty())
+		if(m_geoms.empty())
 			return NULL;
 		return m_geoms.back();
 	} // aux
@@ -77,7 +77,7 @@ class CPHGeometryOwner
 	{
 		calc_volume_data();
 		return m_volume;
-	};																						  // aux
+	}; // aux
 	void get_Extensions(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
 	void get_MaxAreaDir(fvec3& dir);
 	float getRadius();

@@ -8,11 +8,11 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CGameVertexTypePathManager                                                                                     \
-	CPathManager<CGameGraph, _DataStorage, SGameLevel<_dist_type, _index_type, _iteration_type>, _dist_type,           \
+#define CGameVertexTypePathManager                                                                           \
+	CPathManager<CGameGraph, _DataStorage, SGameLevel<_dist_type, _index_type, _iteration_type>, _dist_type, \
 				 _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
@@ -40,7 +40,7 @@ TEMPLATE_SPECIALIZATION
 IC bool CGameVertexTypePathManager::is_goal_reached(const _index_type& node_index)
 {
 	VERIFY(m_evaluator);
-	if (graph->vertex(data_storage->get_best().index())->level_id() == m_evaluator->m_level_id)
+	if(graph->vertex(data_storage->get_best().index())->level_id() == m_evaluator->m_level_id)
 	{
 		m_evaluator->m_vertex_id = data_storage->get_best().index();
 		return (true);
@@ -49,9 +49,10 @@ IC bool CGameVertexTypePathManager::is_goal_reached(const _index_type& node_inde
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CGameVertexTypePathManager::create_path(T& vertex)
+template <typename T>
+IC void CGameVertexTypePathManager::create_path(T& vertex)
 {
-	if (path)
+	if(path)
 		inherited::create_path(vertex);
 }
 

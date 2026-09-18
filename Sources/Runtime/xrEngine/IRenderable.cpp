@@ -9,7 +9,7 @@ IRenderable::IRenderable()
 	renderable.pROS = NULL;
 	renderable.pROS_Allowed = TRUE;
 	ISpatial* self = dynamic_cast<ISpatial*>(this);
-	if (self)
+	if(self)
 		self->spatial.type |= STYPE_RENDERABLE;
 }
 
@@ -18,7 +18,7 @@ IRenderable::~IRenderable()
 {
 	VERIFY(!g_bRendering);
 	Render->model_Delete(renderable.visual);
-	if (renderable.pROS)
+	if(renderable.pROS)
 		Render->ros_destroy(renderable.pROS);
 	renderable.visual = NULL;
 	renderable.pROS = NULL;
@@ -26,7 +26,7 @@ IRenderable::~IRenderable()
 
 IRender_ObjectSpecific* IRenderable::renderable_ROS()
 {
-	if (0 == renderable.pROS && renderable.pROS_Allowed)
+	if(0 == renderable.pROS && renderable.pROS_Allowed)
 		renderable.pROS = Render->ros_create(this);
 	return renderable.pROS;
 }

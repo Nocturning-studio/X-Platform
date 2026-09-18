@@ -13,10 +13,10 @@ void CRender::render_screen_overlays()
 	int CinemaBordersEnabled = 0;
 	int WatermarkEnabled = 0;
 
-	if (ps_r_overlay_flags.test(RFLAG_PHOTO_GRID))
+	if(ps_r_overlay_flags.test(RFLAG_PHOTO_GRID))
 		GridEnabled = 1;
 
-	if (ps_r_overlay_flags.test(RFLAG_CINEMA_BORDERS))
+	if(ps_r_overlay_flags.test(RFLAG_CINEMA_BORDERS))
 		CinemaBordersEnabled = 1;
 
 	RenderBackend.set_CullMode(CULL_DISABLE);
@@ -26,7 +26,7 @@ void CRender::render_screen_overlays()
 	RenderBackend.set_Constant("enabled_overlays", (float)GridEnabled, (float)CinemaBordersEnabled, 0, 0);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 
-	if (ps_r_overlay_flags.test(RFLAG_WATERMARK))
+	if(ps_r_overlay_flags.test(RFLAG_WATERMARK))
 	{
 		RenderBackend.set_Element(RenderTarget->s_frame_overlay->E[SE_OVERLAYS_WATERMARK]);
 		RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);

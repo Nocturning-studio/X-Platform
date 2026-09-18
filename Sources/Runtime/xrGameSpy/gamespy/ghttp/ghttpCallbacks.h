@@ -1,5 +1,5 @@
 /*
-GameSpy GHTTP SDK 
+GameSpy GHTTP SDK
 Dan "Mr. Pants" Schoenblum
 dan@gamespy.com
 
@@ -16,34 +16,29 @@ devsupport@gamespy.com
 #define _GHTTPCALLBACKS_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include "ghttpMain.h"
 #include "ghttpConnection.h"
 
-// Call the completed callback for this connection.
-///////////////////////////////////////////////////
-void ghiCallCompletedCallback
-(
-	GHIConnection * connection
-);
+	// Call the completed callback for this connection.
+	///////////////////////////////////////////////////
+	void ghiCallCompletedCallback(
+		GHIConnection* connection);
 
-// Call the progress callback for this connection.
-//////////////////////////////////////////////////
-void ghiCallProgressCallback
-(
-	GHIConnection * connection,
-	const char * buffer,
-	GHTTPByteCount bufferLen
-);
+	// Call the progress callback for this connection.
+	//////////////////////////////////////////////////
+	void ghiCallProgressCallback(
+		GHIConnection* connection,
+		const char* buffer,
+		GHTTPByteCount bufferLen);
 
-// Call the post callback for this connection.
-//////////////////////////////////////////////
-void ghiCallPostCallback
-(
-	GHIConnection * connection
-);
+	// Call the post callback for this connection.
+	//////////////////////////////////////////////
+	void ghiCallPostCallback(
+		GHIConnection* connection);
 
 #ifdef __cplusplus
 }

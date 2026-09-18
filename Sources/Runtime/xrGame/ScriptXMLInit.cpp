@@ -26,10 +26,10 @@ using namespace luabind;
 
 void _attach_child(CUIWindow* _child, CUIWindow* _parent)
 {
-	if (!_parent)
+	if(!_parent)
 		return;
 	CUIScrollView* _parent_scroll = smart_cast<CUIScrollView*>(_parent);
-	if (_parent_scroll)
+	if(_parent_scroll)
 		_parent_scroll->AddWindow(_child, true);
 	else
 		_parent->AttachChild(_child);
@@ -169,7 +169,7 @@ CUISpinText* CScriptXmlInit::InitSpinText(LPCSTR path, CUIWindow* parent)
 	CUISpinText* pWnd = xr_new<CUISpinText>();
 	CUIXmlInit::InitSpin(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
-	if (parent)
+	if(parent)
 		parent->AttachChild(pWnd);
 	return pWnd;
 }

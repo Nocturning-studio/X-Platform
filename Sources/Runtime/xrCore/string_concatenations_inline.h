@@ -11,18 +11,21 @@ namespace detail
 class XRCORE_API string_tupples
 {
   public:
-	template <typename T0> inline string_tupples(T0 p0) : m_count(1)
+	template <typename T0>
+	inline string_tupples(T0 p0) : m_count(1)
 	{
 		helper<0>::add_string(*this, p0);
 	}
 
-	template <typename T0, typename T1> inline string_tupples(T0 p0, T1 p1) : m_count(2)
+	template <typename T0, typename T1>
+	inline string_tupples(T0 p0, T1 p1) : m_count(2)
 	{
 		helper<0>::add_string(*this, p0);
 		helper<1>::add_string(*this, p1);
 	}
 
-	template <typename T0, typename T1, typename T2> inline string_tupples(T0 p0, T1 p1, T2 p2) : m_count(3)
+	template <typename T0, typename T1, typename T2>
+	inline string_tupples(T0 p0, T1 p1, T2 p2) : m_count(3)
 	{
 		helper<0>::add_string(*this, p0);
 		helper<1>::add_string(*this, p1);
@@ -67,10 +70,10 @@ class XRCORE_API string_tupples
 
 		u32 result = m_strings[0].second;
 
-		for (u32 j = 1; j < m_count; ++j)
+		for(u32 j = 1; j < m_count; ++j)
 			result += m_strings[j].second;
 
-		if (result > max_concat_result_size)
+		if(result > max_concat_result_size)
 		{
 			error_process();
 		}
@@ -86,7 +89,7 @@ class XRCORE_API string_tupples
 		std::memcpy(i, m_strings[0].first, m_strings[0].second * sizeof(*m_strings[0].first));
 		i += m_strings[0].second;
 
-		for (u32 j = 1; j < m_count; ++j)
+		for(u32 j = 1; j < m_count; ++j)
 		{
 			std::memcpy(i, m_strings[j].first, m_strings[j].second * sizeof(*m_strings[j].first));
 			i += m_strings[j].second;
@@ -103,7 +106,8 @@ class XRCORE_API string_tupples
 	};
 
   private:
-	template <u32 index> struct helper
+	template <u32 index>
+	struct helper
 	{
 
 		static inline u32 length(const char* string)
@@ -136,7 +140,8 @@ class XRCORE_API string_tupples
 			return (string.c_str());
 		}
 
-		template <typename T> static inline void add_string(string_tupples& self, T p)
+		template <typename T>
+		static inline void add_string(string_tupples& self, T p)
 		{
 			static_assert(index < max_item_count, "Error: invalid string index specified");
 

@@ -29,8 +29,8 @@ Image* new_image(int xsize, int ysize) /* create a blank image */
 {
 	Image* image;
 
-	if ((0 != (image = (Image*)xr_malloc(sizeof(Image)))) &&
-		(0 != (image->data = (Pixel*)xr_malloc(ysize * xsize * sizeof(Pixel)))))
+	if((0 != (image = (Image*)xr_malloc(sizeof(Image)))) &&
+	   (0 != (image->data = (Pixel*)xr_malloc(ysize * xsize * sizeof(Pixel)))))
 	{
 		ZeroMemory(image->data, ysize * xsize * sizeof(Pixel));
 		image->xsize = xsize;
@@ -48,14 +48,14 @@ void free_image(Image* image)
 
 Pixel get_pixel(Image* image, int x, int y)
 {
-	if ((x < 0) || (x >= image->xsize) || (y < 0) || (y >= image->ysize))
+	if((x < 0) || (x >= image->xsize) || (y < 0) || (y >= image->ysize))
 		return 0;
 	return image->data[(y * image->span) + x];
 }
 
 void get_row(Pixel* row, Image* image, int y)
 {
-	if ((y < 0) || (y >= image->ysize))
+	if((y < 0) || (y >= image->ysize))
 		return;
 	CopyMemory(row, image->data + (y * image->span), (sizeof(Pixel) * image->xsize));
 }
@@ -65,11 +65,11 @@ void get_column(Pixel* column, Image* image, int x)
 	int i, d;
 	Pixel* p;
 
-	if ((x < 0) || (x >= image->xsize))
+	if((x < 0) || (x >= image->xsize))
 		return;
 
 	d = image->span;
-	for (i = image->ysize, p = image->data + x; i-- > 0; p += d)
+	for(i = image->ysize, p = image->data + x; i-- > 0; p += d)
 	{
 		*column++ = *p;
 	}
@@ -77,7 +77,7 @@ void get_column(Pixel* column, Image* image, int x)
 
 Pixel put_pixel(Image* image, int x, int y, Pixel data)
 {
-	if ((x < 0) || (x >= image->xsize) || (y < 0) || (y >= image->ysize))
+	if((x < 0) || (x >= image->xsize) || (y < 0) || (y >= image->ysize))
 		return 0;
 	return image->data[(y * image->span) + x] = data;
 }
@@ -91,9 +91,9 @@ Pixel put_pixel(Image* image, int x, int y, Pixel data)
 float filter(float t)
 {
 	/* f(t) = 2|t|^3 - 3|t|^2 + 1, -1 <= t <= 1 */
-	if (t < 0.0)
+	if(t < 0.0)
 		t = -t;
-	if (t < 1.0)
+	if(t < 1.0)
 		return float((2.0 * t - 3.0) * t * t + 1.0);
 	return (0.0);
 }
@@ -102,7 +102,7 @@ float filter(float t)
 #define box_support (0.5)
 float box_filter(float t)
 {
-	if ((t > -0.5) && (t <= 0.5))
+	if((t > -0.5) && (t <= 0.5))
 		return (1.0);
 	return (0.0);
 }
@@ -111,9 +111,9 @@ float box_filter(float t)
 #define triangle_support (1.0)
 float triangle_filter(float t)
 {
-	if (t < 0.0f)
+	if(t < 0.0f)
 		t = -t;
-	if (t < 1.0f)
+	if(t < 1.0f)
 		return (1.0f - t);
 	return (0.0f);
 }
@@ -122,11 +122,11 @@ float triangle_filter(float t)
 #define bell_support (1.5)
 float bell_filter(float t) /* box (*) box (*) box */
 {
-	if (t < 0)
+	if(t < 0)
 		t = -t;
-	if (t < .5)
+	if(t < .5)
 		return float(.75 - (t * t));
-	if (t < 1.5)
+	if(t < 1.5)
 	{
 		t = (t - 1.5f);
 		return (.5f * (t * t));
@@ -140,14 +140,14 @@ float B_spline_filter(float t) /* box (*) box (*) box (*) box */
 {
 	float tt;
 
-	if (t < 0)
+	if(t < 0)
 		t = -t;
-	if (t < 1)
+	if(t < 1)
 	{
 		tt = t * t;
 		return ((.5f * tt * t) - tt + (2.0f / 3.0f));
 	}
-	else if (t < 2)
+	else if(t < 2)
 	{
 		t = 2 - t;
 		return ((1.0f / 6.0f) * (t * t * t));
@@ -160,15 +160,15 @@ float B_spline_filter(float t) /* box (*) box (*) box (*) box */
 float sinc(float x)
 {
 	x *= 3.1415926f;
-	if (x != 0)
+	if(x != 0)
 		return (std::sin(x) / x);
 	return (1.0);
 }
 float Lanczos3_filter(float t)
 {
-	if (t < 0)
+	if(t < 0)
 		t = -t;
-	if (t < 3.0f)
+	if(t < 3.0f)
 		return float(sinc(t) * sinc(t / 3.0f));
 	return (0.0);
 }
@@ -183,15 +183,15 @@ float Mitchell_filter(float t)
 	float tt;
 
 	tt = t * t;
-	if (t < 0)
+	if(t < 0)
 		t = -t;
-	if (t < 1.0f)
+	if(t < 1.0f)
 	{
 		t = (((12.0f - 9.0f * RESAMPLER_B - 6.0f * RESAMPLER_C) * (t * tt)) +
 			 ((-18.0f + 12.0f * RESAMPLER_B + 6.0f * RESAMPLER_C) * tt) + (6.0f - 2.0f * RESAMPLER_B));
 		return (t / 6.0f);
 	}
-	else if (t < 2.0f)
+	else if(t < 2.0f)
 	{
 		t = (((-1.0f * RESAMPLER_B - 6.0f * RESAMPLER_C) * (t * tt)) +
 			 ((6.0f * RESAMPLER_B + 30.0f * RESAMPLER_C) * tt) + ((-12.0f * RESAMPLER_B - 48.0f * RESAMPLER_C) * t) +
@@ -220,9 +220,9 @@ struct CLIST
 u32 CC(float a)
 {
 	int p = iFloor(float(a) + .5f);
-	if (p < 0)
+	if(p < 0)
 		return 0;
-	else if (p > 255)
+	else if(p > 255)
 		return 255;
 	return p;
 }
@@ -252,7 +252,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 	float (*filterf)(float);
 	filterf = 0;
 	float fwidth = 0;
-	switch (FILTER)
+	switch(FILTER)
 	{
 	case imf_filter:
 		filterf = filter;
@@ -290,7 +290,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 	int i, j, k;				  /* loop variables */
 	int n;						  /* pixel number */
 	float center, left, right;	  /* filter calculation variables */
-	float width, fscale, weight; /* filter calculation variables */
+	float width, fscale, weight;  /* filter calculation variables */
 	Pixel* raster = 0;			  /* a row or column of pixels */
 	CLIST* contrib = 0;			  /* array of contribution lists */
 
@@ -301,7 +301,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		xscale = float(dst.xsize) / float(src.xsize);
 		yscale = float(dst.ysize) / float(src.ysize);
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::1");
 	};
@@ -312,17 +312,17 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		contrib = (CLIST*)xr_malloc(dst.xsize * sizeof(CLIST));
 		ZeroMemory(contrib, dst.xsize * sizeof(CLIST));
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::2");
 	};
-	if (xscale < 1.0)
+	if(xscale < 1.0)
 	{
 		try
 		{
 			width = fwidth / xscale;
 			fscale = 1.0f / xscale;
-			for (i = 0; i < dst.xsize; ++i)
+			for(i = 0; i < dst.xsize; ++i)
 			{
 				contrib[i].n = 0;
 				contrib[i].p = (CONTRIB*)xr_malloc((int)(width * 2 + 1) * sizeof(CONTRIB));
@@ -330,15 +330,15 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				center = float(i) / xscale;
 				left = ceilf(center - width);
 				right = floorf(center + width);
-				for (j = int(left); j <= int(right); ++j)
+				for(j = int(left); j <= int(right); ++j)
 				{
 					weight = center - float(j);
 					weight = filterf(weight / fscale) / fscale;
-					if (j < 0)
+					if(j < 0)
 					{
 						n = -j;
 					}
-					else if (j >= src.xsize)
+					else if(j >= src.xsize)
 					{
 						n = (src.xsize - j) + src.xsize - 1;
 					}
@@ -352,7 +352,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				}
 			}
 		}
-		catch (...)
+		catch(...)
 		{
 			Msg("imf_Process::3 (xscale<1.0)");
 		};
@@ -361,7 +361,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 	{
 		try
 		{
-			for (i = 0; i < dst.xsize; ++i)
+			for(i = 0; i < dst.xsize; ++i)
 			{
 				contrib[i].n = 0;
 				contrib[i].p = (CONTRIB*)xr_malloc((int)(fwidth * 2 + 1) * sizeof(CONTRIB));
@@ -369,15 +369,15 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				center = float(i) / xscale;
 				left = ceilf(center - fwidth);
 				right = floorf(center + fwidth);
-				for (j = int(left); j <= int(right); ++j)
+				for(j = int(left); j <= int(right); ++j)
 				{
 					weight = center - (float)j;
 					weight = (*filterf)(weight);
-					if (j < 0)
+					if(j < 0)
 					{
 						n = -j;
 					}
-					else if (j >= src.xsize)
+					else if(j >= src.xsize)
 					{
 						n = (src.xsize - j) + src.xsize - 1;
 					}
@@ -391,7 +391,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				}
 			}
 		}
-		catch (...)
+		catch(...)
 		{
 			Msg("imf_Process::3 (xscale>1.0)");
 		};
@@ -403,20 +403,20 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		raster = (Pixel*)xr_malloc(src.xsize * sizeof(Pixel));
 		ZeroMemory(raster, src.xsize * sizeof(Pixel));
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::4");
 	};
 	try
 	{
-		for (k = 0; k < tmp->ysize; ++k)
+		for(k = 0; k < tmp->ysize; ++k)
 		{
 			get_row(raster, &src, k);
-			for (i = 0; i < tmp->xsize; ++i)
+			for(i = 0; i < tmp->xsize; ++i)
 			{
 				float w_r = 0., w_g = 0., w_b = 0., w_a = 0.;
 
-				for (j = 0; j < contrib[i].n; ++j)
+				for(j = 0; j < contrib[i].n; ++j)
 				{
 					float W = contrib[i].p[j].weight;
 					Pixel P = raster[contrib[i].p[j].pixel];
@@ -430,7 +430,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		}
 		xr_free(raster);
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::5");
 	};
@@ -438,11 +438,11 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 	/* xr_free the memory allocated for horizontal filter weights */
 	try
 	{
-		for (i = 0; i < tmp->xsize; ++i)
+		for(i = 0; i < tmp->xsize; ++i)
 			xr_free(contrib[i].p);
 		xr_free(contrib);
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::6");
 	};
@@ -453,17 +453,17 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		contrib = (CLIST*)xr_malloc(dst.ysize * sizeof(CLIST));
 		ZeroMemory(contrib, dst.ysize * sizeof(CLIST));
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::7");
 	};
-	if (yscale < 1.0)
+	if(yscale < 1.0)
 	{
 		try
 		{
 			width = fwidth / yscale;
 			fscale = 1.0f / yscale;
-			for (i = 0; i < dst.ysize; ++i)
+			for(i = 0; i < dst.ysize; ++i)
 			{
 				contrib[i].n = 0;
 				contrib[i].p = (CONTRIB*)xr_malloc((int)(width * 2 + 1) * sizeof(CONTRIB));
@@ -471,15 +471,15 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				center = (float)i / yscale;
 				left = ceilf(center - width);
 				right = floorf(center + width);
-				for (j = int(left); j <= int(right); ++j)
+				for(j = int(left); j <= int(right); ++j)
 				{
 					weight = center - (float)j;
 					weight = filterf(weight / fscale) / fscale;
-					if (j < 0)
+					if(j < 0)
 					{
 						n = -j;
 					}
-					else if (j >= tmp->ysize)
+					else if(j >= tmp->ysize)
 					{
 						n = (tmp->ysize - j) + tmp->ysize - 1;
 					}
@@ -493,7 +493,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				}
 			}
 		}
-		catch (...)
+		catch(...)
 		{
 			Msg("imf_Process::8 (yscale<1.0)");
 		};
@@ -502,7 +502,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 	{
 		try
 		{
-			for (i = 0; i < dst.ysize; ++i)
+			for(i = 0; i < dst.ysize; ++i)
 			{
 				contrib[i].n = 0;
 				contrib[i].p = (CONTRIB*)xr_malloc((int)(fwidth * 2 + 1) * sizeof(CONTRIB));
@@ -510,15 +510,15 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				center = (float)i / yscale;
 				left = ceilf(center - fwidth);
 				right = floorf(center + fwidth);
-				for (j = int(left); j <= int(right); ++j)
+				for(j = int(left); j <= int(right); ++j)
 				{
 					weight = center - (float)j;
 					weight = (*filterf)(weight);
-					if (j < 0)
+					if(j < 0)
 					{
 						n = -j;
 					}
-					else if (j >= tmp->ysize)
+					else if(j >= tmp->ysize)
 					{
 						n = (tmp->ysize - j) + tmp->ysize - 1;
 					}
@@ -532,7 +532,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 				}
 			}
 		}
-		catch (...)
+		catch(...)
 		{
 			Msg("imf_Process::8 (yscale>1.0)");
 		};
@@ -544,20 +544,20 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		raster = (Pixel*)xr_malloc(tmp->ysize * sizeof(Pixel));
 		ZeroMemory(raster, tmp->ysize * sizeof(Pixel));
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::9");
 	};
 	try
 	{
-		for (k = 0; k < dst.xsize; ++k)
+		for(k = 0; k < dst.xsize; ++k)
 		{
 			get_column(raster, tmp, k);
-			for (i = 0; i < dst.ysize; ++i)
+			for(i = 0; i < dst.ysize; ++i)
 			{
 				float w_r = 0., w_g = 0., w_b = 0., w_a = 0.;
 
-				for (j = 0; j < contrib[i].n; ++j)
+				for(j = 0; j < contrib[i].n; ++j)
 				{
 					float W = contrib[i].p[j].weight;
 					Pixel P = raster[contrib[i].p[j].pixel];
@@ -571,7 +571,7 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 		}
 		xr_free(raster);
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::A");
 	};
@@ -579,11 +579,11 @@ void imf_Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, E
 	/* xr_free the memory allocated for vertical filter weights */
 	try
 	{
-		for (i = 0; i < dst.ysize; ++i)
+		for(i = 0; i < dst.ysize; ++i)
 			xr_free(contrib[i].p);
 		xr_free(contrib);
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("imf_Process::RESAMPLER_B");
 	};

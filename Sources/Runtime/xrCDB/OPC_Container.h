@@ -38,7 +38,7 @@ class ICECORE_API Container
 	inline_ Container& Add(udword entry)
 	{
 		// Resize if needed
-		if (mCurNbEntries == mMaxNbEntries)
+		if(mCurNbEntries == mMaxNbEntries)
 			Resize();
 
 		// Add _new_ entry
@@ -49,7 +49,7 @@ class ICECORE_API Container
 	inline_ Container& Add(const udword* entries, udword nb)
 	{
 		// Resize if needed
-		if (mCurNbEntries + nb > mMaxNbEntries)
+		if(mCurNbEntries + nb > mMaxNbEntries)
 			Resize(nb);
 
 		// Add _new_ entry
@@ -74,7 +74,7 @@ class ICECORE_API Container
 	inline_ Container& Add(float entry)
 	{
 		// Resize if needed
-		if (mCurNbEntries == mMaxNbEntries)
+		if(mCurNbEntries == mMaxNbEntries)
 			Resize();
 
 		// Add _new_ entry
@@ -85,7 +85,7 @@ class ICECORE_API Container
 	inline_ Container& Add(const float* entries, udword nb)
 	{
 		// Resize if needed
-		if (mCurNbEntries + nb > mMaxNbEntries)
+		if(mCurNbEntries + nb > mMaxNbEntries)
 			Resize(nb);
 
 		// Add _new_ entry
@@ -97,7 +97,7 @@ class ICECORE_API Container
 	//! Add unique [slow]
 	Container& AddUnique(udword entry)
 	{
-		if (!Contains(entry))
+		if(!Contains(entry))
 			Add(entry);
 		return *this;
 	}
@@ -129,7 +129,7 @@ class ICECORE_API Container
 	{
 		// Avoid the write if possible
 		// ### CMOV
-		if (mCurNbEntries)
+		if(mCurNbEntries)
 			mCurNbEntries = 0;
 	}
 
@@ -159,7 +159,7 @@ class ICECORE_API Container
 	//! Deletes the very last entry.
 	inline_ void DeleteLastEntry()
 	{
-		if (mCurNbEntries)
+		if(mCurNbEntries)
 			mCurNbEntries--;
 	}
 	//! Deletes the entry whose index is given

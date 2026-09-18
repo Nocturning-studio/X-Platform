@@ -16,7 +16,7 @@ IC CSpaceRestrictionAbstract::CSpaceRestrictionAbstract()
 
 IC const xr_vector<u32>& CSpaceRestrictionAbstract::border()
 {
-	if (!initialized())
+	if(!initialized())
 		initialize();
 
 	THROW(initialized());
@@ -32,7 +32,7 @@ IC bool CSpaceRestrictionAbstract::initialized() const
 template <typename T>
 IC const xr_vector<u32>& CSpaceRestrictionAbstract::accessible_neighbour_border(T& restriction, bool out_restriction)
 {
-	if (!m_accessible_neighbour_border_actual)
+	if(!m_accessible_neighbour_border_actual)
 		prepare_accessible_neighbour_border(restriction, out_restriction);
 
 	THROW3(!m_accessible_neighbour_border.empty(), "Space restrictor has no accessible neighbours", *name());
@@ -44,13 +44,13 @@ IC bool CSpaceRestrictionAbstract::accessible_neighbours(T& restriction, u32 lev
 {
 	CLevelGraph::const_iterator I, E;
 	ai().level_graph().begin(level_vertex_id, I, E);
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		u32 current = ai().level_graph().value(level_vertex_id, I);
-		if (!ai().level_graph().valid_vertex_id(current))
+		if(!ai().level_graph().valid_vertex_id(current))
 			continue;
 
-		if (restriction->inside(current, !out_restriction) != out_restriction)
+		if(restriction->inside(current, !out_restriction) != out_restriction)
 			continue;
 
 		return (true);
@@ -69,7 +69,7 @@ IC void CSpaceRestrictionAbstract::prepare_accessible_neighbour_border(T& restri
 
 	xr_vector<u32>::const_iterator I = border().begin();
 	xr_vector<u32>::const_iterator E = border().end();
-	for (; I != E; ++I)
-		if (accessible_neighbours(restriction, *I, out_restriction))
+	for(; I != E; ++I)
+		if(accessible_neighbours(restriction, *I, out_restriction))
 			m_accessible_neighbour_border.push_back(*I);
 }

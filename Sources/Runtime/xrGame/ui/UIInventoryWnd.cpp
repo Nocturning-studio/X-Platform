@@ -88,7 +88,7 @@ void CUIInventoryWnd::Init()
 	AttachChild(&UIProgressBack);
 	xml_init.InitStatic(uiXml, "progress_background", 0, &UIProgressBack);
 
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 	{
 		AttachChild(&UIProgressBack_rank);
 		xml_init.InitStatic(uiXml, "progress_back_rank", 0, &UIProgressBack_rank);
@@ -118,7 +118,7 @@ void CUIInventoryWnd::Init()
 	// Ёлементы автоматического добавлени€
 	xml_init.InitAutoStatic(uiXml, "auto_static", this);
 
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 	{
 		UIRankFrame = xr_new<CUIStatic>();
 		UIRankFrame->SetAutoDelete(true);
@@ -197,16 +197,16 @@ void CUIInventoryWnd::Init()
 
 EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 {
-	if (l == m_pUIBagList)
+	if(l == m_pUIBagList)
 		return iwBag;
-	if (l == m_pUIBeltList)
+	if(l == m_pUIBeltList)
 		return iwBelt;
 
-	if (l == m_pUIAutomaticList)
+	if(l == m_pUIAutomaticList)
 		return iwSlot;
-	if (l == m_pUIPistolList)
+	if(l == m_pUIPistolList)
 		return iwSlot;
-	if (l == m_pUIOutfitList)
+	if(l == m_pUIOutfitList)
 		return iwSlot;
 
 	NODEFAULT;
@@ -217,7 +217,7 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 
 void CUIInventoryWnd::PlaySnd(eInventorySndAction a)
 {
-	if (sounds[a]._handle())
+	if(sounds[a]._handle())
 		sounds[a].play(NULL, sm_2D);
 }
 
@@ -229,13 +229,13 @@ CUIInventoryWnd::~CUIInventoryWnd()
 
 bool CUIInventoryWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	if (m_b_need_reinit)
+	if(m_b_need_reinit)
 		return true;
 
 	// вызов дополнительного меню по правой кнопке
-	if (mouse_action == WINDOW_RBUTTON_DOWN)
+	if(mouse_action == WINDOW_RBUTTON_DOWN)
 	{
-		if (UIPropertiesBox.IsShown())
+		if(UIPropertiesBox.IsShown())
 		{
 			UIPropertiesBox.Hide();
 			return true;
@@ -254,12 +254,12 @@ void CUIInventoryWnd::Draw()
 
 void CUIInventoryWnd::Update()
 {
-	if (m_b_need_reinit)
+	if(m_b_need_reinit)
 		InitInventory();
 
 	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(Level().CurrentEntity());
 
-	if (pEntityAlive)
+	if(pEntityAlive)
 	{
 		float v = pEntityAlive->conditions().GetHealth() * 100.0f;
 		UIProgressBarHealth.SetProgressPos(v);
@@ -273,10 +273,10 @@ void CUIInventoryWnd::Update()
 		CInventoryOwner* pOurInvOwner = smart_cast<CInventoryOwner*>(pEntityAlive);
 		u32 _money = 0;
 
-		if (GameID() != GAME_SINGLE)
+		if(GameID() != GAME_SINGLE)
 		{
 			game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID());
-			if (ps)
+			if(ps)
 			{
 				UIProgressBarRank.SetProgressPos(ps->experience_D * 100);
 				_money = ps->money_for_round;
@@ -306,10 +306,10 @@ void CUIInventoryWnd::Show()
 	InitInventory();
 	inherited::Show();
 
-	if (!IsGameTypeSingle())
+	if(!IsGameTypeSingle())
 	{
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (!pActor)
+		if(!pActor)
 			return;
 
 		pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
@@ -318,9 +318,9 @@ void CUIInventoryWnd::Show()
 		int team = Game().local_player->team;
 		int rank = Game().local_player->rank;
 		string256 _path;
-		if (GameID() != GAME_DEATHMATCH)
+		if(GameID() != GAME_DEATHMATCH)
 		{
-			if (1 == team)
+			if(1 == team)
 				sprintf_s(_path, "ui_hud_status_green_0%d", rank + 1);
 			else
 				sprintf_s(_path, "ui_hud_status_blue_0%d", rank + 1);
@@ -337,7 +337,7 @@ void CUIInventoryWnd::Show()
 	Update();
 	PlaySnd(eInvSndOpen);
 
-	//GamePersistent().SetEffectorDOF(GamePersistent().m_DofUI);
+	// GamePersistent().SetEffectorDOF(GamePersistent().m_DofUI);
 }
 
 void CUIInventoryWnd::Hide()
@@ -350,29 +350,29 @@ void CUIInventoryWnd::Hide()
 
 	// достать вещь в активный слот
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
+	if(pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
 	{
 		pActor->inventory().Activate(m_iCurrentActiveSlot);
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
 	}
 
-	if (!IsGameTypeSingle())
+	if(!IsGameTypeSingle())
 	{
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (!pActor)
+		if(!pActor)
 			return;
 
 		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
 	}
 
-	//GamePersistent().RestoreEffectorDOF();
+	// GamePersistent().RestoreEffectorDOF();
 }
 
 void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 {
 	PlaySnd(eInvAttachAddon);
 	R_ASSERT(item_to_upgrade);
-	if (OnClient())
+	if(OnClient())
 	{
 		NET_Packet P;
 		item_to_upgrade->object().u_EventGen(P, GE_ADDON_ATTACH, item_to_upgrade->object().ID());
@@ -384,7 +384,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 
 	// спр€тать вещь из активного слота в инвентарь на врем€ вызова менюшки
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (pActor && item_to_upgrade == pActor->inventory().ActiveItem())
+	if(pActor && item_to_upgrade == pActor->inventory().ActiveItem())
 	{
 		m_iCurrentActiveSlot = pActor->inventory().GetActiveSlot();
 		pActor->inventory().Activate(NO_ACTIVE_SLOT);
@@ -395,7 +395,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 void CUIInventoryWnd::DetachAddon(const char* addon_name)
 {
 	PlaySnd(eInvDetachAddon);
-	if (OnClient())
+	if(OnClient())
 	{
 		NET_Packet P;
 		CurrentIItem()->object().u_EventGen(P, GE_ADDON_DETACH, CurrentIItem()->object().ID());
@@ -406,7 +406,7 @@ void CUIInventoryWnd::DetachAddon(const char* addon_name)
 
 	// спр€тать вещь из активного слота в инвентарь на врем€ вызова менюшки
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (pActor && CurrentIItem() == pActor->inventory().ActiveItem())
+	if(pActor && CurrentIItem() == pActor->inventory().ActiveItem())
 	{
 		m_iCurrentActiveSlot = pActor->inventory().GetActiveSlot();
 		pActor->inventory().Activate(NO_ACTIVE_SLOT);
@@ -453,7 +453,7 @@ void CUIInventoryWnd::SendEvent_Item_Drop(PIItem pItem)
 {
 	pItem->SetDropManual(TRUE);
 
-	if (OnClient())
+	if(OnClient())
 	{
 		NET_Packet P;
 		pItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pItem->object().H_Parent()->ID());
@@ -486,35 +486,35 @@ void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (m_b_need_reinit)
+	if(m_b_need_reinit)
 		return true;
 
-	if (UIPropertiesBox.GetVisible())
+	if(UIPropertiesBox.GetVisible())
 		UIPropertiesBox.OnKeyboard(dik, keyboard_action);
 
-	if (is_binded(kDROP, dik))
+	if(is_binded(kDROP, dik))
 	{
-		if (WINDOW_KEY_PRESSED == keyboard_action)
+		if(WINDOW_KEY_PRESSED == keyboard_action)
 			DropCurrentItem(false);
 		return true;
 	}
 
-	if (WINDOW_KEY_PRESSED == keyboard_action)
+	if(WINDOW_KEY_PRESSED == keyboard_action)
 	{
 #ifdef DEBUG
-		if (DIK_NUMPAD7 == dik && CurrentIItem())
+		if(DIK_NUMPAD7 == dik && CurrentIItem())
 		{
 			CurrentIItem()->ChangeCondition(-0.05f);
 			UIItemInfo.InitItem(CurrentIItem());
 		}
-		else if (DIK_NUMPAD8 == dik && CurrentIItem())
+		else if(DIK_NUMPAD8 == dik && CurrentIItem())
 		{
 			CurrentIItem()->ChangeCondition(0.05f);
 			UIItemInfo.InitItem(CurrentIItem());
 		}
 #endif
 	}
-	if (inherited::OnKeyboard(dik, keyboard_action))
+	if(inherited::OnKeyboard(dik, keyboard_action))
 		return true;
 
 	return false;

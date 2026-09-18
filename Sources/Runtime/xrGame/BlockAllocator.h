@@ -1,6 +1,7 @@
 #ifndef BLOCK_ALLOCATOR_H
 #define BLOCK_ALLOCATOR_H
-template <class T, u32 block_size> class CBlockAllocator
+template <class T, u32 block_size>
+class CBlockAllocator
 {
 	u32 block_count;
 	u32 block_position;
@@ -10,7 +11,7 @@ template <class T, u32 block_size> class CBlockAllocator
   public:
 	IC T* add()
 	{
-		if (block_position == block_size)
+		if(block_position == block_size)
 			next_block();
 		++block_position;
 		return &current_block[block_position - 1];
@@ -18,7 +19,7 @@ template <class T, u32 block_size> class CBlockAllocator
 	IC void empty()
 	{
 		block_count = 0;
-		if (blocks.size())
+		if(blocks.size())
 		{
 			block_position = 0;
 			current_block = blocks[0];
@@ -45,7 +46,7 @@ template <class T, u32 block_size> class CBlockAllocator
 	IC void clear()
 	{
 		xr_vector<T*>::iterator i = blocks.begin(), e = blocks.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			xr_free(*i);
 		blocks.clear();
 		init();
@@ -60,7 +61,7 @@ template <class T, u32 block_size> class CBlockAllocator
 	IC void next_block()
 	{
 
-		if (block_count == blocks.size())
+		if(block_count == blocks.size())
 			add_block();
 		current_block = blocks[block_count];
 		++block_count;
@@ -68,19 +69,20 @@ template <class T, u32 block_size> class CBlockAllocator
 	}
 	////////////////////////////////////////////////////////////////
   public:
-	template <typename _Predicate> IC void for_each(const _Predicate& pred)
+	template <typename _Predicate>
+	IC void for_each(const _Predicate& pred)
 	{
-		if (!current_block)
+		if(!current_block)
 			return;
 		xr_vector<T*>::iterator i = blocks.begin();
 		xr_vector<T*>::iterator e = blocks.begin() + block_count;
 		u32 j;
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 		{
-			for (j = 0; j < block_size; ++j)
+			for(j = 0; j < block_size; ++j)
 				pred.operator()((*i) + j);
 		}
-		for (j = 0; j < block_position; ++j)
+		for(j = 0; j < block_position; ++j)
 		{
 			pred.operator()(current_block + j);
 		}

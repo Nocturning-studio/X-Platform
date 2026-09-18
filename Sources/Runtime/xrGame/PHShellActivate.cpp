@@ -29,15 +29,15 @@
 void CPHShell::activate(bool disable)
 {
 	PresetActive();
-	if (!CPHObject::is_active())
+	if(!CPHObject::is_active())
 		vis_update_deactivate();
-	if (!disable)
+	if(!disable)
 		EnableObject(0);
 }
 void CPHShell::Activate(const fmat4x4& m0, float dt01, const fmat4x4& m2, bool disable)
 {
 
-	if (isActive())
+	if(isActive())
 		return;
 	activate(disable);
 	//	ELEMENT_I i;
@@ -49,13 +49,13 @@ void CPHShell::Activate(const fmat4x4& m0, float dt01, const fmat4x4& m2, bool d
 
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->Activate(mTransform, disable);
 	}
 
 	{
 		JOINT_I i = joints.begin(), e = joints.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->Activate();
 	}
 
@@ -64,7 +64,7 @@ void CPHShell::Activate(const fmat4x4& m0, float dt01, const fmat4x4& m2, bool d
 	m.invert();
 	m.mulA_43(mTransform);
 	TransformPosition(m);
-	if (PKinematics())
+	if(PKinematics())
 	{
 		SetCallbacks(GetBonesCallback());
 	}
@@ -86,24 +86,24 @@ void CPHShell::Activate(const fmat4x4& m0, float dt01, const fmat4x4& m2, bool d
 void CPHShell::Activate(const fmat4x4& transform, const fvec3& lin_vel, const fvec3& ang_vel, bool disable)
 {
 
-	if (isActive())
+	if(isActive())
 		return;
 	activate(disable);
 
 	ELEMENT_I i;
 	mTransform.set(transform);
-	for (i = elements.begin(); elements.end() != i; ++i)
+	for(i = elements.begin(); elements.end() != i; ++i)
 	{
 		(*i)->Activate(transform, lin_vel, ang_vel);
 	}
 
 	{
 		JOINT_I i = joints.begin(), e = joints.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->Activate();
 	}
 
-	if (PKinematics())
+	if(PKinematics())
 	{
 		SetCallbacks(GetBonesCallback());
 	}
@@ -122,23 +122,23 @@ void CPHShell::Activate(const fmat4x4& transform, const fvec3& lin_vel, const fv
 
 void CPHShell::Activate(bool disable)
 {
-	if (isActive())
+	if(isActive())
 		return;
 
 	activate(disable);
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->Activate(mTransform, disable);
 	}
 
 	{
 		JOINT_I i = joints.begin(), e = joints.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->Activate();
 	}
 
-	if (PKinematics())
+	if(PKinematics())
 	{
 		SetCallbacks(GetBonesCallback());
 	}
@@ -149,7 +149,7 @@ void CPHShell::Activate(bool disable)
 
 void CPHShell::Build(bool disable /*false*/)
 {
-	if (isActive())
+	if(isActive())
 		return;
 
 	PresetActive();
@@ -158,7 +158,7 @@ void CPHShell::Build(bool disable /*false*/)
 
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 		{
 			(*i)->build(disable);
 		}
@@ -166,14 +166,14 @@ void CPHShell::Build(bool disable /*false*/)
 
 	{
 		JOINT_I i = joints.begin(), e = joints.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->Create();
 	}
 }
 
 void CPHShell::RunSimulation(bool place_current_forms /*true*/)
 {
-	if (!CPHObject::is_active())
+	if(!CPHObject::is_active())
 		vis_update_deactivate();
 	EnableObject(0);
 
@@ -181,13 +181,13 @@ void CPHShell::RunSimulation(bool place_current_forms /*true*/)
 
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
-		if (place_current_forms)
-			for (; i != e; ++i)
+		if(place_current_forms)
+			for(; i != e; ++i)
 				(*i)->RunSimulation(mTransform);
 	}
 	{
 		JOINT_I i = joints.begin(), e = joints.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			(*i)->RunSimulation();
 	}
 
@@ -196,23 +196,23 @@ void CPHShell::RunSimulation(bool place_current_forms /*true*/)
 
 void CPHShell::AfterSetActive()
 {
-	if (isActive())
+	if(isActive())
 		return;
 	PureActivate();
 	// bActive=true;
 	m_flags.set(flActive, TRUE);
 	ELEMENT_I i = elements.begin(), e = elements.end();
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 		(*i)->PresetActive();
 }
 
 void CPHShell::PureActivate()
 {
-	if (isActive())
+	if(isActive())
 		return;
 	// bActive=true;
 	m_flags.set(flActive, TRUE);
-	if (!CPHObject::is_active())
+	if(!CPHObject::is_active())
 		vis_update_deactivate();
 	EnableObject(0);
 	m_object_in_root.identity();
@@ -222,7 +222,7 @@ void CPHShell::PureActivate()
 void CPHShell::PresetActive()
 {
 	VERIFY(!isActive());
-	if (!m_space)
+	if(!m_space)
 	{
 		m_space = dSimpleSpaceCreate(0);
 		dSpaceSetCleanup(m_space, 0);
@@ -233,20 +233,20 @@ void CPHShell::Deactivate()
 {
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	if (m_pPhysicsShellAnimatorC)
+	if(m_pPhysicsShellAnimatorC)
 	{
 		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC);
 	}
 #endif
 
-	if (!isActive())
+	if(!isActive())
 		return;
 	R_ASSERT2(!ph_world->Processing(), "can not deactivate physics shell during physics processing!!!");
 	R_ASSERT2(!ph_world->IsFreezed(), "can not deactivate physics shell when ph world is freezed!!!");
 	R_ASSERT2(!CPHObject::IsFreezed(), "can not deactivate freezed !!!");
 	ZeroCallbacks();
 	VERIFY(ph_world && ph_world->Exist());
-	if (0)//(isFullActive())
+	if(0) //(isFullActive())
 	{
 		vis_update_deactivate();
 		CPHObject::activate();
@@ -268,14 +268,14 @@ void CPHShell::Deactivate()
 	CPHObject::remove_from_recently_deactivated();
 
 	ELEMENT_I i;
-	for (i = elements.begin(); elements.end() != i; ++i)
+	for(i = elements.begin(); elements.end() != i; ++i)
 		(*i)->Deactivate();
 
 	JOINT_I j;
-	for (j = joints.begin(); joints.end() != j; ++j)
+	for(j = joints.begin(); joints.end() != j; ++j)
 		(*j)->Deactivate();
 
-	if (m_space)
+	if(m_space)
 	{
 		dSpaceDestroy(m_space);
 		m_space = NULL;

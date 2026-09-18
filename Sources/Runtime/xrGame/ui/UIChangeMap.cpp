@@ -84,7 +84,7 @@ void CUIChangeMap::Init(CUIXml& xml_doc)
 #include <dinput.h>
 bool CUIChangeMap::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (dik == DIK_ESCAPE)
+	if(dik == DIK_ESCAPE)
 	{
 		OnBtnCancel();
 		return true;
@@ -94,20 +94,20 @@ bool CUIChangeMap::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 void CUIChangeMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (LIST_ITEM_SELECT == msg && pWnd == lst)
+	if(LIST_ITEM_SELECT == msg && pWnd == lst)
 	{
 		OnItemSelect();
 	}
-	else if (LIST_ITEM_DB_CLICKED == msg && pWnd == lst)
+	else if(LIST_ITEM_DB_CLICKED == msg && pWnd == lst)
 	{
 		OnItemSelect();
 		OnBtnOk();
 	}
-	else if (BUTTON_CLICKED == msg)
+	else if(BUTTON_CLICKED == msg)
 	{
-		if (pWnd == btn_ok)
+		if(pWnd == btn_ok)
 			OnBtnOk();
-		else if (pWnd == btn_cancel)
+		else if(pWnd == btn_cancel)
 			OnBtnCancel();
 	}
 }
@@ -115,7 +115,7 @@ void CUIChangeMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUIChangeMap::OnItemSelect()
 {
 	u32 idx = lst->GetSelectedIDX();
-	if (idx == u32(-1))
+	if(idx == u32(-1))
 		return;
 
 	const SGameTypeMaps& M = gMapListHelper.GetMapListFor((EGameTypes)GameID());
@@ -125,7 +125,7 @@ void CUIChangeMap::OnItemSelect()
 	map_name += name.c_str();
 	xr_string full_name = map_name + ".dds";
 
-	if (FS.exist("$game_textures$", full_name.c_str()))
+	if(FS.exist("$game_textures$", full_name.c_str()))
 		map_pic->InitTexture(map_name.c_str());
 	else
 		map_pic->InitTexture("ui\\ui_noise");
@@ -135,7 +135,7 @@ void CUIChangeMap::OnBtnOk()
 {
 	u32 idx = lst->GetSelectedIDX();
 	const SGameTypeMaps& M = gMapListHelper.GetMapListFor((EGameTypes)GameID());
-	if (idx >= 0 && idx < M.m_map_names.size())
+	if(idx >= 0 && idx < M.m_map_names.size())
 	{
 		const shared_str& name = M.m_map_names[idx];
 
@@ -152,7 +152,7 @@ void CUIChangeMap::FillUpList()
 
 	const SGameTypeMaps& M = gMapListHelper.GetMapListFor((EGameTypes)GameID());
 	u32 cnt = M.m_map_names.size();
-	for (u32 i = 0; i < cnt; ++i)
+	for(u32 i = 0; i < cnt; ++i)
 	{
 		CUIListBoxItem* itm = lst->AddItem(CStringTable().translate(M.m_map_names[i]).c_str());
 		itm->Enable(m_pExtraContentFilter->IsDataEnabled(M.m_map_names[i].c_str()));

@@ -58,7 +58,7 @@ IC void CCoverEvaluatorBase::initialize(const fvec3& start_position, bool fake_c
 	m_start_position = start_position;
 	m_selected = 0;
 	m_best_value = 1000.f;
-	if (!fake_call)
+	if(!fake_call)
 		m_last_update = Engine.TimeManager.GetGlobalTimeMs();
 }
 

@@ -16,15 +16,15 @@ using namespace luabind;
 void CALifeMonsterDetailPathManager::script_register(lua_State* L)
 {
 	module(L)[class_<CALifeMonsterDetailPathManager>("CALifeMonsterDetailPathManager")
-				  .def("target", (void(CALifeMonsterDetailPathManager::*)(const GameGraph::_GRAPH_ID&, const u32&,
-																		  const fvec3&))(
+				  .def("target", (void (CALifeMonsterDetailPathManager::*)(const GameGraph::_GRAPH_ID&, const u32&,
+																		   const fvec3&))(
 									 &CALifeMonsterDetailPathManager::target))
-				  .def("target", (void(CALifeMonsterDetailPathManager::*)(const GameGraph::_GRAPH_ID&))(
+				  .def("target", (void (CALifeMonsterDetailPathManager::*)(const GameGraph::_GRAPH_ID&))(
 									 &CALifeMonsterDetailPathManager::target))
-				  .def("target", (void(CALifeMonsterDetailPathManager::*)(const CALifeSmartTerrainTask*))(
+				  .def("target", (void (CALifeMonsterDetailPathManager::*)(const CALifeSmartTerrainTask*))(
 									 &CALifeMonsterDetailPathManager::target))
 				  .def("speed	",
-					   (void(CALifeMonsterDetailPathManager::*)(const float&))(&CALifeMonsterDetailPathManager::speed))
+					   (void (CALifeMonsterDetailPathManager::*)(const float&))(&CALifeMonsterDetailPathManager::speed))
 				  .def("speed	", (const float& (CALifeMonsterDetailPathManager::*)()
 										const)(&CALifeMonsterDetailPathManager::speed))
 				  .def("completed", &CALifeMonsterDetailPathManager::completed)

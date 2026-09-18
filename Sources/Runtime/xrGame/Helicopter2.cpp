@@ -38,7 +38,7 @@ void CHelicopter::TurnLighting(bool bOn)
 }
 void CHelicopter::TurnEngineSound(bool bOn)
 {
-	if (bOn)
+	if(bOn)
 		m_engineSound.set_volume(1.0f);
 	else
 		m_engineSound.set_volume(0.0f);
@@ -46,7 +46,7 @@ void CHelicopter::TurnEngineSound(bool bOn)
 
 void CHelicopter::StartFlame()
 {
-	if (m_pParticle)
+	if(m_pParticle)
 		return;
 	m_pParticle = CParticlesObject::Create(*m_smoke_particle, FALSE);
 
@@ -63,7 +63,7 @@ void CHelicopter::UpdateHeliParticles()
 	m_particleTransform = K->LL_GetTransform(m_smoke_bone);
 	m_particleTransform.mulA_43(Transform());
 
-	if (m_pParticle)
+	if(m_pParticle)
 	{
 
 		fvec3 vel;
@@ -75,7 +75,7 @@ void CHelicopter::UpdateHeliParticles()
 		m_pParticle->UpdateParent(m_particleTransform, vel);
 	}
 	// lighting
-	if (m_light_render->get_active())
+	if(m_light_render->get_active())
 	{
 		fmat4x4 xf;
 		fmat4x4& M = K->LL_GetTransform(u16(m_light_bone));
@@ -85,7 +85,7 @@ void CHelicopter::UpdateHeliParticles()
 		m_light_render->set_rotation(xf.k, xf.i);
 		m_light_render->set_position(xf.c);
 
-		if (m_lanim)
+		if(m_lanim)
 		{
 			int frame;
 			u32 clr = m_lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // òþ÷ò¨ð•ðõª ò ¯þ¨üðªõ BGR
@@ -100,12 +100,12 @@ void CHelicopter::ExplodeHelicopter()
 {
 	m_ready_explode = false;
 	m_exploded = true;
-	if (m_pParticle)
+	if(m_pParticle)
 	{
 		m_pParticle->Stop();
 		CParticlesObject::Destroy(m_pParticle);
 	}
-	if (CPHDestroyable::CanDestroy())
+	if(CPHDestroyable::CanDestroy())
 		CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
 
 	CExplosive::SetInitiator(ID());
@@ -116,7 +116,7 @@ void CHelicopter::ExplodeHelicopter()
 void CHelicopter::SetDestPosition(fvec3* pos)
 {
 	m_movement.SetDestPosition(pos);
-	if (bDebug)
+	if(bDebug)
 		Msg("---SetDestPosition %f %f %f", pos->x, pos->y, pos->z);
 }
 
@@ -165,7 +165,7 @@ void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
 void CHelicopter::SetSpeedInDestPoint(float sp)
 {
 	m_movement.SetSpeedInDestPoint(sp);
-	if (bDebug)
+	if(bDebug)
 		Msg("---SetSpeedInDestPoint %f", sp);
 }
 
@@ -176,7 +176,7 @@ float CHelicopter::GetSpeedInDestPoint(float sp)
 void CHelicopter::SetOnPointRangeDist(float d)
 {
 	m_movement.onPointRangeDist = d;
-	if (bDebug)
+	if(bDebug)
 		Msg("---SetOnPointRangeDist %f", d);
 }
 
@@ -201,23 +201,23 @@ void CHelicopter::Hit(SHit* pHDS)
 {
 	//	inherited::Hit(pHDS);
 
-	if (GetfHealth() < 0.005f)
+	if(GetfHealth() < 0.005f)
 		return;
 
-	if (state() == CHelicopter::eDead)
+	if(state() == CHelicopter::eDead)
 		return;
 
-	if (pHDS->who == this)
+	if(pHDS->who == this)
 		return;
 
 	bonesIt It = m_hitBones.find(pHDS->bone());
-	if (It != m_hitBones.end() && pHDS->hit_type == ALife::eHitTypeFireWound)
+	if(It != m_hitBones.end() && pHDS->hit_type == ALife::eHitTypeFireWound)
 	{
 		float curHealth = GetfHealth();
 		curHealth -= pHDS->damage() * It->second * 1000.0f;
 		SetfHealth(curHealth);
 #ifdef DEBUG
-		if (bDebug)
+		if(bDebug)
 			Log("----Helicopter::PilotHit(). health=", curHealth);
 #endif
 	}
@@ -228,12 +228,12 @@ void CHelicopter::Hit(SHit* pHDS)
 
 		SetfHealth(GetfHealth() - hit_power);
 #ifdef DEBUG
-		if (bDebug)
+		if(bDebug)
 			Log("----Helicopter::Hit(). health=", GetfHealth());
 #endif
 	};
-	if (pHDS->who && (pHDS->who->CLS_ID == CLSID_OBJECT_ACTOR || smart_cast<CAI_Stalker*>(pHDS->who) ||
-					  smart_cast<CCustomZone*>(pHDS->who)))
+	if(pHDS->who && (pHDS->who->CLS_ID == CLSID_OBJECT_ACTOR || smart_cast<CAI_Stalker*>(pHDS->who) ||
+					 smart_cast<CCustomZone*>(pHDS->who)))
 	{
 		callback(GameObject::eHelicopterOnHit)(pHDS->damage(), pHDS->impulse, pHDS->hit_type, pHDS->who->ID());
 	}
@@ -244,7 +244,7 @@ void CHelicopter::Hit(SHit* pHDS)
 void CHelicopter::PHHit(float P, fvec3& dir, CObject* who, s16 element, fvec3 p_in_object_space, float impulse,
 						ALife::EHitType hit_type)
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		inherited::PHHit(P, dir, who, element, p_in_object_space, impulse, hit_type);
 }
 
@@ -261,13 +261,13 @@ void CollisionCallbackDead(bool& do_colide, bool bo1, dContact& c, SGameMtl* mat
 	CHelicopter* l_this = bo1 ? smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g1)->ph_ref_object)
 							  : smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g2)->ph_ref_object);
 
-	if (l_this && !l_this->m_exploded)
+	if(l_this && !l_this->m_exploded)
 		l_this->m_ready_explode = true;
 }
 
 void CHelicopter::DieHelicopter()
 {
-	if (state() == CHelicopter::eDead)
+	if(state() == CHelicopter::eDead)
 		return;
 	CEntity::Die(NULL);
 
@@ -277,13 +277,13 @@ void CHelicopter::DieHelicopter()
 	m_brokenSound.play_at_pos(0, Transform().c, sm_Looped);
 
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	if (true /*!PPhysicsShell()*/)
+	if(true /*!PPhysicsShell()*/)
 	{
 		string256 I;
 		LPCSTR bone;
 
 		u16 bone_id;
-		for (u32 i = 0, n = _GetItemCount(*m_death_bones_to_hide); i < n; ++i)
+		for(u32 i = 0, n = _GetItemCount(*m_death_bones_to_hide); i < n; ++i)
 		{
 			bone = _GetItem(*m_death_bones_to_hide, i, I);
 			bone_id = K->LL_BoneID(bone);
@@ -300,7 +300,7 @@ void CHelicopter::DieHelicopter()
 	fvec3 prev_pos = PositionStack.front().vPosition;
 	lin_vel.sub(Transform().c, prev_pos);
 
-	if (Engine.TimeManager.GetGlobalTimeMs() != PositionStack.front().dwTime)
+	if(Engine.TimeManager.GetGlobalTimeMs() != PositionStack.front().dwTime)
 		lin_vel.div((Engine.TimeManager.GetGlobalTimeMs() - PositionStack.front().dwTime) / 1000.0f);
 
 	lin_vel.mul(m_death_lin_vel_k);
@@ -331,14 +331,15 @@ void SHeliEnemy::reinit()
 
 void SHeliEnemy::Update()
 {
-	switch (type)
+	switch(type)
 	{
 	case eEnemyNone:
 	case eEnemyPoint:
 		break;
-	case eEnemyEntity: {
+	case eEnemyEntity:
+	{
 		CObject* O = Level().Objects.net_Find(destEnemyID);
-		if (O)
+		if(O)
 			O->Center(destEnemyPos);
 		else
 			type = eEnemyNone;
@@ -381,7 +382,7 @@ bool CHelicopter::UseFireTrail()
 void CHelicopter::UseFireTrail(bool val)
 {
 	m_enemy.bUseFireTrail = val;
-	if (val)
+	if(val)
 	{
 		fireDispersionBase = pSettings->r_float(*cNameSect(), "fire_dispersion_null");
 		fireDispersionBase = deg2rad(fireDispersionBase);
@@ -441,9 +442,9 @@ float t_xx(float V0, float V1, float a0, float a1, float d, float fSign)
 
 float t_1(float t10, float t11)
 {
-	if (t10 < 0)
+	if(t10 < 0)
 		return t11;
-	else if (t11 < 0)
+	else if(t11 < 0)
 		return t10;
 	else
 		return _min(t10, t11);

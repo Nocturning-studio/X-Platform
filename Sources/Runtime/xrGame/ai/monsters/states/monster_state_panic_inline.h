@@ -33,13 +33,13 @@ void CStateMonsterPanicAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::reselect_state()
 {
-	if (get_state(eStatePanic_MoveToHomePoint)->check_start_conditions())
+	if(get_state(eStatePanic_MoveToHomePoint)->check_start_conditions())
 	{
 		select_state(eStatePanic_MoveToHomePoint);
 		return;
 	}
 
-	if (prev_substate == eStatePanic_Run)
+	if(prev_substate == eStatePanic_Run)
 		select_state(eStatePanic_FaceUnprotectedArea);
 	else
 		select_state(eStatePanic_Run);
@@ -50,7 +50,7 @@ void CStateMonsterPanicAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStatePanic_FaceUnprotectedArea)
+	if(current_substate == eStatePanic_FaceUnprotectedArea)
 	{
 		SStateDataAction data;
 
@@ -69,16 +69,16 @@ void CStateMonsterPanicAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::check_force_state()
 {
-	if ((current_substate == eStatePanic_FaceUnprotectedArea))
+	if((current_substate == eStatePanic_FaceUnprotectedArea))
 	{
 		// если видит врага
-		if (object->EnemyMan.get_enemy_time_last_seen() == Engine.TimeManager.GetGlobalTimeMs())
+		if(object->EnemyMan.get_enemy_time_last_seen() == Engine.TimeManager.GetGlobalTimeMs())
 		{
 			select_state(eStatePanic_Run);
 			return;
 		}
 		// если получил hit
-		if (object->HitMemory.get_last_hit_time() + 5000 > Engine.TimeManager.GetGlobalTimeMs())
+		if(object->HitMemory.get_last_hit_time() + 5000 > Engine.TimeManager.GetGlobalTimeMs())
 		{
 			select_state(eStatePanic_Run);
 			return;

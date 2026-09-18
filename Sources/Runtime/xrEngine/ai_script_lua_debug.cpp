@@ -14,36 +14,36 @@ using namespace Script;
 
 bool Script::bfPrintOutput(CLuaVirtualMachine* tpLuaVirtualMachine, LPCSTR caScriptFileName, int iErorCode)
 {
-	for (int i = -1;; --i)
-		if (lua_isstring(tpLuaVirtualMachine, i))
+	for(int i = -1;; --i)
+		if(lua_isstring(tpLuaVirtualMachine, i))
 		{
 			LPCSTR S = lua_tostring(tpLuaVirtualMachine, i);
-			if (!xr_strcmp(S, "cannot resume dead coroutine"))
+			if(!xr_strcmp(S, "cannot resume dead coroutine"))
 			{
 				LuaOut(Lua::eLuaMessageTypeInfo, "Script %s is finished", caScriptFileName);
 				return (true);
 			}
 			else
 			{
-				if (!i && !iErorCode)
+				if(!i && !iErorCode)
 					LuaOut(Lua::eLuaMessageTypeInfo, "Output from %s", caScriptFileName);
 				LuaOut(iErorCode ? Lua::eLuaMessageTypeError : Lua::eLuaMessageTypeMessage, "%s", S);
 			}
 		}
 		else
 		{
-			for (i = 0;; ++i)
-				if (lua_isstring(tpLuaVirtualMachine, i))
+			for(i = 0;; ++i)
+				if(lua_isstring(tpLuaVirtualMachine, i))
 				{
 					LPCSTR S = lua_tostring(tpLuaVirtualMachine, i);
-					if (!xr_strcmp(S, "cannot resume dead coroutine"))
+					if(!xr_strcmp(S, "cannot resume dead coroutine"))
 					{
 						LuaOut(Lua::eLuaMessageTypeInfo, "Script %s is finished", caScriptFileName);
 						return (true);
 					}
 					else
 					{
-						if (!i && !iErorCode)
+						if(!i && !iErorCode)
 							LuaOut(Lua::eLuaMessageTypeInfo, "Output from %s", caScriptFileName);
 						LuaOut(iErorCode ? Lua::eLuaMessageTypeError : Lua::eLuaMessageTypeMessage, "%s", S);
 					}
@@ -55,25 +55,30 @@ bool Script::bfPrintOutput(CLuaVirtualMachine* tpLuaVirtualMachine, LPCSTR caScr
 
 void Script::vfPrintError(CLuaVirtualMachine* tpLuaVirtualMachine, int iErrorCode)
 {
-	switch (iErrorCode)
+	switch(iErrorCode)
 	{
-	case LUA_ERRRUN: {
+	case LUA_ERRRUN:
+	{
 		Msg("! SCRIPT RUNTIME ERROR");
 		break;
 	}
-	case LUA_ERRMEM: {
+	case LUA_ERRMEM:
+	{
 		Msg("! SCRIPT ERROR (memory allocation)");
 		break;
 	}
-	case LUA_ERRERR: {
+	case LUA_ERRERR:
+	{
 		Msg("! SCRIPT ERROR (while running the error handler function)");
 		break;
 	}
-	case LUA_ERRFILE: {
+	case LUA_ERRFILE:
+	{
 		Msg("! SCRIPT ERROR (while running file)");
 		break;
 	}
-	case LUA_ERRSYNTAX: {
+	case LUA_ERRSYNTAX:
+	{
 		Msg("! SCRIPT SYNTAX ERROR");
 		break;
 	}
@@ -81,17 +86,17 @@ void Script::vfPrintError(CLuaVirtualMachine* tpLuaVirtualMachine, int iErrorCod
 		NODEFAULT;
 	}
 
-	for (int i = 0;; ++i)
+	for(int i = 0;; ++i)
 	{
 		Msg("! Stack level %d", i);
-		if (!bfListLevelVars(tpLuaVirtualMachine, i))
+		if(!bfListLevelVars(tpLuaVirtualMachine, i))
 			return;
 	}
 }
 
 LPCSTR Script::cafEventToString(int iEventCode)
 {
-	switch (iEventCode)
+	switch(iEventCode)
 	{
 	case LUA_HOOKCALL:
 		return ("hook call");

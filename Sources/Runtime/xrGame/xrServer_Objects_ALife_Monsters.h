@@ -331,7 +331,7 @@ IC int Rank()
 }
 
 #ifndef XRGAME_EXPORTS
-virtual void update(){};
+virtual void update() {};
 #else
 virtual void update();
 virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
@@ -339,7 +339,7 @@ virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSche
 											   bool bMutualDetection);
 virtual bool bfActive();
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
-virtual void vfDetachAll(bool bFictitious = false){};
+virtual void vfDetachAll(bool bFictitious = false) {};
 void vfCheckForPopulationChanges();
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
@@ -620,7 +620,7 @@ virtual void switch_online();
 virtual void switch_offline();
 virtual bool redundant() const;
 #else
-virtual void update(){};
+virtual void update() {};
 #endif
 
 SERVER_ENTITY_DECLARE_END

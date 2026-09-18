@@ -11,7 +11,7 @@ extern float psSoundVEffects;
 
 void CSoundRender_Emitter::set_position(const fvec3& pos)
 {
-	if (source()->channels_num() == 1)
+	if(source()->channels_num() == 1)
 		p_source.position = pos;
 	else
 		p_source.position.set(0, 0, 0);
@@ -57,12 +57,12 @@ CSoundRender_Emitter::~CSoundRender_Emitter(void)
 
 void CSoundRender_Emitter::Event_ReleaseOwner()
 {
-	if (!(owner_data))
+	if(!(owner_data))
 		return;
 
-	for (u32 it = 0; it < SoundRender->s_events.size(); it++)
+	for(u32 it = 0; it < SoundRender->s_events.size(); it++)
 	{
-		if (owner_data == SoundRender->s_events[it].first)
+		if(owner_data == SoundRender->s_events[it].first)
 		{
 			SoundRender->s_events.erase(SoundRender->s_events.begin() + it);
 			it--;
@@ -74,20 +74,20 @@ void CSoundRender_Emitter::Event_Propagade()
 {
 	fTimeToPropagade += ::Random.randF(s_f_def_event_pulse - 0.030f, s_f_def_event_pulse + 0.030f);
 
-	if (!(owner_data))
+	if(!(owner_data))
 		return;
-	if (0 == owner_data->g_type)
+	if(0 == owner_data->g_type)
 		return;
-	if (0 == owner_data->g_object)
+	if(0 == owner_data->g_object)
 		return;
-	if (0 == SoundRender->Handler)
+	if(0 == SoundRender->Handler)
 		return;
 
 	VERIFY(_valid(p_source.volume));
 	// Calculate range
 	float clip = p_source.max_ai_distance * p_source.volume;
 	float range = _min(p_source.max_ai_distance, clip);
-	if (range < 0.1f)
+	if(range < 0.1f)
 		return;
 
 	// Inform objects
@@ -107,8 +107,8 @@ void CSoundRender_Emitter::switch_to_3D()
 
 u32 CSoundRender_Emitter::play_time()
 {
-	if (m_current_state == stPlaying || m_current_state == stPlayingLooped || m_current_state == stSimulating ||
-		m_current_state == stSimulatingLooped)
+	if(m_current_state == stPlaying || m_current_state == stPlayingLooped || m_current_state == stSimulating ||
+	   m_current_state == stSimulatingLooped)
 		return iFloor((SoundRender->fTimer_Value - fTimeStarted) * 1000.0f);
 	else
 		return 0;
@@ -118,11 +118,11 @@ void CSoundRender_Emitter::set_cursor(u32 p)
 {
 	m_stream_cursor = p;
 
-	if (owner_data._get() && owner_data->fn_attached[0].size())
+	if(owner_data._get() && owner_data->fn_attached[0].size())
 	{
 		u32 bt = ((CSoundRender_Source*)owner_data->handle)->dwBytesTotal;
 
-		if (m_stream_cursor >= m_cur_handle_cursor + bt)
+		if(m_stream_cursor >= m_cur_handle_cursor + bt)
 		{
 			SoundRender->i_destroy_source((CSoundRender_Source*)owner_data->handle);
 			owner_data->handle = SoundRender->i_create_source(owner_data->fn_attached[0].c_str());
@@ -130,7 +130,7 @@ void CSoundRender_Emitter::set_cursor(u32 p)
 			owner_data->fn_attached[1] = "";
 			m_cur_handle_cursor = get_cursor(true);
 
-			if (target)
+			if(target)
 				((CSoundRender_Target*)target)->source_changed();
 		}
 	}
@@ -138,7 +138,7 @@ void CSoundRender_Emitter::set_cursor(u32 p)
 
 u32 CSoundRender_Emitter::get_cursor(bool b_absolute) const
 {
-	if (b_absolute)
+	if(b_absolute)
 		return m_stream_cursor;
 	else
 	{

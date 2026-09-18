@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////
 CRender RenderImplementation;
 //////////////////////////////////////////////////////////////////////////
-#pragma todo(NSDeathman to NSDeathman: Добавить поддержку Glow)
+#pragma todo(NSDeathman to NSDeathman : Добавить поддержку Glow)
 class CGlow : public IRender_Glow
 {
   public:
@@ -120,7 +120,7 @@ static class cl_is_hud_render_phase : public R_constant_setup
 	{
 		int is_hud_render_phase = 0;
 
-		if (RenderImplementation.active_phase() == CRender::PHASE_HUD)
+		if(RenderImplementation.active_phase() == CRender::PHASE_HUD)
 			is_hud_render_phase = 1;
 
 		RenderBackend.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0.0f, 0.0f, 0.0f);
@@ -163,7 +163,7 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 	Msg("Loading d3d compiler DLL: %s", CompilerName);
 	hCompiler = LoadLibrary(CompilerName);
 
-	if (!hCompiler)
+	if(!hCompiler)
 		make_string(
 			"Can't find 'D3DCompiler_43.dll'\nPlease install latest version of DirectX before running this program");
 
@@ -175,7 +175,7 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 CRender::~CRender()
 {
-	if (hCompiler)
+	if(hCompiler)
 	{
 		FreeLibrary(hCompiler);
 		hCompiler = 0;
@@ -245,15 +245,15 @@ void CRender::ResetBegin()
 	// BUG-ID: 10646
 	{
 		u32 it = 0;
-		for (it = 0; it < Lights_LastFrame.size(); it++)
+		for(it = 0; it < Lights_LastFrame.size(); it++)
 		{
-			if (0 == Lights_LastFrame[it])
+			if(0 == Lights_LastFrame[it])
 				continue;
 			try
 			{
 				Lights_LastFrame[it]->get_smapvis().resetoccq();
 			}
-			catch (...)
+			catch(...)
 			{
 				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
 			}
@@ -293,13 +293,13 @@ void CRender::OnFrame()
 	Models->DeleteQueue();
 	CPUOCC.Update();
 
-	if (Details && Details->dtFS)
+	if(Details && Details->dtFS)
 	{
 		Details->PrepareToCalc();
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
 	}
 
-	if (need_render_sun())
+	if(need_render_sun())
 	{
 		wait_for_sun_task();
 		swap_sun_buffers();
@@ -353,7 +353,7 @@ IRender_DetailModel* CRender::model_CreateDM(IReader* F)
 
 void CRender::model_Delete(IRender_DetailModel*& F)
 {
-	if (F)
+	if(F)
 	{
 		CDetail* D = (CDetail*)F;
 		D->Unload();
@@ -372,7 +372,7 @@ IRender_Visual* CRender::model_CreatePE(LPCSTR name)
 IRender_Visual* CRender::model_CreateParticles(LPCSTR name)
 {
 	PS::CPEDef* SE = PSLibrary.FindPED(name);
-	if (SE)
+	if(SE)
 		return Models->CreatePE(SE);
 	else
 	{
@@ -422,7 +422,7 @@ IRender_Visual* CRender::getVisual(int id)
 
 D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
 {
-	if (_alt)
+	if(_alt)
 	{
 		VERIFY(id < int(xDC.size()));
 		return xDC[id].begin();
@@ -436,7 +436,7 @@ D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
 
 IDirect3DVertexBuffer9* CRender::getVB(int id, BOOL _alt)
 {
-	if (_alt)
+	if(_alt)
 	{
 		VERIFY(id < int(xVB.size()));
 		return xVB[id];
@@ -450,7 +450,7 @@ IDirect3DVertexBuffer9* CRender::getVB(int id, BOOL _alt)
 
 IDirect3DIndexBuffer9* CRender::getIB(int id, BOOL _alt)
 {
-	if (_alt)
+	if(_alt)
 	{
 		VERIFY(id < int(xIB.size()));
 		return xIB[id];
@@ -505,7 +505,7 @@ BOOL CRender::occ_visible(Fbox& P)
 
 void CRender::add_Visual(IRender_Visual* V)
 {
-	if (CurrentRenderContext::packet && CurrentRenderContext::context)
+	if(CurrentRenderContext::packet && CurrentRenderContext::context)
 		SceneGraph.ProcessDynamicVisual(V, *CurrentRenderContext::context, *CurrentRenderContext::packet);
 	else
 		SceneGraph.ProcessDynamicVisual(V, m_TraversalContext, SceneGraph.m_packet);
@@ -513,7 +513,7 @@ void CRender::add_Visual(IRender_Visual* V)
 
 void CRender::add_Geometry(IRender_Visual* V)
 {
-	if (CurrentRenderContext::packet && CurrentRenderContext::context)
+	if(CurrentRenderContext::packet && CurrentRenderContext::context)
 	{
 		u32 mask = CurrentRenderContext::context->frustum->getMask();
 		SceneGraph.add_Static(V, mask, *CurrentRenderContext::context, *CurrentRenderContext::packet);
@@ -526,10 +526,10 @@ void CRender::add_Geometry(IRender_Visual* V)
 
 void CRender::add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* verts)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
-	if (T->suppress_wm)
+	if(T->suppress_wm)
 		return;
 	VERIFY2(_valid(P) && _valid(s) && T && verts && (s > EPS_L), "Invalid static wallmark params");
 	Wallmarks->AddStaticWallmark(T, verts, P, &*S, s);
@@ -549,7 +549,7 @@ void CRender::add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shad
 {
 	PROFILE_FUNCTION();
 #pragma todo("FIXME")
-	//Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
+	// Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)
@@ -561,7 +561,7 @@ void CRender::set_render_mode(int mode)
 	float ZMin = 0.0f;
 	float ZMax = 0.0f;
 
-	switch (mode)
+	switch(mode)
 	{
 	case MODE_NEAR:
 		ZMin = 0.0f;
@@ -614,4 +614,3 @@ float CRender::hclip(float v, float dim)
 {
 	return 2.f * v / dim - 1.f;
 }
-

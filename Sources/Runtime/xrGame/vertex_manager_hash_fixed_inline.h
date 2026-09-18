@@ -8,13 +8,13 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _path_id_type, typename _index_type, u32 hash_size, u32 fix_size>                               \
-	template <template <typename _T> class _vertex, template <typename _T1, typename _T2> class _index_vertex,         \
+#define TEMPLATE_SPECIALIZATION                                                                                \
+	template <typename _path_id_type, typename _index_type, u32 hash_size, u32 fix_size>                       \
+	template <template <typename _T> class _vertex, template <typename _T1, typename _T2> class _index_vertex, \
 			  typename _data_storage>
 
-#define CHashFixedVertexManager                                                                                        \
-	CVertexManagerHashFixed<_path_id_type, _index_type, hash_size, fix_size>::CDataStorage<_vertex, _index_vertex,     \
+#define CHashFixedVertexManager                                                                                    \
+	CVertexManagerHashFixed<_path_id_type, _index_type, hash_size, fix_size>::CDataStorage<_vertex, _index_vertex, \
 																						   _data_storage>
 
 TEMPLATE_SPECIALIZATION
@@ -48,7 +48,7 @@ IC void CHashFixedVertexManager::init()
 	inherited::init();
 	++m_current_path_id;
 	m_vertex_count = 0;
-	if (!m_current_path_id)
+	if(!m_current_path_id)
 	{
 		++m_current_path_id;
 		ZeroMemory(m_hash, (hash_size) * sizeof(CGraphIndexVertex*));
@@ -93,10 +93,10 @@ IC bool CHashFixedVertexManager::is_visited(const _index_type& vertex_id) const
 {
 	u32 index = hash_index(vertex_id);
 	CGraphIndexVertex* vertex = m_hash[index];
-	if (!vertex || (vertex->m_path_id != current_path_id()) || (vertex->m_hash != index))
+	if(!vertex || (vertex->m_path_id != current_path_id()) || (vertex->m_hash != index))
 		return (false);
-	for (; vertex; vertex = vertex->m_next)
-		if (vertex->m_vertex->index() == vertex_id)
+	for(; vertex; vertex = vertex->m_next)
+		if(vertex->m_vertex->index() == vertex_id)
 			return (true);
 	return (false);
 }
@@ -112,8 +112,8 @@ IC typename CHashFixedVertexManager::CGraphVertex& CHashFixedVertexManager::get_
 {
 	VERIFY(is_visited(vertex_id));
 	CGraphIndexVertex* vertex = m_hash[hash_index(vertex_id)];
-	for (; vertex; vertex = vertex->m_next)
-		if (vertex->m_vertex->index() == vertex_id)
+	for(; vertex; vertex = vertex->m_next)
+		if(vertex->m_vertex->index() == vertex_id)
 			return (*vertex->m_vertex);
 	NODEFAULT;
 #ifdef DEBUG
@@ -129,17 +129,17 @@ IC typename CHashFixedVertexManager::CGraphVertex& CHashFixedVertexManager::crea
 	VERIFY(m_vertex_count < fix_size);
 	CGraphIndexVertex* index_vertex = m_vertices + m_vertex_count++;
 	// removing old links from the node
-	if (index_vertex->m_prev)
+	if(index_vertex->m_prev)
 	{
 		index_vertex->m_prev->m_next = index_vertex->m_next;
-		if (index_vertex->m_next)
+		if(index_vertex->m_next)
 			index_vertex->m_next->m_prev = index_vertex->m_prev;
 	}
 	else
 	{
-		if (index_vertex->m_next)
+		if(index_vertex->m_next)
 			index_vertex->m_next->m_prev = 0;
-		if (m_hash[index_vertex->m_hash] && (m_hash[index_vertex->m_hash]->m_path_id != current_path_id()))
+		if(m_hash[index_vertex->m_hash] && (m_hash[index_vertex->m_hash]->m_path_id != current_path_id()))
 			m_hash[index_vertex->m_hash] = 0;
 	}
 
@@ -149,13 +149,13 @@ IC typename CHashFixedVertexManager::CGraphVertex& CHashFixedVertexManager::crea
 
 	u32 index = hash_index(vertex_id);
 	CGraphIndexVertex* _vertex = m_hash[index];
-	if (!_vertex || (_vertex->m_path_id != current_path_id()) || (_vertex->m_hash != index))
+	if(!_vertex || (_vertex->m_path_id != current_path_id()) || (_vertex->m_hash != index))
 		_vertex = 0;
 
 	m_hash[index] = index_vertex;
 	index_vertex->m_next = _vertex;
 	index_vertex->m_prev = 0;
-	if (_vertex)
+	if(_vertex)
 		_vertex->m_prev = index_vertex;
 	index_vertex->m_hash = index;
 	return (vertex);

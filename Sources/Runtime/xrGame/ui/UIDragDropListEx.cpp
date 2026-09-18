@@ -9,7 +9,7 @@ CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
 void CUICell::Clear()
 {
 	m_bMainItem = false;
-	if (m_item)
+	if(m_item)
 		m_item->SetOwnerList(NULL);
 	m_item = NULL;
 }
@@ -109,7 +109,7 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 
 void CUIDragDropListEx::DestroyDragItem()
 {
-	if (m_selected_item && m_drag_item && m_drag_item->ParentItem() == m_selected_item)
+	if(m_selected_item && m_drag_item && m_drag_item->ParentItem() == m_selected_item)
 	{
 		VERIFY(GetParent()->GetMouseCapturer() == m_drag_item);
 		GetParent()->SetCapture(NULL, false);
@@ -128,10 +128,10 @@ void CUIDragDropListEx::OnItemStartDragging(CUIWindow* w, void* pData)
 	OnItemSelected(w, pData);
 	CUICellItem* itm = smart_cast<CUICellItem*>(w);
 
-	if (itm != m_selected_item)
+	if(itm != m_selected_item)
 		return;
 
-	if (m_f_item_start_drag && m_f_item_start_drag(itm))
+	if(m_f_item_start_drag && m_f_item_start_drag(itm))
 		return;
 
 	CreateDragItem(itm);
@@ -143,7 +143,7 @@ void CUIDragDropListEx::OnItemDrop(CUIWindow* w, void* pData)
 	CUICellItem* itm = smart_cast<CUICellItem*>(w);
 	VERIFY(itm->OwnerList() == itm->OwnerList());
 
-	if (m_f_item_drop && m_f_item_drop(itm))
+	if(m_f_item_drop && m_f_item_drop(itm))
 	{
 		DestroyDragItem();
 		return;
@@ -154,10 +154,10 @@ void CUIDragDropListEx::OnItemDrop(CUIWindow* w, void* pData)
 
 	bool b = (old_owner == new_owner) && !GetCustomPlacement();
 
-	if (old_owner && new_owner && !b)
+	if(old_owner && new_owner && !b)
 	{
 		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
-		while (i->ChildsCount())
+		while(i->ChildsCount())
 		{
 			CUICellItem* _chld = i->PopChild();
 			new_owner->SetItem(_chld, old_owner->GetDragItemPosition());
@@ -172,7 +172,7 @@ void CUIDragDropListEx::OnItemDBClick(CUIWindow* w, void* pData)
 	OnItemSelected(w, pData);
 	CUICellItem* itm = smart_cast<CUICellItem*>(w);
 
-	if (m_f_item_db_click && m_f_item_db_click(itm))
+	if(m_f_item_db_click && m_f_item_db_click(itm))
 	{
 		DestroyDragItem();
 		return;
@@ -182,7 +182,7 @@ void CUIDragDropListEx::OnItemDBClick(CUIWindow* w, void* pData)
 	VERIFY(m_drag_item == NULL);
 	VERIFY(old_owner == this);
 
-	if (old_owner && old_owner->GetCustomPlacement())
+	if(old_owner && old_owner->GetCustomPlacement())
 	{
 		CUICellItem* i = old_owner->RemoveItem(itm, true);
 		old_owner->SetItem(i);
@@ -195,7 +195,7 @@ void CUIDragDropListEx::OnItemSelected(CUIWindow* w, void* pData)
 {
 	m_selected_item = smart_cast<CUICellItem*>(w);
 	VERIFY(m_selected_item);
-	if (m_f_item_selected)
+	if(m_f_item_selected)
 		m_f_item_selected(m_selected_item);
 }
 
@@ -203,14 +203,14 @@ void CUIDragDropListEx::OnItemRButtonClick(CUIWindow* w, void* pData)
 {
 	OnItemSelected(w, pData);
 	CUICellItem* itm = smart_cast<CUICellItem*>(w);
-	if (m_f_item_rbutton_click)
+	if(m_f_item_rbutton_click)
 		m_f_item_rbutton_click(itm);
 }
 
 void CUIDragDropListEx::GetClientArea(Frect& r)
 {
 	GetAbsoluteRect(r);
-	if (m_vScrollBar->GetVisible())
+	if(m_vScrollBar->GetVisible())
 		r.x2 -= m_vScrollBar->GetWidth();
 }
 
@@ -230,7 +230,7 @@ void CUIDragDropListEx::Compact()
 
 	CUIWindow::WINDOW_LIST_it it = wl.begin();
 	CUIWindow::WINDOW_LIST_it it_e = wl.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		CUICellItem* itm = smart_cast<CUICellItem*>(*it);
 		SetItem(itm);
@@ -242,7 +242,7 @@ void CUIDragDropListEx::Draw()
 {
 	inherited::Draw();
 
-	if (0 && bDebug)
+	if(0 && bDebug)
 	{
 		CGameFont* F = UI()->Font()->pFontDI;
 		F->SetAligment(CGameFont::alCenter);
@@ -258,17 +258,17 @@ void CUIDragDropListEx::Update()
 {
 	inherited::Update();
 
-	if (m_drag_item)
+	if(m_drag_item)
 	{
 		Frect wndRect;
 		GetAbsoluteRect(wndRect);
 		fvec2 cp = GetUICursor()->GetCursorPosition();
-		if (wndRect.in(cp))
+		if(wndRect.in(cp))
 		{
-			if (NULL == m_drag_item->BackList())
+			if(NULL == m_drag_item->BackList())
 				m_drag_item->SetBackList(this);
 		}
-		else if (this == m_drag_item->BackList())
+		else if(this == m_drag_item->BackList())
 			m_drag_item->SetBackList(NULL);
 	}
 }
@@ -293,9 +293,9 @@ bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	bool b = inherited::OnMouse(x, y, mouse_action);
 
-	if (m_vScrollBar->IsShown())
+	if(m_vScrollBar->IsShown())
 	{
-		switch (mouse_action)
+		switch(mouse_action)
 		{
 		case WINDOW_MOUSE_WHEEL_DOWN:
 			m_vScrollBar->TryScrollInc();
@@ -338,7 +338,7 @@ int CUIDragDropListEx::ScrollPos()
 
 void CUIDragDropListEx::SetItem(CUICellItem* itm) // auto
 {
-	if (m_container->AddSimilar(itm))
+	if(m_container->AddSimilar(itm))
 	{
 		return;
 	}
@@ -350,12 +350,12 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm) // auto
 
 void CUIDragDropListEx::SetItem(CUICellItem* itm, fvec2 abs_pos) // start at cursor pos
 {
-	if (m_container->AddSimilar(itm))
+	if(m_container->AddSimilar(itm))
 		return;
 
 	const ivec2 dest_cell_pos = m_container->PickCell(abs_pos);
 
-	if (m_container->ValidCell(dest_cell_pos) && m_container->IsRoomFree(dest_cell_pos, itm->GetGridSize()))
+	if(m_container->ValidCell(dest_cell_pos) && m_container->IsRoomFree(dest_cell_pos, itm->GetGridSize()))
 		SetItem(itm, dest_cell_pos);
 	else
 		SetItem(itm);
@@ -363,7 +363,7 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, fvec2 abs_pos) // start at cur
 
 void CUIDragDropListEx::SetItem(CUICellItem* itm, ivec2 cell_pos) // start at cell
 {
-	if (m_container->AddSimilar(itm))
+	if(m_container->AddSimilar(itm))
 		return;
 	R_ASSERT(m_container->IsRoomFree(cell_pos, itm->GetGridSize()));
 
@@ -376,7 +376,7 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, ivec2 cell_pos) // start at ce
 
 bool CUIDragDropListEx::CanSetItem(CUICellItem* itm)
 {
-	if (m_container->HasFreeSpace(itm->GetGridSize()))
+	if(m_container->HasFreeSpace(itm->GetGridSize()))
 		return true;
 	Compact();
 
@@ -421,13 +421,13 @@ CUICellContainer::~CUICellContainer()
 
 bool CUICellContainer::AddSimilar(CUICellItem* itm)
 {
-	if (!m_pParentDragDropList->IsGrouping())
+	if(!m_pParentDragDropList->IsGrouping())
 		return false;
 
 	CUICellItem* i = FindSimilar(itm);
 	R_ASSERT(i != itm);
 	R_ASSERT(0 == itm->ChildsCount());
-	if (i)
+	if(i)
 	{
 		i->PushChild(itm);
 		itm->SetOwnerList(m_pParentDragDropList);
@@ -438,7 +438,7 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 {
-	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
 #ifdef DEBUG
 		CUICellItem* i = smart_cast<CUICellItem*>(*it);
@@ -446,7 +446,7 @@ CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 		CUICellItem* i = (CUICellItem*)(*it);
 #endif
 		R_ASSERT(i != itm);
-		if (i->EqualTo(itm))
+		if(i->EqualTo(itm))
 			return i;
 	}
 	return NULL;
@@ -455,8 +455,8 @@ CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, ivec2& cell_pos)
 {
 	ivec2 cs = itm->GetGridSize();
-	for (int x = 0; x < cs.x; ++x)
-		for (int y = 0; y < cs.y; ++y)
+	for(int x = 0; x < cs.x; ++x)
+		for(int y = 0; y < cs.y; ++y)
 		{
 			CUICell& C = GetCellAt(ivec2().set(x, y).add(cell_pos));
 			C.SetItem(itm, (x == 0 && y == 0));
@@ -471,11 +471,11 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, ivec2& cell_pos)
 
 CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
 {
-	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
 		CUICellItem* i = (CUICellItem*)(*it);
 
-		if (i->HasChild(itm))
+		if(i->HasChild(itm))
 		{
 			CUICellItem* iii = i->PopChild();
 			R_ASSERT(0 == iii->ChildsCount());
@@ -483,7 +483,7 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
 		}
 	}
 
-	if (!force_root && itm->ChildsCount())
+	if(!force_root && itm->ChildsCount())
 	{
 		CUICellItem* iii = itm->PopChild();
 		R_ASSERT(0 == iii->ChildsCount());
@@ -493,8 +493,8 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
 	ivec2 pos = GetItemPos(itm);
 	ivec2 cs = itm->GetGridSize();
 
-	for (int x = 0; x < cs.x; ++x)
-		for (int y = 0; y < cs.y; ++y)
+	for(int x = 0; x < cs.x; ++x)
+		for(int y = 0; y < cs.y; ++y)
 		{
 			CUICell& C = GetCellAt(ivec2().set(x, y).add(pos));
 			C.Clear();
@@ -508,12 +508,12 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
 ivec2 CUICellContainer::FindFreeCell(const ivec2& size)
 {
 	ivec2 tmp;
-	for (tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
-		for (tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
-			if (IsRoomFree(tmp, size))
+	for(tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
+		for(tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
+			if(IsRoomFree(tmp, size))
 				return tmp;
 
-	if (m_pParentDragDropList->IsAutoGrow())
+	if(m_pParentDragDropList->IsAutoGrow())
 	{
 		Grow();
 		return FindFreeCell(size);
@@ -521,9 +521,9 @@ ivec2 CUICellContainer::FindFreeCell(const ivec2& size)
 	else
 	{
 		m_pParentDragDropList->Compact();
-		for (tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
-			for (tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
-				if (IsRoomFree(tmp, size))
+		for(tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
+			for(tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
+				if(IsRoomFree(tmp, size))
 					return tmp;
 
 		R_ASSERT2(0, "there are no free room to place item");
@@ -534,9 +534,9 @@ ivec2 CUICellContainer::FindFreeCell(const ivec2& size)
 bool CUICellContainer::HasFreeSpace(const ivec2& size)
 {
 	ivec2 tmp;
-	for (tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
-		for (tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
-			if (IsRoomFree(tmp, size))
+	for(tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
+		for(tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
+			if(IsRoomFree(tmp, size))
 				return true;
 
 	return false;
@@ -546,15 +546,15 @@ bool CUICellContainer::IsRoomFree(const ivec2& pos, const ivec2& size)
 {
 	ivec2 tmp;
 
-	for (tmp.x = pos.x; tmp.x < pos.x + size.x; ++tmp.x)
-		for (tmp.y = pos.y; tmp.y < pos.y + size.y; ++tmp.y)
+	for(tmp.x = pos.x; tmp.x < pos.x + size.x; ++tmp.x)
+		for(tmp.y = pos.y; tmp.y < pos.y + size.y; ++tmp.y)
 		{
-			if (!ValidCell(tmp))
+			if(!ValidCell(tmp))
 				return false;
 
 			CUICell& C = GetCellAt(tmp);
 
-			if (!C.Empty())
+			if(!C.Empty())
 				return false;
 		}
 	return true;
@@ -595,12 +595,12 @@ CUICell& CUICellContainer::GetCellAt(const ivec2& pos)
 
 ivec2 CUICellContainer::GetItemPos(CUICellItem* itm)
 {
-	for (int x = 0; x < m_cellsCapacity.x; ++x)
-		for (int y = 0; y < m_cellsCapacity.y; ++y)
+	for(int x = 0; x < m_cellsCapacity.x; ++x)
+		for(int y = 0; y < m_cellsCapacity.y; ++y)
 		{
 			ivec2 p;
 			p.set(x, y);
-			if (GetCellAt(p).m_item == itm)
+			if(GetCellAt(p).m_item == itm)
 				return p;
 		}
 
@@ -611,8 +611,8 @@ ivec2 CUICellContainer::GetItemPos(CUICellItem* itm)
 u32 CUICellContainer::GetCellsInRange(const Irect& rect, UI_CELLS_VEC& res)
 {
 	res.clear_not_free();
-	for (int x = rect.x1; x <= rect.x2; ++x)
-		for (int y = rect.y1; y <= rect.y2; ++y)
+	for(int x = rect.x1; x <= rect.x2; ++x)
+		for(int y = rect.y1; y <= rect.y2; ++y)
 			res.push_back(GetCellAt(ivec2().set(x, y)));
 
 	res.erase(std::unique(res.begin(), res.end()), res.end());
@@ -646,26 +646,26 @@ void CUICellContainer::ClearAll(bool bDestroy)
 	{
 		UI_CELLS_VEC_IT it = m_cells.begin();
 		UI_CELLS_VEC_IT it_e = m_cells.end();
-		for (; it != it_e; ++it)
+		for(; it != it_e; ++it)
 			(*it).Clear();
 	}
-	while (!m_ChildWndList.empty())
+	while(!m_ChildWndList.empty())
 	{
 		CUIWindow* w = m_ChildWndList.back();
 		CUICellItem* wc = smart_cast<CUICellItem*>(w);
 		VERIFY(!wc->IsAutoDelete());
 		DetachChild(wc);
 
-		while (wc->ChildsCount())
+		while(wc->ChildsCount())
 		{
 			CUICellItem* ci = wc->PopChild();
 			R_ASSERT(ci->ChildsCount() == 0);
 
-			if (bDestroy)
+			if(bDestroy)
 				delete_data(ci);
 		}
 
-		if (bDestroy)
+		if(bDestroy)
 		{
 			delete_data(wc);
 		}
@@ -681,7 +681,7 @@ ivec2 CUICellContainer::PickCell(const fvec2& abs_pos)
 	ap.mul(-1);
 	res.x = iFloor(ap.x / m_cellSize.x);
 	res.y = iFloor(ap.y / m_cellSize.y);
-	if (!ValidCell(res))
+	if(!ValidCell(res))
 		res.set(-1, -1);
 	return res;
 }
@@ -692,7 +692,7 @@ void CUICellContainer::Draw()
 	m_pParentDragDropList->GetClientArea(clientArea);
 
 	ivec2 cell_cnt = m_pParentDragDropList->CellsCapacity();
-	if (cell_cnt.x == 0 || cell_cnt.y == 0)
+	if(cell_cnt.x == 0 || cell_cnt.y == 0)
 		return;
 
 	ivec2 cell_sz = CellSize();
@@ -715,8 +715,7 @@ void CUICellContainer::Draw()
 	const fvec2 pts[6] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 #define DRAGNDROP_TY 1.0f
 #define DRAGNDROP_TX 0.5f
-	const fvec2 uvs[6] = {{0.0f, 0.0f}, {DRAGNDROP_TX, 0.0f},		 {DRAGNDROP_TX, DRAGNDROP_TY},
-							 {0.0f, 0.0f}, {DRAGNDROP_TX, DRAGNDROP_TY}, {0.0f, DRAGNDROP_TY}};
+	const fvec2 uvs[6] = {{0.0f, 0.0f}, {DRAGNDROP_TX, 0.0f}, {DRAGNDROP_TX, DRAGNDROP_TY}, {0.0f, 0.0f}, {DRAGNDROP_TX, DRAGNDROP_TY}, {0.0f, DRAGNDROP_TY}};
 
 	// calculate cell size in screen pixels
 	fvec2 f_len;
@@ -727,13 +726,13 @@ void CUICellContainer::Draw()
 	FVF::TL* start_pv =
 		(FVF::TL*)RenderBackend.Vertex.Lock((tgt_cells.width() + 1) * (tgt_cells.height() + 1) * 6, hGeom.stride(), vOffset);
 	FVF::TL* pv = start_pv;
-	for (int x = 0; x <= tgt_cells.width(); ++x)
+	for(int x = 0; x <= tgt_cells.width(); ++x)
 	{
-		for (int y = 0; y <= tgt_cells.height(); ++y)
+		for(int y = 0; y <= tgt_cells.height(); ++y)
 		{
 			fvec2 tp;
 			GetTexUVLT(tp, tgt_cells.x1 + x, tgt_cells.y1 + y);
-			for (u32 k = 0; k < 6; ++k, ++pv)
+			for(u32 k = 0; k < 6; ++k, ++pv)
 			{
 				const fvec2& p = pts[k];
 				const fvec2& uv = uvs[k];
@@ -747,7 +746,7 @@ void CUICellContainer::Draw()
 
 	UI()->PushScissor(clientArea);
 
-	if (p_cnt != 0)
+	if(p_cnt != 0)
 	{
 		// draw grid
 		RenderBackend.set_Shader(hShader);
@@ -756,11 +755,11 @@ void CUICellContainer::Draw()
 	}
 
 	// draw shown items in range
-	if (GetCellsInRange(tgt_cells, m_cells_to_draw))
+	if(GetCellsInRange(tgt_cells, m_cells_to_draw))
 	{
 		UI_CELLS_VEC_IT it = m_cells_to_draw.begin();
-		for (; it != m_cells_to_draw.end(); ++it)
-			if (!(*it).Empty() && !(*it).m_item->m_b_already_drawn)
+		for(; it != m_cells_to_draw.end(); ++it)
+			if(!(*it).Empty() && !(*it).m_item->m_b_already_drawn)
 			{
 				(*it).m_item->Draw();
 			}

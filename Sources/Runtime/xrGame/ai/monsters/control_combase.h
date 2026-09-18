@@ -167,7 +167,8 @@ class CControl_ComControlling
 
 //////////////////////////////////////////////////////////////////////////
 // Data Storage
-template <class T> class CControl_ComControlledStorage : public CControl_ComControlled
+template <class T>
+class CControl_ComControlledStorage : public CControl_ComControlled
 {
   public:
 	virtual ControlCom::IComData* data()
@@ -181,7 +182,8 @@ template <class T> class CControl_ComControlledStorage : public CControl_ComCont
 
 //////////////////////////////////////////////////////////////////////////
 // Pure
-template <class T> class CControl_ComPure : public CControl_Com, public CControl_ComControlledStorage<T>
+template <class T>
+class CControl_ComPure : public CControl_Com, public CControl_ComControlledStorage<T>
 {
   public:
 	virtual CControl_ComControlled* ced()

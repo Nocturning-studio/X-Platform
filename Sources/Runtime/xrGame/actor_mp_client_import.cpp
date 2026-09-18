@@ -9,24 +9,24 @@ void CActorMP::net_Import(NET_Packet& P)
 
 	m_state_holder.read(P);
 
-	if (m_i_am_dead)
+	if(m_i_am_dead)
 		return;
 
-	if (OnClient())
+	if(OnClient())
 		SetfHealth(m_state_holder.state().health);
 
-	if (OnClient())
+	if(OnClient())
 		SetfRadiation(m_state_holder.state().radiation * 100.0f);
 
 	u8 ActiveSlot = m_state_holder.state().inventory_active_slot;
-	if (OnClient())
+	if(OnClient())
 	{
 		//.		if (ActiveSlot >= SLOTS_TOTAL) inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-		if (ActiveSlot >= SLOTS_TOTAL)
+		if(ActiveSlot >= SLOTS_TOTAL)
 			inventory().Activate(NO_ACTIVE_SLOT);
 		else
 		{
-			if (inventory().GetActiveSlot() != u32(ActiveSlot))
+			if(inventory().GetActiveSlot() != u32(ActiveSlot))
 				inventory().Activate(u32(ActiveSlot), eImportUpdate);
 		};
 	}
@@ -41,11 +41,11 @@ void CActorMP::net_Import(NET_Packet& P)
 	N.o_torso.pitch = m_state_holder.state().camera_pitch;
 	N.o_torso.roll = m_state_holder.state().camera_roll;
 
-	if (N.o_torso.roll > PI)
+	if(N.o_torso.roll > PI)
 		N.o_torso.roll -= PI_MUL_2;
 
 	{
-		if (Level().IsDemoPlay() || OnServer() || Remote())
+		if(Level().IsDemoPlay() || OnServer() || Remote())
 		{
 			unaffected_r_torso.yaw = N.o_torso.yaw;
 			unaffected_r_torso.pitch = N.o_torso.pitch;
@@ -79,7 +79,7 @@ void CActorMP::net_Import(NET_Packet& P)
 void CActorMP::postprocess_packet(net_update_A& N_A)
 {
 
-	if (!NET.empty())
+	if(!NET.empty())
 		N_A.dwTimeStamp = NET.back().dwTimeStamp;
 	else
 		N_A.dwTimeStamp = Level().timeServer();
@@ -87,25 +87,25 @@ void CActorMP::postprocess_packet(net_update_A& N_A)
 	N_A.State.previous_position = N_A.State.position;
 	N_A.State.previous_quaternion = N_A.State.quaternion;
 
-	if (Local() && OnClient() || !g_Alive())
+	if(Local() && OnClient() || !g_Alive())
 		return;
 
 	{
 		//-----------------------------------------------
-		if (!NET_A.empty() && N_A.dwTimeStamp < NET_A.back().dwTimeStamp)
+		if(!NET_A.empty() && N_A.dwTimeStamp < NET_A.back().dwTimeStamp)
 			return;
-		if (!NET_A.empty() && N_A.dwTimeStamp == NET_A.back().dwTimeStamp)
+		if(!NET_A.empty() && N_A.dwTimeStamp == NET_A.back().dwTimeStamp)
 		{
 			NET_A.back() = N_A;
 		}
 		else
 		{
 			NET_A.push_back(N_A);
-			if (NET_A.size() > 5)
+			if(NET_A.size() > 5)
 				NET_A.pop_front();
 		};
 
-		if (!NET_A.empty())
+		if(!NET_A.empty())
 			m_bInterpolate = true;
 	};
 
@@ -116,19 +116,19 @@ void CActorMP::postprocess_packet(net_update_A& N_A)
 
 void CActorMP::process_packet(net_update& N)
 {
-	if (Local() && OnClient())
+	if(Local() && OnClient())
 		return;
 
-	if (!NET.empty() && (N.dwTimeStamp < NET.back().dwTimeStamp))
+	if(!NET.empty() && (N.dwTimeStamp < NET.back().dwTimeStamp))
 		return;
 
-	if (g_Alive())
+	if(g_Alive())
 	{
 		setVisible((BOOL)!HUDview());
 		setEnabled(TRUE);
 	};
 
-	if (!NET.empty() && (N.dwTimeStamp == NET.back().dwTimeStamp))
+	if(!NET.empty() && (N.dwTimeStamp == NET.back().dwTimeStamp))
 	{
 		NET.back() = N;
 		return;
@@ -136,6 +136,6 @@ void CActorMP::process_packet(net_update& N)
 
 	NET.push_back(N);
 
-	if (NET.size() > 5)
+	if(NET.size() > 5)
 		NET.pop_front();
 }

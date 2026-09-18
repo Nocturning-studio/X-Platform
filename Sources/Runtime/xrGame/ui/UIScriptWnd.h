@@ -35,7 +35,8 @@ class CUIDialogWndEx : public CUIDialogWnd, public DLL_Pure
 		return true;
 	}
 
-	template <typename T> IC T* GetControl(LPCSTR name);
+	template <typename T>
+	IC T* GetControl(LPCSTR name);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

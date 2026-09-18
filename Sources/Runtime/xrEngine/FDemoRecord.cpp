@@ -47,7 +47,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 	fvec3 DYaw;
 	DYaw.set(dir.x, 0.f, dir.z);
 	DYaw.normalize_safe();
-	if (DYaw.x < 0)
+	if(DYaw.x < 0)
 		m_HPB.x = acosf(DYaw.z);
 	else
 		m_HPB.x = 2 * PI - acosf(DYaw.z);
@@ -106,22 +106,20 @@ CDemoRecord::~CDemoRecord()
 
 void CDemoRecord::Close()
 {
-	//g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+	// g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
 	fLifeTime = -1;
 }
 
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
-fvec3 CDemoRecord::cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f},
-							{0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
-fvec3 CDemoRecord::cmDir[6] = {{1.f, 0.f, 0.f},  {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
-						   {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f},  {0.f, 0.f, -1.f}};
+fvec3 CDemoRecord::cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
+fvec3 CDemoRecord::cmDir[6] = {{1.f, 0.f, 0.f}, {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, -1.f}};
 
 Flags32 CDemoRecord::s_hud_flag = {0};
 Flags32 CDemoRecord::s_dev_flags = {0};
 
 void CDemoRecord::MakeScreenshotFace()
 {
-	switch (m_Stage)
+	switch(m_Stage)
 	{
 	case 0:
 		s_hud_flag.assign(psHUD_Flags);
@@ -145,29 +143,34 @@ void GetLM_BBox(Fbox& bb, INT Step)
 {
 	float half_x = bb.min.x + (bb.max.x - bb.min.x) / 2;
 	float half_z = bb.min.z + (bb.max.z - bb.min.z) / 2;
-	switch (Step)
+	switch(Step)
 	{
-	case 0: {
+	case 0:
+	{
 		bb.max.x = half_x;
 		bb.min.z = half_z;
 	}
 	break;
-	case 1: {
+	case 1:
+	{
 		bb.min.x = half_x;
 		bb.min.z = half_z;
 	}
 	break;
-	case 2: {
+	case 2:
+	{
 		bb.max.x = half_x;
 		bb.max.z = half_z;
 	}
 	break;
-	case 3: {
+	case 3:
+	{
 		bb.min.x = half_x;
 		bb.max.z = half_z;
 	}
 	break;
-	default: {
+	default:
+	{
 	}
 	break;
 	}
@@ -175,7 +178,7 @@ void GetLM_BBox(Fbox& bb, INT Step)
 
 void CDemoRecord::MakeLevelMapProcess()
 {
-	switch (m_Stage)
+	switch(m_Stage)
 	{
 	case 0:
 		s_dev_flags = psDeviceFlags;
@@ -183,13 +186,14 @@ void CDemoRecord::MakeLevelMapProcess()
 		psDeviceFlags.set(rsClearBB | rsDrawStatic, TRUE);
 		psDeviceFlags.set(rsFullscreen, s_dev_flags.test(rsFullscreen));
 		break;
-	case 1: {
+	case 1:
+	{
 		s_hud_flag.assign(psHUD_Flags);
 		psHUD_Flags.assign(0);
 
 		Fbox bb = g_pGameLevel->ObjectSpace.GetBoundingVolume();
 
-		if (g_bDR_LM_UsePointsBBox)
+		if(g_bDR_LM_UsePointsBBox)
 		{
 			bb.max.x = g_DR_LM_Max.x;
 			bb.max.z = g_DR_LM_Max.z;
@@ -197,7 +201,7 @@ void CDemoRecord::MakeLevelMapProcess()
 			bb.min.x = g_DR_LM_Min.x;
 			bb.min.z = g_DR_LM_Min.z;
 		}
-		if (g_bDR_LM_4Steps)
+		if(g_bDR_LM_4Steps)
 			GetLM_BBox(bb, g_iDR_LM_Step);
 		// build camera matrix
 		bb.getcenter(Engine.RenderView.Position);
@@ -212,11 +216,12 @@ void CDemoRecord::MakeLevelMapProcess()
 		Engine.RenderView.Project.build_projection_ortho(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.min.z, bb.max.z);
 	}
 	break;
-	case 2: {
+	case 2:
+	{
 		string_path tmp;
 		Fbox bb = g_pGameLevel->ObjectSpace.GetBoundingVolume();
 
-		if (g_bDR_LM_UsePointsBBox)
+		if(g_bDR_LM_UsePointsBBox)
 		{
 			bb.max.x = g_DR_LM_Max.x;
 			bb.max.z = g_DR_LM_Max.z;
@@ -224,7 +229,7 @@ void CDemoRecord::MakeLevelMapProcess()
 			bb.min.x = g_DR_LM_Min.x;
 			bb.min.z = g_DR_LM_Min.z;
 		}
-		if (g_bDR_LM_4Steps)
+		if(g_bDR_LM_4Steps)
 			GetLM_BBox(bb, g_iDR_LM_Step);
 
 		sprintf_s(tmp, sizeof(tmp), "%s_[%3.3f, %3.3f]-[%3.3f, %3.3f]", *g_pGameLevel->name(), bb.min.x, bb.min.z,
@@ -244,7 +249,7 @@ void CDemoRecord::MakeCubeMapFace(fvec3& D, fvec3& N)
 	Console->Execute("r_disable_postprocess on");
 
 	string32 buf;
-	switch (m_Stage)
+	switch(m_Stage)
 	{
 	case 0:
 		N.set(cmNorm[m_Stage]);
@@ -276,7 +281,7 @@ void CDemoRecord::MakeCubeMapFace(fvec3& D, fvec3& N)
 
 void CDemoRecord::SwitchShowInputInfo()
 {
-	if (m_bShowInputInfo == true)
+	if(m_bShowInputInfo == true)
 	{
 		m_bShowInputInfo = false;
 #ifdef DEBUG_DEMO_RECORD
@@ -378,7 +383,7 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 {
 	ShowInfo();
 
-	if (m_bShowInputInfo == true)
+	if(m_bShowInputInfo == true)
 		ShowInputInfo();
 
 	m_vVelocity.lerp(m_vVelocity, m_vT, 0.3f);
@@ -387,17 +392,17 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 	float speed = m_fSpeed1;
 	float ang_speed = m_fAngSpeed1;
 
-	if (IR_GetKeyState(DIK_LSHIFT))
+	if(IR_GetKeyState(DIK_LSHIFT))
 	{
 		speed = m_fSpeed0;
 		ang_speed = m_fAngSpeed0;
 	}
-	else if (IR_GetKeyState(DIK_Z))
+	else if(IR_GetKeyState(DIK_Z))
 	{
 		speed = m_fSpeed0 * 0.5f;
 		ang_speed = m_fAngSpeed0 * 0.5f;
 	}
-	else if (IR_GetKeyState(DIK_LCONTROL))
+	else if(IR_GetKeyState(DIK_LCONTROL))
 	{
 		speed = m_fSpeed3;
 		ang_speed = m_fAngSpeed3;
@@ -410,7 +415,7 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 	m_HPB.y -= m_vR.x;
 	m_HPB.z += m_vR.z;
 
-	if (g_position.set_position)
+	if(g_position.set_position)
 	{
 		m_Position.set(g_position.p);
 		g_position.set_position = false;
@@ -457,11 +462,11 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 
 BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
-	if (m_bMakeScreenshot)
+	if(m_bMakeScreenshot)
 		Screenshot(info);
-	else if (m_bMakeLevelMap)
+	else if(m_bMakeLevelMap)
 		MakeLevelMapProcess();
-	else if (m_bMakeCubeMap)
+	else if(m_bMakeCubeMap)
 		MakeCubemap(info);
 	else
 		Update(info);
@@ -471,7 +476,7 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 
 void CDemoRecord::SwitchAutofocusState()
 {
-	if (g_bAutofocusEnabled == false)
+	if(g_bAutofocusEnabled == false)
 	{
 		g_bAutofocusEnabled = true;
 	}
@@ -487,7 +492,7 @@ void CDemoRecord::SwitchAutofocusState()
 // общих команд для всех рендеров
 void CDemoRecord::SwitchGridState()
 {
-	if (g_bGridEnabled == false)
+	if(g_bGridEnabled == false)
 	{
 		g_bGridEnabled = true;
 		Console->Execute("r_photo_grid on");
@@ -503,7 +508,7 @@ void CDemoRecord::SwitchGridState()
 // общих команд для всех рендеров
 void CDemoRecord::SwitchCinemaBordersState()
 {
-	if (g_bBordersEnabled == false)
+	if(g_bBordersEnabled == false)
 	{
 		g_bBordersEnabled = true;
 		Console->Execute("r_cinema_borders on");
@@ -517,7 +522,7 @@ void CDemoRecord::SwitchCinemaBordersState()
 
 void CDemoRecord::SwitchWatermarkVisibility()
 {
-	if (g_bWatermarkEnabled == false)
+	if(g_bWatermarkEnabled == false)
 	{
 		g_bWatermarkEnabled = true;
 		Console->Execute("r_watermark on");
@@ -531,66 +536,66 @@ void CDemoRecord::SwitchWatermarkVisibility()
 
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
-	if (dik == DIK_ESCAPE)
+	if(dik == DIK_ESCAPE)
 		Close();
 
-	if (dik == DIK_GRAVE)
+	if(dik == DIK_GRAVE)
 		Console->Show();
 
-	if (dik == DIK_SPACE)
+	if(dik == DIK_SPACE)
 		RecordKey(LINEAR_INTERPOLATION_TYPE);
 
-	if ((dik == DIK_LALT))
+	if((dik == DIK_LALT))
 		RecordKey(DISABLE_INTERPOLATION);
 
-	if (dik == DIK_MINUS)
+	if(dik == DIK_MINUS)
 		SetNeedMakeCubemap();
 
-	if (dik == DIK_BACK)
+	if(dik == DIK_BACK)
 		DeleteKey();
 
-	if (dik == DIK_F11)
+	if(dik == DIK_F11)
 		MakeLevelMapScreenshot();
 
-	if (dik == DIK_DELETE)
+	if(dik == DIK_DELETE)
 		ResetParameters();
 
-	if (dik == DIK_H)
+	if(dik == DIK_H)
 		SwitchAutofocusState();
 
-	if (dik == DIK_V)
+	if(dik == DIK_V)
 		SwitchGridState();
 
-	if (dik == DIK_B)
+	if(dik == DIK_B)
 		SwitchCinemaBordersState();
 
-	if (dik == DIK_TAB)
+	if(dik == DIK_TAB)
 		SwitchShowInputInfo();
 
-	if (dik == DIK_N)
+	if(dik == DIK_N)
 		SwitchWatermarkVisibility();
 
 #ifndef MASTER_GOLD
 #pragma todo("NSDeathman to all: Переделать быструю отладку рендера под удобный вид")
-	if (dik == DIK_1)
+	if(dik == DIK_1)
 		Console->Execute("r_debug_render gbuffer_albedo");
-	if (dik == DIK_2)
+	if(dik == DIK_2)
 		Console->Execute("r_debug_render gbuffer_position");
-	if (dik == DIK_3)
+	if(dik == DIK_3)
 		Console->Execute("r_debug_render gbuffer_normal");
-	if (dik == DIK_4)
+	if(dik == DIK_4)
 		Console->Execute("r_debug_render gbuffer_roughness");
-	if (dik == DIK_5)
+	if(dik == DIK_5)
 		Console->Execute("r_debug_render gbuffer_matallness");
-	if (dik == DIK_6)
+	if(dik == DIK_6)
 		Console->Execute("r_debug_render gbuffer_lightmap_ao");
-	if (dik == DIK_7)
+	if(dik == DIK_7)
 		Console->Execute("r_debug_render direct_light");
-	if (dik == DIK_8)
+	if(dik == DIK_8)
 		Console->Execute("r_debug_render indirect_light");
-	if (dik == DIK_9)
+	if(dik == DIK_9)
 		Console->Execute("r_debug_render real_time_ao");
-	if (dik == DIK_0)
+	if(dik == DIK_0)
 		Console->Execute("r_debug_render disabled");
 #endif
 }
@@ -598,7 +603,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 void CDemoRecord::IR_OnKeyboardHold(int dik)
 {
 	fvec3 vT_delta{}, vR_delta{};
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_A:
 	case DIK_NUMPAD1:
@@ -648,9 +653,9 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 {
 	float scale = .5f; // psMouseSens;
 	fvec3 vR_delta{};
-	if (dx || dy)
+	if(dx || dy)
 	{
-		vR_delta.y += float(dx) * scale;												// heading
+		vR_delta.y += float(dx) * scale;													// heading
 		vR_delta.x += ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * (3.f / 4.f); // pitch
 	}
 	update_whith_timescale(m_vR, vR_delta);
@@ -659,7 +664,7 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 void CDemoRecord::IR_OnMouseHold(int btn)
 {
 	fvec3 vT_delta{};
-	switch (btn)
+	switch(btn)
 	{
 	case 0:
 		vT_delta.z += 1.0f;
@@ -682,15 +687,15 @@ void CDemoRecord::ChangeDepthOfFieldFocalDepth(int direction)
 
 	float X = dof_params_old.x * 0.1f;
 
-	if (direction > 0)
+	if(direction > 0)
 		dof_params_actual.x = dof_params_old.x + X;
 	else
 		dof_params_actual.x = dof_params_old.x - X;
 
-	if (dof_params_actual.x <= 0.5f)
+	if(dof_params_actual.x <= 0.5f)
 		dof_params_actual.x = 0.5f;
 
-	if (dof_params_actual.x >= 100.0f)
+	if(dof_params_actual.x >= 100.0f)
 		dof_params_actual.x = 100.0f;
 
 	g_fDOF = dof_params_actual;
@@ -708,12 +713,12 @@ void CDemoRecord::ChangeDepthOfFieldFocalLength(int direction)
 
 	float X = dof_params_old.y * 0.25f;
 
-	if (direction > 0)
+	if(direction > 0)
 		dof_params_actual.y = dof_params_old.y + X;
 	else
 		dof_params_actual.y = dof_params_old.y - X;
 
-	//dof_params_actual.y = dof_params_actual.x + 10.0f;
+	// dof_params_actual.y = dof_params_actual.x + 10.0f;
 
 	// if (dof_params_actual.x <= 0.1f)
 	//	dof_params_actual.x = 0.1f;
@@ -733,15 +738,15 @@ void CDemoRecord::ChangeDepthOfFieldFStop(int direction)
 
 	float X = dof_params_old.z * 0.1f;
 
-	if (direction > 0)
+	if(direction > 0)
 		dof_params_actual.z = dof_params_old.z + X;
 	else
 		dof_params_actual.z = dof_params_old.z - X;
 
-	if (dof_params_actual.z <= 0.1f)
+	if(dof_params_actual.z <= 0.1f)
 		dof_params_actual.z = 0.1f;
 
-	if (dof_params_actual.z >= 100.0f)
+	if(dof_params_actual.z >= 100.0f)
 		dof_params_actual.z = 100.0f;
 
 	g_fDOF = dof_params_actual;
@@ -754,32 +759,32 @@ void CDemoRecord::ChangeFieldOfView(int direction)
 
 	float X = g_fFov_actual * 0.05f;
 
-	if (direction > 0)
+	if(direction > 0)
 		g_fFov = g_fFov_actual + X;
 	else
 		g_fFov = g_fFov_actual - X;
 
-	if (g_fFov <= 2.28f)
+	if(g_fFov <= 2.28f)
 		g_fFov = 2.28f;
-	else if (g_fFov >= 113.001f)
+	else if(g_fFov >= 113.001f)
 		g_fFov = 113.0f;
 }
 
 void CDemoRecord::IR_OnMouseWheel(int direction)
 {
-	if (IR_GetKeyState(DIK_G))
+	if(IR_GetKeyState(DIK_G))
 	{
 		ChangeDepthOfFieldFocalLength(direction);
 	}
-	else if (IR_GetKeyState(DIK_T))
+	else if(IR_GetKeyState(DIK_T))
 	{
 		ChangeDepthOfFieldFocalDepth(direction);
 	}
-	else if (IR_GetKeyState(DIK_R))
+	else if(IR_GetKeyState(DIK_R))
 	{
 		ChangeDepthOfFieldFStop(direction);
 	}
-	else if (IR_GetKeyState(DIK_F))
+	else if(IR_GetKeyState(DIK_F))
 	{
 		ChangeFieldOfView(direction);
 	}
@@ -787,7 +792,7 @@ void CDemoRecord::IR_OnMouseWheel(int direction)
 
 void CDemoRecord::DeleteKey()
 {
-	if (iCount == 0)
+	if(iCount == 0)
 		return;
 
 	iCount = iCount - 1;

@@ -30,7 +30,7 @@ class CUIButton : public CUIStatic
 	{
 		NORMAL_PRESS, // кнопка нажимается при
 					  // нажатии и отпускании на ней мыши
-		DOWN_PRESS // сразу при нажатии
+		DOWN_PRESS	  // сразу при нажатии
 	} E_PRESS_MODE;
 
 	// заново подготовить состояние

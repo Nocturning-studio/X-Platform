@@ -378,13 +378,15 @@ struct dcPlane
 	}
 };
 
-template <class T> const T& dcMAX(const T& x, const T& y)
+template <class T>
+const T& dcMAX(const T& x, const T& y)
 {
 
 	return x > y ? x : y;
 }
 
-template <class T> const T& dcMIN(const T& x, const T& y)
+template <class T>
+const T& dcMIN(const T& x, const T& y)
 {
 
 	return x < y ? x : y;

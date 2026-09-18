@@ -160,7 +160,7 @@ void CEnvironment::Invalidate()
 
 float CEnvironment::TimeDiff(float prev, float cur)
 {
-	if (prev > cur)
+	if(prev > cur)
 		return (DAY_LENGTH - prev) + cur;
 	else
 		return cur - prev;
@@ -170,16 +170,16 @@ float CEnvironment::TimeWeight(float val, float min_t, float max_t)
 {
 	float weight = 0.f;
 	float length = TimeDiff(min_t, max_t);
-	if (!fis_zero(length, EPS))
+	if(!fis_zero(length, EPS))
 	{
-		if (min_t > max_t)
+		if(min_t > max_t)
 		{
-			if ((val >= min_t) || (val <= max_t))
+			if((val >= min_t) || (val <= max_t))
 				weight = TimeDiff(min_t, val) / length;
 		}
 		else
 		{
-			if ((val >= min_t) && (val <= max_t))
+			if((val >= min_t) && (val <= max_t))
 				weight = TimeDiff(min_t, val) / length;
 		}
 		clamp(weight, 0.f, 1.f);
@@ -200,7 +200,7 @@ float CEnvironment::GetGameTime()
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
-	if (bWFX)
+	if(bWFX)
 		wfx_time -= TimeDiff(fGameTime, game_time);
 	fGameTime = game_time;
 	fTimeFactor = time_factor;
@@ -208,9 +208,9 @@ void CEnvironment::SetGameTime(float game_time, float time_factor)
 
 float CEnvironment::NormalizeTime(float tm)
 {
-	if (tm < 0.f)
+	if(tm < 0.f)
 		return tm + DAY_LENGTH;
-	else if (tm > DAY_LENGTH)
+	else if(tm > DAY_LENGTH)
 		return tm - DAY_LENGTH;
 	else
 		return tm;
@@ -218,25 +218,25 @@ float CEnvironment::NormalizeTime(float tm)
 
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-	if (name.size())
+	if(name.size())
 	{
 		EnvsMapIt it = WeatherCycles.find(name);
-		if (it == WeatherCycles.end())
+		if(it == WeatherCycles.end())
 		{
 			Msg("! Can't find weather effect with name: %s", name.c_str());
 			return;
 		}
 		CurrentCycleName = it->first;
-		if (forced)
+		if(forced)
 		{
 			Invalidate();
 		}
-		if (!bWFX)
+		if(!bWFX)
 		{
 			CurrentWeather = &it->second;
 			CurrentWeatherName = it->first;
 		}
-		if (forced)
+		if(forced)
 		{
 			SelectEnvs(fGameTime);
 		}
@@ -255,14 +255,14 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 
 bool CEnvironment::SetWeatherFX(shared_str name)
 {
-	if (bWFX)
+	if(bWFX)
 		return false;
 
-	if (name.size())
+	if(name.size())
 	{
 		EnvsMapIt it = WeatherFXs.find(name);
 
-		if (it == WeatherFXs.end())
+		if(it == WeatherFXs.end())
 		{
 			Msg("! Can't find weather effect with name: %s", name.c_str());
 			return false;
@@ -277,7 +277,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		float start_tm = fGameTime + rewind_tm;
 		float current_length;
 		float current_weight;
-		if (Current[0]->exec_time > Current[1]->exec_time)
+		if(Current[0]->exec_time > Current[1]->exec_time)
 		{
 			float x = fGameTime > Current[0]->exec_time ? fGameTime - Current[0]->exec_time
 														: (DAY_LENGTH - Current[0]->exec_time) + fGameTime;
@@ -301,7 +301,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 			NormalizeTime(fGameTime - ((rewind_tm / (Current[1]->exec_time - fGameTime)) * current_length - rewind_tm));
 		C1->copy(*Current[1]);
 		C1->exec_time = NormalizeTime(start_tm);
-		for (EnvIt t_it = CurrentWeather->begin() + 2; t_it != CurrentWeather->end() - 1; t_it++)
+		for(EnvIt t_it = CurrentWeather->begin() + 2; t_it != CurrentWeather->end() - 1; t_it++)
 			(*t_it)->exec_time = NormalizeTime(start_tm + (*t_it)->exec_time_loaded);
 		SelectEnv(PrevWeather, WFX_end_desc[0], CE->exec_time);
 		SelectEnv(PrevWeather, WFX_end_desc[1], WFX_end_desc[0]->exec_time + 0.5f);
@@ -331,10 +331,10 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 
 bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time)
 {
-	if (!SetWeatherFX(name))
+	if(!SetWeatherFX(name))
 		return false;
 
-	for (EnvIt it = CurrentWeather->begin(); it != CurrentWeather->end(); it++)
+	for(EnvIt it = CurrentWeather->begin(); it != CurrentWeather->end(); it++)
 		(*it)->exec_time = NormalizeTime((*it)->exec_time - wfx_time + time);
 
 	wfx_time = time;
@@ -362,7 +362,7 @@ bool lb_env_pred(const CEnvDescriptor* x, float val)
 void CEnvironment::SelectEnv(EnvVec* envs, CEnvDescriptor*& e, float gt)
 {
 	EnvIt env = std::lower_bound(envs->begin(), envs->end(), gt, lb_env_pred);
-	if (env == envs->end())
+	if(env == envs->end())
 	{
 		e = envs->front();
 	}
@@ -375,7 +375,7 @@ void CEnvironment::SelectEnv(EnvVec* envs, CEnvDescriptor*& e, float gt)
 void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*& e1, float gt)
 {
 	EnvIt env = std::lower_bound(envs->begin(), envs->end(), gt, lb_env_pred);
-	if (env == envs->end())
+	if(env == envs->end())
 	{
 		e0 = *(envs->end() - 1);
 		e1 = envs->front();
@@ -383,7 +383,7 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 	else
 	{
 		e1 = *env;
-		if (env == envs->begin())
+		if(env == envs->begin())
 			e0 = *(envs->end() - 1);
 		else
 			e0 = *(env - 1);
@@ -393,7 +393,7 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 void CEnvironment::SelectEnvs(float gt)
 {
 	VERIFY(CurrentWeather);
-	if ((Current[0] == Current[1]) && (Current[0] == 0))
+	if((Current[0] == Current[1]) && (Current[0] == 0))
 	{
 		VERIFY(!bWFX);
 		// first or forced start
@@ -402,7 +402,7 @@ void CEnvironment::SelectEnvs(float gt)
 	else
 	{
 		bool bSelect = false;
-		if (Current[0]->exec_time > Current[1]->exec_time)
+		if(Current[0]->exec_time > Current[1]->exec_time)
 		{
 			// terminator
 			bSelect = (gt > Current[1]->exec_time) && (gt < Current[0]->exec_time);
@@ -411,7 +411,7 @@ void CEnvironment::SelectEnvs(float gt)
 		{
 			bSelect = (gt > Current[1]->exec_time);
 		}
-		if (bSelect)
+		if(bSelect)
 		{
 			Current[0] = Current[1];
 			SelectEnv(CurrentWeather, Current[1], gt);
@@ -425,7 +425,7 @@ void CEnvironment::SelectEnvs(float gt)
 
 int get_ref_count(IUnknown* ii)
 {
-	if (ii)
+	if(ii)
 	{
 		ii->AddRef();
 		return ii->Release();
@@ -436,7 +436,7 @@ int get_ref_count(IUnknown* ii)
 
 void CEnvironment::lerp(float& current_weight)
 {
-	if (bWFX && (wfx_time <= 0.f))
+	if(bWFX && (wfx_time <= 0.f))
 		StopWFX();
 
 	SelectEnvs(fGameTime);
@@ -455,7 +455,7 @@ void CEnvironment::lerp(float& current_weight)
 
 	fvec3 view = Engine.RenderView.Position;
 	float mpower = 0;
-	for (xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
+	for(xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
 		mpower += EM.sum(*mit, view);
 
 	// final lerp
@@ -466,45 +466,45 @@ void CEnvironment::OnFrame()
 {
 #ifdef _EDITOR
 	SetGameTime(fGameTime + Engine.TimeManager.GetDeltaTime() * fTimeFactor, fTimeFactor);
-	if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f))
+	if(fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f))
 	{
-		if (fGameTime > DAY_LENGTH)
+		if(fGameTime > DAY_LENGTH)
 			fGameTime -= DAY_LENGTH;
 	}
 	else
 	{
-		if (fGameTime > ed_to_time)
+		if(fGameTime > ed_to_time)
 		{
 			fGameTime = fGameTime - ed_to_time + ed_from_time;
 			Current[0] = Current[1] = 0;
 		}
-		if (fGameTime < ed_from_time)
+		if(fGameTime < ed_from_time)
 		{
 			fGameTime = ed_from_time;
 			Current[0] = Current[1] = 0;
 		}
 	}
-	if (!psDeviceFlags.is(rsEnvironment))
+	if(!psDeviceFlags.is(rsEnvironment))
 		return;
 #else
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return;
 #endif
 
 	CalcWindValues();
 
-	// if (pInput->iGetAsyncKeyState(DIK_O))        
+	// if (pInput->iGetAsyncKeyState(DIK_O))
 	//	SetWeatherFX("surge_day");
 	float current_weight;
 	lerp(current_weight);
 
-	if (Render->is_dynamic_sun_enabled())
+	if(Render->is_dynamic_sun_enabled())
 		calculate_dynamic_sun_dir();
 	else
 		set_static_sun_dir();
 
 	// Устанавливаем текстуры скайбокса в render targets
-	if (CurrentEnv->sky_texture_0)
+	if(CurrentEnv->sky_texture_0)
 	{
 		IDirect3DBaseTexture9* e0 = CurrentEnv->sky_texture_0->surface_get();
 		tsky0->surface_set(e0);
@@ -513,7 +513,7 @@ void CEnvironment::OnFrame()
 	else
 		tsky0->surface_set(NULL);
 
-	if (CurrentEnv->sky_texture_1)
+	if(CurrentEnv->sky_texture_1)
 	{
 		IDirect3DBaseTexture9* e1 = CurrentEnv->sky_texture_1->surface_get();
 		tsky1->surface_set(e1);
@@ -523,7 +523,7 @@ void CEnvironment::OnFrame()
 		tsky1->surface_set(NULL);
 
 	// Устанавливаем LUT текстуры
-	if (CurrentEnv->lut_texture_0)
+	if(CurrentEnv->lut_texture_0)
 	{
 		IDirect3DBaseTexture9* lut0 = CurrentEnv->lut_texture_0->surface_get();
 		tlut0->surface_set(lut0);
@@ -532,7 +532,7 @@ void CEnvironment::OnFrame()
 	else
 		tlut0->surface_set(NULL);
 
-	if (CurrentEnv->lut_texture_1)
+	if(CurrentEnv->lut_texture_1)
 	{
 		IDirect3DBaseTexture9* lut1 = CurrentEnv->lut_texture_1->surface_get();
 		tlut1->surface_set(lut1);
@@ -574,10 +574,10 @@ void CEnvironment::calculate_dynamic_sun_dir()
 	float SHA = (fGameTime / (DAY_LENGTH / 24) - 12) * 15 + Longitude + TC;
 
 	//	Need this to correctly determine SHA sign
-	if (SHA > 180)
+	if(SHA > 180)
 		SHA -= 360;
 
-	if (SHA < -180)
+	if(SHA < -180)
 		SHA += 360;
 
 	//	IN degrees
@@ -598,7 +598,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 	float const cos_Latitude = std::cos(LatitudeR);
 	float const sin_SZA_X_cos_Latitude = sin_SZA * cos_Latitude;
 
-	if (!fis_zero(sin_SZA_X_cos_Latitude))
+	if(!fis_zero(sin_SZA_X_cos_Latitude))
 		cosAZ = (std::sin(deg2rad(D)) - std::sin(LatitudeR) * std::cos(SZA)) / sin_SZA_X_cos_Latitude;
 
 	clamp(cosAZ, -1.0f, 1.0f);
@@ -606,7 +606,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 
 	const fvec2 minAngle = fvec2().set(deg2rad(1.0f), deg2rad(3.0f));
 
-	if (SEA < minAngle.x)
+	if(SEA < minAngle.x)
 		SEA = minAngle.x;
 
 	float fSunBlend = (SEA - minAngle.x) / (minAngle.y - minAngle.x);
@@ -615,7 +615,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 #ifdef PROCEDURAL_WEATHER
 	const fvec2 minAngle1 = fvec2().set(deg2rad(1.0f), deg2rad(20.0f));
 
-	if (SEA < minAngle1.x)
+	if(SEA < minAngle1.x)
 		SEA = minAngle1.x;
 
 	float fSunBlend1 = (SEA - minAngle1.x) / (minAngle1.y - minAngle1.x);
@@ -624,7 +624,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 
 	SEA = -SEA;
 
-	if (SHA < 0)
+	if(SHA < 0)
 		AZ = 2 * PI - AZ;
 
 	R_ASSERT(_valid(AZ));
@@ -661,15 +661,15 @@ void CEnvironment::mods_load()
 {
 	Modifiers.clear_and_free();
 	string_path path;
-	if (FS.exist(path, "$level$", "level.env_mod"))
+	if(FS.exist(path, "$level$", "level.env_mod"))
 	{
 		IReader* fs = FS.r_open(path);
 		u32 id = 0;
-		while (fs->find_chunk(id))
+		while(fs->find_chunk(id))
 		{
 			CEnvModifier E;
 			// Надо обязательно проверять, что файл корректный, даже если чанк был найден. Real Wolf.
-			if (!E.load(fs))
+			if(!E.load(fs))
 				break;
 			Modifiers.push_back(E);
 			id++;
@@ -688,7 +688,7 @@ void CEnvironment::load_level_specific_ambients()
 	string_path full_path;
 	CInifile* level_ambients = xr_new<CInifile>(FS.update_path(full_path, "$game_config$", path), TRUE, TRUE, FALSE);
 
-	for (EnvAmbVecIt I = Ambients.begin(), E = Ambients.end(); I != E; ++I)
+	for(EnvAmbVecIt I = Ambients.begin(), E = Ambients.end(); I != E; ++I)
 	{
 		CEnvAmbient* ambient = *I;
 
@@ -698,7 +698,7 @@ void CEnvironment::load_level_specific_ambients()
 		CInifile* source = (level_ambients && level_ambients->section_exist(section_name)) ? level_ambients : m_ambients_config;
 
 		// check and reload if needed
-		if (xr_strcmp(ambient->get_ambients_config_filename().c_str(), source->fname()))
+		if(xr_strcmp(ambient->get_ambients_config_filename().c_str(), source->fname()))
 		{
 			ambient->destroy();
 			ambient->load(*source, *m_sound_channels_config, *m_effects_config, section_name);
@@ -716,7 +716,7 @@ void CEnvironment::mods_unload()
 
 void CEnvironment::load_weathers()
 {
-	if (!WeatherCycles.empty())
+	if(!WeatherCycles.empty())
 		return;
 
 	typedef xr_vector<LPSTR> file_list_type;
@@ -725,7 +725,7 @@ void CEnvironment::load_weathers()
 
 	file_list_type::const_iterator file_list_it = file_list->begin();
 	file_list_type::const_iterator file_list_end = file_list->end();
-	for (; file_list_it != file_list_end; ++file_list_it)
+	for(; file_list_it != file_list_end; ++file_list_it)
 	{
 		u32 length = xr_strlen(*file_list_it);
 		VERIFY(length >= 4);
@@ -751,7 +751,7 @@ void CEnvironment::load_weathers()
 
 		sections_type::const_iterator sections_it = sections.begin();
 		sections_type::const_iterator sections_end = sections.end();
-		for (; sections_it != sections_end; ++sections_it)
+		for(; sections_it != sections_end; ++sections_it)
 		{
 			CEnvDescriptor* object = create_descriptor((*sections_it)->Name, config);
 			env.push_back(object);
@@ -765,7 +765,7 @@ void CEnvironment::load_weathers()
 	// sorting weather envs
 	EnvsMapIt _I = WeatherCycles.begin();
 	EnvsMapIt _E = WeatherCycles.end();
-	for (; _I != _E; _I++)
+	for(; _I != _E; _I++)
 	{
 		R_ASSERT3(_I->second.size() > 1, "One weather cycle must have implementations for at least two hours", *_I->first);
 		concurrency::parallel_sort(_I->second.begin(), _I->second.end(), sort_env_etl_pred);
@@ -776,7 +776,7 @@ void CEnvironment::load_weathers()
 
 void CEnvironment::load_weather_effects()
 {
-	if (!WeatherFXs.empty())
+	if(!WeatherFXs.empty())
 		return;
 
 	typedef xr_vector<LPSTR> file_list_type;
@@ -785,7 +785,7 @@ void CEnvironment::load_weather_effects()
 
 	file_list_type::const_iterator file_list_it = file_list->begin();
 	file_list_type::const_iterator file_list_end = file_list->end();
-	for (; file_list_it != file_list_end; ++file_list_it)
+	for(; file_list_it != file_list_end; ++file_list_it)
 	{
 		u32 length = xr_strlen(*file_list_it);
 		VERIFY(length >= 4);
@@ -812,7 +812,7 @@ void CEnvironment::load_weather_effects()
 
 		sections_type::const_iterator sections_it = sections.begin();
 		sections_type::const_iterator sections_end = sections.end();
-		for (; sections_it != sections_end; ++sections_it)
+		for(; sections_it != sections_end; ++sections_it)
 		{
 			CEnvDescriptor* object = create_descriptor((*sections_it)->Name, config);
 			env.push_back(object);
@@ -829,7 +829,7 @@ void CEnvironment::load_weather_effects()
 	// sorting weather envs
 	EnvsMapIt _I = WeatherFXs.begin();
 	EnvsMapIt _E = WeatherFXs.end();
-	for (; _I != _E; _I++)
+	for(; _I != _E; _I++)
 	{
 		R_ASSERT3(_I->second.size() > 1, "Environment in weather must >=2", *_I->first);
 		concurrency::parallel_sort(_I->second.begin(), _I->second.end(), sort_env_etl_pred);
@@ -838,14 +838,14 @@ void CEnvironment::load_weather_effects()
 
 void CEnvironment::load()
 {
-	if (!CurrentEnv)
+	if(!CurrentEnv)
 		create_mixer();
 
-	if (!eff_Rain)
+	if(!eff_Rain)
 		eff_Rain = xr_new<CEffect_Rain>();
-	if (!eff_LensFlare)
+	if(!eff_LensFlare)
 		eff_LensFlare = xr_new<CLensFlare>();
-	if (!eff_Thunderbolt)
+	if(!eff_Thunderbolt)
 		eff_Thunderbolt = xr_new<CEffect_Thunderbolt>();
 
 	load_weathers();
@@ -858,9 +858,9 @@ void CEnvironment::unload()
 	// clear weathers
 	_I = WeatherCycles.begin();
 	_E = WeatherCycles.end();
-	for (; _I != _E; _I++)
+	for(; _I != _E; _I++)
 	{
-		for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+		for(EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 			xr_delete(*it);
 	}
 
@@ -868,18 +868,18 @@ void CEnvironment::unload()
 	// clear weather effect
 	_I = WeatherFXs.begin();
 	_E = WeatherFXs.end();
-	for (; _I != _E; _I++)
+	for(; _I != _E; _I++)
 	{
-		for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+		for(EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 			xr_delete(*it);
 	}
 	WeatherFXs.clear();
 	// clear ambient
-	for (EnvAmbVecIt it = Ambients.begin(); it != Ambients.end(); it++)
+	for(EnvAmbVecIt it = Ambients.begin(); it != Ambients.end(); it++)
 		xr_delete(*it);
 	Ambients.clear();
 
-	for (EnvWindVecIt it = Winds.begin(); it != Winds.end(); it++)
+	for(EnvWindVecIt it = Winds.begin(); it != Winds.end(); it++)
 		xr_delete(*it);
 	Winds.clear();
 
@@ -890,7 +890,7 @@ void CEnvironment::unload()
 	CurrentWeather = 0;
 	CurrentWeatherName = 0;
 
-	if (CurrentEnv)
+	if(CurrentEnv)
 		CurrentEnv->clear();
 
 	Invalidate();
@@ -916,8 +916,8 @@ SThunderboltCollection* CEnvironment::thunderbolt_collection(xr_vector<SThunderb
 	typedef xr_vector<SThunderboltCollection*> Container;
 	Container::iterator container_it = collection.begin();
 	Container::iterator container_end = collection.end();
-	for (; container_it != container_end; ++container_it)
-		if ((*container_it)->section == id)
+	for(; container_it != container_end; ++container_it)
+		if((*container_it)->section == id)
 			return (*container_it);
 
 	NODEFAULT;
@@ -932,9 +932,9 @@ CLensFlareDescriptor* CEnvironment::add_flare(xr_vector<CLensFlareDescriptor*>& 
 
 	Flares::const_iterator flares_it = collection.begin();
 	Flares::const_iterator flares_end = collection.end();
-	for (; flares_it != flares_end; ++flares_it)
+	for(; flares_it != flares_end; ++flares_it)
 	{
-		if ((*flares_it)->section == id)
+		if((*flares_it)->section == id)
 			return (*flares_it);
 	}
 

@@ -45,19 +45,19 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
 	ARTICLE_VECTOR::iterator B = article_vector.begin();
 	ARTICLE_VECTOR::iterator E = last_end;
 
-	for (ARTICLE_ID_VECTOR::const_iterator it = info_portion->ArticlesDisable().begin();
-		 it != info_portion->ArticlesDisable().end(); it++)
+	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->ArticlesDisable().begin();
+		it != info_portion->ArticlesDisable().end(); it++)
 	{
 		FindArticleByIDPred pred(*it);
 		last_end = std::remove_if(B, last_end, pred);
 	}
 	article_vector.erase(last_end, E);
 
-	for (ARTICLE_ID_VECTOR::const_iterator it = info_portion->Articles().begin(); it != info_portion->Articles().end();
-		 it++)
+	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->Articles().begin(); it != info_portion->Articles().end();
+		it++)
 	{
 		FindArticleByIDPred pred(*it);
-		if (std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end())
+		if(std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end())
 			continue;
 
 		CEncyclopediaArticle article;
@@ -71,11 +71,11 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
 		n = *(article.data()->name);
 		callback(GameObject::eArticleInfo)(lua_game_object(), g, n, _atype);
 
-		if (HUD().GetUI())
+		if(HUD().GetUI())
 		{
 			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 			pda_section::part p = pda_section::encyclopedia;
-			switch (article.data()->articleType)
+			switch(article.data()->articleType)
 			{
 			case ARTICLE_DATA::eEncyclopediaArticle:
 				p = pda_section::encyclopedia;
@@ -101,10 +101,10 @@ void CActor::AddGameTask(const CInfoPortion* info_portion) const
 {
 	VERIFY(info_portion);
 
-	if (info_portion->GameTasks().empty())
+	if(info_portion->GameTasks().empty())
 		return;
-	for (TASK_ID_VECTOR::const_iterator it = info_portion->GameTasks().begin(); it != info_portion->GameTasks().end();
-		 it++)
+	for(TASK_ID_VECTOR::const_iterator it = info_portion->GameTasks().begin(); it != info_portion->GameTasks().end();
+		it++)
 	{
 		GameTaskManager().GiveGameTaskToActor(*it, 0);
 	}
@@ -117,18 +117,18 @@ void CActor::AddGameNews(GAME_NEWS_DATA& news_data)
 	news_data.receive_time = Level().GetGameTime();
 	news_vector.push_back(news_data);
 
-	if (HUD().GetUI())
+	if(HUD().GetUI())
 	{
 		HUD().GetUI()->UIMainIngameWnd->ReceiveNews(&news_data);
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-		if (pGameSP)
+		if(pGameSP)
 			pGameSP->PdaMenu->PdaContentsChanged(pda_section::news);
 	}
 }
 
 bool CActor::OnReceiveInfo(shared_str info_id) const
 {
-	if (!CInventoryOwner::OnReceiveInfo(info_id))
+	if(!CInventoryOwner::OnReceiveInfo(info_id))
 		return false;
 
 	CInfoPortion info_portion;
@@ -139,14 +139,14 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 	callback(GameObject::eInventoryInfo)(lua_game_object(), *info_id);
 
-	if (!HUD().GetUI())
+	if(!HUD().GetUI())
 		return false;
 	// только если находимся в режиме single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	if(!pGameSP)
 		return false;
 
-	if (pGameSP->TalkMenu->IsShown())
+	if(pGameSP->TalkMenu->IsShown())
 	{
 		pGameSP->TalkMenu->NeedUpdateQuestions();
 	}
@@ -158,15 +158,15 @@ void CActor::OnDisableInfo(shared_str info_id) const
 {
 	CInventoryOwner::OnDisableInfo(info_id);
 
-	if (!HUD().GetUI())
+	if(!HUD().GetUI())
 		return;
 
 	// только если находимся в режиме single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	if(!pGameSP)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
+	if(pGameSP->TalkMenu->IsShown())
 		pGameSP->TalkMenu->NeedUpdateQuestions();
 }
 
@@ -174,10 +174,10 @@ void CActor::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog)
 {
 	// только если находимся в режиме single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	if(!pGameSP)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
+	if(pGameSP->TalkMenu->IsShown())
 		pGameSP->TalkMenu->NeedUpdateQuestions();
 
 	CPhraseDialogManager::ReceivePhrase(phrase_dialog);
@@ -188,17 +188,17 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 	m_AvailableDialogs.clear();
 	m_CheckedDialogs.clear();
 
-	if (CInventoryOwner::m_known_info_registry->registry().objects_ptr())
+	if(CInventoryOwner::m_known_info_registry->registry().objects_ptr())
 	{
-		for (KNOWN_INFO_VECTOR::const_iterator it =
-				 CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
-			 CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
+		for(KNOWN_INFO_VECTOR::const_iterator it =
+				CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
+			CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
 		{
 			// подгрузить кусочек информации с которым мы работаем
 			CInfoPortion info_portion;
 			info_portion.Load((*it).info_id);
 
-			for (u32 i = 0; i < info_portion.DialogNames().size(); i++)
+			for(u32 i = 0; i < info_portion.DialogNames().size(); i++)
 				AddAvailableDialog(*info_portion.DialogNames()[i], partner);
 		}
 	}
@@ -207,7 +207,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 	CInventoryOwner* pInvOwnerPartner = smart_cast<CInventoryOwner*>(partner);
 	VERIFY(pInvOwnerPartner);
 
-	for (u32 i = 0; i < pInvOwnerPartner->CharacterInfo().ActorDialogs().size(); i++)
+	for(u32 i = 0; i < pInvOwnerPartner->CharacterInfo().ActorDialogs().size(); i++)
 		AddAvailableDialog(pInvOwnerPartner->CharacterInfo().ActorDialogs()[i], partner);
 
 	CPhraseDialogManager::UpdateAvailableDialogs(partner);
@@ -217,7 +217,7 @@ void CActor::TryToTalk()
 {
 	VERIFY(m_pPersonWeLookingAt);
 
-	if (!IsTalking())
+	if(!IsTalking())
 	{
 		RunTalkDialog(m_pPersonWeLookingAt);
 	}
@@ -226,14 +226,14 @@ void CActor::TryToTalk()
 void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 {
 	// предложить поговорить с нами
-	if (talk_partner->OfferTalk(this))
+	if(talk_partner->OfferTalk(this))
 	{
 		StartTalk(talk_partner);
 		// только если находимся в режиме single
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-		if (pGameSP)
+		if(pGameSP)
 		{
-			if (pGameSP->MainInputReceiver())
+			if(pGameSP->MainInputReceiver())
 				Game().StartStopMenu(pGameSP->MainInputReceiver(), true);
 			pGameSP->StartTalk();
 		}
@@ -271,7 +271,7 @@ void CActor::UpdateContact		(u16 contact_id)
 */
 void CActor::NewPdaContact(CInventoryOwner* pInvOwner)
 {
-	if (!IsGameTypeSingle())
+	if(!IsGameTypeSingle())
 		return;
 
 	bool b_alive = !!(smart_cast<CEntityAlive*>(pInvOwner))->g_Alive();
@@ -279,11 +279,11 @@ void CActor::NewPdaContact(CInventoryOwner* pInvOwner)
 
 	Level().MapManager().AddRelationLocation(pInvOwner);
 
-	if (HUD().GetUI())
+	if(HUD().GetUI())
 	{
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 
-		if (pGameSP)
+		if(pGameSP)
 			pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
 	}
 }
@@ -291,10 +291,10 @@ void CActor::NewPdaContact(CInventoryOwner* pInvOwner)
 void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
 {
 	CGameObject* GO = smart_cast<CGameObject*>(pInvOwner);
-	if (GO)
+	if(GO)
 	{
 
-		for (int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t)
+		for(int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t)
 		{
 			ALife::ERelationType tt = (ALife::ERelationType)t;
 			Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
@@ -302,10 +302,10 @@ void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
 		Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
 	};
 
-	if (HUD().GetUI())
+	if(HUD().GetUI())
 	{
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-		if (pGameSP)
+		if(pGameSP)
 		{
 			pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
 		}
@@ -323,10 +323,10 @@ void CActor::AddGameNews_deffered(GAME_NEWS_DATA& news_data, u32 delay)
 }
 void CActor::UpdateDefferedMessages()
 {
-	while (m_defferedMessages.size())
+	while(m_defferedMessages.size())
 	{
 		SDefNewsMsg& M = m_defferedMessages.back();
-		if (M.time <= Engine.TimeManager.GetGlobalTimeMs())
+		if(M.time <= Engine.TimeManager.GetGlobalTimeMs())
 		{
 			AddGameNews(*M.news_data);
 			xr_delete(M.news_data);
@@ -340,7 +340,7 @@ void CActor::UpdateDefferedMessages()
 bool CActor::OnDialogSoundHandlerStart(CInventoryOwner* inv_owner, LPCSTR phrase)
 {
 	CAI_Trader* trader = smart_cast<CAI_Trader*>(inv_owner);
-	if (!trader)
+	if(!trader)
 		return false;
 
 	trader->dialog_sound_start(phrase);
@@ -349,7 +349,7 @@ bool CActor::OnDialogSoundHandlerStart(CInventoryOwner* inv_owner, LPCSTR phrase
 bool CActor::OnDialogSoundHandlerStop(CInventoryOwner* inv_owner)
 {
 	CAI_Trader* trader = smart_cast<CAI_Trader*>(inv_owner);
-	if (!trader)
+	if(!trader)
 		return false;
 
 	trader->dialog_sound_stop();

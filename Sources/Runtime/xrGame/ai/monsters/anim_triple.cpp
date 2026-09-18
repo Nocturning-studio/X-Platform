@@ -22,21 +22,21 @@ void CAnimationTriple::on_release()
 	m_man->release(this, ControlCom::eControlAnimation);
 	m_man->unsubscribe(this, ControlCom::eventAnimationEnd);
 
-	if ((m_data.capture_type & ControlCom::eCapturePath) == ControlCom::eCapturePath)
+	if((m_data.capture_type & ControlCom::eCapturePath) == ControlCom::eCapturePath)
 		m_man->release(this, ControlCom::eControlPath);
 
-	if ((m_data.capture_type & ControlCom::eCaptureMovement) == ControlCom::eCaptureMovement)
+	if((m_data.capture_type & ControlCom::eCaptureMovement) == ControlCom::eCaptureMovement)
 		m_man->release(this, ControlCom::eControlMovement);
 
-	if ((m_data.capture_type & ControlCom::eCaptureDir) == ControlCom::eCaptureDir)
+	if((m_data.capture_type & ControlCom::eCaptureDir) == ControlCom::eCaptureDir)
 		m_man->release(this, ControlCom::eControlDir);
 }
 
 bool CAnimationTriple::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured(ControlCom::eControlAnimation))
+	if(m_man->is_captured(ControlCom::eControlAnimation))
 		return false;
 
 	return true;
@@ -44,19 +44,19 @@ bool CAnimationTriple::check_start_conditions()
 
 void CAnimationTriple::activate()
 {
-	if ((m_data.capture_type & ControlCom::eCapturePath) == ControlCom::eCapturePath)
+	if((m_data.capture_type & ControlCom::eCapturePath) == ControlCom::eCapturePath)
 	{
 		m_man->capture(this, ControlCom::eControlPath);
 		m_man->path_stop(this);
 	}
 
-	if ((m_data.capture_type & ControlCom::eCaptureMovement) == ControlCom::eCaptureMovement)
+	if((m_data.capture_type & ControlCom::eCaptureMovement) == ControlCom::eCaptureMovement)
 	{
 		m_man->capture(this, ControlCom::eControlMovement);
 		m_man->move_stop(this);
 	}
 
-	if ((m_data.capture_type & ControlCom::eCaptureDir) == ControlCom::eCaptureDir)
+	if((m_data.capture_type & ControlCom::eCaptureDir) == ControlCom::eCaptureDir)
 	{
 		m_man->capture(this, ControlCom::eControlDir);
 		m_man->dir_stop(this);
@@ -80,21 +80,21 @@ void CAnimationTriple::pointbreak()
 
 void CAnimationTriple::select_next_state()
 {
-	if (m_current_state == eStateNone)
+	if(m_current_state == eStateNone)
 	{
 		STripleAnimEventData event(m_current_state);
 		m_man->notify(ControlCom::eventTAChange, &event);
 		return;
 	}
 
-	if ((m_current_state == eStateExecute) && m_data.execute_once && (m_previous_state == eStateExecute))
+	if((m_current_state == eStateExecute) && m_data.execute_once && (m_previous_state == eStateExecute))
 		return;
 
 	play_selected();
 
 	// raise event
-	if ((m_current_state != eStateExecute) ||
-		((m_current_state == eStateExecute) && (m_previous_state != eStateExecute)))
+	if((m_current_state != eStateExecute) ||
+	   ((m_current_state == eStateExecute) && (m_previous_state != eStateExecute)))
 	{
 
 		STripleAnimEventData event(m_current_state);
@@ -102,7 +102,7 @@ void CAnimationTriple::select_next_state()
 	}
 
 	m_previous_state = m_current_state;
-	if (m_current_state != eStateExecute)
+	if(m_current_state != eStateExecute)
 		m_current_state = EStateAnimTriple(m_current_state + 1);
 }
 

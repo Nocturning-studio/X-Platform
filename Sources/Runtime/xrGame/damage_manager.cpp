@@ -34,10 +34,10 @@ void CDamageManager::reload(LPCSTR section, CInifile* ini)
 	bool section_exist = ini && ini->section_exist(section);
 
 	// прочитать дефолтные параметры
-	if (section_exist)
+	if(section_exist)
 	{
 		string32 buffer;
-		if (ini->line_exist(section, "default"))
+		if(ini->line_exist(section, "default"))
 		{
 			LPCSTR value = ini->r_string(section, "default");
 			m_default_hit_factor = (float)atof(_GetItem(value, 0, buffer));
@@ -49,7 +49,7 @@ void CDamageManager::reload(LPCSTR section, CInifile* ini)
 	init_bones(section, ini);
 
 	// записать поверху прописанные параметры
-	if (section_exist)
+	if(section_exist)
 	{
 		load_section(section, ini);
 	}
@@ -57,7 +57,7 @@ void CDamageManager::reload(LPCSTR section, CInifile* ini)
 
 void CDamageManager::reload(LPCSTR section, LPCSTR line, CInifile* ini)
 {
-	if (ini && ini->section_exist(section) && ini->line_exist(section, line))
+	if(ini && ini->section_exist(section) && ini->line_exist(section, line))
 		reload(ini->r_string(section, line), ini);
 	else
 		reload(section, 0);
@@ -67,7 +67,7 @@ void CDamageManager::init_bones(LPCSTR section, CInifile* ini)
 {
 	CKinematics* kinematics = smart_cast<CKinematics*>(m_object->Visual());
 	VERIFY(kinematics);
-	for (u16 i = 0; i < kinematics->LL_BoneCount(); i++)
+	for(u16 i = 0; i < kinematics->LL_BoneCount(); i++)
 	{
 		CBoneInstance& bone_instance = kinematics->LL_GetBoneInstance(i);
 		bone_instance.set_param(0, m_default_hit_factor);
@@ -80,9 +80,9 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
 	string32 buffer;
 	CKinematics* kinematics = smart_cast<CKinematics*>(m_object->Visual());
 	CInifile::Sect& damages = ini->r_section(section);
-	for (CInifile::SectCIt i = damages.Data.begin(); damages.Data.end() != i; ++i)
+	for(CInifile::SectCIt i = damages.Data.begin(); damages.Data.end() != i; ++i)
 	{
-		if (xr_strcmp(*(*i).first, "default"))
+		if(xr_strcmp(*(*i).first, "default"))
 		{ // read all except default line
 			VERIFY(m_object);
 			int bone = kinematics->LL_BoneID(i->first);
@@ -91,7 +91,7 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
 			bone_instance.set_param(0, (float)atof(_GetItem(*(*i).second, 0, buffer)));
 			bone_instance.set_param(1, (float)atoi(_GetItem(*(*i).second, 1, buffer)));
 			bone_instance.set_param(2, (float)atof(_GetItem(*(*i).second, 2, buffer)));
-			if (_GetItemCount(*(*i).second) < 4)
+			if(_GetItemCount(*(*i).second) < 4)
 			{
 				bone_instance.set_param(3, (float)atof(_GetItem(*(*i).second, 0, buffer)));
 			}
@@ -99,7 +99,7 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
 			{
 				bone_instance.set_param(3, (float)atof(_GetItem(*(*i).second, 3, buffer)));
 			}
-			if (0 == bone && (fis_zero(bone_instance.get_param(0)) || fis_zero(bone_instance.get_param(2))))
+			if(0 == bone && (fis_zero(bone_instance.get_param(0)) || fis_zero(bone_instance.get_param(2))))
 			{
 				string256 error_str;
 				sprintf_s(error_str, "hit_scale and wound_scale for root bone cannot be zero. see section [%s]",
@@ -112,7 +112,7 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
 
 void CDamageManager::HitScale(const int element, float& hit_scale, float& wound_scale, bool aim_bullet)
 {
-	if (BI_NONE == u16(element))
+	if(BI_NONE == u16(element))
 	{
 		// считаем что параметры для BI_NONE заданы как 1.f
 		hit_scale = 1.f * m_default_hit_factor;
@@ -124,7 +124,7 @@ void CDamageManager::HitScale(const int element, float& hit_scale, float& wound_
 	VERIFY(V);
 	// get hit scale
 	float scale;
-	if (aim_bullet)
+	if(aim_bullet)
 	{
 		scale = V->LL_GetBoneInstance(u16(element)).get_param(3);
 	}

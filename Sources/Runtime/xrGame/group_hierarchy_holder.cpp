@@ -34,8 +34,8 @@ void CGroupHierarchyHolder::update_leader()
 	m_leader = 0;
 	MEMBER_REGISTRY::iterator I = m_members.begin();
 	MEMBER_REGISTRY::iterator E = m_members.end();
-	for (; I != E; ++I)
-		if ((*I)->g_Alive())
+	for(; I != E; ++I)
+		if((*I)->g_Alive())
 		{
 			m_leader = *I;
 			break;
@@ -49,7 +49,7 @@ void CGroupHierarchyHolder::register_in_group(CEntity* member)
 	MEMBER_REGISTRY::iterator I = std::find(m_members.begin(), m_members.end(), member);
 	VERIFY3(I == m_members.end(), "Specified group member has already been found", *member->cName());
 
-	if (m_members.empty())
+	if(m_members.empty())
 	{
 		m_visible_objects = xr_new<VISIBLE_OBJECTS>();
 		m_sound_objects = xr_new<SOUND_OBJECTS>();
@@ -66,10 +66,10 @@ void CGroupHierarchyHolder::register_in_group(CEntity* member)
 void CGroupHierarchyHolder::register_in_squad(CEntity* member)
 {
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
-	if (!leader() && member->g_Alive())
+	if(!leader() && member->g_Alive())
 	{
 		m_leader = member;
-		if (!squad().leader())
+		if(!squad().leader())
 			squad().leader(member);
 	}
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
@@ -77,7 +77,7 @@ void CGroupHierarchyHolder::register_in_squad(CEntity* member)
 
 void CGroupHierarchyHolder::register_in_agent_manager(CEntity* member)
 {
-	if (!get_agent_manager() && smart_cast<CAI_Stalker*>(member))
+	if(!get_agent_manager() && smart_cast<CAI_Stalker*>(member))
 	{
 		m_agent_manager = xr_new<CAgentManager>();
 		agent_manager().memory().set_squad_objects(&visible_objects());
@@ -85,14 +85,14 @@ void CGroupHierarchyHolder::register_in_agent_manager(CEntity* member)
 		agent_manager().memory().set_squad_objects(&hit_objects());
 	}
 
-	if (get_agent_manager())
+	if(get_agent_manager())
 		agent_manager().member().add(member);
 }
 
 void CGroupHierarchyHolder::register_in_group_senses(CEntity* member)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(member);
-	if (monster)
+	if(monster)
 	{
 		monster->memory().visual().set_squad_objects(&visible_objects());
 		monster->memory().sound().set_squad_objects(&sound_objects());
@@ -111,11 +111,11 @@ void CGroupHierarchyHolder::unregister_in_group(CEntity* member)
 void CGroupHierarchyHolder::unregister_in_squad(CEntity* member)
 {
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
-	if (leader() && (leader()->ID() == member->ID()))
+	if(leader() && (leader()->ID() == member->ID()))
 	{
 		update_leader();
-		if (squad().leader()->ID() == member->ID())
-			if (leader())
+		if(squad().leader()->ID() == member->ID())
+			if(leader())
 				squad().leader(leader());
 			else
 				squad().update_leader();
@@ -125,14 +125,14 @@ void CGroupHierarchyHolder::unregister_in_squad(CEntity* member)
 
 void CGroupHierarchyHolder::unregister_in_agent_manager(CEntity* member)
 {
-	if (get_agent_manager())
+	if(get_agent_manager())
 	{
 		agent_manager().member().remove(member);
-		if (agent_manager().member().members().empty())
+		if(agent_manager().member().members().empty())
 			xr_delete(m_agent_manager);
 	}
 
-	if (m_members.empty())
+	if(m_members.empty())
 	{
 		xr_delete(m_visible_objects);
 		xr_delete(m_sound_objects);
@@ -143,7 +143,7 @@ void CGroupHierarchyHolder::unregister_in_agent_manager(CEntity* member)
 void CGroupHierarchyHolder::unregister_in_group_senses(CEntity* member)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(member);
-	if (monster)
+	if(monster)
 	{
 		monster->memory().visual().set_squad_objects(0);
 		monster->memory().sound().set_squad_objects(0);

@@ -62,11 +62,11 @@ class CBlender_Particle : public IBlender
 	virtual void Compile(CBlender_Compile& C)
 	{
 		IBlender::Compile(C);
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_NORMAL_HQ: // deffer
 		case SE_NORMAL_LQ: // deffer
-			switch (oBlend.IDselected)
+			switch(oBlend.IDselected)
 			{
 			case 0:
 				C.begin_Pass("gbuffer_stage_particle", "gbuffer_stage_particle", "main", "main", FALSE, TRUE, TRUE, FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
@@ -93,7 +93,7 @@ class CBlender_Particle : public IBlender
 			break;
 		case SE_SHADOW_DEPTH: // smap
 			// HARD or SOFT: shadow-map
-			switch (oBlend.IDselected)
+			switch(oBlend.IDselected)
 			{
 			case 0:
 				C.begin_Pass("particle", "particle", "main", "main", FALSE, TRUE, TRUE, FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
@@ -104,7 +104,7 @@ class CBlender_Particle : public IBlender
 			break;
 		case SE_DEPTH_PREPASS: // smap
 			// HARD or SOFT: shadow-map
-			switch (oBlend.IDselected)
+			switch(oBlend.IDselected)
 			{
 			case 0:
 				C.begin_Pass("depth_prepass_stage_particle", "depth_prepass_stage_particle", "main", "main", FALSE,
@@ -116,7 +116,6 @@ class CBlender_Particle : public IBlender
 			break;
 		};
 	}
-
 
 	CBlender_Particle()
 	{

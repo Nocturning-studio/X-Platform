@@ -80,14 +80,14 @@ class CUIGameCustom : public DLL_Pure, public ISheduled
 
 	void SetFlag(u32 mask, BOOL flag)
 	{
-		if (flag)
+		if(flag)
 			uFlags |= mask;
 		else
 			uFlags &= ~mask;
 	}
 	void InvertFlag(u32 mask)
 	{
-		if (uFlags & mask)
+		if(uFlags & mask)
 			uFlags &= ~mask;
 		else
 			uFlags |= mask;
@@ -105,7 +105,7 @@ class CUIGameCustom : public DLL_Pure, public ISheduled
 	st_vec m_custom_statics;
 
   public:
-	virtual void SetClGame(game_cl_GameState* g){};
+	virtual void SetClGame(game_cl_GameState* g) {};
 
 	virtual float shedule_Scale();
 	virtual void shedule_Update(u32 dt);
@@ -113,7 +113,7 @@ class CUIGameCustom : public DLL_Pure, public ISheduled
 	CUIGameCustom();
 	virtual ~CUIGameCustom();
 
-	virtual void Init(){};
+	virtual void Init() {};
 
 	virtual void Render();
 	virtual void OnFrame();
@@ -129,7 +129,7 @@ class CUIGameCustom : public DLL_Pure, public ISheduled
 
 	CUIDialogWnd* MainInputReceiver();
 	virtual void ReInitShownUI() = 0;
-	virtual void HideShownDialogs(){};
+	virtual void HideShownDialogs() {};
 
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color);
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment,

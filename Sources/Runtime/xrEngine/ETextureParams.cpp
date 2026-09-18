@@ -24,9 +24,7 @@ xr_token tparam_token[] = {{"Advanced", STextureParams::kMIPFilterAdvanced},
 						   {"Kaiser", STextureParams::kMIPFilterKaiser},
 						   {0, 0}};
 
-xr_token ttype_token[] = {{"2D Texture", STextureParams::ttImage}, {"Cube Map", STextureParams::ttCubeMap},
-						  {"Bump Map", STextureParams::ttBumpMap}, {"Normal Map", STextureParams::ttNormalMap},
-						  {"Terrain", STextureParams::ttTerrain},  {0, 0}};
+xr_token ttype_token[] = {{"2D Texture", STextureParams::ttImage}, {"Cube Map", STextureParams::ttCubeMap}, {"Bump Map", STextureParams::ttBumpMap}, {"Normal Map", STextureParams::ttNormalMap}, {"Terrain", STextureParams::ttTerrain}, {0, 0}};
 
 xr_token tfmt_token[] = {{"DXT1", STextureParams::tfDXT1},
 						 {"DXT1 Alpha", STextureParams::tfADXT1},
@@ -60,38 +58,38 @@ void STextureParams::Load(IReader& F)
 	width = F.r_u32();
 	height = F.r_u32();
 
-	if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE))
+	if(F.find_chunk(THM_CHUNK_TEXTURE_TYPE))
 	{
 		type = (ETType)F.r_u32();
 	}
 
-	if (F.find_chunk(THM_CHUNK_DETAIL_EXT))
+	if(F.find_chunk(THM_CHUNK_DETAIL_EXT))
 	{
 		F.r_stringZ(detail_name);
 		detail_scale = F.r_float();
 	}
 
-	if (F.find_chunk(THM_CHUNK_MATERIAL))
+	if(F.find_chunk(THM_CHUNK_MATERIAL))
 	{
 		material = (ETMaterial)F.r_u32();
 		material_weight = F.r_float();
 	}
 
-	if (F.find_chunk(THM_CHUNK_BUMP))
+	if(F.find_chunk(THM_CHUNK_BUMP))
 	{
 		bump_virtual_height = F.r_float();
 		bump_mode = (ETBumpMode)F.r_u32();
-		if (bump_mode < STextureParams::tbmNone)
+		if(bump_mode < STextureParams::tbmNone)
 		{
 			bump_mode = STextureParams::tbmNone; //.. временно (до полного убирания Autogen)
 		}
 		F.r_stringZ(bump_name);
 	}
 
-	if (F.find_chunk(THM_CHUNK_EXT_NORMALMAP))
+	if(F.find_chunk(THM_CHUNK_EXT_NORMALMAP))
 		F.r_stringZ(ext_normal_map_name);
 
-	if (F.find_chunk(THM_CHUNK_FADE_DELAY))
+	if(F.find_chunk(THM_CHUNK_FADE_DELAY))
 		fade_delay = F.r_u8();
 }
 
@@ -142,7 +140,7 @@ void STextureParams::Save(IWriter& F)
 
 void STextureParams::OnTypeChange(PropValue* prop)
 {
-	switch (type)
+	switch(type)
 	{
 	case ttImage:
 	case ttCubeMap:
@@ -166,7 +164,7 @@ void STextureParams::OnTypeChange(PropValue* prop)
 		fmt = tfDXT1;
 		break;
 	}
-	if (!OnTypeChangeEvent.empty())
+	if(!OnTypeChangeEvent.empty())
 		OnTypeChangeEvent(prop);
 }
 
@@ -178,7 +176,7 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 	PHelper().CreateCaption(items, "Source\\Width", shared_str().sprintf("%d", width));
 	PHelper().CreateCaption(items, "Source\\Height", shared_str().sprintf("%d", height));
 	PHelper().CreateCaption(items, "Source\\Alpha", HasAlpha() ? "present" : "absent");
-	switch (type)
+	switch(type)
 	{
 	case ttImage:
 	case ttCubeMap:
@@ -189,7 +187,7 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 
 		P = PHelper().CreateToken32(items, "Bump\\Mode", (u32*)&bump_mode, tbmode_token);
 		P->OnChangeEvent.bind(this, &STextureParams::OnTypeChange);
-		if (tbmUse == bump_mode)
+		if(tbmUse == bump_mode)
 		{
 			AnsiString path;
 			path = base_name;
@@ -256,12 +254,12 @@ LPCSTR STextureParams::FormatString()
 u32 STextureParams::MemoryUsage(LPCSTR base_name)
 {
 	u32 mem_usage = width * height * 4;
-	if (flags.test(flGenerateMipMaps))
+	if(flags.test(flGenerateMipMaps))
 	{
 		mem_usage *= 3ul;
 		mem_usage /= 2ul;
 	}
-	switch (fmt)
+	switch(fmt)
 	{
 	case STextureParams::tfDXT1:
 	case STextureParams::tfADXT1:
@@ -281,13 +279,13 @@ u32 STextureParams::MemoryUsage(LPCSTR base_name)
 	}
 	string_path fn;
 	FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(base_name, ".seq").c_str());
-	if (FS.exist(fn))
+	if(FS.exist(fn))
 	{
 		string128 buffer;
 		IReader* F = FS.r_open(0, fn);
 		F->r_string(buffer, sizeof(buffer));
 		int cnt = 0;
-		while (!F->eof())
+		while(!F->eof())
 		{
 			F->r_string(buffer, sizeof(buffer));
 			cnt++;

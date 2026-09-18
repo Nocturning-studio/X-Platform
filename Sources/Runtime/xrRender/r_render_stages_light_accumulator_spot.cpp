@@ -10,16 +10,16 @@ void CRender::accumulate_spot_lights(light* L)
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
 	ref_shader shader;
-	if (IRender_Light::OMNIPART == L->LightFlags.type)
+	if(IRender_Light::OMNIPART == L->LightFlags.type)
 	{
 		shader = L->get_shader_point();
-		if (!shader)
+		if(!shader)
 			shader = RenderTarget->s_accum_point;
 	}
 	else
 	{
 		shader = L->get_shader_spot();
-		if (!shader)
+		if(!shader)
 			shader = RenderTarget->s_accum_spot;
 	}
 
@@ -133,12 +133,12 @@ void CRender::accumulate_spot_lights(light* L)
 	{
 		// Select shader
 		u32 _id = 0;
-		if (L->LightFlags.bShadow)
+		if(L->LightFlags.bShadow)
 		{
 			bool bFullSize = (L->TransformContext.ShadowContext.size == RenderImplementation.o.smapsize);
-			if (L->TransformContext.ShadowContext.transluent)
+			if(L->TransformContext.ShadowContext.transluent)
 				_id = SE_L_TRANSLUENT;
-			else if (bFullSize)
+			else if(bFullSize)
 				_id = SE_L_FULLSIZE;
 			else
 				_id = SE_L_NORMAL;
@@ -152,8 +152,8 @@ void CRender::accumulate_spot_lights(light* L)
 
 		// Constants
 		float att_R = L->get_range() * .95f;
-		float att_factor = 1.f / (att_R * att_R); 
-		
+		float att_factor = 1.f / (att_R * att_R);
+
 		// ѕолучаем параметры spot света
 		float spot_cutoff = L->get_cone(); // внешний угол (в радианах)
 

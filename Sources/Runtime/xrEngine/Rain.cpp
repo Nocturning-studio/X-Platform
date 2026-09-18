@@ -23,7 +23,7 @@ struct FastRandom
 	FastRandom(u32 seed)
 	{
 		state = seed;
-		if (state == 0)
+		if(state == 0)
 			state = 123456789;
 
 		// MurmurHash3 finalizer mix function
@@ -52,7 +52,8 @@ struct FastRandom
 		// Оптимизированное преобразование в float [0..1)
 		// Используем маску мантиссы IEEE 754 (быстрее, чем деление/умножение)
 		// union позволяет делать это без нарушения strict aliasing в MSVC
-		union {
+		union
+		{
 			u32 i;
 			float f;
 		} u;
@@ -178,7 +179,7 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 	u32 delta = Engine.TimeManager.GetDeltaTimeMs();
 
-	if (b_hit)
+	if(b_hit)
 	{
 		// Смещаем точку удара немного вверх от поверхности (5 см)
 		const float SURFACE_OFFSET = 0.05f;
@@ -203,13 +204,13 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 
 BOOL CEffect_Rain::RayTrace(const fvec3& s, const fvec3& d, float& range, collide::rq_target tgt)
 {
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return FALSE;
 
 	collide::rq_result RQ;
 	CObject* E = g_pGameLevel->CurrentViewEntity();
 	BOOL res = g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
-	if (res)
+	if(res)
 	{
 		range = RQ.range - 0.01f;
 	}
@@ -222,7 +223,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 	CEnvDescriptorMixer* env = g_pGamePersistent->Environment().CurrentEnv;
 	float factor = env->rain_density;
-	if (factor < EPS_L)
+	if(factor < EPS_L)
 		return;
 
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(MAX_DESIRED_DROPS));
@@ -230,7 +231,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 	// Инициализация при необходимости
 	{
 		FastRandom R(123);
-		while (m_drops.size() < desired_items)
+		while(m_drops.size() < desired_items)
 		{
 			RainDrop one;
 			SpawnDrop(one, SOURCE_RADIUS, R);
@@ -240,7 +241,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 
 	auto& write_queue = GetWriteBuffer();
 	write_queue.clear();
-	if (write_queue.capacity() < m_drops.size())
+	if(write_queue.capacity() < m_drops.size())
 		write_queue.reserve(m_drops.size());
 
 	const fvec3& view_pos = Engine.RenderView.Position;
@@ -253,7 +254,8 @@ void CEffect_Rain::SimulateDrops(float dt)
 	concurrency::combinable<xr_vector<fvec3>> local_splash_queue;
 
 	// ПАРАЛЛЕЛЬНЫЙ ЦИКЛ
-	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i) {
+	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i)
+							  {
 		// Генерация уникального seed
 		u32 seed = u32(i) ^ (current_frame * 719393u) ^ global_time;
 		FastRandom R(seed);
@@ -424,25 +426,24 @@ void CEffect_Rain::SimulateDrops(float dt)
 			item.UV[1] = s_drops_uv[s][1];
 			item.UV[2] = s_drops_uv[s][2];
 			item.UV[3] = s_drops_uv[s][3];
-		}
-	});
+		} });
 
 	// Merge результатов
 	{
 		OPTICK_EVENT("Merge Queues");
-		local_render_buffers.combine_each([&](const xr_vector<RainDrawParam>& local_vec) {
+		local_render_buffers.combine_each([&](const xr_vector<RainDrawParam>& local_vec)
+										  {
 			if (!local_vec.empty())
 			{
 				write_queue.insert(write_queue.end(), local_vec.begin(), local_vec.end());
-			}
-		});
+			} });
 
-		local_splash_queue.combine_each([&](const xr_vector<fvec3>& local_splashes) {
+		local_splash_queue.combine_each([&](const xr_vector<fvec3>& local_splashes)
+										{
 			for (const auto& pos : local_splashes)
 			{
 				SpawnSplash(pos);
-			}
-		});
+			} });
 	}
 }
 
@@ -461,7 +462,7 @@ void CEffect_Rain::OnFrame()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return;
 #endif
 
@@ -471,7 +472,7 @@ void CEffect_Rain::OnFrame()
 	float hemi_factor = 1.f;
 #ifndef _EDITOR
 	CObject* E = g_pGameLevel->CurrentViewEntity();
-	if (E && E->renderable_ROS())
+	if(E && E->renderable_ROS())
 	{
 		float lumi = E->renderable_ROS()->get_luminocity_ao();
 		hemi_factor = 1.f - 2.0f * (0.3f - _min(_min(1.f, lumi), 0.3f));
@@ -479,10 +480,10 @@ void CEffect_Rain::OnFrame()
 #endif
 
 	// State machine for Sound
-	switch (m_state)
+	switch(m_state)
 	{
 	case stIdle:
-		if (factor >= EPS_L)
+		if(factor >= EPS_L)
 		{
 			m_state = stWorking;
 			m_snd_ambient.play(0, sm_Looped);
@@ -490,7 +491,7 @@ void CEffect_Rain::OnFrame()
 		}
 		break;
 	case stWorking:
-		if (factor < EPS_L)
+		if(factor < EPS_L)
 		{
 			m_state = stIdle;
 			m_snd_ambient.stop();
@@ -500,7 +501,7 @@ void CEffect_Rain::OnFrame()
 	}
 
 	// Update ambient sound
-	if (m_snd_ambient._feedback())
+	if(m_snd_ambient._feedback())
 	{
 		fvec3 snd_pos;
 		snd_pos.mad(Engine.RenderView.Position, fvec3().set(0, 1, 0), SOURCE_OFFSET);
@@ -508,7 +509,7 @@ void CEffect_Rain::OnFrame()
 		m_snd_ambient.set_volume(1.1f * factor * hemi_factor);
 	}
 
-	if (m_state == stWorking)
+	if(m_state == stWorking)
 	{
 		// 1. Swap Buffers
 		// Меняем буферы местами. Front идет на рендер (с данными прошлого кадра),
@@ -526,9 +527,9 @@ void CEffect_Rain::OnFrame()
 	else
 	{
 		// Очистка если дождь кончился
-		if (!GetReadBuffer().empty())
+		if(!GetReadBuffer().empty())
 			GetReadBuffer().clear();
-		if (!GetWriteBuffer().empty())
+		if(!GetWriteBuffer().empty())
 			GetWriteBuffer().clear();
 	}
 }
@@ -538,12 +539,12 @@ void CEffect_Rain::Render()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return;
 #endif
 
 	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	if (factor < EPS_L)
+	if(factor < EPS_L)
 		return;
 
 	// Calculate count and color
@@ -557,7 +558,7 @@ void CEffect_Rain::Render()
 	UpdateAndRenderDrops(desired_items, u_rain_color);
 
 	// 2. Render Splashes
-	//UpdateAndRenderSplashes(u_rain_color);
+	// UpdateAndRenderSplashes(u_rain_color);
 }
 
 void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
@@ -568,7 +569,7 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 	const auto& read_queue = GetReadBuffer();
 
 	size_t count = read_queue.size();
-	if (count == 0)
+	if(count == 0)
 		return;
 
 	// Lock Buffer
@@ -581,7 +582,7 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 	float w = DROP_WIDTH;
 
 	// Просто молотим данные из буфера в видеокарту
-	for (const auto& item : read_queue)
+	for(const auto& item : read_queue)
 	{
 		// Билбординг (поворот к камере)
 		// Считаем тут, так как позиция камеры могла измениться с момента симуляции (если многопоток)
@@ -627,7 +628,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 	PROFILE_FUNCTION();
 
 	SplashParticle* P = m_particle_active;
-	if (!P)
+	if(!P)
 		return;
 
 	float dt = Engine.TimeManager.GetDeltaTime();
@@ -646,13 +647,13 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 	fmat4x4 m_transform, m_scale;
 	int p_count = 0;
 
-	while (P)
+	while(P)
 	{
 		SplashParticle* next = P->next;
 
 		// Update
 		P->time -= dt;
-		if (P->time < 0)
+		if(P->time < 0)
 		{
 			FreeParticle(P);
 			P = next;
@@ -660,7 +661,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 		}
 
 		// Render Culling
-		if (::Render->ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R))
+		if(::Render->ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R))
 		{
 			float scale = P->time / PARTICLE_TIME;
 			m_scale.scale(scale, scale, scale);
@@ -672,7 +673,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 			p_count++;
 
 			// Batch flush
-			if (p_count >= PARTICLES_CACHE)
+			if(p_count >= PARTICLES_CACHE)
 			{
 				u32 prim_count = (p_count * m_dm_drop->number_indices) / 3;
 				RenderBackend.Vertex.Unlock(max_verts, m_geom_drops->vb_stride);
@@ -699,7 +700,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 	RenderBackend.Vertex.Unlock(total_verts, m_geom_drops->vb_stride);
 	RenderBackend.Index.Unlock(total_inds);
 
-	if (p_count > 0)
+	if(p_count > 0)
 	{
 		RenderBackend.set_Geometry(m_geom_drops);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, total_verts, i_offset, total_inds / 3);
@@ -712,11 +713,11 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 
 void CEffect_Rain::SpawnSplash(const fvec3& pos)
 {
-	if (::Random.randI(2) != 0)
+	if(::Random.randI(2) != 0)
 		return;
 
 	SplashParticle* P = AllocateParticle();
-	if (!P)
+	if(!P)
 		return;
 
 	P->time = PARTICLE_TIME;
@@ -729,7 +730,7 @@ void CEffect_Rain::SpawnSplash(const fvec3& pos)
 void CEffect_Rain::InitParticlePool()
 {
 	m_particle_pool.resize(MAX_PARTICLES);
-	for (u32 it = 0; it < m_particle_pool.size(); it++)
+	for(u32 it = 0; it < m_particle_pool.size(); it++)
 	{
 		SplashParticle& P = m_particle_pool[it];
 		P.prev = (it > 0) ? (&m_particle_pool[it - 1]) : nullptr;
@@ -753,12 +754,12 @@ void CEffect_Rain::ListRemove(SplashParticle* P, SplashParticle*& LST)
 	SplashParticle* prev = P->prev;
 	SplashParticle* next = P->next;
 
-	if (prev)
+	if(prev)
 		prev->next = next;
-	if (next)
+	if(next)
 		next->prev = prev;
 
-	if (LST == P)
+	if(LST == P)
 		LST = next;
 
 	P->prev = nullptr;
@@ -770,7 +771,7 @@ void CEffect_Rain::ListInsert(SplashParticle* P, SplashParticle*& LST)
 	VERIFY(P);
 	P->prev = nullptr;
 	P->next = LST;
-	if (LST)
+	if(LST)
 		LST->prev = P;
 	LST = P;
 }
@@ -778,7 +779,7 @@ void CEffect_Rain::ListInsert(SplashParticle* P, SplashParticle*& LST)
 CEffect_Rain::SplashParticle* CEffect_Rain::AllocateParticle()
 {
 	SplashParticle* P = m_particle_idle;
-	if (!P)
+	if(!P)
 		return nullptr;
 
 	ListRemove(P, m_particle_idle);

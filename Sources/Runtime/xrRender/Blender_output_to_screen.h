@@ -33,7 +33,7 @@ class CBlender_output_to_screen : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case 0:
 			C.begin_Pass("screen_quad", "output_to_screen_stage");

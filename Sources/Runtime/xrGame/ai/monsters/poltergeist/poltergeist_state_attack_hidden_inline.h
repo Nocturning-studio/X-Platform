@@ -21,9 +21,9 @@ TEMPLATE_SPECIALIZATION
 void CStatePoltergeistAttackHiddenAbstract::execute()
 {
 	// проверить на завершение пути
-	if (object->control().path_builder().detail().time_path_built() > time_state_started)
+	if(object->control().path_builder().detail().time_path_built() > time_state_started)
 	{
-		if (object->control().path_builder().is_path_end(DIST_TO_PATH_END))
+		if(object->control().path_builder().is_path_end(DIST_TO_PATH_END))
 			select_target_point();
 	}
 
@@ -42,7 +42,7 @@ TEMPLATE_SPECIALIZATION
 void CStatePoltergeistAttackHiddenAbstract::select_target_point()
 {
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy_position());
-	if (dist > FLY_AROUND_DIST)
+	if(dist > FLY_AROUND_DIST)
 	{
 		m_target.point = object->EnemyMan.get_enemy_position();
 		m_target.node = object->EnemyMan.get_enemy_vertex();

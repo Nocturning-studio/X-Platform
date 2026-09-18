@@ -45,14 +45,14 @@ IC bool CAI_Stalker::CTradeItem::operator==(u16 id) const
 
 bool CAI_Stalker::tradable_item(CInventoryItem* inventory_item, const u16& current_owner_id)
 {
-	if (!inventory_item->useful_for_NPC())
+	if(!inventory_item->useful_for_NPC())
 		return (false);
 
-	if (CLSID_DEVICE_PDA == inventory_item->object().CLS_ID)
+	if(CLSID_DEVICE_PDA == inventory_item->object().CLS_ID)
 	{
 		CPda* pda = smart_cast<CPda*>(inventory_item);
 		VERIFY(pda);
-		if (pda->GetOriginalOwnerID() == current_owner_id)
+		if(pda->GetOriginalOwnerID() == current_owner_id)
 			return (false);
 	}
 
@@ -64,9 +64,9 @@ u32 CAI_Stalker::fill_items(CInventory& inventory, CGameObject* old_owner, ALife
 	u32 result = 0;
 	TIItemContainer::iterator I = inventory.m_all.begin();
 	TIItemContainer::iterator E = inventory.m_all.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!tradable_item(*I, old_owner->ID()))
+		if(!tradable_item(*I, old_owner->ID()))
 			continue;
 
 		m_temp_items.push_back(CTradeItem(*I, old_owner->ID(), new_owner_id));
@@ -94,7 +94,7 @@ IC void CAI_Stalker::buy_item_virtual(CTradeItem& item)
 {
 	item.m_new_owner_id = ID();
 	m_total_money -= item.m_item->Cost();
-	if (m_current_trader)
+	if(m_current_trader)
 		m_current_trader->set_money(m_current_trader->get_money() + item.m_item->Cost(), true);
 }
 
@@ -106,25 +106,25 @@ void CAI_Stalker::choose_food()
 
 void CAI_Stalker::attach_available_ammo(CWeapon* weapon)
 {
-	if (!weapon || weapon->m_ammoTypes.empty())
+	if(!weapon || weapon->m_ammoTypes.empty())
 		return;
 
 	u32 count = 0;
 	xr_vector<CTradeItem>::iterator I = m_temp_items.begin();
 	xr_vector<CTradeItem>::iterator E = m_temp_items.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (m_total_money < (*I).m_item->Cost())
+		if(m_total_money < (*I).m_item->Cost())
 			continue;
 
-		if (std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), (*I).m_item->object().cNameSect()) ==
-			weapon->m_ammoTypes.end())
+		if(std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), (*I).m_item->object().cNameSect()) ==
+		   weapon->m_ammoTypes.end())
 			continue;
 
 		buy_item_virtual(*I);
 
 		++count;
-		if (count >= MAX_AMMO_ATTACH_COUNT)
+		if(count >= MAX_AMMO_ATTACH_COUNT)
 			break;
 	}
 }
@@ -137,36 +137,40 @@ void CAI_Stalker::choose_weapon(ALife::EWeaponPriorityType weapon_priority_type)
 
 	xr_vector<CTradeItem>::iterator I = m_temp_items.begin();
 	xr_vector<CTradeItem>::iterator E = m_temp_items.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (m_total_money < (*I).m_item->Cost())
+		if(m_total_money < (*I).m_item->Cost())
 			continue;
 
 		ai().ef_storage().non_alife().member_item() = &(*I).m_item->object();
 		int j = ai().ef_storage().m_pfPersonalWeaponType->dwfGetWeaponType();
 		float current_value = -1.f;
-		switch (weapon_priority_type)
+		switch(weapon_priority_type)
 		{
-		case ALife::eWeaponPriorityTypeKnife: {
-			if (1 != j)
+		case ALife::eWeaponPriorityTypeKnife:
+		{
+			if(1 != j)
 				continue;
 			current_value = ai().ef_storage().m_pfItemValue->ffGetValue();
 			break;
 		}
-		case ALife::eWeaponPriorityTypeSecondary: {
-			if (5 != j)
+		case ALife::eWeaponPriorityTypeSecondary:
+		{
+			if(5 != j)
 				continue;
 			current_value = ai().ef_storage().m_pfSmallWeaponValue->ffGetValue();
 			break;
 		}
-		case ALife::eWeaponPriorityTypePrimary: {
-			if ((6 != j) && (8 != j) && (9 != j))
+		case ALife::eWeaponPriorityTypePrimary:
+		{
+			if((6 != j) && (8 != j) && (9 != j))
 				continue;
 			current_value = ai().ef_storage().m_pfMainWeaponValue->ffGetValue();
 			break;
 		}
-		case ALife::eWeaponPriorityTypeGrenade: {
-			if (7 != j)
+		case ALife::eWeaponPriorityTypeGrenade:
+		{
+			if(7 != j)
 				continue;
 			current_value = ai().ef_storage().m_pfItemValue->ffGetValue();
 			break;
@@ -175,13 +179,13 @@ void CAI_Stalker::choose_weapon(ALife::EWeaponPriorityType weapon_priority_type)
 			NODEFAULT;
 		}
 
-		if ((current_value > best_value))
+		if((current_value > best_value))
 		{
 			best_value = current_value;
 			best_weapon = &*I;
 		}
 	}
-	if (best_weapon)
+	if(best_weapon)
 	{
 		buy_item_virtual(*best_weapon);
 		attach_available_ammo(smart_cast<CWeapon*>(best_weapon->m_item));
@@ -196,16 +200,16 @@ void CAI_Stalker::choose_medikit()
 
 	// Получаем текущее здоровье (0.0 .. 1.0)
 	float current_health = conditions().health();
-	bool bleeding = false;//conditions().bleeding_speed() > 0.01f;
+	bool bleeding = false; // conditions().bleeding_speed() > 0.01f;
 
 	ai().ef_storage().non_alife().member() = this;
 
 	xr_vector<CTradeItem>::iterator I = m_temp_items.begin();
 	xr_vector<CTradeItem>::iterator E = m_temp_items.end();
 
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (m_total_money < (*I).m_item->Cost())
+		if(m_total_money < (*I).m_item->Cost())
 			continue;
 
 		CInventoryItem* item = (*I).m_item;
@@ -213,7 +217,7 @@ void CAI_Stalker::choose_medikit()
 		CEatableItem* eatable = smart_cast<CEatableItem*>(item);
 
 		// Если это не медицина - пропускаем
-		if (!medkit && !eatable)
+		if(!medkit && !eatable)
 			continue;
 
 		// Оцениваем предмет
@@ -221,31 +225,31 @@ void CAI_Stalker::choose_medikit()
 		float value = 0.f;
 
 		// Приоритет бинтам, если идет кровь
-		if (item->object().cNameSect() == "bandage")
+		if(item->object().cNameSect() == "bandage")
 		{
 			value = bleeding ? 1000.f : 10.f;
 		}
 		// Приоритет аптечкам, если мало здоровья
-		else if (medkit)
+		else if(medkit)
 		{
 			// Научная > Армейская > Обычная
 			// Но если здоровья много, берем дешевую, чтобы не тратить дорогую
 			float item_weight_val = (float)item->Cost();
 
-			if (current_health < 0.3f)
+			if(current_health < 0.3f)
 				value = item_weight_val; // При смерти берем самое дорогое/мощное
 			else
 				value = 10000.f - item_weight_val; // Иначе берем попроще
 		}
 
-		if (value > best_value)
+		if(value > best_value)
 		{
 			best_value = value;
 			best_medikit = &*I;
 		}
 	}
 
-	if (best_medikit)
+	if(best_medikit)
 		buy_item_virtual(*best_medikit);
 }
 
@@ -256,26 +260,26 @@ void CAI_Stalker::choose_detector()
 	ai().ef_storage().non_alife().member() = this;
 	xr_vector<CTradeItem>::iterator I = m_temp_items.begin();
 	xr_vector<CTradeItem>::iterator E = m_temp_items.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (m_total_money < (*I).m_item->Cost())
+		if(m_total_money < (*I).m_item->Cost())
 			continue;
 
 		CCustomDetector* detector = smart_cast<CCustomDetector*>((*I).m_item);
-		if (!detector)
+		if(!detector)
 			continue;
 
 		// evaluating item
 		ai().ef_storage().non_alife().member_item() = detector;
 		float current_value = ai().ef_storage().m_pfDetectorType->ffGetValue();
 		// choosing the best item
-		if ((current_value > best_value))
+		if((current_value > best_value))
 		{
 			best_detector = &*I;
 			best_value = current_value;
 		}
 	}
-	if (best_detector)
+	if(best_detector)
 		buy_item_virtual(*best_detector);
 }
 
@@ -287,7 +291,7 @@ void CAI_Stalker::choose_equipment()
 
 void CAI_Stalker::select_items()
 {
-	if (!m_can_select_items)
+	if(!m_can_select_items)
 		return;
 
 	choose_food();
@@ -302,7 +306,7 @@ void CAI_Stalker::select_items()
 
 void CAI_Stalker::update_sell_info()
 {
-	if (m_sell_info_actuality)
+	if(m_sell_info_actuality)
 		return;
 
 	m_sell_info_actuality = true;
@@ -317,9 +321,9 @@ void CAI_Stalker::update_sell_info()
 
 	TIItemContainer::iterator I = inventory().m_all.begin();
 	TIItemContainer::iterator E = inventory().m_all.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!tradable_item(*I, ID()))
+		if(!tradable_item(*I, ID()))
 			m_temp_items.push_back(CTradeItem(*I, ID(), ID()));
 	}
 }
@@ -334,7 +338,7 @@ bool CAI_Stalker::can_sell(CInventoryItem const* item)
 
 bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return (trade_parameters().enabled(CTradeParameters::action_show(0), item->object().cNameSect()));
 
 	return (const_cast<CAI_Stalker*>(this)->can_sell(item));
@@ -342,25 +346,27 @@ bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, EItemPlace place)
 
 bool CAI_Stalker::non_conflicted(const CInventoryItem* item, const CWeapon* new_weapon) const
 {
-	if (item->object().ID() == new_weapon->ID())
+	if(item->object().ID() == new_weapon->ID())
 		return (true);
 
 	const CWeapon* weapon = smart_cast<const CWeapon*>(item);
-	if (!weapon)
+	if(!weapon)
 		return (true);
 
-	switch (weapon->ef_weapon_type())
+	switch(weapon->ef_weapon_type())
 	{
 	// knives
-	case 1: {
-		if (weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
+	case 1:
+	{
+		if(weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
 			return (true);
 
 		break;
 	}
 	// pistols
-	case 5: {
-		if (weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
+	case 5:
+	{
+		if(weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
 			return (true);
 
 		break;
@@ -370,20 +376,23 @@ bool CAI_Stalker::non_conflicted(const CInventoryItem* item, const CWeapon* new_
 	// shotguns
 	case 7:
 	// sniper rifles
-	case 8: {
-		if ((new_weapon->ef_weapon_type() < 6) || (new_weapon->ef_weapon_type() > 8))
+	case 8:
+	{
+		if((new_weapon->ef_weapon_type() < 6) || (new_weapon->ef_weapon_type() > 8))
 			return (true);
 
 		break;
 	}
-	case 9: {
-		if (weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
+	case 9:
+	{
+		if(weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
 			return (true);
 
 		break;
 	}
-	case 10: {
-		if (weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
+	case 10:
+	{
+		if(weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
 			return (true);
 
 		break;
@@ -399,14 +408,14 @@ bool CAI_Stalker::enough_ammo(const CWeapon* new_weapon) const
 
 	TIItemContainer::const_iterator I = inventory().m_all.begin();
 	TIItemContainer::const_iterator E = inventory().m_all.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (std::find(new_weapon->m_ammoTypes.begin(), new_weapon->m_ammoTypes.end(), (*I)->object().cNameSect()) ==
-			new_weapon->m_ammoTypes.end())
+		if(std::find(new_weapon->m_ammoTypes.begin(), new_weapon->m_ammoTypes.end(), (*I)->object().cNameSect()) ==
+		   new_weapon->m_ammoTypes.end())
 			continue;
 
 		++ammo_box_count;
-		if (ammo_box_count >= enough_ammo_box_count)
+		if(ammo_box_count >= enough_ammo_box_count)
 			return (true);
 	}
 
@@ -416,28 +425,28 @@ bool CAI_Stalker::enough_ammo(const CWeapon* new_weapon) const
 bool CAI_Stalker::conflicted(const CInventoryItem* item, const CWeapon* new_weapon, bool new_wepon_enough_ammo,
 							 int new_weapon_rank) const
 {
-	if (non_conflicted(item, new_weapon))
+	if(non_conflicted(item, new_weapon))
 		return (false);
 
 	const CWeapon* weapon = smart_cast<const CWeapon*>(item);
 	VERIFY(weapon);
 
 	bool current_wepon_enough_ammo = enough_ammo(weapon);
-	if (current_wepon_enough_ammo && !new_wepon_enough_ammo)
+	if(current_wepon_enough_ammo && !new_wepon_enough_ammo)
 		return (true);
 
-	if (!current_wepon_enough_ammo && new_wepon_enough_ammo)
+	if(!current_wepon_enough_ammo && new_wepon_enough_ammo)
 		return (false);
 
-	if (!fsimilar(weapon->GetCondition(), new_weapon->GetCondition(), .05f))
+	if(!fsimilar(weapon->GetCondition(), new_weapon->GetCondition(), .05f))
 		return (weapon->GetCondition() >= new_weapon->GetCondition());
 
-	if (weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
+	if(weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
 		return (weapon->ef_weapon_type() >= new_weapon->ef_weapon_type());
 
 	u32 weapon_rank = get_rank(weapon->cNameSect());
 
-	if (weapon_rank != (u32)new_weapon_rank)
+	if(weapon_rank != (u32)new_weapon_rank)
 		return (weapon_rank >= (u32)new_weapon_rank);
 
 	return (true);
@@ -446,7 +455,7 @@ bool CAI_Stalker::conflicted(const CInventoryItem* item, const CWeapon* new_weap
 bool CAI_Stalker::can_take(CInventoryItem const* item)
 {
 	const CWeapon* new_weapon = smart_cast<const CWeapon*>(item);
-	if (!new_weapon)
+	if(!new_weapon)
 		return (false);
 
 	bool new_weapon_enough_ammo = enough_ammo(new_weapon);
@@ -454,8 +463,8 @@ bool CAI_Stalker::can_take(CInventoryItem const* item)
 
 	TIItemContainer::iterator I = inventory().m_all.begin();
 	TIItemContainer::iterator E = inventory().m_all.end();
-	for (; I != E; ++I)
-		if (conflicted(*I, new_weapon, new_weapon_enough_ammo, new_weapon_rank))
+	for(; I != E; ++I)
+		if(conflicted(*I, new_weapon, new_weapon_enough_ammo, new_weapon_rank))
 			return (false);
 
 	return (true);
@@ -468,34 +477,34 @@ void CAI_Stalker::remove_personal_only_ammo(const CInventoryItem* item)
 
 	xr_vector<shared_str>::const_iterator I = weapon->m_ammoTypes.begin();
 	xr_vector<shared_str>::const_iterator E = weapon->m_ammoTypes.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		bool found = false;
 
 		TIItemContainer::const_iterator i = inventory().m_all.begin();
 		TIItemContainer::const_iterator e = inventory().m_all.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 		{
-			if ((*i)->object().ID() == weapon->ID())
+			if((*i)->object().ID() == weapon->ID())
 				continue;
 
 			const CWeapon* temp = smart_cast<const CWeapon*>(*i);
-			if (!temp)
+			if(!temp)
 				continue;
 
-			if (std::find(temp->m_ammoTypes.begin(), temp->m_ammoTypes.end(), *I) == temp->m_ammoTypes.end())
+			if(std::find(temp->m_ammoTypes.begin(), temp->m_ammoTypes.end(), *I) == temp->m_ammoTypes.end())
 				continue;
 
 			found = true;
 			break;
 		}
 
-		if (found)
+		if(found)
 			continue;
 
-		for (i = inventory().m_all.begin(); i != e; ++i)
+		for(i = inventory().m_all.begin(); i != e; ++i)
 		{
-			if (xr_strcmp(*I, (*i)->object().cNameSect()))
+			if(xr_strcmp(*I, (*i)->object().cNameSect()))
 				continue;
 
 			NET_Packet packet;
@@ -507,7 +516,7 @@ void CAI_Stalker::remove_personal_only_ammo(const CInventoryItem* item)
 
 void CAI_Stalker::update_conflicted(CInventoryItem* item, const CWeapon* new_weapon)
 {
-	if (non_conflicted(item, new_weapon))
+	if(non_conflicted(item, new_weapon))
 		return;
 
 	remove_personal_only_ammo(item);
@@ -516,18 +525,18 @@ void CAI_Stalker::update_conflicted(CInventoryItem* item, const CWeapon* new_wea
 
 void CAI_Stalker::on_after_take(const CGameObject* object)
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
 
-	if (!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "use_single_item_rule", true))
+	if(!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "use_single_item_rule", true))
 		return;
 
 	const CWeapon* new_weapon = smart_cast<const CWeapon*>(object);
-	if (!new_weapon)
+	if(!new_weapon)
 		return;
 
 	TIItemContainer::iterator I = inventory().m_all.begin();
 	TIItemContainer::iterator E = inventory().m_all.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		update_conflicted(*I, new_weapon);
 }

@@ -6,17 +6,18 @@
 IDirect3DStateBlock9* SimulatorStates::record()
 {
 	CHK_DX(RenderBackend.GetDevice()->BeginStateBlock());
-	for (u32 it = 0; it < States.size(); it++)
+	for(u32 it = 0; it < States.size(); it++)
 	{
 		State& S = States[it];
-		switch (S.type)
+		switch(S.type)
 		{
 		case 0:
 			CHK_DX(RenderBackend.GetDevice()->SetRenderState((D3DRENDERSTATETYPE)S.v1, S.v2));
 			break;
 		case 1:
 			break;
-		case 2: {
+		case 2:
+		{
 			CHK_DX(RenderBackend.GetDevice()->SetSamplerState(
 				S.v1, (D3DSAMPLERSTATETYPE)S.v2,
 				((D3DSAMPLERSTATETYPE)S.v2 == D3DSAMP_MAGFILTER && S.v3 == D3DTEXF_ANISOTROPIC) ? D3DTEXF_LINEAR
@@ -33,10 +34,10 @@ IDirect3DStateBlock9* SimulatorStates::record()
 void SimulatorStates::set_RS(u32 a, u32 b)
 {
 	// Search duplicates
-	for (int t = 0; t < int(States.size()); t++)
+	for(int t = 0; t < int(States.size()); t++)
 	{
 		State& S = States[t];
-		if ((0 == S.type) && (a == S.v1))
+		if((0 == S.type) && (a == S.v1))
 		{
 			States.erase(States.begin() + t);
 			break;
@@ -52,10 +53,10 @@ void SimulatorStates::set_RS(u32 a, u32 b)
 void SimulatorStates::set_SAMP(u32 a, u32 b, u32 c)
 {
 	// Search duplicates
-	for (int t = 0; t < int(States.size()); t++)
+	for(int t = 0; t < int(States.size()); t++)
 	{
 		State& S = States[t];
-		if ((2 == S.type) && (a == S.v1) && (b == S.v2))
+		if((2 == S.type) && (a == S.v1) && (b == S.v2))
 		{
 			States.erase(States.begin() + t);
 			break;
@@ -70,11 +71,11 @@ void SimulatorStates::set_SAMP(u32 a, u32 b, u32 c)
 
 BOOL SimulatorStates::equal(SimulatorStates& S)
 {
-	if (States.size() != S.States.size())
+	if(States.size() != S.States.size())
 		return FALSE;
-	if (States.empty())
+	if(States.empty())
 		return TRUE;
-	if (0 != memcmp(&*States.begin(), &*S.States.begin(), States.size() * sizeof(State)))
+	if(0 != memcmp(&*States.begin(), &*S.States.begin(), States.size() * sizeof(State)))
 		return FALSE;
 	return TRUE;
 }

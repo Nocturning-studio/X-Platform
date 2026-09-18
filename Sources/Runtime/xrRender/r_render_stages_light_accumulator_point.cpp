@@ -6,7 +6,7 @@ void CRender::accumulate_point_lights(light* L)
 	RenderImplementation.stats.l_visible++;
 
 	ref_shader shader = L->get_shader_point();
-	if (!shader)
+	if(!shader)
 		shader = RenderTarget->s_accum_point;
 
 	// Common
@@ -57,12 +57,12 @@ void CRender::accumulate_point_lights(light* L)
 	{
 		// Select shader
 		u32 _id = 0;
-		if (L->LightFlags.bShadow)
+		if(L->LightFlags.bShadow)
 		{
 			bool bFullSize = (L->TransformContext.ShadowContext.size == u32(RenderImplementation.o.smapsize));
-			if (L->TransformContext.ShadowContext.transluent)
+			if(L->TransformContext.ShadowContext.transluent)
 				_id = SE_L_TRANSLUENT;
-			else if (bFullSize)
+			else if(bFullSize)
 				_id = SE_L_FULLSIZE;
 			else
 				_id = SE_L_NORMAL;

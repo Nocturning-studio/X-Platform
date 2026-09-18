@@ -35,9 +35,9 @@ void CStateManagerBurer::execute()
 {
 	u32 state = u32(-1);
 
-	if (object->EnemyMan.get_enemy())
+	if(object->EnemyMan.get_enemy())
 	{
-		switch (object->EnemyMan.get_danger_type())
+		switch(object->EnemyMan.get_danger_type())
 		{
 		case eStrong:
 			state = eStatePanic;
@@ -47,17 +47,17 @@ void CStateManagerBurer::execute()
 			break;
 		}
 	}
-	else if (object->HitMemory.is_hit() && (object->HitMemory.get_last_hit_time() + 10000 > Engine.TimeManager.GetGlobalTimeMs()))
+	else if(object->HitMemory.is_hit() && (object->HitMemory.get_last_hit_time() + 10000 > Engine.TimeManager.GetGlobalTimeMs()))
 		state = eStateHitted;
-	else if (object->hear_dangerous_sound || object->hear_interesting_sound)
+	else if(object->hear_dangerous_sound || object->hear_interesting_sound)
 	{
 		state = eStateHearInterestingSound;
 	}
-	else if (object->time_last_scan + SCAN_STATE_TIME > Engine.TimeManager.GetGlobalTimeMs())
+	else if(object->time_last_scan + SCAN_STATE_TIME > Engine.TimeManager.GetGlobalTimeMs())
 	{
 		state = eStateBurerScanning;
 	}
-	else if (can_eat())
+	else if(can_eat())
 	{
 		state = eStateEat;
 	}
@@ -74,7 +74,7 @@ void CStateManagerBurer::execute()
 
 void CStateManagerBurer::setup_substates()
 {
-	if (current_substate == eStateBurerScanning)
+	if(current_substate == eStateBurerScanning)
 	{
 		SStateDataAction data;
 

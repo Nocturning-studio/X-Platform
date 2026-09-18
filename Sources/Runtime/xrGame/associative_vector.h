@@ -59,7 +59,8 @@ class associative_vector
 	IC iterator rend();
 	IC insert_result insert(const value_type& value);
 	IC iterator insert(iterator where, const value_type& value);
-	template <class _iterator_type> IC void insert(_iterator_type first, _iterator_type last);
+	template <class _iterator_type>
+	IC void insert(_iterator_type first, _iterator_type last);
 	IC void erase(iterator element);
 	IC void erase(iterator first, iterator last);
 	IC size_type erase(const key_type& key);

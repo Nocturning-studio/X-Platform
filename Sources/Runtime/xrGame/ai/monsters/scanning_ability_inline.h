@@ -8,7 +8,7 @@
 TEMPLATE_SPECIALIZATION
 void CScanningAbilityAbstract::on_destroy()
 {
-	if (m_this_scan)
+	if(m_this_scan)
 		object->can_scan = true;
 	m_this_scan = false;
 }
@@ -64,50 +64,50 @@ TEMPLATE_SPECIALIZATION
 void CScanningAbilityAbstract::schedule_update()
 {
 	// check if we end scanning
-	if (m_this_scan && !sound_scan._feedback())
+	if(m_this_scan && !sound_scan._feedback())
 	{
 		object->can_scan = true;
 		m_this_scan = false;
 	}
 
-	if (state == eStateDisabled)
+	if(state == eStateDisabled)
 		return;
-	if (!object->g_Alive())
+	if(!object->g_Alive())
 		return;
 
 	CActor* scan_obj = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!scan_obj)
+	if(!scan_obj)
 		return;
 
 	// проверка на активность
-	if (state == eStateNotActive)
+	if(state == eStateNotActive)
 	{
-		if (scan_obj->Position().distance_to(object->Position()) < scan_radius)
+		if(scan_obj->Position().distance_to(object->Position()) < scan_radius)
 			state = eStateScanning;
 	}
 
-	if (state == eStateNotActive)
+	if(state == eStateNotActive)
 		return;
 
-	if (state == eStateScanning)
+	if(state == eStateScanning)
 	{
 		// обновить scan_value
 		float vel = get_velocity(scan_obj);
-		if (vel > velocity_threshold)
+		if(vel > velocity_threshold)
 		{
 
 			// трейсить не чаще, чем scan_trace_time_freq
-			if (time_last_trace + u32(1000 / scan_trace_time_freq) < Engine.TimeManager.GetGlobalTimeMs())
+			if(time_last_trace + u32(1000 / scan_trace_time_freq) < Engine.TimeManager.GetGlobalTimeMs())
 			{
 				time_last_trace = Engine.TimeManager.GetGlobalTimeMs();
 				scan_value += vel;
 			}
 
-			if (sound_scan._feedback())
+			if(sound_scan._feedback())
 				sound_scan.set_position(scan_obj->Position());
 			else
 			{
-				if (object->can_scan)
+				if(object->can_scan)
 				{
 					// играть звук
 					::Sound->play_at_pos(sound_scan, 0, scan_obj->Position());
@@ -125,7 +125,7 @@ void CScanningAbilityAbstract::schedule_update()
 		}
 	}
 
-	if (scan_value > critical_value)
+	if(scan_value > critical_value)
 	{
 		on_scan_success();
 		state = eStateDisabled;
@@ -135,12 +135,12 @@ void CScanningAbilityAbstract::schedule_update()
 TEMPLATE_SPECIALIZATION
 void CScanningAbilityAbstract::frame_update(u32 dt)
 {
-	if (state != eStateScanning)
+	if(state != eStateScanning)
 		return;
 
-	if (scan_value < 0)
+	if(scan_value < 0)
 		scan_value = 0.f;
-	else if (scan_value > 0)
+	else if(scan_value > 0)
 	{
 		scan_value -= decrease_value * float(dt) / 1000;
 	}
@@ -156,7 +156,7 @@ float CScanningAbilityAbstract::get_velocity(CObject* obj)
 TEMPLATE_SPECIALIZATION
 void CScanningAbilityAbstract::enable()
 {
-	if (state != eStateDisabled)
+	if(state != eStateDisabled)
 		return;
 
 	state = eStateNotActive;

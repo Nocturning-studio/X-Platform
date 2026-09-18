@@ -15,7 +15,7 @@ CTorridZone::~CTorridZone()
 
 BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	CSE_Abstract* abstract = (CSE_Abstract*)(DC);
@@ -40,13 +40,13 @@ void CTorridZone::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (m_idle_sound._feedback())
+	if(m_idle_sound._feedback())
 		m_idle_sound.set_position(Transform().c);
-	if (m_blowout_sound._feedback())
+	if(m_blowout_sound._feedback())
 		m_blowout_sound.set_position(Transform().c);
-	if (m_hit_sound._feedback())
+	if(m_hit_sound._feedback())
 		m_hit_sound.set_position(Transform().c);
-	if (m_entrance_sound._feedback())
+	if(m_entrance_sound._feedback())
 		m_entrance_sound.set_position(Transform().c);
 }
 

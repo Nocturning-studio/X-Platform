@@ -37,7 +37,7 @@ void CActor::cam_SetLadder()
 	float& cam_yaw = C->yaw;
 	float delta_yaw = angle_difference_signed(yaw, cam_yaw);
 
-	if (-f_Ladder_cam_limit < delta_yaw && f_Ladder_cam_limit > delta_yaw)
+	if(-f_Ladder_cam_limit < delta_yaw && f_Ladder_cam_limit > delta_yaw)
 	{
 		yaw = cam_yaw + delta_yaw;
 		float lo = (yaw - f_Ladder_cam_limit);
@@ -49,16 +49,16 @@ void CActor::cam_SetLadder()
 }
 void CActor::camUpdateLadder(float dt)
 {
-	if (!character_physics_support()->movement()->ElevatorState())
+	if(!character_physics_support()->movement()->ElevatorState())
 		return;
-	if (cameras[eacFirstEye]->bClampYaw)
+	if(cameras[eacFirstEye]->bClampYaw)
 		return;
 	float yaw = (-Transform().k.getH());
 
 	float& cam_yaw = cameras[eacFirstEye]->yaw;
 	float delta = angle_difference_signed(yaw, cam_yaw);
 
-	if (-0.05f < delta && 0.05f > delta)
+	if(-0.05f < delta && 0.05f > delta)
 	{
 		yaw = cam_yaw + delta;
 		float lo = (yaw - f_Ladder_cam_limit);
@@ -73,12 +73,12 @@ void CActor::camUpdateLadder(float dt)
 	}
 
 	CElevatorState* es = character_physics_support()->movement()->ElevatorState();
-	if (es && es->State() == CElevatorState::clbClimbingDown)
+	if(es && es->State() == CElevatorState::clbClimbingDown)
 	{
 		float& cam_pitch = cameras[eacFirstEye]->pitch;
 		const float ldown_pitch = cameras[eacFirstEye]->lim_pitch.y;
 		float delta = angle_difference_signed(ldown_pitch, cam_pitch);
-		if (delta > 0.f)
+		if(delta > 0.f)
 			cam_pitch += delta * _min(dt * 10.f, 1.f);
 	}
 }
@@ -121,12 +121,12 @@ ICF BOOL test_point(xrXRC& xrc, const fmat4x4& transform, const fmat3x3& mat, co
 
 	CDB::RESULT* it = xrc.r_begin();
 	CDB::RESULT* end = xrc.r_end();
-	for (; it != end; it++)
+	for(; it != end; it++)
 	{
 		CDB::RESULT& O = *it;
-		if (GMLib.GetMaterialByIdx(O.material)->Flags.is(SGameMtl::flPassable))
+		if(GMLib.GetMaterialByIdx(O.material)->Flags.is(SGameMtl::flPassable))
 			continue;
-		if (CDB::TestBBoxTri(mat, pt, ext, O.verts, FALSE))
+		if(CDB::TestBBoxTri(mat, pt, ext, O.verts, FALSE))
 			return TRUE;
 	}
 	return FALSE;
@@ -137,10 +137,10 @@ ICF BOOL test_point(xrXRC& xrc, const fmat4x4& transform, const fmat3x3& mat, co
 #include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {
-	if (m_holder)
+	if(m_holder)
 		return;
 
-	if (mstate_real & mcClimb && cam_active != eacFreeLook)
+	if(mstate_real & mcClimb && cam_active != eacFreeLook)
 		camUpdateLadder(dt);
 
 	fvec3 point = {0, CameraHeight(), 0}, dangle = {0, 0, 0};
@@ -150,9 +150,9 @@ void CActor::cam_Update(float dt, float fFOV)
 	transform.translate_over(Transform().c);
 
 	// lookout
-	if (this == Level().CurrentControlEntity())
+	if(this == Level().CurrentControlEntity())
 	{
-		if (!fis_zero(r_torso_tgt_roll))
+		if(!fis_zero(r_torso_tgt_roll))
 		{
 			fvec3 src_pt, tgt_pt;
 			float radius = point.y * 0.5f;
@@ -190,19 +190,19 @@ void CActor::cam_Update(float dt, float fFOV)
 			xrc.box_options(0);
 			xrc.box_query(Level().ObjectSpace.GetStaticModel(), bc, bd);
 			u32 tri_count = xrc.r_count();
-			if (tri_count)
+			if(tri_count)
 			{
 				float da = 0.f;
 				BOOL bIntersect = FALSE;
 				fvec3 ext = {w, h, VIEWPORT_NEAR / 2};
-				if (test_point(xrc, transform, mat, ext, radius, alpha))
+				if(test_point(xrc, transform, mat, ext, radius, alpha))
 				{
 					da = PI / 1000.f;
-					if (!fis_zero(r_torso.roll))
+					if(!fis_zero(r_torso.roll))
 						da *= r_torso.roll / _abs(r_torso.roll);
 					float angle = 0.f;
-					for (; _abs(angle) < _abs(alpha); angle += da)
-						if (test_point(xrc, transform, mat, ext, radius, angle))
+					for(; _abs(angle) < _abs(alpha); angle += da)
+						if(test_point(xrc, transform, mat, ext, radius, angle))
 						{
 							bIntersect = TRUE;
 							break;
@@ -219,7 +219,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			r_torso.roll = 0.f;
 		}
 	}
-	if (!fis_zero(r_torso.roll))
+	if(!fis_zero(r_torso.roll))
 	{
 		float radius = point.y * 0.5f;
 		float valid_angle = r_torso.roll / 2.f;
@@ -230,12 +230,12 @@ void CActor::cam_Update(float dt, float fFOV)
 	float flCurrentPlayerY = transform.c.y;
 
 	// Smooth out stair step ups
-	if ((character_physics_support()->movement()->Environment() == peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
+	if((character_physics_support()->movement()->Environment() == peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
 	{
 		fPrevCamPos += dt * 1.5f;
-		if (fPrevCamPos > flCurrentPlayerY)
+		if(fPrevCamPos > flCurrentPlayerY)
 			fPrevCamPos = flCurrentPlayerY;
-		if (flCurrentPlayerY - fPrevCamPos > 0.2f)
+		if(flCurrentPlayerY - fPrevCamPos > 0.2f)
 			fPrevCamPos = flCurrentPlayerY - 0.2f;
 		point.y += fPrevCamPos - flCurrentPlayerY;
 	}
@@ -251,13 +251,13 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	C->Update(point, dangle);
 	C->f_fov = fFOV;
-	if (eacFirstEye != cam_active)
+	if(eacFirstEye != cam_active)
 	{
 		cameras[eacFirstEye]->Update(point, dangle);
 		cameras[eacFirstEye]->f_fov = fFOV;
 	}
 
-	if (psActorFlags.test(AF_PSP))
+	if(psActorFlags.test(AF_PSP))
 	{
 		Cameras().UpdateFromCamera(C);
 	}
@@ -269,10 +269,10 @@ void CActor::cam_Update(float dt, float fFOV)
 	fCurAVelocity = vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude() / Engine.TimeManager.GetDeltaTime();
 	vPrevCamDir = cameras[eacFirstEye]->vDirection;
 
-	if (Level().CurrentEntity() == this)
+	if(Level().CurrentEntity() == this)
 	{
 		Level().Cameras().UpdateFromCamera(C);
-		if (eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo))
+		if(eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo))
 		{
 			Cameras().ApplyDevice(_viewport_near);
 		}
@@ -282,27 +282,27 @@ void CActor::cam_Update(float dt, float fFOV)
 // shot effector stuff
 void CActor::update_camera(CCameraShotEffector* effector)
 {
-	if (!effector)
+	if(!effector)
 		return;
 	//	if (Level().CurrentViewEntity() != this) return;
 
 	CCameraBase* pACam = cam_Active();
-	if (!pACam)
+	if(!pACam)
 		return;
 
-	if (pACam->bClampPitch)
+	if(pACam->bClampPitch)
 	{
-		while (pACam->pitch < pACam->lim_pitch[0])
+		while(pACam->pitch < pACam->lim_pitch[0])
 			pACam->pitch += PI_MUL_2;
-		while (pACam->pitch > pACam->lim_pitch[1])
+		while(pACam->pitch > pACam->lim_pitch[1])
 			pACam->pitch -= PI_MUL_2;
 	};
 
 	effector->ApplyLastAngles(&(pACam->pitch), &(pACam->yaw));
 
-	if (pACam->bClampYaw)
+	if(pACam->bClampYaw)
 		clamp(pACam->yaw, pACam->lim_yaw[0], pACam->lim_yaw[1]);
-	if (pACam->bClampPitch)
+	if(pACam->bClampPitch)
 		clamp(pACam->pitch, pACam->lim_pitch[0], pACam->lim_pitch[1]);
 }
 
@@ -312,12 +312,12 @@ extern Flags32 dbg_net_Draw_Flags;
 
 void CActor::OnRender()
 {
-	//OPTICK_EVENT("CActor::OnRender");
+	// OPTICK_EVENT("CActor::OnRender");
 
-	if (!bDebug)
+	if(!bDebug)
 		return;
 
-	if ((dbg_net_Draw_Flags.is_any((1 << 5))))
+	if((dbg_net_Draw_Flags.is_any((1 << 5))))
 		character_physics_support()->movement()->dbg_Draw();
 
 	OnRender_Network();
@@ -357,7 +357,7 @@ void CActor::LoadShootingEffector (LPCSTR section)
 
 void CActor::LoadSleepEffector(LPCSTR section)
 {
-	if (!m_pSleepEffector)
+	if(!m_pSleepEffector)
 		m_pSleepEffector = xr_new<SSleepEffector>();
 
 	m_pSleepEffector->ppi.duality.h = pSettings->r_float(section, "duality_h");

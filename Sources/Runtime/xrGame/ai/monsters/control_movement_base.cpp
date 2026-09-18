@@ -40,7 +40,7 @@ void CControlMovementBase::load(LPCSTR section)
 void CControlMovementBase::load_velocity(LPCSTR section, LPCSTR line, u32 velocity_id)
 {
 	SVelocityParam velocity_param;
-	if (pSettings->line_exist(section, line))
+	if(pSettings->line_exist(section, line))
 		velocity_param.Load(section, line);
 	m_velocities.insert(mk_pair(velocity_id, velocity_param));
 
@@ -61,7 +61,7 @@ SVelocityParam& CControlMovementBase::get_velocity(u32 velocity_id)
 void CControlMovementBase::update_frame()
 {
 	SControlMovementData* ctrl_data = (SControlMovementData*)m_man->data(this, ControlCom::eControlMovement);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->velocity_target = m_velocity;
@@ -71,7 +71,7 @@ void CControlMovementBase::update_frame()
 void CControlMovementBase::set_velocity(float val, bool max_acc)
 {
 	m_velocity = val;
-	if (max_acc)
+	if(max_acc)
 		m_accel = flt_max;
 	else
 	{
@@ -94,9 +94,9 @@ void CControlMovementBase::stop_accel()
 
 float CControlMovementBase::get_velocity_from_path()
 {
-	if (m_man->path_builder().path().empty())
+	if(m_man->path_builder().path().empty())
 		return 0.f;
-	if (!m_man->path_builder().enabled())
+	if(!m_man->path_builder().enabled())
 		return 0.f;
 
 	// get target velocity from path
@@ -107,11 +107,11 @@ float CControlMovementBase::get_velocity_from_path()
 	u32 cur_point_velocity_index = detail.path()[detail.curr_travel_point_index()].velocity;
 	u32 next_point_velocity_index = u32(-1);
 
-	if (detail.path().size() > detail.curr_travel_point_index() + 1)
+	if(detail.path().size() > detail.curr_travel_point_index() + 1)
 		next_point_velocity_index = detail.path()[detail.curr_travel_point_index() + 1].velocity;
 
 	const CDetailPathManager::STravelParams& current_velocity = detail.velocity(cur_point_velocity_index);
-	if (fis_zero(current_velocity.linear_velocity) && (next_point_velocity_index != u32(-1)))
+	if(fis_zero(current_velocity.linear_velocity) && (next_point_velocity_index != u32(-1)))
 	{
 		const CDetailPathManager::STravelParams& next_velocity = detail.velocity(next_point_velocity_index);
 		velocity = _abs(next_velocity.linear_velocity);

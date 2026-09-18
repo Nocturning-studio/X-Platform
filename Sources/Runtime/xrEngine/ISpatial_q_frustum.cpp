@@ -24,22 +24,22 @@ class CWalkerQFrustum
 		float n_vR = 2 * n_R;
 		Fbox BB;
 		BB.set(n_C.x - n_vR, n_C.y - n_vR, n_C.z - n_vR, n_C.x + n_vR, n_C.y + n_vR, n_C.z + n_vR);
-		if (fcvNone == F->testAABB(BB.data(), fmask))
+		if(fcvNone == F->testAABB(BB.data(), fmask))
 			return;
 
 		// test items
 		xr_vector<ISpatial*>::iterator _it = N->items.begin();
 		xr_vector<ISpatial*>::iterator _end = N->items.end();
-		for (; _it != _end; _it++)
+		for(; _it != _end; _it++)
 		{
 			ISpatial* S = *_it;
-			if (0 == (S->spatial.type & mask))
+			if(0 == (S->spatial.type & mask))
 				continue;
 
 			fvec3& sC = S->spatial.sphere.P;
 			float sR = S->spatial.sphere.R;
 			u32 tmask = fmask;
-			if (fcvNone == F->testSphere(sC, sR, tmask))
+			if(fcvNone == F->testSphere(sC, sR, tmask))
 				continue;
 
 			space->q_result->push_back(S);
@@ -47,9 +47,9 @@ class CWalkerQFrustum
 
 		// recurse
 		float c_R = n_R / 2;
-		for (u32 octant = 0; octant < 8; octant++)
+		for(u32 octant = 0; octant < 8; octant++)
 		{
-			if (0 == N->children[octant])
+			if(0 == N->children[octant])
 				continue;
 			fvec3 c_C;
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);

@@ -60,7 +60,7 @@ IC const fvec3& CPatrolPathManager::destination_position() const
 
 IC void CPatrolPathManager::set_path(const CPatrolPath* path, shared_str path_name)
 {
-	if (m_path == path)
+	if(m_path == path)
 		return;
 	m_path = path;
 	m_path_name = path_name;

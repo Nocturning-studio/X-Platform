@@ -14,7 +14,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 	XML_NODE* _stored_root = xml->GetLocalRoot();
 	xml->SetLocalRoot(xml->NavigateToNode("item", idx));
 	int disabled_cnt = xml->GetNodesNum(xml->GetLocalRoot(), "disabled_key");
-	for (int i = 0; i < disabled_cnt; ++i)
+	for(int i = 0; i < disabled_cnt; ++i)
 	{
 		LPCSTR str = xml->Read("disabled_key", i, NULL);
 		m_disabled_actions.push_back(action_name_to_id(str));
@@ -25,7 +25,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 	int j;
 	int f_num = xml->GetNodesNum(xml->GetLocalRoot(), "function_on_start");
 	m_start_lua_functions.resize(f_num);
-	for (j = 0; j < f_num; ++j)
+	for(j = 0; j < f_num; ++j)
 	{
 		str = xml->Read(xml->GetLocalRoot(), "function_on_start", j, NULL);
 		functor_exists = ai().script_engine().functor(str, m_start_lua_functions[j]);
@@ -34,7 +34,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 
 	f_num = xml->GetNodesNum(xml->GetLocalRoot(), "function_on_stop");
 	m_stop_lua_functions.resize(f_num);
-	for (j = 0; j < f_num; ++j)
+	for(j = 0; j < f_num; ++j)
 	{
 		str = xml->Read(xml->GetLocalRoot(), "function_on_stop", j, NULL);
 		functor_exists = ai().script_engine().functor(str, m_stop_lua_functions[j]);
@@ -48,7 +48,7 @@ bool CUISequenceItem::AllowKey(int dik)
 {
 	xr_vector<int>::iterator it =
 		std::find(m_disabled_actions.begin(), m_disabled_actions.end(), get_binded_action(dik));
-	if (it == m_disabled_actions.end())
+	if(it == m_disabled_actions.end())
 		return true;
 	else
 		return false;
@@ -57,9 +57,9 @@ bool CUISequenceItem::AllowKey(int dik)
 void CallFunctions(xr_vector<luabind::functor<void>>& v)
 {
 	xr_vector<luabind::functor<void>>::iterator it = v.begin();
-	for (; it != v.end(); ++it)
+	for(; it != v.end(); ++it)
 	{
-		if ((*it).is_valid())
+		if((*it).is_valid())
 			(*it)();
 	}
 }
@@ -102,12 +102,12 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	xml_init.InitWindow(uiXml, "global_wnd", 0, m_UIWindow);
 	//.	xml_init.InitAutoStaticGroup(uiXml, "global_wnd",		m_UIWindow);
 
-	for (int i = 0; i < items_count; ++i)
+	for(int i = 0; i < items_count; ++i)
 	{
 		LPCSTR _tp = uiXml.ReadAttrib("item", i, "type", "");
 		bool bVideo = 0 == _stricmp(_tp, "video");
 		CUISequenceItem* pItem = 0;
-		if (bVideo)
+		if(bVideo)
 			pItem = xr_new<CUISequenceVideoItem>(this);
 		else
 			pItem = xr_new<CUISequenceSimpleItem>(this);
@@ -135,9 +135,9 @@ void CUISequencer::Destroy()
 
 void CUISequencer::Stop()
 {
-	if (m_items.size())
+	if(m_items.size())
 	{
-		if (m_bPlayEachItem)
+		if(m_bPlayEachItem)
 		{
 			Next();
 			return;
@@ -153,12 +153,12 @@ void CUISequencer::Stop()
 
 void CUISequencer::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
-	if (!m_bActive)
+	if(!m_bActive)
 		return;
 
-	if (!m_items.size())
+	if(!m_items.size())
 	{
 		Stop();
 		return;
@@ -166,11 +166,11 @@ void CUISequencer::OnFrame()
 	else
 	{
 		CUISequenceItem* pCurrItem = m_items.front();
-		if (!pCurrItem->IsPlaying())
+		if(!pCurrItem->IsPlaying())
 			Next();
 	}
 
-	if (!m_items.size())
+	if(!m_items.size())
 	{
 		Stop();
 		return;
@@ -182,9 +182,9 @@ void CUISequencer::OnFrame()
 
 void CUISequencer::OnRender()
 {
-	//OPTICK_EVENT("CUISequencer::OnRender");
+	// OPTICK_EVENT("CUISequencer::OnRender");
 
-	if (m_UIWindow->IsShown())
+	if(m_UIWindow->IsShown())
 		m_UIWindow->Draw();
 	VERIFY(m_items.size());
 	m_items.front()->OnRender();
@@ -194,13 +194,13 @@ void CUISequencer::Next()
 {
 	CUISequenceItem* pCurrItem = m_items.front();
 	bool can_stop = pCurrItem->Stop();
-	if (!can_stop)
+	if(!can_stop)
 		return;
 
 	m_items.pop_front();
 	delete_data(pCurrItem);
 
-	if (m_items.size())
+	if(m_items.size())
 	{
 		pCurrItem = m_items.front();
 		pCurrItem->Start();
@@ -209,7 +209,7 @@ void CUISequencer::Next()
 
 bool CUISequencer::GrabInput()
 {
-	if (m_items.size())
+	if(m_items.size())
 		return m_items.front()->GrabInput();
 	else
 		return false;
@@ -217,82 +217,82 @@ bool CUISequencer::GrabInput()
 
 void CUISequencer::IR_OnMousePress(int btn)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnMousePress(btn);
 }
 
 void CUISequencer::IR_OnMouseRelease(int btn)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnMouseRelease(btn);
 }
 
 void CUISequencer::IR_OnMouseHold(int btn)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnMouseHold(btn);
 }
 
 void CUISequencer::IR_OnMouseMove(int x, int y)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnMouseMove(x, y);
 }
 
 void CUISequencer::IR_OnMouseStop(int x, int y)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnMouseStop(x, y);
 }
 
 void CUISequencer::IR_OnKeyboardRelease(int dik)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnKeyboardRelease(dik);
 }
 
 void CUISequencer::IR_OnKeyboardHold(int dik)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
 }
 
 void CUISequencer::IR_OnMouseWheel(int direction)
 {
-	if (!GrabInput() && m_pStoredInputReceiver)
+	if(!GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnMouseWheel(direction);
 }
 
 void CUISequencer::IR_OnKeyboardPress(int dik)
 {
-	if (m_items.size())
+	if(m_items.size())
 		m_items.front()->OnKeyboardPress(dik);
 
 	bool b = true;
-	if (m_items.size())
+	if(m_items.size())
 		b &= m_items.front()->AllowKey(dik);
 
-	if (b && is_binded(kQUIT, dik))
+	if(b && is_binded(kQUIT, dik))
 	{
 		Stop();
 		return;
 	}
 
-	if (b && !GrabInput() && m_pStoredInputReceiver)
+	if(b && !GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_OnKeyboardPress(dik);
 }
 
 void CUISequencer::IR_OnActivate()
 {
-	if (!pInput)
+	if(!pInput)
 		return;
 	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+	for(i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
 	{
-		if (IR_GetKeyState(i))
+		if(IR_GetKeyState(i))
 		{
 			EGameActions action = get_binded_action(i);
-			switch (action)
+			switch(action)
 			{
 			case kFWD:
 			case kBACK:
@@ -306,7 +306,8 @@ void CUISequencer::IR_OnActivate()
 			case kACCEL:
 			case kL_LOOKOUT:
 			case kR_LOOKOUT:
-			case kWPN_FIRE: {
+			case kWPN_FIRE:
+			{
 				IR_OnKeyboardPress(i);
 			}
 			break;

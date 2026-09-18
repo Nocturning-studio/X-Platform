@@ -37,19 +37,19 @@ bool CUITrackBar::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	bool result = CUIWindow::OnMouse(x, y, mouse_action);
 
-	if (m_bCursorOverWindow)
+	if(m_bCursorOverWindow)
 	{
 		// Показываем текст при наведении
-		if (!m_pStaticValue->GetVisible())
+		if(!m_pStaticValue->GetVisible())
 			m_pStaticValue->SetVisible(true);
 
-		if (pInput->iGetAsyncBtnState(0))
+		if(pInput->iGetAsyncBtnState(0))
 			UpdatePosRelativeToMouse();
 	}
 	else
 	{
 		// Скрываем текст когда курсор ушел
-		if (m_pStaticValue->GetVisible())
+		if(m_pStaticValue->GetVisible())
 			m_pStaticValue->SetVisible(false);
 	}
 
@@ -78,7 +78,7 @@ void CUITrackBar::Init(float x, float y, float width, float height)
 
 void CUITrackBar::SetCurrentValue()
 {
-	if (m_b_is_float)
+	if(m_b_is_float)
 		GetOptFloatValue(m_f_val, m_f_min, m_f_max);
 	else
 		GetOptIntegerValue(m_i_val, m_i_min, m_i_max);
@@ -96,7 +96,7 @@ void CUITrackBar::Draw()
 void CUITrackBar::SaveValue()
 {
 	CUIOptionsItem::SaveValue();
-	if (m_b_is_float)
+	if(m_b_is_float)
 		SaveOptFloatValue(m_f_val);
 	else
 		SaveOptIntegerValue(m_i_val);
@@ -104,7 +104,7 @@ void CUITrackBar::SaveValue()
 
 bool CUITrackBar::IsChanged()
 {
-	if (m_b_is_float)
+	if(m_b_is_float)
 	{
 		return !fsimilar(m_f_back_up, m_f_val);
 	}
@@ -116,7 +116,7 @@ bool CUITrackBar::IsChanged()
 
 void CUITrackBar::SetStep(float step)
 {
-	if (m_b_is_float)
+	if(m_b_is_float)
 		m_f_step = step;
 	else
 		m_i_step = iFloor(step);
@@ -124,7 +124,7 @@ void CUITrackBar::SetStep(float step)
 
 void CUITrackBar::SeveBackUpValue()
 {
-	if (m_b_is_float)
+	if(m_b_is_float)
 		m_f_back_up = m_f_val;
 	else
 		m_i_back_up = m_i_val;
@@ -132,7 +132,7 @@ void CUITrackBar::SeveBackUpValue()
 
 void CUITrackBar::Undo()
 {
-	if (m_b_is_float)
+	if(m_b_is_float)
 		m_f_val = m_f_back_up;
 	else
 		m_i_val = m_i_back_up;
@@ -153,7 +153,7 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 {
 	float _bkf = 0.0f;
 	int _bki = 0;
-	if (m_b_is_float)
+	if(m_b_is_float)
 	{
 		_bkf = m_f_val;
 	}
@@ -166,12 +166,12 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 	float window_width = GetWidth();
 	float fpos = cursor_pos.x;
 
-	if (GetInvert())
+	if(GetInvert())
 		fpos = window_width - fpos;
 
-	if (fpos < btn_width / 2)
+	if(fpos < btn_width / 2)
 		fpos = btn_width / 2;
-	else if (fpos > window_width - btn_width / 2)
+	else if(fpos > window_width - btn_width / 2)
 		fpos = window_width - btn_width / 2;
 
 	float __fval;
@@ -187,20 +187,20 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 	int _vi = iFloor(_v);
 	float _vf = __fstep * _vi;
 
-	if (_d - _vf > __fstep / 2.0f)
+	if(_d - _vf > __fstep / 2.0f)
 		_vf += __fstep;
 
 	__fval = __fmin + _vf;
 
 	clamp(__fval, __fmin, __fmax);
 
-	if (m_b_is_float)
+	if(m_b_is_float)
 		m_f_val = __fval;
 	else
 		m_i_val = iFloor(__fval);
 
 	bool b_ch = false;
-	if (m_b_is_float)
+	if(m_b_is_float)
 	{
 		b_ch = !fsimilar(_bkf, m_f_val);
 	}
@@ -209,7 +209,7 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 		b_ch = (_bki != m_i_val);
 	}
 
-	if (b_ch)
+	if(b_ch)
 		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
 
 	UpdatePos();
@@ -220,7 +220,7 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 void CUITrackBar::UpdatePos()
 {
 #ifdef DEBUG
-	if (m_b_is_float)
+	if(m_b_is_float)
 		R_ASSERT2(m_f_val >= m_f_min && m_f_val <= m_f_max,
 				  "CUITrackBar::UpdatePos() - m_val >= m_min && m_val <= m_max");
 	else
@@ -238,7 +238,7 @@ void CUITrackBar::UpdatePos()
 	float __fmin = (m_b_is_float) ? m_f_min : (float)m_i_min;
 
 	pos.x = (__fval - __fmin) * free_space / (__fmax - __fmin);
-	if (GetInvert())
+	if(GetInvert())
 		pos.x = free_space - pos.x;
 
 	m_pSlider->SetWndPos(pos);
@@ -250,11 +250,11 @@ void CUITrackBar::UpdatePos()
 
 void CUITrackBar::UpdateStaticValue()
 {
-	if (!m_pStaticValue)
+	if(!m_pStaticValue)
 		return;
 
 	string128 buf;
-	if (m_b_is_float)
+	if(m_b_is_float)
 		sprintf(buf, "%.2f", m_f_val);
 	else
 		sprintf(buf, "%d", m_i_val);
@@ -264,9 +264,9 @@ void CUITrackBar::UpdateStaticValue()
 
 void CUITrackBar::OnMessage(const char* message)
 {
-	if (0 == xr_strcmp(message, "set_default_value"))
+	if(0 == xr_strcmp(message, "set_default_value"))
 	{
-		if (m_b_is_float)
+		if(m_b_is_float)
 			m_f_val = m_f_min + (m_f_max - m_f_min) / 2.0f;
 		else
 			m_i_val = m_i_min + iFloor((m_i_max - m_i_min) / 2.0f);
@@ -290,6 +290,6 @@ void CUITrackBar::SetCheck(bool b)
 void CUITrackBar::OnFocusLost()
 {
 	CUIWindow::OnFocusLost();
-	if (m_pStaticValue && m_pStaticValue->GetVisible())
+	if(m_pStaticValue && m_pStaticValue->GetVisible())
 		m_pStaticValue->SetVisible(false);
 }

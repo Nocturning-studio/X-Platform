@@ -85,10 +85,10 @@ static int solve_R_angle(const float g[3], const float s[3], const float t[3], c
 
 	float alpha[3];
 
-	for (int j = 0; j < 3; j++)
+	for(int j = 0; j < 3; j++)
 	{
 		alpha[j] = 0;
-		for (int i = 0; i < 3; i++)
+		for(int i = 0; i < 3; i++)
 			alpha[j] += T[j][i] * t[i];
 	}
 
@@ -105,21 +105,21 @@ static int solve_R_angle(const float g[3], const float s[3], const float t[3], c
 
 	n = solve_trig1(a, b, c, temp);
 
-	if (n == 2)
+	if(n == 2)
 	{
 		// Two positive solutions. choose first
-		if (temp[0] < 0 && temp[1] < 0)
+		if(temp[0] < 0 && temp[1] < 0)
 		{
 			r_angle = temp[0];
 			// printf("Two solutions: %lf %lf\n", temp[0], temp[1]);
 			n = 1;
 		}
-		else if (temp[0] < 0)
+		else if(temp[0] < 0)
 		{
 			n = 1;
 			r_angle = temp[0];
 		}
-		else if (temp[1] < 0)
+		else if(temp[1] < 0)
 		{
 			n = 1;
 			r_angle = temp[1];
@@ -130,10 +130,10 @@ static int solve_R_angle(const float g[3], const float s[3], const float t[3], c
 			r_angle = temp[1]; //?
 		}
 	}
-	else if (n == 1)
+	else if(n == 1)
 	{
 		// Is solution positive ?
-		if (temp[0] < 0)
+		if(temp[0] < 0)
 			n = 0;
 		else
 			r_angle = temp[0];
@@ -169,7 +169,7 @@ float get_circle_equation(const float ee[3], const float axis[3], const float po
 
 	float alpha;
 
-	if (!law_of_cosines(wn, upper_len, lower_len, alpha))
+	if(!law_of_cosines(wn, upper_len, lower_len, alpha))
 		return 0;
 
 	// center of circle (origin is location of first S joint)
@@ -185,7 +185,7 @@ float get_circle_equation(const float ee[3], const float axis[3], const float po
 	// inverting the normal vector
 	//
 
-	if (DOT(n, pos_axis) < 0.0)
+	if(DOT(n, pos_axis) < 0.0)
 		vecscalarmult(n, n, -1.0);
 
 	vecscalarmult(temp, n, DOT(axis, n));
@@ -224,7 +224,7 @@ int scale_goal(const float l1[3], const float l2[3], float g[3])
 	float max_len = (L1 + L2) * 0.9999f;
 	//    float min_len = fabs(L1 - L2);
 
-	if (g_len > max_len)
+	if(g_len > max_len)
 	{
 		vecscalarmult(g, g, max_len / (g_len /**1.01f*/));
 		return 1;
@@ -262,11 +262,11 @@ int SRS::SetGoalPos(const float eee[3], const Matrix E, float& rangle)
 	// the ee in the R1 frame as p_r1 and ee_r1
 
 	get_translation(T, p_r1);
-	hmatmult(Temp, (float(*)[4])E, S);
+	hmatmult(Temp, (float (*)[4])E, S);
 	get_translation(Temp, s);
 	cpvector(ee, eee);
 
-	if (project_to_workspace)
+	if(project_to_workspace)
 		scale_goal(p_r1, s, ee);
 
 	//
@@ -275,7 +275,7 @@ int SRS::SetGoalPos(const float eee[3], const Matrix E, float& rangle)
 	//
 	radius = get_circle_equation(ee, proj_axis, pos_axis, upper_len, norm(s), c, u, v, n);
 
-	if (!solve_R_angle(ee, s, p_r1, T, r_angle))
+	if(!solve_R_angle(ee, s, p_r1, T, r_angle))
 		return 0;
 	rangle = r_angle;
 
@@ -312,7 +312,7 @@ int SRS::SetGoal(const Matrix GG, float& rangle)
 	get_translation(T, p_r1);
 	get_translation(S, s);
 
-	if (project_to_workspace && scale_goal(p_r1, s, ee))
+	if(project_to_workspace && scale_goal(p_r1, s, ee))
 		set_translation(G, ee);
 
 	EvaluateCircle(ee);
@@ -323,7 +323,7 @@ int SRS::SetGoal(const Matrix GG, float& rangle)
 	// Build rotation matrix about the R joint
 	//
 
-	if (!solve_R_angle(ee, s, p_r1, T, r_angle))
+	if(!solve_R_angle(ee, s, p_r1, T, r_angle))
 		return 0;
 	r_angle = -r_angle;
 	rangle = r_angle;
@@ -398,7 +398,7 @@ inline void make_frame(const float p[3], float p_scale, const float q[3], Matrix
 
 	// z vector is x cross y
 
-	if (invert)
+	if(invert)
 	{
 		R[0][0] = x[0];
 		R[1][0] = x[1];
@@ -480,9 +480,9 @@ void SRS::SolveR1R2(float angle, Matrix R1, Matrix R2)
 	hmatmult(G2, R2, SRT);
 	hmatmult(G2, G2, R1);
 	printf("Displaying the error matrix\n");
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for(int j = 0; j < 4; j++)
 			printf(" %lf ", fabs(G2[i][j] - G[i][j]));
 		printf("\n");
 	}
@@ -674,7 +674,7 @@ static void get_aim_circle_equation(const float g[3], const float a[3], const fl
 	float beta = PI - alpha;
 
 	float delta = asinf(std::sin(beta) * L3 / L4);
-	if (delta < 0)
+	if(delta < 0)
 		delta = -delta;
 	float gamma = PI - delta - beta;
 

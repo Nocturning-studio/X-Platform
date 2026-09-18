@@ -10,7 +10,8 @@
 
 #include "condition_state.h"
 
-template <typename _world_property, typename _edge_value_type> class COperatorAbstract
+template <typename _world_property, typename _edge_value_type>
+class COperatorAbstract
 {
   public:
 	typedef _edge_value_type _edge_value_type;

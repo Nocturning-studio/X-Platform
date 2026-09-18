@@ -13,7 +13,7 @@ void xrServer::Perform_transfer(NET_Packet& PR, NET_Packet& PT, CSE_Abstract* wh
 	u32 time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// 1. Perform migration if need it
-	if (from->owner != to->owner)
+	if(from->owner != to->owner)
 		PerformMigration(what, from->owner, to->owner);
 	// Log						("B");
 

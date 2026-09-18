@@ -1,7 +1,8 @@
 #pragma once
 #include "../state.h"
 
-template <typename _Object> class CStateMonsterTestState : public CState<_Object>
+template <typename _Object>
+class CStateMonsterTestState : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 	typedef CState<_Object>* state_ptr;
@@ -12,7 +13,8 @@ template <typename _Object> class CStateMonsterTestState : public CState<_Object
 	virtual void setup_substates();
 };
 
-template <typename _Object> class CStateMonsterTestCover : public CState<_Object>
+template <typename _Object>
+class CStateMonsterTestCover : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 	typedef CState<_Object>* state_ptr;

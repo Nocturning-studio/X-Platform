@@ -9,7 +9,7 @@
 
 void __stdcall xrSkin2W_SSE(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInstance* Bones)
 {
-	for (u32 i = 0; i < vCount; ++i)
+	for(u32 i = 0; i < vCount; ++i)
 	{
 		vertBoned2W& src = S[i];
 		vertRender& dst = D[i];
@@ -37,7 +37,7 @@ void __stdcall xrSkin2W_SSE(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInst
 
 		__m128 final_pos, final_norm;
 
-		if (idx0 == idx1)
+		if(idx0 == idx1)
 		{
 			final_pos = pos0;
 			final_norm = norm0;

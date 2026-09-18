@@ -17,7 +17,7 @@ class CSafeValue
 	}
 	IC void new_val(float& val)
 	{
-		if (_valid(val))
+		if(_valid(val))
 			m_safe_value = val;
 		else
 			val = m_safe_value;

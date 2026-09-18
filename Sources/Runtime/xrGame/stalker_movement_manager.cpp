@@ -59,14 +59,14 @@ fvec3 SplineCatmullRom(const fvec3& p0, const fvec3& p1, const fvec3& p2, const 
 void CStalkerMovementManager::predict_smooth_direction()
 {
 	// [ИЗМЕНЕНИЕ] Разрешаем сглаживание для любого движения (кроме стояния)
-	if (path().empty() || movement_type() == eMovementTypeStand)
+	if(path().empty() || movement_type() == eMovementTypeStand)
 		return;
 
 	u32 idx = detail().curr_travel_point_index();
 	u32 count = path().size();
 
 	// Нам нужно минимум 4 точки для полноценного сплайна
-	if (idx + 2 >= count)
+	if(idx + 2 >= count)
 		return;
 
 	fvec3 p0, p1, p2, p3;
@@ -78,13 +78,13 @@ void CStalkerMovementManager::predict_smooth_direction()
 	p2 = path()[idx + 1].position;
 
 	// P0 - предыдущая точка
-	if (idx > 0)
+	if(idx > 0)
 		p0 = path()[idx - 1].position;
 	else
 		p0 = p1;
 
 	// P3 - точка после следующей
-	if (idx + 2 < count)
+	if(idx + 2 < count)
 		p3 = path()[idx + 2].position;
 	else
 		p3 = p2;
@@ -100,7 +100,7 @@ void CStalkerMovementManager::predict_smooth_direction()
 	dir.sub(smooth_target, object().Position());
 
 	// Защита от нулевого вектора (если мы стоим точно в точке)
-	if (dir.square_magnitude() < EPS_L)
+	if(dir.square_magnitude() < EPS_L)
 		return;
 
 	dir.normalize();
@@ -117,9 +117,9 @@ void CStalkerMovementManager::predict_smooth_direction()
 
 IC void CStalkerMovementManager::setup_head_speed()
 {
-	if (mental_state() == eMentalStateFree)
+	if(mental_state() == eMentalStateFree)
 	{
-		if (object().sight().enabled())
+		if(object().sight().enabled())
 			m_head.speed = PI_DIV_2;
 	}
 	else
@@ -133,7 +133,7 @@ IC void CStalkerMovementManager::add_velocity(int mask, float linear, float comp
 
 IC float CStalkerMovementManager::path_direction_angle()
 {
-	if (!path().empty() && (path().size() > detail().curr_travel_point_index() + 1))
+	if(!path().empty() && (path().size() > detail().curr_travel_point_index() + 1))
 	{
 		fvec3 t;
 		t.sub(path()[detail().curr_travel_point_index() + 1].position,
@@ -164,7 +164,7 @@ void CStalkerMovementManager::initialize()
 
 void CStalkerMovementManager::set_desired_position(const fvec3* desired_position)
 {
-	if (desired_position)
+	if(desired_position)
 	{
 		m_target.m_use_desired_position = true;
 		VERIFY2(object().movement().accessible(*desired_position) || show_restrictions(&restrictions()),
@@ -182,10 +182,10 @@ void CStalkerMovementManager::set_desired_position(const fvec3* desired_position
 
 IC void CStalkerMovementManager::setup_body_orientation()
 {
-	if (path().empty())
+	if(path().empty())
 		return;
 
-	if (path().size() <= detail().curr_travel_point_index() + 1)
+	if(path().size() <= detail().curr_travel_point_index() + 1)
 		return;
 
 	fvec3 temp;
@@ -317,13 +317,13 @@ void CStalkerMovementManager::reinit()
 
 bool CStalkerMovementManager::script_control()
 {
-	if (!object().GetScriptControl())
+	if(!object().GetScriptControl())
 		return (false);
 
-	if (!object().GetCurrentAction())
+	if(!object().GetCurrentAction())
 		return (false);
 
-	if (fis_zero(object().GetCurrentAction()->m_tMovementAction.m_fSpeed))
+	if(fis_zero(object().GetCurrentAction()->m_tMovementAction.m_fSpeed))
 		return (false);
 
 	object().m_fCurSpeed = object().GetCurrentAction()->m_tMovementAction.m_fSpeed;
@@ -334,10 +334,11 @@ bool CStalkerMovementManager::script_control()
 void CStalkerMovementManager::setup_movement_params()
 {
 	inherited::set_path_type(path_type());
-	switch (path_type())
+	switch(path_type())
 	{
 	case MovementManager::ePathTypeGamePath:
-	case MovementManager::ePathTypePatrolPath: {
+	case MovementManager::ePathTypePatrolPath:
+	{
 		set_desired_position(0);
 		break;
 	}
@@ -346,10 +347,10 @@ void CStalkerMovementManager::setup_movement_params()
 	detail().set_path_type(detail_path_type());
 	level_path().set_evaluator(base_level_params());
 
-	if (use_desired_position())
+	if(use_desired_position())
 	{
 		VERIFY(_valid(desired_position()));
-		if (!restrictions().accessible(desired_position()))
+		if(!restrictions().accessible(desired_position()))
 		{
 			fvec3 temp;
 			level_path().set_dest_vertex(restrictions().accessible_nearest(desired_position(), temp));
@@ -360,10 +361,10 @@ void CStalkerMovementManager::setup_movement_params()
 	}
 	else
 	{
-		if ((path_type() != MovementManager::ePathTypePatrolPath) &&
-			(path_type() != MovementManager::ePathTypeGamePath) && (path_type() != MovementManager::ePathTypeNoPath))
+		if((path_type() != MovementManager::ePathTypePatrolPath) &&
+		   (path_type() != MovementManager::ePathTypeGamePath) && (path_type() != MovementManager::ePathTypeNoPath))
 		{
-			if (!restrictions().accessible(level_path().dest_vertex_id()))
+			if(!restrictions().accessible(level_path().dest_vertex_id()))
 			{
 				fvec3 temp;
 				level_path().set_dest_vertex(restrictions().accessible_nearest(
@@ -382,7 +383,7 @@ void CStalkerMovementManager::setup_movement_params()
 		}
 	}
 
-	if (use_desired_direction())
+	if(use_desired_direction())
 	{
 		VERIFY(_valid(desired_direction()));
 		detail().set_dest_direction(desired_direction());
@@ -400,13 +401,15 @@ void CStalkerMovementManager::setup_velocities()
 	int velocity_mask = eVelocityPositiveVelocity;
 
 	// setup body state
-	switch (body_state())
+	switch(body_state())
 	{
-	case eBodyStateCrouch: {
+	case eBodyStateCrouch:
+	{
 		velocity_mask |= eVelocityCrouch;
 		break;
 	}
-	case eBodyStateStand: {
+	case eBodyStateStand:
+	{
 		velocity_mask |= eVelocityStand;
 		break;
 	}
@@ -415,41 +418,47 @@ void CStalkerMovementManager::setup_velocities()
 	}
 
 	// setup mental state
-	switch (mental_state())
+	switch(mental_state())
 	{
-	case eMentalStateDanger: {
+	case eMentalStateDanger:
+	{
 		velocity_mask |= eVelocityDanger;
 		break;
 	}
-	case eMentalStateFree: {
+	case eMentalStateFree:
+	{
 		velocity_mask |= eVelocityFree;
 		break;
 	}
-	case eMentalStatePanic: {
+	case eMentalStatePanic:
+	{
 		velocity_mask |= eVelocityPanic;
 		break;
 	}
 	}
 
 	// setup_movement_type
-	switch (movement_type())
+	switch(movement_type())
 	{
-	case eMovementTypeWalk: {
+	case eMovementTypeWalk:
+	{
 		velocity_mask |= eVelocityWalk;
 		break;
 	}
-	case eMovementTypeRun: {
+	case eMovementTypeRun:
+	{
 		velocity_mask |= eVelocityRun;
 		break;
 	}
-	default: {
+	default:
+	{
 		velocity_mask |= eVelocityStanding;
 		velocity_mask &= u32(-1) ^ (eVelocityNegativeVelocity | eVelocityPositiveVelocity);
 	}
 	}
 
 	// setup all the possible velocities
-	if (velocity_mask & eVelocityDanger)
+	if(velocity_mask & eVelocityDanger)
 	{
 		detail().set_desirable_mask(velocity_mask);
 		detail().set_velocity_mask(velocity_mask | eVelocityStanding);
@@ -464,16 +473,16 @@ void CStalkerMovementManager::setup_velocities()
 
 void CStalkerMovementManager::parse_velocity_mask()
 {
-	if (path().empty() || (detail().curr_travel_point_index() != m_last_turn_index))
+	if(path().empty() || (detail().curr_travel_point_index() != m_last_turn_index))
 		m_last_turn_index = u32(-1);
 
 	object().sight().enable(true);
 
-	if ((movement_type() == eMovementTypeStand) || path().empty() ||
-		(path().size() <= detail().curr_travel_point_index()) || path_completed() || !actual())
+	if((movement_type() == eMovementTypeStand) || path().empty() ||
+	   (path().size() <= detail().curr_travel_point_index()) || path_completed() || !actual())
 	{
 		object().m_fCurSpeed = 0;
-		if (mental_state() != eMentalStateDanger)
+		if(mental_state() != eMentalStateDanger)
 			m_body.speed = 1 * PI_DIV_2;
 		else
 			m_body.speed = PI_MUL_2;
@@ -486,22 +495,22 @@ void CStalkerMovementManager::parse_velocity_mask()
 	DetailPathManager::STravelPathPoint point = path()[detail().curr_travel_point_index()];
 	CDetailPathManager::STravelParams current_velocity = detail().velocity(point.velocity);
 
-	if (fis_zero(current_velocity.linear_velocity))
+	if(fis_zero(current_velocity.linear_velocity))
 	{
-		if (mental_state() == eMentalStateFree)
+		if(mental_state() == eMentalStateFree)
 		{
 			setup_body_orientation();
 			object().sight().enable(false);
 			//			Msg						("%d FALSE",Engine.TimeManager.GetGlobalTimeMs());
 		}
-		if ((mental_state() != eMentalStateFree) ||
-			//				(object().sight().current_action().sight_type() != SightManager::eSightTypePathDirection) ||
-			fis_zero(path_direction_angle(), EPS_L) || (m_last_turn_index == detail().curr_travel_point_index()))
+		if((mental_state() != eMentalStateFree) ||
+		   //				(object().sight().current_action().sight_type() != SightManager::eSightTypePathDirection) ||
+		   fis_zero(path_direction_angle(), EPS_L) || (m_last_turn_index == detail().curr_travel_point_index()))
 		{
 			m_last_turn_index = detail().curr_travel_point_index();
 			object().sight().enable(true);
 			//			Msg						("%d TRUE",Engine.TimeManager.GetGlobalTimeMs());
-			if (detail().curr_travel_point_index() + 1 < path().size())
+			if(detail().curr_travel_point_index() + 1 < path().size())
 			{
 				point = path()[detail().curr_travel_point_index() + 1];
 				current_velocity = detail().velocity(point.velocity);
@@ -510,11 +519,11 @@ void CStalkerMovementManager::parse_velocity_mask()
 	}
 	else
 	{
-		if (mental_state() != eMentalStateDanger)
+		if(mental_state() != eMentalStateDanger)
 		{
-			if (mental_state() == eMentalStatePanic)
+			if(mental_state() == eMentalStatePanic)
 			{
-				if (!fis_zero(path_direction_angle(), PI_DIV_8 * .5f))
+				if(!fis_zero(path_direction_angle(), PI_DIV_8 * .5f))
 				{
 					u32 temp = u32(-1);
 					temp ^= eVelocityFree;
@@ -527,7 +536,7 @@ void CStalkerMovementManager::parse_velocity_mask()
 			}
 			else
 			{
-				if (!fis_zero(path_direction_angle(), PI_DIV_8 * .5f))
+				if(!fis_zero(path_direction_angle(), PI_DIV_8 * .5f))
 				{
 					setup_body_orientation();
 					object().sight().enable(false);
@@ -543,13 +552,13 @@ void CStalkerMovementManager::parse_velocity_mask()
 
 	// [IMPROVEMENT] Look Into Turn
 	// Если мы бежим и не целимся во врага (свободный бег или поиск укрытия)
-	if (m_current.m_movement_type == eMovementTypeRun && !object().GetScriptControl())
+	if(m_current.m_movement_type == eMovementTypeRun && !object().GetScriptControl())
 	{
 		// Проверяем, куда ведет путь через 1-2 метра
 		float look_angle = path_direction_angle();
 
 		// Если угол значительный (поворот)
-		if (_abs(look_angle) > PI_DIV_8)
+		if(_abs(look_angle) > PI_DIV_8)
 		{
 			// Принудительно вращаем голову в сторону пути быстрее, чем тело
 			// m_head.target.yaw берется из setup_body_orientation, но мы ускоряем поворот
@@ -561,13 +570,15 @@ void CStalkerMovementManager::parse_velocity_mask()
 	m_body.speed = current_velocity.real_angular_velocity;
 	set_desirable_speed(object().m_fCurSpeed);
 
-	switch (point.velocity & eVelocityBodyState)
+	switch(point.velocity & eVelocityBodyState)
 	{
-	case eVelocityStand: {
+	case eVelocityStand:
+	{
 		m_current.m_body_state = eBodyStateStand;
 		break;
 	}
-	case eVelocityCrouch: {
+	case eVelocityCrouch:
+	{
 		m_current.m_body_state = eBodyStateCrouch;
 		break;
 	}
@@ -575,14 +586,15 @@ void CStalkerMovementManager::parse_velocity_mask()
 		NODEFAULT;
 	}
 
-	switch (point.velocity & eVelocityMentalState)
+	switch(point.velocity & eVelocityMentalState)
 	{
-	case eVelocityFree: {
+	case eVelocityFree:
+	{
 #ifdef DEBUG
-		if (m_object->brain().current_action_id() == StalkerDecisionSpace::eWorldOperatorCombatPlanner)
+		if(m_object->brain().current_action_id() == StalkerDecisionSpace::eWorldOperatorCombatPlanner)
 		{
 			CStalkerCombatPlanner& planner = smart_cast<CStalkerCombatPlanner&>(m_object->brain().current_action());
-			if (planner.current_action_id() != StalkerDecisionSpace::eWorldOperatorKillWoundedEnemy)
+			if(planner.current_action_id() != StalkerDecisionSpace::eWorldOperatorKillWoundedEnemy)
 				Msg("~ stalker %s is doing bad thing (action %s)", *m_object->cName(),
 					planner.current_action().m_action_name);
 		}
@@ -590,11 +602,13 @@ void CStalkerMovementManager::parse_velocity_mask()
 		m_current.m_mental_state = eMentalStateFree;
 		break;
 	}
-	case eVelocityDanger: {
+	case eVelocityDanger:
+	{
 		m_current.m_mental_state = eMentalStateDanger;
 		break;
 	}
-	case eVelocityPanic: {
+	case eVelocityPanic:
+	{
 		m_current.m_mental_state = eMentalStatePanic;
 		break;
 	}
@@ -605,17 +619,20 @@ void CStalkerMovementManager::parse_velocity_mask()
 	VERIFY2((m_current.m_mental_state != eMentalStateFree) || m_current.m_body_state != eBodyStateCrouch,
 			*object().cName());
 
-	switch (point.velocity & eVelocityMovementType)
+	switch(point.velocity & eVelocityMovementType)
 	{
-	case eVelocityStanding: {
+	case eVelocityStanding:
+	{
 		m_current.m_movement_type = eMovementTypeStand;
 		break;
 	}
-	case eVelocityWalk: {
+	case eVelocityWalk:
+	{
 		m_current.m_movement_type = eMovementTypeWalk;
 		break;
 	}
-	case eVelocityRun: {
+	case eVelocityRun:
+	{
 		m_current.m_movement_type = eMovementTypeRun;
 		break;
 	}
@@ -624,13 +641,13 @@ void CStalkerMovementManager::parse_velocity_mask()
 	}
 
 	// [IMPROVEMENT] Smooth Stop
-	if (!path().empty() && movement_type() != eMovementTypeStand)
+	if(!path().empty() && movement_type() != eMovementTypeStand)
 	{
 		// Дистанция до финиша
 		float dist_to_end = detail().distance_to_target(); // Метод есть в CDetailPathManager (или вычислить вручную)
 
 		// Если осталось меньше 1.5 метра
-		if (dist_to_end < 1.5f)
+		if(dist_to_end < 1.5f)
 		{
 			// Линейная интерполяция скорости к нулю
 			// Минимальная скорость 0.5 м/с, чтобы он все-таки дошел
@@ -652,12 +669,12 @@ void CStalkerMovementManager::set_nearest_accessible_position()
 
 void CStalkerMovementManager::set_nearest_accessible_position(fvec3 desired_position, u32 level_vertex_id)
 {
-	if (!ai().level_graph().inside(level_vertex_id, desired_position))
+	if(!ai().level_graph().inside(level_vertex_id, desired_position))
 		desired_position = ai().level_graph().vertex_position(level_vertex_id);
 	else
 		desired_position.y = ai().level_graph().vertex_plane_y(level_vertex_id, desired_position.x, desired_position.z);
 
-	if (!restrictions().accessible(desired_position))
+	if(!restrictions().accessible(desired_position))
 	{
 		level_vertex_id = restrictions().accessible_nearest(fvec3().set(desired_position), desired_position);
 		VERIFY(restrictions().accessible(level_vertex_id));
@@ -665,7 +682,7 @@ void CStalkerMovementManager::set_nearest_accessible_position(fvec3 desired_posi
 	}
 	else
 	{
-		if (!restrictions().accessible(level_vertex_id))
+		if(!restrictions().accessible(level_vertex_id))
 		{
 			level_vertex_id = restrictions().accessible_nearest(ai().level_graph().vertex_position(level_vertex_id),
 																desired_position);
@@ -685,29 +702,29 @@ void CStalkerMovementManager::set_nearest_accessible_position(fvec3 desired_posi
 
 void CStalkerMovementManager::update(u32 time_delta)
 {
-	//OPTICK_EVENT("CStalkerMovementManager::update");
+	// OPTICK_EVENT("CStalkerMovementManager::update");
 
-	if (!enabled())
+	if(!enabled())
 		return;
 
 	VERIFY((m_target.m_mental_state != eMentalStateFree) || (m_target.m_body_state != eBodyStateCrouch));
 	m_current = m_target;
 
-	if (m_force_update || (movement_type() != eMovementTypeStand))
+	if(m_force_update || (movement_type() != eMovementTypeStand))
 		setup_movement_params();
 
-	if (script_control())
+	if(script_control())
 		return;
 
-	if (m_force_update || (movement_type() != eMovementTypeStand))
+	if(m_force_update || (movement_type() != eMovementTypeStand))
 		setup_velocities();
 
-	if (m_force_update || (movement_type() != eMovementTypeStand))
+	if(m_force_update || (movement_type() != eMovementTypeStand))
 		update_path();
 
 	parse_velocity_mask();
 
-	predict_smooth_direction(); 
+	predict_smooth_direction();
 
 	process_smart_turns();
 }
@@ -720,7 +737,7 @@ void CStalkerMovementManager::on_travel_point_change(const u32& previous_travel_
 void CStalkerMovementManager::on_restrictions_change()
 {
 	inherited::on_restrictions_change();
-	if (use_desired_position() && !restrictions().accessible(desired_position()))
+	if(use_desired_position() && !restrictions().accessible(desired_position()))
 		set_nearest_accessible_position();
 }
 
@@ -749,25 +766,25 @@ bool CStalkerMovementManager::is_object_on_the_way(const CGameObject* object, co
 {
 	update_object_on_the_way(object, distance);
 
-	if (m_last_query_object != object)
+	if(m_last_query_object != object)
 	{
 		update_object_on_the_way(object, distance);
 		return (m_last_query_result);
 	}
 
-	if (distance - EPS_L > m_last_query_distance)
+	if(distance - EPS_L > m_last_query_distance)
 	{
 		update_object_on_the_way(object, distance);
 		return (m_last_query_result);
 	}
 
-	if (!m_last_query_position.similar(this->object().Position()))
+	if(!m_last_query_position.similar(this->object().Position()))
 	{
 		update_object_on_the_way(object, distance);
 		return (m_last_query_result);
 	}
 
-	if (!m_last_query_object_position.similar(object->Position()))
+	if(!m_last_query_object_position.similar(object->Position()))
 	{
 		update_object_on_the_way(object, distance);
 		return (m_last_query_result);
@@ -778,15 +795,15 @@ bool CStalkerMovementManager::is_object_on_the_way(const CGameObject* object, co
 
 IC float distance_to_line(const fvec3& p0, const fvec3& p1, const fvec3& p2)
 {
-	if (p0.similar(p2))
+	if(p0.similar(p2))
 		return (0.f);
 
-	if (p1.similar(p2))
+	if(p1.similar(p2))
 		return (0.f);
 
 	fvec3 p0p2 = fvec3().sub(p2, p0);
 	float p0p2_magnitude = p0p2.magnitude();
-	if (p0.similar(p1))
+	if(p0.similar(p1))
 		return (p0p2_magnitude);
 
 	p0p2.normalize();
@@ -795,12 +812,12 @@ IC float distance_to_line(const fvec3& p0, const fvec3& p1, const fvec3& p2)
 	p0p1.normalize();
 
 	float cos_alpha = p0p2.dotproduct(p0p1);
-	if (cos_alpha < 0.f)
+	if(cos_alpha < 0.f)
 		return (p0p2_magnitude);
 
 	fvec3 p1p2 = fvec3().sub(p2, p1);
 	fvec3 p1p0 = fvec3(p0p1).invert();
-	if (p1p2.dotproduct(p1p0) < 0.f)
+	if(p1p2.dotproduct(p1p0) < 0.f)
 		return (p1p2.magnitude());
 
 	float sin_alpha = std::sqrt(1.f - _sqr(cos_alpha));
@@ -809,13 +826,13 @@ IC float distance_to_line(const fvec3& p0, const fvec3& p1, const fvec3& p2)
 
 void CStalkerMovementManager::update_object_on_the_way(const CGameObject* object, const float& distance)
 {
-	if (!actual())
+	if(!actual())
 		return;
 
-	if (path().empty())
+	if(path().empty())
 		return;
 
-	if (detail().curr_travel_point_index() >= detail().path().size() - 1)
+	if(detail().curr_travel_point_index() >= detail().path().size() - 1)
 		return;
 
 	m_last_query_object = object;
@@ -828,16 +845,16 @@ void CStalkerMovementManager::update_object_on_the_way(const CGameObject* object
 	float current_distance = 0.f;
 	xr_vector<STravelPathPoint>::const_iterator I = detail().path().begin() + detail().curr_travel_point_index() + 1;
 	xr_vector<STravelPathPoint>::const_iterator E = detail().path().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (distance_to_line((*(I - 1)).position, (*I).position, position) < 1.f)
+		if(distance_to_line((*(I - 1)).position, (*I).position, position) < 1.f)
 		{
 			m_last_query_result = true;
 			return;
 		}
 
 		current_distance += (*(I - 1)).position.distance_to((*I).position);
-		if (current_distance > distance)
+		if(current_distance > distance)
 			return;
 	}
 }
@@ -849,13 +866,13 @@ void CStalkerMovementManager::force_update(const bool& force_update)
 
 void CStalkerMovementManager::check_for_bad_path()
 {
-	if (m_current.m_movement_type != eMovementTypeRun)
+	if(m_current.m_movement_type != eMovementTypeRun)
 		return;
 
-	if (m_current.m_mental_state != eMentalStateDanger)
+	if(m_current.m_mental_state != eMentalStateDanger)
 		return;
 
-	if (detail().completed(object().Position(), !detail().state_patrol_path()))
+	if(detail().completed(object().Position(), !detail().state_patrol_path()))
 		return;
 
 	typedef xr_vector<STravelPathPoint> PATH;
@@ -863,13 +880,13 @@ void CStalkerMovementManager::check_for_bad_path()
 
 	u32 point_count = path.size();
 	u32 point_index = detail().curr_travel_point_index();
-	if (point_index + 2 >= point_count)
+	if(point_index + 2 >= point_count)
 		return;
 
 	float distance = path[point_index + 1].position.distance_to(object().Position());
 	fvec3 current_direction = fvec3().sub(path[point_index + 1].position, path[point_index].position);
 	fvec3 next_direction;
-	if (current_direction.magnitude() >= EPS_L)
+	if(current_direction.magnitude() >= EPS_L)
 		current_direction.normalize();
 	else
 		current_direction.set(0.f, 0.f, 1.f);
@@ -879,19 +896,19 @@ void CStalkerMovementManager::check_for_bad_path()
 	VERIFY(I != E);
 	PATH::const_iterator J = I + 1;
 	VERIFY(J != E);
-	for (; J != E; ++I, ++J)
+	for(; J != E; ++I, ++J)
 	{
 		next_direction = fvec3().sub((*J).position, (*I).position);
 		float magnitude = next_direction.magnitude();
 		distance += magnitude;
 		//. how can it be?
-		if (magnitude < EPS_L)
+		if(magnitude < EPS_L)
 			continue;
 
 		next_direction.normalize();
 		float cos_angle = current_direction.dotproduct(next_direction);
 		float angle = acosf(cos_angle);
-		if (angle > BAD_PATH_ANGLE)
+		if(angle > BAD_PATH_ANGLE)
 		{
 #ifdef DEBUG
 			Msg("bad path check changed movement type from RUN to WALK");
@@ -900,7 +917,7 @@ void CStalkerMovementManager::check_for_bad_path()
 			return;
 		}
 
-		if (distance >= BAD_PATH_DISTANCE_CHECK)
+		if(distance >= BAD_PATH_DISTANCE_CHECK)
 			return;
 	}
 }
@@ -909,25 +926,25 @@ void CStalkerMovementManager::process_smart_turns()
 {
 	// [ИЗМЕНЕНИЕ] Работаем для любого движения, кроме стояния
 	// Убрали проверку eMentalStateDanger, чтобы патрульные тоже ходили плавно
-	if (m_current.m_movement_type == eMovementTypeStand)
+	if(m_current.m_movement_type == eMovementTypeStand)
 		return;
 
-	if (detail().completed(object().Position(), !detail().state_patrol_path()))
+	if(detail().completed(object().Position(), !detail().state_patrol_path()))
 		return;
 
 	const auto& path = detail().path();
 	u32 point_index = detail().curr_travel_point_index();
 
-	if (point_index + 2 >= path.size())
+	if(point_index + 2 >= path.size())
 		return;
 
 	fvec3 current_dir = fvec3().sub(path[point_index + 1].position, path[point_index].position);
-	if (current_dir.magnitude() < EPS_L)
+	if(current_dir.magnitude() < EPS_L)
 		return;
 	current_dir.normalize();
 
 	fvec3 next_dir = fvec3().sub(path[point_index + 2].position, path[point_index + 1].position);
-	if (next_dir.magnitude() < EPS_L)
+	if(next_dir.magnitude() < EPS_L)
 		return;
 	next_dir.normalize();
 
@@ -938,7 +955,7 @@ void CStalkerMovementManager::process_smart_turns()
 	const float START_SLOW_ANGLE = PI_DIV_6; // 30 градусов
 	const float MAX_SLOW_ANGLE = PI_DIV_2;	 // 90 градусов
 
-	if (angle > START_SLOW_ANGLE)
+	if(angle > START_SLOW_ANGLE)
 	{
 		float factor = (angle - START_SLOW_ANGLE) / (MAX_SLOW_ANGLE - START_SLOW_ANGLE);
 		clamp(factor, 0.f, 1.f);

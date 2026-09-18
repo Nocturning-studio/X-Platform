@@ -127,26 +127,30 @@ struct NodeCompressed
 	ICF void link(u8 link_index, u32 value)
 	{
 		value &= 0x007fffff;
-		switch (link_index)
+		switch(link_index)
 		{
-		case 0: {
+		case 0:
+		{
 			value |= (*(u32*)data) & 0xff800000;
 			CopyMemory(data, &value, sizeof(u32));
 			break;
 		}
-		case 1: {
+		case 1:
+		{
 			value <<= 7;
 			value |= (*(u32*)(data + 2)) & 0xc000007f;
 			CopyMemory(data + 2, &value, sizeof(u32));
 			break;
 		}
-		case 2: {
+		case 2:
+		{
 			value <<= 6;
 			value |= (*(u32*)(data + 5)) & 0xe000003f;
 			CopyMemory(data + 5, &value, sizeof(u32));
 			break;
 		}
-		case 3: {
+		case 3:
+		{
 			value <<= 5;
 			value |= (*(u32*)(data + 8)) & 0xf000001f;
 			CopyMemory(data + 8, &value, sizeof(u32));
@@ -172,7 +176,7 @@ struct NodeCompressed
 
 	ICF u32 link(u8 index) const
 	{
-		switch (index)
+		switch(index)
 		{
 		case 0:
 			return ((*(u32*)data) & 0x007fffff);
@@ -197,7 +201,7 @@ struct NodeCompressed
 
 	ICF u16 cover(u8 index) const
 	{
-		switch (index)
+		switch(index)
 		{
 		case 0:
 			return (cover0);
@@ -232,26 +236,30 @@ struct NodeCompressed6
 	ICF void link(u8 link_index, u32 value)
 	{
 		value &= 0x001fffff;
-		switch (link_index)
+		switch(link_index)
 		{
-		case 0: {
+		case 0:
+		{
 			value |= (*(u32*)data) & 0xffe00000;
 			CopyMemory(data, &value, sizeof(u32));
 			break;
 		}
-		case 1: {
+		case 1:
+		{
 			value <<= 5;
 			value |= (*(u32*)(data + 2)) & 0xfc00001f;
 			CopyMemory(data + 2, &value, sizeof(u32));
 			break;
 		}
-		case 2: {
+		case 2:
+		{
 			value <<= 2;
 			value |= (*(u32*)(data + 5)) & 0xff800003;
 			CopyMemory(data + 5, &value, sizeof(u32));
 			break;
 		}
-		case 3: {
+		case 3:
+		{
 			value <<= 7;
 			value |= (*(u32*)(data + 7)) & 0xf000007f;
 			CopyMemory(data + 7, &value, sizeof(u32));
@@ -275,7 +283,7 @@ struct NodeCompressed6
 
 	ICF u32 link(u8 index) const
 	{
-		switch (index)
+		switch(index)
 		{
 		case 0:
 			return ((*(u32*)data) & 0x001fffff);
@@ -300,7 +308,7 @@ struct NodeCompressed6
 
 	ICF u16 cover(u8 index) const
 	{
-		switch (index)
+		switch(index)
 		{
 		case 0:
 			return (cover0);

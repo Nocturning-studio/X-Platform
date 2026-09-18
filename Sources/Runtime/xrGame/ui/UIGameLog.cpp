@@ -107,36 +107,36 @@ void CUIGameLog::Update()
 	WINDOW_LIST_it end_it = m_pad->GetChildWndList().end();
 	WINDOW_LIST_it begin_it = m_pad->GetChildWndList().begin();
 
-	for (WINDOW_LIST_it it = begin_it; it != end_it; ++it)
+	for(WINDOW_LIST_it it = begin_it; it != end_it; ++it)
 	{
 		CUIStatic* pItem = smart_cast<CUIStatic*>(*it);
 		VERIFY(pItem);
 		pItem->Update();
 
-		if (pItem->IsClrAnimStoped())
+		if(pItem->IsClrAnimStoped())
 			toDelList.push_back(pItem);
 	}
 
 	// Delete elements
 	{
 		xr_vector<CUIWindow*>::iterator it;
-		for (it = toDelList.begin(); it != toDelList.end(); it++)
+		for(it = toDelList.begin(); it != toDelList.end(); it++)
 			RemoveWindow(*it);
 	}
 
 	// REMOVE INVISIBLE AND PART VISIBLE ITEMS
-	if (m_flags.test(eNeedRecalc))
+	if(m_flags.test(eNeedRecalc))
 		RecalcSize();
 
 	toDelList.clear();
 	Frect visible_rect;
 	GetAbsoluteRect(visible_rect);
-	for (WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end() != it; ++it)
+	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end() != it; ++it)
 	{
 		Frect r;
 		(*it)->GetAbsoluteRect(r);
-		if (!(visible_rect.in(r.x1, r.y1) && visible_rect.in(r.x2, r.y1) && visible_rect.in(r.x1, r.y2) &&
-			  visible_rect.in(r.x2, r.y2)))
+		if(!(visible_rect.in(r.x1, r.y1) && visible_rect.in(r.x2, r.y1) && visible_rect.in(r.x1, r.y2) &&
+			 visible_rect.in(r.x2, r.y2)))
 		{
 			toDelList.push_back(*it);
 		}
@@ -145,10 +145,10 @@ void CUIGameLog::Update()
 	// Delete elements
 	{
 		xr_vector<CUIWindow*>::iterator it;
-		for (it = toDelList.begin(); it != toDelList.end(); it++)
+		for(it = toDelList.begin(); it != toDelList.end(); it++)
 			RemoveWindow(*it);
 	}
 
-	if (m_flags.test(eNeedRecalc))
+	if(m_flags.test(eNeedRecalc))
 		RecalcSize();
 }

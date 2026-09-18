@@ -92,7 +92,7 @@ IC void CStalkerAnimationPair::make_inactual()
 IC const CStalkerAnimationPair::CALLBACK_ID* CStalkerAnimationPair::callback(const CALLBACK_ID& callback) const
 {
 	CALLBACKS::const_iterator I = std::find(m_callbacks.begin(), m_callbacks.end(), callback);
-	if (I != m_callbacks.end())
+	if(I != m_callbacks.end())
 		return (&*I);
 
 	return (0);

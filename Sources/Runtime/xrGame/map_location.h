@@ -39,7 +39,7 @@ class CMapLocation : public IPureDestroyableObject
 	u16 m_refCount;
 	int m_ttl;
 	u32 m_actual_time;
-	fvec3 m_position_global;	// last global position, actual time only current frame
+	fvec3 m_position_global; // last global position, actual time only current frame
 	fvec2 m_position_on_map; // last position on parent map, actual time only current frame
 
 	struct SCachedValues
@@ -53,7 +53,7 @@ class CMapLocation : public IPureDestroyableObject
 	SCachedValues m_cached;
 
   private:
-	CMapLocation(const CMapLocation&){}; // disable copy ctor
+	CMapLocation(const CMapLocation&) {}; // disable copy ctor
 
   protected:
 	void LoadSpot(LPCSTR type, bool bReload);
@@ -147,7 +147,7 @@ class CMapLocation : public IPureDestroyableObject
 	}
 
 #ifdef DEBUG
-	virtual void Dump(){};
+	virtual void Dump() {};
 #endif
 };
 

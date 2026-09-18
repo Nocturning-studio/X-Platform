@@ -35,7 +35,7 @@ class CHolderCustom
 	{
 		;
 	}
-	virtual void UpdateEx(float fov){}; // called by owner
+	virtual void UpdateEx(float fov) {}; // called by owner
 	virtual CHolderCustom* cast_holder_custom()
 	{
 		return this;
@@ -64,9 +64,9 @@ class CHolderCustom
 		return fvec3().set(0, 0, 0);
 	}
 	virtual CCameraBase* Camera() = 0;
-	virtual void Action(int id, u32 flags){};
-	virtual void SetParam(int id, fvec2 val){};
-	virtual void SetParam(int id, fvec3 val){};
+	virtual void Action(int id, u32 flags) {};
+	virtual void SetParam(int id, fvec2 val) {};
+	virtual void SetParam(int id, fvec3 val) {};
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

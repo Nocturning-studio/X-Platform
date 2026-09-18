@@ -58,14 +58,14 @@ bool CCustomMotion::Load(IReader& F)
 COMotion::COMotion() : CCustomMotion()
 {
 	mtype = mtObject;
-	for (int ch = 0; ch < ctMaxChannel; ch++)
+	for(int ch = 0; ch < ctMaxChannel; ch++)
 		envs[ch] = xr_new<CEnvelope>();
 }
 
 COMotion::COMotion(COMotion* source) : CCustomMotion(source)
 {
 	// bone motions
-	for (int ch = 0; ch < ctMaxChannel; ch++)
+	for(int ch = 0; ch < ctMaxChannel; ch++)
 		envs[ch] = xr_new<CEnvelope>(source->envs[ch]);
 }
 
@@ -76,7 +76,7 @@ COMotion::~COMotion()
 
 void COMotion::Clear()
 {
-	for (int ch = 0; ch < ctMaxChannel; ch++)
+	for(int ch = 0; ch < ctMaxChannel; ch++)
 		xr_delete(envs[ch]);
 }
 
@@ -97,7 +97,7 @@ void COMotion::SaveMotion(const char* buf)
 	F.open_chunk(EOBJ_OMOTION);
 	Save(F);
 	F.close_chunk();
-	if (!F.save_to(buf))
+	if(!F.save_to(buf))
 		Log("!Can't save object motion:", buf);
 }
 
@@ -112,7 +112,7 @@ void COMotion::Save(IWriter& F)
 {
 	CCustomMotion::Save(F);
 	F.w_u16(EOBJ_OMOTION_VERSION);
-	for (int ch = 0; ch < ctMaxChannel; ch++)
+	for(int ch = 0; ch < ctMaxChannel; ch++)
 		envs[ch]->Save(F);
 }
 
@@ -120,16 +120,16 @@ bool COMotion::Load(IReader& F)
 {
 	CCustomMotion::Load(F);
 	u16 vers = F.r_u16();
-	if (vers == 0x0003)
+	if(vers == 0x0003)
 	{
 		Clear();
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 		{
 			envs[ch] = xr_new<CEnvelope>();
 			envs[ch]->Load_1(F);
 		}
 	}
-	else if (vers == 0x0004)
+	else if(vers == 0x0004)
 	{
 		Clear();
 		envs[ctPositionX] = xr_new<CEnvelope>();
@@ -147,10 +147,10 @@ bool COMotion::Load(IReader& F)
 	}
 	else
 	{
-		if (vers != EOBJ_OMOTION_VERSION)
+		if(vers != EOBJ_OMOTION_VERSION)
 			return false;
 		Clear();
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 		{
 			envs[ch] = xr_new<CEnvelope>();
 			envs[ch]->Load_2(F);
@@ -193,38 +193,38 @@ void COMotion::FindNearestKey(float t, float& mn, float& mx, float eps)
 float COMotion::GetLength(float* mn, float* mx)
 {
 	float ln, len = 0.f;
-	for (int ch = 0; ch < ctMaxChannel; ch++)
-		if ((ln = envs[ch]->GetLength(mn, mx)) > len)
+	for(int ch = 0; ch < ctMaxChannel; ch++)
+		if((ln = envs[ch]->GetLength(mn, mx)) > len)
 			len = ln;
 	return len;
 }
 BOOL COMotion::ScaleKeys(float from_time, float to_time, float scale_factor)
 {
 	BOOL bRes = TRUE;
-	for (int ch = 0; ch < ctMaxChannel; ch++)
-		if (FALSE == (bRes = envs[ch]->ScaleKeys(from_time, to_time, scale_factor, 1.f / fFPS)))
+	for(int ch = 0; ch < ctMaxChannel; ch++)
+		if(FALSE == (bRes = envs[ch]->ScaleKeys(from_time, to_time, scale_factor, 1.f / fFPS)))
 			break;
 	return bRes;
 }
 BOOL COMotion::NormalizeKeys(float from_time, float to_time, float speed)
 {
-	if (to_time < from_time)
+	if(to_time < from_time)
 		return FALSE;
 	CEnvelope* E = Envelope(ctPositionX);
 	float new_tm = 0;
 	float t0 = E->keys.front()->time;
 	FloatVec tms;
 	tms.push_back(t0);
-	for (KeyIt it = E->keys.begin() + 1; it != E->keys.end(); it++)
+	for(KeyIt it = E->keys.begin() + 1; it != E->keys.end(); it++)
 	{
-		if ((*it)->time > from_time)
+		if((*it)->time > from_time)
 		{
-			if ((*it)->time < to_time + EPS)
+			if((*it)->time < to_time + EPS)
 			{
 				float dist = 0;
 				fvec3 PT, T, R;
 				_Evaluate(t0, PT, R);
-				for (float tm = t0 + 1.f / fFPS; tm <= (*it)->time; tm += EPS_L)
+				for(float tm = t0 + 1.f / fFPS; tm <= (*it)->time; tm += EPS_L)
 				{
 					_Evaluate(tm, T, R);
 					dist += PT.distance_to(T);
@@ -243,12 +243,12 @@ BOOL COMotion::NormalizeKeys(float from_time, float to_time, float speed)
 			}
 		}
 	}
-	for (int ch = 0; ch < ctMaxChannel; ch++)
+	for(int ch = 0; ch < ctMaxChannel; ch++)
 	{
 		E = Envelope(EChannelType(ch));
 		FloatIt f_it = tms.begin();
 		VERIFY(tms.size() == E->keys.size());
-		for (KeyIt k_it = E->keys.begin(); k_it != E->keys.end(); k_it++, f_it++)
+		for(KeyIt k_it = E->keys.begin(); k_it != E->keys.end(); k_it++, f_it++)
 			(*k_it)->time = *f_it;
 	}
 
@@ -286,11 +286,11 @@ CSMotion::CSMotion(CSMotion* source) : CCustomMotion(source)
 	// bone motions
 	st_BoneMotion* src;
 	st_BoneMotion* dest;
-	for (u32 i = 0; i < bone_mots.size(); i++)
+	for(u32 i = 0; i < bone_mots.size(); i++)
 	{
 		dest = &bone_mots[i];
 		src = &source->bone_mots[i];
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 			dest->envs[ch] = xr_new<CEnvelope>(src->envs[ch]);
 	}
 }
@@ -302,9 +302,9 @@ CSMotion::~CSMotion()
 
 void CSMotion::Clear()
 {
-	for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+	for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 	{
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 			xr_delete(bm_it->envs[ch]);
 	}
 	bone_mots.clear();
@@ -312,8 +312,8 @@ void CSMotion::Clear()
 
 st_BoneMotion* CSMotion::FindBoneMotion(shared_str name)
 {
-	for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
-		if (bm_it->name.equal(name))
+	for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+		if(bm_it->name.equal(name))
 			return &*bm_it;
 	return 0;
 }
@@ -328,11 +328,11 @@ void CSMotion::CopyMotion(CSMotion* source)
 	st_BoneMotion* src;
 	st_BoneMotion* dest;
 	bone_mots.resize(source->bone_mots.size());
-	for (u32 i = 0; i < bone_mots.size(); i++)
+	for(u32 i = 0; i < bone_mots.size(); i++)
 	{
 		dest = &bone_mots[i];
 		src = &source->bone_mots[i];
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 			dest->envs[ch] = xr_new<CEnvelope>(src->envs[ch]);
 	}
 }
@@ -366,7 +366,7 @@ void CSMotion::SaveMotion(const char* buf)
 	F.open_chunk(EOBJ_SMOTION);
 	Save(F);
 	F.close_chunk();
-	if (!F.save_to(buf))
+	if(!F.save_to(buf))
 		Log("!Can't save skeleton motion:", buf);
 }
 
@@ -388,18 +388,18 @@ void CSMotion::Save(IWriter& F)
 	F.w_float(fFalloff);
 	F.w_float(fPower);
 	F.w_u16((u16)bone_mots.size());
-	for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+	for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 	{
 		xr_strlwr(bm_it->name);
 		F.w_stringZ(bm_it->name);
 		F.w_u8(bm_it->m_Flags.get());
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 			bm_it->envs[ch]->Save(F);
 	}
 
 	u32 sz = marks.size();
 	F.w_u32(sz);
-	for (u32 i = 0; i < sz; ++i)
+	for(u32 i = 0; i < sz; ++i)
 		marks[i].Save(&F);
 }
 
@@ -407,7 +407,7 @@ bool CSMotion::Load(IReader& F)
 {
 	CCustomMotion::Load(F);
 	u16 vers = F.r_u16();
-	if (vers == 0x0004)
+	if(vers == 0x0004)
 	{
 		m_BoneOrPart = u16(F.r_u32() & 0xffff);
 		m_Flags.set(esmFX, F.r_u8());
@@ -418,11 +418,11 @@ bool CSMotion::Load(IReader& F)
 		fPower = F.r_float();
 		bone_mots.resize(F.r_u32());
 		string64 temp_buf;
-		for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+		for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 		{
 			bm_it->SetName(_itoa(int(bm_it - bone_mots.begin()), temp_buf, 10));
 			bm_it->m_Flags.assign((u8)F.r_u32());
-			for (int ch = 0; ch < ctMaxChannel; ch++)
+			for(int ch = 0; ch < ctMaxChannel; ch++)
 			{
 				bm_it->envs[ch] = xr_new<CEnvelope>();
 				bm_it->envs[ch]->Load_1(F);
@@ -431,7 +431,7 @@ bool CSMotion::Load(IReader& F)
 	}
 	else
 	{
-		if (vers == 0x0005)
+		if(vers == 0x0005)
 		{
 			m_Flags.assign((u8)F.r_u32());
 			m_BoneOrPart = u16(F.r_u32() & 0xffff);
@@ -441,12 +441,12 @@ bool CSMotion::Load(IReader& F)
 			fPower = F.r_float();
 			bone_mots.resize(F.r_u32());
 			string64 buf;
-			for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+			for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 			{
 				F.r_stringZ(buf, sizeof(buf));
 				bm_it->SetName(buf);
 				bm_it->m_Flags.assign((u8)F.r_u32());
-				for (int ch = 0; ch < ctMaxChannel; ch++)
+				for(int ch = 0; ch < ctMaxChannel; ch++)
 				{
 					bm_it->envs[ch] = xr_new<CEnvelope>();
 					bm_it->envs[ch]->Load_1(F);
@@ -455,7 +455,7 @@ bool CSMotion::Load(IReader& F)
 		}
 		else
 		{
-			if (vers >= 0x0006)
+			if(vers >= 0x0006)
 			{
 				m_Flags.assign(F.r_u8());
 				m_BoneOrPart = F.r_u16();
@@ -465,12 +465,12 @@ bool CSMotion::Load(IReader& F)
 				fPower = F.r_float();
 				bone_mots.resize(F.r_u16());
 				string64 buf;
-				for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+				for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 				{
 					F.r_stringZ(buf, sizeof(buf));
 					bm_it->SetName(buf);
 					bm_it->m_Flags.assign(F.r_u8());
-					for (int ch = 0; ch < ctMaxChannel; ch++)
+					for(int ch = 0; ch < ctMaxChannel; ch++)
 					{
 						bm_it->envs[ch] = xr_new<CEnvelope>();
 						bm_it->envs[ch]->Load_2(F);
@@ -479,26 +479,26 @@ bool CSMotion::Load(IReader& F)
 			}
 		}
 	}
-	if (vers >= 0x0007)
+	if(vers >= 0x0007)
 	{
 		u32 sz = F.r_u32();
-		if (sz > 0)
+		if(sz > 0)
 		{
 			marks.resize(sz);
-			for (u32 i = 0; i < sz; ++i)
+			for(u32 i = 0; i < sz; ++i)
 				marks[i].Load(&F);
 		}
 	}
-	for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+	for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 		xr_strlwr(bm_it->name);
 	return true;
 }
 
 void CSMotion::Optimize()
 {
-	for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
+	for(BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
 	{
-		for (int ch = 0; ch < ctMaxChannel; ch++)
+		for(int ch = 0; ch < ctMaxChannel; ch++)
 			bm_it->envs[ch]->Optimize();
 	}
 }
@@ -506,7 +506,7 @@ void CSMotion::Optimize()
 void CSMotion::SortBonesBySkeleton(BoneVec& bones)
 {
 	BoneMotionVec new_bone_mots;
-	for (BoneIt b_it = bones.begin(); b_it != bones.end(); b_it++)
+	for(BoneIt b_it = bones.begin(); b_it != bones.end(); b_it++)
 	{
 		st_BoneMotion* BM = FindBoneMotion((*b_it)->Name());
 		R_ASSERT(BM);
@@ -531,14 +531,14 @@ void SAnimParams::Set(CCustomMotion* M)
 }
 void SAnimParams::Update(float dt, float speed, bool loop)
 {
-	if (!bPlay)
+	if(!bPlay)
 		return;
 	bWrapped = false;
 	t += speed * dt;
-	if (t > max_t)
+	if(t > max_t)
 	{
 		bWrapped = true;
-		if (loop)
+		if(loop)
 		{
 			float len = max_t - min_t;
 			float k = float(iFloor((t - min_t) / len));
@@ -564,7 +564,7 @@ void CClip::Save(IWriter& F)
 
 	F.open_chunk(EOBJ_CLIP_DATA_CHUNK);
 	F.w_stringZ(name);
-	for (int k = 0; k < 4; k++)
+	for(int k = 0; k < 4; k++)
 	{
 		F.w_stringZ(cycles[k].name);
 		F.w_u16(cycles[k].slot);
@@ -581,11 +581,11 @@ bool CClip::Load(IReader& F)
 {
 	R_ASSERT(F.find_chunk(EOBJ_CLIP_VERSION_CHUNK));
 	u16 ver = F.r_u16();
-	if (ver != EOBJ_CLIP_VERSION)
+	if(ver != EOBJ_CLIP_VERSION)
 		return false;
 	R_ASSERT(F.find_chunk(EOBJ_CLIP_DATA_CHUNK));
 	F.r_stringZ(name);
-	for (int k = 0; k < 4; k++)
+	for(int k = 0; k < 4; k++)
 	{
 		F.r_stringZ(cycles[k].name);
 		cycles[k].slot = F.r_u16();
@@ -600,19 +600,19 @@ bool CClip::Load(IReader& F)
 
 bool CClip::Equal(CClip* c)
 {
-	if (!name.equal(c->name))
+	if(!name.equal(c->name))
 		return false;
-	if (!cycles[0].equal(c->cycles[0]))
+	if(!cycles[0].equal(c->cycles[0]))
 		return false;
-	if (!cycles[1].equal(c->cycles[1]))
+	if(!cycles[1].equal(c->cycles[1]))
 		return false;
-	if (!cycles[2].equal(c->cycles[2]))
+	if(!cycles[2].equal(c->cycles[2]))
 		return false;
-	if (!cycles[3].equal(c->cycles[3]))
+	if(!cycles[3].equal(c->cycles[3]))
 		return false;
-	if (!fx.equal(c->fx))
+	if(!fx.equal(c->fx))
 		return false;
-	if (length != c->length)
+	if(length != c->length)
 		return false;
 	return true;
 }

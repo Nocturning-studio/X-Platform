@@ -25,10 +25,10 @@ TEMPLATE_SPECIALIZATION
 IC void CSScriptCallbackEx::clear()
 {
 	m_functor.~functor_type();
-	new (&m_functor) functor_type();
+	new(&m_functor) functor_type();
 
 	m_object.~object_type();
-	new (&m_object) object_type();
+	new(&m_object) object_type();
 }
 
 TEMPLATE_SPECIALIZATION
@@ -43,10 +43,10 @@ IC CSScriptCallbackEx& CSScriptCallbackEx::operator=(const CScriptCallbackEx_& c
 {
 	clear();
 
-	if (callback.m_functor.is_valid() && callback.m_functor.lua_state())
+	if(callback.m_functor.is_valid() && callback.m_functor.lua_state())
 		m_functor = callback.m_functor;
 
-	if (callback.m_object.is_valid() && callback.m_object.lua_state())
+	if(callback.m_object.is_valid() && callback.m_object.lua_state())
 		m_object = callback.m_object;
 
 	return (*this);

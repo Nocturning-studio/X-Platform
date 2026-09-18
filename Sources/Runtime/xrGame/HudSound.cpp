@@ -15,7 +15,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND& hud_snd, int t
 	string256 sound_line;
 	strcpy_s(sound_line, line);
 	int k = 0;
-	while (pSettings->line_exist(section, sound_line))
+	while(pSettings->line_exist(section, sound_line))
 	{
 		hud_snd.sounds.push_back(SSnd());
 		SSnd& s = hud_snd.sounds.back();
@@ -39,24 +39,24 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
 	_GetItem(str, 0, buf_str);
 	snd.create(buf_str, st_Effect, type);
 
-	if (volume != NULL)
+	if(volume != NULL)
 	{
 		*volume = 1.f;
-		if (count > 1)
+		if(count > 1)
 		{
 			_GetItem(str, 1, buf_str);
-			if (xr_strlen(buf_str) > 0)
+			if(xr_strlen(buf_str) > 0)
 				*volume = (float)atof(buf_str);
 		}
 	}
 
-	if (delay != NULL)
+	if(delay != NULL)
 	{
 		*delay = 0;
-		if (count > 2)
+		if(count > 2)
 		{
 			_GetItem(str, 2, buf_str);
-			if (xr_strlen(buf_str) > 0)
+			if(xr_strlen(buf_str) > 0)
 				*delay = (float)atof(buf_str);
 		}
 	}
@@ -65,7 +65,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
 void HUD_SOUND::DestroySound(HUD_SOUND& hud_snd)
 {
 	xr_vector<SSnd>::iterator it = hud_snd.sounds.begin();
-	for (; it != hud_snd.sounds.end(); ++it)
+	for(; it != hud_snd.sounds.end(); ++it)
 		(*it).snd.destroy();
 	hud_snd.sounds.clear();
 
@@ -75,14 +75,14 @@ void HUD_SOUND::DestroySound(HUD_SOUND& hud_snd)
 void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const fvec3& position, const CObject* parent, bool b_hud_mode,
 						  bool looped)
 {
-	if (hud_snd.sounds.empty())
+	if(hud_snd.sounds.empty())
 		return;
 
 	hud_snd.m_activeSnd = NULL;
 	StopSound(hud_snd);
 
 	u32 flags = b_hud_mode ? sm_2D : 0;
-	if (looped)
+	if(looped)
 		flags |= sm_Looped;
 
 	hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(hud_snd.sounds.size())];
@@ -96,7 +96,7 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const fvec3& position, const CObje
 void HUD_SOUND::StopSound(HUD_SOUND& hud_snd)
 {
 	xr_vector<SSnd>::iterator it = hud_snd.sounds.begin();
-	for (; it != hud_snd.sounds.end(); ++it)
+	for(; it != hud_snd.sounds.end(); ++it)
 	{
 		//.		VERIFY2					((*it).snd._handle(),"Trying to stop non-existant or destroyed sound");
 		(*it).snd.stop();

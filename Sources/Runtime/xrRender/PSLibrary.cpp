@@ -36,45 +36,45 @@ void CPSLibrary::OnCreate()
 {
 	string_path fn;
 	FS.update_path(fn, _game_data_, PSLIB_FILENAME);
-	if (FS.exist(fn))
+	if(FS.exist(fn))
 	{
-		if (!Load(fn))
+		if(!Load(fn))
 			Msg("PS Library: Unsupported version.");
 	}
 	else
 	{
 		Msg("Can't find file: '%s'", fn);
 	}
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
+	for(PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
 		(*e_it)->CreateShader();
 }
 
 void CPSLibrary::OnDestroy()
 {
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
+	for(PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
 		(*e_it)->DestroyShader();
 
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
+	for(PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
 		xr_delete(*e_it);
 	m_PEDs.clear();
 
-	for (PS::PGDIt g_it = m_PGDs.begin(); g_it != m_PGDs.end(); g_it++)
+	for(PS::PGDIt g_it = m_PGDs.begin(); g_it != m_PGDs.end(); g_it++)
 		xr_delete(*g_it);
 	m_PGDs.clear();
 }
 //----------------------------------------------------
 PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
 {
-	if (!Name)
+	if(!Name)
 		return m_PEDs.end();
 #ifdef _EDITOR
-	for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); it++)
-		if (0 == xr_strcmp((*it)->Name(), Name))
+	for(PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); it++)
+		if(0 == xr_strcmp((*it)->Name(), Name))
 			return it;
 	return m_PEDs.end();
 #else
 	PS::PEDIt I = std::lower_bound(m_PEDs.begin(), m_PEDs.end(), Name, ped_find_pred);
-	if (I == m_PEDs.end() || (0 != xr_strcmp((*I)->m_Name, Name)))
+	if(I == m_PEDs.end() || (0 != xr_strcmp((*I)->m_Name, Name)))
 		return m_PEDs.end();
 	else
 		return I;
@@ -89,16 +89,16 @@ PS::CPEDef* CPSLibrary::FindPED(LPCSTR Name)
 
 PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
 {
-	if (!Name)
+	if(!Name)
 		return m_PGDs.end();
 #ifdef _EDITOR
-	for (PS::PGDIt it = m_PGDs.begin(); it != m_PGDs.end(); it++)
-		if (0 == xr_strcmp((*it)->m_Name, Name))
+	for(PS::PGDIt it = m_PGDs.begin(); it != m_PGDs.end(); it++)
+		if(0 == xr_strcmp((*it)->m_Name, Name))
 			return it;
 	return m_PGDs.end();
 #else
 	PS::PGDIt I = std::lower_bound(m_PGDs.begin(), m_PGDs.end(), Name, pgd_find_pred);
-	if (I == m_PGDs.end() || (0 != xr_strcmp((*I)->m_Name, Name)))
+	if(I == m_PGDs.end() || (0 != xr_strcmp((*I)->m_Name, Name)))
 		return m_PGDs.end();
 	else
 		return I;
@@ -126,7 +126,7 @@ void CPSLibrary::RenamePGD(PS::CPGDef* src, LPCSTR new_name)
 void CPSLibrary::Remove(const char* nm)
 {
 	PS::PEDIt itPED = FindPEDIt(nm);
-	if (itPED != m_PEDs.end())
+	if(itPED != m_PEDs.end())
 	{
 		(*itPED)->DestroyShader();
 		xr_delete(*itPED);
@@ -135,7 +135,7 @@ void CPSLibrary::Remove(const char* nm)
 	else
 	{
 		PS::PGDIt itPGD = FindPGDIt(nm);
-		if (itPGD != m_PGDs.end())
+		if(itPGD != m_PGDs.end())
 		{
 			xr_delete(*itPGD);
 			m_PGDs.erase(itPGD);
@@ -150,18 +150,18 @@ bool CPSLibrary::Load(const char* nm)
 	bool bRes = true;
 	R_ASSERT(F->find_chunk(PS_CHUNK_VERSION));
 	u16 ver = F->r_u16();
-	if (ver != PS_VERSION)
+	if(ver != PS_VERSION)
 		return false;
 	// second generation
 	IReader* OBJ;
 	OBJ = F->open_chunk(PS_CHUNK_SECONDGEN);
-	if (OBJ)
+	if(OBJ)
 	{
 		IReader* O = OBJ->open_chunk(0);
-		for (int count = 1; O; count++)
+		for(int count = 1; O; count++)
 		{
 			PS::CPEDef* def = xr_new<PS::CPEDef>();
-			if (def->Load(*O))
+			if(def->Load(*O))
 				m_PEDs.push_back(def);
 			else
 			{
@@ -169,7 +169,7 @@ bool CPSLibrary::Load(const char* nm)
 				xr_delete(def);
 			}
 			O->close();
-			if (!bRes)
+			if(!bRes)
 				break;
 			O = OBJ->open_chunk(count);
 		}
@@ -177,13 +177,13 @@ bool CPSLibrary::Load(const char* nm)
 	}
 	// second generation
 	OBJ = F->open_chunk(PS_CHUNK_THIRDGEN);
-	if (OBJ)
+	if(OBJ)
 	{
 		IReader* O = OBJ->open_chunk(0);
-		for (int count = 1; O; count++)
+		for(int count = 1; O; count++)
 		{
 			PS::CPGDef* def = xr_new<PS::CPGDef>();
-			if (def->Load(*O))
+			if(def->Load(*O))
 				m_PGDs.push_back(def);
 			else
 			{
@@ -191,7 +191,7 @@ bool CPSLibrary::Load(const char* nm)
 				xr_delete(def);
 			}
 			O->close();
-			if (!bRes)
+			if(!bRes)
 				break;
 			O = OBJ->open_chunk(count);
 		}

@@ -26,22 +26,22 @@ IC void OrientToNorm(const fvec3& normal, fmat4x4& form, Fobb& box)
 	float max_dot = abs(ax_pointer[0].dotproduct(normal));
 	float min_size = box.m_halfsize.x;
 	int max_ax_i = 0, min_size_i = 0;
-	for (int i = 1; 3 > i; ++i)
+	for(int i = 1; 3 > i; ++i)
 	{
 		float dot_pr = abs(ax_pointer[i].dotproduct(normal));
-		if (max_dot < dot_pr)
+		if(max_dot < dot_pr)
 		{
 			max_ax_i = i;
 			max_dot = dot_pr;
 		}
-		if (min_size > s_pointer[i])
+		if(min_size > s_pointer[i])
 		{
 			min_size_i = i;
 			min_size = s_pointer[i];
 		}
 	}
 	VERIFY(min_size_i == max_ax_i);
-	if (ax_pointer[max_ax_i].dotproduct(normal) < 0.f)
+	if(ax_pointer[max_ax_i].dotproduct(normal) < 0.f)
 	{
 		ax_pointer[max_ax_i].invert();
 		ax_pointer[(max_ax_i + 1) % 3].invert();
@@ -63,7 +63,7 @@ CPHLeaderGeomShell::CPHLeaderGeomShell(CClimableObject* climable)
 }
 void CPHLeaderGeomShell::near_callback(CPHObject* obj)
 {
-	if (obj && obj->CastType() == CPHObject::tpCharacter)
+	if(obj && obj->CastType() == CPHObject::tpCharacter)
 	{
 		CPHCharacter* ch = static_cast<CPHCharacter*>(obj);
 		ch->SetElevator(m_pClimable);
@@ -96,19 +96,19 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
 	shift.set(0.f, 0.f, 0.f);
 	SORT(
 		b._11, m_axis.set(Transform().i); m_axis.mul(m_box.m_halfsize.x), m_side.set(Transform().i);
-		m_side.mul(m_box.m_halfsize.x), m_norm.set(Transform().i); if (m_box.m_halfsize.x < f_min_width) {
+		m_side.mul(m_box.m_halfsize.x), m_norm.set(Transform().i); if(m_box.m_halfsize.x < f_min_width) {
 			m_box.m_halfsize.x = f_min_width;
 			shift.set(1.f, 0.f, 0.f);
 		};
 		m_norm.mul(m_box.m_halfsize.x), b._22, m_axis.set(Transform().j);
 		m_axis.mul(m_box.m_halfsize.y), m_side.set(Transform().j); m_side.mul(m_box.m_halfsize.y), m_norm.set(Transform().j);
-		if (m_box.m_halfsize.y < f_min_width) {
+		if(m_box.m_halfsize.y < f_min_width) {
 			m_box.m_halfsize.y = f_min_width;
 			shift.set(0.f, 1.f, 0.f);
 		};
 		m_norm.mul(m_box.m_halfsize.y), b._33, m_axis.set(Transform().k);
 		m_axis.mul(m_box.m_halfsize.z), m_side.set(Transform().k); m_side.mul(m_box.m_halfsize.z), m_norm.set(Transform().k);
-		if (m_box.m_halfsize.z < f_min_width) {
+		if(m_box.m_halfsize.z < f_min_width) {
 			m_box.m_halfsize.z = f_min_width;
 			shift.set(0.f, 0.f, 1.f);
 		};
@@ -122,7 +122,7 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
 	P_BuildStaticGeomShell(smart_cast<CPHStaticGeomShell*>(m_pStaticShell), smart_cast<CGameObject*>(this), 0, m_box);
 	m_pStaticShell->SetMaterial("materials\\fake_ladders");
 
-	if (m_axis.y < 0.f)
+	if(m_axis.y < 0.f)
 	{
 		m_axis.invert();
 		m_side.invert();
@@ -246,7 +246,7 @@ float CClimableObject::DDSideToAxis(CPHCharacter* actor, fvec3& dir) const
 	side.set(m_side);
 	to_mag_and_dir(side);
 	float dot = side.dotproduct(dir);
-	if (dot > 0.f)
+	if(dot > 0.f)
 	{
 		dir.set(side);
 		return dot;
@@ -345,7 +345,7 @@ void CClimableObject::ObjectContactCallback(bool& do_colide, bool bo1, dContact&
 	CClimableObject* this_object = NULL;
 	CPHCharacter* ch = NULL;
 	float norm_sign = 0.f;
-	if (bo1)
+	if(bo1)
 	{
 		usr_data_ch = usr_data_2;
 		usr_data_lad = usr_data_1;
@@ -358,7 +358,7 @@ void CClimableObject::ObjectContactCallback(bool& do_colide, bool bo1, dContact&
 		usr_data_lad = usr_data_2;
 	}
 
-	if (usr_data_ch && usr_data_ch->ph_object && usr_data_ch->ph_object->CastType() == CPHObject::tpCharacter)
+	if(usr_data_ch && usr_data_ch->ph_object && usr_data_ch->ph_object->CastType() == CPHObject::tpCharacter)
 		ch = static_cast<CPHCharacter*>(usr_data_ch->ph_object);
 	else
 	{
@@ -369,16 +369,16 @@ void CClimableObject::ObjectContactCallback(bool& do_colide, bool bo1, dContact&
 	VERIFY(usr_data_lad);
 	this_object = static_cast<CClimableObject*>(usr_data_lad->ph_ref_object);
 	VERIFY(this_object);
-	if (!this_object->BeforeLadder(ch, -0.1f))
+	if(!this_object->BeforeLadder(ch, -0.1f))
 		do_colide = false;
 }
 #ifdef DEBUG
 extern Flags32 dbg_net_Draw_Flags;
 void CClimableObject ::OnRender()
 {
-	//OPTICK_EVENT("CClimableObject::OnRender");
+	// OPTICK_EVENT("CClimableObject::OnRender");
 
-	if (!dbg_net_Draw_Flags.test(1 << 10) && !ph_dbg_draw_mask.test(phDbgLadder))
+	if(!dbg_net_Draw_Flags.test(1 << 10) && !ph_dbg_draw_mask.test(phDbgLadder))
 		return;
 
 	fmat4x4 form;

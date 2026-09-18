@@ -17,9 +17,11 @@ class CSpaceRestrictionAbstract
 	bool m_accessible_neighbour_border_actual;
 
   private:
-	template <typename T> IC bool accessible_neighbours(T& restriction, u32 level_vertex_id, bool out_restriction);
+	template <typename T>
+	IC bool accessible_neighbours(T& restriction, u32 level_vertex_id, bool out_restriction);
 
-	template <typename T> IC void prepare_accessible_neighbour_border(T& restriction, bool out_restriction);
+	template <typename T>
+	IC void prepare_accessible_neighbour_border(T& restriction, bool out_restriction);
 
   public:
 	IC CSpaceRestrictionAbstract();
@@ -31,7 +33,8 @@ class CSpaceRestrictionAbstract
 	IC bool initialized() const;
 
   public:
-	template <typename T> IC const xr_vector<u32>& accessible_neighbour_border(T& restriction, bool out_restriction);
+	template <typename T>
+	IC const xr_vector<u32>& accessible_neighbour_border(T& restriction, bool out_restriction);
 
   public:
 	virtual shared_str name() const = 0;

@@ -7,8 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::clear_gbuffer()
 {
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-											RenderTarget->rt_GBuffer[1], 
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0],
+											RenderTarget->rt_GBuffer[1],
 											RenderTarget->rt_GBuffer[2]);
 
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
@@ -20,8 +20,8 @@ void CRender::set_gbuffer()
 {
 	////OPTICK_EVENT("CRenderTarget::set_gbuffer");
 
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0], 
-											RenderTarget->rt_GBuffer[1], 
+	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_GBuffer[0],
+											RenderTarget->rt_GBuffer[1],
 											RenderTarget->rt_GBuffer[2]);
 
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
@@ -32,7 +32,7 @@ void CRender::set_gbuffer()
 	// Misc	- draw only front-faces
 	RenderBackend.SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE);
 
-	//Set backface culling
+	// Set backface culling
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 
 	RenderBackend.set_ColorWriteEnable();

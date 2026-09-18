@@ -125,7 +125,7 @@ struct Particle
 	float age;	   // 4
 	u16 frame;	   // 2
 	Flags16 flags; // 2
-};				   // 		72
+}; // 		72
 
 typedef void (*OnBirthParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
 typedef void (*OnDeadParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
@@ -225,5 +225,5 @@ class IParticleManager
 };
 
 PARTICLES_API IParticleManager* ParticleManager();
-};	   // namespace PAPI
+}; // namespace PAPI
 #endif // PSystemH

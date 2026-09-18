@@ -56,11 +56,11 @@ struct ray_cache
 	}
 	BOOL similar(const fvec3& _start, const fvec3& _dir, const float _range)
 	{
-		if (!_start.similar(start))
+		if(!_start.similar(start))
 			return FALSE;
-		if (!fsimilar(1.f, dir.dotproduct(_dir)))
+		if(!fsimilar(1.f, dir.dotproduct(_dir)))
 			return FALSE;
-		if (!fsimilar(_range, range))
+		if(!fsimilar(_range, range))
 			return FALSE;
 		return TRUE;
 	}
@@ -105,7 +105,7 @@ struct rq_result
 	}
 	IC BOOL set_if_less(CDB::RESULT* I)
 	{
-		if (I->range < range)
+		if(I->range < range)
 		{
 			set(0, I->range, I->id);
 			return TRUE;
@@ -115,7 +115,7 @@ struct rq_result
 	}
 	IC BOOL set_if_less(rq_result* R)
 	{
-		if (R->range < range)
+		if(R->range < range)
 		{
 			set(R->O, R->range, R->element);
 			return TRUE;
@@ -125,7 +125,7 @@ struct rq_result
 	}
 	IC BOOL set_if_less(CObject* _who, float _range, int _element)
 	{
-		if (_range < range)
+		if(_range < range)
 		{
 			set(_who, _range, _element);
 			return TRUE;
@@ -152,10 +152,10 @@ class rq_results
   public:
 	IC BOOL append_result(CObject* _who, float _range, int _element, BOOL bNearest)
 	{
-		if (bNearest && !results.empty())
+		if(bNearest && !results.empty())
 		{
 			rq_result& R = results.back();
-			if (_range < R.range)
+			if(_range < R.range)
 			{
 				R.O = _who;
 				R.range = _range;
@@ -173,7 +173,7 @@ class rq_results
 	}
 	IC void append_result(rq_result& res)
 	{
-		if (0 == results.capacity())
+		if(0 == results.capacity())
 			results.reserve(8);
 		results.push_back(res);
 	}

@@ -26,7 +26,7 @@ class CBlender_autoexposure : public IBlender
 		// Имя единого шейдерного файла (без расширения)
 		LPCSTR sh_name = "postprocess_stage_autoexposure";
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_PASS_AUTOEXPOSURE_GENERATE_MIP_CHAIN:
 			// Pass 1: Initial

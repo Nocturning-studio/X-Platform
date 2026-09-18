@@ -22,19 +22,21 @@ struct intrusive_base
 	{
 	}
 
-	template <typename T> IC void _release(T* object)
+	template <typename T>
+	IC void _release(T* object)
 	{
 		try
 		{
 			xr_delete(object);
 		}
-		catch (...)
+		catch(...)
 		{
 		}
 	}
 };
 
-template <typename object_type, typename base_type = intrusive_base> class intrusive_ptr
+template <typename object_type, typename base_type = intrusive_base>
+class intrusive_ptr
 {
   private:
 	typedef base_type base_type;

@@ -33,7 +33,7 @@ class CWeaponShotEffector
 
   public:
 	CWeaponShotEffector();
-	virtual ~CWeaponShotEffector(){};
+	virtual ~CWeaponShotEffector() {};
 
 	void Initialize(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
 	IC BOOL IsActive()

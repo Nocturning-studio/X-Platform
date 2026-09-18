@@ -36,7 +36,8 @@ class CScriptEntityAction
 	IC CScriptEntityAction();
 	IC CScriptEntityAction(const CScriptEntityAction* entity_action);
 	virtual ~CScriptEntityAction();
-	template <typename T> IC void SetAction(const T& t, T& tt);
+	template <typename T>
+	IC void SetAction(const T& t, T& tt);
 	IC void SetAction(CScriptMovementAction& tMovementAction);
 	IC void SetAction(CScriptWatchAction& tWatchAction);
 	IC void SetAction(CScriptAnimationAction& tAnimationAction);

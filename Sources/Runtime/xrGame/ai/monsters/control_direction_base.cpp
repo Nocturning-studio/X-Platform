@@ -21,7 +21,7 @@ void CControlDirectionBase::reinit()
 
 void CControlDirectionBase::face_target(const fvec3& position, u32 delay, float add_yaw)
 {
-	if (m_time_last_faced + delay > Engine.TimeManager.GetGlobalTimeMs())
+	if(m_time_last_faced + delay > Engine.TimeManager.GetGlobalTimeMs())
 		return;
 
 	m_delay = delay;
@@ -50,7 +50,7 @@ void CControlDirectionBase::use_path_direction(bool reversed)
 	float yaw, pitch;
 	m_man->path_builder().detail().direction().getHP(yaw, pitch);
 
-	if (fsimilar(yaw, 0.f, EPS_S))
+	if(fsimilar(yaw, 0.f, EPS_S))
 		return;
 
 	m_heading.target = angle_normalize((reversed) ? (-yaw + PI) : (-yaw));
@@ -71,7 +71,7 @@ void CControlDirectionBase::set_heading(float value, bool force)
 void CControlDirectionBase::update_frame()
 {
 	SControlDirectionData* ctrl_data = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->heading.target_angle = m_heading.target;

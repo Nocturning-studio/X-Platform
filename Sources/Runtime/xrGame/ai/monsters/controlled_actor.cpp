@@ -26,7 +26,7 @@ void CControlledActor::release()
 
 void CControlledActor::frame_update()
 {
-	if (is_controlling() && m_need_turn)
+	if(is_controlling() && m_need_turn)
 	{
 		update_turn();
 	}
@@ -65,11 +65,11 @@ void CControlledActor::update_turn()
 	// YAW
 	float speed_factor = angle_difference(cam_current_yaw, cam_target_yaw) / MAX_DIST;
 	clamp(speed_factor, 0.f, 1.f);
-	if (speed_factor > 0.5f)
+	if(speed_factor > 0.5f)
 		speed_factor = 1.f - speed_factor;
 
 	float speed;
-	if (fsimilar(cam_current_yaw, cam_target_yaw, EPS_ANGLE))
+	if(fsimilar(cam_current_yaw, cam_target_yaw, EPS_ANGLE))
 	{
 		m_turned_yaw = true;
 	}
@@ -77,7 +77,7 @@ void CControlledActor::update_turn()
 	{
 		speed = SPEED_MIN + speed_factor * (SPEED_MAX - SPEED_MIN);
 
-		if (from_right(cam_target_yaw, cam_current_yaw))
+		if(from_right(cam_target_yaw, cam_current_yaw))
 			m_actor->cam_Active()->Move(kLEFT, speed * Engine.TimeManager.GetDeltaTime());
 		else
 			m_actor->cam_Active()->Move(kRIGHT, speed * Engine.TimeManager.GetDeltaTime());
@@ -86,10 +86,10 @@ void CControlledActor::update_turn()
 	// PITCH
 	speed_factor = angle_difference(cam_current_pitch, cam_target_pitch) / MAX_DIST;
 	clamp(speed_factor, 0.f, 1.f);
-	if (speed_factor > 0.5f)
+	if(speed_factor > 0.5f)
 		speed_factor = 1.f - speed_factor;
 
-	if (fsimilar(cam_current_pitch, cam_target_pitch, EPS_ANGLE))
+	if(fsimilar(cam_current_pitch, cam_target_pitch, EPS_ANGLE))
 	{
 		m_turned_pitch = true;
 	}
@@ -97,7 +97,7 @@ void CControlledActor::update_turn()
 	{
 		speed = SPEED_MIN + speed_factor * (SPEED_MAX - SPEED_MIN);
 
-		if (from_right(cam_target_pitch, cam_current_pitch))
+		if(from_right(cam_target_pitch, cam_current_pitch))
 			m_actor->cam_Active()->Move(kDOWN, speed * Engine.TimeManager.GetDeltaTime());
 		else
 			m_actor->cam_Active()->Move(kUP, speed * Engine.TimeManager.GetDeltaTime());
@@ -117,11 +117,11 @@ bool CControlledActor::is_turning()
 
 bool CControlledActor::authorized(int cmd)
 {
-	if (cmd == kWPN_1)
+	if(cmd == kWPN_1)
 		return true;
-	if (cmd == kWPN_FIRE)
+	if(cmd == kWPN_FIRE)
 	{
-		if (m_actor->inventory().GetActiveSlot() == 0)
+		if(m_actor->inventory().GetActiveSlot() == 0)
 			return true;
 	}
 

@@ -40,7 +40,7 @@ void CStalkerActionCombatBase::finalize()
 {
 	inherited::finalize();
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().sound().set_sound_mask(0);
@@ -59,7 +59,7 @@ void CStalkerActionCombatBase::fire()
 	float yaw, pitch;
 	direction.getHP(yaw, pitch);
 	const MonsterSpace::SBoneRotation& current_angles = object().movement().head_orientation();
-	if (angle_difference(-yaw, current_angles.current.yaw) > start_fire_angle_difference)
+	if(angle_difference(-yaw, current_angles.current.yaw) > start_fire_angle_difference)
 	{
 		aim_ready();
 		return;
@@ -95,21 +95,22 @@ void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& m
 {
 	/**/
 	int weapon_type = 6;
-	if (object().best_weapon())
+	if(object().best_weapon())
 		weapon_type = object().best_weapon()->object().ef_weapon_type();
 
-	switch (weapon_type)
+	switch(weapon_type)
 	{
 	// pistols
-	case 5: {
-		if (distance > 30.f)
+	case 5:
+	{
+		if(distance > 30.f)
 		{
 			min_queue_size = 1;
 			max_queue_size = 1;
 			min_queue_interval = 1000;
 			max_queue_interval = 1250;
 		}
-		else if (distance > 15.f)
+		else if(distance > 15.f)
 		{
 			min_queue_size = 2;
 			max_queue_size = 4;
@@ -127,15 +128,16 @@ void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& m
 		break;
 	}
 	// shotguns
-	case 7: {
-		if (distance > 30.f)
+	case 7:
+	{
+		if(distance > 30.f)
 		{
 			min_queue_size = 1;
 			max_queue_size = 1;
 			min_queue_interval = 1250;
 			max_queue_interval = 1500;
 		}
-		else if (distance > 15.f)
+		else if(distance > 15.f)
 		{
 			min_queue_size = 1;
 			max_queue_size = 1;
@@ -153,15 +155,16 @@ void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& m
 		break;
 	}
 	// sniper rifles
-	case 8: {
-		if (distance > 30.f)
+	case 8:
+	{
+		if(distance > 30.f)
 		{
 			min_queue_size = 1;
 			max_queue_size = 1;
 			min_queue_interval = 3000;
 			max_queue_interval = 4000;
 		}
-		else if (distance > 15.f)
+		else if(distance > 15.f)
 		{
 			min_queue_size = 1;
 			max_queue_size = 1;
@@ -178,15 +181,16 @@ void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& m
 
 		break;
 	}
-	default: {
-		if (distance > 30.f)
+	default:
+	{
+		if(distance > 30.f)
 		{
 			min_queue_size = object().min_queue_size_far();
 			max_queue_size = object().max_queue_size_far();
 			min_queue_interval = object().min_queue_interval_far();
 			max_queue_interval = object().max_queue_interval_far();
 		}
-		else if (distance > 15.f)
+		else if(distance > 15.f)
 		{
 			min_queue_size = object().min_queue_size_medium();
 			max_queue_size = object().max_queue_size_medium();
@@ -236,23 +240,23 @@ void CStalkerActionCombatBase::play_panic_sound(u32 max_start_time, u32 min_star
 void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time,
 												 u32 min_stop_time, u32 id)
 {
-	if (!object().memory().enemy().selected()->human_being())
+	if(!object().memory().enemy().selected()->human_being())
 		return;
 
-	if (!object().agent_manager().member().can_cry_noninfo_phrase())
+	if(!object().agent_manager().member().can_cry_noninfo_phrase())
 		return;
 
 	u32 sound_type = eStalkerSoundAttackNoAllies;
 #ifdef DEBUG
-	if (object().agent_manager().member().combat_members().empty())
+	if(object().agent_manager().member().combat_members().empty())
 		Msg("! I am in combat, but there is no combat members at all (including me), "
 			"npc[%s],team[%d],squad[%d],group[%d]",
 			*object().cName(), object().g_Team(), object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
-	if (object().agent_manager().member().combat_members().size() > 1)
+	if(object().agent_manager().member().combat_members().size() > 1)
 	{
-		if (object().agent_manager().enemy().enemies().size() > 1)
+		if(object().agent_manager().enemy().enemies().size() > 1)
 			sound_type = eStalkerSoundAttackAlliesSeveralEnemies;
 		else
 			sound_type = eStalkerSoundAttackAlliesSingleEnemy;
@@ -266,11 +270,11 @@ void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_sta
 void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time,
 													   u32 min_stop_time, u32 id)
 {
-	if (!object().agent_manager().member().can_cry_noninfo_phrase())
+	if(!object().agent_manager().member().can_cry_noninfo_phrase())
 		return;
 
 #ifdef DEBUG
-	if (object().agent_manager().member().combat_members().empty())
+	if(object().agent_manager().member().combat_members().empty())
 		Msg("! I am in combat, but there is no combat members at all (including me), "
 			"npc[%s],team[%d],squad[%d],group[%d]",
 			*object().cName(), object().g_Team(), object().g_Squad(), object().g_Group());

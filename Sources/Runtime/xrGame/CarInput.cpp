@@ -20,17 +20,17 @@
 
 void CCar::OnMouseMove(int dx, int dy)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
 	CCameraBase* C = active_camera;
 	float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.f;
-	if (dx)
+	if(dx)
 	{
 		float d = float(dx) * scale;
 		C->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
 	}
-	if (dy)
+	if(dy)
 	{
 		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
 		C->Move((d > 0) ? kUP : kDOWN, _abs(d));
@@ -39,7 +39,7 @@ void CCar::OnMouseMove(int dx, int dy)
 
 bool CCar::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 {
-	if (tpEntityAction->m_tMovementAction.m_bCompleted)
+	if(tpEntityAction->m_tMovementAction.m_bCompleted)
 		return (false);
 
 	u32 l_tInput = tpEntityAction->m_tMovementAction.m_tInputKeys;
@@ -51,9 +51,9 @@ bool CCar::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 	vfProcessInputKey(kACCEL, !!(l_tInput & CScriptMovementAction::eInputKeyShiftUp));
 	vfProcessInputKey(kCROUCH, !!(l_tInput & CScriptMovementAction::eInputKeyShiftDown));
 	vfProcessInputKey(kJUMP, !!(l_tInput & CScriptMovementAction::eInputKeyBreaks));
-	if (!!(l_tInput & CScriptMovementAction::eInputKeyEngineOn))
+	if(!!(l_tInput & CScriptMovementAction::eInputKeyEngineOn))
 		StartEngine();
-	if (!!(l_tInput & CScriptMovementAction::eInputKeyEngineOff))
+	if(!!(l_tInput & CScriptMovementAction::eInputKeyEngineOff))
 		StopEngine();
 
 	// if (_abs(tpEntityAction->m_tMovementAction.m_fSpeed) > EPS_L)
@@ -65,26 +65,29 @@ bool CCar::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 bool CCar::bfAssignObject(CScriptEntityAction* tpEntityAction)
 {
 	CScriptObjectAction& l_tObjectAction = tpEntityAction->m_tObjectAction;
-	if (l_tObjectAction.m_bCompleted || !xr_strlen(l_tObjectAction.m_caBoneName))
+	if(l_tObjectAction.m_bCompleted || !xr_strlen(l_tObjectAction.m_caBoneName))
 		return ((l_tObjectAction.m_bCompleted = true) == false);
 
 	s16 l_sBoneID = smart_cast<CKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
-	if (is_Door(l_sBoneID))
+	if(is_Door(l_sBoneID))
 	{
-		switch (l_tObjectAction.m_tGoalType)
+		switch(l_tObjectAction.m_tGoalType)
 		{
-		case MonsterSpace::eObjectActionActivate: {
-			if (!DoorOpen(l_sBoneID))
+		case MonsterSpace::eObjectActionActivate:
+		{
+			if(!DoorOpen(l_sBoneID))
 				return ((l_tObjectAction.m_bCompleted = true) == false);
 			break;
 		}
-		case MonsterSpace::eObjectActionDeactivate: {
-			if (!DoorClose(l_sBoneID))
+		case MonsterSpace::eObjectActionDeactivate:
+		{
+			if(!DoorClose(l_sBoneID))
 				return ((l_tObjectAction.m_bCompleted = true) == false);
 			break;
 		}
-		case MonsterSpace::eObjectActionUse: {
-			if (!DoorSwitch(l_sBoneID))
+		case MonsterSpace::eObjectActionUse:
+		{
+			if(!DoorSwitch(l_sBoneID))
 				return ((l_tObjectAction.m_bCompleted = true) == false);
 			break;
 		}
@@ -94,19 +97,22 @@ bool CCar::bfAssignObject(CScriptEntityAction* tpEntityAction)
 		return (false);
 	}
 	SCarLight* light = NULL;
-	if (m_lights.findLight(l_sBoneID, light))
+	if(m_lights.findLight(l_sBoneID, light))
 	{
-		switch (l_tObjectAction.m_tGoalType)
+		switch(l_tObjectAction.m_tGoalType)
 		{
-		case MonsterSpace::eObjectActionActivate: {
+		case MonsterSpace::eObjectActionActivate:
+		{
 			light->TurnOn();
 			return ((l_tObjectAction.m_bCompleted = true) == false);
 		}
-		case MonsterSpace::eObjectActionDeactivate: {
+		case MonsterSpace::eObjectActionDeactivate:
+		{
 			light->TurnOff();
 			return ((l_tObjectAction.m_bCompleted = true) == false);
 		}
-		case MonsterSpace::eObjectActionUse: {
+		case MonsterSpace::eObjectActionUse:
+		{
 			light->Switch();
 			return ((l_tObjectAction.m_bCompleted = true) == false);
 		}
@@ -120,7 +126,7 @@ bool CCar::bfAssignObject(CScriptEntityAction* tpEntityAction)
 
 void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 {
-	if (bPressed)
+	if(bPressed)
 		OnKeyboardPress(iCommand);
 	else
 		OnKeyboardRelease(iCommand);
@@ -128,10 +134,10 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 
 void CCar::OnKeyboardPress(int cmd)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
-	switch (cmd)
+	switch(cmd)
 	{
 	case kCAM_1:
 		OnCameraChange(ectFirst);
@@ -156,12 +162,12 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kR_STRAFE:
 		PressRight();
-		if (OwnerActor())
+		if(OwnerActor())
 			OwnerActor()->steer_Vehicle(1);
 		break;
 	case kL_STRAFE:
 		PressLeft();
-		if (OwnerActor())
+		if(OwnerActor())
 			OwnerActor()->steer_Vehicle(-1);
 		break;
 	case kJUMP:
@@ -180,9 +186,9 @@ void CCar::OnKeyboardPress(int cmd)
 
 void CCar::OnKeyboardRelease(int cmd)
 {
-	if (Remote())
+	if(Remote())
 		return;
-	switch (cmd)
+	switch(cmd)
 	{
 	case kACCEL:
 		break;
@@ -194,12 +200,12 @@ void CCar::OnKeyboardRelease(int cmd)
 		break;
 	case kL_STRAFE:
 		ReleaseLeft();
-		if (OwnerActor())
+		if(OwnerActor())
 			OwnerActor()->steer_Vehicle(0);
 		break;
 	case kR_STRAFE:
 		ReleaseRight();
-		if (OwnerActor())
+		if(OwnerActor())
 			OwnerActor()->steer_Vehicle(0);
 		break;
 	case kJUMP:
@@ -210,10 +216,10 @@ void CCar::OnKeyboardRelease(int cmd)
 
 void CCar::OnKeyboardHold(int cmd)
 {
-	if (Remote())
+	if(Remote())
 		return;
 
-	switch (cmd)
+	switch(cmd)
 	{
 	case kCAM_ZOOM_IN:
 	case kCAM_ZOOM_OUT:
@@ -247,29 +253,29 @@ void CCar::OnKeyboardHold(int cmd)
 }
 void CCar::Action(int id, u32 flags)
 {
-	if (m_car_weapon)
+	if(m_car_weapon)
 		m_car_weapon->Action(id, flags);
 }
 void CCar::SetParam(int id, fvec2 val)
 {
-	if (m_car_weapon)
+	if(m_car_weapon)
 		m_car_weapon->SetParam(id, val);
 }
 void CCar::SetParam(int id, fvec3 val)
 {
-	if (m_car_weapon)
+	if(m_car_weapon)
 		m_car_weapon->SetParam(id, val);
 }
 bool CCar::WpnCanHit()
 {
-	if (m_car_weapon)
+	if(m_car_weapon)
 		return m_car_weapon->AllowFire();
 	return false;
 }
 
 float CCar::FireDirDiff()
 {
-	if (m_car_weapon)
+	if(m_car_weapon)
 		return m_car_weapon->FireDirDiff();
 	return 0.0f;
 }
@@ -279,14 +285,14 @@ float CCar::FireDirDiff()
 
 bool CCar::isObjectVisible(CScriptGameObject* O_)
 {
-	if (m_memory)
+	if(m_memory)
 	{
 		return m_memory->visual().visible_now(&O_->object());
 	}
 	else
 	{
 
-		if (!O_)
+		if(!O_)
 		{
 			Msg("Attempt to call CCar::isObjectVisible method wihth passed NULL parameter");
 			return false;
@@ -299,7 +305,7 @@ bool CCar::isObjectVisible(CScriptGameObject* O_)
 		fvec3 from_point;
 		Center(from_point);
 
-		if (HasWeapon())
+		if(HasWeapon())
 		{
 			from_point.y = Transform().c.y + m_car_weapon->_height();
 		}

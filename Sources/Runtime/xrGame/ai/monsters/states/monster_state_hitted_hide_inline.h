@@ -29,7 +29,7 @@ void CStateMonsterHittedHideAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterHittedHideAbstract::check_start_conditions()
 {
-	if (object->HitMemory.is_hit() && !object->EnemyMan.get_enemy())
+	if(object->HitMemory.is_hit() && !object->EnemyMan.get_enemy())
 		return true;
 	return false;
 }
@@ -40,10 +40,10 @@ bool CStateMonsterHittedHideAbstract::check_completion()
 	float dist = object->Position().distance_to(object->HitMemory.get_last_hit_position());
 
 	// good dist
-	if (dist < GOOD_DISTANCE_IN_COVER)
+	if(dist < GOOD_DISTANCE_IN_COVER)
 		return false;
 	// +hide more than 3 sec
-	if (time_state_started + MIN_HIDE_TIME > Engine.TimeManager.GetGlobalTimeMs())
+	if(time_state_started + MIN_HIDE_TIME > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	return true;

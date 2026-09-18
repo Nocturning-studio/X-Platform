@@ -8,7 +8,7 @@
 
 void CScriptDebugger::SendMessageToIde(CMailSlotMsg& msg)
 {
-	if (CheckExisting(IDE_MAIL_SLOT))
+	if(CheckExisting(IDE_MAIL_SLOT))
 	{
 		SendMailslotMessage(IDE_MAIL_SLOT, msg);
 		m_bIdePresent = true;
@@ -21,7 +21,7 @@ LRESULT CScriptDebugger::_SendMessage(u32 message, WPARAM wParam, LPARAM lParam)
 {
 	//	if ( (m_pDebugger)&&(m_pDebugger->Active())&&(message >= _DMSG_FIRST_MSG && message <= _DMSG_LAST_MSG) )
 	//		return m_pDebugger->DebugMessage(message, wParam, lParam);
-	if ((Active()) && (message >= _DMSG_FIRST_MSG && message <= _DMSG_LAST_MSG))
+	if((Active()) && (message >= _DMSG_FIRST_MSG && message <= _DMSG_LAST_MSG))
 		return DebugMessage(message, wParam, lParam);
 
 	return 0;
@@ -31,28 +31,32 @@ LRESULT CScriptDebugger::DebugMessage(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	CMailSlotMsg msg;
 
-	switch (nMsg)
+	switch(nMsg)
 	{
-	case DMSG_NEW_CONNECTION: {
+	case DMSG_NEW_CONNECTION:
+	{
 		msg.w_int(DMSG_NEW_CONNECTION);
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_CLOSE_CONNECTION: {
+	case DMSG_CLOSE_CONNECTION:
+	{
 		msg.w_int(DMSG_CLOSE_CONNECTION);
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_WRITE_DEBUG: {
+	case DMSG_WRITE_DEBUG:
+	{
 		msg.w_int(DMSG_WRITE_DEBUG);
 		msg.w_string((char*)wParam);
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_GOTO_FILELINE: {
+	case DMSG_GOTO_FILELINE:
+	{
 		msg.w_int(DMSG_GOTO_FILELINE);
 		msg.w_string((char*)wParam);
 		msg.w_int((int)lParam);
@@ -60,21 +64,24 @@ LRESULT CScriptDebugger::DebugMessage(UINT nMsg, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 
-	case DMSG_DEBUG_BREAK: {
+	case DMSG_DEBUG_BREAK:
+	{
 		msg.w_int(DMSG_ACTIVATE_IDE);
 		SendMessageToIde(msg);
 		WaitForReply(true);
 	}
 	break;
 
-	case DMSG_CLEAR_STACKTRACE: {
+	case DMSG_CLEAR_STACKTRACE:
+	{
 		m_callStack->Clear();
 		msg.w_int(DMSG_CLEAR_STACKTRACE);
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_ADD_STACKTRACE: {
+	case DMSG_ADD_STACKTRACE:
+	{
 		m_callStack->Add(((StackTrace*)wParam)->szDesc, ((StackTrace*)wParam)->szFile, ((StackTrace*)wParam)->nLine);
 
 		msg.w_int(DMSG_ADD_STACKTRACE);
@@ -83,50 +90,58 @@ LRESULT CScriptDebugger::DebugMessage(UINT nMsg, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 
-	case DMSG_GOTO_STACKTRACE_LEVEL: {
+	case DMSG_GOTO_STACKTRACE_LEVEL:
+	{
 		m_callStack->GotoStackTraceLevel((int)wParam);
 		StackLevelChanged();
 	}
 	break;
 
-	case DMSG_CLEAR_LOCALVARIABLES: {
+	case DMSG_CLEAR_LOCALVARIABLES:
+	{
 		msg.w_int(DMSG_CLEAR_LOCALVARIABLES);
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_ADD_LOCALVARIABLE: {
+	case DMSG_ADD_LOCALVARIABLE:
+	{
 		msg.w_int(DMSG_ADD_LOCALVARIABLE);
 		msg.w_buff((void*)wParam, sizeof(Variable));
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_CLEAR_THREADS: {
+	case DMSG_CLEAR_THREADS:
+	{
 		msg.w_int(DMSG_CLEAR_THREADS);
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_ADD_THREAD: {
+	case DMSG_ADD_THREAD:
+	{
 		msg.w_int(DMSG_ADD_THREAD);
 		msg.w_buff((void*)wParam, sizeof(SScriptThread));
 		SendMessageToIde(msg);
 	}
 	break;
 
-	case DMSG_THREAD_CHANGED: {
+	case DMSG_THREAD_CHANGED:
+	{
 		int nThreadID = (int)wParam;
 		DrawThreadInfo(nThreadID);
 	}
 	break;
 
-	case DMSG_GET_VAR_TABLE: {
+	case DMSG_GET_VAR_TABLE:
+	{
 		DrawVariableInfo((char*)wParam);
 	}
 	break;
 
-	case DMSG_EVAL_WATCH: {
+	case DMSG_EVAL_WATCH:
+	{
 		string2048 res;
 		res[0] = 0;
 		Eval((const char*)wParam, res, sizeof(res));
@@ -159,7 +174,7 @@ CScriptDebugger::CScriptDebugger()
 	m_nLevel = 0;
 	m_mailSlot = CreateMailSlotByName(DEBUGGER_MAIL_SLOT);
 
-	if (m_mailSlot == INVALID_HANDLE_VALUE)
+	if(m_mailSlot == INVALID_HANDLE_VALUE)
 	{
 		m_bIdePresent = false;
 		return;
@@ -171,7 +186,7 @@ void CScriptDebugger::Connect(LPCSTR mslot_name)
 {
 	m_bIdePresent = CheckExisting(IDE_MAIL_SLOT);
 	ZeroMemory(m_curr_connected_mslot, sizeof(m_curr_connected_mslot));
-	if (Active())
+	if(Active())
 	{
 		_SendMessage(DMSG_NEW_CONNECTION, 0, 0);
 		CMailSlotMsg msg;
@@ -184,7 +199,7 @@ void CScriptDebugger::Connect(LPCSTR mslot_name)
 
 CScriptDebugger::~CScriptDebugger()
 {
-	if (Active())
+	if(Active())
 		_SendMessage(DMSG_CLOSE_CONNECTION, 0, 0);
 
 	CloseHandle(m_mailSlot);
@@ -196,7 +211,7 @@ CScriptDebugger::~CScriptDebugger()
 
 void CScriptDebugger::UnPrepareLua(lua_State* l, int idx)
 {
-	if (idx == -1)
+	if(idx == -1)
 		return; // !Active()
 	m_lua->UnPrepareLua(l, idx);
 }
@@ -205,7 +220,7 @@ int CScriptDebugger::PrepareLua(lua_State* l)
 {
 	// call this function immediatly before calling lua_pcall.
 	// returns index in stack for errorFunc
-	if (!Active())
+	if(!Active())
 		return -1;
 
 	m_nMode = DMOD_NONE;
@@ -214,7 +229,7 @@ int CScriptDebugger::PrepareLua(lua_State* l)
 
 BOOL CScriptDebugger::PrepareLuaBind()
 {
-	if (!Active())
+	if(!Active())
 		return FALSE;
 
 	m_lua->PrepareLuaBind();
@@ -236,15 +251,15 @@ void CScriptDebugger::Write(const char* szMsg)
 void CScriptDebugger::LineHook(const char* szFile, int nLine)
 {
 	CheckNewMessages();
-	if (m_nMode == DMOD_STOP)
+	if(m_nMode == DMOD_STOP)
 	{
 		// Console->Execute("quit");
 		return;
 	}
 
-	if (HasBreakPoint(szFile, nLine) || m_nMode == DMOD_STEP_INTO || m_nMode == DMOD_BREAK ||
-		(m_nMode == DMOD_STEP_OVER && m_nLevel <= 0) || (m_nMode == DMOD_STEP_OUT && m_nLevel < 0) ||
-		(m_nMode == DMOD_RUN_TO_CURSOR && xr_strcmp(m_strPathName, szFile) && m_nLine == nLine))
+	if(HasBreakPoint(szFile, nLine) || m_nMode == DMOD_STEP_INTO || m_nMode == DMOD_BREAK ||
+	   (m_nMode == DMOD_STEP_OVER && m_nLevel <= 0) || (m_nMode == DMOD_STEP_OUT && m_nLevel < 0) ||
+	   (m_nMode == DMOD_RUN_TO_CURSOR && xr_strcmp(m_strPathName, szFile) && m_nLine == nLine))
 	{
 		DebugBreak(szFile, nLine);
 		GetBreakPointsFromIde();
@@ -253,7 +268,7 @@ void CScriptDebugger::LineHook(const char* szFile, int nLine)
 
 void CScriptDebugger::FunctionHook(const char* szFile, int nLine, BOOL bCall)
 {
-	if (m_nMode == DMOD_STOP)
+	if(m_nMode == DMOD_STOP)
 		return;
 
 	m_nLevel += (bCall ? 1 : -1);
@@ -263,7 +278,7 @@ void CScriptDebugger::DrawThreadInfo(int nThreadID)
 {
 	// find corresponding lua_state
 	lua_State* ls = m_threads->FindScript(nThreadID);
-	if (!ls)
+	if(!ls)
 		return;
 	m_lua->set_lua(ls);
 	DrawCurrentState();
@@ -299,7 +314,7 @@ void CScriptDebugger::GetBreakPointsFromIde()
 
 void CScriptDebugger::ErrorBreak(const char* szFile, int nLine)
 {
-	if (Active())
+	if(Active())
 		DebugBreak(szFile, nLine);
 }
 
@@ -368,7 +383,7 @@ void CScriptDebugger::Eval(const char* strCode, char* res, int res_sz)
 void CScriptDebugger::CheckNewMessages()
 {
 	CMailSlotMsg msg;
-	while (CheckMailslotMessage(m_mailSlot, msg))
+	while(CheckMailslotMessage(m_mailSlot, msg))
 	{
 		TranslateIdeMessage(&msg);
 	};
@@ -380,70 +395,78 @@ void CScriptDebugger::WaitForReply(bool bWaitForModalResult) // UINT nMsg)
 	do
 	{
 		CMailSlotMsg msg;
-		while (true)
+		while(true)
 		{
-			if (CheckMailslotMessage(m_mailSlot, msg))
+			if(CheckMailslotMessage(m_mailSlot, msg))
 				break;
 			Sleep(10);
 		};
 		R_ASSERT(msg.GetLen());
 
 		mr = TranslateIdeMessage(&msg); // mr--is this an ide modalResult ?
-	} while (bWaitForModalResult && !mr);
+	} while(bWaitForModalResult && !mr);
 }
 
 bool CScriptDebugger::TranslateIdeMessage(CMailSlotMsg* msg)
 {
 	int nType;
 	msg->r_int(nType);
-	switch (nType)
+	switch(nType)
 	{
-	case DMSG_DEBUG_GO: {
+	case DMSG_DEBUG_GO:
+	{
 		m_nMode = DMOD_NONE;
 		return true;
 	}
 	break;
 
-	case DMSG_DEBUG_BREAK: {
+	case DMSG_DEBUG_BREAK:
+	{
 		m_nMode = DMOD_BREAK;
 		return true;
 	}
 	break;
 
-	case DMSG_DEBUG_STEP_INTO: {
+	case DMSG_DEBUG_STEP_INTO:
+	{
 		m_nMode = DMOD_STEP_INTO;
 		return true;
 	}
 	break;
 
-	case DMSG_DEBUG_STEP_OVER: {
+	case DMSG_DEBUG_STEP_OVER:
+	{
 		m_nLevel = 0;
 		m_nMode = DMOD_STEP_OVER;
 		return true;
 	}
 	break;
 
-	case DMSG_DEBUG_STEP_OUT: {
+	case DMSG_DEBUG_STEP_OUT:
+	{
 		m_nLevel = 0;
 		m_nMode = DMOD_STEP_OUT;
 		return true;
 	}
 	break;
 
-	case DMSG_DEBUG_RUN_TO_CURSOR: {
+	case DMSG_DEBUG_RUN_TO_CURSOR:
+	{
 		// DMOD_RUN_TO_CURSOR;
 		return true;
 	}
 	break;
 
-	case DMSG_STOP_DEBUGGING: {
+	case DMSG_STOP_DEBUGGING:
+	{
 		m_nMode = DMOD_STOP;
 		//			Console->Execute("quit");
 		return true;
 	}
 	break;
 
-	case DMSG_GOTO_STACKTRACE_LEVEL: {
+	case DMSG_GOTO_STACKTRACE_LEVEL:
+	{
 		int nLevel;
 		msg->r_int(nLevel);
 		_SendMessage(DMSG_GOTO_STACKTRACE_LEVEL, nLevel, 0);
@@ -451,13 +474,15 @@ bool CScriptDebugger::TranslateIdeMessage(CMailSlotMsg* msg)
 	}
 	break;
 
-	case DMSG_GET_BREAKPOINTS: {
+	case DMSG_GET_BREAKPOINTS:
+	{
 		FillBreakPointsIn(msg);
 		return false;
 	}
 	break;
 
-	case DMSG_THREAD_CHANGED: {
+	case DMSG_THREAD_CHANGED:
+	{
 		int nThreadID;
 		msg->r_int(nThreadID);
 		_SendMessage(DMSG_THREAD_CHANGED, nThreadID, 0);
@@ -465,7 +490,8 @@ bool CScriptDebugger::TranslateIdeMessage(CMailSlotMsg* msg)
 	}
 	break;
 
-	case DMSG_GET_VAR_TABLE: {
+	case DMSG_GET_VAR_TABLE:
+	{
 		string512 varName;
 		varName[0] = 0;
 		msg->r_string(varName);
@@ -474,7 +500,8 @@ bool CScriptDebugger::TranslateIdeMessage(CMailSlotMsg* msg)
 	}
 	break;
 
-	case DMSG_EVAL_WATCH: {
+	case DMSG_EVAL_WATCH:
+	{
 		string2048 watch;
 		watch[0] = 0;
 		int iItem;
@@ -499,13 +526,13 @@ bool CScriptDebugger::HasBreakPoint(const char* fileName, s32 lineNum)
 
 	_splitpath(fileName, drive, dir, sFileName, ext);
 
-	for (u32 i = 0; i < m_breakPoints.size(); ++i)
+	for(u32 i = 0; i < m_breakPoints.size(); ++i)
 	{
 		SBreakPoint bp(m_breakPoints[i]);
-		if (bp.nLine == lineNum)
-			if (xr_strlen(bp.fileName) == xr_strlen(sFileName))
+		if(bp.nLine == lineNum)
+			if(xr_strlen(bp.fileName) == xr_strlen(sFileName))
 			{
-				if (xr_stricmp(*bp.fileName, sFileName) == 0)
+				if(xr_stricmp(*bp.fileName, sFileName) == 0)
 					return true;
 			}
 	}
@@ -517,7 +544,7 @@ void CScriptDebugger::FillBreakPointsIn(CMailSlotMsg* msg)
 	m_breakPoints.clear();
 	s32 nCount = 0;
 	msg->r_int(nCount);
-	for (s32 i = 0; i < nCount; ++i)
+	for(s32 i = 0; i < nCount; ++i)
 	{
 		SBreakPoint bp;
 		string256 fn;
@@ -526,7 +553,7 @@ void CScriptDebugger::FillBreakPointsIn(CMailSlotMsg* msg)
 		s32 bpCount = 0;
 		msg->r_int(bpCount);
 
-		for (s32 j = 0; j < bpCount; ++j)
+		for(s32 j = 0; j < bpCount; ++j)
 		{
 			msg->r_int(bp.nLine);
 			m_breakPoints.push_back(bp);

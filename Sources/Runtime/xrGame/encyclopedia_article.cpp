@@ -34,7 +34,7 @@ CEncyclopediaArticle::CEncyclopediaArticle()
 
 CEncyclopediaArticle::~CEncyclopediaArticle()
 {
-	if (data()->image.GetParent())
+	if(data()->image.GetParent())
 		data()->image.GetParent()->DetachChild(&(data()->image));
 }
 
@@ -70,7 +70,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 	// секция ltx, откуда читать данные
 	LPCSTR ltx = pXML->Read(pNode, "ltx", 0, NULL);
 
-	if (ltx)
+	if(ltx)
 	{
 		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader());
 
@@ -85,7 +85,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 	}
 	else
 	{
-		if (pXML->NavigateToNode(pNode, "texture", 0))
+		if(pXML->NavigateToNode(pNode, "texture", 0))
 		{
 			pXML->SetLocalRoot(pNode);
 			CUIXmlInit::InitTexture(*pXML, "", 0, &data()->image);
@@ -93,7 +93,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 		}
 	}
 
-	if (data()->image.TextureAvailable())
+	if(data()->image.TextureAvailable())
 	{
 		Frect r = data()->image.GetUIStaticItem().GetOriginalRect();
 		data()->image.SetAutoDelete(false);
@@ -101,14 +101,14 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 		const int minSize = 65;
 
 		// Сначала устанавливаем если надо минимально допустимые размеры иконки
-		if (r.width() < minSize)
+		if(r.width() < minSize)
 		{
 			float dx = minSize - r.width();
 			r.x2 += dx;
 			data()->image.SetTextureOffset(dx / 2, data()->image.GetTextureOffeset()[1]);
 		}
 
-		if (r.height() < minSize)
+		if(r.height() < minSize)
 		{
 			float dy = minSize - r.height();
 			r.y2 += dy;
@@ -120,19 +120,19 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 
 	// Тип статьи
 	xr_string atricle_type = pXML->ReadAttrib(pNode, "article_type", "encyclopedia");
-	if (0 == xr_stricmp(atricle_type.c_str(), "encyclopedia"))
+	if(0 == xr_stricmp(atricle_type.c_str(), "encyclopedia"))
 	{
 		data()->articleType = ARTICLE_DATA::eEncyclopediaArticle;
 	}
-	else if (0 == xr_stricmp(atricle_type.c_str(), "journal"))
+	else if(0 == xr_stricmp(atricle_type.c_str(), "journal"))
 	{
 		data()->articleType = ARTICLE_DATA::eJournalArticle;
 	}
-	else if (0 == xr_stricmp(atricle_type.c_str(), "task"))
+	else if(0 == xr_stricmp(atricle_type.c_str(), "task"))
 	{
 		data()->articleType = ARTICLE_DATA::eTaskArticle;
 	}
-	else if (0 == xr_stricmp(atricle_type.c_str(), "info"))
+	else if(0 == xr_stricmp(atricle_type.c_str(), "info"))
 	{
 		data()->articleType = ARTICLE_DATA::eInfoArticle;
 	}
@@ -146,8 +146,8 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 
 void CEncyclopediaArticle::InitXmlIdToIndex()
 {
-	if (!id_to_index::tag_name)
+	if(!id_to_index::tag_name)
 		id_to_index::tag_name = "article";
-	if (!id_to_index::file_str)
+	if(!id_to_index::file_str)
 		id_to_index::file_str = pSettings->r_string("encyclopedia", "files");
 }

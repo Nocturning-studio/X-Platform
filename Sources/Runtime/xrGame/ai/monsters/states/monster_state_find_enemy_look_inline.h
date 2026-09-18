@@ -37,7 +37,7 @@ void CStateMonsterFindEnemyLookAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterFindEnemyLookAbstract::reselect_state()
 {
-	if ((current_stage == 1) || (current_stage == 3))
+	if((current_stage == 1) || (current_stage == 3))
 	{
 		float h, p;
 		current_dir.getHP(h, p);
@@ -58,7 +58,7 @@ void CStateMonsterFindEnemyLookAbstract::reselect_state()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterFindEnemyLookAbstract::check_completion()
 {
-	if (current_stage < 5)
+	if(current_stage < 5)
 		return false;
 	return true;
 }
@@ -68,7 +68,7 @@ void CStateMonsterFindEnemyLookAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateFindEnemy_LookAround_MoveToPoint)
+	if(current_substate == eStateFindEnemy_LookAround_MoveToPoint)
 	{
 
 		SStateDataMoveToPoint data;
@@ -86,7 +86,7 @@ void CStateMonsterFindEnemyLookAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateFindEnemy_LookAround_LookAround)
+	if(current_substate == eStateFindEnemy_LookAround_LookAround)
 	{
 		SStateDataAction data;
 
@@ -100,7 +100,7 @@ void CStateMonsterFindEnemyLookAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateFindEnemy_LookAround_TurnToPoint)
+	if(current_substate == eStateFindEnemy_LookAround_TurnToPoint)
 	{
 		SStateDataLookToPoint data;
 

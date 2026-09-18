@@ -84,7 +84,7 @@ class SApplyBodyEffectorPred
 IC void add_contact_body_effector(dBodyID body, const dContact& c, SGameMtl* material)
 {
 	CPHContactBodyEffector* effector = (CPHContactBodyEffector*)dBodyGetData(body);
-	if (effector)
+	if(effector)
 		effector->Merge(c, material);
 	else
 	{
@@ -110,11 +110,11 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 	VERIFY(&contacts[0].geom);
 	n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
 
-	if (n > N - 1)
+	if(n > N - 1)
 		n = N - 1;
 	int i;
 
-	for (i = 0; i < n; ++i)
+	for(i = 0; i < n; ++i)
 	{
 		dContact& c = contacts[i];
 		dContactGeom& cgeom = c.geom;
@@ -136,22 +136,22 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 		usr_data_1 = retrieveGeomUserData(g1);
 		usr_data_2 = retrieveGeomUserData(g2);
 		///////////////////////////////////////////////////////////////////////////////////////////////////
-		if (usr_data_2)
+		if(usr_data_2)
 			material_idx_2 = usr_data_2->material;
-		if (usr_data_1)
+		if(usr_data_1)
 			material_idx_1 = usr_data_1->material;
 		bool is_tri_1 = dTriListClass == dGeomGetClass(g1);
 		bool is_tri_2 = dTriListClass == dGeomGetClass(g2);
-		if (!is_tri_2 && !is_tri_1)
+		if(!is_tri_2 && !is_tri_1)
 			surface.mode = 0;
-		if (is_tri_1)
+		if(is_tri_1)
 			material_idx_1 = (u16)surface.mode;
-		if (is_tri_2)
+		if(is_tri_2)
 			material_idx_2 = (u16)surface.mode;
 		SGameMtl* material_1 = GMLib.GetMaterialByIdx(material_idx_1);
 		SGameMtl* material_2 = GMLib.GetMaterialByIdx(material_idx_2);
 		////////////////params can be changed in
-		///callbacks//////////////////////////////////////////////////////////////////////////
+		/// callbacks//////////////////////////////////////////////////////////////////////////
 		surface.mode = dContactApprox1 | dContactSoftERP | dContactSoftCFM;
 		float spring = material_2->fPHSpring * material_1->fPHSpring * world_spring;
 		float damping = material_2->fPHDamping * material_1->fPHDamping * world_damping;
@@ -163,76 +163,76 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 		Flags32& flags_1 = material_1->Flags;
 		Flags32& flags_2 = material_2->Flags;
 
-		if (is_tri_1)
+		if(is_tri_1)
 		{
 #pragma warning(push)
 #pragma warning(disable : 4245)
-			if (material_1->Flags.test(SGameMtl::flSlowDown) && !(usr_data_2->pushing_neg || usr_data_2->pushing_b_neg))
+			if(material_1->Flags.test(SGameMtl::flSlowDown) && !(usr_data_2->pushing_neg || usr_data_2->pushing_b_neg))
 #pragma warning(pop)
 			{
 				dBodyID body = dGeomGetBody(g2);
 				R_ASSERT2(body, "static - static collision !!!");
-				if (material_1->Flags.test(SGameMtl::flLiquid))
+				if(material_1->Flags.test(SGameMtl::flLiquid))
 				{
 					add_contact_body_effector(body, c, material_1);
 				}
 				else
 				{
-					if (!usr_data_2 || !usr_data_2->ph_object || !usr_data_2->ph_object->IsRayMotion())
+					if(!usr_data_2 || !usr_data_2->ph_object || !usr_data_2->ph_object->IsRayMotion())
 					{
 						add_contact_body_effector(body, c, material_1);
 					}
 				}
 			}
-			if (material_1->Flags.test(SGameMtl::flPassable))
+			if(material_1->Flags.test(SGameMtl::flPassable))
 				do_collide = false;
 			//	if(material_2->Flags.is(SGameMtl::flClimable))
 			//		do_collide=false;
 		}
-		if (is_tri_2)
+		if(is_tri_2)
 		{
 #pragma warning(push)
 #pragma warning(disable : 4245)
-			if (material_2->Flags.test(SGameMtl::flSlowDown) && !(usr_data_1->pushing_neg || usr_data_1->pushing_b_neg))
+			if(material_2->Flags.test(SGameMtl::flSlowDown) && !(usr_data_1->pushing_neg || usr_data_1->pushing_b_neg))
 #pragma warning(pop)
 			{
 
 				dBodyID body = dGeomGetBody(g1);
 				R_ASSERT2(body, "static - static collision !!!");
-				if (material_2->Flags.test(SGameMtl::flLiquid))
+				if(material_2->Flags.test(SGameMtl::flLiquid))
 				{
 					add_contact_body_effector(body, c, material_2);
 				}
 				else
 				{
-					if (!usr_data_1 || !usr_data_1->ph_object || !usr_data_1->ph_object->IsRayMotion())
+					if(!usr_data_1 || !usr_data_1->ph_object || !usr_data_1->ph_object->IsRayMotion())
 					{
 						add_contact_body_effector(body, c, material_2);
 					}
 				}
 			}
-			if (material_2->Flags.test(SGameMtl::flPassable))
+			if(material_2->Flags.test(SGameMtl::flPassable))
 				do_collide = false;
 		}
 
-		if (flags_1.test(SGameMtl::flBounceable) && flags_2.test(SGameMtl::flBounceable))
+		if(flags_1.test(SGameMtl::flBounceable) && flags_2.test(SGameMtl::flBounceable))
 		{
 			surface.mode |= dContactBounce;
 			surface.bounce_vel = _max(material_1->fPHBounceStartVelocity, material_2->fPHBounceStartVelocity);
 			surface.bounce = _min(material_1->fPHBouncing, material_2->fPHBouncing);
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////////
-		if (usr_data_2 && usr_data_2->object_callbacks)
+		if(usr_data_2 && usr_data_2->object_callbacks)
 		{
 			usr_data_2->object_callbacks->Call(do_collide, false, c, material_1, material_2);
 		}
 
-		if (usr_data_1 && usr_data_1->object_callbacks)
+		if(usr_data_1 && usr_data_1->object_callbacks)
 		{
 			usr_data_1->object_callbacks->Call(do_collide, true, c, material_1, material_2);
 		}
 
-		if (usr_data_2)
+		if(usr_data_2)
 		{
 			usr_data_2->pushing_b_neg =
 				usr_data_2->pushing_b_neg &&
@@ -241,13 +241,13 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 				usr_data_2->pushing_neg &&
 				!GMLib.GetMaterialByIdx(usr_data_2->neg_tri->material)->Flags.test(SGameMtl::flPassable);
 			pushing_neg = usr_data_2->pushing_b_neg || usr_data_2->pushing_neg;
-			if (usr_data_2->ph_object)
+			if(usr_data_2->ph_object)
 			{
 				usr_data_2->ph_object->InitContact(&c, do_collide, material_idx_1, material_idx_2);
 			}
 		}
 		///////////////////////////////////////////////////////////////////////////////////////
-		if (usr_data_1)
+		if(usr_data_1)
 		{
 			usr_data_1->pushing_b_neg =
 				usr_data_1->pushing_b_neg &&
@@ -256,15 +256,15 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 				usr_data_1->pushing_neg &&
 				!GMLib.GetMaterialByIdx(usr_data_1->neg_tri->material)->Flags.test(SGameMtl::flPassable);
 			pushing_neg = usr_data_1->pushing_b_neg || usr_data_1->pushing_neg;
-			if (usr_data_1->ph_object)
+			if(usr_data_1->ph_object)
 			{
 				usr_data_1->ph_object->InitContact(&c, do_collide, material_idx_1, material_idx_2);
 			}
 		}
 
-		if (pushing_neg)
+		if(pushing_neg)
 			surface.mu = dInfinity;
-		if (do_collide && collided_contacts < MAX_CONTACTS)
+		if(do_collide && collided_contacts < MAX_CONTACTS)
 		{
 			++collided_contacts;
 #ifdef DEBUG
@@ -284,12 +284,12 @@ void NearCallback(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeomID o2)
 	CPHIsland* island2 = obj2->DActiveIsland();
 	obj2->near_callback(obj1);
 	int MAX_CONTACTS = -1;
-	if (!island1->CanMerge(island2, MAX_CONTACTS))
+	if(!island1->CanMerge(island2, MAX_CONTACTS))
 		return;
-	if (CollideIntoGroup(o1, o2, ContactGroup, island1, MAX_CONTACTS) != 0)
+	if(CollideIntoGroup(o1, o2, ContactGroup, island1, MAX_CONTACTS) != 0)
 	{
 		obj1->MergeIsland(obj2);
-		if (!obj2->is_active())
+		if(!obj2->is_active())
 			obj2->EnableObject(obj1);
 	}
 }
@@ -421,7 +421,7 @@ void BodyCutForce(dBodyID body, float l_limit, float w_limit)
 
 	dReal force_limit = l_limit / fixed_step * m.mass;
 
-	if (force_mag > force_limit)
+	if(force_mag > force_limit)
 	{
 		dBodySetForce(body, force[0] / force_mag * force_limit, force[1] / force_mag * force_limit,
 					  force[2] / force_mag * force_limit);
@@ -430,7 +430,7 @@ void BodyCutForce(dBodyID body, float l_limit, float w_limit)
 	const dReal* torque = dBodyGetTorque(body);
 	dReal torque_mag = dSqrt(dDOT(torque, torque));
 
-	if (torque_mag < 0.001f)
+	if(torque_mag < 0.001f)
 		return;
 
 	dMatrix3 tmp, invI, I;
@@ -448,10 +448,10 @@ void BodyCutForce(dBodyID body, float l_limit, float w_limit)
 	dMULTIPLY0_331(wa, invI, torque);
 	dReal wa_mag = dSqrt(dDOT(wa, wa));
 
-	if (wa_mag > wa_limit)
+	if(wa_mag > wa_limit)
 	{
 		// scale w
-		for (int i = 0; i < 3; ++i)
+		for(int i = 0; i < 3; ++i)
 			wa[i] *= wa_limit / wa_mag;
 		dVector3 new_torqu;
 
@@ -466,10 +466,10 @@ void dMassSub(dMass* a, const dMass* b)
 	int i;
 	VERIFY(a && b);
 	dReal denom = dRecip(a->mass - b->mass);
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		a->c[i] = (a->c[i] * a->mass - b->c[i] * b->mass) * denom;
 	a->mass -= b->mass;
-	for (i = 0; i < 12; ++i)
+	for(i = 0; i < 12; ++i)
 		a->I[i] -= b->I[i];
 }
 
@@ -497,7 +497,7 @@ float E_NLD(dBodyID b1, dBodyID b2, const dReal* norm) // norm - from 2 to 1
 	dReal vel_pr1 = dDOT(vel1, norm);
 	dReal vel_pr2 = dDOT(vel2, norm);
 
-	if (vel_pr1 > vel_pr2)
+	if(vel_pr1 > vel_pr2)
 		return 0.f; // exit if the bodies are departing
 
 	dVector3 impuls1 = {vel1[0] * m1.mass, vel1[1] * m1.mass, vel1[2] * m1.mass};
@@ -517,9 +517,9 @@ float E_NLD(dBodyID b1, dBodyID b2, const dReal* norm) // norm - from 2 to 1
 float E_NL(dBodyID b1, dBodyID b2, const dReal* norm)
 {
 	VERIFY(b1 || b2);
-	if (b1)
+	if(b1)
 	{
-		if (b2)
+		if(b2)
 			return E_NLD(b1, b2, norm);
 		else
 			return E_NlS(b1, norm, 1);

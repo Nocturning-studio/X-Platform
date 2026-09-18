@@ -23,7 +23,8 @@ class IPureServer;
 
 struct XRNETSERVER_API ip_address
 {
-	union {
+	union
+	{
 		struct
 		{
 			u8 a1;
@@ -250,8 +251,8 @@ class XRNETSERVER_API IPureServer : private MultipacketReciever
 	{
 		return true;
 	}
-	virtual void Assign_ServerType(string512& res){};
-	virtual void GetServerInfo(CServerInfo* si){};
+	virtual void Assign_ServerType(string512& res) {};
+	virtual void GetServerInfo(CServerInfo* si) {};
 
 	IClient* GetServerClient()
 	{

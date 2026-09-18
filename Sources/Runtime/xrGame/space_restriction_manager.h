@@ -16,7 +16,8 @@ namespace RestrictionSpace
 struct CTimeIntrusiveBase;
 };
 
-template <typename _1, typename _2> class intrusive_ptr;
+template <typename _1, typename _2>
+class intrusive_ptr;
 
 class CSpaceRestriction;
 
@@ -59,7 +60,8 @@ class CSpaceRestrictionManager : public CSpaceRestrictionHolder
 							 shared_str remove_out_restrictions, shared_str remove_in_restrictions);
 	void clear();
 
-	template <typename T1, typename T2> IC void add_border(ALife::_OBJECT_ID id, T1 p1, T2 p2);
+	template <typename T1, typename T2>
+	IC void add_border(ALife::_OBJECT_ID id, T1 p1, T2 p2);
 	void remove_border(ALife::_OBJECT_ID id);
 
 	shared_str in_restrictions(ALife::_OBJECT_ID id);

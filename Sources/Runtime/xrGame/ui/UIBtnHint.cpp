@@ -34,9 +34,9 @@ CUIButtonHint::~CUIButtonHint()
 
 void CUIButtonHint::OnRender()
 {
-	//OPTICK_EVENT("CUIButtonHint::OnRender");
+	// OPTICK_EVENT("CUIButtonHint::OnRender");
 
-	if (m_enabledOnFrame)
+	if(m_enabledOnFrame)
 	{
 		m_text->Update();
 		m_border->Update();

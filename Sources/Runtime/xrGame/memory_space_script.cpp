@@ -25,7 +25,8 @@ int get_sound_type(const CSoundObject& sound_object)
 	return ((int)sound_object.m_sound_type);
 }
 
-template <typename T> CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
+template <typename T>
+CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
 {
 	return (memory_object.m_object->lua_game_object());
 }
@@ -39,7 +40,7 @@ CScriptGameObject* CDangerObject_object(const CDangerObject* self)
 CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
 {
 	VERIFY(self);
-	if (!self->dependent_object())
+	if(!self->dependent_object())
 		return (0);
 
 	const CGameObject* game_object = smart_cast<const CGameObject*>(self->dependent_object());

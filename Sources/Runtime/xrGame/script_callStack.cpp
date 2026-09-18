@@ -58,7 +58,7 @@ void CScriptCallStack::SetStackTraceLevel(int nLevel)
 
 void CScriptCallStack::GotoStackTraceLevel(int nLevel)
 {
-	if (nLevel < 0 || (u32)nLevel >= m_files.size())
+	if(nLevel < 0 || (u32)nLevel >= m_files.size())
 		return;
 
 	m_nCurrentLevel = nLevel;

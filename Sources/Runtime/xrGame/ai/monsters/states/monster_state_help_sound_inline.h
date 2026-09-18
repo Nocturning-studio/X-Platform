@@ -17,9 +17,9 @@ CStateMonsterHearHelpSoundAbstract::CStateMonsterHearHelpSound(_Object* obj) : i
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterHearHelpSoundAbstract::check_start_conditions()
 {
-	if (!object->SoundMemory.hear_help_sound())
+	if(!object->SoundMemory.hear_help_sound())
 		return false;
-	if (object->Home->has_home())
+	if(object->Home->has_home())
 		return object->Home->at_home(ai().level_graph().vertex_position(object->SoundMemory.hear_help_sound_node()));
 
 	return true;
@@ -28,7 +28,7 @@ bool CStateMonsterHearHelpSoundAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterHearHelpSoundAbstract::check_completion()
 {
-	if (current_substate == u32(-1))
+	if(current_substate == u32(-1))
 		return true;
 	return false;
 }
@@ -36,9 +36,9 @@ bool CStateMonsterHearHelpSoundAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterHearHelpSoundAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 		select_state(eStateHearHelpSound_MoveToDest);
-	else if (prev_substate == eStateHearHelpSound_MoveToDest)
+	else if(prev_substate == eStateHearHelpSound_MoveToDest)
 		select_state(eStateHearHelpSound_LookAround);
 }
 
@@ -47,7 +47,7 @@ void CStateMonsterHearHelpSoundAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateHearHelpSound_MoveToDest)
+	if(current_substate == eStateHearHelpSound_MoveToDest)
 	{
 		SStateDataMoveToPointEx data;
 
@@ -68,7 +68,7 @@ void CStateMonsterHearHelpSoundAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateHearHelpSound_LookAround)
+	if(current_substate == eStateHearHelpSound_LookAround)
 	{
 		SStateDataAction data;
 		data.action = ACT_LOOK_AROUND;

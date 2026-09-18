@@ -1,20 +1,20 @@
 #include "gsCommon.h"
 #include "gsAvailable.h"
 
-#define PACKET_TYPE    0x09
-#define MASTER_PORT   27900
-#define MAX_RETRIES       1
-#define TIMEOUT_TIME   2000
+#define PACKET_TYPE 0x09
+#define MASTER_PORT 27900
+#define MAX_RETRIES 1
+#define TIMEOUT_TIME 2000
 
 // this is the global var that the SDKs check
 // to see if they should communicate with the backend
-GSIACResult __GSIACResult	= GSIACWaiting;
+GSIACResult __GSIACResult = GSIACWaiting;
 
 // this makes the gamename available to all of the SDKs
-char __GSIACGamename[64]	= {0};
+char __GSIACGamename[64] = {0};
 
 // this allows devs to do their own hostname resolution
-char GSIACHostname[64]		= {0};
+char GSIACHostname[64] = {0};
 
 // used to keep state during the check
 static struct
@@ -27,7 +27,7 @@ static struct
 	int retryCount;
 } AC;
 
-static int get_sockaddrin_host(const char * hostname, int port, SOCKADDR_IN * saddr)
+static int get_sockaddrin_host(const char* hostname, int port, SOCKADDR_IN* saddr)
 {
 	GS_ASSERT(hostname)
 	GS_ASSERT(saddr)
@@ -35,13 +35,13 @@ static int get_sockaddrin_host(const char * hostname, int port, SOCKADDR_IN * sa
 	saddr->sin_family = AF_INET;
 	saddr->sin_port = htons((unsigned short)port);
 	saddr->sin_addr.s_addr = inet_addr(hostname);
-	
+
 	if(saddr->sin_addr.s_addr == INADDR_NONE)
 	{
-		HOSTENT * host = gethostbyname(hostname);
+		HOSTENT* host = gethostbyname(hostname);
 		if(!host)
 			return 0;
-		saddr->sin_addr.s_addr = *(unsigned int *)host->h_addr_list[0];
+		saddr->sin_addr.s_addr = *(unsigned int*)host->h_addr_list[0];
 	}
 
 	return 1;
@@ -49,11 +49,11 @@ static int get_sockaddrin_host(const char * hostname, int port, SOCKADDR_IN * sa
 
 static void SendPacket(void)
 {
-	sendto(AC.sock, AC.packet, AC.packetLen, 0, (SOCKADDR *)&AC.address, sizeof(AC.address));
+	sendto(AC.sock, AC.packet, AC.packetLen, 0, (SOCKADDR*)&AC.address, sizeof(AC.address));
 	AC.sendTime = current_time();
 }
 
-void GSIStartAvailableCheckA(const char * gamename)
+void GSIStartAvailableCheckA(const char* gamename)
 {
 	char hostname[64];
 	int override;
@@ -99,7 +99,7 @@ void GSIStartAvailableCheckA(const char * gamename)
 	AC.retryCount = 0;
 }
 #ifdef GSI_UNICODE
-void GSIStartAvailableCheckW(const unsigned short * gamename)
+void GSIStartAvailableCheckW(const unsigned short* gamename)
 {
 	char gamename_A[32];
 	GS_ASSERT(gamename)
@@ -110,7 +110,7 @@ void GSIStartAvailableCheckW(const unsigned short * gamename)
 }
 #endif
 
-static int HandlePacket(char * packet, int len, SOCKADDR_IN * address, int * disabledservices)
+static int HandlePacket(char* packet, int len, SOCKADDR_IN* address, int* disabledservices)
 {
 	int bitfield;
 
@@ -162,7 +162,7 @@ GSIACResult GSIAvailableCheckThink(void)
 	if(CanReceiveOnSocket(AC.sock))
 	{
 		// read it from the socket
-		rcode = (int)recvfrom(AC.sock, packet, (int)sizeof(packet), 0, (SOCKADDR *)&address, &len);
+		rcode = (int)recvfrom(AC.sock, packet, (int)sizeof(packet), 0, (SOCKADDR*)&address, &len);
 
 		// verify the packet
 		rcode = HandlePacket(packet, rcode, &address, &disabledservices);

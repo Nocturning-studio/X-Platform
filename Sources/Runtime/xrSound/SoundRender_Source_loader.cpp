@@ -11,7 +11,7 @@
 //	SEEK_END	2	End-of-file
 int ov_seek_func(void* datasource, s64 offset, int whence)
 {
-	switch (whence)
+	switch(whence)
 	{
 	case SEEK_SET:
 		((IReader*)datasource)->seek((int)offset);
@@ -57,7 +57,7 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 
 	// seek
 	u32 cur_pos = u32(ov_pcm_tell(ovf));
-	if (cur_pos != buf_offs)
+	if(cur_pos != buf_offs)
 		ov_pcm_seek(ovf, buf_offs);
 
 	// decompress
@@ -80,7 +80,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 	R_ASSERT3(ovi, "Invalid source info:", pName);
 
 #ifdef DEBUG
-	if (ovi->channels == 2)
+	if(ovi->channels == 2)
 		Msg("stereo sound source [%s]", pName);
 #endif // #ifdef DEBUG
 
@@ -100,12 +100,12 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 
 	vorbis_comment* ovm = ov_comment(&ovf, -1);
 
-	if (ovm->comments)
+	if(ovm->comments)
 	{
 		IReader F(ovm->user_comments[0], ovm->comment_lengths[0]);
 		u32 vers = F.r_u32();
 
-		if (vers == 0x0001)
+		if(vers == 0x0001)
 		{
 			m_fMinDist = F.r_float();
 			m_fMaxDist = F.r_float();
@@ -113,7 +113,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 			m_uGameType = F.r_u32();
 			m_fMaxAIDist = m_fMaxDist;
 		}
-		else if (vers == 0x0002)
+		else if(vers == 0x0002)
 		{
 			m_fMinDist = F.r_float();
 			m_fMaxDist = F.r_float();
@@ -121,7 +121,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 			m_uGameType = F.r_u32();
 			m_fMaxAIDist = m_fMaxDist;
 		}
-		else if (vers == OGG_COMMENT_VERSION)
+		else if(vers == OGG_COMMENT_VERSION)
 		{
 			m_fMinDist = F.r_float();
 			m_fMaxDist = F.r_float();
@@ -140,7 +140,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 #endif
 
 	// R_ASSERT3((m_fMaxAIDist >= 0.1f) && (m_fMaxDist >= 0.1f), "Invalid max distance.", pName);
-	if (!(m_fMaxAIDist >= 0.1f) && !(m_fMaxDist >= 0.1f))
+	if(!(m_fMaxAIDist >= 0.1f) && !(m_fMaxDist >= 0.1f))
 		Log("Invalid max distance, file", pName);
 
 	ov_clear(&ovf);
@@ -153,17 +153,17 @@ void CSoundRender_Source::load(LPCSTR name)
 	strcpy(N, name);
 	xr_strlwr(N);
 
-	if (strext(N))
+	if(strext(N))
 		*strext(N) = 0;
 
 	fname = N;
 	strconcat(sizeof(fn), fn, N, ".ogg");
 
-	if (!FS.exist("$level$", fn))
+	if(!FS.exist("$level$", fn))
 		FS.update_path(fn, "$game_sounds$", fn);
 
-	#pragma todo(NSDeathman to NSDeathman - кастыль)
-	if (!FS.exist(fn))
+#pragma todo(NSDeathman to NSDeathman - кастыль)
+	if(!FS.exist(fn))
 	{
 		Msg("! Can't find sound '%s', try to find _l.ogg version", name);
 
@@ -172,7 +172,7 @@ void CSoundRender_Source::load(LPCSTR name)
 
 		FS.update_path(fn, "$game_sounds$", fn);
 
-		if (!FS.exist(fn))
+		if(!FS.exist(fn))
 		{
 			Msg("! Can't find sound '%s'", fn);
 			FS.update_path(fn, "$game_sounds$", "$no_sound.ogg");

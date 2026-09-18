@@ -17,7 +17,7 @@ CALifeGroupRegistry::~CALifeGroupRegistry()
 void CALifeGroupRegistry::add(CSE_ALifeDynamicObject* object)
 {
 	CSE_ALifeOnlineOfflineGroup* group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(object);
-	if (!group)
+	if(!group)
 		return;
 
 	OBJECTS::const_iterator I = objects().find(group->ID);
@@ -28,7 +28,7 @@ void CALifeGroupRegistry::add(CSE_ALifeDynamicObject* object)
 void CALifeGroupRegistry::remove(CSE_ALifeDynamicObject* object)
 {
 	CSE_ALifeOnlineOfflineGroup* group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(object);
-	if (!group)
+	if(!group)
 		return;
 
 	OBJECTS::iterator I = m_objects.find(group->ID);
@@ -47,6 +47,6 @@ void CALifeGroupRegistry::on_after_game_load()
 {
 	OBJECTS::iterator I = m_objects.begin();
 	OBJECTS::iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I).second->on_after_game_load();
 }

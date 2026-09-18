@@ -19,7 +19,7 @@ CALifeObjectRegistry::~CALifeObjectRegistry()
 {
 	OBJECT_REGISTRY::iterator I = m_objects.begin();
 	OBJECT_REGISTRY::iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		// hack, should be revisited in case of not intended behaviour
 		(*I).second->on_unregister();
@@ -46,13 +46,13 @@ void CALifeObjectRegistry::save(IWriter& memory_stream, CSE_ALifeDynamicObject* 
 
 	ALife::OBJECT_VECTOR::const_iterator I = object->children.begin();
 	ALife::OBJECT_VECTOR::const_iterator E = object->children.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CSE_ALifeDynamicObject* child = this->object(*I, true);
-		if (!child)
+		if(!child)
 			continue;
 
-		if (!child->can_save())
+		if(!child->can_save())
 			continue;
 
 		save(memory_stream, child, object_count);
@@ -70,12 +70,12 @@ void CALifeObjectRegistry::save(IWriter& memory_stream)
 	u32 object_count = 0;
 	OBJECT_REGISTRY::iterator I = m_objects.begin();
 	OBJECT_REGISTRY::iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!(*I).second->can_save())
+		if(!(*I).second->can_save())
 			continue;
 
-		if ((*I).second->ID_Parent != 0xffff)
+		if((*I).second->ID_Parent != 0xffff)
 			continue;
 
 		save(memory_stream, (*I).second, object_count);
@@ -104,7 +104,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
 	string64 s_name;
 	tNetPacket.r_stringZ(s_name);
 #ifdef DEBUG
-	if (psAI_Flags.test(aiALife))
+	if(psAI_Flags.test(aiALife))
 	{
 		Msg("Loading object %s", s_name);
 	}
@@ -138,7 +138,7 @@ void CALifeObjectRegistry::load(IReader& file_stream)
 
 	CSE_ALifeDynamicObject** I = objects;
 	CSE_ALifeDynamicObject** E = objects + count;
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		*I = get_object(file_stream);
 		add(*I);

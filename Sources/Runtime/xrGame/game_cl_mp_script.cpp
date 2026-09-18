@@ -14,7 +14,8 @@ using namespace luabind;
 #pragma warning(push)
 #pragma warning(disable : 4709)
 
-template <typename T> struct CWrapperBaseCLMPScript : public T, public luabind::wrap_base
+template <typename T>
+struct CWrapperBaseCLMPScript : public T, public luabind::wrap_base
 {
 	typedef T inherited;
 	typedef CWrapperBaseCLMPScript<T> self_type;
@@ -61,13 +62,13 @@ void game_cl_mp_script::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 }
 
-game_cl_mp_script::game_cl_mp_script() : inherited(){};
+game_cl_mp_script::game_cl_mp_script() : inherited() {};
 
 CScriptGameObject* game_cl_mp_script::GetObjectByGameID(u32 id)
 {
 	CObject* pObject = Level().Objects.net_Find(id);
 	CGameObject* pGameObject = smart_cast<CGameObject*>(pObject);
-	if (!pGameObject)
+	if(!pGameObject)
 		return NULL;
 
 	return pGameObject->lua_game_object();

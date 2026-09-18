@@ -96,15 +96,15 @@ IC void dcTriListCollider::VxToGlClTriState(u32 v, CDB::TRI* T_array)
 {
 	// CDB::TRI*       T_array      = Level().ObjectSpace.GetStaticTris();
 	xr_vector<int>::iterator LI = I + 1;
-	for (; E != LI; ++LI)
+	for(; E != LI; ++LI)
 	{
 		u32* verts = T_array[*LI].verts;
 		flags8& state = gl_cl_tries_state[LI - B];
-		if (verts[0] == v)
+		if(verts[0] == v)
 			state.set(fl_engaged_v0, TRUE);
-		if (verts[1] == v)
+		if(verts[1] == v)
 			state.set(fl_engaged_v1, TRUE);
-		if (verts[2] == v)
+		if(verts[2] == v)
 			state.set(fl_engaged_v2, TRUE);
 	}
 }
@@ -112,15 +112,15 @@ IC void dcTriListCollider::SideToGlClTriState(u32 v0, u32 v1, CDB::TRI* T_array)
 {
 	//      = Level().ObjectSpace.GetStaticTris();
 	xr_vector<int>::iterator LI = I + 1;
-	for (; E != LI; ++LI)
+	for(; E != LI; ++LI)
 	{
 		u32* verts = T_array[*LI].verts;
 		flags8& state = gl_cl_tries_state[LI - B];
-		if (verts[0] == v1 && verts[1] == v0)
+		if(verts[0] == v1 && verts[1] == v0)
 			state.set(fl_engaged_s0, TRUE);
-		if (verts[1] == v1 && verts[2] == v0)
+		if(verts[1] == v1 && verts[2] == v0)
 			state.set(fl_engaged_s1, TRUE);
-		if (verts[2] == v1 && verts[0] == v0)
+		if(verts[2] == v1 && verts[0] == v0)
 			state.set(fl_engaged_s2, TRUE);
 	}
 }

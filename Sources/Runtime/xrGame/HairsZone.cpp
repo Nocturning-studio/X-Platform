@@ -10,7 +10,7 @@
 bool CHairsZone::BlowoutState()
 {
 	bool result = inherited::BlowoutState();
-	if (!result)
+	if(!result)
 		UpdateBlowout();
 
 	return result;
@@ -18,17 +18,17 @@ bool CHairsZone::BlowoutState()
 
 void CHairsZone::CheckForAwaking()
 {
-	for (OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
+	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 	{
 		CObject* pObject = (*it).object;
-		if (!pObject)
+		if(!pObject)
 			continue;
 
 		CEntityAlive* pEnt = smart_cast<CEntityAlive*>(pObject);
-		if (pEnt)
+		if(pEnt)
 		{
 			float sp = pEnt->character_physics_support()->movement()->GetVelocityActual();
-			if (sp > m_min_speed_to_react)
+			if(sp > m_min_speed_to_react)
 			{
 				SwitchZoneState(eZoneStateAwaking);
 				return;
@@ -61,17 +61,17 @@ void CHairsZone::Load(LPCSTR section)
 void CHairsZone::Affect(SZoneObjectInfo* O)
 {
 	CPhysicsShellHolder* pGameObject = smart_cast<CPhysicsShellHolder*>(O->object);
-	if (!pGameObject)
+	if(!pGameObject)
 		return;
 
-	if (O->zone_ignore)
+	if(O->zone_ignore)
 		return;
 
 	fvec3 P;
 	Transform().transform_tiny(P, CFORM()->getSphere().P);
 
 #ifdef DEBUG
-	if (bDebug)
+	if(bDebug)
 	{
 		char l_pow[255];
 		sprintf_s(l_pow, "zone hit. %.1f", Power(pGameObject->Position().distance_to(P)));
@@ -94,7 +94,7 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
 	O->total_damage += power;
 	O->hit_num++;
 
-	if (power > 0.01f)
+	if(power > 0.01f)
 	{
 		m_dwDeltaTime = 0;
 		position_in_bone_space.set(0.f, 0.f, 0.f);

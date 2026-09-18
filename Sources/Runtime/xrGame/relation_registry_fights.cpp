@@ -27,10 +27,10 @@ void RELATION_REGISTRY::FightRegister(u16 attacker, u16 defender, ALife::ERelati
 
 	FIGHT_VECTOR& fights = fight_registry();
 	FIGHT_VECTOR_IT it = fights.begin();
-	for (; it != fights.end(); it++)
+	for(; it != fights.end(); it++)
 	{
 		FIGHT_DATA& fight_data = *it;
-		if (attacker == fight_data.attacker && defender == fight_data.defender)
+		if(attacker == fight_data.attacker && defender == fight_data.defender)
 		{
 			fight_data.time_old = fight_data.time;
 			fight_data.time = Engine.TimeManager.GetGlobalTimeMs();
@@ -39,7 +39,7 @@ void RELATION_REGISTRY::FightRegister(u16 attacker, u16 defender, ALife::ERelati
 		}
 	}
 
-	if (it == fights.end())
+	if(it == fights.end())
 	{
 		FIGHT_DATA fight_data;
 		fight_data.attacker = attacker;
@@ -54,11 +54,11 @@ void RELATION_REGISTRY::FightRegister(u16 attacker, u16 defender, ALife::ERelati
 RELATION_REGISTRY::FIGHT_DATA* RELATION_REGISTRY::FindFight(u16 object_id, bool by_attacker)
 {
 	FIGHT_VECTOR& fights = fight_registry();
-	for (FIGHT_VECTOR_IT it = fights.begin(); it != fights.end(); it++)
+	for(FIGHT_VECTOR_IT it = fights.begin(); it != fights.end(); it++)
 	{
 		FIGHT_DATA& fight_data = *it;
 		u16 id_to_find = by_attacker ? fight_data.attacker : fight_data.defender;
-		if (object_id == id_to_find)
+		if(object_id == id_to_find)
 		{
 			return &fight_data;
 		}
@@ -73,7 +73,7 @@ bool fight_time_pred(RELATION_REGISTRY::FIGHT_DATA& fight_data)
 	static u32 fight_remember_time = u32(1000.f * pSettings->r_float(ACTIONS_POINTS_SECT, "fight_remember_time"));
 
 	u32 time_delta = Engine.TimeManager.GetGlobalTimeMs() - fight_data.time;
-	if (time_delta > fight_remember_time)
+	if(time_delta > fight_remember_time)
 		return true;
 
 	return false;

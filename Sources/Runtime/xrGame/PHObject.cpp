@@ -22,14 +22,14 @@ CPHObject::CPHObject() : ISpatial(g_SpatialSpacePhysic)
 void CPHObject::activate()
 {
 	R_ASSERT2(dSpacedGeom(), "trying to activate destroyed or not created object!");
-	if (m_flags.test(st_activated))
+	if(m_flags.test(st_activated))
 		return;
-	if (m_flags.test(st_freezed))
+	if(m_flags.test(st_freezed))
 	{
 		UnFreeze();
 		return;
 	}
-	if (m_flags.test(st_recently_deactivated))
+	if(m_flags.test(st_recently_deactivated))
 		remove_from_recently_deactivated();
 	ph_world->AddObject(this);
 	vis_update_activate();
@@ -43,7 +43,7 @@ void CPHObject::EnableObject(CPHObject* obj)
 
 void CPHObject::deactivate()
 {
-	if (!m_flags.test(st_activated))
+	if(!m_flags.test(st_activated))
 		return;
 	VERIFY2(m_island.IsActive(), "can not do it during processing");
 	ph_world->RemoveObject(PH_OBJECT_I(this));
@@ -54,7 +54,7 @@ void CPHObject::deactivate()
 void CPHObject::put_in_recently_deactivated()
 {
 	VERIFY(!m_flags.test(st_activated) && !m_flags.test(st_freezed));
-	if (m_flags.test(st_recently_deactivated))
+	if(m_flags.test(st_recently_deactivated))
 		return;
 	m_check_count = u8(ph_tri_clear_disable_count);
 	m_flags.set(st_recently_deactivated, TRUE);
@@ -62,7 +62,7 @@ void CPHObject::put_in_recently_deactivated()
 }
 void CPHObject::remove_from_recently_deactivated()
 {
-	if (!m_flags.test(st_recently_deactivated))
+	if(!m_flags.test(st_recently_deactivated))
 		return;
 	m_check_count = 0;
 	m_flags.set(st_recently_deactivated, FALSE);
@@ -70,7 +70,7 @@ void CPHObject::remove_from_recently_deactivated()
 }
 void CPHObject::check_recently_deactivated()
 {
-	if (m_check_count == 0)
+	if(m_check_count == 0)
 	{
 		ClearRecentlyDeactivated();
 		remove_from_recently_deactivated();
@@ -87,26 +87,26 @@ void CPHObject::spatial_move()
 
 void CPHObject::Collide()
 {
-	if (m_flags.test(fl_ray_motions))
+	if(m_flags.test(fl_ray_motions))
 	{
 		CPHMoveStorage* tracers = MoveStorage();
 		CPHMoveStorage::iterator I = tracers->begin(), E = tracers->end();
-		for (; E != I; I++)
+		for(; E != I; I++)
 		{
 			const fvec3 *from = 0, *to = 0;
 			fvec3 dir;
 			I.Positions(from, to);
-			if (from->x == -dInfinity)
+			if(from->x == -dInfinity)
 				continue;
 			dir.sub(*to, *from);
 			float magnitude = dir.magnitude();
-			if (magnitude < EPS)
+			if(magnitude < EPS)
 				continue;
 			dir.mul(1.f / magnitude);
 			g_SpatialSpacePhysic->q_ray(ph_world->r_spatial, 0, STYPE_PHYSIC, *from, dir,
 										magnitude); //|ISpatial_DB::O_ONLYFIRST
 #ifdef DEBUG
-			if (ph_dbg_draw_mask.test(phDbgDrawRayMotions))
+			if(ph_dbg_draw_mask.test(phDbgDrawRayMotions))
 			{
 				DBG_OpenCashedDraw();
 				DBG_DrawLine(*from, fvec3().add(*from, fvec3().mul(dir, magnitude)), D3DCOLOR_XRGB(0, 255, 0));
@@ -116,10 +116,10 @@ void CPHObject::Collide()
 #endif
 			qResultVec& result = ph_world->r_spatial;
 			qResultIt i = result.begin(), e = result.end();
-			for (; i != e; ++i)
+			for(; i != e; ++i)
 			{
 				CPHObject* obj2 = static_cast<CPHObject*>(*i);
-				if (obj2 == this || !obj2->m_flags.test(st_dirty))
+				if(obj2 == this || !obj2->m_flags.test(st_dirty))
 					continue;
 				dGeomID motion_ray = ph_world->GetMotionRayGeom();
 				dGeomRayMotionSetGeom(motion_ray, I.dGeom());
@@ -130,7 +130,7 @@ void CPHObject::Collide()
 	}
 	CollideDynamics();
 	///////////////////////////////
-	if (CPHCollideValidator::DoCollideStatic(*this))
+	if(CPHCollideValidator::DoCollideStatic(*this))
 		CollideStatic(dSpacedGeom(), this);
 	m_flags.set(st_dirty, FALSE);
 }
@@ -139,12 +139,12 @@ void CPHObject::CollideDynamics()
 	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, STYPE_PHYSIC, spatial.sphere.P, AABB);
 	qResultVec& result = ph_world->r_spatial;
 	qResultIt i = result.begin(), e = result.end();
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		CPHObject* obj2 = static_cast<CPHObject*>(*i);
-		if (obj2 == this || !obj2->m_flags.test(st_dirty))
+		if(obj2 == this || !obj2->m_flags.test(st_dirty))
 			continue;
-		if (CPHCollideValidator::DoCollide(*this, *obj2))
+		if(CPHCollideValidator::DoCollide(*this, *obj2))
 			NearCallback(this, obj2, dSpacedGeom(), obj2->dSpacedGeom());
 	}
 }
@@ -153,7 +153,7 @@ void CPHObject::reinit_single()
 	IslandReinit();
 	qResultVec& result = ph_world->r_spatial;
 	qResultIt i = result.begin(), e = result.end();
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		CPHObject* obj = static_cast<CPHObject*>(*i);
 		obj->IslandReinit();
@@ -174,7 +174,7 @@ bool CPHObject::step_single(dReal step)
 
 	CollideDynamics();
 	bool ret = !m_island.IsObjGroun();
-	if (ret)
+	if(ret)
 	{
 		// PhTune							(step);
 		IslandStep(step);
@@ -228,7 +228,7 @@ void CPHObject::collision_enable()
 
 void CPHObject::Freeze()
 {
-	if (!m_flags.test(st_activated))
+	if(!m_flags.test(st_activated))
 		return;
 	ph_world->RemoveObject(this);
 	ph_world->AddFreezedObject(this);
@@ -237,7 +237,7 @@ void CPHObject::Freeze()
 
 void CPHObject::UnFreeze()
 {
-	if (!m_flags.test(st_freezed))
+	if(!m_flags.test(st_freezed))
 		return;
 	UnFreezeContent();
 	ph_world->RemoveFreezedObject(this);
@@ -251,7 +251,7 @@ CPHUpdateObject::CPHUpdateObject()
 
 void CPHUpdateObject::Activate()
 {
-	if (b_activated)
+	if(b_activated)
 		return;
 	ph_world->AddUpdateObject(this);
 	b_activated = true;
@@ -259,7 +259,7 @@ void CPHUpdateObject::Activate()
 
 void CPHUpdateObject::Deactivate()
 {
-	if (!b_activated)
+	if(!b_activated)
 		return;
 	ph_world->RemoveUpdateObject(this);
 	b_activated = false;

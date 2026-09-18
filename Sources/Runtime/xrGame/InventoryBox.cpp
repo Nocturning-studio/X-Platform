@@ -16,9 +16,10 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 
-	switch (type)
+	switch(type)
 	{
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		u16 id;
 		P.r_u16(id);
 		CObject* itm = Level().Objects.net_Find(id);
@@ -29,7 +30,8 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 		itm->setEnabled(FALSE);
 	}
 	break;
-	case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		u16 id;
 		P.r_u16(id);
 		CObject* itm = Level().Objects.net_Find(id);
@@ -42,7 +44,7 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 		bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;
 		itm->H_SetParent(NULL, dont_create_shell);
 
-		if (m_in_use)
+		if(m_in_use)
 		{
 			CGameObject* GO = smart_cast<CGameObject*>(itm);
 			Actor()->callback(GameObject::eInvBoxItemTake)(this->lua_game_object(), GO->lua_game_object());
@@ -72,7 +74,7 @@ void CInventoryBox::AddAvailableItems(TIItemContainer& items_container) const
 	xr_vector<u16>::const_iterator it = m_items.begin();
 	xr_vector<u16>::const_iterator it_e = m_items.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		PIItem itm = smart_cast<PIItem>(Level().Objects.net_Find(*it));
 		VERIFY(itm);

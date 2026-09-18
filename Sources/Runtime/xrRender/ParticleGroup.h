@@ -94,7 +94,7 @@ class CParticleGroup : public IParticleCustom
 		IC u32 GetVisuals(xr_vector<IRender_Visual*>& visuals)
 		{
 			visuals.reserve(_children_related.size() + _children_free.size() + 1);
-			if (_effect)
+			if(_effect)
 				visuals.push_back(_effect);
 			visuals.insert(visuals.end(), _children_related.begin(), _children_related.end());
 			visuals.insert(visuals.end(), _children_free.begin(), _children_free.end());

@@ -9,7 +9,8 @@
 // -----------------------------------------------------------------------------
 // Sphere template
 // -----------------------------------------------------------------------------
-template <class T> struct template_sphere
+template <class T>
+struct template_sphere
 {
 	template_vector3<T> P;
 	T R;
@@ -67,22 +68,22 @@ template <class T> struct template_sphere
 		ERP_Result result = rpNone;
 
 		T fDiscr = fB * fB - fA * fC;
-		if (fDiscr < (T)0.0)
+		if(fDiscr < (T)0.0)
 		{
 			quantity = 0;
 		}
-		else if (fDiscr > (T)0.0)
+		else if(fDiscr > (T)0.0)
 		{
 			T fRoot = std::sqrt(fDiscr);
 			T fInvA = ((T)1.0) / fA;
 			afT[0] = range * (-fB - fRoot) * fInvA;
 			afT[1] = range * (-fB + fRoot) * fInvA;
-			if (afT[0] >= (T)0.0)
+			if(afT[0] >= (T)0.0)
 			{
 				quantity = 2;
 				result = rpOriginOutside;
 			}
-			else if (afT[1] >= (T)0.0)
+			else if(afT[1] >= (T)0.0)
 			{
 				quantity = 1;
 				afT[0] = afT[1];
@@ -94,7 +95,7 @@ template <class T> struct template_sphere
 		else
 		{
 			afT[0] = range * (-fB / fA);
-			if (afT[0] >= (T)0.0)
+			if(afT[0] >= (T)0.0)
 			{
 				quantity = 1;
 				result = rpOriginOutside;
@@ -112,10 +113,10 @@ template <class T> struct template_sphere
 		float afT[2];
 		typename template_sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
 
-		if (result == template_sphere<T>::rpOriginInside ||
-			((result == template_sphere<T>::rpOriginOutside) && (afT[0] < dist)))
+		if(result == template_sphere<T>::rpOriginInside ||
+		   ((result == template_sphere<T>::rpOriginOutside) && (afT[0] < dist)))
 		{
-			switch (result)
+			switch(result)
 			{
 			case template_sphere<T>::rpOriginInside:
 				dist = afT[0] < dist ? afT[0] : dist;
@@ -134,9 +135,9 @@ template <class T> struct template_sphere
 		int quantity;
 		T afT[2];
 		typename template_sphere<T>::ERP_Result result = intersect(start, dir, dist, quantity, afT);
-		if (rpNone != result)
+		if(rpNone != result)
 		{
-			if (afT[0] < dist)
+			if(afT[0] < dist)
 			{
 				dist = afT[0];
 				return result;
@@ -156,10 +157,10 @@ template <class T> struct template_sphere
 		T v = Q.dotproduct(D);
 		T d = R2 - (c2 - v * v);
 
-		if (d > 0.f)
+		if(d > 0.f)
 		{
 			T _range = v - std::sqrt(d);
-			if (_range < range)
+			if(_range < range)
 			{
 				range = _range;
 				return (c2 < R2) ? rpOriginInside : rpOriginOutside;
@@ -175,7 +176,7 @@ template <class T> struct template_sphere
 	IC BOOL contains(const template_sphere<T>& S) const
 	{
 		const T RDiff = R - S.R;
-		if (RDiff < 0)
+		if(RDiff < 0)
 			return false;
 		return (P.distance_to_sqr(S.P) <= RDiff * RDiff);
 	}
@@ -188,7 +189,8 @@ template <class T> struct template_sphere
 
 typedef template_sphere<float> Fsphere;
 
-template <class T> BOOL _valid(const template_sphere<T>& s)
+template <class T>
+BOOL _valid(const template_sphere<T>& s)
 {
 	return _valid(s.P) && _valid(s.R);
 }
@@ -257,7 +259,7 @@ class Basis
 
 	bool push(const fvec3& p)
 	{
-		if (m == 0)
+		if(m == 0)
 		{
 			q0 = p;
 			c[0] = q0;
@@ -272,14 +274,14 @@ class Basis
 			v[m].sub(p, q0);
 
 			// compute a_{m,i}, i < m
-			for (i = 1; i < m; ++i)
+			for(i = 1; i < m; ++i)
 			{
 				a[m][i] = v[i].dotproduct(v[m]);
 				a[m][i] *= (2.f / z[i]);
 			}
 
 			// update v[m] to Q_m - \bar{Q}_m
-			for (i = 1; i < m; ++i)
+			for(i = 1; i < m; ++i)
 			{
 				v[m].mad(v[m], v[i], -a[m][i]);
 			}
@@ -290,7 +292,7 @@ class Basis
 			z[m] *= 2;
 
 			// reject if z[m] too small
-			if (z[m] < eps * current_sqr_r)
+			if(z[m] < eps * current_sqr_r)
 				return false;
 
 			// update c, sqr_r
@@ -329,15 +331,15 @@ class Miniball
 	void mtf_mb(It i)
 	{
 		support_end = L.begin();
-		if (B.size() == 4)
+		if(B.size() == 4)
 			return;
 
-		for (It k = L.begin(); k != i;)
+		for(It k = L.begin(); k != i;)
 		{
 			It j = k++;
-			if (B.excess(*j) > 0)
+			if(B.excess(*j) > 0)
 			{
-				if (B.push(*j))
+				if(B.push(*j))
 				{
 					mtf_mb(j);
 					B.pop();
@@ -356,10 +358,10 @@ class Miniball
 		{
 			It pivot = L.begin();
 			max_e = max_excess(t, i, pivot);
-			if (max_e > 0)
+			if(max_e > 0)
 			{
 				t = support_end;
-				if (t == pivot)
+				if(t == pivot)
 					++t;
 				old_sqr_r = B.squared_radius();
 				B.push(*pivot);
@@ -367,12 +369,12 @@ class Miniball
 				B.pop();
 				move_to_front(pivot);
 			}
-		} while ((max_e > 0) && (B.squared_radius() > old_sqr_r));
+		} while((max_e > 0) && (B.squared_radius() > old_sqr_r));
 	}
 
 	void move_to_front(It j)
 	{
-		if (support_end == j)
+		if(support_end == j)
 			support_end++;
 		L.splice(L.begin(), L, j);
 	}
@@ -383,12 +385,12 @@ class Miniball
 		float sqr_r = B.squared_radius();
 		float e, max_e = 0;
 
-		for (It k = t; k != i; ++k)
+		for(It k = t; k != i; ++k)
 		{
 			const fvec3& point = *k;
 			e = -sqr_r;
 			e += point.distance_to_sqr(*pCenter);
-			if (e > max_e)
+			if(e > max_e)
 			{
 				max_e = e;
 				pivot = k;
@@ -460,7 +462,7 @@ inline void Fsphere_compute(Fsphere& dest, const fvec3* verts, int count)
 {
 	Miniball mb;
 
-	for (int i = 0; i < count; i++)
+	for(int i = 0; i < count; i++)
 		mb.check_in(verts[i]);
 
 	mb.build();

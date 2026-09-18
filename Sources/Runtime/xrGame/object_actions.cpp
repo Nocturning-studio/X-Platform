@@ -52,7 +52,7 @@ void CObjectActionShow::initialize()
 	inherited::initialize();
 
 	VERIFY(m_item);
-	if (object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
+	if(object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
 		object().inventory().Ruck(object().inventory().m_slots[m_item->GetSlot()].m_pIItem);
 
 	//.	object().inventory().SetActiveSlot(NO_ACTIVE_SLOT);
@@ -61,7 +61,7 @@ void CObjectActionShow::initialize()
 		bool							result = object().inventory().Activate	(m_item->GetSlot());
 		VERIFY							(result);
 	*/
-	if (!m_weapon)
+	if(!m_weapon)
 		return;
 }
 
@@ -69,18 +69,18 @@ void CObjectActionShow::execute()
 {
 	inherited::execute();
 	VERIFY(m_item);
-	if (!object().inventory().ActiveItem() ||
-		(object().inventory().ActiveItem()->object().ID() != m_item->object().ID()))
+	if(!object().inventory().ActiveItem() ||
+	   (object().inventory().ActiveItem()->object().ID() != m_item->object().ID()))
 	{
 		CHudItem* hud_item = smart_cast<CHudItem*>(object().inventory().ActiveItem());
-		if (!hud_item)
+		if(!hud_item)
 		{
 			object().inventory().Slot(m_item);
 			return;
 		}
-		if (!hud_item->IsPending())
+		if(!hud_item->IsPending())
 		{
-			if (object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
+			if(object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
 				object().inventory().Ruck(object().inventory().m_slots[m_item->GetSlot()].m_pIItem);
 			//.			object().inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 			object().inventory().Slot(m_item);
@@ -135,10 +135,10 @@ void CObjectActionReload::execute()
 
 	CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
 	VERIFY(weapon);
-	if (weapon->IsPending())
+	if(weapon->IsPending())
 		return;
 
-	if (weapon->GetAmmoElapsed())
+	if(weapon->GetAmmoElapsed())
 		return;
 
 	object().inventory().Action(kWPN_RELOAD, CMD_START);
@@ -162,7 +162,7 @@ void CObjectActionFire::initialize()
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (!m_object->can_kill_member())
+	if(!m_object->can_kill_member())
 		object().inventory().Action(kWPN_FIRE, CMD_START);
 	else
 		object().inventory().Action(kWPN_FIRE, CMD_STOP);
@@ -176,10 +176,10 @@ void CObjectActionFire::execute()
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (!m_object->can_kill_member())
+	if(!m_object->can_kill_member())
 	{
 		CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
-		if (!weapon || (weapon->GetState() != CWeapon::eFire))
+		if(!weapon || (weapon->GetState() != CWeapon::eFire))
 			object().inventory().Action(kWPN_FIRE, CMD_START);
 	}
 	else
@@ -205,7 +205,7 @@ CObjectActionStrapping::CObjectActionStrapping(CInventoryItem* item, CAI_Stalker
 
 CObjectActionStrapping::~CObjectActionStrapping()
 {
-	if (m_callback_removed)
+	if(m_callback_removed)
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end)));
@@ -228,7 +228,7 @@ void CObjectActionStrapping::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[[%6d][%s]][%s] removing callback on callabck
-	//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrapping::initialize()
@@ -247,7 +247,7 @@ void CObjectActionStrapping::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrapping::execute()
@@ -263,10 +263,10 @@ void CObjectActionStrapping::finalize()
 {
 	inherited::finalize();
 
-	if (!m_callback_removed)
+	if(!m_callback_removed)
 	{
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 
 		object().animation().torso().remove_callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end));
@@ -278,7 +278,7 @@ void CObjectActionStrapping::finalize()
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrapping::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionStrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -295,7 +295,7 @@ CObjectActionStrappingToIdle::CObjectActionStrappingToIdle(CInventoryItem* item,
 
 CObjectActionStrappingToIdle::~CObjectActionStrappingToIdle()
 {
-	if (m_callback_removed)
+	if(m_callback_removed)
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrappingToIdle::on_animation_end)));
@@ -318,7 +318,7 @@ void CObjectActionStrappingToIdle::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[%6d][%s] removing callback on callabck
-	//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrappingToIdle::initialize()
@@ -335,7 +335,7 @@ void CObjectActionStrappingToIdle::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrappingToIdle::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionStrappingToIdle::execute()
@@ -351,21 +351,21 @@ void CObjectActionStrappingToIdle::finalize()
 {
 	inherited::finalize();
 
-	if (!m_callback_removed)
+	if(!m_callback_removed)
 	{
 		object().animation().torso().remove_callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrappingToIdle::on_animation_end));
 
 		m_callback_removed = true;
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 	else
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionStrappingToIdle::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionStrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -382,7 +382,7 @@ CObjectActionUnstrapping::CObjectActionUnstrapping(CInventoryItem* item, CAI_Sta
 
 CObjectActionUnstrapping::~CObjectActionUnstrapping()
 {
-	if (m_callback_removed)
+	if(m_callback_removed)
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrapping::on_animation_end)));
@@ -405,7 +405,7 @@ void CObjectActionUnstrapping::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[%6d][%s] removing callback on callabck
-	//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrapping::initialize()
@@ -424,7 +424,7 @@ void CObjectActionUnstrapping::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrapping::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrapping::execute()
@@ -440,21 +440,21 @@ void CObjectActionUnstrapping::finalize()
 {
 	inherited::finalize();
 
-	if (!m_callback_removed)
+	if(!m_callback_removed)
 	{
 		object().animation().torso().remove_callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrapping::on_animation_end));
 
 		m_callback_removed = true;
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 	else
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrapping::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionUnstrapping::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -471,7 +471,7 @@ CObjectActionUnstrappingToIdle::CObjectActionUnstrappingToIdle(CInventoryItem* i
 
 CObjectActionUnstrappingToIdle::~CObjectActionUnstrappingToIdle()
 {
-	if (m_callback_removed)
+	if(m_callback_removed)
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
@@ -494,7 +494,7 @@ void CObjectActionUnstrappingToIdle::on_animation_end()
 	m_callback_removed = true;
 
 	//	Msg							("[%6d][%s] removing callback on callabck
-	//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrappingToIdle::initialize()
@@ -511,7 +511,7 @@ void CObjectActionUnstrappingToIdle::initialize()
 		CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 
 	//	Msg							("[%6d][%s] adding callback
-	//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+	// CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 }
 
 void CObjectActionUnstrappingToIdle::execute()
@@ -527,21 +527,21 @@ void CObjectActionUnstrappingToIdle::finalize()
 {
 	inherited::finalize();
 
-	if (!m_callback_removed)
+	if(!m_callback_removed)
 	{
 		object().animation().torso().remove_callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 
 		m_callback_removed = true;
 		//		Msg						("[%6d][%s] removing callback from ::finalize
-		//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 	else
 	{
 		VERIFY(!object().animation().torso().callback(
 			CStalkerAnimationPair::CALLBACK_ID(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
 		//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-		//CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
+		// CObjectActionUnstrappingToIdle::on_animation_end",Engine.TimeManager.GetGlobalTimeMs(),*object().cName());
 	}
 }
 
@@ -573,7 +573,7 @@ void CObjectActionQueueWait::execute()
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (completed())
+	if(completed())
 		m_magazined->StopedAfterQueueFired(false);
 }
 
@@ -585,7 +585,7 @@ void CObjectActionQueueWait::finalize()
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (!completed())
+	if(!completed())
 		m_magazined->StopedAfterQueueFired(false);
 }
 
@@ -635,7 +635,7 @@ CObjectActionDrop::CObjectActionDrop(CInventoryItem* item, CAI_Stalker* owner, C
 void CObjectActionDrop::initialize()
 {
 	inherited::initialize();
-	if (!m_item || !m_item->object().H_Parent() || (m_object->ID() != m_item->object().H_Parent()->ID()))
+	if(!m_item || !m_item->object().H_Parent() || (m_object->ID() != m_item->object().H_Parent()->ID()))
 		return;
 
 	NET_Packet P;
@@ -657,7 +657,7 @@ CObjectActionThreaten::CObjectActionThreaten(CAI_Stalker* item, CAI_Stalker* own
 void CObjectActionThreaten::execute()
 {
 	inherited::execute();
-	if (completed())
+	if(completed())
 		object().inventory().Action(kWPN_FIRE, CMD_STOP);
 }
 
@@ -690,7 +690,7 @@ void CObjectActionAim::execute()
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (m_weapon && completed())
+	if(m_weapon && completed())
 		m_weapon->StopedAfterQueueFired(false);
 }
 
@@ -712,7 +712,7 @@ void CObjectActionIdle::initialize()
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (m_storage->property(ObjectHandlerSpace::eWorldPropertyUseEnough))
+	if(m_storage->property(ObjectHandlerSpace::eWorldPropertyUseEnough))
 		object().CObjectHandler::set_goal(MonsterSpace::eObjectActionActivate, object().inventory().ActiveItem());
 	m_storage->set_property(ObjectHandlerSpace::eWorldPropertyUseEnough, false);
 }

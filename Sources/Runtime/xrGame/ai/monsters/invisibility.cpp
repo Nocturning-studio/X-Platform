@@ -23,7 +23,7 @@ void CInvisibility::reload(LPCSTR section)
 
 void CInvisibility::activate()
 {
-	if (m_active)
+	if(m_active)
 		return;
 	start_blink();
 
@@ -33,7 +33,7 @@ void CInvisibility::activate()
 
 void CInvisibility::deactivate()
 {
-	if (!m_active)
+	if(!m_active)
 		return;
 	start_blink();
 
@@ -58,20 +58,20 @@ void CInvisibility::stop_blink()
 
 void CInvisibility::update_blink()
 {
-	if (!m_blink)
+	if(!m_blink)
 		return;
 
 	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// check for whole blink time
-	if (m_time_start_blink + timeBlink < cur_time)
+	if(m_time_start_blink + timeBlink < cur_time)
 	{
 		stop_blink();
 		return;
 	}
 
 	// check for current blink interval time
-	if (m_time_last_blink + timeBlinkInterval < cur_time)
+	if(m_time_last_blink + timeBlinkInterval < cur_time)
 	{
 		// blink
 		m_time_last_blink = cur_time;
@@ -85,9 +85,9 @@ void CInvisibility::frame_update()
 {
 	update_blink();
 
-	if (!m_manual)
+	if(!m_manual)
 	{
-		if (m_active)
+		if(m_active)
 			m_energy -= m_speed * Engine.TimeManager.GetDeltaTime();
 		else
 			m_energy += m_speed * Engine.TimeManager.GetDeltaTime();
@@ -102,12 +102,12 @@ void CInvisibility::set_manual_control(bool b_man)
 
 void CInvisibility::manual_activate()
 {
-	if (m_manual)
+	if(m_manual)
 		activate();
 }
 
 void CInvisibility::manual_deactivate()
 {
-	if (m_manual)
+	if(m_manual)
 		deactivate();
 }

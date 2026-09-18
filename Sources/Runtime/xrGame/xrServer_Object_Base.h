@@ -108,7 +108,7 @@ virtual void load(NET_Packet& tNetPacket);
 
 CSE_Abstract(LPCSTR caSection);
 virtual ~CSE_Abstract();
-virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender){};
+virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) {};
 virtual void FillProps(LPCSTR pref, PropItemVec& items);
 virtual BOOL Net_Relevant()
 {

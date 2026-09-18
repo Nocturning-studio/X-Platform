@@ -36,10 +36,10 @@ CFogOfWarMngr::~CFogOfWarMngr()
 }
 CLevelFogOfWar* CFogOfWarMngr::GetFogOfWar(const shared_str& level_name)
 {
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 		return NULL;
 	FOG_STORAGE_IT it = std::find_if(GetFogStorage().begin(), GetFogStorage().end(), FindFogByLevelName(level_name));
-	if (it != GetFogStorage().end())
+	if(it != GetFogStorage().end())
 		return &(*it);
 	else
 	{ // create new or load...
@@ -57,11 +57,11 @@ FOG_STORAGE_T& CFogOfWarMngr::GetFogStorage()
 };
 
 CLevelFogOfWar::CLevelFogOfWar()
-	: m_rowNum(0), m_colNum(0){
-					   //	m_levelRect.set	(0.0f,0.0f,0.0f,0.0f);
-					   //	hShader.create	("hud\\default","ui\\ui_fog_of_war");
-					   //	hGeom.create	(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
-				   };
+	: m_rowNum(0), m_colNum(0) {
+		  //	m_levelRect.set	(0.0f,0.0f,0.0f,0.0f);
+		  //	hShader.create	("hud\\default","ui\\ui_fog_of_war");
+		  //	hGeom.create	(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
+	  };
 
 void CLevelFogOfWar::Init(const shared_str& level)
 {
@@ -71,7 +71,7 @@ void CLevelFogOfWar::Init(const shared_str& level)
 	CInifile& gameLtx = *pGameIni;
 
 	fvec4 tmp;
-	if (gameLtx.line_exist(m_level_name, "bound_rect"))
+	if(gameLtx.line_exist(m_level_name, "bound_rect"))
 		tmp = gameLtx.r_fvector4(m_level_name, "bound_rect");
 	else
 		tmp.set(-10000.0f, -10000.0f, 10000.0f, 10000.0f); //. hack
@@ -91,10 +91,10 @@ void CLevelFogOfWar::Init(const shared_str& level)
 
 void CLevelFogOfWar::Open(fvec2 pos)
 {
-	if (!m_rowNum || !m_rowNum)
+	if(!m_rowNum || !m_rowNum)
 		return; // invalid map
-	if (!(pos.x >= m_levelRect.lt.x && pos.y >= m_levelRect.lt.y && pos.x <= m_levelRect.rb.x &&
-		  pos.y <= m_levelRect.rb.y))
+	if(!(pos.x >= m_levelRect.lt.x && pos.y >= m_levelRect.lt.y && pos.x <= m_levelRect.rb.x &&
+		 pos.y <= m_levelRect.rb.y))
 		return; // invalid position
 	VERIFY2((pos.x >= m_levelRect.lt.x && pos.y >= m_levelRect.lt.y && pos.x <= m_levelRect.rb.x &&
 			 pos.y <= m_levelRect.rb.y),
@@ -111,19 +111,19 @@ void CLevelFogOfWar::Open(fvec2 pos)
 	tgt.rb.x = pos.x + FOG_OPEN_RADIUS;
 	tgt.rb.y = pos.y + FOG_OPEN_RADIUS;
 
-	for (int rr = row - cell_sz; rr <= row + cell_sz; ++rr)
+	for(int rr = row - cell_sz; rr <= row + cell_sz; ++rr)
 	{
-		if (rr < 0)
+		if(rr < 0)
 			continue;
-		for (int cc = col - cell_sz; cc <= col + cell_sz; ++cc)
+		for(int cc = col - cell_sz; cc <= col + cell_sz; ++cc)
 		{
-			if (cc < 0)
+			if(cc < 0)
 				continue;
 			cell.lt.x = m_levelRect.lt.x + cc * FOG_CELL_SZ;
 			cell.rb.y = m_levelRect.lt.y + m_levelRect.height() - rr * FOG_CELL_SZ;
 			cell.rb.x = m_levelRect.lt.x + cc * FOG_CELL_SZ + FOG_CELL_SZ;
 			cell.lt.y = m_levelRect.lt.y + m_levelRect.height() - rr * FOG_CELL_SZ - FOG_CELL_SZ;
-			if (tgt.intersected(cell))
+			if(tgt.intersected(cell))
 				Open(rr, cc, true);
 		}
 	}
@@ -131,7 +131,7 @@ void CLevelFogOfWar::Open(fvec2 pos)
 
 void CLevelFogOfWar::Open(u32 row, u32 col, bool b)
 {
-	if (row >= m_rowNum || col >= m_colNum)
+	if(row >= m_rowNum || col >= m_colNum)
 		return;
 
 	m_cells.at(row * m_colNum + col) = b;
@@ -166,12 +166,12 @@ enum
 
 void CLevelFogOfWar::GetTexUVLT(fvec2& uv, u32 col, u32 row)
 {
-	if (row >= m_rowNum || col >= m_colNum)
+	if(row >= m_rowNum || col >= m_colNum)
 		uv.set(0.5f, 0.0f);
 	else
 	{
 		bool cell_mask = m_cells[row * m_colNum + col];
-		if (cell_mask == true)
+		if(cell_mask == true)
 			uv.set(0.0f, 0.0f);
 		else
 			uv.set(0.5f, 0.0f);
@@ -221,13 +221,13 @@ void CLevelFogOfWar::Draw()
 	u32 vOffset = 0;
 	FVF::TL* start_pv = (FVF::TL*)RenderBackend.Vertex.Lock(cells.width() * cells.height() * 6, hGeom.stride(), vOffset);
 	FVF::TL* pv = start_pv;
-	for (int x = 0; x < cells.width(); ++x)
+	for(int x = 0; x < cells.width(); ++x)
 	{
-		for (int y = 0; y < cells.height(); ++y)
+		for(int y = 0; y < cells.height(); ++y)
 		{
 			fvec2 tp;
 			GetTexUVLT(tp, cells.x1 + x, cells.y1 + y);
-			for (u32 k = 0; k < 6; ++k, ++pv)
+			for(u32 k = 0; k < 6; ++k, ++pv)
 			{
 				const fvec2& p = pts[k];
 				const fvec2& uv = uvs[k];
@@ -241,7 +241,7 @@ void CLevelFogOfWar::Draw()
 
 	// set scissor
 	UI()->PushScissor(clip_rect);
-	if (p_cnt != 0)
+	if(p_cnt != 0)
 	{
 		// draw
 		RenderBackend.set_Shader(hShader);

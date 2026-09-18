@@ -45,7 +45,7 @@ class CBlender_detail_object : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_DETAIL_NORMAL_ANIMATED:
 			C.set_Define("USE_DETAILWAVE", "1", CBlender_Compile::ShaderScope::Vertex);
@@ -71,7 +71,7 @@ class CBlender_detail_object : public IBlender
 			//	C.set_Define("USE_DETAILWAVE", "1");
 			// case SE_DETAIL_DEPTH_PREPASS_STATIC:
 			//	C.begin_Pass("shadow_depth_stage_detail_object", "shadow_depth_stage_detail_object",
-			//FALSE);//C.begin_Pass("depth_prepass_stage_detail_object", "depth_prepass_stage_detail_object");
+			// FALSE);//C.begin_Pass("depth_prepass_stage_detail_object", "depth_prepass_stage_detail_object");
 			//	C.set_Sampler("s_base", C.L_textures[0]);
 			//	jitter(C);
 			//	C.end_Pass();

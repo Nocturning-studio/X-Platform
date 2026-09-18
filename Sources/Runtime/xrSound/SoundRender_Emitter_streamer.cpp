@@ -15,10 +15,10 @@ void CSoundRender_Emitter::fill_data(u8* _dest, u32 offset, u32 size)
 	u32 line_offs = offset - line * line_size;
 	u32 line_amount = line_size - line_offs;
 
-	while (size)
+	while(size)
 	{
 		// cache access
-		if (SoundRender->cache.request(source()->CAT, line))
+		if(SoundRender->cache.request(source()->CAT, line))
 			source()->decompress(line, target->get_data());
 
 		// fill block
@@ -42,14 +42,15 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
 	LPBYTE dest = LPBYTE(ptr);
 	u32 dwBytesTotal = get_bytes_total();
 
-	if ((get_cursor(true) + size) > dwBytesTotal)
+	if((get_cursor(true) + size) > dwBytesTotal)
 	{
 		// We are reaching the end of data, what to do?
-		switch (m_current_state)
+		switch(m_current_state)
 		{
-		case stPlaying: {
+		case stPlaying:
+		{
 			// Fill as much data as we can, zeroing remainder
-			if (get_cursor(true) >= dwBytesTotal)
+			if(get_cursor(true) >= dwBytesTotal)
 			{
 				// ??? We requested the block after remainder - just zero
 				std::memset(dest, 0, size);
@@ -69,7 +70,8 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
 		}
 		break;
 
-		case stPlayingLooped: {
+		case stPlayingLooped:
+		{
 			u32 hw_position = 0;
 			do
 			{
@@ -79,7 +81,7 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
 				hw_position += sz_write;
 				move_cursor(sz_write);
 				set_cursor(get_cursor(true) % dwBytesTotal);
-			} while (0 != (size - hw_position));
+			} while(0 != (size - hw_position));
 		}
 		break;
 
@@ -92,12 +94,12 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
 	{
 		u32 bt_handle = ((CSoundRender_Source*)owner_data->handle)->dwBytesTotal;
 
-		if (get_cursor(true) + size > m_cur_handle_cursor + bt_handle)
+		if(get_cursor(true) + size > m_cur_handle_cursor + bt_handle)
 		{
 			R_ASSERT(owner_data->fn_attached[0].size());
 			u32 rem = 0;
 
-			if ((m_cur_handle_cursor + bt_handle) > get_cursor(true))
+			if((m_cur_handle_cursor + bt_handle) > get_cursor(true))
 			{
 				rem = (m_cur_handle_cursor + bt_handle) - get_cursor(true);
 

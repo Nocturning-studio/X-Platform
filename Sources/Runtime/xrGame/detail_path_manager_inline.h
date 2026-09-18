@@ -49,7 +49,7 @@ IC void CDetailPathManager::set_start_direction(const fvec3& start_direction)
 IC void CDetailPathManager::set_dest_position(const fvec3& dest_position)
 {
 #ifdef DEBUG
-	if (!(!m_restricted_object || m_restricted_object->accessible(dest_position)))
+	if(!(!m_restricted_object || m_restricted_object->accessible(dest_position)))
 	{
 		LogStackTrace("error call stack");
 	}
@@ -58,7 +58,7 @@ IC void CDetailPathManager::set_dest_position(const fvec3& dest_position)
 		   "Old movement destination is not accessible after changing restrictions!");
 
 	bool value = !!m_dest_position.similar(dest_position, .1f);
-	if (!value)
+	if(!value)
 		m_corrected_dest_position = dest_position;
 
 	m_actuality = m_actuality && value;
@@ -107,18 +107,18 @@ IC void CDetailPathManager::adjust_point(const fvec2& source, float yaw, float m
 IC void CDetailPathManager::assign_angle(float& angle, const float start_yaw, const float dest_yaw, const bool positive,
 										 const EDirectionType direction_type, const bool start) const
 {
-	if (positive)
-		if (dest_yaw >= start_yaw)
+	if(positive)
+		if(dest_yaw >= start_yaw)
 			angle = dest_yaw - start_yaw;
 		else
 			angle = PI_MUL_2 - start_yaw + dest_yaw;
-	else if (dest_yaw <= start_yaw)
+	else if(dest_yaw <= start_yaw)
 		angle = dest_yaw - start_yaw;
 	else
 		angle = dest_yaw - start_yaw - PI_MUL_2;
 
-	if (!start && ((direction_type == eDirectionTypePP) || (direction_type == eDirectionTypeNN)))
-		if (angle <= 0.f)
+	if(!start && ((direction_type == eDirectionTypePP) || (direction_type == eDirectionTypeNN)))
+		if(angle <= 0.f)
 			angle = angle + PI_MUL_2;
 		else
 			angle = angle - PI_MUL_2;
@@ -233,7 +233,7 @@ IC const CDetailPathManager::VELOCITIES& CDetailPathManager::velocities() const
 
 IC const float& CDetailPathManager::distance_to_target()
 {
-	if (m_distance_to_target_actual)
+	if(m_distance_to_target_actual)
 		return (m_distance_to_target);
 
 	update_distance_to_target();

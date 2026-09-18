@@ -31,7 +31,7 @@ IGame_Level::~IGame_Level()
 {
 	Engine.ThreadManager.WaitForFrameEnd();
 
-	if (strstr(Core.Params, "-nes_texture_storing"))
+	if(strstr(Core.Params, "-nes_texture_storing"))
 		Engine.ResourceManager->StoreNecessaryTextures();
 
 	Engine.ResourceManager->DeferredUnloadLevelTextures(pLevel->fname());
@@ -59,7 +59,7 @@ IGame_Level::~IGame_Level()
 
 void IGame_Level::net_Stop()
 {
-	for (int i = 0; i < 6; i++)
+	for(int i = 0; i < 6; i++)
 		Objects.Update(true);
 	// Destroy all objects
 	Objects.Unload();
@@ -76,7 +76,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 	// Initialize level data
 	Engine.LevelManager.SetLevel(dwNum);
 	string_path temp;
-	if (!FS.exist(temp, "$level$", "level.ltx"))
+	if(!FS.exist(temp, "$level$", "level.ltx"))
 		Debug.fatal(DEBUG_INFO, "Can't find level configuration file '%s'.", temp);
 	pLevel = xr_new<CInifile>(temp);
 
@@ -97,7 +97,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 	ObjectSpace.Load();
 
 	// HUD + Environment
-	if (g_hud)
+	if(g_hud)
 		pHUD = g_hud;
 	else
 		pHUD = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
@@ -126,7 +126,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 
 	bReady = true;
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		IR_Capture();
 
 #ifndef DEDICATED_SERVER
@@ -158,13 +158,13 @@ void IGame_Level::OnFrame()
 	pHUD->OnFrame();
 
 	// Ambience
-	if (Sounds_Random.size() && (Engine.TimeManager.GetGlobalTimeMs() > Sounds_Random_dwNextTime))
+	if(Sounds_Random.size() && (Engine.TimeManager.GetGlobalTimeMs() > Sounds_Random_dwNextTime))
 	{
 		Sounds_Random_dwNextTime = Engine.TimeManager.GetGlobalTimeMs() + ::Random.randI(10000, 20000);
 		fvec3 pos;
 		pos.random_dir().normalize().mul(::Random.randF(30, 100)).add(Engine.RenderView.Position);
 		int id = ::Random.randI(Sounds_Random.size());
-		if (Sounds_Random_Enabled)
+		if(Sounds_Random_Enabled)
 		{
 			Sounds_Random[id].play_at_pos(0, pos, 0);
 			Sounds_Random[id].set_volume(1.f);
@@ -189,7 +189,7 @@ void CServerInfo::AddItem(shared_str& name_, LPCSTR value_, u32 color_)
 	strcat_s(it.name, value_);
 	it.color = color_;
 
-	if (data.size() < max_item)
+	if(data.size() < max_item)
 	{
 		data.push_back(it);
 	}

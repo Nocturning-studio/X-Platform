@@ -27,38 +27,38 @@ unsigned short int mbhMulti2WideDumb(wide_char* WideStr, wide_char* WidePos, con
 
 	VERIFY(MultiStr);
 
-	if (!MultiStr[0])
+	if(!MultiStr[0])
 		return 0;
 
-	if (WideStr || WidePos)
+	if(WideStr || WidePos)
 		VERIFY2(((WideStrSize > 0) && (WideStrSize < 0xFFFF)), make_string("'WideStrSize'=%hu", WideStrSize));
 
-	while ((b1 = MultiStr[spos++]) != 0x00)
+	while((b1 = MultiStr[spos++]) != 0x00)
 	{
-		if (WidePos)
+		if(WidePos)
 			WidePos[dpos] = spos;
 
 		dpos++;
 
 		wc = b1;
 
-		if (WideStr)
+		if(WideStr)
 		{
 			VERIFY2((dpos < WideStrSize), make_string("S1: '%s',%hu<%hu", MultiStr, dpos, WideStrSize));
 			WideStr[dpos] = wc;
 		}
 	}
 
-	if (WidePos)
+	if(WidePos)
 		WidePos[dpos] = spos;
 
-	if (WideStr)
+	if(WideStr)
 	{
 		VERIFY2((dpos < WideStrSize), make_string("S2: '%s',%hu<%hu", MultiStr, dpos, WideStrSize));
 		WideStr[dpos + 1] = 0x0000;
 	}
 
-	if (WideStr)
+	if(WideStr)
 		WideStr[0] = dpos;
 
 	return dpos;
@@ -76,28 +76,28 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
 
 	VERIFY(MultiStr);
 
-	if (!MultiStr[0])
+	if(!MultiStr[0])
 		return 0;
 
-	if (WideStr || WidePos)
+	if(WideStr || WidePos)
 		VERIFY2(((WideStrSize > 0) && (WideStrSize < 0xFFFF)), make_string("'WideStrSize'=%hu", WideStrSize));
 
-	while ((b1 = MultiStr[spos]) != 0x00)
+	while((b1 = MultiStr[spos]) != 0x00)
 	{
-		if (WidePos)
+		if(WidePos)
 			WidePos[dpos] = spos;
 
 		spos++;
 
-		if ((b1 & BITS1_MASK) == BITS1_EXP)
+		if((b1 & BITS1_MASK) == BITS1_EXP)
 		{
 			wc = b1;
 		}
-		else if ((b1 & BITS3_MASK) == BITS3_EXP)
+		else if((b1 & BITS3_MASK) == BITS3_EXP)
 		{
 			b2 = MultiStr[spos++];
 #ifdef MB_DUMB_CONVERSION
-			if (!(b2 && ((b2 & BITS2_MASK) == BITS2_EXP)))
+			if(!(b2 && ((b2 & BITS2_MASK) == BITS2_EXP)))
 				return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else  // MB_DUMB_CONVERSION
 			VERIFY2((b2 && ((b2 & BITS2_MASK) == BITS2_EXP)),
@@ -105,11 +105,11 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
 #endif // MB_DUMB_CONVERSION
 			wc = ((b1 & ~BITS3_MASK) << 6) | (b2 & ~BITS2_MASK);
 		}
-		else if ((b1 & BITS4_MASK) == BITS4_EXP)
+		else if((b1 & BITS4_MASK) == BITS4_EXP)
 		{
 			b2 = MultiStr[spos++];
 #ifdef MB_DUMB_CONVERSION
-			if (!(b2 && ((b2 & BITS2_MASK) == BITS2_EXP)))
+			if(!(b2 && ((b2 & BITS2_MASK) == BITS2_EXP)))
 				return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else  // MB_DUMB_CONVERSION
 			VERIFY2((b2 && ((b2 & BITS2_MASK) == BITS2_EXP)),
@@ -117,7 +117,7 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
 #endif // MB_DUMB_CONVERSION
 			b3 = MultiStr[spos++];
 #ifdef MB_DUMB_CONVERSION
-			if (!(b3 && ((b3 & BITS2_MASK) == BITS2_EXP)))
+			if(!(b3 && ((b3 & BITS2_MASK) == BITS2_EXP)))
 				return mbhMulti2WideDumb(WideStr, WidePos, WideStrSize, MultiStr);
 #else  // MB_DUMB_CONVERSION
 			VERIFY2((b3 && ((b3 & BITS2_MASK) == BITS2_EXP)),
@@ -136,23 +136,23 @@ unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const u
 
 		dpos++;
 
-		if (WideStr)
+		if(WideStr)
 		{
 			VERIFY2((dpos < WideStrSize), make_string("S1: '%s',%hu<%hu", MultiStr, dpos, WideStrSize));
 			WideStr[dpos] = wc;
 		}
 	}
 
-	if (WidePos)
+	if(WidePos)
 		WidePos[dpos] = spos;
 
-	if (WideStr)
+	if(WideStr)
 	{
 		VERIFY2((dpos < WideStrSize), make_string("S2: '%s',%hu<%hu", MultiStr, dpos, WideStrSize));
 		WideStr[dpos + 1] = 0x0000;
 	}
 
-	if (WideStr)
+	if(WideStr)
 		WideStr[0] = dpos;
 
 	return dpos;

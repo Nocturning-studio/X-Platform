@@ -11,8 +11,16 @@
 #include "../object_broker.h"
 
 LPCSTR _list_names[] = {
-	"lst_pistol", "lst_pistol_ammo", "lst_rifle",  "lst_rifle_ammo", "lst_outfit",
-	"lst_medkit", "lst_granade",	 "lst_others", "lst_player_bag", "lst_shop",
+	"lst_pistol",
+	"lst_pistol_ammo",
+	"lst_rifle",
+	"lst_rifle_ammo",
+	"lst_outfit",
+	"lst_medkit",
+	"lst_granade",
+	"lst_others",
+	"lst_player_bag",
+	"lst_shop",
 };
 CUIMpTradeWnd::CUIMpTradeWnd()
 {
@@ -52,7 +60,7 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	AddCallback("tab_control", TAB_CHANGED, CUIWndCallback::void_function(this, &CUIMpTradeWnd::OnRootTabChanged));
 
 	u32 root_cnt = m_store_hierarchy->GetRoot().ChildCount();
-	for (u32 i = 0; i < root_cnt; ++i)
+	for(u32 i = 0; i < root_cnt; ++i)
 	{
 		const CStoreHierarchy::item& it = m_store_hierarchy->GetRoot().ChildAt(i);
 
@@ -211,11 +219,11 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	AddCallback("btn_rifle_ammo2", BUTTON_CLICKED,
 				CUIWndCallback::void_function(this, &CUIMpTradeWnd::OnBtnRifleAmmo2Clicked));
 
-	for (int idx = e_first; idx < e_total_lists; ++idx)
+	for(int idx = e_first; idx < e_total_lists; ++idx)
 	{
 		CUIDragDropListEx* lst = xr_new<CUIDragDropListEx>();
 		m_list[idx] = lst;
-		if (idx != e_shop)
+		if(idx != e_shop)
 		{
 			AttachChild(lst);
 			lst->SetAutoDelete(true);

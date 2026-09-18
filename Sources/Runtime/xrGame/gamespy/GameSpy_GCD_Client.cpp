@@ -11,7 +11,7 @@ CGameSpy_GCD_Client::CGameSpy_GCD_Client()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -26,7 +26,7 @@ CGameSpy_GCD_Client::CGameSpy_GCD_Client(HMODULE hGameSpyDLL)
 
 CGameSpy_GCD_Client::~CGameSpy_GCD_Client()
 {
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;

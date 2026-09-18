@@ -31,11 +31,11 @@ void CStreamReader::map(const u32& new_offset)
 	VERIFY(pure_start_offset >= start_offset);
 	u32 pure_end_offset = m_window_size + pure_start_offset;
 	u32 end_offset = pure_end_offset / granularity;
-	if (pure_end_offset % granularity)
+	if(pure_end_offset % granularity)
 		++end_offset;
 
 	end_offset *= granularity;
-	if (end_offset > m_archive_size)
+	if(end_offset > m_archive_size)
 		end_offset = m_archive_size;
 
 	m_current_window_size = end_offset - start_offset;
@@ -54,13 +54,13 @@ void CStreamReader::advance(const int& offset)
 	VERIFY(m_current_pointer >= m_start_pointer);
 	VERIFY(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
 	int offset_inside_window = int(m_current_pointer - m_start_pointer);
-	if (offset_inside_window + offset >= (int)m_current_window_size)
+	if(offset_inside_window + offset >= (int)m_current_window_size)
 	{
 		remap(m_current_offset_from_start + offset_inside_window + offset);
 		return;
 	}
 
-	if (offset_inside_window + offset < 0)
+	if(offset_inside_window + offset < 0)
 	{
 		remap(m_current_offset_from_start + offset_inside_window + offset);
 		return;
@@ -75,7 +75,7 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
 	VERIFY(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
 
 	int offset_inside_window = int(m_current_pointer - m_start_pointer);
-	if (offset_inside_window + buffer_size < m_current_window_size)
+	if(offset_inside_window + buffer_size < m_current_window_size)
 	{
 		std::memcpy(_buffer, m_current_pointer, buffer_size);
 		m_current_pointer += buffer_size;
@@ -93,7 +93,7 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
 		advance(elapsed_in_window);
 
 		elapsed_in_window = m_current_window_size;
-	} while (m_current_window_size < buffer_size);
+	} while(m_current_window_size < buffer_size);
 
 	std::memcpy(buffer, m_current_pointer, buffer_size);
 	advance(buffer_size);
@@ -103,7 +103,7 @@ CStreamReader* CStreamReader::open_chunk(const u32& chunk_id)
 {
 	BOOL compressed;
 	u32 size = find_chunk(chunk_id, &compressed);
-	if (!size)
+	if(!size)
 		return (0);
 
 	R_ASSERT2(!compressed, "cannot use CStreamReader on compressed chunks");

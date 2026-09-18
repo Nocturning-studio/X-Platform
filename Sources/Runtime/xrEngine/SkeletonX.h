@@ -74,7 +74,8 @@ class ENGINE_API CSkeletonX
 	u16 ChildIDX;
 
 	// render-mode specifics
-	union {
+	union
+	{
 		struct
 		{ // soft-skinning only
 			u32 cache_DiscardID;

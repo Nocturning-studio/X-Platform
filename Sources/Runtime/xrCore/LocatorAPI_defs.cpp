@@ -46,9 +46,9 @@ FS_Path::FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCaptio
 	//	VERIFY			(_Root&&_Root[0]);
 	string_path temp;
 	strcpy_s(temp, sizeof(temp), _Root);
-	if (_Add)
+	if(_Add)
 		strcat(temp, _Add);
-	if (temp[0] && temp[xr_strlen(temp) - 1] != '\\')
+	if(temp[0] && temp[xr_strlen(temp) - 1] != '\\')
 		strcat(temp, "\\");
 	m_Path = xr_strlwr(xr_strdup(temp));
 	m_DefExt = _DefExt ? xr_strlwr(xr_strdup(_DefExt)) : 0;
@@ -81,7 +81,7 @@ void FS_Path::_set(LPSTR add)
 	// m_Path
 	string_path temp;
 	strconcat(sizeof(temp), temp, m_Root, m_Add);
-	if (temp[xr_strlen(temp) - 1] != '\\')
+	if(temp[xr_strlen(temp) - 1] != '\\')
 		strcat(temp, "\\");
 	xr_free(m_Path);
 	m_Path = xr_strlwr(xr_strdup(temp));
@@ -93,13 +93,13 @@ void FS_Path::_set_root(LPSTR root)
 	//	R_ASSERT		(root);
 	xr_free(m_Root);
 	m_Root = xr_strlwr(xr_strdup(root));
-	if (m_Root[0] && m_Root[xr_strlen(m_Root) - 1] != '\\')
+	if(m_Root[0] && m_Root[xr_strlen(m_Root) - 1] != '\\')
 		strcat(m_Root, "\\");
 
 	// m_Path
 	string_path temp;
 	strconcat(sizeof(temp), temp, m_Root, m_Add ? m_Add : "");
-	if (*temp && temp[xr_strlen(temp) - 1] != '\\')
+	if(*temp && temp[xr_strlen(temp) - 1] != '\\')
 		strcat(temp, "\\");
 	xr_free(m_Path);
 	m_Path = xr_strlwr(xr_strdup(temp));
@@ -131,26 +131,26 @@ bool XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask)
 {
 	LPCSTR cp = 0;
 	LPCSTR mp = 0;
-	for (; *s && *mask != '*'; mask++, s++)
-		if (*mask != *s && *mask != '?')
+	for(; *s && *mask != '*'; mask++, s++)
+		if(*mask != *s && *mask != '?')
 			return false;
-	for (;;)
+	for(;;)
 	{
-		if (!*s)
+		if(!*s)
 		{
-			while (*mask == '*')
+			while(*mask == '*')
 				mask++;
 			return !*mask;
 		}
-		if (*mask == '*')
+		if(*mask == '*')
 		{
-			if (!*++mask)
+			if(!*++mask)
 				return true;
 			mp = mask;
 			cp = s + 1;
 			continue;
 		}
-		if (*mask == *s || *mask == '?')
+		if(*mask == *s || *mask == '?')
 		{
 			mask++, s++;
 			continue;

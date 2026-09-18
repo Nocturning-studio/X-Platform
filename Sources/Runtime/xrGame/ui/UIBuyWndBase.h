@@ -33,7 +33,7 @@ class IBuyWnd : public CUIDialogWnd
 {
 
   public:
-	virtual ~IBuyWnd(){};
+	virtual ~IBuyWnd() {};
 	virtual void Init(const shared_str& sectionName, const shared_str& sectionPrice) = 0;
 	virtual void BindDragDropListEvents(CUIDragDropListEx* lst, bool bDrag) = 0;
 
@@ -60,10 +60,10 @@ class IBuyWnd : public CUIDialogWnd
 	virtual void ItemToBelt(const shared_str& sectionName) = 0;
 	virtual void ItemToRuck(const shared_str& sectionName, u8 addons) = 0;
 	virtual void ItemToSlot(const shared_str& sectionName, u8 addons) = 0;
-	virtual void SetupPlayerItemsBegin(){};
-	virtual void SetupPlayerItemsEnd(){};
-	virtual void SetupDefaultItemsBegin(){};
-	virtual void SetupDefaultItemsEnd(){};
+	virtual void SetupPlayerItemsBegin() {};
+	virtual void SetupPlayerItemsEnd() {};
+	virtual void SetupDefaultItemsBegin() {};
+	virtual void SetupDefaultItemsEnd() {};
 	virtual const preset_items& GetPreset(ETradePreset idx) = 0;
 	virtual u32 GetPresetCost(ETradePreset idx) = 0;
 	virtual void ClearPreset(ETradePreset idx) = 0;

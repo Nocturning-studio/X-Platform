@@ -10,9 +10,9 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 {
 	//	CHolderCustom* wpn	=smart_cast<CHolderCustom*>(object);
 	CHolderCustom* wpn = object;
-	if (m_holder)
+	if(m_holder)
 	{
-		if (!wpn || (m_holder == wpn))
+		if(!wpn || (m_holder == wpn))
 		{
 			m_holder->detach_Actor();
 			character_physics_support()->movement()->CreateCharacter();
@@ -22,19 +22,19 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 	}
 	else
 	{
-		if (wpn)
+		if(wpn)
 		{
 			fvec3 center;
 			Center(center);
-			if (wpn->Use(Engine.RenderView.Position, Engine.RenderView.Direction, center))
+			if(wpn->Use(Engine.RenderView.Position, Engine.RenderView.Direction, center))
 			{
-				if (wpn->attach_Actor(this))
+				if(wpn->attach_Actor(this))
 				{
 					// destroy actor character
 					character_physics_support()->movement()->DestroyCharacter();
 					PickupModeOff();
 					m_holder = wpn;
-					if (pCamBobbing)
+					if(pCamBobbing)
 					{
 						Cameras().RemoveCamEffector(eCEBobbing);
 						pCamBobbing = NULL;

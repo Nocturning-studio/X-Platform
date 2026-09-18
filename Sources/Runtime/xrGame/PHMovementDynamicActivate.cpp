@@ -57,44 +57,44 @@ float STestFootCallbackPars::max_real_depth = 0.2f;
 template <class Pars>
 void TTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
-	if (saved_callback)
+	if(saved_callback)
 		saved_callback(do_colide, bo1, c, material_1, material_2);
 
-	if (do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
+	if(do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
 	{
 		float& depth = c.geom.depth;
 		float test_depth = depth - Pars::decrement_depth;
 		save_max(max_depth_dynamic_activate, test_depth);
 		c.surface.mu *= Pars::calback_friction_factor;
-		if (test_depth > Pars::depth_to_use_force)
+		if(test_depth > Pars::depth_to_use_force)
 		{
 			float force = Pars::callback_force_factor * ph_world->Gravity();
 			dBodyID b1 = dGeomGetBody(c.geom.g1);
 			dBodyID b2 = dGeomGetBody(c.geom.g2);
-			if (b1)
+			if(b1)
 				dBodyAddForce(b1, c.geom.normal[0] * force, c.geom.normal[1] * force, c.geom.normal[2] * force);
-			if (b2)
+			if(b2)
 				dBodyAddForce(b2, -c.geom.normal[0] * force, -c.geom.normal[1] * force, -c.geom.normal[2] * force);
 			dxGeomUserData* ud1 = retrieveGeomUserData(c.geom.g1);
 			dxGeomUserData* ud2 = retrieveGeomUserData(c.geom.g2);
 
-			if (ud1)
+			if(ud1)
 			{
 				CPhysicsShell* phsl = ud1->ph_ref_object->PPhysicsShell();
-				if (phsl)
+				if(phsl)
 					phsl->Enable();
 			}
 
-			if (ud2)
+			if(ud2)
 			{
 				CPhysicsShell* phsl = ud2->ph_ref_object->PPhysicsShell();
-				if (phsl)
+				if(phsl)
 					phsl->Enable();
 			}
 
 			do_colide = false;
 		}
-		else if (test_depth > Pars::depth_to_change_softness_pars)
+		else if(test_depth > Pars::depth_to_change_softness_pars)
 		{
 			c.surface.soft_cfm = Pars::callback_cfm_factor;
 			c.surface.soft_erp = Pars::callback_erp_factor;
@@ -139,13 +139,13 @@ class CVelocityLimiter : public CPHUpdateObject
 		const float* linear_velocity = dBodyGetLinearVel(m_body);
 		// limit velocity
 		bool ret = false;
-		if (dV_valid(linear_velocity))
+		if(dV_valid(linear_velocity))
 		{
 			dReal mag;
 			fvec3 vlinear_velocity;
 			vlinear_velocity.set(cast_fv(linear_velocity));
 			mag = std::sqrt(linear_velocity[0] * linear_velocity[0] + linear_velocity[2] * linear_velocity[2]); //
-			if (mag > l_limit)
+			if(mag > l_limit)
 			{
 				dReal f = mag / l_limit;
 				// dBodySetLinearVel(m_body,linear_velocity[0]/f,linear_velocity[1],linear_velocity[2]/f);///f
@@ -154,7 +154,7 @@ class CVelocityLimiter : public CPHUpdateObject
 				ret = true;
 			}
 			mag = _abs(linear_velocity[1]);
-			if (mag > y_limit)
+			if(mag > y_limit)
 			{
 				vlinear_velocity.y = linear_velocity[1] / mag * y_limit;
 				ret = true;
@@ -172,14 +172,14 @@ class CVelocityLimiter : public CPHUpdateObject
 	{
 		const float* linear_velocity = dBodyGetLinearVel(m_body);
 
-		if (VelocityLimit())
+		if(VelocityLimit())
 		{
 			dBodySetPosition(m_body, m_safe_position[0] + linear_velocity[0] * fixed_step,
 							 m_safe_position[1] + linear_velocity[1] * fixed_step,
 							 m_safe_position[2] + linear_velocity[2] * fixed_step);
 		}
 
-		if (!dV_valid(dBodyGetPosition(m_body)))
+		if(!dV_valid(dBodyGetPosition(m_body)))
 			dBodySetPosition(m_body, m_safe_position[0] - m_safe_velocity[0] * fixed_step,
 							 m_safe_position[1] - m_safe_velocity[1] * fixed_step,
 							 m_safe_position[2] - m_safe_velocity[2] * fixed_step);
@@ -245,11 +245,11 @@ class CGetContactForces : public CPHUpdateObject
 	{
 		InitValues();
 		int num = dBodyGetNumJoints(m_body);
-		for (int i = 0; i < num; ++i)
+		for(int i = 0; i < num; ++i)
 		{
 			dJointID joint = dBodyGetJoint(m_body, i);
 
-			if (dJointGetType(joint) == dJointTypeContact)
+			if(dJointGetType(joint) == dJointTypeContact)
 			{
 				dJointSetFeedback(joint, ContactFeedBacks.add());
 			}
@@ -259,10 +259,10 @@ class CGetContactForces : public CPHUpdateObject
 	virtual void PhDataUpdate(dReal step)
 	{
 		int num = dBodyGetNumJoints(m_body);
-		for (int i = 0; i < num; i++)
+		for(int i = 0; i < num; i++)
 		{
 			dJointID joint = dBodyGetJoint(m_body, i);
-			if (dJointGetType(joint) == dJointTypeContact)
+			if(dJointGetType(joint) == dJointTypeContact)
 			{
 				dJointFeedback* feedback = dJointGetFeedback(joint);
 				R_ASSERT2(feedback, "Feedback was not set!!!");
@@ -273,7 +273,7 @@ class CGetContactForces : public CPHUpdateObject
 				dReal* self_torque = feedback->t1;
 				dReal* othrers_force = feedback->f2;
 				dReal* othrers_torque = feedback->t2;
-				if (b_body_second)
+				if(b_body_second)
 				{
 					other_body = b_joint->node[0].body;
 					self_force = feedback->f2;
@@ -286,14 +286,14 @@ class CGetContactForces : public CPHUpdateObject
 				save_max(m_max_torque_self, std::sqrt(dDOT(self_torque, self_torque)));
 				save_max(m_max_force_self_y, _abs(self_force[1]));
 				save_max(m_max_force_self_sd, std::sqrt(self_force[0] * self_force[0] + self_force[2] * self_force[2]));
-				if (other_body)
+				if(other_body)
 				{
 					dVector3 shoulder;
 					dVectorSub(shoulder, dJointGetPositionContact(joint), dBodyGetPosition(other_body));
 					dReal shoulder_lenght = std::sqrt(dDOT(shoulder, shoulder));
 
 					save_max(m_max_force_others, std::sqrt(dDOT(othrers_force, othrers_force)));
-					if (!fis_zero(shoulder_lenght))
+					if(!fis_zero(shoulder_lenght))
 						save_max(m_max_torque_others, std::sqrt(dDOT(othrers_torque, othrers_torque)) / shoulder_lenght);
 				}
 			}
@@ -317,22 +317,22 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 											float resolve_depth /*=0.01f*/)
 {
 	bool character_exist = CharacterExist();
-	if (character_exist && trying_times[id] != u32(-1))
+	if(character_exist && trying_times[id] != u32(-1))
 	{
 		fvec3 dif;
 		dif.sub(trying_poses[id], cast_fv(dBodyGetPosition(m_character->get_body())));
-		if (Engine.TimeManager.GetGlobalTimeMs() - trying_times[id] < 500 && dif.magnitude() < 0.05f)
+		if(Engine.TimeManager.GetGlobalTimeMs() - trying_times[id] < 500 && dif.magnitude() < 0.05f)
 			return false;
 	}
-	if (!m_character || m_character->PhysicsRefObject()->PPhysicsShell())
+	if(!m_character || m_character->PhysicsRefObject()->PPhysicsShell())
 		return false;
 	DWORD old_id = BoxID();
 
 	bool character_disabled = character_exist && !m_character->IsEnabled();
-	if (character_exist && id == old_id)
+	if(character_exist && id == old_id)
 		return true;
 
-	if (!character_exist)
+	if(!character_exist)
 	{
 		CreateCharacter();
 	}
@@ -352,7 +352,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	//	int		num_steps=5;
 	//	float	resolve_depth=0.01f;
 
-	if (!character_exist)
+	if(!character_exist)
 	{
 		num_it = 20;
 		num_steps = 1;
@@ -383,14 +383,14 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	vl.l_limit *= (fnum_it * fnum_steps / 5.f);
 	vl.y_limit = vl.l_limit;
 	////////////////////////////////////
-	for (int m = 0; 30 > m; ++m)
+	for(int m = 0; 30 > m; ++m)
 	{
 		Calculate(fvec3().set(0, 0, 0), fvec3().set(1, 0, 0), 0, 0, 0, 0);
 		EnableCharacter();
 		m_character->ApplyForce(0, ph_world->Gravity() * m_character->Mass(), 0);
 		max_depth_dynamic_activate = 0.f;
 		ph_world->Step();
-		if (max_depth_dynamic_activate < resolve_depth)
+		if(max_depth_dynamic_activate < resolve_depth)
 		{
 			break;
 		}
@@ -400,12 +400,12 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	vl.y_limit = vl.l_limit;
 	/////////////////////////////////////
 
-	for (int m = 0; num_steps > m; ++m)
+	for(int m = 0; num_steps > m; ++m)
 	{
 		float param = fnum_steps_r * (1 + m);
 		InterpolateBox(id, param);
 		ret = false;
-		for (int i = 0; num_it > i; ++i)
+		for(int i = 0; num_it > i; ++i)
 		{
 			max_depth_dynamic_activate = 0.f;
 			Calculate(fvec3().set(0, 0, 0), fvec3().set(1, 0, 0), 0, 0, 0, 0);
@@ -413,29 +413,29 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 			m_character->ApplyForce(0, ph_world->Gravity() * m_character->Mass(), 0);
 			ph_world->Step();
 			ph_world->CutVelocity(max_vel, max_a_vel);
-			if (max_depth_dynamic_activate < resolve_depth)
+			if(max_depth_dynamic_activate < resolve_depth)
 			{
 				ret = true;
 				break;
 			}
 		}
-		if (!ret)
+		if(!ret)
 			break;
 	}
 	m_character->SwitchInInitContact();
 	vl.Deactivate();
 
 	ph_world->UnFreeze();
-	if (!ret)
+	if(!ret)
 	{
-		if (!character_exist)
+		if(!character_exist)
 			DestroyCharacter();
-		else if (character_disabled)
+		else if(character_disabled)
 			m_character->Disable();
 		ActivateBox(old_id);
 		SetVelocity(vel);
 		dBodyID b = GetBody();
-		if (b)
+		if(b)
 		{
 			dMatrix3 R;
 			dRSetIdentity(R);
@@ -455,7 +455,7 @@ bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num
 	SetOjectContactCallback(saved_callback);
 	SetVelocity(vel);
 	saved_callback = 0;
-	if (!ret && character_exist)
+	if(!ret && character_exist)
 	{
 		trying_times[id] = Engine.TimeManager.GetGlobalTimeMs();
 		trying_poses[id].set(cast_fv(dBodyGetPosition(m_character->get_body())));

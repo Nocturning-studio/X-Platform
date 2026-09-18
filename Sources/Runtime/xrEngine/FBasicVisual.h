@@ -29,7 +29,11 @@ struct ENGINE_API IRender_Mesh
 	u32 iCount;
 	u32 dwPrimitives;
 
-	IRender_Mesh() { p_rm_Vertices = 0; p_rm_Indices = 0; }
+	IRender_Mesh()
+	{
+		p_rm_Vertices = 0;
+		p_rm_Indices = 0;
+	}
 	virtual ~IRender_Mesh();
 
   private:
@@ -53,17 +57,17 @@ class ENGINE_API IRender_Visual
 	vis_data vis;	   // visibility-data
 	ref_shader shader; // pipe state, shared
 
-	std::atomic<u32> m_Refs{ 0 };
-	IC void AddRef()    noexcept { m_Refs.fetch_add(1, std::memory_order_relaxed); }
+	std::atomic<u32> m_Refs{0};
+	IC void AddRef() noexcept { m_Refs.fetch_add(1, std::memory_order_relaxed); }
 	IC void ReleaseRef() noexcept { m_Refs.fetch_sub(1, std::memory_order_acq_rel); }
-	IC u32  GetRefs() const noexcept { return m_Refs.load(std::memory_order_acquire); }
+	IC u32 GetRefs() const noexcept { return m_Refs.load(std::memory_order_acquire); }
 
-	virtual void Render(float LOD){}; // LOD - Level Of Detail  [0..1], Ignored
+	virtual void Render(float LOD) {}; // LOD - Level Of Detail  [0..1], Ignored
 	virtual void Load(const char* N, IReader* data, u32 dwFlags);
 	virtual void Release(); // Shared memory release
 	virtual void Copy(IRender_Visual* from);
-	virtual void Spawn(){};
-	virtual void Depart(){};
+	virtual void Spawn() {};
+	virtual void Depart() {};
 
 	virtual CKinematics* dcast_PKinematics() { return 0; }
 	virtual CKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }

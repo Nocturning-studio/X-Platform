@@ -66,25 +66,25 @@ game_cl_mp::game_cl_mp()
 game_cl_mp::~game_cl_mp()
 {
 	CL_TEAM_DATA_LIST_it it = TeamList.begin();
-	for (; it != TeamList.end(); ++it)
+	for(; it != TeamList.end(); ++it)
 	{
-		if (it->IndicatorShader)
+		if(it->IndicatorShader)
 			it->IndicatorShader.destroy();
-		if (it->InvincibleShader)
+		if(it->InvincibleShader)
 			it->InvincibleShader.destroy();
 	};
 	TeamList.clear();
 
-	if (m_EquipmentIconsShader)
+	if(m_EquipmentIconsShader)
 		m_EquipmentIconsShader.destroy();
 
-	if (m_KillEventIconsShader)
+	if(m_KillEventIconsShader)
 		m_KillEventIconsShader.destroy();
 
-	if (m_RadiationIconsShader)
+	if(m_RadiationIconsShader)
 		m_RadiationIconsShader.destroy();
 
-	if (m_BloodLossIconsShader)
+	if(m_BloodLossIconsShader)
 		m_BloodLossIconsShader.destroy();
 
 	m_pSndMessagesInPlay.clear_and_free();
@@ -130,12 +130,12 @@ bool game_cl_mp::NeedToSendReady_Spectator(int key, game_PlayerState* ps)
 bool game_cl_mp::OnKeyboardPress(int key)
 {
 	CStringTable st;
-	if (kJUMP == key || kWPN_FIRE == key)
+	if(kJUMP == key || kWPN_FIRE == key)
 	{
 		bool b_need_to_send_ready = false;
 
 		CObject* curr = Level().CurrentControlEntity();
-		if (!curr)
+		if(!curr)
 			return (false);
 
 		bool is_actor = curr->CLS_ID == CLSID_OBJECT_ACTOR;
@@ -143,15 +143,15 @@ bool game_cl_mp::OnKeyboardPress(int key)
 
 		game_PlayerState* ps = local_player;
 
-		if (is_actor)
+		if(is_actor)
 		{
 			b_need_to_send_ready = NeedToSendReady_Actor(key, ps);
 		};
-		if (is_spectator)
+		if(is_spectator)
 		{
 			b_need_to_send_ready = NeedToSendReady_Spectator(key, ps);
 		};
-		if (b_need_to_send_ready)
+		if(b_need_to_send_ready)
 		{
 			CGameObject* GO = smart_cast<CGameObject*>(curr);
 			NET_Packet P;
@@ -164,20 +164,21 @@ bool game_cl_mp::OnKeyboardPress(int key)
 			return false;
 	};
 
-	if ((Phase() != GAME_PHASE_INPROGRESS) && (kQUIT != key) && (kCONSOLE != key))
+	if((Phase() != GAME_PHASE_INPROGRESS) && (kQUIT != key) && (kCONSOLE != key))
 		return true;
 
-	if (Phase() == GAME_PHASE_INPROGRESS)
+	if(Phase() == GAME_PHASE_INPROGRESS)
 	{
-		switch (key)
+		switch(key)
 		{
 		case kCHAT:
-		case kCHAT_TEAM: {
+		case kCHAT_TEAM:
+		{
 			shared_str prefix;
 
 			CUIChatWnd* pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
 
-			if (kCHAT_TEAM == key)
+			if(kCHAT_TEAM == key)
 			{
 				prefix.sprintf("%s> ", *st.translate("st_mp_say_to_team"));
 
@@ -192,7 +193,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 			pChatWnd->SetEditBoxPrefix(prefix);
 
 			StartStopMenu(pChatWnd, false);
-			if (!pChatWnd->IsShown() && xr_strlen(pChatWnd->UIEditBox.GetText()) > 0)
+			if(!pChatWnd->IsShown() && xr_strlen(pChatWnd->UIEditBox.GetText()) > 0)
 			{
 				shared_str phrase = pChatWnd->UIEditBox.GetText();
 				//				pChatWnd->Say(phrase);
@@ -202,37 +203,41 @@ bool game_cl_mp::OnKeyboardPress(int key)
 			return false;
 		}
 		break;
-		case kVOTE_BEGIN: {
-			if (IsVotingEnabled() && !IsVotingActive())
+		case kVOTE_BEGIN:
+		{
+			if(IsVotingEnabled() && !IsVotingActive())
 				VotingBegin();
 			else
 			{
-				if (!IsVotingEnabled())
+				if(!IsVotingEnabled())
 					OnCantVoteMsg(*st.translate("st_mp_disabled_voting"));
 				else
 					OnCantVoteMsg(*st.translate("st_mp_only_one_voting"));
 			};
 		}
 		break;
-		case kVOTE: {
-			if (IsVotingEnabled() && IsVotingActive())
+		case kVOTE:
+		{
+			if(IsVotingEnabled() && IsVotingActive())
 				Vote();
 			else
 			{
-				if (!IsVotingEnabled())
+				if(!IsVotingEnabled())
 					OnCantVoteMsg(*st.translate("st_mp_disabled_voting"));
 				else
 					OnCantVoteMsg(*st.translate("st_mp_no_current_voting"));
 			}
 		}
 		break;
-		case kVOTEYES: {
-			if (IsVotingEnabled() && IsVotingActive())
+		case kVOTEYES:
+		{
+			if(IsVotingEnabled() && IsVotingActive())
 				SendVoteYesMessage();
 		}
 		break;
-		case kVOTENO: {
-			if (IsVotingEnabled() && IsVotingActive())
+		case kVOTENO:
+		{
+			if(IsVotingEnabled() && IsVotingActive())
 				SendVoteNoMessage();
 		}
 		break;
@@ -245,12 +250,13 @@ bool game_cl_mp::OnKeyboardPress(int key)
 		case kSPEECH_MENU_6:
 		case kSPEECH_MENU_7:
 		case kSPEECH_MENU_8:
-		case kSPEECH_MENU_9: {
-			if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+		case kSPEECH_MENU_9:
+		{
+			if(!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 				break;
 
 			u32 MenuID = key - kSPEECH_MENU_0;
-			if (MenuID >= m_aMessageMenus.size())
+			if(MenuID >= m_aMessageMenus.size())
 				break;
 			cl_MessageMenu* pCurMenu = &(m_aMessageMenus[MenuID]);
 			HideMessageMenus();
@@ -266,7 +272,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 
 void game_cl_mp::VotingBegin()
 {
-	if (!m_pVoteStartWindow)
+	if(!m_pVoteStartWindow)
 		m_pVoteStartWindow = xr_new<CUIVotingCategory>();
 
 	StartStopMenu(m_pVoteStartWindow, true);
@@ -274,7 +280,7 @@ void game_cl_mp::VotingBegin()
 
 void game_cl_mp::Vote()
 {
-	if (!m_pVoteRespondWindow)
+	if(!m_pVoteRespondWindow)
 		m_pVoteRespondWindow = xr_new<CUIVote>();
 
 	StartStopMenu(m_pVoteRespondWindow, true);
@@ -282,7 +288,7 @@ void game_cl_mp::Vote()
 
 void game_cl_mp::OnCantVoteMsg(LPCSTR Text)
 {
-	if (!m_pMessageBox)
+	if(!m_pMessageBox)
 		m_pMessageBox = xr_new<CUIMessageBoxEx>();
 
 	m_pMessageBox->Init("cant_vote");
@@ -310,7 +316,7 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet& P)
 	string512 Text;
 	CStringTable st;
 
-	switch (msg)
+	switch(msg)
 	{
 
 	case GAME_EVENT_PLAYER_KILLED: // dm
@@ -318,19 +324,22 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet& P)
 		OnPlayerKilled(P);
 	}
 	break;
-	case GAME_EVENT_VOTE_START: {
+	case GAME_EVENT_VOTE_START:
+	{
 		sprintf_s(Text, "%s%s", Color_Main, *st.translate("mp_voting_started_msg"));
 		CommonMessageOut(Text);
 		OnVoteStart(P);
 	}
 	break;
-	case GAME_EVENT_VOTE_STOP: {
+	case GAME_EVENT_VOTE_STOP:
+	{
 		sprintf_s(Text, "%s%s", Color_Main, *st.translate("mp_voting_broken"));
 		CommonMessageOut(Text);
 		OnVoteStop(P);
 	}
 	break;
-	case GAME_EVENT_VOTE_END: {
+	case GAME_EVENT_VOTE_END:
+	{
 		string512 Reason;
 		P.r_stringZ(Reason);
 		sprintf_s(Text, "%s%s", Color_Main, *st.translate(Reason));
@@ -338,43 +347,51 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet& P)
 		OnVoteEnd(P);
 	}
 	break;
-	case GAME_EVENT_PLAYER_NAME: {
+	case GAME_EVENT_PLAYER_NAME:
+	{
 		OnPlayerChangeName(P);
 	}
 	break;
-	case GAME_EVENT_SPEECH_MESSAGE: {
+	case GAME_EVENT_SPEECH_MESSAGE:
+	{
 		OnSpeechMessage(P);
 	}
 	break;
-	case GAME_EVENT_PLAYERS_MONEY_CHANGED: {
+	case GAME_EVENT_PLAYERS_MONEY_CHANGED:
+	{
 		OnEventMoneyChanged(P);
 	}
 	break;
-	case GAME_EVENT_PLAYER_GAME_MENU_RESPOND: {
+	case GAME_EVENT_PLAYER_GAME_MENU_RESPOND:
+	{
 		OnGameMenuRespond(P);
 	}
 	break;
-	case GAME_EVENT_ROUND_STARTED: {
+	case GAME_EVENT_ROUND_STARTED:
+	{
 		OnGameRoundStarted();
 	}
 	break;
-	case GAME_EVENT_ROUND_END: {
+	case GAME_EVENT_ROUND_END:
+	{
 		string64 reason;
 		P.r_stringZ(reason);
 	}
 	break;
-	case GAME_EVENT_SERVER_STRING_MESSAGE: {
+	case GAME_EVENT_SERVER_STRING_MESSAGE:
+	{
 		string1024 mess;
 		P.r_stringZ(mess);
 		sprintf_s(Text, "%s%s", Color_Red, *st.translate(mess));
 		CommonMessageOut(Text);
 	}
 	break;
-	case GAME_EVENT_SERVER_DIALOG_MESSAGE: {
+	case GAME_EVENT_SERVER_DIALOG_MESSAGE:
+	{
 		string1024 mess;
 		P.r_stringZ(mess);
 		Msg(mess);
-		if (MainMenu() && !g_dedicated_server)
+		if(MainMenu() && !g_dedicated_server)
 		{
 			MainMenu()->OnSessionTerminate(mess);
 		}
@@ -415,13 +432,13 @@ void game_cl_mp::ChatSayTeam(const shared_str& phrase)
 void game_cl_mp::OnWarnMessage(NET_Packet* P)
 {
 	u8 msg_type = P->r_u8();
-	if (msg_type == 1)
+	if(msg_type == 1)
 	{
 		u16 _ping = P->r_u16();
 		u8 _cnt = P->r_u8();
 		u8 _total = P->r_u8();
 
-		if (HUD().GetUI())
+		if(HUD().GetUI())
 		{
 			string512 _buff;
 			sprintf_s(_buff, "max_ping_warn_%d", _cnt);
@@ -430,7 +447,7 @@ void game_cl_mp::OnWarnMessage(NET_Packet* P)
 			sprintf_s(_buff, "%d ms.", _ping);
 			ss->m_static->SetText(_buff);
 			CUIWindow* w = ss->m_static->FindChild("auto_static_0");
-			if (w)
+			if(w)
 			{
 				sprintf_s(_buff, "%d/%d", _cnt, _total);
 				CUIStatic* s = smart_cast<CUIStatic*>(w);
@@ -451,7 +468,7 @@ void game_cl_mp::OnChatMessage(NET_Packet* P)
 	P->r_s16(team);
 	/// #ifdef DEBUG
 	CStringTable st;
-	switch (team)
+	switch(team)
 	{
 	case 0:
 		Msg("%s: %s : %s", *st.translate("mp_chat"), PlayerName, ChatMsg);
@@ -465,21 +482,21 @@ void game_cl_mp::OnChatMessage(NET_Packet* P)
 	}
 
 	// #endif
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
 	string256 colPlayerName;
 	sprintf_s(colPlayerName, "%s%s:%s", Color_Teams[team], PlayerName, "%c[default]");
-	if (Level().CurrentViewEntity() && HUD().GetUI())
+	if(Level().CurrentViewEntity() && HUD().GetUI())
 		HUD().GetUI()->m_pMessagesWnd->AddChatMessage(ChatMsg, colPlayerName);
 };
 
 void game_cl_mp::CommonMessageOut(LPCSTR msg)
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
-	if (HUD().GetUI())
+	if(HUD().GetUI())
 		HUD().GetUI()->m_pMessagesWnd->AddLogMessage(msg);
 };
 
@@ -490,19 +507,20 @@ void game_cl_mp::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 	//-----------------------------------------
 
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
-	switch (Phase())
+	switch(Phase())
 	{
-	case GAME_PHASE_PENDING: {
+	case GAME_PHASE_PENDING:
+	{
 		CUIChatWnd* pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
-		if (pChatWnd && pChatWnd->IsShown())
+		if(pChatWnd && pChatWnd->IsShown())
 			StartStopMenu(pChatWnd, false);
 
-		if (m_bJustRestarted)
+		if(m_bJustRestarted)
 		{
-			if (Level().CurrentViewEntity())
+			if(Level().CurrentViewEntity())
 			{
 				PlaySndMessage(ID_READY);
 				m_bJustRestarted = false;
@@ -510,16 +528,18 @@ void game_cl_mp::shedule_Update(u32 dt)
 		}
 	}
 	break;
-	case GAME_PHASE_INPROGRESS: {
-		if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+	case GAME_PHASE_INPROGRESS:
+	{
+		if(!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		{
 			HideMessageMenus();
 		};
 	}
 	break;
-	default: {
+	default:
+	{
 		CUIChatWnd* pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
-		if (pChatWnd && pChatWnd->IsShown())
+		if(pChatWnd && pChatWnd->IsShown())
 			StartStopMenu(pChatWnd, false);
 	}
 	break;
@@ -528,17 +548,17 @@ void game_cl_mp::shedule_Update(u32 dt)
 
 	u32 cur_game_state = Phase();
 
-	if (m_pVoteStartWindow && m_pVoteStartWindow->IsShown() && cur_game_state != GAME_PHASE_INPROGRESS)
+	if(m_pVoteStartWindow && m_pVoteStartWindow->IsShown() && cur_game_state != GAME_PHASE_INPROGRESS)
 	{
 		m_pVoteStartWindow->GetHolder()->StartStopMenu(m_pVoteStartWindow, true);
 	}
-	if (m_pVoteRespondWindow && m_pVoteRespondWindow->IsShown() &&
-		(cur_game_state != GAME_PHASE_INPROGRESS || !IsVotingActive()))
+	if(m_pVoteRespondWindow && m_pVoteRespondWindow->IsShown() &&
+	   (cur_game_state != GAME_PHASE_INPROGRESS || !IsVotingActive()))
 	{
 		m_pVoteRespondWindow->GetHolder()->StartStopMenu(m_pVoteRespondWindow, true);
 	}
 
-	if (m_pMessageBox && m_pMessageBox->IsShown() && cur_game_state != GAME_PHASE_INPROGRESS)
+	if(m_pMessageBox && m_pMessageBox->IsShown() && cur_game_state != GAME_PHASE_INPROGRESS)
 	{
 		m_pMessageBox->GetHolder()->StartStopMenu(m_pMessageBox, true);
 	}
@@ -546,9 +566,9 @@ void game_cl_mp::shedule_Update(u32 dt)
 
 void game_cl_mp::SendStartVoteMessage(LPCSTR args)
 {
-	if (!args)
+	if(!args)
 		return;
-	if (!IsVotingEnabled())
+	if(!IsVotingEnabled())
 		return;
 	NET_Packet P;
 	Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
@@ -559,7 +579,7 @@ void game_cl_mp::SendStartVoteMessage(LPCSTR args)
 
 void game_cl_mp::SendVoteYesMessage()
 {
-	if (!IsVotingEnabled() || !IsVotingActive())
+	if(!IsVotingEnabled() || !IsVotingActive())
 		return;
 	NET_Packet P;
 	Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
@@ -568,7 +588,7 @@ void game_cl_mp::SendVoteYesMessage()
 };
 void game_cl_mp::SendVoteNoMessage()
 {
-	if (!IsVotingEnabled() || !IsVotingActive())
+	if(!IsVotingEnabled() || !IsVotingActive())
 		return;
 	NET_Packet P;
 	Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
@@ -583,7 +603,7 @@ void game_cl_mp::OnVoteStart(NET_Packet& P)
 void game_cl_mp::OnVoteStop(NET_Packet& P)
 {
 	SetVotingActive(false);
-	if (m_pVoteRespondWindow && m_pVoteRespondWindow->IsShown())
+	if(m_pVoteRespondWindow && m_pVoteRespondWindow->IsShown())
 	{
 		StartStopMenu(m_pVoteRespondWindow, true);
 	}
@@ -595,9 +615,9 @@ void game_cl_mp::OnVoteEnd(NET_Packet& P)
 };
 void game_cl_mp::OnPlayerVoted(game_PlayerState* ps)
 {
-	if (!IsVotingActive())
+	if(!IsVotingActive())
 		return;
-	if (ps->m_bCurrentVoteAgreed == 2)
+	if(ps->m_bCurrentVoteAgreed == 2)
 		return;
 
 	CStringTable st;
@@ -615,7 +635,7 @@ void game_cl_mp::LoadTeamData(const shared_str& TeamName)
 	Team.Indicator_r2 = 0.f;
 
 	Team.caSection = TeamName;
-	if (pSettings->section_exist(TeamName))
+	if(pSettings->section_exist(TeamName))
 	{
 		Team.Indicator_r1 = pSettings->r_float(TeamName, "indicator_r1");
 		Team.Indicator_r2 = pSettings->r_float(TeamName, "indicator_r2");
@@ -635,23 +655,25 @@ void game_cl_mp::LoadTeamData(const shared_str& TeamName)
 	TeamList.push_back(Team);
 }
 
-void game_cl_mp::OnSwitchPhase_InProgress(){};
+void game_cl_mp::OnSwitchPhase_InProgress() {};
 
 void game_cl_mp::OnSwitchPhase(u32 old_phase, u32 new_phase)
 {
 	inherited::OnSwitchPhase(old_phase, new_phase);
-	switch (new_phase)
+	switch(new_phase)
 	{
-	case GAME_PHASE_INPROGRESS: {
+	case GAME_PHASE_INPROGRESS:
+	{
 		m_bSpectatorSelected = FALSE;
 
-		if (Level().pHUD && HUD().GetUI())
+		if(Level().pHUD && HUD().GetUI())
 		{
 			HUD().GetUI()->ShowGameIndicators();
 		};
 	}
 	break;
-	case GAME_PHASE_PENDING: {
+	case GAME_PHASE_PENDING:
+	{
 		m_bJustRestarted = true;
 		HideMessageMenus();
 	};
@@ -665,8 +687,9 @@ void game_cl_mp::OnSwitchPhase(u32 old_phase, u32 new_phase)
 		HideMessageMenus();
 		break;
 
-	default: {
-		if (Level().pHUD && HUD().GetUI())
+	default:
+	{
+		if(Level().pHUD && HUD().GetUI())
 		{
 			HUD().GetUI()->HideGameIndicators();
 		};
@@ -678,7 +701,7 @@ void game_cl_mp::OnSwitchPhase(u32 old_phase, u32 new_phase)
 
 ref_shader game_cl_mp::GetEquipmentIconsShader()
 {
-	if (m_EquipmentIconsShader)
+	if(m_EquipmentIconsShader)
 		return m_EquipmentIconsShader;
 
 	m_EquipmentIconsShader.create("hud\\default", EQUIPMENT_ICONS);
@@ -719,7 +742,7 @@ ref_shader game_cl_mp::GetBloodLossIconsShader()
 }
 ref_shader game_cl_mp::GetRankIconsShader()
 {
-	if (m_RankIconsShader)
+	if(m_RankIconsShader)
 		return m_RankIconsShader;
 
 	m_RankIconsShader.create("hud\\default", RANK_ICONS);
@@ -740,7 +763,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 	CObject* pWeapon = Level().Objects.net_Find(WeaponID);
 
 	game_PlayerState* pPlayer = GetPlayerByGameID(KilledID);
-	if (!pPlayer)
+	if(!pPlayer)
 	{
 		Msg("! Non existant player[%d] killed by [%d] with [%d]", KilledID, KillerID, WeaponID);
 		return;
@@ -759,16 +782,16 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 	KMS.m_initiator.m_shader = NULL;
 	KMS.m_ext_info.m_shader = NULL;
 
-	switch (KillType)
+	switch(KillType)
 	{
 		//-----------------------------------------------------------
 	case KT_HIT: // from hit
 	{
 		string1024 sWeapon = "", sSpecial = "";
-		if (pWeapon)
+		if(pWeapon)
 		{
 			CInventoryItem* pIItem = smart_cast<CInventoryItem*>(pWeapon);
-			if (pIItem)
+			if(pIItem)
 			{
 				KMS.m_initiator.m_shader = GetEquipmentIconsShader();
 				KMS.m_initiator.m_rect.x1 = pIItem->GetKillMsgXPos();
@@ -780,7 +803,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 			else
 			{
 				CCustomZone* pAnomaly = smart_cast<CCustomZone*>(pWeapon);
-				if (pAnomaly)
+				if(pAnomaly)
 				{
 					KMS.m_initiator.m_shader = GetKillEventIconsShader();
 					KMS.m_initiator.m_rect.x1 = 1;
@@ -792,12 +815,12 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 			}
 		}
 
-		if (pKiller || pOKiller)
+		if(pKiller || pOKiller)
 		{
-			if (!pKiller)
+			if(!pKiller)
 			{
 				CCustomZone* pAnomaly = smart_cast<CCustomZone*>(pOKiller);
-				if (pAnomaly)
+				if(pAnomaly)
 				{
 					KMS.m_initiator.m_shader = GetKillEventIconsShader();
 					KMS.m_initiator.m_rect.x1 = 1;
@@ -809,20 +832,20 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 				}
 			};
 
-			if (pKiller)
+			if(pKiller)
 			{
 				KMS.m_killer.m_name = pKiller ? pKiller->name : *(pOKiller->cNameSect());
 				KMS.m_killer.m_color = pKiller ? Color_Teams_u32[pKiller->team] : Color_Neutral_u32;
 			};
 		};
 		//-------------------------------------------
-		switch (SpecialKill)
+		switch(SpecialKill)
 		{
 		case SKT_NONE: // not special
 		{
-			if (pOKiller && pOKiller == Level().CurrentViewEntity())
+			if(pOKiller && pOKiller == Level().CurrentViewEntity())
 			{
-				if (pWeapon && pWeapon->CLS_ID == CLSID_OBJECT_W_KNIFE)
+				if(pWeapon && pWeapon->CLS_ID == CLSID_OBJECT_W_KNIFE)
 					PlaySndMessage(ID_BUTCHER);
 			};
 		}
@@ -830,7 +853,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 		case SKT_HEADSHOT: // Head Shot
 		{
 			BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
-			if (it != m_pBonusList.end() && (*it == "headshot"))
+			if(it != m_pBonusList.end() && (*it == "headshot"))
 			{
 				Bonus_Struct* pBS = &(*it);
 				KMS.m_ext_info.m_shader = pBS->IconShader;
@@ -842,14 +865,14 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 
 			sprintf_s(sSpecial, *st.translate("mp_with_headshot"));
 
-			if (pOKiller && pOKiller == Level().CurrentViewEntity())
+			if(pOKiller && pOKiller == Level().CurrentViewEntity())
 				PlaySndMessage(ID_HEADSHOT);
 		}
 		break;
 		case SKT_BACKSTAB: // BackStab
 		{
 			BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
-			if (it != m_pBonusList.end() && (*it == "backstab"))
+			if(it != m_pBonusList.end() && (*it == "backstab"))
 			{
 				Bonus_Struct* pBS = &(*it);
 				KMS.m_ext_info.m_shader = pBS->IconShader;
@@ -861,13 +884,13 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 
 			sprintf_s(sSpecial, *st.translate("mp_with_backstab"));
 
-			if (pOKiller && pOKiller == Level().CurrentViewEntity())
+			if(pOKiller && pOKiller == Level().CurrentViewEntity())
 				PlaySndMessage(ID_ASSASSIN);
 		}
 		break;
 		}
 		// suicide
-		if (KilledID == KillerID)
+		if(KilledID == KillerID)
 		{
 			KMS.m_victim.m_name = NULL;
 
@@ -896,10 +919,10 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 17;
 		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 26;
 
-		if (!pKiller)
+		if(!pKiller)
 		{
 			CCustomZone* pAnomaly = smart_cast<CCustomZone*>(pOKiller);
-			if (pAnomaly)
+			if(pAnomaly)
 			{
 				KMS.m_ext_info.m_shader = GetKillEventIconsShader();
 				KMS.m_ext_info.m_rect.x1 = 1;
@@ -912,7 +935,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 			}
 		};
 
-		if (pKiller)
+		if(pKiller)
 		{
 			KMS.m_killer.m_name = pKiller ? pKiller->name : *(pOKiller->cNameSect());
 			KMS.m_killer.m_color = pKiller ? Color_Teams_u32[pKiller->team] : Color_Neutral_u32;
@@ -941,7 +964,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet& P)
 	default:
 		break;
 	}
-	if (HUD().GetUI() && HUD().GetUI()->m_pMessagesWnd)
+	if(HUD().GetUI() && HUD().GetUI()->m_pMessagesWnd)
 		HUD().GetUI()->m_pMessagesWnd->AddLogMessage(KMS);
 };
 
@@ -961,7 +984,7 @@ void game_cl_mp::OnPlayerChangeName(NET_Packet& P)
 	CommonMessageOut(resStr);
 	//-------------------------------------------
 	CObject* pObj = Level().Objects.net_Find(ObjID);
-	if (pObj)
+	if(pObj)
 		pObj->cName_set(NewName);
 }
 
@@ -992,7 +1015,7 @@ void game_cl_mp::net_import_update(NET_Packet& P)
 {
 	u8 OldRank = u8(-1);
 	s16 OldTeam = -1;
-	if (local_player)
+	if(local_player)
 	{
 		OldRank = local_player->rank;
 		OldTeam = local_player->team;
@@ -1000,11 +1023,11 @@ void game_cl_mp::net_import_update(NET_Packet& P)
 	//---------------------------------------------
 	inherited::net_import_update(P);
 	//---------------------------------------------
-	if (local_player)
+	if(local_player)
 	{
-		if (OldTeam != local_player->team)
+		if(OldTeam != local_player->team)
 			OnTeamChanged();
-		if (OldRank != local_player->rank)
+		if(OldRank != local_player->rank)
 			OnRankChanged(OldRank);
 	};
 }
@@ -1013,7 +1036,7 @@ void game_cl_mp::net_import_state(NET_Packet& P)
 {
 	u8 OldRank = u8(-1);
 	s16 OldTeam = -1;
-	if (local_player)
+	if(local_player)
 	{
 		OldRank = local_player->rank;
 		OldTeam = local_player->team;
@@ -1021,11 +1044,11 @@ void game_cl_mp::net_import_state(NET_Packet& P)
 
 	inherited::net_import_state(P);
 
-	if (local_player)
+	if(local_player)
 	{
-		if (OldTeam != local_player->team)
+		if(OldTeam != local_player->team)
 			OnTeamChanged();
-		if (OldRank != local_player->rank)
+		if(OldRank != local_player->rank)
 			OnRankChanged(OldRank);
 	};
 	//-------------------------------------------------------------
@@ -1055,13 +1078,13 @@ bool game_cl_mp::Is_Spectator_Camera_Allowed(CSpectator::EActorCameras Camera)
 
 void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 {
-	if (!local_player)
+	if(!local_player)
 		return;
 	CUIGameDM* pUIDM = smart_cast<CUIGameDM*>(m_game_ui_custom);
 	local_player->money_for_round = P.r_s32();
 	OnMoneyChanged();
 	{
-		if (pUIDM)
+		if(pUIDM)
 		{
 			string256 MoneyStr;
 			_itoa(local_player->money_for_round, MoneyStr, 10);
@@ -1069,9 +1092,9 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 		}
 	}
 	s32 Money_Added = P.r_s32();
-	if (Money_Added != 0)
+	if(Money_Added != 0)
 	{
-		if (pUIDM)
+		if(pUIDM)
 		{
 			string256 MoneyStr;
 			sprintf_s(MoneyStr, (Money_Added > 0) ? "+%d" : "%d", Money_Added);
@@ -1081,7 +1104,7 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 	u8 NumBonuses = P.r_u8();
 	s32 TotalBonusMoney = 0;
 	shared_str BonusStr = (NumBonuses > 1) ? "Your bonuses : " : ((NumBonuses == 1) ? "Your bonus : " : "");
-	for (u8 i = 0; i < NumBonuses; i++)
+	for(u8 i = 0; i < NumBonuses; i++)
 	{
 		s32 BonusMoney = P.r_s32();
 		SPECIAL_KILL_TYPE BonusReason = SPECIAL_KILL_TYPE(P.r_u8());
@@ -1090,7 +1113,7 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 		//---------------------------------------------------------
 		KillMessageStruct BMS;
 		string256 MoneyStr;
-		if (BonusMoney >= 0)
+		if(BonusMoney >= 0)
 			sprintf_s(MoneyStr, "+%d", BonusMoney);
 		else
 			sprintf_s(MoneyStr, "-%d", BonusMoney);
@@ -1099,25 +1122,30 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 		u32 RectID = 0;
 		//---------------------------------------------------------
 		shared_str BName = "";
-		switch (BonusReason)
+		switch(BonusReason)
 		{
-		case SKT_HEADSHOT: {
+		case SKT_HEADSHOT:
+		{
 			BName = "headshot";
 		}
 		break;
-		case SKT_BACKSTAB: {
+		case SKT_BACKSTAB:
+		{
 			BName = "backstab";
 		}
 		break;
-		case SKT_KNIFEKILL: {
+		case SKT_KNIFEKILL:
+		{
 			BName = "knife_kill";
 		}
 		break;
-		case SKT_PDA: {
+		case SKT_PDA:
+		{
 			BName = "pda_taken";
 		}
 		break;
-		case SKT_KIR: {
+		case SKT_KIR:
+		{
 			BName.sprintf("%d_kill_in_row", BonusKills);
 
 			sprintf_s(MoneyStr, sizeof(MoneyStr), "%d", BonusKills);
@@ -1125,14 +1153,15 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 			BMS.m_killer.m_color = 0xffff0000;
 		}
 		break;
-		case SKT_NEWRANK: {
+		case SKT_NEWRANK:
+		{
 			BName = "new_rank";
 			RectID = (local_player->rank + 1) * 2 + ModifyTeam(local_player->team);
 		}
 		break;
 		};
 		BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), BName.c_str());
-		if (it != m_pBonusList.end() && (*it == BName.c_str()))
+		if(it != m_pBonusList.end() && (*it == BName.c_str()))
 		{
 			Bonus_Struct* pBS = &(*it);
 
@@ -1143,7 +1172,7 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet& P)
 			BMS.m_initiator.m_rect.y2 = pBS->IconRects[RectID].y1 + pBS->IconRects[RectID].y2;
 		};
 
-		if (pUIDM)
+		if(pUIDM)
 			pUIDM->DisplayMoneyBonus(BMS);
 	};
 };
@@ -1153,7 +1182,7 @@ void game_cl_mp::OnSpectatorSelect()
 	CObject* l_pObj = Level().CurrentEntity();
 
 	CGameObject* l_pPlayer = smart_cast<CGameObject*>(l_pObj);
-	if (!l_pPlayer)
+	if(!l_pPlayer)
 		return;
 
 	NET_Packet P;
@@ -1169,17 +1198,20 @@ void game_cl_mp::OnSpectatorSelect()
 void game_cl_mp::OnGameMenuRespond(NET_Packet& P)
 {
 	u8 Respond = P.r_u8();
-	switch (Respond)
+	switch(Respond)
 	{
-	case PLAYER_SELECT_SPECTATOR: {
+	case PLAYER_SELECT_SPECTATOR:
+	{
 		OnGameMenuRespond_Spectator(P);
 	}
 	break;
-	case PLAYER_CHANGE_TEAM: {
+	case PLAYER_CHANGE_TEAM:
+	{
 		OnGameMenuRespond_ChangeTeam(P);
 	}
 	break;
-	case PLAYER_CHANGE_SKIN: {
+	case PLAYER_CHANGE_SKIN:
+	{
 		OnGameMenuRespond_ChangeSkin(P);
 	}
 	break;
@@ -1205,11 +1237,11 @@ void game_cl_mp::OnBuySpawn(CUIWindow* pWnd, void* p)
 
 void game_cl_mp::LoadBonuses()
 {
-	if (!pSettings->section_exist("mp_bonus_money"))
+	if(!pSettings->section_exist("mp_bonus_money"))
 		return;
 	m_pBonusList.clear();
 	u32 BonusCount = pSettings->line_count("mp_bonus_money");
-	for (u32 i = 0; i < BonusCount; i++)
+	for(u32 i = 0; i < BonusCount; i++)
 	{
 		LPCSTR line, name;
 		pSettings->r_line("mp_bonus_money", i, &name, &line);
@@ -1217,7 +1249,7 @@ void game_cl_mp::LoadBonuses()
 		string1024 tmp0, tmp1, IconStr;
 		_GetItem(line, 0, tmp0);
 		_GetItem(line, 1, tmp1);
-		if (strstr(name, "kill_in_row"))
+		if(strstr(name, "kill_in_row"))
 		{
 			sprintf_s(tmp1, "%s Kill", tmp1);
 			sprintf_s(IconStr, "kill_in_row");
@@ -1231,7 +1263,7 @@ void game_cl_mp::LoadBonuses()
 		NewBonus.MoneyStr = tmp0;
 		NewBonus.Money = atol(tmp0);
 		//-------------------------------------
-		if (!strstr(name, "new_rank"))
+		if(!strstr(name, "new_rank"))
 		{
 			string1024 IconShader, IconX, IconY, IconW, IconH;
 			sprintf_s(IconShader, "%s_shader", IconStr);
@@ -1239,7 +1271,7 @@ void game_cl_mp::LoadBonuses()
 			sprintf_s(IconY, "%s_y", IconStr);
 			sprintf_s(IconW, "%s_w", IconStr);
 			sprintf_s(IconH, "%s_h", IconStr);
-			if (pSettings->line_exist("mp_bonus_icons", IconShader))
+			if(pSettings->line_exist("mp_bonus_icons", IconShader))
 			{
 				NewBonus.IconShader.create("hud\\default", pSettings->r_string("mp_bonus_icons", IconShader));
 			}
@@ -1256,7 +1288,7 @@ void game_cl_mp::LoadBonuses()
 			NewBonus.IconShader.create("hud\\default", IconShader);
 
 			Frect IconRect;
-			for (u32 r = 1; r <= 5; r++)
+			for(u32 r = 1; r <= 5; r++)
 			{
 				string256 rankstr;
 
@@ -1280,9 +1312,10 @@ void game_cl_mp::LoadBonuses()
 
 void game_cl_mp::OnRadminMessage(u16 type, NET_Packet* P)
 {
-	switch (type)
+	switch(type)
 	{
-	case M_REMOTE_CONTROL_CMD: {
+	case M_REMOTE_CONTROL_CMD:
+	{
 		string4096 buff;
 		P->r_stringZ(buff);
 		Msg("# srv: %s", buff);

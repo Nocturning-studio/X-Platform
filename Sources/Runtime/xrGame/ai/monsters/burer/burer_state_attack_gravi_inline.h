@@ -26,7 +26,7 @@ void CStateBurerAttackGraviAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackGraviAbstract::execute()
 {
-	switch (m_action)
+	switch(m_action)
 	{
 	/************************/
 	case ACTION_GRAVI_STARTED:
@@ -55,7 +55,7 @@ void CStateBurerAttackGraviAbstract::execute()
 		/***************************/
 	case ACTION_WAIT_TRIPLE_END:
 		/***************************/
-		if (!object->com_man().ta_is_active())
+		if(!object->com_man().ta_is_active())
 		{
 			m_action = ACTION_COMPLETED;
 		}
@@ -96,13 +96,13 @@ bool CStateBurerAttackGraviAbstract::check_start_conditions()
 {
 	// обработать объекты
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
-	if (dist < GOOD_DISTANCE_FOR_GRAVI)
+	if(dist < GOOD_DISTANCE_FOR_GRAVI)
 		return false;
-	if (!object->EnemyMan.see_enemy_now())
+	if(!object->EnemyMan.see_enemy_now())
 		return false;
-	if (!object->control().direction().is_face_target(object->EnemyMan.get_enemy(), deg(45)))
+	if(!object->control().direction().is_face_target(object->EnemyMan.get_enemy(), deg(45)))
 		return false;
-	if (object->com_man().ta_is_active())
+	if(object->com_man().ta_is_active())
 		return false;
 
 	// всё ок, можно начать грави атаку
@@ -138,7 +138,7 @@ void CStateBurerAttackGraviAbstract::ExecuteGraviContinue()
 	clamp(time_to_hold, 0.f, 1.f);
 	time_to_hold *= float(object->m_gravi_time_to_hold);
 
-	if (time_gravi_started + u32(time_to_hold) < Engine.TimeManager.GetGlobalTimeMs())
+	if(time_gravi_started + u32(time_to_hold) < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		m_action = ACTION_GRAVI_FIRE;
 	}

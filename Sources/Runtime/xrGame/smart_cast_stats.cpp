@@ -66,7 +66,7 @@ CSmartCastStats* CSmartCastStats::m_instance = 0;
 
 IC CSmartCastStats* CSmartCastStats::instance()
 {
-	if (!m_instance)
+	if(!m_instance)
 		m_instance = xr_new<CSmartCastStats>();
 	return (m_instance);
 }
@@ -86,7 +86,7 @@ CSmartCastStats* g_smart_cast_opt = 0;
 
 IC CSmartCastStats& stats_all()
 {
-	if (!g_smart_cast_opt)
+	if(!g_smart_cast_opt)
 		g_smart_cast_opt = xr_new<CSmartCastStats>();
 	return (*g_smart_cast_opt);
 }
@@ -96,7 +96,7 @@ IC void CSmartCastStats::add(LPCSTR from, LPCSTR to)
 {
 	CStats temp(from, to, 1);
 	STATS::iterator I = m_stats.find(temp);
-	if (I == m_stats.end())
+	if(I == m_stats.end())
 		m_stats.insert(temp);
 	else
 		++(const_cast<CStats&>(*I).m_count);
@@ -109,7 +109,7 @@ IC void CSmartCastStats::clear()
 
 IC void CSmartCastStats::show()
 {
-	if (m_stats.empty())
+	if(m_stats.empty())
 	{
 		Msg("CONGRATULATIONS : SmartCast stats is empty!!!");
 		return;
@@ -122,13 +122,13 @@ IC void CSmartCastStats::show()
 
 	xr_vector<CStats>::const_iterator I = m_temp.begin();
 	xr_vector<CStats>::const_iterator E = m_temp.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		total += (*I).m_count;
 
 	Msg("SmartCast stats (different %d, total %d) : ", (u32)m_stats.size(), total);
 
 	I = m_temp.begin();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		Msg("%8d %6.2f% : smart_cast<%s>(%s)", (*I).m_count, float((*I).m_count) * 100.f / float(total), (*I).m_to,
 			(*I).m_from);
 }

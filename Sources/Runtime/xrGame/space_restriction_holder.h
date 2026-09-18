@@ -11,7 +11,8 @@
 class CSpaceRestrictionBridge;
 class CSpaceRestrictor;
 
-template <typename _1, typename _2> class intrusive_ptr;
+template <typename _1, typename _2>
+class intrusive_ptr;
 
 namespace RestrictionSpace
 {

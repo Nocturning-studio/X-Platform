@@ -27,7 +27,7 @@ void CUICheckButton::Update()
 {
 	CUI3tButton::Update();
 
-	if (m_pDependControl)
+	if(m_pDependControl)
 		m_pDependControl->Enable(GetCheck());
 }
 

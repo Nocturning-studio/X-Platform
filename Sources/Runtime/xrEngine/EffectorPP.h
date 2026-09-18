@@ -13,7 +13,7 @@ class ENGINE_API CEffectorPP : public SBaseEffector
 
   public:
 	CEffectorPP(EEffectorPPType type, float lifeTime, bool free_on_remove = true);
-	CEffectorPP() : bFreeOnRemove(true), fLifeTime(0.0f), bOverlap(true){};
+	CEffectorPP() : bFreeOnRemove(true), fLifeTime(0.0f), bOverlap(true) {};
 	virtual ~CEffectorPP();
 	virtual BOOL Process(SPPInfo& PPInfo);
 	virtual BOOL Valid()

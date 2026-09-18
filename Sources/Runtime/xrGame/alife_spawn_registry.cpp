@@ -180,7 +180,7 @@ void CALifeSpawnRegistry::save_updates(IWriter& stream)
 {
 	SPAWN_GRAPH::vertex_iterator I = m_spawns.vertices().begin();
 	SPAWN_GRAPH::vertex_iterator E = m_spawns.vertices().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		stream.open_chunk((*I).second->vertex_id());
 		(*I).second->data()->save_update(stream);
@@ -191,8 +191,8 @@ void CALifeSpawnRegistry::save_updates(IWriter& stream)
 void CALifeSpawnRegistry::load_updates(IReader& stream)
 {
 	u32 vertex_id;
-	for (IReader* chunk = stream.open_chunk_iterator(vertex_id); chunk;
-		 chunk = stream.open_chunk_iterator(vertex_id, chunk))
+	for(IReader* chunk = stream.open_chunk_iterator(vertex_id); chunk;
+		chunk = stream.open_chunk_iterator(vertex_id, chunk))
 	{
 		VERIFY(u32(ALife::_SPAWN_ID(-1)) > vertex_id);
 		const SPAWN_GRAPH::CVertex* vertex = m_spawns.vertex(ALife::_SPAWN_ID(vertex_id));
@@ -209,18 +209,18 @@ void CALifeSpawnRegistry::build_root_spawns()
 	{
 		SPAWN_GRAPH::const_vertex_iterator I = m_spawns.vertices().begin();
 		SPAWN_GRAPH::const_vertex_iterator E = m_spawns.vertices().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			m_temp0.push_back((*I).second->vertex_id());
 	}
 
 	{
 		SPAWN_GRAPH::const_vertex_iterator I = m_spawns.vertices().begin();
 		SPAWN_GRAPH::const_vertex_iterator E = m_spawns.vertices().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			SPAWN_GRAPH::const_iterator i = (*I).second->edges().begin();
 			SPAWN_GRAPH::const_iterator e = (*I).second->edges().end();
-			for (; i != e; ++i)
+			for(; i != e; ++i)
 				m_temp1.push_back((*i).vertex_id());
 		}
 	}
@@ -239,11 +239,11 @@ void CALifeSpawnRegistry::build_story_spawns()
 {
 	SPAWN_GRAPH::const_vertex_iterator I = m_spawns.vertices().begin();
 	SPAWN_GRAPH::const_vertex_iterator E = m_spawns.vertices().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CSE_ALifeObject* object = smart_cast<CSE_ALifeObject*>(&(*I).second->data()->object());
 		VERIFY(object);
-		if (object->m_spawn_story_id == INVALID_SPAWN_STORY_ID)
+		if(object->m_spawn_story_id == INVALID_SPAWN_STORY_ID)
 			continue;
 
 		m_spawn_story_ids.insert(std::make_pair(object->m_spawn_story_id, (*I).first));

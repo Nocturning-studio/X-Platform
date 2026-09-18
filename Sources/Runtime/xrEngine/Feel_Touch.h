@@ -31,7 +31,7 @@ class ENGINE_API Touch : private pure_relcase
 	virtual BOOL feel_touch_contact(CObject* O);
 	virtual void feel_touch_update(fvec3& P, float R);
 	virtual void feel_touch_deny(CObject* O, DWORD T);
-	virtual void feel_touch_new(CObject* O){};
-	virtual void feel_touch_delete(CObject* O){};
+	virtual void feel_touch_new(CObject* O) {};
+	virtual void feel_touch_delete(CObject* O) {};
 };
 }; // namespace Feel

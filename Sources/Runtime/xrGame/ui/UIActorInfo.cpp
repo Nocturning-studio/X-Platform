@@ -88,7 +88,7 @@ void CUIActorInfoWnd::Init()
 void CUIActorInfoWnd::Show(bool status)
 {
 	inherited::Show(status);
-	if (!status)
+	if(!status)
 		return;
 
 	UICharacterInfo->InitCharacter(Actor()->ID());
@@ -108,15 +108,15 @@ void CUIActorInfoWnd::FillPointsInfo()
 	uiXml.SetLocalRoot(uiXml.NavigateToNode("actor_stats_wnd", 0));
 	string64 buff;
 
-	for (int i = 0; i < items_num; ++i)
+	for(int i = 0; i < items_num; ++i)
 	{
 		CUIActorStaticticHeader* itm = xr_new<CUIActorStaticticHeader>(this);
 		itm->Init(&uiXml, "master_part", i);
 
-		if (itm->m_id != "foo")
+		if(itm->m_id != "foo")
 		{
 
-			if (itm->m_id == "reputation")
+			if(itm->m_id == "reputation")
 			{
 				itm->m_text2->SetTextST(InventoryUtilities::GetReputationAsText(Actor()->Reputation()));
 				itm->m_text2->SetTextColor(InventoryUtilities::GetReputationColor(Actor()->Reputation()));
@@ -125,7 +125,7 @@ void CUIActorInfoWnd::FillPointsInfo()
 			{
 				s32 _totl = Actor()->StatisticMgr().GetSectionPoints(itm->m_id);
 
-				if (_totl == -1)
+				if(_totl == -1)
 				{
 					itm->m_text2->SetTextST("");
 				}
@@ -145,7 +145,7 @@ void CUIActorInfoWnd::FillPointsInfo()
 
 	FillMasterPart(&uiXml, "foo");
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		FillMasterPart(&uiXml, (*it).key);
 	}
@@ -161,10 +161,10 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
 	strconcat(sizeof(buff), buff, "actor_stats_wnd:master_part_", key_name.c_str());
 	itm->Init(xml, buff, 0);
 
-	if (key_name != "foo")
+	if(key_name != "foo")
 	{
 
-		if (key_name == "reputation")
+		if(key_name == "reputation")
 		{
 			itm->m_text2->SetTextST(InventoryUtilities::GetReputationAsText(Actor()->Reputation()));
 			itm->m_text2->SetTextColor(InventoryUtilities::GetReputationColor(Actor()->Reputation()));
@@ -173,7 +173,7 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
 		{
 			s32 _totl = Actor()->StatisticMgr().GetSectionPoints(key_name);
 
-			if (_totl == -1)
+			if(_totl == -1)
 			{
 				itm->m_text2->SetTextST("");
 			}
@@ -199,10 +199,10 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 	sprintf_s(path, "detail_part_%s", id.c_str());
 
 	XML_NODE* n = uiXml.NavigateToNode(path, 0);
-	if (!n)
+	if(!n)
 		sprintf_s(path, "detail_part_def");
 
-	if (id == "reputation") // reputation
+	if(id == "reputation") // reputation
 	{
 		UIInfoHeader->GetTitleStatic()->SetTextST("st_detail_list_for_community_relations");
 		FillReputationDetails(&uiXml, path);
@@ -218,7 +218,7 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 
 	int _cntr = 0;
 	string64 buff;
-	for (; it != it_e; ++it, ++_cntr)
+	for(; it != it_e; ++it, ++_cntr)
 	{
 		CUIActorStaticticDetail* itm = xr_new<CUIActorStaticticDetail>();
 		itm->Init(&uiXml, path, 0);
@@ -229,7 +229,7 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 		itm->m_text1->SetTextST(*CStringTable().translate((*it).key));
 		itm->m_text1->AdjustHeightToText();
 
-		if (0 == (*it).str_value.size())
+		if(0 == (*it).str_value.size())
 		{
 			sprintf_s(buff, "x%d", (*it).int_count);
 			itm->m_text2->SetTextST(buff);
@@ -270,7 +270,7 @@ void CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
 	CHARACTER_GOODWILL d_neutral = CHARACTER_REPUTATION::relation(rep_actor.index(), rep_neutral.index());
 
 	string64 buff;
-	for (int i = 0; i < cnt; ++i)
+	for(int i = 0; i < cnt; ++i)
 	{
 		CUIActorStaticticDetail* itm = xr_new<CUIActorStaticticDetail>();
 		itm->Init(xml, path, 0);
@@ -329,7 +329,7 @@ void CUIActorStaticticHeader::Init(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
 bool CUIActorStaticticHeader::OnMouseDown(int mouse_btn)
 {
-	if (mouse_btn == MOUSE_1 && m_id != "total")
+	if(mouse_btn == MOUSE_1 && m_id != "total")
 	{
 		m_actorInfoWnd->MasterList().SetSelected(this);
 		return true;
@@ -342,7 +342,7 @@ void CUIActorStaticticHeader::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
 	m_text1->SetTextColor(subst_alpha(m_text1->GetTextColor(), b ? 255 : m_stored_alpha));
-	if (b)
+	if(b)
 	{
 		m_actorInfoWnd->FillPointsDetail(m_id);
 	}

@@ -14,7 +14,7 @@ CGameSpy_QR2::CGameSpy_QR2()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -31,7 +31,7 @@ CGameSpy_QR2::CGameSpy_QR2(HMODULE hGameSpyDLL)
 
 CGameSpy_QR2::~CGameSpy_QR2()
 {
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -128,8 +128,8 @@ bool CGameSpy_QR2::Init(int PortID, int Public, void* instance)
 	// call qr_init with the query port number and gamename, default IP address, and no user data
 
 	//	if (xrGS_qr2_init(NULL,NULL,PortID, GAMESPY_GAMENAME, m_SecretKey, Public, 0,
-	if (xrGS_qr2_init(NULL, NULL, PortID, Public, 0, callback_serverkey, callback_playerkey, callback_teamkey,
-					  callback_keylist, callback_count, callback_adderror, instance) != e_qrnoerror)
+	if(xrGS_qr2_init(NULL, NULL, PortID, Public, 0, callback_serverkey, callback_playerkey, callback_teamkey,
+					 callback_keylist, callback_count, callback_adderror, instance) != e_qrnoerror)
 	{
 		//		_tprintf(_T("Error starting query sockets\n"));
 		Msg("xrGS::QR2 : Failes to Initialize!");

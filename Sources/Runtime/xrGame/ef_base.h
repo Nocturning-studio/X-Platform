@@ -30,7 +30,7 @@ class CBaseFunction
 		m_caName[0] = 0;
 	};
 
-	virtual ~CBaseFunction(){};
+	virtual ~CBaseFunction() {};
 
 	IC CEF_Storage& ef_storage() const
 	{
@@ -43,9 +43,9 @@ class CBaseFunction
 	virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue = 2)
 	{
 		float fTemp = ffGetValue();
-		if (fTemp <= m_fMinResultValue)
+		if(fTemp <= m_fMinResultValue)
 			return (0);
-		else if (fTemp >= m_fMaxResultValue)
+		else if(fTemp >= m_fMaxResultValue)
 			return (dwDiscretizationValue - 1);
 		else
 			return (iFloor((fTemp - m_fMinResultValue) / (m_fMaxResultValue - m_fMinResultValue) *

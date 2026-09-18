@@ -50,11 +50,11 @@ CSE_ALifeDynamicObject* alife_object(const CALifeSimulator* self, LPCSTR name)
 {
 	VERIFY(self);
 
-	for (CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator it = self->objects().objects().begin();
-		 it != self->objects().objects().end(); it++)
+	for(CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator it = self->objects().objects().begin();
+		it != self->objects().objects().end(); it++)
 	{
 		CSE_ALifeDynamicObject* obj = it->second;
-		if (xr_strcmp(obj->name_replace(), name) == 0)
+		if(xr_strcmp(obj->name_replace(), name) == 0)
 			return (it->second);
 	}
 
@@ -86,7 +86,7 @@ void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR section
 	LPCSTR section = section_name;
 	R_ASSERT(Ini->section_exist(section));
 
-	for (k = 0; Ini->r_line(section, k, &N, &V); ++k)
+	for(k = 0; Ini->r_line(section, k, &N, &V); ++k)
 	{
 		temp = Ini->r_string_wb(section, N);
 
@@ -95,7 +95,7 @@ void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR section
 
 		STORY_PAIRS::const_iterator I = result.begin();
 		STORY_PAIRS::const_iterator E = result.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			R_ASSERT3((*I).first != temp, duplicated_id_description, *temp);
 
 		result.push_back(std::make_pair(*temp, atoi(N)));
@@ -164,17 +164,17 @@ CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR section
 										   u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id,
 										   ALife::_OBJECT_ID id_parent)
 {
-	if (id_parent == ALife::_OBJECT_ID(-1))
+	if(id_parent == ALife::_OBJECT_ID(-1))
 		return (self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
 
 	CSE_ALifeDynamicObject* object = ai().alife().objects().object(id_parent, true);
-	if (!object)
+	if(!object)
 	{
 		Msg("! invalid parent id [%d] specified", id_parent);
 		return (0);
 	}
 
-	if (!object->m_bOnline)
+	if(!object->m_bOnline)
 		return (self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
 
 	NET_Packet packet;
@@ -202,17 +202,17 @@ CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR section,
 	//	if (id_parent == ALife::_OBJECT_ID(-1))
 	//		return (self->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
 	CSE_ALifeDynamicObject* object = 0;
-	if (id_parent != ALife::_OBJECT_ID(-1))
+	if(id_parent != ALife::_OBJECT_ID(-1))
 	{
 		object = ai().alife().objects().object(id_parent, true);
-		if (!object)
+		if(!object)
 		{
 			Msg("! invalid parent id [%d] specified", id_parent);
 			return (0);
 		}
 	}
 
-	if (!object || !object->m_bOnline)
+	if(!object || !object->m_bOnline)
 	{
 		CSE_Abstract* item = self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent);
 
@@ -261,7 +261,7 @@ void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
 	THROW(object);
 	CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(object);
 	THROW(alife_object);
-	if (!alife_object->m_bOnline)
+	if(!alife_object->m_bOnline)
 	{
 		self->release(object, true);
 		return;
@@ -313,10 +313,10 @@ class CFindByIDPred
 bool has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& id, LPCSTR info_id)
 {
 	const KNOWN_INFO_VECTOR* known_info = registry(self, id);
-	if (!known_info)
+	if(!known_info)
 		return (false);
 
-	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
+	if(std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
 		return (false);
 
 	return (true);
@@ -354,11 +354,11 @@ void CALifeSimulator::script_register(lua_State* L)
 			   .def("story_object",
 					(CSE_ALifeDynamicObject * (*)(const CALifeSimulator*, ALife::_STORY_ID))(alife_story_object))
 			   .def("set_switch_online",
-					(void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_online))
+					(void (CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_online))
 			   .def("set_switch_offline",
-					(void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_offline))
+					(void (CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_offline))
 			   .def("set_interactive",
-					(void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_interactive))
+					(void (CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_interactive))
 			   .def("kill_entity", &CALifeSimulator::kill_entity)
 			   .def("kill_entity", &kill_entity0)
 			   .def("kill_entity", &kill_entity1)
@@ -383,7 +383,7 @@ void CALifeSimulator::script_register(lua_State* L)
 		   def("alife", &alife)];
 
 	{
-		if (story_ids.empty())
+		if(story_ids.empty())
 			generate_story_ids(story_ids, INVALID_STORY_ID, "story_ids", "INVALID_STORY_ID",
 							   "Invalid story id description (contains spaces)!", "INVALID_STORY_ID redifinition!",
 							   "Duplicated story id description!");
@@ -392,14 +392,14 @@ void CALifeSimulator::script_register(lua_State* L)
 
 		STORY_PAIRS::const_iterator I = story_ids.begin();
 		STORY_PAIRS::const_iterator E = story_ids.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			instance.enum_("_story_ids")[luabind::value(*(*I).first, (*I).second)];
 
 		luabind::module(L)[instance];
 	}
 
 	{
-		if (spawn_story_ids.empty())
+		if(spawn_story_ids.empty())
 			generate_story_ids(spawn_story_ids, INVALID_SPAWN_STORY_ID, "spawn_story_ids", "INVALID_SPAWN_STORY_ID",
 							   "Invalid spawn story id description (contains spaces)!",
 							   "INVALID_SPAWN_STORY_ID redifinition!", "Duplicated spawn story id description!");
@@ -408,7 +408,7 @@ void CALifeSimulator::script_register(lua_State* L)
 
 		SPAWN_STORY_PAIRS::const_iterator I = spawn_story_ids.begin();
 		SPAWN_STORY_PAIRS::const_iterator E = spawn_story_ids.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			instance.enum_("_spawn_story_ids")[luabind::value(*(*I).first, (*I).second)];
 
 		luabind::module(L)[instance];

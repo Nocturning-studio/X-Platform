@@ -89,19 +89,19 @@ struct SFillPropData
 		// location type
 		LPCSTR N, V;
 		u32 k;
-		for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
+		for(int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
 		{
 			VERIFY(locations[i].empty());
 			string256 caSection, T;
 			strconcat(caSection, SECTION_HEADER, _itoa(i, T, 10));
 			R_ASSERT(Ini->section_exist(caSection));
-			for (k = 0; Ini->r_line(caSection, k, &N, &V); ++k)
+			for(k = 0; Ini->r_line(caSection, k, &N, &V); ++k)
 				locations[i].push_back(xr_rtoken(V, atoi(N)));
 		}
 
 		// level names/ids
 		VERIFY(level_ids.empty());
-		for (k = 0; Ini->r_line("levels", k, &N, &V); ++k)
+		for(k = 0; Ini->r_line("levels", k, &N, &V); ++k)
 			level_ids.push_back(Ini->r_string_wb(N, "caption"));
 
 		// story names
@@ -109,7 +109,7 @@ struct SFillPropData
 			VERIFY(story_names.empty());
 			LPCSTR section = "story_ids";
 			R_ASSERT(Ini->section_exist(section));
-			for (k = 0; Ini->r_line(section, k, &N, &V); ++k)
+			for(k = 0; Ini->r_line(section, k, &N, &V); ++k)
 				story_names.push_back(xr_rtoken(V, atoi(N)));
 
 			concurrency::parallel_sort(story_names.begin(), story_names.end(), story_name_predicate());
@@ -121,7 +121,7 @@ struct SFillPropData
 			VERIFY(spawn_story_names.empty());
 			LPCSTR section = "spawn_story_ids";
 			R_ASSERT(Ini->section_exist(section));
-			for (k = 0; Ini->r_line(section, k, &N, &V); ++k)
+			for(k = 0; Ini->r_line(section, k, &N, &V); ++k)
 				spawn_story_names.push_back(xr_rtoken(V, atoi(N)));
 
 			concurrency::parallel_sort(spawn_story_names.begin(), spawn_story_names.end(), story_name_predicate());
@@ -132,7 +132,7 @@ struct SFillPropData
 #ifndef AI_COMPILER
 		// character profiles indexes
 		VERIFY(character_profiles.empty());
-		for (int i = 0; i <= CCharacterInfo::GetMaxIndex(); i++)
+		for(int i = 0; i <= CCharacterInfo::GetMaxIndex(); i++)
 		{
 			character_profiles.push_back(CCharacterInfo::IndexToId(i));
 		}
@@ -147,7 +147,7 @@ struct SFillPropData
 	}
 	void unload()
 	{
-		for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
+		for(int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
 			locations[i].clear();
 		level_ids.clear();
 		story_names.clear();
@@ -158,13 +158,13 @@ struct SFillPropData
 	{
 		VERIFY(counter > 0);
 		--counter;
-		if (!counter)
+		if(!counter)
 			unload();
 	}
 	void inc()
 	{
 		VERIFY(counter < 0xffffffff);
-		if (!counter)
+		if(!counter)
 			load();
 		++counter;
 	}
@@ -212,7 +212,7 @@ CSE_ALifeGraphPoint::~CSE_ALifeGraphPoint()
 void CSE_ALifeGraphPoint::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	tNetPacket.r_stringZ(m_caConnectionPointName);
-	if (m_wVersion < 33)
+	if(m_wVersion < 33)
 		tNetPacket.r_u32();
 	else
 		tNetPacket.r_stringZ(m_caConnectionLevelName);
@@ -336,11 +336,11 @@ void CSE_ALifeObject::STATE_Write(NET_Packet& tNetPacket)
 
 void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-	if (m_wVersion >= 1)
+	if(m_wVersion >= 1)
 	{
-		if (m_wVersion > 24)
+		if(m_wVersion > 24)
 		{
-			if (m_wVersion < 83)
+			if(m_wVersion < 83)
 			{
 				tNetPacket.r_float(); // m_spawn_probability);
 			}
@@ -354,11 +354,11 @@ void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
 			m_spawn_probability	= (float)l_ucTemp;
 			/**/
 		}
-		if (m_wVersion < 83)
+		if(m_wVersion < 83)
 		{
 			tNetPacket.r_u32();
 		}
-		if (m_wVersion < 4)
+		if(m_wVersion < 4)
 		{
 			u16 wDummy;
 			tNetPacket.r_u16(wDummy);
@@ -366,41 +366,41 @@ void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
 		tNetPacket.r(&m_tGraphID, sizeof(m_tGraphID));
 		tNetPacket.r_float(m_fDistance);
 	}
-	if (m_wVersion >= 4)
+	if(m_wVersion >= 4)
 	{
 		u32 dwDummy;
 		tNetPacket.r_u32(dwDummy);
 		m_bDirectControl = !!dwDummy;
 	}
 
-	if (m_wVersion >= 8)
+	if(m_wVersion >= 8)
 		tNetPacket.r_u32(m_tNodeID);
 
-	if ((m_wVersion > 22) && (m_wVersion <= 79))
+	if((m_wVersion > 22) && (m_wVersion <= 79))
 		tNetPacket.r(&m_tSpawnID, sizeof(m_tSpawnID));
 
-	if ((m_wVersion > 23) && (m_wVersion < 84))
+	if((m_wVersion > 23) && (m_wVersion < 84))
 	{
 		shared_str temp;
 		tNetPacket.r_stringZ(temp); // m_spawn_control);
 	}
 
-	if (m_wVersion > 49)
+	if(m_wVersion > 49)
 	{
 		tNetPacket.r_u32(m_flags.flags);
 	}
 
-	if (m_wVersion > 57)
+	if(m_wVersion > 57)
 	{
-		if (m_ini_file)
+		if(m_ini_file)
 			xr_delete(m_ini_file);
 		tNetPacket.r_stringZ(m_ini_string);
 	}
 
-	if (m_wVersion > 61)
+	if(m_wVersion > 61)
 		tNetPacket.r(&m_story_id, sizeof(m_story_id));
 
-	if (m_wVersion > 111)
+	if(m_wVersion > 111)
 		tNetPacket.r(&m_spawn_story_id, sizeof(m_spawn_story_id));
 }
 
@@ -408,13 +408,13 @@ void CSE_ALifeObject::UPDATE_Write(NET_Packet& tNetPacket)
 {
 }
 
-void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket){};
+void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket) {};
 
 void CSE_ALifeObject::FillProps(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps(pref, items);
 	PHelper().CreateRText(items, PrepareKey(pref, *s_name, "Custom data"), &m_ini_string);
-	if (m_flags.is(flUseSwitches))
+	if(m_flags.is(flUseSwitches))
 	{
 		PHelper().CreateFlag32(items, PrepareKey(pref, *s_name, "ALife\\Can switch online"), &m_flags, flSwitchOnline);
 		PHelper().CreateFlag32(items, PrepareKey(pref, *s_name, "ALife\\Can switch offline"), &m_flags,
@@ -531,7 +531,7 @@ void CSE_ALifeGroupAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 	tNetPacket.r_u32(dwDummy);
 	m_bCreateSpawnPositions = !!dwDummy;
 	tNetPacket.r_u16(m_wCount);
-	if (m_wVersion > 19)
+	if(m_wVersion > 19)
 		load_data(m_tpMembers, tNetPacket);
 };
 
@@ -604,7 +604,7 @@ void CSE_ALifeDynamicObject::FillProps(LPCSTR pref, PropItemVec& values)
 CSE_ALifeDynamicObjectVisual::CSE_ALifeDynamicObjectVisual(LPCSTR caSection)
 	: CSE_ALifeDynamicObject(caSection), CSE_Visual()
 {
-	if (pSettings->line_exist(caSection, "visual"))
+	if(pSettings->line_exist(caSection, "visual"))
 		set_visual(pSettings->r_string(caSection, "visual"));
 }
 
@@ -626,7 +626,7 @@ void CSE_ALifeDynamicObjectVisual::STATE_Write(NET_Packet& tNetPacket)
 void CSE_ALifeDynamicObjectVisual::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited1::STATE_Read(tNetPacket, size);
-	if (m_wVersion > 31)
+	if(m_wVersion > 31)
 		visual_read(tNetPacket, m_wVersion);
 }
 
@@ -663,7 +663,7 @@ CSE_ALifePHSkeletonObject::~CSE_ALifePHSkeletonObject()
 void CSE_ALifePHSkeletonObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited1::STATE_Read(tNetPacket, size);
-	if (m_wVersion >= 64)
+	if(m_wVersion >= 64)
 		inherited2::STATE_Read(tNetPacket, size);
 }
 
@@ -741,7 +741,7 @@ void CSE_ALifeSpaceRestrictor::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited1::STATE_Read(tNetPacket, size);
 	cform_read(tNetPacket);
-	if (m_wVersion > 74)
+	if(m_wVersion > 74)
 		m_space_restrictor_type = tNetPacket.r_u8();
 }
 
@@ -801,7 +801,7 @@ CSE_ALifeLevelChanger::~CSE_ALifeLevelChanger()
 void CSE_ALifeLevelChanger::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited::STATE_Read(tNetPacket, size);
-	if (m_wVersion < 34)
+	if(m_wVersion < 34)
 	{
 		tNetPacket.r_u32();
 		tNetPacket.r_u32();
@@ -813,7 +813,7 @@ void CSE_ALifeLevelChanger::STATE_Read(NET_Packet& tNetPacket, u16 size)
 		tNetPacket.r_float(m_tNextPosition.x);
 		tNetPacket.r_float(m_tNextPosition.y);
 		tNetPacket.r_float(m_tNextPosition.z);
-		if (m_wVersion <= 53)
+		if(m_wVersion <= 53)
 			m_tAngles.set(0.f, tNetPacket.r_float(), 0.f);
 		else
 			tNetPacket.r_vec3(m_tAngles);
@@ -821,7 +821,7 @@ void CSE_ALifeLevelChanger::STATE_Read(NET_Packet& tNetPacket, u16 size)
 	tNetPacket.r_stringZ(m_caLevelToChange);
 	tNetPacket.r_stringZ(m_caLevelPointToChange);
 
-	if (m_wVersion > 116)
+	if(m_wVersion > 116)
 		m_bSilentMode = !!tNetPacket.r_u8();
 }
 
@@ -871,7 +871,7 @@ CSE_ALifeObjectPhysic::CSE_ALifeObjectPhysic(LPCSTR caSection)
 	type = epotSkeleton;
 	mass = 10.f;
 
-	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
+	if(pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
 		set_visual(pSettings->r_string(caSection, "visual"));
 
 	m_flags.set(flUseSwitches, FALSE);
@@ -885,11 +885,11 @@ CSE_ALifeObjectPhysic::~CSE_ALifeObjectPhysic()
 
 void CSE_ALifeObjectPhysic::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-	if (m_wVersion >= 14)
-		if (m_wVersion >= 16)
+	if(m_wVersion >= 14)
+		if(m_wVersion >= 16)
 		{
 			inherited1::STATE_Read(tNetPacket, size);
-			if (m_wVersion < 32)
+			if(m_wVersion < 32)
 				visual_read(tNetPacket, m_wVersion);
 		}
 		else
@@ -898,27 +898,27 @@ void CSE_ALifeObjectPhysic::STATE_Read(NET_Packet& tNetPacket, u16 size)
 			visual_read(tNetPacket, m_wVersion);
 		}
 
-	if (m_wVersion >= 64)
+	if(m_wVersion >= 64)
 		inherited2::STATE_Read(tNetPacket, size);
 
 	tNetPacket.r_u32(type);
 	tNetPacket.r_float(mass);
 
-	if (m_wVersion > 9)
+	if(m_wVersion > 9)
 		tNetPacket.r_stringZ(fixed_bones);
 
-	if (m_wVersion < 65 && m_wVersion > 28)
+	if(m_wVersion < 65 && m_wVersion > 28)
 		tNetPacket.r_stringZ(startup_animation);
 
-	if (m_wVersion < 64)
+	if(m_wVersion < 64)
 	{
-		if (m_wVersion > 39) // > 39
+		if(m_wVersion > 39) // > 39
 			tNetPacket.r_u8(_flags.flags);
 
-		if (m_wVersion > 56)
+		if(m_wVersion > 56)
 			tNetPacket.r_u16(source_id);
 
-		if (m_wVersion > 60 && _flags.test(flSavedData))
+		if(m_wVersion > 60 && _flags.test(flSavedData))
 		{
 			data_load(tNetPacket);
 		}
@@ -1011,14 +1011,14 @@ CSE_ALifeObjectHangingLamp::~CSE_ALifeObjectHangingLamp()
 
 void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-	if (m_wVersion > 20)
+	if(m_wVersion > 20)
 		inherited1::STATE_Read(tNetPacket, size);
-	if (m_wVersion >= 69)
+	if(m_wVersion >= 69)
 		inherited2::STATE_Read(tNetPacket, size);
-	if (m_wVersion < 32)
+	if(m_wVersion < 32)
 		visual_read(tNetPacket, m_wVersion);
 
-	if (m_wVersion < 49)
+	if(m_wVersion < 49)
 	{
 		shared_str s_tmp;
 		float f_tmp;
@@ -1029,29 +1029,29 @@ void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
 		tNetPacket.r_stringZ(s_tmp);
 		tNetPacket.r_float(range);
 		tNetPacket.r_angle8(f_tmp);
-		if (m_wVersion > 10)
+		if(m_wVersion > 10)
 			tNetPacket.r_float(brightness);
-		if (m_wVersion > 11)
+		if(m_wVersion > 11)
 			tNetPacket.r_u16(flags.flags);
-		if (m_wVersion > 12)
+		if(m_wVersion > 12)
 			tNetPacket.r_float(f_tmp);
-		if (m_wVersion > 17)
+		if(m_wVersion > 17)
 			tNetPacket.r_stringZ(startup_animation);
 
 		set_editor_flag(flVisualAnimationChange);
 
-		if (m_wVersion > 42)
+		if(m_wVersion > 42)
 		{
 			tNetPacket.r_stringZ(s_tmp);
 			tNetPacket.r_float(f_tmp);
 		}
 
-		if (m_wVersion > 43)
+		if(m_wVersion > 43)
 		{
 			tNetPacket.r_stringZ(fixed_bones);
 		}
 
-		if (m_wVersion > 44)
+		if(m_wVersion > 44)
 		{
 			tNetPacket.r_float(m_health);
 		}
@@ -1069,7 +1069,7 @@ void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
 		tNetPacket.r_stringZ(fixed_bones);
 		tNetPacket.r_float(m_health);
 	}
-	if (m_wVersion > 55)
+	if(m_wVersion > 55)
 	{
 		tNetPacket.r_float(m_virtual_size);
 		tNetPacket.r_float(m_ambient_radius);
@@ -1081,7 +1081,7 @@ void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
 		tNetPacket.r_stringZ(glow_texture);
 		tNetPacket.r_float(glow_radius);
 	}
-	if (m_wVersion > 96)
+	if(m_wVersion > 96)
 	{
 		tNetPacket.r_stringZ(light_ambient_bone);
 	}
@@ -1166,11 +1166,11 @@ void CSE_ALifeObjectHangingLamp::FillProps(LPCSTR pref, PropItemVec& values)
 						   "lights");
 	PHelper().CreateChoose(values, PrepareKey(pref, *s_name, "Light\\Main\\Bone"), &light_main_bone, smSkeletonBones, 0,
 						   (void*)visual()->get_visual());
-	if (flags.is(flTypeSpot))
+	if(flags.is(flTypeSpot))
 		PHelper().CreateAngle(values, PrepareKey(pref, *s_name, "Light\\Main\\Cone Angle"), &spot_cone_angle,
 							  deg2rad(1.f), deg2rad(120.f));
 
-	if (flags.is(flPointAmbient))
+	if(flags.is(flPointAmbient))
 	{
 		PHelper().CreateFloat(values, PrepareKey(pref, *s_name, "Light\\Ambient\\Radius"), &m_ambient_radius, 0.f,
 							  1000.f);
@@ -1196,20 +1196,20 @@ void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner
 										   const fmat4x4& parent, int priority, bool strictB2F)
 {
 	inherited1::on_render(du, owner, bSelected, parent, priority, strictB2F);
-	if ((1 == priority) && (false == strictB2F))
+	if((1 == priority) && (false == strictB2F))
 	{
 		u32 clr = bSelected ? 0x00FFFFFF : 0x00FFFF00;
 		fmat4x4 main_transform, ambient_transform;
 		owner->get_bone_transform(*light_main_bone, main_transform);
 		main_transform.mulA_43(parent);
-		if (flags.is(flPointAmbient))
+		if(flags.is(flPointAmbient))
 		{
 			owner->get_bone_transform(*light_ambient_bone, ambient_transform);
 			ambient_transform.mulA_43(parent);
 		}
-		if (bSelected)
+		if(bSelected)
 		{
-			if (flags.is(flTypeSpot))
+			if(flags.is(flTypeSpot))
 			{
 				du->DrawSpotLight(main_transform.c, main_transform.k, range, spot_cone_angle, clr);
 			}
@@ -1217,11 +1217,11 @@ void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner
 			{
 				du->DrawLineSphere(main_transform.c, range, clr, true);
 			}
-			if (flags.is(flPointAmbient))
+			if(flags.is(flPointAmbient))
 				du->DrawLineSphere(ambient_transform.c, m_ambient_radius, clr, true);
 		}
 		du->DrawPointLight(main_transform.c, VIS_RADIUS, clr);
-		if (flags.is(flPointAmbient))
+		if(flags.is(flPointAmbient))
 			du->DrawPointLight(ambient_transform.c, VIS_RADIUS, clr);
 	}
 }
@@ -1233,7 +1233,7 @@ bool CSE_ALifeObjectHangingLamp::used_ai_locations() const
 
 bool CSE_ALifeObjectHangingLamp::validate()
 {
-	if (flags.test(flR1) || flags.test(flR2))
+	if(flags.test(flR1) || flags.test(flR2))
 		return (true);
 
 	Msg("! Render type is not set properly!");
@@ -1374,7 +1374,7 @@ void CSE_ALifeHelicopter::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited1::STATE_Read(tNetPacket, size);
 	CSE_Motion::motion_read(tNetPacket);
-	if (m_wVersion >= 69)
+	if(m_wVersion >= 69)
 		inherited3::STATE_Read(tNetPacket, size);
 	tNetPacket.r_stringZ(startup_animation);
 	tNetPacket.r_stringZ(engine_sound);
@@ -1433,7 +1433,7 @@ bool CSE_ALifeHelicopter::used_ai_locations() const
 CSE_ALifeCar::CSE_ALifeCar(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection), CSE_PHSkeleton(caSection)
 {
 
-	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
+	if(pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
 		set_visual(pSettings->r_string(caSection, "visual"));
 	m_flags.set(flUseSwitches, FALSE);
 	m_flags.set(flSwitchOffline, FALSE);
@@ -1448,13 +1448,13 @@ void CSE_ALifeCar::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited1::STATE_Read(tNetPacket, size);
 
-	if (m_wVersion > 65)
+	if(m_wVersion > 65)
 		inherited2::STATE_Read(tNetPacket, size);
-	if ((m_wVersion > 52) && (m_wVersion < 55))
+	if((m_wVersion > 52) && (m_wVersion < 55))
 		tNetPacket.r_float();
-	if (m_wVersion > 92)
+	if(m_wVersion > 92)
 		health = tNetPacket.r_float();
-	if (health > 1.0f)
+	if(health > 1.0f)
 		health /= 100.0f;
 }
 
@@ -1503,7 +1503,7 @@ void CSE_ALifeCar::data_load(NET_Packet& tNetPacket)
 	tNetPacket.r_vec3(o_Angle);
 	door_states.clear();
 	u16 doors_number = tNetPacket.r_u16();
-	for (u16 i = 0; i < doors_number; ++i)
+	for(u16 i = 0; i < doors_number; ++i)
 	{
 		SDoorState ds;
 		ds.read(tNetPacket);
@@ -1512,7 +1512,7 @@ void CSE_ALifeCar::data_load(NET_Packet& tNetPacket)
 
 	wheel_states.clear();
 	u16 wheels_number = tNetPacket.r_u16();
-	for (u16 i = 0; i < wheels_number; ++i)
+	for(u16 i = 0; i < wheels_number; ++i)
 	{
 		SWheelState ws;
 		ws.read(tNetPacket);
@@ -1529,7 +1529,7 @@ void CSE_ALifeCar::data_save(NET_Packet& tNetPacket)
 	{
 		tNetPacket.w_u16(u16(door_states.size()));
 		xr_vector<SDoorState>::iterator i = door_states.begin(), e = door_states.end();
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 		{
 			i->write(tNetPacket);
 		}
@@ -1538,7 +1538,7 @@ void CSE_ALifeCar::data_save(NET_Packet& tNetPacket)
 	{
 		tNetPacket.w_u16(u16(wheel_states.size()));
 		xr_vector<SWheelState>::iterator i = wheel_states.begin(), e = wheel_states.end();
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 		{
 			i->write(tNetPacket);
 		}
@@ -1647,9 +1647,9 @@ ISE_Shape* CSE_ALifeObjectClimable::shape()
 void CSE_ALifeObjectClimable::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	// inherited1::STATE_Read		(tNetPacket,size);
-	if (m_wVersion == 99)
+	if(m_wVersion == 99)
 		CSE_ALifeObject::STATE_Read(tNetPacket, size);
-	if (m_wVersion > 99)
+	if(m_wVersion > 99)
 		inherited2::STATE_Read(tNetPacket, size);
 	cform_read(tNetPacket);
 }

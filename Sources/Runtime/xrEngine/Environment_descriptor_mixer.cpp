@@ -42,12 +42,12 @@ void CEnvDescriptorMixer::clear()
 
 int get_ref_count(IUnknown* ii);
 
-void CEnvDescriptorMixer::lerp( CEnvironment* env, 
-								CEnvDescriptor& A, 
-								CEnvDescriptor& B, 
-								float f, 
-								CEnvModifier& Mdf,
-							    float modifier_power )
+void CEnvDescriptorMixer::lerp(CEnvironment* env,
+							   CEnvDescriptor& A,
+							   CEnvDescriptor& B,
+							   float f,
+							   CEnvModifier& Mdf,
+							   float modifier_power)
 {
 	// Макрос для интерполяции обычных чисел (float)
 	// Разворачивается в: variable = (1-f)*A.variable + f*B.variable
@@ -85,12 +85,12 @@ void CEnvDescriptorMixer::lerp( CEnvironment* env,
 
 	// Fog Color
 	LERP_VEC(fog_color);
-	if (Mdf.use_flags.test(eFogColor))
+	if(Mdf.use_flags.test(eFogColor))
 		fog_color.add(Mdf.fog_color).mul(modif_power);
 
 	// Fog Density
 	LERP(fog_density);
-	if (Mdf.use_flags.test(eFogDensity))
+	if(Mdf.use_flags.test(eFogDensity))
 	{
 		fog_density += Mdf.fog_density;
 		fog_density *= modif_power;
@@ -137,17 +137,17 @@ void CEnvDescriptorMixer::lerp( CEnvironment* env,
 
 	// Sky Color
 	LERP_VEC(sky_color);
-	if (Mdf.use_flags.test(eSkyColor))
+	if(Mdf.use_flags.test(eSkyColor))
 		sky_color.add(Mdf.sky_color).mul(modif_power);
 
 	// Ambient
 	LERP_VEC(ambient);
-	if (Mdf.use_flags.test(eAmbientColor))
+	if(Mdf.use_flags.test(eAmbientColor))
 		ambient.add(Mdf.ambient).mul(modif_power);
 
 	// Hemi
 	LERP_VEC(hemi_color);
-	if (Mdf.use_flags.test(eHemiColor))
+	if(Mdf.use_flags.test(eHemiColor))
 	{
 		hemi_color.x += Mdf.hemi_color.x;
 		hemi_color.y += Mdf.hemi_color.y;

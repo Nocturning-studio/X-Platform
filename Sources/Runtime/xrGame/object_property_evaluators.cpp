@@ -53,7 +53,7 @@ CObjectPropertyEvaluatorAmmo::CObjectPropertyEvaluatorAmmo(CWeapon* item, CAI_St
 
 CObjectPropertyEvaluatorAmmo::_value_type CObjectPropertyEvaluatorAmmo::evaluate()
 {
-	if (!m_ammo_type)
+	if(!m_ammo_type)
 		return (_value_type(!!(m_item->GetAmmoCurrent() - m_item->GetAmmoElapsed())));
 	else
 		return (_value_type(false));
@@ -70,7 +70,7 @@ CObjectPropertyEvaluatorEmpty::CObjectPropertyEvaluatorEmpty(CWeapon* item, CAI_
 
 CObjectPropertyEvaluatorEmpty::_value_type CObjectPropertyEvaluatorEmpty::evaluate()
 {
-	if (!m_ammo_type)
+	if(!m_ammo_type)
 		return (_value_type(!m_item->GetAmmoElapsed()));
 	else
 		return (_value_type(false));
@@ -87,7 +87,7 @@ CObjectPropertyEvaluatorFull::CObjectPropertyEvaluatorFull(CWeapon* item, CAI_St
 
 CObjectPropertyEvaluatorFull::_value_type CObjectPropertyEvaluatorFull::evaluate()
 {
-	if (!m_ammo_type)
+	if(!m_ammo_type)
 		return (_value_type(m_item->GetAmmoElapsed() == m_item->GetAmmoMagSize()));
 	else
 		return (_value_type(false));
@@ -104,7 +104,7 @@ CObjectPropertyEvaluatorReady::CObjectPropertyEvaluatorReady(CWeapon* item, CAI_
 
 CObjectPropertyEvaluatorReady::_value_type CObjectPropertyEvaluatorReady::evaluate()
 {
-	if (!m_ammo_type)
+	if(!m_ammo_type)
 		//		return		(_value_type(!m_item->IsMisfire() && m_item->GetAmmoElapsed()));
 		return (_value_type(!m_item->IsMisfire() &&
 							(m_item->GetAmmoElapsed() && (m_item->GetState() != CWeapon::eReload))));
@@ -138,13 +138,13 @@ CObjectPropertyEvaluatorNoItems::CObjectPropertyEvaluatorNoItems(CAI_Stalker* ow
 
 CObjectPropertyEvaluatorNoItems::_value_type CObjectPropertyEvaluatorNoItems::evaluate()
 {
-	if (!object().inventory().ActiveItem())
+	if(!object().inventory().ActiveItem())
 		return (true);
 
-	if (object().inventory().ActiveItem()->IsHidden())
+	if(object().inventory().ActiveItem()->IsHidden())
 		return (true);
 
-	if (object().inventory().ActiveItem()->IsShowing())
+	if(object().inventory().ActiveItem()->IsShowing())
 		return (true);
 
 	return (false);

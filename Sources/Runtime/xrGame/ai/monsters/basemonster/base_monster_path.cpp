@@ -34,7 +34,7 @@ bool CBaseMonster::GetCorpseCover(fvec3& position, u32& vertex_id)
 {
 	m_corpse_cover_evaluator->setup(10.f, 50.f);
 	const CCoverPoint* point = ai().cover_manager().best_cover(Position(), 30.f, *m_corpse_cover_evaluator);
-	if (!point)
+	if(!point)
 		return false;
 
 	position = point->m_position;
@@ -46,7 +46,7 @@ bool CBaseMonster::GetCoverFromEnemy(const fvec3& enemy_pos, fvec3& position, u3
 {
 	m_enemy_cover_evaluator->setup(enemy_pos, 30.f, 50.f);
 	const CCoverPoint* point = ai().cover_manager().best_cover(Position(), 40.f, *m_enemy_cover_evaluator);
-	if (!point)
+	if(!point)
 		return false;
 
 	position = point->m_position;
@@ -59,7 +59,7 @@ bool CBaseMonster::GetCoverFromPoint(const fvec3& pos, fvec3& position, u32& ver
 {
 	m_enemy_cover_evaluator->setup(pos, min_dist, max_dist);
 	const CCoverPoint* point = ai().cover_manager().best_cover(Position(), radius, *m_enemy_cover_evaluator);
-	if (!point)
+	if(!point)
 		return false;
 
 	position = point->m_position;
@@ -72,7 +72,7 @@ bool CBaseMonster::GetCoverCloseToPoint(const fvec3& dest_pos, float min_dist, f
 {
 	m_cover_evaluator_close_point->setup(dest_pos, min_dist, max_dist, deviation);
 	const CCoverPoint* point = ai().cover_manager().best_cover(Position(), radius, *m_cover_evaluator_close_point);
-	if (!point)
+	if(!point)
 		return false;
 
 	position = point->m_position;

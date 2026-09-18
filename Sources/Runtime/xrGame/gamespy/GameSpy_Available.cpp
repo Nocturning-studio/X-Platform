@@ -9,7 +9,7 @@ CGameSpy_Available::CGameSpy_Available()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 	//-----------------------------------------------
@@ -24,7 +24,7 @@ CGameSpy_Available::CGameSpy_Available(HMODULE hGameSpyDLL)
 
 CGameSpy_Available::~CGameSpy_Available()
 {
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -44,18 +44,20 @@ bool CGameSpy_Available::CheckAvailableServices(shared_str& resultstr)
 	GSIACResult result;
 	xrGS_GSIStartAvailableCheck();
 
-	while ((result = xrGS_GSIAvailableCheckThink()) == GSIACWaiting)
+	while((result = xrGS_GSIAvailableCheckThink()) == GSIACWaiting)
 		xrGS_msleep(5);
 
-	if (result != GSIACAvailable)
+	if(result != GSIACAvailable)
 	{
-		switch (result)
+		switch(result)
 		{
-		case GSIACUnavailable: {
+		case GSIACUnavailable:
+		{
 			resultstr = "! Online Services for STALKER are no longer available.";
 		}
 		break;
-		case GSIACTemporarilyUnavailable: {
+		case GSIACTemporarilyUnavailable:
+		{
 			resultstr = "! Online Services for STALKER are temporarily down for maintenance.";
 		}
 		break;

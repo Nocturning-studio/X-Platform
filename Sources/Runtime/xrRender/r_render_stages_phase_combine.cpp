@@ -13,10 +13,10 @@ void CRender::combine_additional_postprocess()
 
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
 	RenderBackend.set_Constant("cas_params", ps_cas_contrast, ps_cas_sharpening, 0, 0);
-	RenderBackend.set_Constant("bloom_parameters",  ps_r_bloom_threshold, 
-												ps_r_bloom_brightness, 
-												ps_r_bloom_blades_threshold, 
-												ps_r_bloom_blades_brightness);
+	RenderBackend.set_Constant("bloom_parameters", ps_r_bloom_threshold,
+							   ps_r_bloom_brightness,
+							   ps_r_bloom_blades_threshold,
+							   ps_r_bloom_blades_brightness);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ void CRender::precombine_scene()
 
 	float additional_ambient = 0.0f;
 
-	if (g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
+	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
 		additional_ambient = 0.5f;
 
 	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
@@ -73,37 +73,37 @@ void CRender::combine_scene_lighting()
 
 	float additional_ambient = 0.0f;
 
-	if (g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
+	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
 		additional_ambient = 0.5f;
 
 	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
 
 	const float minamb = 0.001f;
-	fvec4 ambclr = {	_max(sRgbToLinear(envdesc->ambient.x), minamb),
-						_max(sRgbToLinear(envdesc->ambient.y), minamb),
-						_max(sRgbToLinear(envdesc->ambient.z), minamb), 
-						ps_r_ao_brightness};
+	fvec4 ambclr = {_max(sRgbToLinear(envdesc->ambient.x), minamb),
+					_max(sRgbToLinear(envdesc->ambient.y), minamb),
+					_max(sRgbToLinear(envdesc->ambient.z), minamb),
+					ps_r_ao_brightness};
 
-	fvec4 envclr = {	sRgbToLinear(envdesc->hemi_color.x), 
-						sRgbToLinear(envdesc->hemi_color.y),
-						sRgbToLinear(envdesc->hemi_color.z), 
-						envdesc->weight};
+	fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x),
+					sRgbToLinear(envdesc->hemi_color.y),
+					sRgbToLinear(envdesc->hemi_color.z),
+					envdesc->weight};
 
 	IDirect3DBaseTexture9* e0 = nullptr;
 	IDirect3DBaseTexture9* e1 = nullptr;
 
-	if (envdesc->sky_irradiance_0)
+	if(envdesc->sky_irradiance_0)
 		e0 = envdesc->sky_irradiance_0->surface_get();
-	if (envdesc->sky_irradiance_1)
+	if(envdesc->sky_irradiance_1)
 		e1 = envdesc->sky_irradiance_1->surface_get();
 
-	if (e0)
+	if(e0)
 	{
 		RenderTarget->t_irradiance_map_0->surface_set(e0);
 		_RELEASE(e0);
 	}
 
-	if (e1)
+	if(e1)
 	{
 		RenderTarget->t_irradiance_map_1->surface_set(e1);
 		_RELEASE(e1);
@@ -119,53 +119,53 @@ void CRender::combine_scene_lighting()
 	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], RenderBackend.GetBaseZB());
 	//
-//#ifdef DEBUG
-//	RenderBackend.set_CullMode(CULL_BACKFACE);
-//	static xr_vector<Fplane> saved_dbg_planes;
-//	if (bDebug)
-//		saved_dbg_planes = dbg_planes;
-//	else
-//		dbg_planes = saved_dbg_planes;
-//	if (1)
-//		for (u32 it = 0; it < dbg_planes.size(); it++)
-//		{
-//			Fplane& P = dbg_planes[it];
-//			fvec3 zero;
-//			zero.mul(P.n, P.d);
-//
-//			fvec3 L_dir, L_up = P.n, L_right;
-//			L_dir.set(0, 0, 1);
-//			if (_abs(L_up.dotproduct(L_dir)) > .99f)
-//				L_dir.set(1, 0, 0);
-//			L_right.crossproduct(L_up, L_dir);
-//			L_right.normalize();
-//			L_dir.crossproduct(L_right, L_up);
-//			L_dir.normalize();
-//
-//			fvec3 p0, p1, p2, p3;
-//			float sz = 100.f;
-//			p0.mad(zero, L_right, sz).mad(L_dir, sz);
-//			p1.mad(zero, L_right, sz).mad(L_dir, -sz);
-//			p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
-//			p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
-//			RenderBackend.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
-//			RenderBackend.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
-//		}
-//
-//	static xr_vector<dbg_line_t> saved_dbg_lines;
-//	if (bDebug)
-//		saved_dbg_lines = dbg_lines;
-//	else
-//		dbg_lines = saved_dbg_lines;
-//	if (1)
-//		for (u32 it = 0; it < dbg_lines.size(); it++)
-//		{
-//			RenderBackend.dbg_DrawLINE(Fidentity, dbg_lines[it].P0, dbg_lines[it].P1, dbg_lines[it].color);
-//		}
-//
-//	dbg_spheres.clear();
-//	dbg_lines.clear();
-//	dbg_planes.clear();
-//#endif
+	// #ifdef DEBUG
+	//	RenderBackend.set_CullMode(CULL_BACKFACE);
+	//	static xr_vector<Fplane> saved_dbg_planes;
+	//	if (bDebug)
+	//		saved_dbg_planes = dbg_planes;
+	//	else
+	//		dbg_planes = saved_dbg_planes;
+	//	if (1)
+	//		for (u32 it = 0; it < dbg_planes.size(); it++)
+	//		{
+	//			Fplane& P = dbg_planes[it];
+	//			fvec3 zero;
+	//			zero.mul(P.n, P.d);
+	//
+	//			fvec3 L_dir, L_up = P.n, L_right;
+	//			L_dir.set(0, 0, 1);
+	//			if (_abs(L_up.dotproduct(L_dir)) > .99f)
+	//				L_dir.set(1, 0, 0);
+	//			L_right.crossproduct(L_up, L_dir);
+	//			L_right.normalize();
+	//			L_dir.crossproduct(L_right, L_up);
+	//			L_dir.normalize();
+	//
+	//			fvec3 p0, p1, p2, p3;
+	//			float sz = 100.f;
+	//			p0.mad(zero, L_right, sz).mad(L_dir, sz);
+	//			p1.mad(zero, L_right, sz).mad(L_dir, -sz);
+	//			p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
+	//			p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
+	//			RenderBackend.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
+	//			RenderBackend.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
+	//		}
+	//
+	//	static xr_vector<dbg_line_t> saved_dbg_lines;
+	//	if (bDebug)
+	//		saved_dbg_lines = dbg_lines;
+	//	else
+	//		dbg_lines = saved_dbg_lines;
+	//	if (1)
+	//		for (u32 it = 0; it < dbg_lines.size(); it++)
+	//		{
+	//			RenderBackend.dbg_DrawLINE(Fidentity, dbg_lines[it].P0, dbg_lines[it].P1, dbg_lines[it].color);
+	//		}
+	//
+	//	dbg_spheres.clear();
+	//	dbg_lines.clear();
+	//	dbg_planes.clear();
+	// #endif
 }
 ///////////////////////////////////////////////////////////////////////////////////

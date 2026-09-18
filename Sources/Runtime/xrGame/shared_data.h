@@ -1,7 +1,8 @@
 #pragma once
 
 // Singleton template definition
-template <class T> class CSingleton
+template <class T>
+class CSingleton
 {
   private:
 	static T* _self;
@@ -24,7 +25,7 @@ template <class T> class CSingleton
 
 	static void DestroySingleton()
 	{
-		if (!_self)
+		if(!_self)
 			return;
 		Log("DestroySingleton::RefCounter:", _refcount);
 		VERIFY(_on_self_delete == false);
@@ -35,16 +36,16 @@ template <class T> class CSingleton
   public:
 	static T* Instance()
 	{
-		if (!_self)
+		if(!_self)
 			_self = xr_new<T>();
 		++_refcount;
 		return _self;
 	}
 	void FreeInst()
 	{
-		if (0 == --_refcount)
+		if(0 == --_refcount)
 		{
-			if (_on_self_delete)
+			if(_on_self_delete)
 			{
 				CSingleton<T>* ptr = this;
 				xr_delete(ptr);
@@ -53,20 +54,24 @@ template <class T> class CSingleton
 	}
 };
 
-template <class T> T* CSingleton<T>::_self = NULL;
-template <class T> int CSingleton<T>::_refcount = 0;
-template <class T> bool CSingleton<T>::_on_self_delete = true;
+template <class T>
+T* CSingleton<T>::_self = NULL;
+template <class T>
+int CSingleton<T>::_refcount = 0;
+template <class T>
+bool CSingleton<T>::_on_self_delete = true;
 
-template <class SHARED_TYPE, class KEY_TYPE> class CSharedObj : public CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>
+template <class SHARED_TYPE, class KEY_TYPE>
+class CSharedObj : public CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>
 {
 	xr_map<KEY_TYPE, SHARED_TYPE*> _shared_tab;
 	typedef typename xr_map<KEY_TYPE, SHARED_TYPE*>::iterator SHARED_DATA_MAP_IT;
 
   public:
-	CSharedObj(){};
+	CSharedObj() {};
 	virtual ~CSharedObj()
 	{
-		for (SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it)
+		for(SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it)
 		{
 			xr_delete(it->second);
 		}
@@ -80,7 +85,7 @@ template <class SHARED_TYPE, class KEY_TYPE> class CSharedObj : public CSingleto
 		SHARED_TYPE* _data;
 
 		// if not found - create appropriate shared data object
-		if (_shared_tab.end() == shared_it)
+		if(_shared_tab.end() == shared_it)
 		{
 			_data = xr_new<SHARED_TYPE>();
 			_shared_tab.insert(mk_pair(id, _data));
@@ -112,7 +117,8 @@ class CSharedResource
 	}
 };
 
-template <class SHARED_TYPE, class KEY_TYPE, bool auto_delete = true> class CSharedClass
+template <class SHARED_TYPE, class KEY_TYPE, bool auto_delete = true>
+class CSharedClass
 {
 	SHARED_TYPE* _sd;
 	CSharedObj<SHARED_TYPE, KEY_TYPE>* pSharedObj;
@@ -137,7 +143,7 @@ template <class SHARED_TYPE, class KEY_TYPE, bool auto_delete = true> class CSha
 	{
 		_sd = pSharedObj->get_shared(key);
 
-		if (!get_sd()->IsLoaded())
+		if(!get_sd()->IsLoaded())
 		{
 			load_shared(section);
 			get_sd()->SetLoad();
@@ -161,7 +167,7 @@ template <class SHARED_TYPE, class KEY_TYPE, bool auto_delete = true> class CSha
 	bool start_load_shared(KEY_TYPE key)
 	{
 		_sd = pSharedObj->get_shared(key);
-		if (get_sd()->IsLoaded())
+		if(get_sd()->IsLoaded())
 			return false;
 		return true;
 	}

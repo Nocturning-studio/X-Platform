@@ -24,10 +24,10 @@ bool CLevel::net_start_client1()
 	// name_of_server
 	string64 name_of_server = "";
 	//	strcpy						(name_of_server,*m_caClientOptions);
-	if (strchr(*m_caClientOptions, '/'))
+	if(strchr(*m_caClientOptions, '/'))
 		strncpy(name_of_server, *m_caClientOptions, strchr(*m_caClientOptions, '/') - *m_caClientOptions);
 
-	if (strchr(name_of_server, '/'))
+	if(strchr(name_of_server, '/'))
 		*strchr(name_of_server, '/') = 0;
 
 	// Startup client
@@ -42,7 +42,7 @@ bool CLevel::net_start_client1()
 
 bool CLevel::net_start_client2()
 {
-	if (psNET_direct_connect)
+	if(psNET_direct_connect)
 	{
 		Server->create_direct_client();
 	}
@@ -54,10 +54,10 @@ bool CLevel::net_start_client2()
 
 bool CLevel::net_start_client3()
 {
-	if (connected_to_server)
+	if(connected_to_server)
 	{
 		LPCSTR level_name = NULL;
-		if (psNET_direct_connect)
+		if(psNET_direct_connect)
 		{
 			level_name = ai().get_alife() ? *name() : Server->level_name(Server->GetConnectOptions()).c_str();
 		}
@@ -66,7 +66,7 @@ bool CLevel::net_start_client3()
 
 		// Determine internal level-ID
 		int level_id = Engine.LevelManager.GetLevelID(level_name);
-		if (level_id < 0)
+		if(level_id < 0)
 		{
 			Disconnect();
 			Engine.LoadingScreen->Hide();
@@ -85,7 +85,7 @@ bool CLevel::net_start_client3()
 
 bool CLevel::net_start_client4()
 {
-	if (connected_to_server)
+	if(connected_to_server)
 	{
 		// Begin spawn
 		g_pGamePersistent->LoadTitle("st_client_spawning");
@@ -101,25 +101,25 @@ bool CLevel::net_start_client4()
 		Engine.Events.Frame.Remove(g_pNetProcessor);
 		Engine.ThreadManager.LegacyFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH);
 
-		if (!psNET_direct_connect)
+		if(!psNET_direct_connect)
 		{
 			// Waiting for connection/configuration completition
 			CTimer timer_sync;
 			timer_sync.Start();
-			while (!net_isCompleted_Connect())
+			while(!net_isCompleted_Connect())
 				Sleep(5);
 			Msg("* connection sync: %d ms", timer_sync.GetElapsed_ms());
-			while (!net_isCompleted_Sync())
+			while(!net_isCompleted_Sync())
 			{
 				ClientReceive();
 				Sleep(5);
 			}
 		}
 
-		while (!game_configured)
+		while(!game_configured)
 		{
 			ClientReceive();
-			if (Server)
+			if(Server)
 				Server->Update();
 			Sleep(5);
 		}
@@ -129,10 +129,10 @@ bool CLevel::net_start_client4()
 
 bool CLevel::net_start_client5()
 {
-	if (connected_to_server)
+	if(connected_to_server)
 	{
 		// Textures
-		if (!g_dedicated_server)
+		if(!g_dedicated_server)
 		{
 			g_pGamePersistent->LoadTitle("st_loading_textures");
 			Engine.ResourceManager->DeferredLoad(FALSE);
@@ -146,10 +146,10 @@ bool CLevel::net_start_client5()
 
 bool CLevel::net_start_client6()
 {
-	if (connected_to_server)
+	if(connected_to_server)
 	{
 		// Sync
-		if (g_hud)
+		if(g_hud)
 			g_hud->OnConnected();
 
 		g_pGamePersistent->LoadTitle("st_client_synchronising");

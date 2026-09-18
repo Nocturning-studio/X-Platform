@@ -81,7 +81,7 @@ struct SBoneShape
 	}
 	bool Valid()
 	{
-		switch (type)
+		switch(type)
 		{
 		case stBox:
 			return !fis_zero(box.m_halfsize.x) && !fis_zero(box.m_halfsize.x) && !fis_zero(box.m_halfsize.x);
@@ -132,7 +132,7 @@ struct SJointIKData
 	void Export(IWriter& F)
 	{
 		F.w_u32(type);
-		for (int k = 0; k < 3; k++)
+		for(int k = 0; k < 3; k++)
 		{
 			// Kostya Slipchenko say:
 			// направление вращения в ОДЕ отличается от направления вращение в X-Ray
@@ -160,7 +160,7 @@ struct SJointIKData
 		ik_flags.flags = F.r_u32();
 		break_force = F.r_float();
 		break_torque = F.r_float();
-		if (vers > 0)
+		if(vers > 0)
 		{
 			friction = F.r_float();
 		}

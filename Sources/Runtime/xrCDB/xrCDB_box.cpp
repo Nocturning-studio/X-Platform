@@ -6,108 +6,108 @@
 using namespace CDB;
 using namespace Opcode;
 
-#define AXISTEST_X01(a, b, fa, fb)                                                                                     \
-	min = a * v0.y - b * v0.z;                                                                                         \
-	max = a * v2.y - b * v2.z;                                                                                         \
-	if (min > max)                                                                                                     \
-	{                                                                                                                  \
-		const float tmp = max;                                                                                         \
-		max = min;                                                                                                     \
-		min = tmp;                                                                                                     \
-	}                                                                                                                  \
-	rad = fa * extents.y + fb * extents.z;                                                                             \
-	if (min > rad || max < -rad)                                                                                       \
+#define AXISTEST_X01(a, b, fa, fb)         \
+	min = a * v0.y - b * v0.z;             \
+	max = a * v2.y - b * v2.z;             \
+	if(min > max)                          \
+	{                                      \
+		const float tmp = max;             \
+		max = min;                         \
+		min = tmp;                         \
+	}                                      \
+	rad = fa * extents.y + fb * extents.z; \
+	if(min > rad || max < -rad)            \
 		return FALSE;
 
 //! TO BE DOCUMENTED
-#define AXISTEST_X2(a, b, fa, fb)                                                                                      \
-	min = a * v0.y - b * v0.z;                                                                                         \
-	max = a * v1.y - b * v1.z;                                                                                         \
-	if (min > max)                                                                                                     \
-	{                                                                                                                  \
-		const float tmp = max;                                                                                         \
-		max = min;                                                                                                     \
-		min = tmp;                                                                                                     \
-	}                                                                                                                  \
-	rad = fa * extents.y + fb * extents.z;                                                                             \
-	if (min > rad || max < -rad)                                                                                       \
+#define AXISTEST_X2(a, b, fa, fb)          \
+	min = a * v0.y - b * v0.z;             \
+	max = a * v1.y - b * v1.z;             \
+	if(min > max)                          \
+	{                                      \
+		const float tmp = max;             \
+		max = min;                         \
+		min = tmp;                         \
+	}                                      \
+	rad = fa * extents.y + fb * extents.z; \
+	if(min > rad || max < -rad)            \
 		return FALSE;
 
 //! TO BE DOCUMENTED
-#define AXISTEST_Y02(a, b, fa, fb)                                                                                     \
-	min = b * v0.z - a * v0.x;                                                                                         \
-	max = b * v2.z - a * v2.x;                                                                                         \
-	if (min > max)                                                                                                     \
-	{                                                                                                                  \
-		const float tmp = max;                                                                                         \
-		max = min;                                                                                                     \
-		min = tmp;                                                                                                     \
-	}                                                                                                                  \
-	rad = fa * extents.x + fb * extents.z;                                                                             \
-	if (min > rad || max < -rad)                                                                                       \
+#define AXISTEST_Y02(a, b, fa, fb)         \
+	min = b * v0.z - a * v0.x;             \
+	max = b * v2.z - a * v2.x;             \
+	if(min > max)                          \
+	{                                      \
+		const float tmp = max;             \
+		max = min;                         \
+		min = tmp;                         \
+	}                                      \
+	rad = fa * extents.x + fb * extents.z; \
+	if(min > rad || max < -rad)            \
 		return FALSE;
 
 //! TO BE DOCUMENTED
-#define AXISTEST_Y1(a, b, fa, fb)                                                                                      \
-	min = b * v0.z - a * v0.x;                                                                                         \
-	max = b * v1.z - a * v1.x;                                                                                         \
-	if (min > max)                                                                                                     \
-	{                                                                                                                  \
-		const float tmp = max;                                                                                         \
-		max = min;                                                                                                     \
-		min = tmp;                                                                                                     \
-	}                                                                                                                  \
-	rad = fa * extents.x + fb * extents.z;                                                                             \
-	if (min > rad || max < -rad)                                                                                       \
+#define AXISTEST_Y1(a, b, fa, fb)          \
+	min = b * v0.z - a * v0.x;             \
+	max = b * v1.z - a * v1.x;             \
+	if(min > max)                          \
+	{                                      \
+		const float tmp = max;             \
+		max = min;                         \
+		min = tmp;                         \
+	}                                      \
+	rad = fa * extents.x + fb * extents.z; \
+	if(min > rad || max < -rad)            \
 		return FALSE;
 
 //! TO BE DOCUMENTED
-#define AXISTEST_Z12(a, b, fa, fb)                                                                                     \
-	min = a * v1.x - b * v1.y;                                                                                         \
-	max = a * v2.x - b * v2.y;                                                                                         \
-	if (min > max)                                                                                                     \
-	{                                                                                                                  \
-		const float tmp = max;                                                                                         \
-		max = min;                                                                                                     \
-		min = tmp;                                                                                                     \
-	}                                                                                                                  \
-	rad = fa * extents.x + fb * extents.y;                                                                             \
-	if (min > rad || max < -rad)                                                                                       \
+#define AXISTEST_Z12(a, b, fa, fb)         \
+	min = a * v1.x - b * v1.y;             \
+	max = a * v2.x - b * v2.y;             \
+	if(min > max)                          \
+	{                                      \
+		const float tmp = max;             \
+		max = min;                         \
+		min = tmp;                         \
+	}                                      \
+	rad = fa * extents.x + fb * extents.y; \
+	if(min > rad || max < -rad)            \
 		return FALSE;
 
 //! TO BE DOCUMENTED
-#define AXISTEST_Z0(a, b, fa, fb)                                                                                      \
-	min = a * v0.x - b * v0.y;                                                                                         \
-	max = a * v1.x - b * v1.y;                                                                                         \
-	if (min > max)                                                                                                     \
-	{                                                                                                                  \
-		const float tmp = max;                                                                                         \
-		max = min;                                                                                                     \
-		min = tmp;                                                                                                     \
-	}                                                                                                                  \
-	rad = fa * extents.x + fb * extents.y;                                                                             \
-	if (min > rad || max < -rad)                                                                                       \
+#define AXISTEST_Z0(a, b, fa, fb)          \
+	min = a * v0.x - b * v0.y;             \
+	max = a * v1.x - b * v1.y;             \
+	if(min > max)                          \
+	{                                      \
+		const float tmp = max;             \
+		max = min;                         \
+		min = tmp;                         \
+	}                                      \
+	rad = fa * extents.x + fb * extents.y; \
+	if(min > rad || max < -rad)            \
 		return FALSE;
 
 //! This macro quickly finds the min & max values among 3 variables
-#define FINDMINMAX(x0, x1, x2, min, max)                                                                               \
-	min = max = x0;                                                                                                    \
-	if (x1 < min)                                                                                                      \
-		min = x1;                                                                                                      \
-	if (x1 > max)                                                                                                      \
-		max = x1;                                                                                                      \
-	if (x2 < min)                                                                                                      \
-		min = x2;                                                                                                      \
-	if (x2 > max)                                                                                                      \
+#define FINDMINMAX(x0, x1, x2, min, max) \
+	min = max = x0;                      \
+	if(x1 < min)                         \
+		min = x1;                        \
+	if(x1 > max)                         \
+		max = x1;                        \
+	if(x2 < min)                         \
+		min = x2;                        \
+	if(x2 > max)                         \
 		max = x2;
 
 //! TO BE DOCUMENTED
 bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox)
 {
 	Point vmin, vmax;
-	for (udword q = 0; q <= 2; q++)
+	for(udword q = 0; q <= 2; q++)
 	{
-		if (((const float*)normal)[q] > 0.0f)
+		if(((const float*)normal)[q] > 0.0f)
 		{
 			((float*)vmin)[q] = -((const float*)maxbox)[q];
 			((float*)vmax)[q] = ((const float*)maxbox)[q];
@@ -118,15 +118,16 @@ bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox)
 			((float*)vmax)[q] = -((const float*)maxbox)[q];
 		}
 	}
-	if ((normal | vmin) + d > 0.0f)
+	if((normal | vmin) + d > 0.0f)
 		return false;
-	if ((normal | vmax) + d >= 0.0f)
+	if((normal | vmax) + d >= 0.0f)
 		return true;
 
 	return false;
 }
 
-template <bool bClass3, bool bFirst> class box_collider
+template <bool bClass3, bool bFirst>
+class box_collider
 {
   public:
 	COLLIDER* dest;
@@ -150,17 +151,17 @@ template <bool bClass3, bool bFirst> class box_collider
 	}
 	ICF bool _box(const fvec3& C, const fvec3& E)
 	{
-		if (b_max.x < C.x - E.x)
+		if(b_max.x < C.x - E.x)
 			return false;
-		if (b_max.y < C.y - E.y)
+		if(b_max.y < C.y - E.y)
 			return false;
-		if (b_max.z < C.z - E.z)
+		if(b_max.z < C.z - E.z)
 			return false;
-		if (b_min.x > C.x + E.x)
+		if(b_min.x > C.x + E.x)
 			return false;
-		if (b_min.y > C.y + E.y)
+		if(b_min.y > C.y + E.y)
 			return false;
-		if (b_min.z > C.z + E.z)
+		if(b_min.z > C.z + E.z)
 			return false;
 		return true;
 	};
@@ -176,7 +177,7 @@ template <bool bClass3, bool bFirst> class box_collider
 		float min_val, max_val;
 		// Find min_val, max_val of the triangle in x-direction, and test for overlap in X
 		FINDMINMAX(v0.x, v1.x, v2.x, min_val, max_val);
-		if (min_val > extents.x || max_val < -extents.x)
+		if(min_val > extents.x || max_val < -extents.x)
 			return false;
 
 		// Same for Y
@@ -185,7 +186,7 @@ template <bool bClass3, bool bFirst> class box_collider
 		v2.y = mLeafVerts[2].y - center.y;
 
 		FINDMINMAX(v0.y, v1.y, v2.y, min_val, max_val);
-		if (min_val > extents.y || max_val < -extents.y)
+		if(min_val > extents.y || max_val < -extents.y)
 			return false;
 
 		// Same for Z
@@ -194,7 +195,7 @@ template <bool bClass3, bool bFirst> class box_collider
 		v2.z = mLeafVerts[2].z - center.z;
 
 		FINDMINMAX(v0.z, v1.z, v2.z, min_val, max_val);
-		if (min_val > extents.z || max_val < -extents.z)
+		if(min_val > extents.z || max_val < -extents.z)
 			return false;
 
 		// 2) Test if the box intersects the plane of the triangle
@@ -204,11 +205,11 @@ template <bool bClass3, bool bFirst> class box_collider
 		const Point e1 = v2 - v1;
 		const Point normal = e0 ^ e1;
 		const float d = -normal | v0;
-		if (!planeBoxOverlap(normal, d, extents))
+		if(!planeBoxOverlap(normal, d, extents))
 			return false;
 
 		// 3) "Class III" tests
-		if (bClass3)
+		if(bClass3)
 		{
 			float rad;
 			float min, max;
@@ -257,7 +258,7 @@ template <bool bClass3, bool bFirst> class box_collider
 		mLeafVerts[2].x = v2.x;
 		mLeafVerts[2].y = v2.y;
 		mLeafVerts[2].z = v2.z;
-		if (!_tri())
+		if(!_tri())
 			return;
 		RESULT& R = dest->r_add();
 		R.id = prim;
@@ -269,21 +270,21 @@ template <bool bClass3, bool bFirst> class box_collider
 	void _stab(const AABBNoLeafNode* node)
 	{
 		// Actual box-box test
-		if (!_box((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents))
+		if(!_box((fvec3&)node->mAABB.mCenter, (fvec3&)node->mAABB.mExtents))
 			return;
 
 		// 1st chield
-		if (node->HasLeaf())
+		if(node->HasLeaf())
 			_prim(node->GetPrimitive());
 		else
 			_stab(node->GetPos());
 
 		// Early exit for "only first"
-		if (bFirst && dest->r_count())
+		if(bFirst && dest->r_count())
 			return;
 
 		// 2nd chield
-		if (node->HasLeaf2())
+		if(node->HasLeaf2())
 			_prim(node->GetPrimitive2());
 		else
 			_stab(node->GetNeg());
@@ -300,9 +301,9 @@ void COLLIDER::box_query(const MODEL* m_def, const fvec3& b_center, const fvec3&
 	r_clear();
 
 	// Binary dispatcher
-	if (box_mode & OPT_FULL_TEST)
+	if(box_mode & OPT_FULL_TEST)
 	{
-		if (box_mode & OPT_ONLYFIRST)
+		if(box_mode & OPT_ONLYFIRST)
 		{
 			box_collider<true, true> BC;
 			BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
@@ -317,7 +318,7 @@ void COLLIDER::box_query(const MODEL* m_def, const fvec3& b_center, const fvec3&
 	}
 	else
 	{
-		if (box_mode & OPT_ONLYFIRST)
+		if(box_mode & OPT_ONLYFIRST)
 		{
 			box_collider<false, true> BC;
 			BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);

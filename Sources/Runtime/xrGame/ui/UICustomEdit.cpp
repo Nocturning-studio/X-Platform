@@ -16,9 +16,9 @@ CUICustomEdit::CUICustomEdit()
 {
 	m_max_symb_count = u32(-1);
 	char l_c;
-	for (l_c = 'a'; l_c <= 'z'; ++l_c)
+	for(l_c = 'a'; l_c <= 'z'; ++l_c)
 		gs_DIK2CHR[DILetters[l_c - 'a']] = l_c;
-	for (l_c = '0'; l_c <= '9'; ++l_c)
+	for(l_c = '0'; l_c <= '9'; ++l_c)
 		gs_DIK2CHR[DILetters['z' - 'a' + l_c + 1 - '0']] = l_c;
 
 	m_bShift = false;
@@ -63,7 +63,7 @@ void CUICustomEdit::Init(float x, float y, float width, float height)
 
 void CUICustomEdit::SetLightAnim(LPCSTR lanim)
 {
-	if (lanim && xr_strlen(lanim))
+	if(lanim && xr_strlen(lanim))
 		m_lanim = LALib.FindItem(lanim);
 	else
 		m_lanim = NULL;
@@ -92,7 +92,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	//	if(pWnd == GetParent())
 	//	{
 	// кто-то другой захватил клавиатуру
-	if (msg == WINDOW_KEYBOARD_CAPTURE_LOST)
+	if(msg == WINDOW_KEYBOARD_CAPTURE_LOST)
 	{
 		m_bInputFocus = false;
 		m_iKeyPressAndHold = 0;
@@ -102,9 +102,9 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	if (m_bFocusByDbClick)
+	if(m_bFocusByDbClick)
 	{
-		if (mouse_action == WINDOW_LBUTTON_DB_CLICK && !m_bInputFocus)
+		if(mouse_action == WINDOW_LBUTTON_DB_CLICK && !m_bInputFocus)
 		{
 			GetParent()->SetKeyboardCapture(this, true);
 			m_bInputFocus = true;
@@ -114,7 +114,7 @@ bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
 		}
 	}
 
-	if (mouse_action == WINDOW_LBUTTON_DOWN && !m_bInputFocus)
+	if(mouse_action == WINDOW_LBUTTON_DOWN && !m_bInputFocus)
 	{
 		GetParent()->SetKeyboardCapture(this, true);
 		m_bInputFocus = true;
@@ -127,24 +127,24 @@ bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
 
 bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (!m_bInputFocus)
+	if(!m_bInputFocus)
 		return false;
-	if (keyboard_action == WINDOW_KEY_PRESSED)
+	if(keyboard_action == WINDOW_KEY_PRESSED)
 	{
 		m_iKeyPressAndHold = dik;
 		m_bHoldWaitMode = true;
 
-		if (KeyPressed(dik))
+		if(KeyPressed(dik))
 			return true;
 	}
-	else if (keyboard_action == WINDOW_KEY_RELEASED)
+	else if(keyboard_action == WINDOW_KEY_RELEASED)
 	{
-		if (m_iKeyPressAndHold == dik)
+		if(m_iKeyPressAndHold == dik)
 		{
 			m_iKeyPressAndHold = 0;
 			m_bHoldWaitMode = false;
 		}
-		if (KeyReleased(dik))
+		if(KeyReleased(dik))
 			return true;
 	}
 	return false;
@@ -155,7 +155,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 	xr_map<u32, char>::iterator it;
 	char out_me = 0;
 	bool bChanged = false;
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_LEFT:
 	case DIKEYBOARD_LEFT:
@@ -170,7 +170,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 		m_bShift = true;
 		break;
 	case DIK_ESCAPE:
-		if (xr_strlen(GetText()) != 0)
+		if(xr_strlen(GetText()) != 0)
 		{
 			SetText("");
 			bChanged = true;
@@ -235,7 +235,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 		it = gs_DIK2CHR.find(dik);
 
 		// нажата клавиша с буквой
-		if (gs_DIK2CHR.end() != it)
+		if(gs_DIK2CHR.end() != it)
 		{
 			AddLetter((*it).second);
 			bChanged = true;
@@ -244,23 +244,23 @@ bool CUICustomEdit::KeyPressed(int dik)
 		break;
 	}
 
-	if (m_bNumbersOnly)
+	if(m_bNumbersOnly)
 	{
-		if (strstr(m_lines.GetText(), "."))
+		if(strstr(m_lines.GetText(), "."))
 			return true;
-		if (('.' == out_me) && m_bFloatNumbers)
+		if(('.' == out_me) && m_bFloatNumbers)
 		{
 			AddChar(out_me);
 			bChanged = true;
 		}
 	}
-	else if (out_me)
+	else if(out_me)
 	{
 		AddChar(out_me);
 		bChanged = true;
 	}
 
-	if (bChanged)
+	if(bChanged)
 		GetMessageTarget()->SendMessage(this, EDIT_TEXT_CHANGED, NULL);
 
 	return true;
@@ -268,7 +268,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 
 bool CUICustomEdit::KeyReleased(int dik)
 {
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_LSHIFT:
 	case DIK_RSHIFT:
@@ -281,36 +281,36 @@ bool CUICustomEdit::KeyReleased(int dik)
 
 void CUICustomEdit::AddChar(char c)
 {
-	if (xr_strlen(m_lines.GetText()) >= m_max_symb_count)
+	if(xr_strlen(m_lines.GetText()) >= m_max_symb_count)
 		return;
 
 	float text_length = m_lines.GetFont()->SizeOf_(m_lines.GetText());
 	UI()->ClientToScreenScaledWidth(text_length);
 
-	if (!m_lines.GetTextComplexMode() && (text_length > GetWidth() - 1))
+	if(!m_lines.GetTextComplexMode() && (text_length > GetWidth() - 1))
 		return;
 
 	m_lines.AddCharAtCursor(c);
 	m_lines.ParseText();
-	if (m_lines.GetTextComplexMode())
+	if(m_lines.GetTextComplexMode())
 	{
-		if (m_lines.GetVisibleHeight() > GetHeight())
+		if(m_lines.GetVisibleHeight() > GetHeight())
 			m_lines.DelLeftChar();
 	}
 }
 
 void CUICustomEdit::AddLetter(char c)
 {
-	if (m_bNumbersOnly)
+	if(m_bNumbersOnly)
 	{
-		if ((c >= '0' && c <= '9'))
+		if((c >= '0' && c <= '9'))
 			AddChar(c);
 
 		return;
 	}
-	if (m_bShift)
+	if(m_bShift)
 	{
-		switch (c)
+		switch(c)
 		{
 		case '1':
 			c = '!';
@@ -358,17 +358,17 @@ void CUICustomEdit::AddLetter(char c)
 
 void CUICustomEdit::Update()
 {
-	if (m_bInputFocus)
+	if(m_bInputFocus)
 	{
 		static u32 last_time;
 
 		u32 cur_time = Engine.TimeManager.TimerAsync();
 
-		if (m_iKeyPressAndHold)
+		if(m_iKeyPressAndHold)
 		{
-			if (m_bHoldWaitMode)
+			if(m_bHoldWaitMode)
 			{
-				if (cur_time - last_time > HOLD_WAIT_TIME)
+				if(cur_time - last_time > HOLD_WAIT_TIME)
 				{
 					m_bHoldWaitMode = false;
 					last_time = cur_time;
@@ -376,7 +376,7 @@ void CUICustomEdit::Update()
 			}
 			else
 			{
-				if (cur_time - last_time > HOLD_REPEAT_TIME)
+				if(cur_time - last_time > HOLD_REPEAT_TIME)
 				{
 					last_time = cur_time;
 					KeyPressed(m_iKeyPressAndHold);
@@ -399,7 +399,7 @@ void CUICustomEdit::Draw()
 	GetAbsolutePos(pos);
 	m_lines.Draw(pos.x + m_textPos.x, pos.y + m_textPos.y);
 
-	if (m_bInputFocus)
+	if(m_bInputFocus)
 	{ // draw cursor here
 		fvec2 outXY;
 
@@ -438,7 +438,7 @@ const char* CUICustomEdit::GetText()
 void CUICustomEdit::Enable(bool status)
 {
 	CUIWindow::Enable(status);
-	if (!status)
+	if(!status)
 		SendMessage(this, WINDOW_KEYBOARD_CAPTURE_LOST);
 }
 

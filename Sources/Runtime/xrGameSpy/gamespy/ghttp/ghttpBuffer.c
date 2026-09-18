@@ -1,5 +1,5 @@
- /*
-GameSpy GHTTP SDK 
+/*
+GameSpy GHTTP SDK
 Dan "Mr. Pants" Schoenblum
 dan@gamespy.com
 
@@ -19,16 +19,13 @@ devsupport@gamespy.com
 #include "../common/gsCrypt.h"
 #include "../common/gsSSL.h"
 
-
 // Resize the buffer.
 /////////////////////
-GHTTPBool ghiResizeBuffer
-(
-	GHIBuffer * buffer,
-	int sizeIncrement
-)
+GHTTPBool ghiResizeBuffer(
+	GHIBuffer* buffer,
+	int sizeIncrement)
 {
-	char * tempPtr;
+	char* tempPtr;
 	int newSize;
 
 	assert(buffer);
@@ -45,7 +42,7 @@ GHTTPBool ghiResizeBuffer
 	// Reallocate with the bigger size.
 	///////////////////////////////////
 	newSize = (buffer->size + sizeIncrement);
-	tempPtr = (char *)gsirealloc(buffer->data, (unsigned int)newSize);
+	tempPtr = (char*)gsirealloc(buffer->data, (unsigned int)newSize);
 	if(!tempPtr)
 		return GHTTPFalse;
 
@@ -57,13 +54,11 @@ GHTTPBool ghiResizeBuffer
 	return GHTTPTrue;
 }
 
-GHTTPBool ghiInitBuffer
-(
-	struct GHIConnection * connection,
-	GHIBuffer * buffer,
+GHTTPBool ghiInitBuffer(
+	struct GHIConnection* connection,
+	GHIBuffer* buffer,
 	int initialSize,
-	int sizeIncrement
-)
+	int sizeIncrement)
 {
 	GHTTPBool bResult;
 
@@ -108,13 +103,11 @@ GHTTPBool ghiInitBuffer
 	return GHTTPTrue;
 }
 
-GHTTPBool ghiInitFixedBuffer
-(
-	struct GHIConnection * connection,
-	GHIBuffer * buffer,
-	char * userBuffer,
-	int size
-)
+GHTTPBool ghiInitFixedBuffer(
+	struct GHIConnection* connection,
+	GHIBuffer* buffer,
+	char* userBuffer,
+	int size)
 {
 	assert(connection);
 	assert(buffer);
@@ -151,12 +144,11 @@ GHTTPBool ghiInitFixedBuffer
 	return GHTTPTrue;
 }
 
-GHTTPBool ghiInitReadOnlyBuffer
-(
-	struct GHIConnection * connection,  // The connection.
-	GHIBuffer * buffer,  // The buffer to init.
-	const char * userBuffer,   // The user-buffer to use.
-	int size             // The size of the buffer.
+GHTTPBool ghiInitReadOnlyBuffer(
+	struct GHIConnection* connection, // The connection.
+	GHIBuffer* buffer,				  // The buffer to init.
+	const char* userBuffer,			  // The user-buffer to use.
+	int size						  // The size of the buffer.
 )
 {
 	assert(connection);
@@ -188,15 +180,13 @@ GHTTPBool ghiInitReadOnlyBuffer
 
 	// Start with user supplied data
 	//////////////////////////////
-	buffer->len = size; 
+	buffer->len = size;
 
 	return GHTTPTrue;
 }
 
-void ghiFreeBuffer
-(
-	GHIBuffer * buffer
-)
+void ghiFreeBuffer(
+	GHIBuffer* buffer)
 {
 	assert(buffer);
 
@@ -214,12 +204,10 @@ void ghiFreeBuffer
 	memset(buffer, 0, sizeof(GHIBuffer));
 }
 
-GHTTPBool ghiAppendDataToBuffer
-(
-	GHIBuffer * buffer,
-	const char * data,
-	int dataLen
-)
+GHTTPBool ghiAppendDataToBuffer(
+	GHIBuffer* buffer,
+	const char* data,
+	int dataLen)
 {
 	GHTTPBool bResult;
 	int newLen;
@@ -236,7 +224,7 @@ GHTTPBool ghiAppendDataToBuffer
 		return GHTTPFalse;
 	if(dataLen < 0)
 		return GHTTPFalse;
-	if (buffer->readOnly)
+	if(buffer->readOnly)
 		return GHTTPFalse;
 
 	// Get the string length if needed.
@@ -278,14 +266,11 @@ GHTTPBool ghiAppendDataToBuffer
 	return GHTTPTrue;
 }
 
-
 // Use sparingly. This function wraps the data in an SSL record.
-GHTTPBool ghiEncryptDataToBuffer
-(
-	GHIBuffer * buffer,
-	const char * data,
-	int dataLen
-)
+GHTTPBool ghiEncryptDataToBuffer(
+	GHIBuffer* buffer,
+	const char* data,
+	int dataLen)
 {
 	GHIEncryptionResult result;
 	int bufSpace = 0;
@@ -303,12 +288,12 @@ GHTTPBool ghiEncryptDataToBuffer
 		return GHTTPFalse;
 	if(dataLen < 0)
 		return GHTTPFalse;
-	if (buffer->readOnly)
+	if(buffer->readOnly)
 		return GHTTPFalse;
 
 	// Switch to plain text append when not using SSL
-	if (buffer->connection->encryptor.mEngine == GHTTPEncryptionEngine_None ||
-		buffer->connection->encryptor.mSessionEstablished == GHTTPFalse)
+	if(buffer->connection->encryptor.mEngine == GHTTPEncryptionEngine_None ||
+	   buffer->connection->encryptor.mSessionEstablished == GHTTPFalse)
 	{
 		return ghiAppendDataToBuffer(buffer, data, dataLen);
 	}
@@ -317,26 +302,26 @@ GHTTPBool ghiEncryptDataToBuffer
 	///////////////////////////////////
 	if(dataLen == 0)
 		dataLen = (int)strlen(data);
-	if (dataLen == 0)
+	if(dataLen == 0)
 		return GHTTPTrue; // no data and strlen == 0
 	bufSpace = buffer->size - buffer->len;
 
-	do 
-	{	
+	do
+	{
 		int fragmentLen = min(dataLen, GS_SSL_MAX_CONTENTLENGTH);
-		
+
 		// Call the encryptor function
 		//    bufSize is reduced by the number of bytes written
-		result = buffer->connection->encryptor.mEncryptFunc(buffer->connection, &buffer->connection->encryptor, 
-													&data[pos], dataLen,
-													&buffer->data[buffer->len], &bufSpace);
-		if (result == GHIEncryptionResult_BufferTooSmall)
+		result = buffer->connection->encryptor.mEncryptFunc(buffer->connection, &buffer->connection->encryptor,
+															&data[pos], dataLen,
+															&buffer->data[buffer->len], &bufSpace);
+		if(result == GHIEncryptionResult_BufferTooSmall)
 		{
-			if (ghiResizeBuffer(buffer, buffer->sizeIncrement) == GHTTPFalse)
+			if(ghiResizeBuffer(buffer, buffer->sizeIncrement) == GHTTPFalse)
 				return GHTTPFalse;
 			bufSpace = buffer->size - buffer->len;
 		}
-		else if (result == GHIEncryptionResult_Success)
+		else if(result == GHIEncryptionResult_Success)
 		{
 			// update data and buffer positions
 			pos += fragmentLen;
@@ -345,7 +330,7 @@ GHTTPBool ghiEncryptDataToBuffer
 		else
 		{
 			gsDebugFormat(GSIDebugCat_HTTP, GSIDebugType_Misc, GSIDebugLevel_WarmError,
-				"ghiEncryptDataToBuffer encountered unhandled return code: %d\r\n", result);
+						  "ghiEncryptDataToBuffer encountered unhandled return code: %d\r\n", result);
 			return GHTTPFalse;
 		}
 	} while(pos < dataLen);
@@ -353,12 +338,10 @@ GHTTPBool ghiEncryptDataToBuffer
 	return GHTTPTrue;
 }
 
-GHTTPBool ghiAppendHeaderToBuffer
-(
-	GHIBuffer * buffer,
-	const char * name,
-	const char * value
-)
+GHTTPBool ghiAppendHeaderToBuffer(
+	GHIBuffer* buffer,
+	const char* name,
+	const char* value)
 {
 	if(!ghiAppendDataToBuffer(buffer, name, 0))
 		return GHTTPFalse;
@@ -372,11 +355,9 @@ GHTTPBool ghiAppendHeaderToBuffer
 	return GHTTPTrue;
 }
 
-GHTTPBool ghiAppendCharToBuffer
-(
-	GHIBuffer * buffer,
-	int c
-)
+GHTTPBool ghiAppendCharToBuffer(
+	GHIBuffer* buffer,
+	int c)
 {
 	GHTTPBool bResult;
 	assert(buffer);
@@ -385,7 +366,7 @@ GHTTPBool ghiAppendCharToBuffer
 	//////////////
 	if(!buffer)
 		return GHTTPFalse;
-	if (buffer->readOnly)
+	if(buffer->readOnly)
 		return GHTTPFalse;
 
 	// Make sure the array is big enough.
@@ -419,11 +400,9 @@ GHTTPBool ghiAppendCharToBuffer
 	return GHTTPTrue;
 }
 
-GHTTPBool ghiAppendIntToBuffer
-(
-	GHIBuffer * buffer,
-	int i
-)
+GHTTPBool ghiAppendIntToBuffer(
+	GHIBuffer* buffer,
+	int i)
 {
 	char intValue[16];
 
@@ -432,10 +411,8 @@ GHTTPBool ghiAppendIntToBuffer
 	return ghiAppendDataToBuffer(buffer, intValue, 0);
 }
 
-void ghiResetBuffer
-(
-	GHIBuffer * buffer
-)
+void ghiResetBuffer(
+	GHIBuffer* buffer)
 {
 	assert(buffer);
 
@@ -444,19 +421,17 @@ void ghiResetBuffer
 
 	// Start with an empty string.
 	//////////////////////////////
-	if (!buffer->readOnly)
+	if(!buffer->readOnly)
 		*buffer->data = '\0';
 }
 
-GHTTPBool ghiSendBufferedData
-(
-	struct GHIConnection * connection
-)
+GHTTPBool ghiSendBufferedData(
+	struct GHIConnection* connection)
 {
 	int rcode;
 	int writeFlag;
 	int exceptFlag;
-	char * data;
+	char* data;
 	int len;
 
 	// Loop while we can send.
@@ -495,38 +470,34 @@ GHTTPBool ghiSendBufferedData
 		// Update the position.
 		///////////////////////
 		connection->sendBuffer.pos += rcode;
-	}
-	while(connection->sendBuffer.pos < connection->sendBuffer.len);
+	} while(connection->sendBuffer.pos < connection->sendBuffer.len);
 
 	return GHTTPTrue;
 }
 
-
 // Read data from a buffer
-GHTTPBool ghiReadDataFromBuffer
-(
-	GHIBuffer * bufferIn,    // the GHIBuffer to read from
-	char        bufferOut[], // the raw buffer to write to
-	int *       len          // max number of bytes to append, becomes actual length written
+GHTTPBool ghiReadDataFromBuffer(
+	GHIBuffer* bufferIn, // the GHIBuffer to read from
+	char bufferOut[],	 // the raw buffer to write to
+	int* len			 // max number of bytes to append, becomes actual length written
 )
 {
 	int bytesAvailable = 0;
-	int bytesToCopy    = 0;
-	
-	
+	int bytesToCopy = 0;
+
 	// Verify parameters
 	assert(bufferIn != NULL);
 	assert(len != NULL);
-	if (*len == 0)
+	if(*len == 0)
 		return GHTTPFalse;
 
 	// Make sure the bufferIn isn't emtpy
 	bytesAvailable = (int)bufferIn->len - bufferIn->pos;
-	if (bytesAvailable <= 0)
+	if(bytesAvailable <= 0)
 		return GHTTPFalse;
 
 	// Calculate the actual number of bytes to copy
-	bytesToCopy = min(*len-1, bytesAvailable);
+	bytesToCopy = min(*len - 1, bytesAvailable);
 
 	// Copy the bytes
 	memcpy(bufferOut, bufferIn->data + bufferIn->pos, (size_t)bytesToCopy);
@@ -538,22 +509,20 @@ GHTTPBool ghiReadDataFromBuffer
 	return GHTTPTrue;
 }
 
-
 // Read data from a buffer with a garunteed length
-GHTTPBool ghiReadDataFromBufferFixed
-(
-	GHIBuffer * bufferIn,    // the GHIBuffer to read from
-	char        bufferOut[], // the raw buffer to write to
-	int         bytesToCopy  // number of bytes to read
+GHTTPBool ghiReadDataFromBufferFixed(
+	GHIBuffer* bufferIn, // the GHIBuffer to read from
+	char bufferOut[],	 // the raw buffer to write to
+	int bytesToCopy		 // number of bytes to read
 )
 {
 	// Verify parameters
 	assert(bufferIn != NULL);
-	if (bytesToCopy == 0)
+	if(bytesToCopy == 0)
 		return GHTTPTrue;
 
 	// Make sure the bufferIn isn't too small
-	if (bufferIn->len < bytesToCopy)
+	if(bufferIn->len < bytesToCopy)
 		return GHTTPFalse;
 
 	// Copy the bytes

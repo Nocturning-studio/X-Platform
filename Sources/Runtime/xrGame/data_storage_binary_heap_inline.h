@@ -49,7 +49,7 @@ IC void CBinaryHeap::add_opened(CGraphVertex& vertex)
 {
 	VERIFY(m_heap_head <= m_heap_tail);
 	inherited::add_opened(vertex);
-	if (!*m_heap_head || ((*m_heap_head)->f() < vertex.f()))
+	if(!*m_heap_head || ((*m_heap_head)->f() < vertex.f()))
 	{
 		*m_heap_tail = &vertex;
 	}
@@ -67,7 +67,7 @@ IC void CBinaryHeap::decrease_opened(CGraphVertex& vertex, const _dist_type valu
 	VERIFY(!is_opened_empty());
 	CGraphVertex** i = m_heap_head;
 
-	for (; *i != &vertex; ++i)
+	for(; *i != &vertex; ++i)
 		;
 
 	std::push_heap(m_heap_head, i + 1, CGraphNodePredicate());

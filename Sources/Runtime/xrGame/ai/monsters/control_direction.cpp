@@ -47,8 +47,8 @@ void CControlDirection::update_frame()
 
 	// поправка угловой скорости в соответствии с текущей и таргетовой линейной скоростями
 	// heading speed correction
-	if (!fis_zero(m_man->movement().velocity_current()) && !fis_zero(m_man->movement().velocity_target()) &&
-		m_data.linear_dependency)
+	if(!fis_zero(m_man->movement().velocity_current()) && !fis_zero(m_man->movement().velocity_target()) &&
+	   m_data.linear_dependency)
 		m_heading.current_speed = m_data.heading.target_speed * m_man->movement().velocity_current() /
 								  (m_man->movement().velocity_target() + EPS_L);
 	else
@@ -58,11 +58,11 @@ void CControlDirection::update_frame()
 	m_heading.current_angle = angle_normalize(m_heading.current_angle);
 	m_data.heading.target_angle = angle_normalize(m_data.heading.target_angle);
 
-	if (fsimilar(m_heading.current_angle, m_data.heading.target_angle))
+	if(fsimilar(m_heading.current_angle, m_data.heading.target_angle))
 		heading_similar = true;
 	angle_lerp(m_heading.current_angle, m_data.heading.target_angle, m_heading.current_speed,
 			   m_object->client_update_fdelta());
-	if (!heading_similar && fsimilar(m_heading.current_angle, m_data.heading.target_angle))
+	if(!heading_similar && fsimilar(m_heading.current_angle, m_data.heading.target_angle))
 	{
 		event_data.angle |= SRotationEventData::eHeading;
 	}
@@ -74,11 +74,11 @@ void CControlDirection::update_frame()
 	m_pitch.current_angle = angle_normalize_signed(m_pitch.current_angle);
 	m_data.pitch.target_angle = angle_normalize_signed(m_data.pitch.target_angle);
 
-	if (fsimilar(m_pitch.current_angle, m_data.pitch.target_angle))
+	if(fsimilar(m_pitch.current_angle, m_data.pitch.target_angle))
 		pitch_similar = true;
 	angle_lerp(m_pitch.current_angle, m_data.pitch.target_angle, m_pitch.current_speed,
 			   m_object->client_update_fdelta());
-	if (!pitch_similar && fsimilar(m_pitch.current_angle, m_data.pitch.target_angle))
+	if(!pitch_similar && fsimilar(m_pitch.current_angle, m_data.pitch.target_angle))
 	{
 		event_data.angle |= SRotationEventData::ePitch;
 	}
@@ -93,26 +93,26 @@ void CControlDirection::update_frame()
 	// save object position
 	fvec3 P = m_object->Position();
 	// set angles
-	if (!m_object->animation_movement_controlled())
+	if(!m_object->animation_movement_controlled())
 		m_object->Transform().setHPB(-m_man->path_builder().m_body.current.yaw, -m_man->path_builder().m_body.current.pitch,
-								 0);
+									 0);
 	// restore object position
 	m_object->Position() = P;
 
 	// if there is an event
-	if (event_data.angle)
+	if(event_data.angle)
 		m_man->notify(ControlCom::eventRotationEnd, &event_data);
 }
 
 void CControlDirection::pitch_correction()
 {
-	if (!m_object->ability_pitch_correction())
+	if(!m_object->ability_pitch_correction())
 		return;
 
 	// extended feature to pitch by path (wall climbing)
 	// distance between two travel point must be more than 1.f
-	if (m_object->control().path_builder().is_moving_on_path() &&
-		(m_object->movement().detail().path().size() > m_object->movement().detail().curr_travel_point_index() + 1))
+	if(m_object->control().path_builder().is_moving_on_path() &&
+	   (m_object->movement().detail().path().size() > m_object->movement().detail().curr_travel_point_index() + 1))
 	{
 
 		const DetailPathManager::STravelPathPoint cur_point =
@@ -120,7 +120,7 @@ void CControlDirection::pitch_correction()
 		const DetailPathManager::STravelPathPoint next_point =
 			m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index() + 1];
 
-		if (cur_point.position.distance_to_sqr(next_point.position) > 1)
+		if(cur_point.position.distance_to_sqr(next_point.position) > 1)
 		{
 			// получаем искомый вектор направления
 			fvec3 target_dir;
@@ -163,7 +163,7 @@ bool CControlDirection::is_face_target(const fvec3& position, float eps_angle)
 	float target_h = fvec3().sub(position, m_object->Position()).getH();
 	float my_h = m_object->Direction().getH();
 
-	if (angle_difference(target_h, my_h) > eps_angle)
+	if(angle_difference(target_h, my_h) > eps_angle)
 		return false;
 
 	return true;

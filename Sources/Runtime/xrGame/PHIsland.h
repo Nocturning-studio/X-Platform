@@ -131,7 +131,7 @@ class CPHIsland : public dxWorld
 	}
 	IC void GoActive()
 	{
-		while (!m_self_active->m_flags.is_active())
+		while(!m_self_active->m_flags.is_active())
 			m_self_active = m_self_active->m_self_active;
 	}
 	IC void Merge(CPHIsland* island)
@@ -139,12 +139,12 @@ class CPHIsland : public dxWorld
 		// VERIFY2(b_active&&island->b_active,"no active island");
 		CPHIsland* first_island = DActiveIsland();
 		CPHIsland* second_island = island->DActiveIsland();
-		if (first_island == second_island)
+		if(first_island == second_island)
 			return;
 
 		*(second_island->m_joints_tail) = first_island->firstjoint;
 		first_island->firstjoint = second_island->firstjoint;
-		if (0 == first_island->nj && 0 != second_island->nj)
+		if(0 == first_island->nj && 0 != second_island->nj)
 		{
 			first_island->m_joints_tail = second_island->m_joints_tail;
 		}
@@ -165,7 +165,7 @@ class CPHIsland : public dxWorld
 	{
 		firstjoint = m_first_joint;
 		firstbody = m_first_body;
-		if (!m_nj)
+		if(!m_nj)
 		{
 			m_joints_tail = &firstjoint;
 			*m_joints_tail = 0;
@@ -199,7 +199,7 @@ class CPHIsland : public dxWorld
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
 		dWorldAddBody(DWorld(), body);
 		m_first_body = body;
-		if (m_nb == 0)
+		if(m_nb == 0)
 		{
 			m_bodies_tail = (dxBody**)&body->next;
 		}
@@ -208,9 +208,9 @@ class CPHIsland : public dxWorld
 	IC void RemoveBody(dxBody* body)
 	{
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
-		if (m_first_body == body)
+		if(m_first_body == body)
 			m_first_body = (dxBody*)body->next;
-		if (m_bodies_tail == (dxBody**)(&(body->next)))
+		if(m_bodies_tail == (dxBody**)(&(body->next)))
 		{
 			m_bodies_tail = (dxBody**)body->tome;
 		}
@@ -222,7 +222,7 @@ class CPHIsland : public dxWorld
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
 		dWorldAddJoint(DWorld(), joint);
 		m_first_joint = joint;
-		if (!m_nj)
+		if(!m_nj)
 		{
 			VERIFY(joint->next == 0);
 			m_joints_tail = (dxJoint**)(&(joint->next));
@@ -232,7 +232,7 @@ class CPHIsland : public dxWorld
 
 	IC void ConnectJoint(dxJoint* joint)
 	{
-		if (!nj)
+		if(!nj)
 		{
 			m_joints_tail = (dxJoint**)(&(joint->next));
 			VERIFY(!firstjoint);
@@ -257,9 +257,9 @@ class CPHIsland : public dxWorld
 	IC void RemoveJoint(dxJoint* joint)
 	{
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
-		if (m_first_joint == joint)
+		if(m_first_joint == joint)
 			m_first_joint = (dxJoint*)joint->next;
-		if (m_joints_tail == (dxJoint**)(&(joint->next)))
+		if(m_joints_tail == (dxJoint**)(&(joint->next)))
 		{
 			m_joints_tail = (dxJoint**)joint->tome;
 		}

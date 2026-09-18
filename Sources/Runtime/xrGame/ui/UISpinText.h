@@ -26,8 +26,8 @@ class CUISpinText : public CUICustomSpin
   protected:
 	virtual bool CanPressUp();
 	virtual bool CanPressDown();
-	virtual void IncVal(){};
-	virtual void DecVal(){};
+	virtual void IncVal() {};
+	virtual void DecVal() {};
 	void SetItem();
 	struct SInfo
 	{

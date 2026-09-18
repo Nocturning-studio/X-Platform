@@ -21,19 +21,19 @@ CStateMonsterHearDangerousSoundAbstract::CStateMonsterHearDangerousSound(_Object
 TEMPLATE_SPECIALIZATION
 void CStateMonsterHearDangerousSoundAbstract::reselect_state()
 {
-	if (get_state(eStateHearDangerousSound_Home)->check_start_conditions())
+	if(get_state(eStateHearDangerousSound_Home)->check_start_conditions())
 	{
 		select_state(eStateHearDangerousSound_Home);
 		return;
 	}
 
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
 		select_state(eStateHearDangerousSound_Hide);
 		return;
 	}
 
-	if (prev_substate == eStateHearDangerousSound_Hide)
+	if(prev_substate == eStateHearDangerousSound_Hide)
 	{
 		select_state(eStateHearDangerousSound_FaceOpenPlace);
 		return;
@@ -47,7 +47,7 @@ void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateHearDangerousSound_Hide)
+	if(current_substate == eStateHearDangerousSound_Hide)
 	{
 		SStateHideFromPoint data;
 
@@ -71,7 +71,7 @@ void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateHearDangerousSound_FaceOpenPlace)
+	if(current_substate == eStateHearDangerousSound_FaceOpenPlace)
 	{
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;
@@ -85,7 +85,7 @@ void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateHearDangerousSound_StandScared)
+	if(current_substate == eStateHearDangerousSound_StandScared)
 	{
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;

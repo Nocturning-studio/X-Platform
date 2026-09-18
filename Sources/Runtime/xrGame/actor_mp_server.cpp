@@ -18,7 +18,7 @@ void CSE_ActorMP::STATE_Write(NET_Packet& packet)
 
 BOOL CSE_ActorMP::Net_Relevant()
 {
-	if (fHealth <= 0)
+	if(fHealth <= 0)
 		return (false);
 	return (inherited::Net_Relevant());
 }

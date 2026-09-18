@@ -21,22 +21,22 @@ int get_texture_load_lod(LPCSTR fn)
 	CInifile::SectCIt it = it_;
 	CInifile::SectCIt it_e = it_e_;
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (strstr(fn, it->first.c_str()))
+		if(strstr(fn, it->first.c_str()))
 		{
-			if (psTextureLOD < 1)
+			if(psTextureLOD < 1)
 				return 0;
-			else if (psTextureLOD < 3)
+			else if(psTextureLOD < 3)
 				return 1;
 			else
 				return 2;
 		}
 	}
 
-	if (psTextureLOD < 2)
+	if(psTextureLOD < 2)
 		return 0;
-	else if (psTextureLOD < 4)
+	else if(psTextureLOD < 4)
 		return 1;
 	else
 		return 2;
@@ -44,13 +44,13 @@ int get_texture_load_lod(LPCSTR fn)
 
 u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)
 {
-	if (1 == mip_cnt)
+	if(1 == mip_cnt)
 		return orig_size;
 
 	int _lod = lod;
 	float res = float(orig_size);
 
-	while (_lod > 0)
+	while(_lod > 0)
 	{
 		--_lod;
 		res -= res / 1.333f;
@@ -79,13 +79,13 @@ IDirect3DBaseTexture9* CRender::TextureLoad(LPCSTR fRName, u32& ret_msize)
 	IReader* S = NULL;
 
 	// Try to find texture in multiple locations
-	if (FS.exist(fn, "$level$", fname, ".dds"))
+	if(FS.exist(fn, "$level$", fname, ".dds"))
 		goto _DDS;
-	if (FS.exist(fn, "$game_textures$", fname, ".dds"))
+	if(FS.exist(fn, "$game_textures$", fname, ".dds"))
 		goto _DDS;
-	if (FS.exist(fn, "$game_textures$", fname, ".hdr"))
+	if(FS.exist(fn, "$game_textures$", fname, ".hdr"))
 		goto _DDS;
-	if (FS.exist(fn, "$game_saves$", fname, ".dds"))
+	if(FS.exist(fn, "$game_saves$", fname, ".dds"))
 		goto _DDS;
 
 #ifdef _EDITOR
@@ -97,7 +97,8 @@ IDirect3DBaseTexture9* CRender::TextureLoad(LPCSTR fRName, u32& ret_msize)
 	goto _DDS;
 #endif
 
-_DDS : {
+_DDS:
+{
 	// Load and get header
 	D3DXIMAGE_INFO IMG;
 	S = FS.r_open(fn);
@@ -107,7 +108,7 @@ _DDS : {
 	img_size = S->length();
 	R_ASSERT(S);
 	HRESULT const result = D3DXGetImageInfoFromFileInMemory(S->pointer(), S->length(), &IMG);
-	if (FAILED(result))
+	if(FAILED(result))
 	{
 		Msg("! Can't get image info for texture '%s'", fn);
 		FS.r_close(S);
@@ -118,18 +119,19 @@ _DDS : {
 		goto _DDS;
 	}
 
-	if (IMG.ResourceType == D3DRTYPE_CUBETEXTURE)
+	if(IMG.ResourceType == D3DRTYPE_CUBETEXTURE)
 		goto _DDS_CUBE;
 	else
 		goto _DDS_2D;
 
-_DDS_CUBE : {
+_DDS_CUBE:
+{
 	HRESULT const result_cube = D3DXCreateCubeTextureFromFileInMemoryEx(
 		RenderBackend.GetDevice(), S->pointer(), S->length(), D3DX_DEFAULT, IMG.MipLevels, 0, IMG.Format, D3DPOOL_DEFAULT,
 		D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, 0, &pTextureCUBE);
 	FS.r_close(S);
 
-	if (FAILED(result_cube))
+	if(FAILED(result_cube))
 	{
 		Msg("! Can't load texture '%s'", fn);
 		string_path temp;
@@ -147,7 +149,8 @@ _DDS_CUBE : {
 	ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
 	return pTextureCUBE;
 }
-_DDS_2D : {
+_DDS_2D:
+{
 	// Load texture directly with all mip levels using D3DPOOL_DEFAULT
 	HRESULT const result_2D =
 		D3DXCreateTextureFromFileInMemoryEx(RenderBackend.GetDevice(), S->pointer(), S->length(), D3DX_DEFAULT, D3DX_DEFAULT,
@@ -157,7 +160,7 @@ _DDS_2D : {
 											D3DX_DEFAULT, D3DX_DEFAULT, 0, &IMG, 0, &pTexture2D);
 	FS.r_close(S);
 
-	if (FAILED(result_2D))
+	if(FAILED(result_2D))
 	{
 		Msg("! Can't load texture '%s'", fn);
 		string_path temp;

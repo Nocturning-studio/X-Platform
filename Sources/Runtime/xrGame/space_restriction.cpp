@@ -20,7 +20,8 @@
 
 const float dependent_distance = 100.f;
 
-template <bool a> struct CMergeInOutPredicate
+template <bool a>
+struct CMergeInOutPredicate
 {
 	SpaceRestrictionHolder::CBaseRestrictionPtr m_out;
 	SpaceRestrictionHolder::CBaseRestrictionPtr m_in;
@@ -34,7 +35,7 @@ template <bool a> struct CMergeInOutPredicate
 
 	IC bool operator()(u32 level_vertex_id) const
 	{
-		if (!m_out || !m_in)
+		if(!m_out || !m_in)
 			return (false);
 		return (a ? m_in->inside(level_vertex_id, false) : !m_out->inside(level_vertex_id, true));
 	}
@@ -58,10 +59,10 @@ struct CRemoveMergedFreeInRestrictions
 
 bool CSpaceRestriction::accessible(const Fsphere& sphere)
 {
-	if (!initialized())
+	if(!initialized())
 	{
 		initialize();
-		if (!initialized())
+		if(!initialized())
 			return (true);
 	}
 
@@ -77,10 +78,10 @@ bool CSpaceRestriction::accessible(const Fsphere& sphere)
 
 bool CSpaceRestriction::accessible(u32 level_vertex_id, float radius)
 {
-	if (!initialized())
+	if(!initialized())
 	{
 		initialize();
-		if (!initialized())
+		if(!initialized())
 			return (true);
 	}
 
@@ -93,11 +94,11 @@ IC bool CSpaceRestriction::intersects(SpaceRestrictionHolder::CBaseRestrictionPt
 {
 	xr_vector<u32>::const_iterator I = bridge1->border().begin();
 	xr_vector<u32>::const_iterator E = bridge1->border().end();
-	for (; I != E; ++I)
-		if (bridge0->inside(*I, true))
+	for(; I != E; ++I)
+		if(bridge0->inside(*I, true))
 			return (true);
 
-	if (!bridge0->border().empty() && bridge1->inside(bridge0->border().front(), true))
+	if(!bridge0->border().empty() && bridge1->inside(bridge0->border().front(), true))
 		return (true);
 
 	m_temp.resize(bridge0->border().size() + bridge1->border().size());
@@ -109,7 +110,7 @@ IC bool CSpaceRestriction::intersects(SpaceRestrictionHolder::CBaseRestrictionPt
 
 IC bool CSpaceRestriction::intersects(SpaceRestrictionHolder::CBaseRestrictionPtr bridge)
 {
-	if (!m_out_space_restriction)
+	if(!m_out_space_restriction)
 		return (false);
 
 	return (intersects(m_out_space_restriction, bridge));
@@ -117,7 +118,7 @@ IC bool CSpaceRestriction::intersects(SpaceRestrictionHolder::CBaseRestrictionPt
 
 void CSpaceRestriction::merge_in_out_restrictions()
 {
-	//OPTICK_EVENT("CSpaceRestriction::merge_in_out_restrictions");
+	// OPTICK_EVENT("CSpaceRestriction::merge_in_out_restrictions");
 	START_PROFILE("Restricted Object/Merge In-Out");
 	xr_vector<u32> temp_border;
 
@@ -126,7 +127,7 @@ void CSpaceRestriction::merge_in_out_restrictions()
 								  CMergeInOutPredicate<true>(m_out_space_restriction, m_in_space_restriction)),
 				   m_border.end());
 
-	if (m_in_space_restriction)
+	if(m_in_space_restriction)
 	{
 		temp_border = m_in_space_restriction->border();
 		temp_border.erase(std::remove_if(temp_border.begin(), temp_border.end(),
@@ -147,7 +148,7 @@ CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestriction
 	{
 		RESTRICTIONS::const_iterator I = temp_restrictions.begin();
 		RESTRICTIONS::const_iterator E = temp_restrictions.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			acc_length += xr_strlen(*(*I)->name()) + 1;
 	}
 
@@ -156,7 +157,7 @@ CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestriction
 	shared_str temp = bridge->name();
 	RESTRICTIONS::const_iterator I = temp_restrictions.begin();
 	RESTRICTIONS::const_iterator E = temp_restrictions.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		temp = strconcat(sizeof(S), S, *temp, ",", *(*I)->name());
 
 	xr_free(S);
@@ -169,7 +170,7 @@ void CSpaceRestriction::merge_free_in_retrictions()
 {
 	START_PROFILE("Restricted Object/Merge Free In");
 	string256 temp;
-	for (u32 i = 0, n = _GetItemCount(*m_in_restrictions); i < n; ++i)
+	for(u32 i = 0, n = _GetItemCount(*m_in_restrictions); i < n; ++i)
 	{
 		SpaceRestrictionHolder::CBaseRestrictionPtr bridge =
 			m_space_restriction_manager->restriction(shared_str(_GetItem(*m_in_restrictions, i, temp)));
@@ -177,20 +178,20 @@ void CSpaceRestriction::merge_free_in_retrictions()
 	}
 
 	RESTRICTIONS temp_restrictions;
-	for (bool ok = false; !ok;)
+	for(bool ok = false; !ok;)
 	{
 		ok = true;
 		temp_restrictions.clear();
 
 		FREE_IN_RESTRICTIONS::iterator I = m_free_in_restrictions.begin(), J;
 		FREE_IN_RESTRICTIONS::iterator E = m_free_in_restrictions.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			for (J = I + 1; J != E; ++J)
-				if (intersects((*I).m_restriction, (*J).m_restriction))
+			for(J = I + 1; J != E; ++J)
+				if(intersects((*I).m_restriction, (*J).m_restriction))
 					temp_restrictions.push_back((*J).m_restriction);
 
-			if (!temp_restrictions.empty())
+			if(!temp_restrictions.empty())
 			{
 				J = remove_if(m_free_in_restrictions.begin(), m_free_in_restrictions.end(),
 							  CRemoveMergedFreeInRestrictions(temp_restrictions));
@@ -211,19 +212,19 @@ void CSpaceRestriction::initialize()
 	m_out_space_restriction = m_space_restriction_manager->restriction(m_out_restrictions);
 	m_in_space_restriction = m_space_restriction_manager->restriction(m_in_restrictions);
 
-	if (!m_out_space_restriction && !m_in_space_restriction)
+	if(!m_out_space_restriction && !m_in_space_restriction)
 	{
 		m_initialized = true;
 		return;
 	}
 
-	if (m_out_space_restriction && !m_out_space_restriction->initialized())
+	if(m_out_space_restriction && !m_out_space_restriction->initialized())
 		m_out_space_restriction->initialize();
 
 #ifdef DEBUG
-	if (m_out_space_restriction)
+	if(m_out_space_restriction)
 	{
-		if (!m_out_space_restriction->object().correct())
+		if(!m_out_space_restriction->object().correct())
 		{
 			Msg("~ BAD out restrictions combination :");
 			Msg("~ %s", *m_out_space_restriction->name());
@@ -231,14 +232,14 @@ void CSpaceRestriction::initialize()
 	}
 #endif
 
-	if (m_in_space_restriction && !m_in_space_restriction->initialized())
+	if(m_in_space_restriction && !m_in_space_restriction->initialized())
 		m_in_space_restriction->initialize();
 
-	if ((m_out_space_restriction && !m_out_space_restriction->initialized()) ||
-		(m_in_space_restriction && !m_in_space_restriction->initialized()))
+	if((m_out_space_restriction && !m_out_space_restriction->initialized()) ||
+	   (m_in_space_restriction && !m_in_space_restriction->initialized()))
 		return;
 
-	if (m_out_space_restriction)
+	if(m_out_space_restriction)
 		merge_in_out_restrictions();
 #ifdef USE_FREE_IN_RESTRICTIONS
 	else
@@ -246,7 +247,7 @@ void CSpaceRestriction::initialize()
 #endif
 
 #ifdef DEBUG
-	if (!m_out_space_restriction)
+	if(!m_out_space_restriction)
 		m_border = m_in_space_restriction->border();
 #endif
 
@@ -255,14 +256,14 @@ void CSpaceRestriction::initialize()
 
 void CSpaceRestriction::remove_border()
 {
-	if (!initialized())
+	if(!initialized())
 		return;
 
 	VERIFY(m_applied);
 
 	m_applied = false;
 
-	if (m_out_space_restriction)
+	if(m_out_space_restriction)
 	{
 		ai().level_graph().clear_mask(border());
 		return;
@@ -271,8 +272,8 @@ void CSpaceRestriction::remove_border()
 #ifdef USE_FREE_IN_RESTRICTIONS
 	FREE_IN_RESTRICTIONS::iterator I = m_free_in_restrictions.begin();
 	FREE_IN_RESTRICTIONS::iterator E = m_free_in_restrictions.end();
-	for (; I != E; ++I)
-		if ((*I).m_enabled)
+	for(; I != E; ++I)
+		if((*I).m_enabled)
 		{
 			VERIFY((*I).m_restriction);
 			(*I).m_enabled = false;
@@ -285,7 +286,7 @@ void CSpaceRestriction::remove_border()
 
 u32 CSpaceRestriction::accessible_nearest(const fvec3& position, fvec3& result)
 {
-	if (m_out_space_restriction)
+	if(m_out_space_restriction)
 		return (m_out_space_restriction->accessible_nearest(m_out_space_restriction, position, result, true));
 
 	VERIFY(m_in_space_restriction);
@@ -294,7 +295,7 @@ u32 CSpaceRestriction::accessible_nearest(const fvec3& position, fvec3& result)
 
 bool CSpaceRestriction::affect(SpaceRestrictionHolder::CBaseRestrictionPtr bridge, const Fsphere& sphere) const
 {
-	if (bridge->inside(sphere))
+	if(bridge->inside(sphere))
 		return (false);
 
 	return (true);

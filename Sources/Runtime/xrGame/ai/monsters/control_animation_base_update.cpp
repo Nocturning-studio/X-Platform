@@ -109,18 +109,18 @@ void CControlAnimationBase::update_frame()
 
 void CControlAnimationBase::update()
 {
-	if (m_state_attack)
+	if(m_state_attack)
 		return;
 
 	// Установка Yaw
-	if (m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled())
+	if(m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled())
 		m_object->dir().use_path_direction(((spec_params & ASP_MOVE_BKWD) == ASP_MOVE_BKWD));
 
 	SelectAnimation();
 	SelectVelocities();
 
 	// применить
-	if (prev_motion != cur_anim_info().motion)
+	if(prev_motion != cur_anim_info().motion)
 	{
 		prev_motion = cur_anim_info().motion;
 		select_animation();
@@ -134,14 +134,14 @@ void CControlAnimationBase::update()
 void CControlAnimationBase::SelectAnimation()
 {
 	EAction action = m_tAction;
-	if (m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled())
+	if(m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled())
 		action = GetActionFromPath();
 
 	cur_anim_info().motion = m_tMotions[action].anim;
 
 	m_object->CheckSpecParams(spec_params);
-	if (prev_motion != cur_anim_info().motion)
-		if (CheckTransition(prev_motion, cur_anim_info().motion))
+	if(prev_motion != cur_anim_info().motion)
+		if(CheckTransition(prev_motion, cur_anim_info().motion))
 			return;
 
 	CheckReplacedAnim();
@@ -157,18 +157,18 @@ void CControlAnimationBase::SetTurnAnimation()
 	float delta_yaw = angle_difference(yaw_target, yaw_current);
 
 	bool turn_left = true;
-	if (from_right(yaw_target, yaw_current))
+	if(from_right(yaw_target, yaw_current))
 		turn_left = false;
 
 	EPState anim_state = GetState(cur_anim_info().motion);
-	if (IsStandCurAnim() && (anim_state == PS_STAND) && (!fis_zero(delta_yaw)))
+	if(IsStandCurAnim() && (anim_state == PS_STAND) && (!fis_zero(delta_yaw)))
 	{
 		m_object->SetTurnAnimation(turn_left);
 		return;
 	}
 
-	if (m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled() &&
-		(delta_yaw > MOVE_TURN_ANGLE))
+	if(m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled() &&
+	   (delta_yaw > MOVE_TURN_ANGLE))
 	{
 		m_object->SetTurnAnimation(turn_left);
 		return;
@@ -190,14 +190,14 @@ void CControlAnimationBase::SelectVelocities()
 	SMotionVel anim_vel;
 	anim_vel.set(0.f, 0.f);
 
-	if (b_moving)
+	if(b_moving)
 	{
 
 		u32 cur_point_velocity_index =
 			m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index()].velocity;
 
 		u32 next_point_velocity_index = u32(-1);
-		if (m_object->movement().detail().path().size() > m_object->movement().detail().curr_travel_point_index() + 1)
+		if(m_object->movement().detail().path().size() > m_object->movement().detail().curr_travel_point_index() + 1)
 			next_point_velocity_index = m_object->movement()
 											.detail()
 											.path()[m_object->movement().detail().curr_travel_point_index() + 1]
@@ -205,10 +205,10 @@ void CControlAnimationBase::SelectVelocities()
 
 		// если сейчас стоит на месте и есть след точка (т.е. должен быть в движении),
 		// то реализовать поворот на месте, а дальше форсировать скорость со следующей точки
-		if ((cur_point_velocity_index == MonsterMovement::eVelocityParameterStand) &&
-			(next_point_velocity_index != u32(-1)))
+		if((cur_point_velocity_index == MonsterMovement::eVelocityParameterStand) &&
+		   (next_point_velocity_index != u32(-1)))
 		{
-			if (!m_object->control().direction().is_turning())
+			if(!m_object->control().direction().is_turning())
 				cur_point_velocity_index = next_point_velocity_index;
 		}
 
@@ -228,7 +228,7 @@ void CControlAnimationBase::SelectVelocities()
 	//	R_ASSERT(fsimilar(path_vel.angular,	anim_vel.angular));
 
 	// установка линейной скорости
-	if (m_object->state_invisible)
+	if(m_object->state_invisible)
 	{
 		// если невидимый, то установить скорость из пути
 		m_object->move().set_velocity(_abs(path_vel.linear));
@@ -236,12 +236,12 @@ void CControlAnimationBase::SelectVelocities()
 	else
 	{
 
-		if (fis_zero(_abs(anim_vel.linear)))
+		if(fis_zero(_abs(anim_vel.linear)))
 			stop_now();
 		else
 		{
 			// - проверить на возможность торможения
-			if (!accel_check_braking(-2.f, _abs(anim_vel.linear)))
+			if(!accel_check_braking(-2.f, _abs(anim_vel.linear)))
 			{
 				m_object->move().set_velocity(_abs(anim_vel.linear));
 				// no braking mode
@@ -256,17 +256,17 @@ void CControlAnimationBase::SelectVelocities()
 
 	// финальная корректировка скорости анимации по физической скорости
 
-	if (!m_object->state_invisible && !fis_zero(anim_vel.linear))
+	if(!m_object->state_invisible && !fis_zero(anim_vel.linear))
 	{
 
 		EMotionAnim new_anim;
 		float a_speed;
 
-		if (accel_chain_get(m_man->movement().real_velocity(), cur_anim_info().motion, new_anim, a_speed))
+		if(accel_chain_get(m_man->movement().real_velocity(), cur_anim_info().motion, new_anim, a_speed))
 		{
 			cur_anim_info().motion = new_anim;
 
-			if (a_speed < 0.5f)
+			if(a_speed < 0.5f)
 				a_speed += 0.5f;
 
 			cur_anim_info().speed._set_target(a_speed);
@@ -280,7 +280,7 @@ void CControlAnimationBase::SelectVelocities()
 	set_animation_speed();
 
 	// установка угловой скорости
-	if (m_object->state_invisible)
+	if(m_object->state_invisible)
 		m_object->dir().set_heading_speed(path_vel.angular);
 	else
 	{
@@ -288,7 +288,7 @@ void CControlAnimationBase::SelectVelocities()
 		VERIFY(item_it);
 
 		// Melee?
-		if (m_tAction == ACT_ATTACK)
+		if(m_tAction == ACT_ATTACK)
 		{
 			float vel = item_it->velocity.velocity.angular_real;
 			m_object->dir().set_heading_speed(vel *
@@ -309,16 +309,16 @@ void CControlAnimationBase::CheckVelocityBounce()
 	float cur_speed = temp_vec.magnitude();
 
 	// prepare
-	if (fis_zero(prev_speed))
+	if(fis_zero(prev_speed))
 		prev_speed = 0.01f;
-	if (fis_zero(cur_speed))
+	if(fis_zero(cur_speed))
 		cur_speed = 0.01f;
 
 	float ratio = ((prev_speed > cur_speed) ? (prev_speed / cur_speed) : (cur_speed / prev_speed));
 
-	if (ratio > VELOCITY_BOUNCE_THRESHOLD)
+	if(ratio > VELOCITY_BOUNCE_THRESHOLD)
 	{
-		if (prev_speed > cur_speed)
+		if(prev_speed > cur_speed)
 			ratio = -ratio;
 
 		// prepare event

@@ -17,18 +17,18 @@ CWeaponRG6::~CWeaponRG6()
 BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL l_res = inheritedSG::net_Spawn(DC);
-	if (!l_res)
+	if(!l_res)
 		return l_res;
 
-	if (iAmmoElapsed && !getCurrentRocket())
+	if(iAmmoElapsed && !getCurrentRocket())
 	{
 		shared_str grenade_name = m_ammoTypes[0];
 		shared_str fake_grenade_name = pSettings->r_string(grenade_name, "fake_grenade_name");
 
-		if (fake_grenade_name.size())
+		if(fake_grenade_name.size())
 		{
 			int k = iAmmoElapsed;
-			while (k)
+			while(k)
 			{
 				k--;
 				inheritedRL::SpawnRocket(*fake_grenade_name, this);
@@ -50,7 +50,7 @@ void CWeaponRG6::Load(LPCSTR section)
 void CWeaponRG6::FireStart()
 {
 
-	if (GetState() == eIdle && getRocketCount())
+	if(GetState() == eIdle && getRocketCount())
 	{
 		inheritedSG::FireStart();
 
@@ -59,10 +59,10 @@ void CWeaponRG6::FireStart()
 		d.set(get_LastFD());
 
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
-		if (E)
+		if(E)
 		{
 			CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
-			if (NULL == io->inventory().ActiveItem())
+			if(NULL == io->inventory().ActiveItem())
 			{
 				Log("current_state", GetState());
 				Log("next_state", GetNextState());
@@ -79,7 +79,7 @@ void CWeaponRG6::FireStart()
 		fvec3::generate_orthonormal_basis(launch_matrix.k, launch_matrix.j, launch_matrix.i);
 		launch_matrix.c.set(p1);
 
-		if (IsZoomed() && H_Parent()->CLS_ID == CLSID_OBJECT_ACTOR)
+		if(IsZoomed() && H_Parent()->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
 			H_Parent()->setEnabled(FALSE);
 			setEnabled(FALSE);
@@ -90,7 +90,7 @@ void CWeaponRG6::FireStart()
 			setEnabled(TRUE);
 			H_Parent()->setEnabled(TRUE);
 
-			if (HasPick)
+			if(HasPick)
 			{
 				//			collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 				fvec3 Transference;
@@ -104,16 +104,16 @@ void CWeaponRG6::FireStart()
 				u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed,
 																EffectiveGravity(), res);
 #ifdef DEBUG
-				if (canfire0 > 0)
+				if(canfire0 > 0)
 					DBG_DrawLine(p1, fvec3().add(p1, res[0]), D3DCOLOR_XRGB(0, 255, 0));
-				if (canfire0 > 1)
+				if(canfire0 > 1)
 					DBG_DrawLine(p1, fvec3().add(p1, res[1]), D3DCOLOR_XRGB(0, 0, 255));
 				DBG_ClosedCashedDraw(30000);
 #endif
-				if (canfire0 != 0)
+				if(canfire0 != 0)
 				{
 					//					Msg ("d[%f,%f,%f] - res [%f,%f,%f]", d.x, d.y, d.z, res[0].x, res[0].y,
-					//res[0].z);
+					// res[0].z);
 					d = res[0];
 				};
 			}
@@ -128,7 +128,7 @@ void CWeaponRG6::FireStart()
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 
-		if (OnServer())
+		if(OnServer())
 		{
 			NET_Packet P;
 			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
@@ -144,7 +144,7 @@ u8 CWeaponRG6::AddCartridge(u8 cnt)
 	u8 t = inheritedSG::AddCartridge(cnt);
 	u8 k = cnt - t;
 	shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
-	while (k)
+	while(k)
 	{
 		--k;
 		inheritedRL::SpawnRocket(*fake_grenade_name, this);
@@ -157,15 +157,17 @@ void CWeaponRG6::OnEvent(NET_Packet& P, u16 type)
 	inheritedSG::OnEvent(P, type);
 
 	u16 id;
-	switch (type)
+	switch(type)
 	{
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		P.r_u16(id);
 		inheritedRL::AttachRocket(id, this);
 	}
 	break;
 	case GE_OWNERSHIP_REJECT:
-	case GE_LAUNCH_ROCKET: {
+	case GE_LAUNCH_ROCKET:
+	{
 		bool bLaunch = (type == GE_LAUNCH_ROCKET);
 		P.r_u16(id);
 		inheritedRL::DetachRocket(id, bLaunch);

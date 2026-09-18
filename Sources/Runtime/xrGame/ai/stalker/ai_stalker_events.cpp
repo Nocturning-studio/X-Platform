@@ -27,10 +27,11 @@ void CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent(P, type);
 	CInventoryOwner::OnEvent(P, type);
 
-	switch (type)
+	switch(type)
 	{
 	case GE_TRADE_BUY:
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 
 		u16 id;
 		P.r_u16(id);
@@ -42,11 +43,11 @@ void CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 		Msg("Trying to take - %s (%d)", *O->cName(), O->ID());
 #endif
 		CGameObject* _O = smart_cast<CGameObject*>(O);
-		if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_O)))
+		if(inventory().CanTakeItem(smart_cast<CInventoryItem*>(_O)))
 		{ // GetScriptControl()
 			O->H_SetParent(this);
 			inventory().Take(_O, true, false);
-			if (!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(O))
+			if(!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(O))
 				CObjectHandler::set_goal(eObjectActionIdle, _O);
 
 			on_after_take(_O);
@@ -69,12 +70,13 @@ void CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 		break;
 	}
 	case GE_TRADE_SELL:
-	case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		u16 id;
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
 
-		if (!O)
+		if(!O)
 			break;
 
 		bool just_before_destroy = !P.r_eof() && P.r_u8();
@@ -97,9 +99,9 @@ void CAI_Stalker::on_ownership_reject(CObject* O, bool just_before_destroy)
 	CGameObject* const game_object = smart_cast<CGameObject*>(O);
 	VERIFY(game_object);
 
-	if (!inventory().DropItem(game_object, just_before_destroy, just_before_destroy))
+	if(!inventory().DropItem(game_object, just_before_destroy, just_before_destroy))
 		return;
-	if (O->getDestroy())
+	if(O->getDestroy())
 		return;
 	feel_touch_deny(O, 2000);
 }
@@ -107,17 +109,17 @@ void CAI_Stalker::on_ownership_reject(CObject* O, bool just_before_destroy)
 void CAI_Stalker::feel_touch_new(CObject* O)
 {
 	//	Msg					("FEEL_TOUCH::NEW : %s",*O->cName());
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
-	if (Remote())
+	if(Remote())
 		return;
-	if ((O->spatial.type | STYPE_VISIBLEFORAI) != O->spatial.type)
+	if((O->spatial.type | STYPE_VISIBLEFORAI) != O->spatial.type)
 		return;
 
 	// Now, test for game specific logical objects to minimize traffic
 	CInventoryItem* I = smart_cast<CInventoryItem*>(O);
 
-	if (!wounded() && !critically_wounded() && I && I->useful_for_NPC() && can_take(I))
+	if(!wounded() && !critically_wounded() && I && I->useful_for_NPC() && can_take(I))
 	{
 #ifndef SILENCE
 		Msg("Taking item %s (%d)!", *I->cName(), I->ID());
@@ -131,7 +133,7 @@ void CAI_Stalker::feel_touch_new(CObject* O)
 
 void CAI_Stalker::DropItemSendMessage(CObject* O)
 {
-	if (!O || !O->H_Parent() || (this != O->H_Parent()))
+	if(!O || !O->H_Parent() || (this != O->H_Parent()))
 		return;
 
 #ifndef SILENCE

@@ -8,6 +8,6 @@ class ENGINE_API Sound
 {
   public:
 	virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const fvec3& Position,
-								float power){};
+								float power) {};
 };
 }; // namespace Feel

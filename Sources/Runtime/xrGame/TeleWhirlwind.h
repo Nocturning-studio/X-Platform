@@ -14,7 +14,7 @@ class CTeleWhirlwindObject : public CTelekineticObject
 	float throw_power;
 
   public:
-	virtual ~CTeleWhirlwindObject(){};
+	virtual ~CTeleWhirlwindObject() {};
 	CTeleWhirlwindObject();
 	virtual bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
 	void set_throw_power(float throw_pow);

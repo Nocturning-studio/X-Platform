@@ -37,13 +37,13 @@ static void RenderStaticBatch(SceneGraphTypes::mapNormalItems& batch)
 	PROFILE_FUNCTION();
 
 	// Сортировка Front-to-Back по SSA для Early Z-Cull
-	//std::sort(batch.begin(), batch.end(),
-	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b) 
+	// std::sort(batch.begin(), batch.end(),
+	//		  [](const SceneGraphTypes::StaticRenderNode& a, const SceneGraphTypes::StaticRenderNode& b)
 	//		  {
 	//			  return a.screenSpaceArea > b.screenSpaceArea;
 	//		  });
 
-	for (const auto& node : batch)
+	for(const auto& node : batch)
 	{
 		node.pVisual->Render(CalculateLODFactor(node.screenSpaceArea, node.pVisual->vis.sphere.R));
 	}
@@ -55,13 +55,13 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 	PROFILE_FUNCTION();
 
 	// Сортировка Front-to-Back
-	//std::sort(batch.begin(), batch.end(),
-	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b) 
+	// std::sort(batch.begin(), batch.end(),
+	//		  [](const SceneGraphTypes::DynamicRenderNode& a, const SceneGraphTypes::DynamicRenderNode& b)
 	//		  {
 	//			  return a.screenSpaceArea > b.screenSpaceArea;
 	//		  });
 
-	for (const auto& node : batch)
+	for(const auto& node : batch)
 	{
 		RenderBackend.set_transform_world(node.transform);
 		RenderImplementation.apply_ao_lighting(node.ao_cube);
@@ -86,44 +86,48 @@ static void __fastcall RenderSortedNode(SceneGraphTypes::mapSorted_Node* node)
 }
 
 // --- Texture List Comparators (for State Optimization) ---
-template <typename TNode> bool CompareTexturesLex2(TNode* N1, TNode* N2)
+template <typename TNode>
+bool CompareTexturesLex2(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
-	if ((*t1)[0] < (*t2)[0])
+	if((*t1)[0] < (*t2)[0])
 		return true;
-	if ((*t1)[0] > (*t2)[0])
+	if((*t1)[0] > (*t2)[0])
 		return false;
-	if ((*t1)[1] < (*t2)[1])
+	if((*t1)[1] < (*t2)[1])
 		return true;
 	return false;
 }
 
-template <typename TNode> bool CompareTexturesLex3(TNode* N1, TNode* N2)
+template <typename TNode>
+bool CompareTexturesLex3(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
-	if ((*t1)[0] < (*t2)[0])
+	if((*t1)[0] < (*t2)[0])
 		return true;
-	if ((*t1)[0] > (*t2)[0])
+	if((*t1)[0] > (*t2)[0])
 		return false;
-	if ((*t1)[1] < (*t2)[1])
+	if((*t1)[1] < (*t2)[1])
 		return true;
-	if ((*t1)[1] > (*t2)[1])
+	if((*t1)[1] > (*t2)[1])
 		return false;
-	if ((*t1)[2] < (*t2)[2])
+	if((*t1)[2] < (*t2)[2])
 		return true;
 	return false;
 }
 
-template <typename TNode> bool CompareTexturesLexN(TNode* N1, TNode* N2)
+template <typename TNode>
+bool CompareTexturesLexN(TNode* N1, TNode* N2)
 {
 	STextureList* t1 = N1->key;
 	STextureList* t2 = N2->key;
 	return std::lexicographical_compare(t1->begin(), t1->end(), t2->begin(), t2->end());
 }
 
-template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
+template <typename TNode>
+bool CompareTexturesSSA(TNode* N1, TNode* N2)
 {
 	return (N1->val.screenSpaceArea > N2->val.screenSpaceArea);
 }
@@ -132,14 +136,14 @@ template <typename TNode> bool CompareTexturesSSA(TNode* N1, TNode* N2)
 template <typename MapTextures, typename VecTypes>
 void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_map, BOOL bUseSSA)
 {
-	if (textures_map.size() == 0)
+	if(textures_map.size() == 0)
 		return;
 
 	int texture_count = textures_map.begin()->key->size();
 
-	if (bUseSSA)
+	if(bUseSSA)
 	{
-		if (texture_count <= 1)
+		if(texture_count <= 1)
 		{
 			textures_map.getANY_P(list);
 			std::sort(list.begin(), list.end(), CompareTexturesSSA<typename MapTextures::TNode>);
@@ -147,9 +151,9 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 		else
 		{
 			// Разделяем на "близкие" (важные для HZB) и "дальние"
-			for (auto it = textures_map.begin(); it != textures_map.end(); ++it)
+			for(auto it = textures_map.begin(); it != textures_map.end(); ++it)
 			{
-				if (it->val.screenSpaceArea > r_ssaHZBvsTEX)
+				if(it->val.screenSpaceArea > r_ssaHZBvsTEX)
 					list.push_back(it);
 				else
 					temp_list.push_back(it);
@@ -159,9 +163,9 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 			std::sort(list.begin(), list.end(), CompareTexturesSSA<typename MapTextures::TNode>);
 
 			// Дальние сортируем по текстурам (для минимизации переключений)
-			if (2 == texture_count)
+			if(2 == texture_count)
 				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLex2<typename MapTextures::TNode>);
-			else if (3 == texture_count)
+			else if(3 == texture_count)
 				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLex3<typename MapTextures::TNode>);
 			else
 				std::sort(temp_list.begin(), temp_list.end(), CompareTexturesLexN<typename MapTextures::TNode>);
@@ -172,9 +176,9 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 	else
 	{
 		textures_map.getANY_P(list);
-		if (2 == texture_count)
+		if(2 == texture_count)
 			std::sort(list.begin(), list.end(), CompareTexturesLex2<typename MapTextures::TNode>);
-		else if (3 == texture_count)
+		else if(3 == texture_count)
 			std::sort(list.begin(), list.end(), CompareTexturesLex3<typename MapTextures::TNode>);
 		else
 			std::sort(list.begin(), list.end(), CompareTexturesLexN<typename MapTextures::TNode>);
@@ -194,7 +198,7 @@ void CSceneGraph::Render(SceneGraphPacket& packet, SceneGraphRenderType type, u3
 	DebugCheckDuplicateVisuals(packet);
 #endif
 
-	switch (type)
+	switch(type)
 	{
 	case SceneGraphRenderType::Opaque:
 		_RenderOpaque(packet, priority, clear);
@@ -241,7 +245,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 
 		map_vs.getANY_P(m_scratch.nrmVS);
 
-		for (auto* node_vs : m_scratch.nrmVS)
+		for(auto* node_vs : m_scratch.nrmVS)
 		{
 			RenderBackend.set_Vertex_Shader(node_vs->key);
 
@@ -249,7 +253,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 			map_ps.screenSpaceArea = 0;
 			map_ps.getANY_P(m_scratch.nrmPS);
 
-			for (auto* node_ps : m_scratch.nrmPS)
+			for(auto* node_ps : m_scratch.nrmPS)
 			{
 				RenderBackend.set_Pixel_Shader(node_ps->key);
 
@@ -257,7 +261,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 				map_cs.screenSpaceArea = 0;
 				map_cs.getANY_P(m_scratch.nrmCS);
 
-				for (auto* node_cs : m_scratch.nrmCS)
+				for(auto* node_cs : m_scratch.nrmCS)
 				{
 					RenderBackend.set_Constants(node_cs->key);
 
@@ -265,7 +269,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 					map_states.screenSpaceArea = 0;
 					map_states.getANY_P(m_scratch.nrmStates);
 
-					for (auto* node_state : m_scratch.nrmStates)
+					for(auto* node_state : m_scratch.nrmStates)
 					{
 						RenderBackend.set_States(node_state->key);
 
@@ -274,7 +278,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 
 						SortTextureList(m_scratch.nrmTextures, m_scratch.nrmTexturesTemp, map_tex, TRUE);
 
-						for (auto* node_tex : m_scratch.nrmTextures)
+						for(auto* node_tex : m_scratch.nrmTextures)
 						{
 							RenderBackend.set_Textures(node_tex->key);
 
@@ -283,29 +287,29 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 
 							RenderStaticBatch(items);
 
-							if (_clear)
+							if(_clear)
 								items.clear();
 						}
 
 						m_scratch.nrmTextures.clear();
 						m_scratch.nrmTexturesTemp.clear();
-						if (_clear)
+						if(_clear)
 							map_tex.clear();
 					}
 					m_scratch.nrmStates.clear();
-					if (_clear)
+					if(_clear)
 						map_states.clear();
 				}
 				m_scratch.nrmCS.clear();
-				if (_clear)
+				if(_clear)
 					map_cs.clear();
 			}
 			m_scratch.nrmPS.clear();
-			if (_clear)
+			if(_clear)
 				map_ps.clear();
 		}
 		m_scratch.nrmVS.clear();
-		if (_clear)
+		if(_clear)
 			map_vs.clear();
 	}
 
@@ -318,7 +322,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 		mapMatrixVS& map_vs = packet.queue_dynamic[_priority];
 		map_vs.getANY_P(m_scratch.matVS);
 
-		for (auto* node_vs : m_scratch.matVS)
+		for(auto* node_vs : m_scratch.matVS)
 		{
 			RenderBackend.set_Vertex_Shader(node_vs->key);
 
@@ -326,7 +330,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 			map_ps.screenSpaceArea = 0;
 			map_ps.getANY_P(m_scratch.matPS);
 
-			for (auto* node_ps : m_scratch.matPS)
+			for(auto* node_ps : m_scratch.matPS)
 			{
 				RenderBackend.set_Pixel_Shader(node_ps->key);
 
@@ -334,7 +338,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 				map_cs.screenSpaceArea = 0;
 				map_cs.getANY_P(m_scratch.matCS);
 
-				for (auto* node_cs : m_scratch.matCS)
+				for(auto* node_cs : m_scratch.matCS)
 				{
 					RenderBackend.set_Constants(node_cs->key);
 
@@ -342,7 +346,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 					map_states.screenSpaceArea = 0;
 					map_states.getANY_P(m_scratch.matStates);
 
-					for (auto* node_state : m_scratch.matStates)
+					for(auto* node_state : m_scratch.matStates)
 					{
 						RenderBackend.set_States(node_state->key);
 
@@ -351,7 +355,7 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 
 						SortTextureList(m_scratch.matTextures, m_scratch.matTexturesTemp, map_tex, TRUE);
 
-						for (auto* node_tex : m_scratch.matTextures)
+						for(auto* node_tex : m_scratch.matTextures)
 						{
 							RenderBackend.set_Textures(node_tex->key);
 
@@ -363,23 +367,23 @@ void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _c
 
 						m_scratch.matTextures.clear();
 						m_scratch.matTexturesTemp.clear();
-						if (_clear)
+						if(_clear)
 							map_tex.clear();
 					}
 					m_scratch.matStates.clear();
-					if (_clear)
+					if(_clear)
 						map_states.clear();
 				}
 				m_scratch.matCS.clear();
-				if (_clear)
+				if(_clear)
 					map_cs.clear();
 			}
 			m_scratch.matPS.clear();
-			if (_clear)
+			if(_clear)
 				map_ps.clear();
 		}
 		m_scratch.matVS.clear();
-		if (_clear)
+		if(_clear)
 			map_vs.clear();
 	}
 
@@ -394,13 +398,13 @@ void CSceneGraph::RenderFromCache(const SceneTraversalContext& initial_ctx, Scen
 	local_ctx.traversal_marker_id = ++m_traversal_marker;
 
 	auto static_visuals = packet.m_visuals_static_visible;
-	for (IRender_Visual* V : static_visuals)
+	for(IRender_Visual* V : static_visuals)
 	{
 		ProcessStaticVisual(V, local_ctx, packet);
 	}
 
 	auto dynamic_visuals = packet.m_visuals_dynamic_visible;
-	for (auto& it : dynamic_visuals)
+	for(auto& it : dynamic_visuals)
 	{
 		local_ctx.transform = &it.matrix;
 		ProcessDynamicVisual(it.visual, local_ctx, packet);
@@ -417,7 +421,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	fmat4x4 ViewProjectOld = Engine.RenderView.ViewProjection;
 
 	// Create Custom HUD Projection
-	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov), 
+	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov),
 											   Engine.RenderView.Aspect,
 											   VIEWPORT_NEAR_HUD,
 											   g_pGamePersistent->Environment().CurrentEnv->far_plane);
@@ -470,12 +474,12 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	PROFILE_FUNCTION();
 
 	// Сбор LOD-ов в плоский список
-	if (_setup_zb)
+	if(_setup_zb)
 		packet.mapLOD.getLR(packet.lstLODs); // front-to-back (для Z-buffer)
 	else
 		packet.mapLOD.getRL(packet.lstLODs); // back-to-front (для цвета)
 
-	if (packet.lstLODs.empty())
+	if(packet.lstLODs.empty())
 		return;
 
 	u32 shader_id = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
@@ -485,15 +489,15 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	FLOD::_hw* VertexBuffer = (FLOD::_hw*)RenderBackend.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
 
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
-	if (ssa_range < EPS_S)
+	if(ssa_range < EPS_S)
 		ssa_range = EPS_S;
 
 	const float ssa_limit_b = r_ssaLOD_B;
 	const fvec3 camera_pos = Engine.RenderView.Position;
 
 	// *** Генерация геометрии ***
-	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i) 
-	{
+	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i)
+							  {
 		FLOD::_hw* V = VertexBuffer + (i * 4);
 		SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
 		FLOD* lod_visual = (FLOD*)Node.pVisual;
@@ -549,21 +553,20 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 			V[v_idx].t1 = FaceA.v[id].t;
 			V[v_idx].rgbh0 = FaceB.v[id].c_rgb_hemi;
 			V[v_idx].rgbh1 = FaceA.v[id].c_rgb_hemi;
-		}
-	});
+		} });
 
 	RenderBackend.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
 	// *** Группировка по шейдерам ***
-	if (!packet.lstLODs.empty())
+	if(!packet.lstLODs.empty())
 	{
 		ref_selement current_shader = packet.lstLODs[0].pVisual->shader->E[shader_id];
 		int current_count = 0;
 
-		for (u32 i = 0; i < packet.lstLODs.size(); i++)
+		for(u32 i = 0; i < packet.lstLODs.size(); i++)
 		{
 			SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
-			if (Node.pVisual->shader->E[shader_id] == current_shader)
+			if(Node.pVisual->shader->E[shader_id] == current_shader)
 			{
 				current_count++;
 			}
@@ -581,11 +584,11 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	int current_lod_index = 0;
 	RenderBackend.set_transform_world(Fidentity);
 
-	for (u32 g = 0; g < packet.lstLODgroups.size(); g++)
+	for(u32 g = 0; g < packet.lstLODgroups.size(); g++)
 	{
 		int primitive_count = packet.lstLODgroups[g];
 
-		if (primitive_count > 0)
+		if(primitive_count > 0)
 		{
 			// Используем packet.lstLODs
 			RenderBackend.set_Element(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
@@ -605,6 +608,6 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	packet.lstLODs.clear();
 	packet.lstLODgroups.clear();
 
-	if (_clear)
+	if(_clear)
 		packet.mapLOD.clear();
 }

@@ -68,22 +68,21 @@ void CCoverManager::compute_static_cover()
 	u32 VertexCount = ai().level_graph().header().vertex_count();
 
 	concurrency::parallel_for(u32(0), VertexCount, [this](u32 iterator)
-	{
+							  {
 		if (ai().level_graph().vertex(iterator)->cover(0) + ai().level_graph().vertex(iterator)->cover(1) +
 			ai().level_graph().vertex(iterator)->cover(2) + ai().level_graph().vertex(iterator)->cover(3))
 			m_temp[iterator] = edge_vertex(iterator);
 		else
-			m_temp[iterator] = false;
-	});
+			m_temp[iterator] = false; });
 
-	for (u32 i = 0; i < VertexCount; ++i)
-		if (m_temp[i] && critical_cover(i))
+	for(u32 i = 0; i < VertexCount; ++i)
+		if(m_temp[i] && critical_cover(i))
 			m_covers->insert(xr_new<CCoverPoint>(ai().level_graph().vertex_position(ai().level_graph().vertex(i)), i));
 }
 
 void CCoverManager::clear()
 {
-	if (!get_covers())
+	if(!get_covers())
 		return;
 
 	covers().all(m_nearest);

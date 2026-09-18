@@ -5,7 +5,8 @@
 #include "xrMath_utils.h"
 #include "xrMath_random.h"
 
-template <class T> struct template_vector3
+template <class T>
+struct template_vector3
 {
   public:
 	typedef T TYPE;
@@ -188,7 +189,8 @@ template <class T> struct template_vector3
 	ICF SelfRef operator/=(T s) { return div(s); }
 
 	// Унарный минус
-	IC Self operator-() const {
+	IC Self operator-() const
+	{
 		Self r;
 		r.invert(*this);
 		return r;
@@ -260,7 +262,7 @@ template <class T> struct template_vector3
 	IC SelfRef align()
 	{
 		y = 0;
-		if (_abs(z) >= _abs(x))
+		if(_abs(z) >= _abs(x))
 		{
 			z /= _abs(z ? z : 1);
 			x = 0;
@@ -276,11 +278,11 @@ template <class T> struct template_vector3
 	// Squeeze
 	IC SelfRef squeeze(T Epsilon)
 	{
-		if (_abs(x) < Epsilon)
+		if(_abs(x) < Epsilon)
 			x = 0;
-		if (_abs(y) < Epsilon)
+		if(_abs(y) < Epsilon)
 			y = 0;
-		if (_abs(z) < Epsilon)
+		if(_abs(z) < Epsilon)
 			z = 0;
 		return *this;
 	}
@@ -403,7 +405,7 @@ template <class T> struct template_vector3
 	ICF SelfRef normalize_safe(void)
 	{
 		T magnitude = x * x + y * y + z * z;
-		if (magnitude > std::numeric_limits<T>::min())
+		if(magnitude > std::numeric_limits<T>::min())
 		{
 			magnitude = std::sqrt(1 / magnitude);
 			x *= magnitude;
@@ -427,7 +429,7 @@ template <class T> struct template_vector3
 	ICF SelfRef normalize_safe(const Self& v)
 	{
 		T magnitude = v.x * v.x + v.y * v.y + v.z * v.z;
-		if (magnitude > std::numeric_limits<T>::min())
+		if(magnitude > std::numeric_limits<T>::min())
 		{
 			magnitude = std::sqrt(1 / magnitude);
 			x = v.x * magnitude;
@@ -555,24 +557,24 @@ template <class T> struct template_vector3
 	{
 		float hyp;
 
-		if (fis_zero(x) && fis_zero(z))
+		if(fis_zero(x) && fis_zero(z))
 		{
 			h = 0.0f;
-			if (!fis_zero(float(y)))
+			if(!fis_zero(float(y)))
 				p = (y > 0.0f) ? PI_DIV_2 : -PI_DIV_2;
 			else
 				p = 0.0f;
 		}
 		else
 		{
-			if (fis_zero(z))
+			if(fis_zero(z))
 				h = (x > 0.0f) ? -PI_DIV_2 : PI_DIV_2;
-			else if (z < 0.0f)
+			else if(z < 0.0f)
 				h = -(atanf(x / z) - PI);
 			else
 				h = -atanf(x / z);
 			hyp = std::sqrt(x * x + z * z);
-			if (fis_zero(float(hyp)))
+			if(fis_zero(float(hyp)))
 				p = (y > 0.0f) ? PI_DIV_2 : -PI_DIV_2;
 			else
 				p = atanf(y / hyp);
@@ -580,15 +582,15 @@ template <class T> struct template_vector3
 	}
 	ICF float getH() const
 	{
-		if (fis_zero(x) && fis_zero(z))
+		if(fis_zero(x) && fis_zero(z))
 		{
 			return 0.0f;
 		}
 		else
 		{
-			if (fis_zero(z))
+			if(fis_zero(z))
 				return (x > 0.0f) ? -PI_DIV_2 : PI_DIV_2;
-			else if (z < 0.0f)
+			else if(z < 0.0f)
 				return -(atanf(x / z) - PI);
 			else
 				return -atanf(x / z);
@@ -596,9 +598,9 @@ template <class T> struct template_vector3
 	}
 	ICF float getP() const
 	{
-		if (fis_zero(x) && fis_zero(z))
+		if(fis_zero(x) && fis_zero(z))
 		{
-			if (!fis_zero(float(y)))
+			if(!fis_zero(float(y)))
 				return (y > 0.0f) ? PI_DIV_2 : -PI_DIV_2;
 			else
 				return 0.0f;
@@ -606,7 +608,7 @@ template <class T> struct template_vector3
 		else
 		{
 			float hyp = std::sqrt(x * x + z * z);
-			if (fis_zero(float(hyp)))
+			if(fis_zero(float(hyp)))
 				return (y > 0.0f) ? PI_DIV_2 : -PI_DIV_2;
 			else
 				return atanf(y / hyp);
@@ -624,7 +626,7 @@ template <class T> struct template_vector3
 	{
 		T fInvLength;
 
-		if (_abs(dir.x) >= _abs(dir.y))
+		if(_abs(dir.x) >= _abs(dir.y))
 		{
 			// W.x or W.z is the largest magnitude component, swap them
 			fInvLength = 1.f / std::sqrt(dir.x * dir.x + dir.z * dir.z);
@@ -647,7 +649,7 @@ template <class T> struct template_vector3
 	{
 		T fInvLength;
 		dir.normalize();
-		if (fsimilar(dir.y, 1.f, EPS))
+		if(fsimilar(dir.y, 1.f, EPS))
 		{
 			up.set(0.f, 0.f, 1.f);
 			fInvLength = 1.f / std::sqrt(dir.x * dir.x + dir.y * dir.y);
@@ -677,76 +679,119 @@ template <class T> struct template_vector3
 };
 
 template <class T>
-IC template_vector3<T> operator+(const template_vector3<T>& a, const template_vector3<T>& b) {
-	template_vector3<T> r(a); r += b; return r;
+IC template_vector3<T> operator+(const template_vector3<T>& a, const template_vector3<T>& b)
+{
+	template_vector3<T> r(a);
+	r += b;
+	return r;
 }
 template <class T>
-IC template_vector3<T> operator+(const template_vector3<T>& a, T s) {
-	template_vector3<T> r(a); r += s; return r;
+IC template_vector3<T> operator+(const template_vector3<T>& a, T s)
+{
+	template_vector3<T> r(a);
+	r += s;
+	return r;
 }
 template <class T>
-IC template_vector3<T> operator+(T s, const template_vector3<T>& a) {
-	template_vector3<T> r(a); r += s; return r;
-}
-
-template <class T>
-IC template_vector3<T> operator-(const template_vector3<T>& a, const template_vector3<T>& b) {
-	template_vector3<T> r(a); r -= b; return r;
-}
-template <class T>
-IC template_vector3<T> operator-(const template_vector3<T>& a, T s) {
-	template_vector3<T> r(a); r -= s; return r;
-}
-template <class T>
-IC template_vector3<T> operator-(T s, const template_vector3<T>& a) {
-	template_vector3<T> r; r.sub(a, s); return r;   // эквивалентно: s - a = -(a - s)
-}
-
-template <class T>
-IC template_vector3<T> operator*(const template_vector3<T>& a, const template_vector3<T>& b) {
-	template_vector3<T> r(a); r *= b; return r;
-}
-template <class T>
-IC template_vector3<T> operator*(const template_vector3<T>& a, T s) {
-	template_vector3<T> r(a); r *= s; return r;
-}
-template <class T>
-IC template_vector3<T> operator*(T s, const template_vector3<T>& a) {
-	template_vector3<T> r(a); r *= s; return r;
-}
-
-template <class T>
-IC template_vector3<T> operator/(const template_vector3<T>& a, const template_vector3<T>& b) {
-	template_vector3<T> r(a); r /= b; return r;
-}
-template <class T>
-IC template_vector3<T> operator/(const template_vector3<T>& a, T s) {
-	template_vector3<T> r(a); r /= s; return r;
-}
-template <class T>
-IC template_vector3<T> operator/(T s, const template_vector3<T>& a) {
-	template_vector3<T> r; r.x = s / a.x; r.y = s / a.y; r.z = s / a.z;
+IC template_vector3<T> operator+(T s, const template_vector3<T>& a)
+{
+	template_vector3<T> r(a);
+	r += s;
 	return r;
 }
 
 template <class T>
-IC template_vector3<T> operator-(const template_vector3<T>& a) {
-	template_vector3<T> r; r.invert(a); return r;
+IC template_vector3<T> operator-(const template_vector3<T>& a, const template_vector3<T>& b)
+{
+	template_vector3<T> r(a);
+	r -= b;
+	return r;
+}
+template <class T>
+IC template_vector3<T> operator-(const template_vector3<T>& a, T s)
+{
+	template_vector3<T> r(a);
+	r -= s;
+	return r;
+}
+template <class T>
+IC template_vector3<T> operator-(T s, const template_vector3<T>& a)
+{
+	template_vector3<T> r;
+	r.sub(a, s);
+	return r; // эквивалентно: s - a = -(a - s)
 }
 
 template <class T>
-IC bool operator==(const template_vector3<T>& a, const template_vector3<T>& b) {
+IC template_vector3<T> operator*(const template_vector3<T>& a, const template_vector3<T>& b)
+{
+	template_vector3<T> r(a);
+	r *= b;
+	return r;
+}
+template <class T>
+IC template_vector3<T> operator*(const template_vector3<T>& a, T s)
+{
+	template_vector3<T> r(a);
+	r *= s;
+	return r;
+}
+template <class T>
+IC template_vector3<T> operator*(T s, const template_vector3<T>& a)
+{
+	template_vector3<T> r(a);
+	r *= s;
+	return r;
+}
+
+template <class T>
+IC template_vector3<T> operator/(const template_vector3<T>& a, const template_vector3<T>& b)
+{
+	template_vector3<T> r(a);
+	r /= b;
+	return r;
+}
+template <class T>
+IC template_vector3<T> operator/(const template_vector3<T>& a, T s)
+{
+	template_vector3<T> r(a);
+	r /= s;
+	return r;
+}
+template <class T>
+IC template_vector3<T> operator/(T s, const template_vector3<T>& a)
+{
+	template_vector3<T> r;
+	r.x = s / a.x;
+	r.y = s / a.y;
+	r.z = s / a.z;
+	return r;
+}
+
+template <class T>
+IC template_vector3<T> operator-(const template_vector3<T>& a)
+{
+	template_vector3<T> r;
+	r.invert(a);
+	return r;
+}
+
+template <class T>
+IC bool operator==(const template_vector3<T>& a, const template_vector3<T>& b)
+{
 	return a.similar(b);
 }
 template <class T>
-IC bool operator!=(const template_vector3<T>& a, const template_vector3<T>& b) {
+IC bool operator!=(const template_vector3<T>& a, const template_vector3<T>& b)
+{
 	return !a.similar(b);
 }
 
 typedef template_vector3<float> fvec3;
 typedef template_vector3<s32> ivec3;
 
-template <class T> BOOL _valid(const template_vector3<T>& v)
+template <class T>
+BOOL _valid(const template_vector3<T>& v)
 {
 	return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z);
 }
@@ -762,7 +807,7 @@ IC BOOL exact_normalize(float* a)
 {
 	double sqr_magnitude = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
 	double epsilon = 1.192092896e-05F;
-	if (sqr_magnitude > epsilon)
+	if(sqr_magnitude > epsilon)
 	{
 		double l = rsqrt(sqr_magnitude);
 		a[0] *= l;
@@ -777,9 +822,9 @@ IC BOOL exact_normalize(float* a)
 	aa0 = std::abs(a0);
 	aa1 = std::abs(a1);
 	aa2 = std::abs(a2);
-	if (aa1 > aa0)
+	if(aa1 > aa0)
 	{
-		if (aa2 > aa1)
+		if(aa2 > aa1)
 		{
 			goto aa2_largest;
 		}
@@ -795,7 +840,7 @@ IC BOOL exact_normalize(float* a)
 	}
 	else
 	{
-		if (aa2 > aa0)
+		if(aa2 > aa0)
 		{
 		aa2_largest: // aa2 is largest
 			a0 /= aa2;
@@ -807,7 +852,7 @@ IC BOOL exact_normalize(float* a)
 		}
 		else
 		{ // aa0 is largest
-			if (aa0 <= 0)
+			if(aa0 <= 0)
 			{
 				// dDEBUGMSG ("vector has zero size"); ... this messace is annoying
 				a[0] = 0; // if all a's are zero, this is where we'll end up.

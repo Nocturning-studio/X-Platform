@@ -25,7 +25,8 @@
 // реестр новостей, полученных актером
 // typedef CALifeRegistryWrapper<CGameNewsRegistry> GAME_NEWS_REGISTRY;
 
-template <typename T> class CALifeRegistryWrapperObject
+template <typename T>
+class CALifeRegistryWrapperObject
 {
 	T* m_registry;
 

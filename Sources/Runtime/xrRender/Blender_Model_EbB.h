@@ -8,7 +8,7 @@
 class CBlender_Model_EbB : public IBlender
 {
   public:
-	string64 oT2_Name;	// name of secondary texture
+	string64 oT2_Name;		// name of secondary texture
 	string64 oT2_transform; // transform for secondary texture
 	xrP_BOOL oBlend;
 
@@ -49,7 +49,7 @@ class CBlender_Model_EbB : public IBlender
 		xrPREAD_MARKER(fs);
 		xrPREAD_PROP(fs, xrPID_TEXTURE, oT2_Name);
 		xrPREAD_PROP(fs, xrPID_MATRIX, oT2_transform);
-		if (version >= 0x1)
+		if(version >= 0x1)
 		{
 			xrPREAD_PROP(fs, xrPID_BOOL, oBlend);
 		}
@@ -59,10 +59,10 @@ class CBlender_Model_EbB : public IBlender
 	{
 		IBlender::Compile(C);
 
-		if (oBlend.value)
+		if(oBlend.value)
 		{
 			// forward
-			switch (C.iElement)
+			switch(C.iElement)
 			{
 			case 0:
 			case 1:
@@ -76,7 +76,7 @@ class CBlender_Model_EbB : public IBlender
 		else
 		{
 			// deferred
-			switch (C.iElement)
+			switch(C.iElement)
 			{
 			case SE_NORMAL_HQ: // deffer
 				configure_shader(C, true, "dynamic_mesh", "static_mesh", false);

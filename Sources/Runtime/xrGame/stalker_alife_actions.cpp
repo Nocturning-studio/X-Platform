@@ -57,8 +57,8 @@ void CStalkerActionNoALife::initialize()
 	object().sight().setup(CSightAction(SightManager::eSightTypeCover, false, true));
 
 	m_stop_weapon_handling_time = Engine.TimeManager.GetGlobalTimeMs();
-	if (object().inventory().ActiveItem() && object().best_weapon() &&
-		(object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+	if(object().inventory().ActiveItem() && object().best_weapon() &&
+	   (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
 		m_stop_weapon_handling_time += ::Random32.random(30000) + 30000;
 
 #else
@@ -81,7 +81,7 @@ void CStalkerActionNoALife::finalize()
 
 	object().movement().set_desired_position(0);
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
@@ -92,8 +92,8 @@ void CStalkerActionNoALife::execute()
 	inherited::execute();
 #ifndef STALKER_DEBUG_MODE
 	object().sound().play(eStalkerSoundHumming, 60000, 10000);
-	if (Engine.TimeManager.GetGlobalTimeMs() >= m_stop_weapon_handling_time)
-		if (!object().best_weapon())
+	if(Engine.TimeManager.GetGlobalTimeMs() >= m_stop_weapon_handling_time)
+		if(!object().best_weapon())
 			object().CObjectHandler::set_goal(eObjectActionIdle);
 		else
 			object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
@@ -123,7 +123,7 @@ void CStalkerActionGatherItems::initialize()
 	object().movement().set_movement_type(eMovementTypeWalk);
 	object().movement().set_mental_state(eMentalStateDanger);
 	object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
-	if (!object().inventory().ActiveItem())
+	if(!object().inventory().ActiveItem())
 		object().CObjectHandler::set_goal(eObjectActionIdle);
 	else
 		object().CObjectHandler::set_goal(eObjectActionIdle, object().inventory().ActiveItem());
@@ -135,7 +135,7 @@ void CStalkerActionGatherItems::finalize()
 
 	object().movement().set_desired_position(0);
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().sound().set_sound_mask(0);
@@ -145,7 +145,7 @@ void CStalkerActionGatherItems::execute()
 {
 	inherited::execute();
 
-	if (!object().memory().item().selected())
+	if(!object().memory().item().selected())
 		return;
 
 	u32 level_vertex_id = object().memory().item().selected()->ai_location().level_vertex_id();

@@ -33,11 +33,11 @@ bool r_line(CScriptIniFile* self, LPCSTR S, int L, xr_string& N, xr_string& V)
 
 	LPCSTR n, v;
 	bool result = !!self->r_line(S, L, &n, &v);
-	if (!result)
+	if(!result)
 		return (false);
 
 	N = n;
-	if (v)
+	if(v)
 		V = v;
 	return (true);
 }

@@ -32,8 +32,8 @@ IC void CALifeGraphRegistry::assign(CSE_ALifeMonsterAbstract* monster)
 	monster->m_fDistanceToPoint = monster->m_fDistance;
 	CGameGraph::const_iterator i, e;
 	ai().game_graph().begin(monster->m_tNextGraphID, i, e);
-	for (; i != e; ++i)
-		if ((*i).distance() > monster->m_fDistance)
+	for(; i != e; ++i)
+		if((*i).distance() > monster->m_fDistance)
 		{
 			monster->m_fDistanceFromPoint = (*i).distance() - monster->m_fDistance;
 			break;
@@ -43,7 +43,7 @@ IC void CALifeGraphRegistry::assign(CSE_ALifeMonsterAbstract* monster)
 IC void CALifeGraphRegistry::set_process_time(const float& process_time)
 {
 	m_process_time = process_time;
-	if (m_level)
+	if(m_level)
 		level().set_process_time(m_process_time);
 }
 
@@ -57,12 +57,14 @@ IC const CALifeGraphRegistry::GRAPH_REGISTRY& CALifeGraphRegistry::objects() con
 	return (m_objects);
 }
 
-template <typename F> IC void CALifeGraphRegistry::iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f)
+template <typename F>
+IC void CALifeGraphRegistry::iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f)
 {
 	iterate(((CGraphPointInfo&)(objects()[game_vertex_id])).objects(), f);
 }
 
-template <typename F, typename C> IC void CALifeGraphRegistry::iterate(C& c, const F& f)
+template <typename F, typename C>
+IC void CALifeGraphRegistry::iterate(C& c, const F& f)
 {
 	c.update(f);
 }

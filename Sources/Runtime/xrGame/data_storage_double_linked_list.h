@@ -10,12 +10,15 @@
 
 #include "data_storage_single_linked_list.h"
 
-template <bool sorted = false> struct CDataStorageDoubleLinkedList
+template <bool sorted = false>
+struct CDataStorageDoubleLinkedList
 {
 
-	template <template <typename _T> class T1> struct DoubleLinkedList
+	template <template <typename _T> class T1>
+	struct DoubleLinkedList
 	{
-		template <typename T2> struct _vertex : public T1<T2>
+		template <typename T2>
+		struct _vertex : public T1<T2>
 		{
 			T2* _prev;
 

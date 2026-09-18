@@ -12,7 +12,7 @@ xr_string xrServer::ent_name_safe(u16 eid)
 {
 	string1024 buff;
 	CSE_Abstract* e_dest = game->get_entity_from_eid(eid);
-	if (e_dest)
+	if(e_dest)
 		sprintf(buff, "[%d][%s:%s]", eid, e_dest->name(), e_dest->name_replace());
 	else
 		sprintf(buff, "[%d][%s]", eid, "NOTFOUND");
@@ -30,7 +30,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 #endif
 
 	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest); // кто должен быть уничтожен
-	if (!e_dest)
+	if(!e_dest)
 	{
 #ifdef DEBUG
 		Msg("!SV:ge_destroy: [%d] not found on server", id_dest);
@@ -51,29 +51,29 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 	P2.w_begin(M_EVENT_PACK);
 	//---------------------------------------------
 	// check if we have children
-	if (!e_dest->children.empty())
+	if(!e_dest->children.empty())
 	{
-		if (!pEventPack)
+		if(!pEventPack)
 			pEventPack = &P2;
 
-		while (!e_dest->children.empty())
+		while(!e_dest->children.empty())
 			Process_event_destroy(P, sender, time, *e_dest->children.begin(), pEventPack);
 	};
 
-	if (0xffff == parent_id && NULL == pEventPack)
+	if(0xffff == parent_id && NULL == pEventPack)
 	{
 		SendBroadcast(BroadcastCID, P, MODE);
 	}
 	else
 	{
 		NET_Packet tmpP;
-		if (0xffff != parent_id && Process_event_reject(P, sender, time, parent_id, ID, false))
+		if(0xffff != parent_id && Process_event_reject(P, sender, time, parent_id, ID, false))
 		{
 			game->u_EventGen(tmpP, GE_OWNERSHIP_REJECT, parent_id);
 			tmpP.w_u16(id_dest);
 			tmpP.w_u8(1);
 
-			if (!pEventPack)
+			if(!pEventPack)
 				pEventPack = &P2;
 
 			pEventPack->w_u8(u8(tmpP.B.count));
@@ -86,21 +86,21 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 		pEventPack->w(&tmpP.B.data, tmpP.B.count);
 	};
 
-	if (NULL == pEPack && NULL != pEventPack)
+	if(NULL == pEPack && NULL != pEventPack)
 	{
 		SendBroadcast(BroadcastCID, *pEventPack, MODE);
 	}
 
 	// Everything OK, so perform entity-destroy
-	if (e_dest->m_bALifeControl && ai().get_alife())
+	if(e_dest->m_bALifeControl && ai().get_alife())
 	{
 		game_sv_Single* _game = smart_cast<game_sv_Single*>(game);
 		VERIFY(_game);
-		if (ai().alife().objects().object(id_dest, true))
+		if(ai().alife().objects().object(id_dest, true))
 			_game->alife().release(e_dest, false);
 	}
 
-	if (game)
+	if(game)
 		game->OnDestroyObject(e_dest->ID);
 
 	entity_Destroy(e_dest);

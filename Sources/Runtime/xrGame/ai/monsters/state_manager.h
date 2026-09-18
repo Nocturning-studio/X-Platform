@@ -4,7 +4,7 @@
 class IStateManagerBase
 {
   public:
-	virtual ~IStateManagerBase(){};
+	virtual ~IStateManagerBase() {};
 	virtual void reinit() = 0;
 	virtual void update() = 0;
 	virtual void force_script_state(EMonsterState state) = 0;

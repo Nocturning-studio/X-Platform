@@ -31,7 +31,7 @@ void CStalkerAnimationManager::torso_play_callback(CBlend* blend)
 	CStalkerAnimationPair& pair = animation.torso();
 	pair.on_animation_end();
 
-	if (animation.m_looking_back)
+	if(animation.m_looking_back)
 	{
 		animation.m_change_direction_time = Engine.TimeManager.GetGlobalTimeMs() + need_look_back_time_interval;
 		animation.m_looking_back = 0;
@@ -44,21 +44,21 @@ MotionID CStalkerAnimationManager::no_object_animation(const EBodyState& body_st
 	const CStalkerMovementManager& movement = stalker.movement();
 	const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[0].A;
 
-	if (eMentalStateFree == movement.mental_state())
+	if(eMentalStateFree == movement.mental_state())
 	{
 		VERIFY3(eBodyStateStand == movement.body_state(), "Cannot run FREE animations, when body state is not stand!",
 				*stalker.cName());
 
-		if (standing())
+		if(standing())
 			return (animation[9].A[1]);
 
 		return (animation[7 + movement.movement_type()].A[1]);
 	}
 
-	if (standing())
+	if(standing())
 		return (animation[6].A[0]);
 
-	if (eMovementTypeWalk == movement.movement_type())
+	if(eMovementTypeWalk == movement.movement_type())
 		return (animation[6].A[2]);
 
 	VERIFY(eMovementTypeRun == movement.movement_type());
@@ -78,7 +78,7 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
 	const CStalkerMovementManager& movement = stalker.movement();
 	u32 id = stalker.CObjectHandler::planner().current_action_state_id();
 
-	switch (id)
+	switch(id)
 	{
 	case ObjectHandlerSpace::eWorldOperatorFire1:
 	case ObjectHandlerSpace::eWorldOperatorFire2:
@@ -87,19 +87,20 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
 	case ObjectHandlerSpace::eWorldOperatorAimingReady1:
 	case ObjectHandlerSpace::eWorldOperatorAimingReady2:
 	case ObjectHandlerSpace::eWorldOperatorQueueWait1:
-	case ObjectHandlerSpace::eWorldOperatorQueueWait2: {
-		if (standing())
+	case ObjectHandlerSpace::eWorldOperatorQueueWait2:
+	{
+		if(standing())
 			return (animation[6].A[0]);
 
-		if (eMovementTypeWalk == movement.movement_type())
+		if(eMovementTypeWalk == movement.movement_type())
 		{
-			if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+			if((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
 				return (animation[13 + m_looking_back - 1].A[1]);
 			else
 				return (animation[6].A[0]);
 		}
 
-		if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+		if((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
 			return (animation[13 + m_looking_back - 1].A[0]);
 
 		VERIFY(eMovementTypeRun == movement.movement_type());
@@ -116,26 +117,26 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
 		return (animation_stand[12].A[1]);
 	}
 
-	if (eMentalStateFree == movement.mental_state())
+	if(eMentalStateFree == movement.mental_state())
 	{
 		VERIFY3(eBodyStateStand == movement.body_state(), "Cannot run FREE animation when body state is not stand!",
 				*object().cName());
 
-		if (standing())
+		if(standing())
 			return (animation[9].A[1]);
 
 		return (animation[7 + movement.movement_type()].A[1]);
 	}
 
-	if (standing())
+	if(standing())
 		return (animation[6].A[0]);
 
-	if (eMovementTypeWalk == movement.movement_type())
+	if(eMovementTypeWalk == movement.movement_type())
 		return (animation[6].A[2]);
 
 	VERIFY(eMovementTypeRun == movement.movement_type());
 
-	if (eBodyStateStand == movement.body_state())
+	if(eBodyStateStand == movement.body_state())
 		return (animation[6].A[3]);
 
 	return (animation[6].A[3]);
@@ -145,10 +146,11 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
 {
 	const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[slot].A;
 
-	switch (m_weapon->GetState())
+	switch(m_weapon->GetState())
 	{
-	case CWeapon::eReload: {
-		switch (m_weapon->GetReloadState())
+	case CWeapon::eReload:
+	{
+		switch(m_weapon->GetReloadState())
 		{
 		case CWeapon::eSubstateReloadBegin:
 			return (animation[4].A[0]);
@@ -171,21 +173,22 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
 	case CWeapon::eHidden:
 		return (no_object_animation(body_state));
 	case CWeapon::eFire:
-	case CWeapon::eFire2: {
+	case CWeapon::eFire2:
+	{
 		CAI_Stalker& stalker = object();
 		CStalkerMovementManager& movement = stalker.movement();
-		if (standing())
+		if(standing())
 			return (animation[1].A[0]);
 
-		if (eMovementTypeWalk == movement.movement_type())
+		if(eMovementTypeWalk == movement.movement_type())
 		{
-			if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+			if((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
 				return (animation[13 + m_looking_back - 1].A[1 /**1/**/]);
 			else
 				return (animation[1].A[0 /**2/**/]);
 		}
 
-		if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+		if((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
 			return (animation[13 + m_looking_back - 1].A[0]);
 
 		VERIFY(eMovementTypeRun == movement.movement_type());
@@ -200,12 +203,12 @@ MotionID CStalkerAnimationManager::missile_animation(u32 slot, const EBodyState&
 {
 	VERIFY(m_missile);
 
-	if (body_state == eBodyStateCrouch)
+	if(body_state == eBodyStateCrouch)
 		slot = 0;
 
 	const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[slot].A;
 
-	switch (m_missile->GetState())
+	switch(m_missile->GetState())
 	{
 	case MS_SHOWING:
 		return (torso().select(animation[0].A));
@@ -233,20 +236,20 @@ MotionID CStalkerAnimationManager::assign_torso_animation()
 {
 	EBodyState body_state = this->body_state();
 
-	if (!object().inventory().ActiveItem())
+	if(!object().inventory().ActiveItem())
 		return (no_object_animation(body_state));
 
 	fill_object_info();
 
-	if (m_weapon)
+	if(m_weapon)
 	{
-		if (!strapped())
+		if(!strapped())
 			return (weapon_animation(object_slot(), body_state));
 
 		return (no_object_animation(body_state));
 	}
 
-	if (m_missile)
+	if(m_missile)
 		return (missile_animation(object_slot(), body_state));
 
 	return (unknown_object_animation(object_slot(), body_state));

@@ -14,11 +14,11 @@ u32 CDbgScriptThreads::Fill()
 #ifdef XRGAME_EXPORTS
 	CScriptProcess* sp = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
 
-	if (sp)
+	if(sp)
 		res += FillFrom(sp);
 
 	sp = ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel);
-	if (sp)
+	if(sp)
 		res += FillFrom(sp);
 
 	return res;
@@ -32,7 +32,7 @@ u32 CDbgScriptThreads::FillFrom(CScriptProcess* sp)
 	m_threads.clear();
 	const CScriptProcess::SCRIPT_REGISTRY& vScripts = sp->scripts();
 	CScriptProcess::SCRIPT_REGISTRY::const_iterator It = vScripts.begin();
-	for (; It != vScripts.end(); ++It)
+	for(; It != vScripts.end(); ++It)
 	{
 		SScriptThread th;
 		//		th.pScript		= (*It);
@@ -49,9 +49,9 @@ u32 CDbgScriptThreads::FillFrom(CScriptProcess* sp)
 lua_State* CDbgScriptThreads::FindScript(int nThreadID)
 {
 	xr_vector<SScriptThread>::iterator It = m_threads.begin();
-	for (; It != m_threads.end(); ++It)
+	for(; It != m_threads.end(); ++It)
 	{
-		if ((*It).scriptID == nThreadID)
+		if((*It).scriptID == nThreadID)
 			return (*It).lua;
 	}
 	return 0;
@@ -62,7 +62,7 @@ void CDbgScriptThreads::DrawThreads()
 	// CScriptDebugger::GetDebugger()->ClearThreads();
 	m_debugger->ClearThreads();
 	xr_vector<SScriptThread>::iterator It = m_threads.begin();
-	for (; It != m_threads.end(); ++It)
+	for(; It != m_threads.end(); ++It)
 	{
 		SScriptThread th;
 		th = *It;

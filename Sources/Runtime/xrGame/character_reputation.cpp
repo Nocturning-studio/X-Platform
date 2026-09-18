@@ -26,9 +26,9 @@ int CHARACTER_REPUTATION::ValueToIndex(CHARACTER_REPUTATION_VALUE val)
 {
 	T_VECTOR::iterator it = m_pItemDataVector->begin();
 	T_VECTOR::iterator it_e = m_pItemDataVector->end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (val < (*it).threshold)
+		if(val < (*it).threshold)
 			return (int)std::distance(m_pItemDataVector->begin(), it);
 	}
 	return inherited::GetMaxIndex();

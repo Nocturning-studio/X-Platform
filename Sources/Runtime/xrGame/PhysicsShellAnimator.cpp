@@ -11,8 +11,8 @@ ICF bool no_physics_shape(const SBoneShape& shape);
 CPhysicsShellAnimator::CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell) : m_pPhysicsShell(_pPhysicsShell)
 {
 
-	for (xr_vector<CPHElement*>::iterator i = m_pPhysicsShell->Elements().begin();
-		 i != m_pPhysicsShell->Elements().end(); i++)
+	for(xr_vector<CPHElement*>::iterator i = m_pPhysicsShell->Elements().begin();
+		i != m_pPhysicsShell->Elements().end(); i++)
 	{
 		CPhysicsShellAnimatorBoneData PhysicsShellAnimatorBoneDataC;
 		PhysicsShellAnimatorBoneDataC.m_element = *i;
@@ -30,7 +30,7 @@ CPhysicsShellAnimator::CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell) : m_
 		m_bones_data.push_back(PhysicsShellAnimatorBoneDataC);
 	}
 
-	for (u16 i = 0; i < m_pPhysicsShell->get_JointsNumber(); i++)
+	for(u16 i = 0; i < m_pPhysicsShell->get_JointsNumber(); i++)
 	{
 		((CPHShell*)(m_pPhysicsShell))->DeleteJoint(i);
 	}
@@ -38,7 +38,7 @@ CPhysicsShellAnimator::CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell) : m_
 
 CPhysicsShellAnimator::~CPhysicsShellAnimator()
 {
-	for (xr_vector<CPhysicsShellAnimatorBoneData>::iterator i = m_bones_data.begin(); i != m_bones_data.end(); i++)
+	for(xr_vector<CPhysicsShellAnimatorBoneData>::iterator i = m_bones_data.begin(); i != m_bones_data.end(); i++)
 	{
 		((CPHShell*)(m_pPhysicsShell))->Island().DActiveIsland()->RemoveJoint(i->m_anim_fixed_dJointID);
 		dJointDestroy(i->m_anim_fixed_dJointID);
@@ -49,7 +49,7 @@ void CPhysicsShellAnimator::OnFrame()
 {
 	m_pPhysicsShell->Enable();
 
-	for (xr_vector<CPhysicsShellAnimatorBoneData>::iterator i = m_bones_data.begin(); i != m_bones_data.end(); i++)
+	for(xr_vector<CPhysicsShellAnimatorBoneData>::iterator i = m_bones_data.begin(); i != m_bones_data.end(); i++)
 	{
 		fmat4x4 target_obj_posFmatrixS;
 		CBoneInstance& B = m_pPhysicsShell->PKinematics()->LL_GetBoneInstance(i->m_element->m_SelfID);

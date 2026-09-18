@@ -76,7 +76,7 @@ CEntityCondition::~CEntityCondition(void)
 
 void CEntityCondition::ClearWounds()
 {
-	for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
+	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
 		xr_delete(*it);
 	m_WoundVector.clear();
 
@@ -161,16 +161,16 @@ void CEntityCondition::ChangeEntityMorale(float value)
 void CEntityCondition::ChangeBleeding(float percent)
 {
 	// затянуть раны
-	for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
+	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
 	{
 		(*it)->Incarnation(percent, m_fMinWoundSize);
-		if (0 == (*it)->TotalSize())
+		if(0 == (*it)->TotalSize())
 			(*it)->SetDestroy(true);
 	}
 }
 bool RemoveWoundPred(CWound* pWound)
 {
-	if (pWound->GetDestroy())
+	if(pWound->GetDestroy())
 	{
 		xr_delete(pWound);
 		return true;
@@ -189,9 +189,9 @@ void CEntityCondition::UpdateConditionTime()
 {
 	u64 _cur_time = (GameID() == GAME_SINGLE) ? Level().GetGameTime() : Level().timeServer();
 
-	if (m_bTimeValid)
+	if(m_bTimeValid)
 	{
-		if (_cur_time > m_iLastTimeCalled)
+		if(_cur_time > m_iLastTimeCalled)
 		{
 			float x = float(_cur_time - m_iLastTimeCalled) / 1000.0f;
 			SetConditionDeltaTime(x);
@@ -217,25 +217,25 @@ void CEntityCondition::UpdateConditionTime()
 // вычисление параметров с ходом игрового времени
 void CEntityCondition::UpdateCondition()
 {
-	if (GetHealth() <= 0)
+	if(GetHealth() <= 0)
 		return;
 	//-----------------------------------------
 	bool CriticalHealth = false;
 
-	if (m_fDeltaHealth + GetHealth() <= 0)
+	if(m_fDeltaHealth + GetHealth() <= 0)
 	{
 		CriticalHealth = true;
 		m_object->OnCriticalHitHealthLoss();
 	}
 	else
 	{
-		if (m_fDeltaHealth < 0)
+		if(m_fDeltaHealth < 0)
 			m_object->OnHitHealthLoss(GetHealth() + m_fDeltaHealth);
 	}
 	//-----------------------------------------
 	UpdateHealth();
 	//-----------------------------------------
-	if (!CriticalHealth && m_fDeltaHealth + GetHealth() <= 0)
+	if(!CriticalHealth && m_fDeltaHealth + GetHealth() <= 0)
 	{
 		CriticalHealth = true;
 		m_object->OnCriticalWoundHealthLoss();
@@ -244,7 +244,7 @@ void CEntityCondition::UpdateCondition()
 	UpdatePower();
 	UpdateRadiation();
 	//-----------------------------------------
-	if (!CriticalHealth && m_fDeltaHealth + GetHealth() <= 0)
+	if(!CriticalHealth && m_fDeltaHealth + GetHealth() <= 0)
 	{
 		CriticalHealth = true;
 		m_object->OnCriticalRadiationHealthLoss();
@@ -277,16 +277,16 @@ void CEntityCondition::UpdateCondition()
 float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_type, s16 element, float AP)
 {
 	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(m_object);
-	if (!pInvOwner)
+	if(!pInvOwner)
 		return hit_power;
 
 	CCustomOutfit* pOutfit = (CCustomOutfit*)pInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-	if (!pOutfit)
+	if(!pOutfit)
 		return hit_power;
 
 	float new_hit_power = hit_power;
 
-	if (hit_type == ALife::eHitTypeFireWound)
+	if(hit_type == ALife::eHitTypeFireWound)
 		new_hit_power = pOutfit->HitThruArmour(hit_power, element, AP);
 	else
 		new_hit_power *= pOutfit->GetHitTypeProtection(hit_type, element);
@@ -300,11 +300,11 @@ float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_typ
 float CEntityCondition::HitPowerEffect(float power_loss)
 {
 	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(m_object);
-	if (!pInvOwner)
+	if(!pInvOwner)
 		return power_loss;
 
 	CCustomOutfit* pOutfit = (CCustomOutfit*)pInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-	if (!pOutfit)
+	if(!pOutfit)
 		return power_loss;
 
 	float new_power_loss = power_loss * pOutfit->GetPowerLoss();
@@ -319,16 +319,16 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 
 	// запомнить кость по которой ударили и силу удара
 	WOUND_VECTOR_IT it = m_WoundVector.begin();
-	for (; it != m_WoundVector.end(); it++)
+	for(; it != m_WoundVector.end(); it++)
 	{
-		if ((*it)->GetBoneNum() == element)
+		if((*it)->GetBoneNum() == element)
 			break;
 	}
 
 	CWound* pWound = NULL;
 
 	// новая рана
-	if (it == m_WoundVector.end())
+	if(it == m_WoundVector.end())
 	{
 		pWound = xr_new<CWound>(element);
 		pWound->AddHit(hit_power * ::Random.randF(0.5f, 1.5f), hit_type);
@@ -356,7 +356,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	hit_power = HitOutfitEffect(hit_power, pHDS->hit_type, pHDS->boneID, pHDS->ap);
 
 	bool bAddWound = true;
-	switch (pHDS->hit_type)
+	switch(pHDS->hit_type)
 	{
 	case ALife::eHitTypeTelepatic:
 		// -------------------------------------------------
@@ -409,18 +409,19 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power * m_fPowerHitPart;
 		break;
-	default: {
+	default:
+	{
 		Msg("Unknown hit type");
 	}
 	break;
 	}
 
-	if (bDebug)
+	if(bDebug)
 		Msg("%s hitted in %s with %f[%f]", m_object->Name(),
 			smart_cast<CKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f,
 			hit_power_org);
 	// раны добавляются только живому
-	if (bAddWound && GetHealth() > 0)
+	if(bAddWound && GetHealth() > 0)
 		return AddWound(hit_power * m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);
 	else
 		return NULL;
@@ -430,7 +431,7 @@ float CEntityCondition::BleedingSpeed()
 {
 	float bleeding_speed = 0;
 
-	for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
+	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
 		bleeding_speed += (*it)->TotalSize();
 
 	return (m_WoundVector.empty() ? 0.f : bleeding_speed / m_WoundVector.size());
@@ -453,7 +454,7 @@ void CEntityCondition::UpdatePower()
 
 void CEntityCondition::UpdatePsyHealth(float k)
 {
-	if (m_fPsyHealth > 0)
+	if(m_fPsyHealth > 0)
 	{
 		m_fDeltaPsyHealth += m_change_v.m_fV_PsyHealth * k * m_fDeltaTime;
 	}
@@ -461,7 +462,7 @@ void CEntityCondition::UpdatePsyHealth(float k)
 
 void CEntityCondition::UpdateRadiation(float k)
 {
-	if (m_fRadiation > 0)
+	if(m_fRadiation > 0)
 	{
 		m_fDeltaRadiation -= m_change_v.m_fV_Radiation * k * m_fDeltaTime;
 
@@ -471,7 +472,7 @@ void CEntityCondition::UpdateRadiation(float k)
 
 void CEntityCondition::UpdateEntityMorale()
 {
-	if (m_fEntityMorale < m_fEntityMoraleMax)
+	if(m_fEntityMorale < m_fEntityMoraleMax)
 	{
 		m_fDeltaEntityMorale += m_change_v.m_fV_EntityMorale * m_fDeltaTime;
 	}
@@ -479,7 +480,7 @@ void CEntityCondition::UpdateEntityMorale()
 
 bool CEntityCondition::IsLimping() const
 {
-	if (!m_use_limping_state)
+	if(!m_use_limping_state)
 		return (false);
 	return (m_fPower * GetHealth() <= m_limping_threshold);
 }
@@ -489,7 +490,7 @@ void CEntityCondition::save(NET_Packet& output_packet)
 	u8 is_alive = (GetHealth() > 0.f) ? 1 : 0;
 
 	output_packet.w_u8(is_alive);
-	if (is_alive)
+	if(is_alive)
 	{
 		save_data(m_fPower, output_packet);
 		save_data(m_fRadiation, output_packet);
@@ -497,7 +498,7 @@ void CEntityCondition::save(NET_Packet& output_packet)
 		save_data(m_fPsyHealth, output_packet);
 
 		output_packet.w_u8((u8)m_WoundVector.size());
-		for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; it++)
+		for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; it++)
 			(*it)->save(output_packet);
 	}
 }
@@ -507,7 +508,7 @@ void CEntityCondition::load(IReader& input_packet)
 	m_bTimeValid = false;
 
 	u8 is_alive = input_packet.r_u8();
-	if (is_alive)
+	if(is_alive)
 	{
 		load_data(m_fPower, input_packet);
 		load_data(m_fRadiation, input_packet);
@@ -516,8 +517,8 @@ void CEntityCondition::load(IReader& input_packet)
 
 		ClearWounds();
 		m_WoundVector.resize(input_packet.r_u8());
-		if (!m_WoundVector.empty())
-			for (u32 i = 0; i < m_WoundVector.size(); i++)
+		if(!m_WoundVector.empty())
+			for(u32 i = 0; i < m_WoundVector.size(); i++)
 			{
 				CWound* pWound = xr_new<CWound>(BI_NONE);
 				pWound->load(input_packet);
@@ -549,7 +550,7 @@ void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
 
 void CEntityCondition::remove_links(const CObject* object)
 {
-	if (m_pWho != object)
+	if(m_pWho != object)
 		return;
 
 	m_pWho = m_object;

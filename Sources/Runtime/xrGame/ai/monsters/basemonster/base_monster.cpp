@@ -104,11 +104,11 @@ CBaseMonster::~CBaseMonster()
 
 void CBaseMonster::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 
-	if (g_Alive())
+	if(g_Alive())
 	{
 		CStepManager::update();
 	}
@@ -140,19 +140,19 @@ void CBaseMonster::shedule_Update(u32 dt)
 
 void CBaseMonster::Die(CObject* who)
 {
-	if (StateMan)
+	if(StateMan)
 		StateMan->critical_finalize();
 
 	inherited::Die(who);
 
-	if (is_special_killer(who))
+	if(is_special_killer(who))
 		sound().play(MonsterSound::eMonsterSoundDieInAnomaly);
 	else
 		sound().play(MonsterSound::eMonsterSoundDie);
 
 	monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 
-	if (m_controlled)
+	if(m_controlled)
 		m_controlled->on_die();
 }
 
@@ -160,14 +160,14 @@ void CBaseMonster::Die(CObject* who)
 // ALife::EHitType hit_type)
 void CBaseMonster::Hit(SHit* pHDS)
 {
-	if (ignore_collision_hit && (pHDS->hit_type == ALife::eHitTypeStrike))
+	if(ignore_collision_hit && (pHDS->hit_type == ALife::eHitTypeStrike))
 		return;
 
-	if (invulnerable())
+	if(invulnerable())
 		return;
 
-	if (g_Alive())
-		if (!critically_wounded())
+	if(g_Alive())
+		if(!critically_wounded())
 			update_critical_wounded(pHDS->boneID, pHDS->power);
 
 	//	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
@@ -187,17 +187,17 @@ CPHDestroyable* CBaseMonster::ph_destroyable()
 
 bool CBaseMonster::useful(const CItemManager* manager, const CGameObject* object) const
 {
-	if (!movement().restrictions().accessible(object->Position()))
+	if(!movement().restrictions().accessible(object->Position()))
 		return (false);
 
-	if (!movement().restrictions().accessible(object->ai_location().level_vertex_id()))
+	if(!movement().restrictions().accessible(object->ai_location().level_vertex_id()))
 		return (false);
 
 	const CEntityAlive* pCorpse = smart_cast<const CEntityAlive*>(object);
-	if (!pCorpse)
+	if(!pCorpse)
 		return false;
 
-	if (!pCorpse->g_Alive())
+	if(!pCorpse->g_Alive())
 		return true;
 	return false;
 }
@@ -211,11 +211,11 @@ float CBaseMonster::evaluate(const CItemManager* manager, const CGameObject* obj
 
 void CBaseMonster::ChangeTeam(int team, int squad, int group)
 {
-	if ((team == g_Team()) && (squad == g_Squad()) && (group == g_Group()))
+	if((team == g_Team()) && (squad == g_Squad()) && (group == g_Group()))
 		return;
 
 #ifdef DEBUG
-	if (!g_Alive())
+	if(!g_Alive())
 	{
 		ai().script_engine().print_stack();
 		VERIFY2(g_Alive(), "you are trying to change team of a dead entity");
@@ -235,7 +235,7 @@ void CBaseMonster::SetTurnAnimation(bool turn_left)
 
 void CBaseMonster::set_state_sound(u32 type, bool once)
 {
-	if (once)
+	if(once)
 	{
 
 		sound().play(type);
@@ -244,8 +244,8 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 	{
 
 		// handle situation, when monster want to play attack sound for the first time
-		if ((type == MonsterSound::eMonsterSoundAggressive) &&
-			(m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))
+		if((type == MonsterSound::eMonsterSoundAggressive) &&
+		   (m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))
 		{
 
 			sound().play(MonsterSound::eMonsterSoundAttackHit);
@@ -260,12 +260,12 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 			VERIFY(objects_count > 0);
 
 			u32 delay = 0;
-			switch (type)
+			switch(type)
 			{
 			case MonsterSound::eMonsterSoundIdle:
 				// check distance to actor
 
-				if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
+				if(Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
 				{
 					delay = u32(float(db().m_dwDistantIdleSndDelay) * std::sqrt(float(objects_count)));
 					type = MonsterSound::eMonsterSoundIdleDistant;
@@ -309,7 +309,7 @@ void CBaseMonster::TranslateActionToPathParams()
 	u32 vel_mask = 0;
 	u32 des_mask = 0;
 
-	switch (anim().m_tAction)
+	switch(anim().m_tAction)
 	{
 	case ACT_STAND_IDLE:
 	case ACT_SIT_IDLE:
@@ -323,7 +323,7 @@ void CBaseMonster::TranslateActionToPathParams()
 		break;
 
 	case ACT_WALK_FWD:
-		if (m_bDamaged)
+		if(m_bDamaged)
 		{
 			vel_mask = MonsterMovement::eVelocityParamsWalkDamaged;
 			des_mask = MonsterMovement::eVelocityParameterWalkDamaged;
@@ -337,7 +337,7 @@ void CBaseMonster::TranslateActionToPathParams()
 	case ACT_WALK_BKWD:
 		break;
 	case ACT_RUN:
-		if (m_bDamaged)
+		if(m_bDamaged)
 		{
 			vel_mask = MonsterMovement::eVelocityParamsRunDamaged;
 			des_mask = MonsterMovement::eVelocityParameterRunDamaged;
@@ -361,16 +361,16 @@ void CBaseMonster::TranslateActionToPathParams()
 		break;
 	}
 
-	if (state_invisible)
+	if(state_invisible)
 	{
 		vel_mask = MonsterMovement::eVelocityParamsInvisible;
 		des_mask = MonsterMovement::eVelocityParameterInvisible;
 	}
 
-	if (m_force_real_speed)
+	if(m_force_real_speed)
 		vel_mask = des_mask;
 
-	if (bEnablePath)
+	if(bEnablePath)
 	{
 		path().set_velocity_mask(vel_mask);
 		path().set_desirable_mask(des_mask);
@@ -437,7 +437,7 @@ void CBaseMonster::net_Relcase(CObject* O)
 	inherited::net_Relcase(O);
 
 	// TODO: do not clear, remove only object O
-	if (g_Alive())
+	if(g_Alive())
 	{
 		EnemyMemory.remove_links(O);
 		SoundMemory.remove_links(O);
@@ -490,7 +490,7 @@ void CBaseMonster::on_restrictions_change()
 {
 	inherited::on_restrictions_change();
 
-	if (StateMan)
+	if(StateMan)
 		StateMan->reinit();
 }
 
@@ -526,16 +526,16 @@ void CBaseMonster::load_effector(LPCSTR section, LPCSTR line, SAttackEffector& e
 
 bool CBaseMonster::check_start_conditions(ControlCom::EControlType type)
 {
-	if (type == ControlCom::eControlRotationJump)
+	if(type == ControlCom::eControlRotationJump)
 	{
 		EMonsterState state = StateMan->get_state_type();
-		if (state != eStateAttack_Run)
+		if(state != eStateAttack_Run)
 			return false;
 	}
-	if (type == ControlCom::eControlMeleeJump)
+	if(type == ControlCom::eControlMeleeJump)
 	{
 		EMonsterState state = StateMan->get_state_type();
-		if (!is_state(state, eStateAttack_Run) && !is_state(state, eStateAttack_Melee))
+		if(!is_state(state, eStateAttack_Run) && !is_state(state, eStateAttack_Melee))
 			return false;
 	}
 	return true;
@@ -547,9 +547,10 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	CInventoryOwner::OnEvent(P, type);
 
 	u16 id;
-	switch (type)
+	switch(type)
 	{
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
 		VERIFY(O);
@@ -565,7 +566,8 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	}
 	case GE_TRADE_SELL:
 
-		case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		P.r_u16(id);
 		CObject* Obj = Level().Objects.net_Find(id);
 		Obj = Level().Objects.net_Find(id);
@@ -582,10 +584,10 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
 
-		if (O)
+		if(O)
 		{
 			CEntity* pEntity = smart_cast<CEntity*>(O);
-			if (pEntity)
+			if(pEntity)
 				on_kill_enemy(pEntity);
 		}
 

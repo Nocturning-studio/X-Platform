@@ -147,11 +147,11 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number)
 	UIQuestionsList->AddWindow(itm, true);
 	Register(itm);
 	++number; // zero-based index
-	if (number <= 10)
+	if(number <= 10)
 	{
-	//	string16 buff;
-	//	sprintf_s(buff, "%d.", (number == 10) ? 0 : number);
-	//	itm->m_num_text->SetText(buff);
+		//	string16 buff;
+		//	sprintf_s(buff, "%d.", (number == 10) ? 0 : number);
+		//	itm->m_num_text->SetText(buff);
 		itm->m_text->SetAccelerator(DIK_ESCAPE + number, 0);
 	}
 }
@@ -230,11 +230,11 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 	m_text->SetWindowName("text_button");
 	AddCallback("text_button", BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
 
-	//m_num_text = new CUIStatic();
-	//m_num_text->SetAutoDelete(true);
-	//AttachChild(m_num_text);
-	//strconcat(sizeof(str), str, path, ":num_text");
-	//xml_init.InitStatic(*xml_doc, str, 0, m_num_text);
+	// m_num_text = new CUIStatic();
+	// m_num_text->SetAutoDelete(true);
+	// AttachChild(m_num_text);
+	// strconcat(sizeof(str), str, path, ":num_text");
+	// xml_init.InitStatic(*xml_doc, str, 0, m_num_text);
 }
 
 void CUIQuestionItem::Init(LPCSTR val, LPCSTR text)

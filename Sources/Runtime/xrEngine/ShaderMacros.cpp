@@ -4,7 +4,7 @@
 // Добавили const
 void CShaderMacros::_clear_string_storage() const
 {
-	for (char* str : string_storage)
+	for(char* str : string_storage)
 	{
 		xr_free(str);
 	}
@@ -26,12 +26,12 @@ void CShaderMacros::_safe_format_float(char* dest, size_t dest_size, float value
 
 	// Убираем trailing zeros
 	char* dot = strchr(dest, '.');
-	if (dot)
+	if(dot)
 	{
 		char* end = dest + strlen(dest) - 1;
-		while (end > dot && *end == '0')
+		while(end > dot && *end == '0')
 			*end-- = '\0';
-		if (end == dot)
+		if(end == dot)
 			*end = '\0';
 	}
 }
@@ -44,16 +44,16 @@ void CShaderMacros::_safe_format_uint(char* dest, size_t dest_size, unsigned int
 
 void CShaderMacros::_clean_string(char* str)
 {
-	if (!str)
+	if(!str)
 		return;
 
 	char* src = str;
 	char* dst = str;
 
-	while (*src)
+	while(*src)
 	{
 		// Оставляем только ASCII печатные символы
-		if (*src >= 32 && *src <= 126)
+		if(*src >= 32 && *src <= 126)
 		{
 			*dst++ = *src;
 		}
@@ -65,12 +65,12 @@ void CShaderMacros::_clean_string(char* str)
 // Добавили const
 bool CShaderMacros::_is_ascii_printable(const char* str) const
 {
-	if (!str)
+	if(!str)
 		return false;
 
-	for (const char* p = str; *p; ++p)
+	for(const char* p = str; *p; ++p)
 	{
-		if (*p < 32 || *p > 126)
+		if(*p < 32 || *p > 126)
 			return false;
 	}
 	return true;
@@ -78,12 +78,12 @@ bool CShaderMacros::_is_ascii_printable(const char* str) const
 
 CShaderMacros::MacroImpl* CShaderMacros::find(LPCSTR Name)
 {
-	if (Name == NULL)
+	if(Name == NULL)
 		return NULL;
 
-	for (auto& it : macros_impl)
+	for(auto& it : macros_impl)
 	{
-		if (xr_strcmp(Name, it.Name.c_str()) == 0)
+		if(xr_strcmp(Name, it.Name.c_str()) == 0)
 			return &it;
 	}
 
@@ -92,12 +92,12 @@ CShaderMacros::MacroImpl* CShaderMacros::find(LPCSTR Name)
 
 void CShaderMacros::add(BOOL Enabled, LPCSTR Name, LPCSTR Definition)
 {
-	if (!Name || !Definition)
+	if(!Name || !Definition)
 		return;
 
 	MacroImpl* pMacro = find(Name);
 
-	if (pMacro)
+	if(pMacro)
 	{
 		pMacro->Definition = Definition;
 		pMacro->State = Enabled ? Enable : Disable;
@@ -119,14 +119,14 @@ void CShaderMacros::add(LPCSTR Name, LPCSTR Definition)
 
 void CShaderMacros::add(LPCSTR Name, int value)
 {
-	if (!Name)
+	if(!Name)
 		return;
 
 	string32 formatted;
 	_safe_format_int(formatted, sizeof(formatted), value);
 	_clean_string(formatted);
 
-	if (_is_ascii_printable(formatted))
+	if(_is_ascii_printable(formatted))
 		add(Name, formatted);
 	else
 	{
@@ -137,14 +137,14 @@ void CShaderMacros::add(LPCSTR Name, int value)
 
 void CShaderMacros::add(LPCSTR Name, float value)
 {
-	if (!Name)
+	if(!Name)
 		return;
 
 	string64 formatted;
 	_safe_format_float(formatted, sizeof(formatted), value);
 	_clean_string(formatted);
 
-	if (_is_ascii_printable(formatted))
+	if(_is_ascii_printable(formatted))
 		add(Name, formatted);
 	else
 	{
@@ -155,14 +155,14 @@ void CShaderMacros::add(LPCSTR Name, float value)
 
 void CShaderMacros::add(LPCSTR Name, u32 value)
 {
-	if (!Name)
+	if(!Name)
 		return;
 
 	string32 formatted;
 	_safe_format_uint(formatted, sizeof(formatted), value);
 	_clean_string(formatted);
 
-	if (_is_ascii_printable(formatted))
+	if(_is_ascii_printable(formatted))
 		add(Name, formatted);
 	else
 	{
@@ -183,7 +183,7 @@ void CShaderMacros::add(BOOL Enabled, LPCSTR Name, int value)
 	_safe_format_int(formatted, sizeof(formatted), value);
 	_clean_string(formatted);
 
-	if (_is_ascii_printable(formatted))
+	if(_is_ascii_printable(formatted))
 		add(Enabled, Name, formatted);
 	else
 		add(Enabled, Name, "0");
@@ -195,7 +195,7 @@ void CShaderMacros::add(BOOL Enabled, LPCSTR Name, float value)
 	_safe_format_float(formatted, sizeof(formatted), value);
 	_clean_string(formatted);
 
-	if (_is_ascii_printable(formatted))
+	if(_is_ascii_printable(formatted))
 		add(Enabled, Name, formatted);
 	else
 		add(Enabled, Name, "0.0");
@@ -207,7 +207,7 @@ void CShaderMacros::add(BOOL Enabled, LPCSTR Name, u32 value)
 	_safe_format_uint(formatted, sizeof(formatted), value);
 	_clean_string(formatted);
 
-	if (_is_ascii_printable(formatted))
+	if(_is_ascii_printable(formatted))
 		add(Enabled, Name, formatted);
 	else
 		add(Enabled, Name, "0");
@@ -220,11 +220,11 @@ void CShaderMacros::add(BOOL Enabled, LPCSTR Name, bool value)
 
 void CShaderMacros::add(CShaderMacros& Macros)
 {
-	for (auto& it : Macros.macros_impl)
+	for(auto& it : Macros.macros_impl)
 	{
 		MacroImpl* pMacro = find(it.Name.c_str());
 
-		if (pMacro)
+		if(pMacro)
 		{
 			pMacro->Definition = it.Definition;
 			pMacro->State = it.State;
@@ -240,7 +240,7 @@ void CShaderMacros::undef(LPCSTR Name)
 {
 	MacroImpl* pMacro = find(Name);
 
-	if (pMacro)
+	if(pMacro)
 	{
 		pMacro->State = Undef;
 	}
@@ -260,13 +260,13 @@ std::string& CShaderMacros::get_name()
 {
 	name.clear();
 
-	for (auto& it : macros_impl)
+	for(auto& it : macros_impl)
 	{
 		// Проверяем что Definition валиден и не пуст
 		LPCSTR def_str = it.Definition.c_str();
-		if (def_str && def_str[0] != '\0')
+		if(def_str && def_str[0] != '\0')
 		{
-			if (it.State == Enable)
+			if(it.State == Enable)
 			{
 				name += def_str;
 			}
@@ -274,7 +274,7 @@ std::string& CShaderMacros::get_name()
 			{
 				// Используем длину строки
 				size_t len = strlen(def_str);
-				for (size_t j = 0; j < len; ++j)
+				for(size_t j = 0; j < len; ++j)
 					name += it.State;
 			}
 		}
@@ -290,16 +290,16 @@ xr_vector<D3DXMACRO> CShaderMacros::get_macros() const
 
 	d3dx_macros_cache.clear();
 
-	for (const auto& it : macros_impl)
+	for(const auto& it : macros_impl)
 	{
 		LPCSTR name_str = it.Name.c_str();
 		LPCSTR def_str = it.Definition.c_str();
 
 		// Проверяем через размер или указатель
-		if (it.State == Enable && name_str && name_str[0] != '\0' && def_str && def_str[0] != '\0')
+		if(it.State == Enable && name_str && name_str[0] != '\0' && def_str && def_str[0] != '\0')
 		{
 			// Дополнительная проверка на валидность строк
-			if (!_is_ascii_printable(name_str) || !_is_ascii_printable(def_str))
+			if(!_is_ascii_printable(name_str) || !_is_ascii_printable(def_str))
 			{
 				Msg("! CShaderMacros: Skipping invalid macro: %s = %s", name_str, def_str);
 				continue;
@@ -330,10 +330,10 @@ xr_vector<D3DXMACRO> CShaderMacros::get_macros() const
 
 void CShaderMacros::dump_debug_info(LPCSTR context) const
 {
-	for (const auto& macro : macros_impl)
+	for(const auto& macro : macros_impl)
 	{
 		const char* state_str = "Unknown";
-		switch (macro.State)
+		switch(macro.State)
 		{
 		case Enable:
 			state_str = "Enable";

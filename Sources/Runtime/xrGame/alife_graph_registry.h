@@ -51,7 +51,8 @@ class CALifeGraphRegistry
 
   protected:
 	void setup_current_level();
-	template <typename F, typename C> IC void iterate(C& c, const F& f);
+	template <typename F, typename C>
+	IC void iterate(C& c, const F& f);
 
   public:
 	CALifeGraphRegistry();
@@ -71,7 +72,8 @@ class CALifeGraphRegistry
 	IC void set_process_time(const float& process_time);
 	IC CSE_ALifeCreatureActor* actor() const;
 	IC const GRAPH_REGISTRY& objects() const;
-	template <typename F> IC void iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f);
+	template <typename F>
+	IC void iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f);
 };
 
 #include "alife_graph_registry_inline.h"

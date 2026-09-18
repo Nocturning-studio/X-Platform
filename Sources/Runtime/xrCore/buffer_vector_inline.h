@@ -64,7 +64,7 @@ inline void buffer_vector_specialized::assign(input_iterator begin, input_iterat
 	m_end = m_begin + (end - begin);
 	VERIFY(m_max_end >= m_end);
 
-	for (iterator I = m_begin; begin != end; ++begin, ++I)
+	for(iterator I = m_begin; begin != end; ++begin, ++I)
 		construct(I, *begin);
 }
 
@@ -76,7 +76,7 @@ inline void buffer_vector_specialized::assign(size_type const& count, const_refe
 	m_end = m_begin + count;
 	VERIFY(m_max_end >= m_end);
 
-	for (iterator I = m_begin; I != m_end; ++I)
+	for(iterator I = m_begin; I != m_end; ++I)
 		construct(I, value);
 }
 
@@ -99,10 +99,10 @@ TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::resize(size_type const& size)
 {
 	size_type current_size = this->size();
-	if (size == current_size)
+	if(size == current_size)
 		return;
 
-	if (size < current_size)
+	if(size < current_size)
 	{
 		destroy(m_begin + size, m_begin + current_size);
 		m_end = m_begin + size;
@@ -134,7 +134,7 @@ inline void buffer_vector_specialized::insert(iterator const& where, input_itera
 	iterator j = m_end + count - 1; // new end
 	iterator i = m_end - 1;			// old end
 	iterator e = where - 1;
-	for (; i != e; --i, --j)
+	for(; i != e; --i, --j)
 	{
 		construct(j, *i);
 		destroy(i);
@@ -142,7 +142,7 @@ inline void buffer_vector_specialized::insert(iterator const& where, input_itera
 
 	m_end += count;
 
-	for (iterator i = where, e = i + count; i != e; ++i, ++begin)
+	for(iterator i = where, e = i + count; i != e; ++i, ++begin)
 		construct(i, *begin);
 }
 
@@ -155,7 +155,7 @@ inline void buffer_vector_specialized::insert(iterator const& where, size_type c
 	iterator j = m_end + count - 1; // new end
 	iterator i = m_end - 1;			// old end
 	iterator e = where - 1;
-	for (; i != e; --i, --j)
+	for(; i != e; --i, --j)
 	{
 		construct(j, *i);
 		destroy(i);
@@ -163,7 +163,7 @@ inline void buffer_vector_specialized::insert(iterator const& where, size_type c
 
 	m_end += count;
 
-	for (iterator i = where, e = i + count; i != e; ++i)
+	for(iterator i = where, e = i + count; i != e; ++i)
 		construct(i, value);
 }
 
@@ -183,10 +183,10 @@ inline void buffer_vector_specialized::erase(iterator const& begin, iterator con
 	VERIFY(m_end >= end);
 
 	VERIFY(begin <= end);
-	if (begin == end)
+	if(begin == end)
 		return;
 
-	for (iterator i = begin, j = end; j != m_end; ++i, ++j)
+	for(iterator i = begin, j = end; j != m_end; ++i, ++j)
 	{
 		destroy(i);
 		construct(i, *j);
@@ -355,19 +355,19 @@ inline typename buffer_vector_specialized::size_type buffer_vector_specialized::
 TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::construct(pointer p)
 {
-	new (p) T();
+	new(p) T();
 }
 
 TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::construct(pointer p, const_reference value)
 {
-	new (p) T(value);
+	new(p) T(value);
 }
 
 TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::construct(iterator begin, iterator const& end)
 {
-	for (; begin != end; ++begin)
+	for(; begin != end; ++begin)
 		construct(begin);
 }
 
@@ -380,7 +380,7 @@ inline void buffer_vector_specialized::destroy(pointer p)
 TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::destroy(iterator begin, iterator const& end)
 {
-	for (; begin != end; ++begin)
+	for(; begin != end; ++begin)
 		destroy(begin);
 }
 

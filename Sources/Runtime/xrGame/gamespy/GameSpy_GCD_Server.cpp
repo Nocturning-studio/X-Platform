@@ -11,7 +11,7 @@ CGameSpy_GCD_Server::CGameSpy_GCD_Server()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -25,7 +25,7 @@ CGameSpy_GCD_Server::CGameSpy_GCD_Server(HMODULE hGameSpyDLL)
 };
 CGameSpy_GCD_Server::~CGameSpy_GCD_Server()
 {
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -47,7 +47,7 @@ void CGameSpy_GCD_Server::LoadGameSpy(HMODULE hGameSpyDLL)
 bool CGameSpy_GCD_Server::Init()
 {
 	int res = xrGS_gcd_init_qr2(NULL);
-	if (res == -1)
+	if(res == -1)
 	{
 		Msg("! xrGS::CDKey : Failes to Initialize!");
 		return false;
@@ -63,10 +63,10 @@ void CGameSpy_GCD_Server::ShutDown()
 
 void CGameSpy_GCD_Server::CreateRandomChallenge(char* challenge, int nchars)
 {
-	if (nchars > GAMESPY_MAXCHALLANGESIZE)
+	if(nchars > GAMESPY_MAXCHALLANGESIZE)
 		nchars = GAMESPY_MAXCHALLANGESIZE;
 	challenge[nchars] = 0;
-	while (nchars--)
+	while(nchars--)
 	{
 		challenge[nchars] = char('a' + ::Random.randI(26));
 	};
@@ -76,14 +76,14 @@ void CGameSpy_GCD_Server::CreateRandomChallenge(char* challenge, int nchars)
 void __cdecl ClientAuthorizeCallback(int productid, int localid, int authenticated, char* errmsg, void* instance)
 {
 	xrGameSpyServer* pServer = (xrGameSpyServer*)(instance);
-	if (pServer)
+	if(pServer)
 		pServer->OnCDKey_Validation(localid, authenticated, errmsg);
 };
 
 void __cdecl ClientReAuthorizeCallback(int gameid, int localid, int hint, char* challenge, void* instance)
 {
 	xrGameSpyServer* pServer = (xrGameSpyServer*)(instance);
-	if (pServer)
+	if(pServer)
 		pServer->OnCDKey_ReValidation(localid, hint, challenge);
 };
 

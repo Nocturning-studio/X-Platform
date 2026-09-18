@@ -33,31 +33,31 @@ void CStateControllerAttackAbstract::execute()
 	EMonsterState state_id = eStateUnknown;
 
 	// Prev == None
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 		state_id = eStateAttack_HideInCoverLite;
 
 	// Prev == Hide Cover Lite
-	if (state_id == eStateUnknown)
+	if(state_id == eStateUnknown)
 	{
-		if (prev_substate == eStateAttack_HideInCoverLite)
+		if(prev_substate == eStateAttack_HideInCoverLite)
 		{
-			if (!get_state_current()->check_completion())
+			if(!get_state_current()->check_completion())
 				state_id = eStateAttack_HideInCoverLite;
-			else if (get_state(eStateAttack_MoveOut)->check_start_conditions())
+			else if(get_state(eStateAttack_MoveOut)->check_start_conditions())
 				state_id = eStateAttack_MoveOut;
 		}
 	}
 
 	// Prev == Move Out
-	if (state_id == eStateUnknown)
+	if(state_id == eStateUnknown)
 	{
-		if (prev_substate == eStateAttack_MoveOut)
+		if(prev_substate == eStateAttack_MoveOut)
 		{
-			if (get_state(eStateAttack_ControlFire)->check_start_conditions())
+			if(get_state(eStateAttack_ControlFire)->check_start_conditions())
 				state_id = eStateAttack_ControlFire;
 			else
 			{
-				if (!get_state_current()->check_completion())
+				if(!get_state_current()->check_completion())
 					state_id = eStateAttack_MoveOut;
 				else
 					state_id = eStateAttack_HideInCover;
@@ -88,11 +88,11 @@ void CStateControllerAttackAbstract::execute()
 	}
 
 	// Prev == Control Fire
-	if (state_id == eStateUnknown)
+	if(state_id == eStateUnknown)
 	{
-		if (prev_substate == eStateAttack_ControlFire)
+		if(prev_substate == eStateAttack_ControlFire)
 		{
-			if (!get_state_current()->check_completion())
+			if(!get_state_current()->check_completion())
 				state_id = eStateAttack_ControlFire;
 			else
 				state_id = eStateAttack_HideInCover;
@@ -100,11 +100,11 @@ void CStateControllerAttackAbstract::execute()
 	}
 
 	// Prev == Hide Cover
-	if (state_id == eStateUnknown)
+	if(state_id == eStateUnknown)
 	{
-		if (prev_substate == eStateAttack_HideInCover)
+		if(prev_substate == eStateAttack_HideInCover)
 		{
-			if (!get_state_current()->check_completion())
+			if(!get_state_current()->check_completion())
 				state_id = eStateAttack_HideInCover;
 			else
 				state_id = eStateAttack_CampInCover;
@@ -112,15 +112,15 @@ void CStateControllerAttackAbstract::execute()
 	}
 
 	// Prev == Camp In Cover
-	if (state_id == eStateUnknown)
+	if(state_id == eStateUnknown)
 	{
-		if (prev_substate == eStateAttack_CampInCover)
+		if(prev_substate == eStateAttack_CampInCover)
 		{
-			if (!get_state_current()->check_completion())
+			if(!get_state_current()->check_completion())
 				state_id = eStateAttack_CampInCover;
 			else
 			{
-				if (get_state(eStateAttack_MoveOut)->check_start_conditions())
+				if(get_state(eStateAttack_MoveOut)->check_start_conditions())
 					state_id = eStateAttack_MoveOut;
 				else
 					state_id = eStateAttack_HideInCoverLite;
@@ -128,7 +128,7 @@ void CStateControllerAttackAbstract::execute()
 		}
 	}
 
-	if (state_id == eStateUnknown)
+	if(state_id == eStateUnknown)
 	{
 		state_id = eStateAttack_HideInCover;
 	}

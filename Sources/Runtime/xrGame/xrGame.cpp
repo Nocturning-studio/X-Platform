@@ -28,7 +28,7 @@ extern "C"
 	{
 		DLL_Pure* object = object_factory().client_object(clsid);
 #ifdef DEBUG
-		if (!object)
+		if(!object)
 			return (0);
 #endif
 		object->CLS_ID = clsid;
@@ -45,9 +45,10 @@ extern void CCC_RegisterCommands();
 
 BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 {
-	switch (ul_reason_for_call)
+	switch(ul_reason_for_call)
 	{
-	case DLL_PROCESS_ATTACH: {
+	case DLL_PROCESS_ATTACH:
+	{
 		// register console commands
 		CCC_RegisterCommands();
 		// keyboard binding
@@ -58,7 +59,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 		break;
 	}
 
-	case DLL_PROCESS_DETACH: {
+	case DLL_PROCESS_DETACH:
+	{
 		break;
 	}
 	}

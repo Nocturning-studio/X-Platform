@@ -29,7 +29,7 @@ void CStepManager::reload(LPCSTR section)
 	m_legs_count = pSettings->r_u8(section, "LegsCount");
 	LPCSTR anim_section = pSettings->r_string(section, "step_params");
 
-	if (!pSettings->section_exist(anim_section))
+	if(!pSettings->section_exist(anim_section))
 		return;
 	VERIFY((m_legs_count >= MIN_LEGS_COUNT) && (m_legs_count <= MAX_LEGS_COUNT));
 
@@ -41,14 +41,14 @@ void CStepManager::reload(LPCSTR section)
 
 	CKinematicsAnimated* skeleton_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
 
-	for (u32 i = 0; pSettings->r_line(anim_section, i, &anim_name, &val); ++i)
+	for(u32 i = 0; pSettings->r_line(anim_section, i, &anim_name, &val); ++i)
 	{
 		_GetItem(val, 0, cur_elem);
 
 		param.cycles = u8(atoi(cur_elem));
 		R_ASSERT(param.cycles >= 1);
 
-		for (u32 j = 0; j < m_legs_count; j++)
+		for(u32 j = 0; j < m_legs_count; j++)
 		{
 			_GetItem(val, 1 + j * 2, cur_elem);
 			param.step[j].time = float(atof(cur_elem));
@@ -58,14 +58,14 @@ void CStepManager::reload(LPCSTR section)
 		}
 
 		MotionID motion_id = skeleton_animated->ID_Cycle_Safe(anim_name);
-		if (!motion_id)
+		if(!motion_id)
 			continue;
 
 		m_steps_map.insert(mk_pair(motion_id, param));
 	}
 
 	// reload foot bones
-	for (u32 i = 0; i < MAX_LEGS_COUNT; i++)
+	for(u32 i = 0; i < MAX_LEGS_COUNT; i++)
 		m_foot_bones[i] = BI_NONE;
 	reload_foot_bones();
 
@@ -76,17 +76,17 @@ void CStepManager::reload(LPCSTR section)
 void CStepManager::on_animation_start(MotionID motion_id, CBlend* blend)
 {
 	m_blend = blend;
-	if (!m_blend)
+	if(!m_blend)
 		return;
 
-	if (m_object->character_ik_controller())
+	if(m_object->character_ik_controller())
 		m_object->character_ik_controller()->PlayLegs(blend);
 
 	m_time_anim_started = Engine.TimeManager.GetGlobalTimeMs();
 
 	// искать текущую анимацию в STEPS_MAP
 	STEPS_MAP_IT it = m_steps_map.find(motion_id);
-	if (it == m_steps_map.end())
+	if(it == m_steps_map.end())
 	{
 		m_step_info.disable = true;
 		return;
@@ -96,7 +96,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend* blend)
 	m_step_info.params = it->second;
 	m_step_info.cur_cycle = 1; // all cycles are 1-based
 
-	for (u32 i = 0; i < m_legs_count; i++)
+	for(u32 i = 0; i < m_legs_count; i++)
 	{
 		m_step_info.activity[i].handled = false;
 		m_step_info.activity[i].cycle = m_step_info.cur_cycle;
@@ -107,17 +107,17 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend* blend)
 
 void CStepManager::update()
 {
-	//OPTICK_EVENT("CStepManager::update");
+	// OPTICK_EVENT("CStepManager::update");
 
 	START_PROFILE("Step Manager")
 
-	if (m_step_info.disable)
+	if(m_step_info.disable)
 		return;
-	if (!m_blend)
+	if(!m_blend)
 		return;
 
 	SGameMtlPair* mtl_pair = m_object->material().get_current_pair();
-	if (!mtl_pair)
+	if(!mtl_pair)
 		return;
 
 	// получить параметры шага
@@ -128,22 +128,22 @@ void CStepManager::update()
 	float cycle_anim_time = get_blend_time() / step.cycles;
 
 	// пройти по всем ногам и проверить время
-	for (u32 i = 0; i < m_legs_count; i++)
+	for(u32 i = 0; i < m_legs_count; i++)
 	{
 
 		// если событие уже обработано для этой ноги, то skip
-		if (m_step_info.activity[i].handled && (m_step_info.activity[i].cycle == m_step_info.cur_cycle))
+		if(m_step_info.activity[i].handled && (m_step_info.activity[i].cycle == m_step_info.cur_cycle))
 			continue;
 
 		// вычислить смещённое время шага в соответствии с параметрами анимации ходьбы
 		u32 offset_time =
 			m_time_anim_started +
 			u32(1000 * (cycle_anim_time * (m_step_info.cur_cycle - 1) + cycle_anim_time * step.step[i].time));
-		if (offset_time <= cur_time)
+		if(offset_time <= cur_time)
 		{
 
 			// Играть звук
-			if (!mtl_pair->StepSounds.empty() && is_on_ground())
+			if(!mtl_pair->StepSounds.empty() && is_on_ground())
 			{
 				fvec3 sound_pos = m_object->Position();
 				sound_pos.y += 0.5;
@@ -152,7 +152,7 @@ void CStepManager::update()
 			}
 
 			// Играть партиклы
-			if (!mtl_pair->CollideParticles.empty())
+			if(!mtl_pair->CollideParticles.empty())
 			{
 				LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
 
@@ -183,18 +183,18 @@ void CStepManager::update()
 	}
 
 	// определить текущий цикл
-	if (m_step_info.cur_cycle < step.cycles)
+	if(m_step_info.cur_cycle < step.cycles)
 		m_step_info.cur_cycle = 1 + u8(float(cur_time - m_time_anim_started) / (1000.f * cycle_anim_time));
 
 	// если анимация циклическая...
 	u32 time_anim_end = m_time_anim_started + u32(get_blend_time() * 1000); // время завершения работы анимации
-	if (!m_blend->stop_at_end && (time_anim_end < cur_time))
+	if(!m_blend->stop_at_end && (time_anim_end < cur_time))
 	{
 
 		m_time_anim_started = time_anim_end;
 		m_step_info.cur_cycle = 1;
 
-		for (u32 i = 0; i < m_legs_count; i++)
+		for(u32 i = 0; i < m_legs_count; i++)
 		{
 			m_step_info.activity[i].handled = false;
 			m_step_info.activity[i].cycle = m_step_info.cur_cycle;
@@ -221,20 +221,20 @@ fvec3 CStepManager::get_foot_position(ELegType leg_type)
 
 void CStepManager::load_foot_bones(CInifile::Sect& data)
 {
-	for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); ++I)
+	for(CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); ++I)
 	{
 		const CInifile::Item& item = *I;
 
 		u16 index = smart_cast<CKinematics*>(m_object->Visual())->LL_BoneID(*item.second);
 		VERIFY3(index != BI_NONE, "foot bone not found", *item.second);
 
-		if (xr_strcmp(*item.first, "front_left") == 0)
+		if(xr_strcmp(*item.first, "front_left") == 0)
 			m_foot_bones[eFrontLeft] = index;
-		else if (xr_strcmp(*item.first, "front_right") == 0)
+		else if(xr_strcmp(*item.first, "front_right") == 0)
 			m_foot_bones[eFrontRight] = index;
-		else if (xr_strcmp(*item.first, "back_right") == 0)
+		else if(xr_strcmp(*item.first, "back_right") == 0)
 			m_foot_bones[eBackRight] = index;
-		else if (xr_strcmp(*item.first, "back_left") == 0)
+		else if(xr_strcmp(*item.first, "back_left") == 0)
 			m_foot_bones[eBackLeft] = index;
 	}
 }
@@ -242,21 +242,21 @@ void CStepManager::load_foot_bones(CInifile::Sect& data)
 void CStepManager::reload_foot_bones()
 {
 	CInifile* ini = smart_cast<CKinematics*>(m_object->Visual())->LL_UserData();
-	if (ini && ini->section_exist("foot_bones"))
+	if(ini && ini->section_exist("foot_bones"))
 	{
 		load_foot_bones(ini->r_section("foot_bones"));
 	}
 	else
 	{
-		if (!pSettings->line_exist(*m_object->cNameSect(), "foot_bones"))
+		if(!pSettings->line_exist(*m_object->cNameSect(), "foot_bones"))
 			R_ASSERT2(false, "section [foot_bones] not found in monster user_data");
 		load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(), "foot_bones")));
 	}
 
 	// проверка на соответсвие
 	int count = 0;
-	for (u32 i = 0; i < MAX_LEGS_COUNT; i++)
-		if (m_foot_bones[i] != BI_NONE)
+	for(u32 i = 0; i < MAX_LEGS_COUNT; i++)
+		if(m_foot_bones[i] != BI_NONE)
 			count++;
 
 	VERIFY(count == m_legs_count);

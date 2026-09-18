@@ -77,7 +77,7 @@ void CWeaponStatMgun::Load(LPCSTR section)
 
 BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inheritedPH::net_Spawn(DC))
+	if(!inheritedPH::net_Spawn(DC))
 		return FALSE;
 
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
@@ -142,9 +142,9 @@ void CWeaponStatMgun::net_Import(NET_Packet& P) // import from server
 	u8 state = P.r_u8();
 	load_data(m_destEnemyDir, P);
 
-	if (TRUE == IsWorking() && !state)
+	if(TRUE == IsWorking() && !state)
 		FireEnd();
-	if (FALSE == IsWorking() && state)
+	if(FALSE == IsWorking() && state)
 		FireStart();
 }
 
@@ -154,7 +154,7 @@ void CWeaponStatMgun::UpdateCL()
 	UpdateBarrelDir();
 	UpdateFire();
 
-	if (OwnerActor() && OwnerActor()->IsMyCamera())
+	if(OwnerActor() && OwnerActor()->IsMyCamera())
 	{
 		cam_Update(Engine.TimeManager.GetDeltaTime(), g_fov);
 		OwnerActor()->Cameras().UpdateFromCamera(Camera());
@@ -167,7 +167,7 @@ void CWeaponStatMgun::UpdateCL()
 //							float impulse, ALife::EHitType hit_type)
 void CWeaponStatMgun::Hit(SHit* pHDS)
 {
-	if (NULL == Owner())
+	if(NULL == Owner())
 		//		inheritedPH::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 		inheritedPH::Hit(pHDS);
 }
@@ -195,7 +195,7 @@ void CWeaponStatMgun::UpdateBarrelDir()
 		float sv_x = m_tgt_x_rot;
 
 		clamp(m_tgt_x_rot, -m_lim_x_rot.y, -m_lim_x_rot.x);
-		if (!fsimilar(sv_x, m_tgt_x_rot, EPS_L))
+		if(!fsimilar(sv_x, m_tgt_x_rot, EPS_L))
 			m_allow_fire = FALSE;
 	}
 	{ // y angle
@@ -204,7 +204,7 @@ void CWeaponStatMgun::UpdateBarrelDir()
 		m_tgt_y_rot = angle_normalize_signed(m_bind_y_rot - dep.getH());
 		float sv_y = m_tgt_y_rot;
 		clamp(m_tgt_y_rot, -m_lim_y_rot.y, -m_lim_y_rot.x);
-		if (!fsimilar(sv_y, m_tgt_y_rot, EPS_L))
+		if(!fsimilar(sv_y, m_tgt_y_rot, EPS_L))
 			m_allow_fire = FALSE;
 	}
 
@@ -233,7 +233,7 @@ void CWeaponStatMgun::cam_Update(float dt, float fov)
 	Camera()->yaw = angle_inertion_var(Camera()->yaw, des_cam_dir.x, 0.5f, 7.5f, PI_DIV_6, Engine.TimeManager.GetDeltaTime());
 	Camera()->pitch = angle_inertion_var(Camera()->pitch, des_cam_dir.y, 0.5f, 7.5f, PI_DIV_6, Engine.TimeManager.GetDeltaTime());
 
-	if (OwnerActor())
+	if(OwnerActor())
 	{
 		// rotate head
 		OwnerActor()->Orientation().yaw = -Camera()->yaw;
@@ -259,10 +259,11 @@ void CWeaponStatMgun::SetDesiredDir(float h, float p)
 void CWeaponStatMgun::Action(int id, u32 flags)
 {
 	inheritedHolder::Action(id, flags);
-	switch (id)
+	switch(id)
 	{
-	case kWPN_FIRE: {
-		if (flags == CMD_START)
+	case kWPN_FIRE:
+	{
+		if(flags == CMD_START)
 			FireStart();
 		else
 			FireEnd();
@@ -274,7 +275,7 @@ void CWeaponStatMgun::Action(int id, u32 flags)
 void CWeaponStatMgun::SetParam(int id, fvec2 val)
 {
 	inheritedHolder::SetParam(id, val);
-	switch (id)
+	switch(id)
 	{
 	case DESIRED_DIR:
 		SetDesiredDir(val.x, val.y);

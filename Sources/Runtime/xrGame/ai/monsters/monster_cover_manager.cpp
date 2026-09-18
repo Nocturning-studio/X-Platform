@@ -114,18 +114,18 @@ void CCoverEvaluator::evaluate(const CCoverPoint* cover_point, float weight)
 	// DBG().level_info(this).add_item(cover_point->position(), D3DCOLOR_XRGB(0,255,0));
 #endif
 	CMonsterSquad* squad = monster_squad().get_squad(m_object);
-	if (squad->is_locked_cover(cover_point->level_vertex_id()))
+	if(squad->is_locked_cover(cover_point->level_vertex_id()))
 		return;
 
-	if (fis_zero(weight))
+	if(fis_zero(weight))
 		return;
 
 	float dest_distance = m_dest_position.distance_to(cover_point->position());
 
-	if ((dest_distance <= m_min_distance) && (m_current_distance > dest_distance))
+	if((dest_distance <= m_min_distance) && (m_current_distance > dest_distance))
 		return;
 
-	if ((dest_distance >= m_max_distance) && (m_current_distance < dest_distance))
+	if((dest_distance >= m_max_distance) && (m_current_distance < dest_distance))
 		return;
 
 	fvec3 direction;
@@ -135,12 +135,12 @@ void CCoverEvaluator::evaluate(const CCoverPoint* cover_point, float weight)
 
 	float cover_value = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
 	float value = cover_value;
-	if (ai().level_graph().neighbour_in_direction(direction, cover_point->level_vertex_id()))
+	if(ai().level_graph().neighbour_in_direction(direction, cover_point->level_vertex_id()))
 		value += 10.f;
 
 	value /= weight;
 
-	if (value >= m_best_value)
+	if(value >= m_best_value)
 		return;
 
 	m_selected = cover_point;
@@ -206,14 +206,14 @@ void CMonsterCoverManager::less_cover_direction(fvec3& dir)
 	fvec3 direction;
 
 	// trace discretely left
-	for (float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang - ANGLE_DISP_STEP))
+	for(float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang - ANGLE_DISP_STEP))
 	{
 
 		direction.setHP(ang, 0.f);
 
-		if (Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, m_object))
+		if(Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, m_object))
 		{
-			if ((l_rq.range < TRACE_STATIC_DIST))
+			if((l_rq.range < TRACE_STATIC_DIST))
 			{
 				angle_from = ang;
 				break;
@@ -222,14 +222,14 @@ void CMonsterCoverManager::less_cover_direction(fvec3& dir)
 	}
 
 	// trace discretely right
-	for (float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang + ANGLE_DISP_STEP))
+	for(float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang + ANGLE_DISP_STEP))
 	{
 
 		direction.setHP(ang, 0.f);
 
-		if (Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, m_object))
+		if(Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, m_object))
 		{
-			if ((l_rq.range < TRACE_STATIC_DIST))
+			if((l_rq.range < TRACE_STATIC_DIST))
 			{
 				angle_to = ang;
 				break;

@@ -22,27 +22,27 @@ void xrServer::OnCL_Disconnected(IClient* CL)
 	ClientID clientID;
 	clientID.set(0);
 
-	if (xrCData->owner != 0)
+	if(xrCData->owner != 0)
 	{
 		game->AddDelayedEvent(P, GAME_EVENT_PLAYER_DISCONNECTED, 0, clientID);
 	};
 
 	//
 	xrS_entities::iterator I = entities.begin(), E = entities.end();
-	if (client_Count() > 1 && !CL->flags.bLocal)
+	if(client_Count() > 1 && !CL->flags.bLocal)
 	{
 		// Migrate entities
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			CSE_Abstract* entity = I->second;
-			if (entity->owner == CL)
+			if(entity->owner == CL)
 				PerformMigration(entity, (xrClientData*)CL, SelectBestClientToMigrateTo(entity, TRUE));
 		}
 	}
 	else
 	{
 		// Destroy entities
-		while (!entities.empty())
+		while(!entities.empty())
 		{
 			CSE_Abstract* entity = entities.begin()->second;
 			entity_Destroy(entity);
@@ -53,7 +53,7 @@ void xrServer::OnCL_Disconnected(IClient* CL)
 	Server_Client_Check(CL);
 
 #ifdef BATTLEYE
-	if (g_pGameLevel && Level().battleye_system.server)
+	if(g_pGameLevel && Level().battleye_system.server)
 	{
 		Level().battleye_system.server->RemovePlayer(CL->ID.value());
 	}

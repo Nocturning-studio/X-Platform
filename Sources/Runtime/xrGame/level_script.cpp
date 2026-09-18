@@ -43,7 +43,7 @@ void check_object(CScriptGameObject* object)
 	{
 		Msg("check_object %s", object->Name());
 	}
-	catch (...)
+	catch(...)
 	{
 		object = object;
 	}
@@ -52,12 +52,12 @@ void check_object(CScriptGameObject* object)
 CScriptGameObject* tpfGetActor()
 {
 	static bool first_time = true;
-	if (first_time)
+	if(first_time)
 		ai().script_engine().script_log(eLuaMessageTypeError, "Do not use level.actor function!");
 	first_time = false;
 
 	CActor* l_tpActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (l_tpActor)
+	if(l_tpActor)
 		return (smart_cast<CGameObject*>(l_tpActor)->lua_game_object());
 	else
 		return (0);
@@ -66,12 +66,12 @@ CScriptGameObject* tpfGetActor()
 CScriptGameObject* get_object_by_name(LPCSTR caObjectName)
 {
 	static bool first_time = true;
-	if (first_time)
+	if(first_time)
 		ai().script_engine().script_log(eLuaMessageTypeError, "Do not use level.object function!");
 	first_time = false;
 
 	CGameObject* l_tpGameObject = smart_cast<CGameObject*>(Level().Objects.FindObjectByName(caObjectName));
-	if (l_tpGameObject)
+	if(l_tpGameObject)
 		return (l_tpGameObject->lua_game_object());
 	else
 		return (0);
@@ -81,7 +81,7 @@ CScriptGameObject* get_object_by_name(LPCSTR caObjectName)
 CScriptGameObject* get_object_by_id(u32 id)
 {
 	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
-	if (!pGameObject)
+	if(!pGameObject)
 		return NULL;
 
 	return pGameObject->lua_game_object();
@@ -109,7 +109,7 @@ bool is_wfx_playing()
 
 void set_time_factor(float time_factor)
 {
-	if (!OnServer())
+	if(!OnServer())
 		return;
 
 	Level().Server->game->SetGameTimeFactor(time_factor);
@@ -213,14 +213,14 @@ fvec3 vertex_position(u32 level_vertex_id)
 void map_add_object_spot(u16 id, LPCSTR spot_type, LPCSTR text)
 {
 	CMapLocation* ml = Level().MapManager().AddMapLocation(spot_type, id);
-	if (xr_strlen(text))
+	if(xr_strlen(text))
 		ml->SetHint(text);
 }
 
 void map_add_object_spot_ser(u16 id, LPCSTR spot_type, LPCSTR text)
 {
 	CMapLocation* ml = Level().MapManager().AddMapLocation(spot_type, id);
-	if (xr_strlen(text))
+	if(xr_strlen(text))
 		ml->SetHint(text);
 
 	ml->SetSerializable(true);
@@ -229,7 +229,7 @@ void map_add_object_spot_ser(u16 id, LPCSTR spot_type, LPCSTR text)
 void map_change_spot_hint(u16 id, LPCSTR spot_type, LPCSTR text)
 {
 	CMapLocation* ml = Level().MapManager().GetMapLocation(spot_type, id);
-	if (!ml)
+	if(!ml)
 		return;
 	ml->SetHint(text);
 }
@@ -401,19 +401,19 @@ Fbox get_bounding_volume()
 
 void iterate_sounds(LPCSTR prefix, u32 max_count, const CScriptCallbackEx<void>& callback)
 {
-	for (int j = 0, N = _GetItemCount(prefix); j < N; ++j)
+	for(int j = 0, N = _GetItemCount(prefix); j < N; ++j)
 	{
 		string_path fn, s;
 		LPSTR S = (LPSTR)&s;
 		_GetItem(prefix, j, S);
-		if (FS.exist(fn, "$game_sounds$", S, ".ogg"))
+		if(FS.exist(fn, "$game_sounds$", S, ".ogg"))
 			callback(prefix);
 
-		for (u32 i = 0; i < max_count; ++i)
+		for(u32 i = 0; i < max_count; ++i)
 		{
 			string_path name;
 			sprintf_s(name, "%s%d", S, i);
-			if (FS.exist(fn, "$game_sounds$", name, ".ogg"))
+			if(FS.exist(fn, "$game_sounds$", name, ".ogg"))
 				callback(name);
 		}
 	}
@@ -512,7 +512,7 @@ void remove_pp_effector(int id)
 {
 	CPostprocessAnimator* pp = smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
 
-	if (pp)
+	if(pp)
 		pp->Stop(1.0f);
 }
 
@@ -520,7 +520,7 @@ void set_pp_effector_factor(int id, float f, float f_sp)
 {
 	CPostprocessAnimator* pp = smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
 
-	if (pp)
+	if(pp)
 		pp->SetDesiredFactor(f, f_sp);
 }
 
@@ -528,7 +528,7 @@ void set_pp_effector_factor2(int id, float f)
 {
 	CPostprocessAnimator* pp = smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
 
-	if (pp)
+	if(pp)
 		pp->SetCurrentFactor(f);
 }
 
@@ -599,16 +599,14 @@ void CLevel::script_register(lua_State* L)
 		def("start_stop_menu", start_stop_menu), def("add_dialog_to_render", add_dialog_to_render),
 		def("remove_dialog_to_render", remove_dialog_to_render), def("main_input_receiver", main_input_receiver),
 		def("hide_indicators", hide_indicators), def("show_indicators", show_indicators),
-		def("add_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&)) & add_call)),
+		def("add_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&))&add_call)),
 		def("add_call",
-			((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)) &
-			 add_call)),
-		def("add_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR)) & add_call)),
-		def("remove_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&)) & remove_call)),
+			((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&))&add_call)),
+		def("add_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR))&add_call)),
+		def("remove_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&))&remove_call)),
 		def("remove_call",
-			((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)) &
-			 remove_call)),
-		def("remove_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR)) & remove_call)),
+			((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&))&remove_call)),
+		def("remove_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR))&remove_call)),
 		def("remove_calls_for_object", remove_calls_for_object), def("present", is_level_present),
 		def("disable_input", disable_input), def("enable_input", enable_input), def("spawn_phantom", spawn_phantom),
 

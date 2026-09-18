@@ -21,7 +21,7 @@
 void CScriptGameObject::SetTipText(LPCSTR tip_text)
 {
 	CUsableScriptObject* l_tpUseableScriptObject = smart_cast<CUsableScriptObject*>(&object());
-	if (!l_tpUseableScriptObject)
+	if(!l_tpUseableScriptObject)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"SetTipText. Reason: the object is not usable");
 	else
@@ -31,7 +31,7 @@ void CScriptGameObject::SetTipText(LPCSTR tip_text)
 void CScriptGameObject::SetTipTextDefault()
 {
 	CUsableScriptObject* l_tpUseableScriptObject = smart_cast<CUsableScriptObject*>(&object());
-	if (!l_tpUseableScriptObject)
+	if(!l_tpUseableScriptObject)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"SetTipTextDefault . Reason: the object is not usable");
 	else
@@ -41,7 +41,7 @@ void CScriptGameObject::SetTipTextDefault()
 void CScriptGameObject::SetNonscriptUsable(bool nonscript_usable)
 {
 	CUsableScriptObject* l_tpUseableScriptObject = smart_cast<CUsableScriptObject*>(&object());
-	if (!l_tpUseableScriptObject)
+	if(!l_tpUseableScriptObject)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"SetNonscriptUsable . Reason: the object is not usable");
 	else
@@ -51,7 +51,7 @@ void CScriptGameObject::SetNonscriptUsable(bool nonscript_usable)
 fvec3 CScriptGameObject::GetCurrentDirection()
 {
 	CProjector* obj = smart_cast<CProjector*>(&object());
-	if (!obj)
+	if(!obj)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"Script Object : cannot access class member GetCurrentDirection!");
@@ -73,7 +73,7 @@ CScriptGameObject::~CScriptGameObject()
 CScriptGameObject* CScriptGameObject::Parent() const
 {
 	CGameObject* l_tpGameObject = smart_cast<CGameObject*>(object().H_Parent());
-	if (l_tpGameObject)
+	if(l_tpGameObject)
 		return (l_tpGameObject->lua_game_object());
 	else
 		return (0);
@@ -102,13 +102,13 @@ LPCSTR CScriptGameObject::Section() const
 void CScriptGameObject::Kill(CScriptGameObject* who)
 {
 	CEntity* l_tpEntity = smart_cast<CEntity*>(&object());
-	if (!l_tpEntity)
+	if(!l_tpEntity)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s cannot access class member Kill!",
 										*object().cName());
 		return;
 	}
-	if (!l_tpEntity->AlreadyDie())
+	if(!l_tpEntity->AlreadyDie())
 		l_tpEntity->KillEntity(who ? who->object().ID() : object().ID());
 	else
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "attempt to kill dead object %s",
@@ -118,7 +118,7 @@ void CScriptGameObject::Kill(CScriptGameObject* who)
 bool CScriptGameObject::Alive() const
 {
 	CEntity* entity = smart_cast<CEntity*>(&object());
-	if (!entity)
+	if(!entity)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member Alive!");
@@ -130,7 +130,7 @@ bool CScriptGameObject::Alive() const
 ALife::ERelationType CScriptGameObject::GetRelationType(CScriptGameObject* who)
 {
 	CEntityAlive* l_tpEntityAlive1 = smart_cast<CEntityAlive*>(&object());
-	if (!l_tpEntityAlive1)
+	if(!l_tpEntityAlive1)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"%s cannot access class member GetRelationType!", *object().cName());
@@ -138,7 +138,7 @@ ALife::ERelationType CScriptGameObject::GetRelationType(CScriptGameObject* who)
 	}
 
 	CEntityAlive* l_tpEntityAlive2 = smart_cast<CEntityAlive*>(&who->object());
-	if (!l_tpEntityAlive2)
+	if(!l_tpEntityAlive2)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"%s cannot apply GetRelationType method for non-alive object!",
@@ -149,10 +149,11 @@ ALife::ERelationType CScriptGameObject::GetRelationType(CScriptGameObject* who)
 	return l_tpEntityAlive1->tfGetRelationType(l_tpEntityAlive2);
 }
 
-template <typename T> IC T* CScriptGameObject::action_planner()
+template <typename T>
+IC T* CScriptGameObject::action_planner()
 {
 	CAI_Stalker* manager = smart_cast<CAI_Stalker*>(&object());
-	if (!manager)
+	if(!manager)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CAI_Stalker : cannot access class member action_planner!");
 	return (&manager->brain());
@@ -166,7 +167,7 @@ CScriptActionPlanner* script_action_planner(CScriptGameObject* obj)
 void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_enemy_callback!");
@@ -178,7 +179,7 @@ void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor
 void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor, const luabind::object& object)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_enemy_callback!");
@@ -190,7 +191,7 @@ void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor
 void CScriptGameObject::set_enemy_callback()
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_enemy_callback!");
@@ -227,13 +228,13 @@ void CScriptGameObject::set_fastcall(const luabind::functor<bool>& functor, cons
 void CScriptGameObject::set_const_force(const fvec3& dir, float value, u32 time_interval)
 {
 	CPhysicsShell* shell = object().cast_physics_shell_holder()->PPhysicsShell();
-	if (!ph_world)
+	if(!ph_world)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"set_const_force : ph_world do not exist!");
 		return;
 	}
-	if (!shell)
+	if(!shell)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"set_const_force : object %s has no physics shell!", *object().cName());

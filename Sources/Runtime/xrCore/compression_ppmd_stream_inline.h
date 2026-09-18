@@ -24,7 +24,7 @@ inline void stream::put_char(const u8& object)
 inline int stream::get_char()
 {
 	VERIFY(m_pointer >= m_buffer);
-	if (m_pointer < (m_buffer + m_buffer_size))
+	if(m_pointer < (m_buffer + m_buffer_size))
 		return (*m_pointer++);
 	return (EOF);
 }

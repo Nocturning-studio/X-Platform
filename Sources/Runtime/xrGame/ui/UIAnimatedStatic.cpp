@@ -24,13 +24,13 @@ CUIAnimatedStatic::CUIAnimatedStatic()
 
 void CUIAnimatedStatic::Update()
 {
-	if (!m_bPlaying)
+	if(!m_bPlaying)
 		return;
 
 	static u32 oneFrameDuration = 0;
 
 	// Пересчитаем пааметры анимации
-	if (m_bParamsChanged && 0 != m_uFrameCount)
+	if(m_bParamsChanged && 0 != m_uFrameCount)
 	{
 		// Пересчитаем время одного кадра
 		oneFrameDuration = iCeil(m_uAnimationDuration / static_cast<float>(m_uFrameCount));
@@ -45,17 +45,17 @@ void CUIAnimatedStatic::Update()
 	m_prevTime = Engine.TimeManager.GetContinualTimeMs();
 
 	// Если анимация закончилась
-	if (m_uTimeElapsed > m_uAnimationDuration)
+	if(m_uTimeElapsed > m_uAnimationDuration)
 	{
 		Rewind(0);
-		if (!m_bCyclic)
+		if(!m_bCyclic)
 			Stop();
 	}
 
 	// Теперь вычисляем кадры в зависимости от времени
 	u32 curFrame = m_uTimeElapsed / oneFrameDuration;
 
-	if (curFrame != m_uCurFrame)
+	if(curFrame != m_uCurFrame)
 	{
 		m_uCurFrame = curFrame;
 		SetFrame(m_uCurFrame);
@@ -80,7 +80,7 @@ void CUIAnimatedStatic::SetAnimPos(float pos)
 
 	u32 curFrame = u32(m_uFrameCount * pos);
 
-	if (curFrame != m_uCurFrame)
+	if(curFrame != m_uCurFrame)
 	{
 		m_uCurFrame = curFrame;
 		SetFrame(m_uCurFrame);

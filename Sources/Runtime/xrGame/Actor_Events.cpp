@@ -36,25 +36,26 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	CInventoryOwner::OnEvent(P, type);
 
 	u16 id;
-	switch (type)
+	switch(type)
 	{
 	case GE_TRADE_BUY:
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
-		if (!O)
+		if(!O)
 		{
 			Msg("! Error: No object to take/buy [%d]", id);
 			break;
 		}
 
 		CFoodItem* pFood = smart_cast<CFoodItem*>(O);
-		if (pFood)
+		if(pFood)
 			pFood->m_eItemPlace = eItemPlaceRuck;
 
 		CGameObject* _GO = smart_cast<CGameObject*>(O);
 
-		if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_GO)))
+		if(inventory().CanTakeItem(smart_cast<CInventoryItem*>(_GO)))
 		{
 			O->H_SetParent(smart_cast<CObject*>(this));
 
@@ -62,17 +63,17 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
 			CUIGameSP* pGameSP = NULL;
 			CUI* ui = HUD().GetUI();
-			if (ui && ui->UIGame())
+			if(ui && ui->UIGame())
 			{
 				pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-				if (Level().CurrentViewEntity() == this)
+				if(Level().CurrentViewEntity() == this)
 					HUD().GetUI()->UIGame()->ReInitShownUI();
 			};
 
 			// добавить отсоединенный аддон в инвентарь
-			if (pGameSP)
+			if(pGameSP)
 			{
-				if (pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)
+				if(pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)
 				{
 					pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem*>(O));
 				}
@@ -90,12 +91,13 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	}
 	break;
 	case GE_TRADE_SELL:
-	case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		P.r_u16(id);
 		CObject* Obj = Level().Objects.net_Find(id);
 		//			R_ASSERT2( Obj, make_string("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str() );
 		VERIFY2(Obj, make_string("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str());
-		if (!Obj)
+		if(!Obj)
 		{
 			Msg("! GE_OWNERSHIP_REJECT: Object not found, id = %d", id);
 			break;
@@ -110,7 +112,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		Msg("--- Actor [%d][%s]  %s  [%d][%s]", ID(), Name(), act, GO->ID(), GO->cNameSect().c_str());
 #endif // MP_LOGGING
 		VERIFY(GO->H_Parent());
-		if (!GO->H_Parent())
+		if(!GO->H_Parent())
 		{
 			Msg("! ERROR: Actor [%d][%s] tries to reject item [%d][%s] that has no parent", ID(), Name(), GO->ID(),
 				GO->cNameSect().c_str());
@@ -120,7 +122,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		VERIFY2(GO->H_Parent()->ID() == ID(), make_string("actor [%d][%s] tries to drop not own object [%d][%s]", ID(),
 														  Name(), GO->ID(), GO->cNameSect().c_str())
 												  .c_str());
-		if (GO->H_Parent()->ID() != ID())
+		if(GO->H_Parent()->ID() != ID())
 		{
 			CActor* real_parent = smart_cast<CActor*>(GO->H_Parent());
 			Msg("! ERROR: Actor [%d][%s] tries to drop not own item [%d][%s], his parent is [%d][%s]", ID(), Name(),
@@ -128,7 +130,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			break;
 		}
 
-		if (!Obj->getDestroy() && inventory().DropItem(GO, just_before_destroy, dont_create_shell))
+		if(!Obj->getDestroy() && inventory().DropItem(GO, just_before_destroy, dont_create_shell))
 		{
 			// O->H_SetParent(0,just_before_destroy);//moved to DropItem
 			// feel_touch_deny(O,2000);
@@ -136,7 +138,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
 			// [12.11.07] Alexander Maniluk: extended GE_OWNERSHIP_REJECT packet for drop item to selected position
 			fvec3 dropPosition;
-			if (!P.r_eof())
+			if(!P.r_eof())
 			{
 				P.r_vec3(dropPosition);
 				GO->MoveTo(dropPosition);
@@ -148,14 +150,15 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 				MovePacket.w_vec3(dropPosition);
 				u_EventSend(MovePacket);*/
 			}
-			if (!just_before_destroy)
+			if(!just_before_destroy)
 				SelectBestWeapon(Obj);
-			if (Level().CurrentViewEntity() == this && HUD().GetUI() && HUD().GetUI()->UIGame())
+			if(Level().CurrentViewEntity() == this && HUD().GetUI() && HUD().GetUI()->UIGame())
 				HUD().GetUI()->UIGame()->ReInitShownUI();
 		}
 	}
 	break;
-	case GE_INV_ACTION: {
+	case GE_INV_ACTION:
+	{
 		s32 cmd;
 		P.r_s32(cmd);
 		u32 flags;
@@ -163,11 +166,11 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		s32 ZoomRndSeed = P.r_s32();
 		s32 ShotRndSeed = P.r_s32();
 
-		if (flags & CMD_START)
+		if(flags & CMD_START)
 		{
-			if (cmd == kWPN_ZOOM)
+			if(cmd == kWPN_ZOOM)
 				SetZoomRndSeed(ZoomRndSeed);
-			if (cmd == kWPN_FIRE)
+			if(cmd == kWPN_FIRE)
 				SetShotRndSeed(ShotRndSeed);
 			IR_OnKeyboardPress(cmd);
 		}
@@ -179,19 +182,20 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	case GEG_PLAYER_ITEM2BELT:
 	case GEG_PLAYER_ITEM2RUCK:
 	case GEG_PLAYER_ITEM_EAT:
-	case GEG_PLAYER_ACTIVATEARTEFACT: {
+	case GEG_PLAYER_ACTIVATEARTEFACT:
+	{
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
-		if (!O)
+		if(!O)
 			break;
-		if (O->getDestroy())
+		if(O->getDestroy())
 		{
 #ifdef DEBUG
 			Msg("! something to destroyed object - %s[%d]0x%X", *O->cName(), id, smart_cast<CInventoryItem*>(O));
 #endif
 			break;
 		}
-		switch (type)
+		switch(type)
 		{
 		case GEG_PLAYER_ITEM2SLOT:
 			inventory().Slot(smart_cast<CInventoryItem*>(O));
@@ -205,7 +209,8 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		case GEG_PLAYER_ITEM_EAT:
 			inventory().Eat(smart_cast<CInventoryItem*>(O));
 			break;
-		case GEG_PLAYER_ACTIVATEARTEFACT: {
+		case GEG_PLAYER_ACTIVATEARTEFACT:
+		{
 			CArtefact* pArtefact = smart_cast<CArtefact*>(O);
 			pArtefact->ActivateArtefact();
 		}
@@ -213,7 +218,8 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		}
 	}
 	break;
-	case GEG_PLAYER_ACTIVATE_SLOT: {
+	case GEG_PLAYER_ACTIVATE_SLOT:
+	{
 		u32 slot_id;
 		P.r_u32(slot_id);
 
@@ -221,13 +227,15 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 	}
 	break;
 
-	case GEG_PLAYER_WEAPON_HIDE_STATE: {
+	case GEG_PLAYER_WEAPON_HIDE_STATE:
+	{
 		u32 State = P.r_u32();
 		BOOL Set = !!P.r_u8();
 		inventory().SetSlotsBlocked((u16)State, !!Set);
 	}
 	break;
-	case GE_MOVE_ACTOR: {
+	case GE_MOVE_ACTOR:
+	{
 		fvec3 NewPos, NewRot;
 		P.r_vec3(NewPos);
 		P.r_vec3(NewRot);
@@ -235,28 +243,31 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		MoveActor(NewPos, NewRot);
 	}
 	break;
-	case GE_ACTOR_MAX_POWER: {
+	case GE_ACTOR_MAX_POWER:
+	{
 		conditions().MaxPower();
 		conditions().ClearWounds();
 		ClearBloodWounds();
 	}
 	break;
-	case GEG_PLAYER_ATTACH_HOLDER: {
+	case GEG_PLAYER_ATTACH_HOLDER:
+	{
 		u32 id = P.r_u32();
 		CObject* O = Level().Objects.net_Find(id);
-		if (!O)
+		if(!O)
 		{
 			Msg("! Error: No object to attach holder [%d]", id);
 			break;
 		}
 		VERIFY(m_holder == NULL);
 		CHolderCustom* holder = smart_cast<CHolderCustom*>(O);
-		if (!holder->Engaged())
+		if(!holder->Engaged())
 			use_Holder(holder);
 	}
 	break;
-	case GEG_PLAYER_DETACH_HOLDER: {
-		if (!m_holder)
+	case GEG_PLAYER_DETACH_HOLDER:
+	{
+		if(!m_holder)
 			break;
 		u32 id = P.r_u32();
 		CGameObject* GO = smart_cast<CGameObject*>(m_holder);
@@ -264,11 +275,13 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		use_Holder(NULL);
 	}
 	break;
-	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE: {
+	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
+	{
 		OnPlayHeadShotParticle(P);
 	}
 	break;
-	case GE_ACTOR_JUMPING: {
+	case GE_ACTOR_JUMPING:
+	{
 		/*
 		fvec3 dir;
 		P.r_dir(dir);

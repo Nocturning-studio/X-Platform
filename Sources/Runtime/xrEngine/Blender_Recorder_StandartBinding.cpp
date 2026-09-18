@@ -16,14 +16,14 @@
 #include "environment.h"
 
 // matrices
-#define BIND_DECLARE(xf)                                                                                               \
-	class cl_transform_##xf : public R_constant_setup                                                                      \
-	{                                                                                                                  \
-		virtual void setup(R_constant* C)                                                                              \
-		{                                                                                                              \
-			RenderBackend.transforms.set_c_##xf(C);                                                                               \
-		}                                                                                                              \
-	};                                                                                                                 \
+#define BIND_DECLARE(xf)                              \
+	class cl_transform_##xf : public R_constant_setup \
+	{                                                 \
+		virtual void setup(R_constant* C)             \
+		{                                             \
+			RenderBackend.transforms.set_c_##xf(C);   \
+		}                                             \
+	};                                                \
 	static cl_transform_##xf binder_##xf
 BIND_DECLARE(World);
 BIND_DECLARE(View);
@@ -32,14 +32,14 @@ BIND_DECLARE(WorldView);
 BIND_DECLARE(ViewProject);
 BIND_DECLARE(WorldViewProject);
 
-#define DECLARE_TREE_BIND(c)                                                                                           \
-	class cl_tree_##c : public R_constant_setup                                                                        \
-	{                                                                                                                  \
-		virtual void setup(R_constant* C)                                                                              \
-		{                                                                                                              \
-			RenderBackend.tree.set_c_##c(C);                                                                                  \
-		}                                                                                                              \
-	};                                                                                                                 \
+#define DECLARE_TREE_BIND(c)                    \
+	class cl_tree_##c : public R_constant_setup \
+	{                                           \
+		virtual void setup(R_constant* C)       \
+		{                                       \
+			RenderBackend.tree.set_c_##c(C);    \
+		}                                       \
+	};                                          \
 	static cl_tree_##c tree_binder_##c
 
 DECLARE_TREE_BIND(m_transform_v);
@@ -70,7 +70,7 @@ class cl_texgen : public R_constant_setup
 		float _h = float(Device.dwHeight);
 		float o_w = (.5f / _w);
 		float o_h = (.5f / _h);
-		fmat4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
+		fmat4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
 		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_WorldViewProject);
@@ -90,7 +90,7 @@ class cl_VPtexgen : public R_constant_setup
 		float _h = float(Device.dwHeight);
 		float o_w = (.5f / _w);
 		float o_h = (.5f / _h);
-		fmat4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f,		-0.5f,		0.0f, 0.0f,
+		fmat4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
 		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_ViewProject);
@@ -107,7 +107,7 @@ class cl_fog_params : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z),
@@ -125,7 +125,7 @@ class cl_fog_color : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z), 0);
@@ -141,7 +141,7 @@ static class cl_fog_density final : public R_constant_setup
 	fvec4 FogDensity;
 	void setup(R_constant* C) override
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_density, 0, 0, 0);
@@ -156,7 +156,7 @@ static class cl_fog_sky_influence final : public R_constant_setup
 	fvec4 FogDensity;
 	void setup(R_constant* C) override
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_sky_influence, 0, 0, 0);
@@ -171,7 +171,7 @@ static class cl_vertical_fog_density final : public R_constant_setup
 	fvec4 VerticalFogDensity;
 	void setup(R_constant* C) override
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			VerticalFogDensity.set(desc->vertical_fog_density, 0, 0, 0);
@@ -186,7 +186,7 @@ static class cl_vertical_fog_height final : public R_constant_setup
 	fvec4 VerticalFogHeight;
 	void setup(R_constant* C) override
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			VerticalFogHeight.set(desc->vertical_fog_height, 0, 0, 0);
@@ -265,7 +265,7 @@ class cl_sun0_color : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->sun_color.x), sRgbToLinear(desc->sun_color.y), sRgbToLinear(desc->sun_color.z), 0);
@@ -280,8 +280,8 @@ static class cl_env_color : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
-		fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS,sRgbToLinear( envdesc->hemi_color.y) * 2 + EPS,
-						   sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
+		fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS, sRgbToLinear(envdesc->hemi_color.y) * 2 + EPS,
+						sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
 		RenderBackend.set_Constant(C, envclr);
 	}
 } binder_env_color;
@@ -292,7 +292,7 @@ class cl_sun0_dir_w : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc->sun_dir.x, desc->sun_dir.y, desc->sun_dir.z, 0);
@@ -307,7 +307,7 @@ class cl_sun0_dir_e : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			fvec3 D;
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
@@ -327,7 +327,7 @@ class cl_amb_color : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->ambient.x), sRgbToLinear(desc->ambient.y), sRgbToLinear(desc->ambient.z), desc->weight);
@@ -343,7 +343,7 @@ class cl_ambient_brightness : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc->ambient_brightness, 0, 0, 0);
@@ -359,7 +359,7 @@ class cl_hemi_color : public R_constant_setup
 	fvec4 result;
 	virtual void setup(R_constant* C)
 	{
-		if (marker != Engine.TimeManager.GetFrameCount())
+		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->hemi_color.x), sRgbToLinear(desc->hemi_color.y), sRgbToLinear(desc->hemi_color.z), desc->hemi_color.w);
@@ -437,7 +437,7 @@ void CBlender_Compile::SetMapping()
 	set_Constant("rain_density", &binder_rain_density);
 
 	set_Constant("pos_decompression_params", &binder_pos_decompress_params);
-	
+
 	// env-params
 	set_Constant("env_color", &binder_env_color);
 
@@ -459,11 +459,11 @@ void CBlender_Compile::SetMapping()
 
 	set_Constant("screen_res", &binder_screen_res);
 
-	if (bDetail && bDetail_Diffuse && detail_scaler)
+	if(bDetail && bDetail_Diffuse && detail_scaler)
 		set_Constant("dt_params", detail_scaler);
 
 	// other common
-	for (u32 it = 0; it < Engine.ResourceManager->v_constant_setup.size(); it++)
+	for(u32 it = 0; it < Engine.ResourceManager->v_constant_setup.size(); it++)
 	{
 		std::pair<shared_str, R_constant_setup*> cs = Engine.ResourceManager->v_constant_setup[it];
 		set_Constant(*cs.first, cs.second);

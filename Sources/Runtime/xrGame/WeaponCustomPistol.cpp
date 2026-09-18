@@ -23,7 +23,7 @@ void CWeaponCustomPistol::switch2_Fire()
 
 void CWeaponCustomPistol::FireEnd()
 {
-	if (fTime <= 0)
+	if(fTime <= 0)
 	{
 		m_bPending = false;
 		inherited::FireEnd();

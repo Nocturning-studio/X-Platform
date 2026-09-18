@@ -19,11 +19,11 @@ CTracer::CTracer()
 	sh_Tracer.create("effects\\bullet_tracer", "fx\\fx_tracer");
 	sh_Geom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 	m_aColors.clear();
-	for (u8 i = 0; i < 255; i++)
+	for(u8 i = 0; i < 255; i++)
 	{
 		shared_str LineName;
 		LineName.sprintf("color_%d", i);
-		if (!pSettings->line_exist(TRACERS_COLOR_TABLE, LineName))
+		if(!pSettings->line_exist(TRACERS_COLOR_TABLE, LineName))
 			break;
 		float r, g, b;
 		sscanf(pSettings->r_string(TRACERS_COLOR_TABLE, *LineName), "%f,%f,%f", &r, &g, &b);
@@ -95,11 +95,11 @@ IC void FillSprite_Line(FVF::LIT*& pv, const fvec3& pos, const fvec3& dir, float
 void CTracer::Render(FVF::LIT*& verts, const fvec3& pos, const fvec3& center, const fvec3& dir, float length,
 					 float width, u8 colorID)
 {
-	//OPTICK_EVENT("CTracer::Render");
+	// OPTICK_EVENT("CTracer::Render");
 
-	if (::Render->ViewBase.testSphere_dirty((fvec3&)center, length * .5f))
+	if(::Render->ViewBase.testSphere_dirty((fvec3&)center, length * .5f))
 	{
-		if (colorID >= m_aColors.size())
+		if(colorID >= m_aColors.size())
 			colorID = 0;
 		FillSprite_Circle(verts, pos, width * .5f, width * .5f, m_aColors[colorID]);
 		FillSprite_Line(verts, center, dir, width * .5f, length * .5f, m_aColors[colorID]);

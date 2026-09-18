@@ -1,10 +1,14 @@
 ﻿---
-BasedOnStyle: Microsoft
 Language: Cpp
+BasedOnStyle: Microsoft
 PointerAlignment: Left
-SortIncludes: 'false'
-SortUsingDeclarations: 'false'
-SpaceAfterCStyleCast: 'false'
+DerivePointerAlignment: false
+SpaceBeforeParens: Never
+BreakBeforeBraces: Allman
+ColumnLimit: 0
+SortIncludes: false
+SortUsingDeclarations: false
+SpaceAfterCStyleCast: false
 UseTab: Always
-
+AllowShortFunctionsOnASingleLine: All
 ...

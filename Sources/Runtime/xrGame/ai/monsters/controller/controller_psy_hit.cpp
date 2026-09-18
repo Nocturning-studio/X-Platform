@@ -37,15 +37,15 @@ void CControllerPsyHit::reinit()
 
 bool CControllerPsyHit::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
-		return false;
-
-	if (Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))
+	if(m_man->is_captured_pure())
 		return false;
 
-	if (m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist)
+	if(Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))
+		return false;
+
+	if(m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist)
 		return false;
 
 	return true;
@@ -80,7 +80,7 @@ void CControllerPsyHit::deactivate()
 	m_man->release_pure(this);
 	m_man->unsubscribe(this, ControlCom::eventAnimationEnd);
 
-	if (m_blocked)
+	if(m_blocked)
 	{
 		NET_Packet P;
 
@@ -95,14 +95,14 @@ void CControllerPsyHit::deactivate()
 
 void CControllerPsyHit::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
 {
-	if (type == ControlCom::eventAnimationEnd)
+	if(type == ControlCom::eventAnimationEnd)
 	{
-		if (m_current_index < 3)
+		if(m_current_index < 3)
 		{
 			m_current_index++;
 			play_anim();
 
-			switch (m_current_index)
+			switch(m_current_index)
 			{
 			case 1:
 				death_glide_start();
@@ -134,18 +134,18 @@ void CControllerPsyHit::play_anim()
 
 bool CControllerPsyHit::check_conditions_final()
 {
-	if (!m_object->g_Alive())
+	if(!m_object->g_Alive())
 		return false;
-	if (!Actor())
+	if(!Actor())
 		return false;
-	if (m_object->EnemyMan.get_enemy() != Actor())
+	if(m_object->EnemyMan.get_enemy() != Actor())
 		return false;
-	if (!Actor()->g_Alive())
+	if(!Actor()->g_Alive())
 		return false;
 
-	if (!m_object->EnemyMan.see_enemy_now())
+	if(!m_object->EnemyMan.see_enemy_now())
 		return false;
-	if (m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist)
+	if(m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist)
 		return false;
 
 	//// trace enemy (extended check visibility)
@@ -221,7 +221,7 @@ bool CControllerPsyHit::check_conditions_final()
 
 void CControllerPsyHit::death_glide_start()
 {
-	if (!check_conditions_final())
+	if(!check_conditions_final())
 	{
 		m_man->deactivate(this);
 		return;
@@ -305,35 +305,35 @@ void CControllerPsyHit::update_frame()
 void CControllerPsyHit::set_sound_state(ESoundState state)
 {
 	CController* monster = smart_cast<CController*>(m_object);
-	if (state == ePrepare)
+	if(state == ePrepare)
 	{
 		monster->m_sound_tube_prepare.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
 	}
-	else if (state == eStart)
+	else if(state == eStart)
 	{
-		if (monster->m_sound_tube_prepare._feedback())
+		if(monster->m_sound_tube_prepare._feedback())
 			monster->m_sound_tube_prepare.stop();
 
 		monster->m_sound_tube_start.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
 		monster->m_sound_tube_pull.play_at_pos(Actor(), fvec3().set(0.f, 0.f, 0.f), sm_2D);
 	}
-	else if (state == eHit)
+	else if(state == eHit)
 	{
-		if (monster->m_sound_tube_start._feedback())
+		if(monster->m_sound_tube_start._feedback())
 			monster->m_sound_tube_start.stop();
-		if (monster->m_sound_tube_pull._feedback())
+		if(monster->m_sound_tube_pull._feedback())
 			monster->m_sound_tube_pull.stop();
 
 		// monster->m_sound_tube_hit_left.play_at_pos(Actor(), fvec3().set(-1.f, 0.f, 1.f), sm_2D);
 		// monster->m_sound_tube_hit_right.play_at_pos(Actor(), fvec3().set(1.f, 0.f, 1.f), sm_2D);
 	}
-	else if (state == eNone)
+	else if(state == eNone)
 	{
-		if (monster->m_sound_tube_start._feedback())
+		if(monster->m_sound_tube_start._feedback())
 			monster->m_sound_tube_start.stop();
-		if (monster->m_sound_tube_pull._feedback())
+		if(monster->m_sound_tube_pull._feedback())
 			monster->m_sound_tube_pull.stop();
-		if (monster->m_sound_tube_prepare._feedback())
+		if(monster->m_sound_tube_prepare._feedback())
 			monster->m_sound_tube_prepare.stop();
 	}
 
@@ -350,12 +350,12 @@ void CControllerPsyHit::hit()
 
 void CControllerPsyHit::on_death()
 {
-	if (!is_active())
+	if(!is_active())
 		return;
 
 	// Stop camera effector
 	CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
-	if (ce)
+	if(ce)
 	{
 		Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
 	}

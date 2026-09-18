@@ -19,17 +19,17 @@ CUICustomItem::~CUICustomItem()
 
 void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float x1, float y1, float x2, float y2)
 {
-	//OPTICK_EVENT("CUICustomItem::Render");
+	// OPTICK_EVENT("CUICustomItem::Render");
 
 	CTexture* T = RenderBackend.get_ActiveTexture(0);
 	fvec2 ts;
 	ts.set(float(T->get_Width()), float(T->get_Height()));
 
-	if (!(uFlags & flValidRect))
+	if(!(uFlags & flValidRect))
 	{
 		SetRect(0, 0, ts.x, ts.y);
 	}
-	if (!(uFlags & flValidOriginalRect))
+	if(!(uFlags & flValidOriginalRect))
 	{
 		iOriginalRect.set(0, 0, ts.x, ts.y);
 		uFlags |= flValidOriginalRect;
@@ -49,9 +49,9 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float
 	RBt.set(iOriginalRect.x2 / ts.x, iOriginalRect.y2 / ts.y);
 
 	// Check mirror mode
-	if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)
+	if(tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)
 		std::swap(LTt.x, RBt.x);
-	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
+	if(tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
 		std::swap(LTt.y, RBt.y);
 	// clip poly
 	sPoly2D S;
@@ -65,9 +65,9 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float
 	//	const C2DFrustum& FF = UI()->ScreenFrustum();
 	sPoly2D* R = UI()->ScreenFrustum().ClipPoly(S, D);
 	//	sPoly2D* R		= &S;
-	if (R && R->size())
+	if(R && R->size())
 	{
-		for (u32 k = 0; k < R->size() - 2; k++)
+		for(u32 k = 0; k < R->size() - 2; k++)
 		{
 			Pointer->set((*R)[0 + 0].pt.x, (*R)[0 + 0].pt.y, color, (*R)[0 + 0].uv.x, (*R)[0 + 0].uv.y);
 			Pointer++;
@@ -81,7 +81,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color, float
 //--------------------------------------------------------------------
 void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color)
 {
-	//OPTICK_EVENT("CUICustomItem::Render");
+	// OPTICK_EVENT("CUICustomItem::Render");
 
 	Render(Pointer, pos, color, iVisRect.x1, iVisRect.y1, iVisRect.x2, iVisRect.y2);
 }
@@ -89,7 +89,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos, u32 color)
 
 void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, float angle)
 {
-	//OPTICK_EVENT("CUICustomItem::Render");
+	// OPTICK_EVENT("CUICustomItem::Render");
 
 	//.	angle = -0.3f;
 	CTexture* T = RenderBackend.get_ActiveTexture(0);
@@ -98,10 +98,10 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, fl
 	ts.set(float(T->get_Width()), float(T->get_Height()));
 	hp.set(0.5f / ts.x, 0.5f / ts.y);
 
-	if (!(uFlags & flValidRect))
+	if(!(uFlags & flValidRect))
 		SetRect(0, 0, ts.x, ts.y);
 
-	if (!(uFlags & flValidOriginalRect))
+	if(!(uFlags & flValidOriginalRect))
 	{
 		iOriginalRect.set(0, 0, ts.x, ts.y);
 		uFlags |= flValidOriginalRect;
@@ -116,7 +116,7 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, fl
 	float sinA = std::sin(angle);
 
 	// Rotation
-	if (!(uFlags & flValidHeadingPivot))
+	if(!(uFlags & flValidHeadingPivot))
 		pivot.set(iVisRect.x2 / 2.f, iVisRect.y2 / 2.f);
 	else
 		pivot.set(iHeadingPivot.x, iHeadingPivot.y);
@@ -129,9 +129,9 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, fl
 	LTt.set(iOriginalRect.x1 / ts.x + hp.x, iOriginalRect.y1 / ts.y + hp.y);
 	RBt.set(iOriginalRect.x2 / ts.x + hp.x, iOriginalRect.y2 / ts.y + hp.y);
 	// Check mirror mode
-	if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)
+	if(tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)
 		std::swap(LTt.x, RBt.x);
-	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
+	if(tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
 		std::swap(LTt.y, RBt.y);
 
 	float kx = (UI()->is_16_9_mode()) ? 0.8333f : 1.0f;
@@ -156,13 +156,13 @@ void CUICustomItem::Render(FVF::TL*& Pointer, const fvec2& pos_ns, u32 color, fl
 	S[3].rotate_pt(pivot, cosA, sinA, kx);
 	S[3].pt.add(offset);
 
-	for (int i = 0; i < 4; ++i)
+	for(int i = 0; i < 4; ++i)
 		UI()->ClientToScreenScaled(S[i].pt);
 
 	sPoly2D D;
 	sPoly2D* R = UI()->ScreenFrustum().ClipPoly(S, D);
-	if (R && R->size())
-		for (u32 k = 0; k < R->size(); k++, Pointer++)
+	if(R && R->size())
+		for(u32 k = 0; k < R->size(); k++, Pointer++)
 		{
 			//.			fvec2 _pt;
 			//.			UI()->ClientToScreenScaled			(_pt, (*R)[k].pt.x, (*R)[k].pt.y);

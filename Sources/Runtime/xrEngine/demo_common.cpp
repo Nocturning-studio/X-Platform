@@ -35,7 +35,7 @@ void SetDefaultParameters()
 	g_bAutofocusEnabled = false;
 	g_bGridEnabled = false;
 	g_bBordersEnabled = false;
-	
+
 	g_bWatermarkEnabled = false;
 }
 
@@ -48,11 +48,11 @@ void ApplyFrameParameters(u32 frame, float interpolation_factor)
 {
 	u32 ActualFrame = frame;
 	u32 NextFrame = ActualFrame + 1;
-	
-	if (ActualFrame == TotalFramesCount)
+
+	if(ActualFrame == TotalFramesCount)
 		NextFrame -= 1;
 
-	if (!NeedInterpolation(NextFrame))
+	if(!NeedInterpolation(NextFrame))
 		NextFrame -= 1;
 
 	float FovActual = FramesArray[ActualFrame].Fov;
@@ -64,14 +64,14 @@ void ApplyFrameParameters(u32 frame, float interpolation_factor)
 
 	g_bBordersEnabled = FramesArray[ActualFrame].UseCinemaBorders;
 
-	if (g_bBordersEnabled)
+	if(g_bBordersEnabled)
 		Console->Execute("r_cinema_borders on");
 	else
 		Console->Execute("r_cinema_borders off");
 
 	g_bWatermarkEnabled = FramesArray[ActualFrame].UseWatermark;
 
-	if (g_bWatermarkEnabled)
+	if(g_bWatermarkEnabled)
 		Console->Execute("r_watermark on");
 	else
 		Console->Execute("r_watermark off");
@@ -101,7 +101,7 @@ void ResetParameters()
 /////////////////////////////////////////////////////////////////
 void SaveAllFramesDataToIni(int FramesCount)
 {
-	if (FramesCount == 0)
+	if(FramesCount == 0)
 		return;
 
 	TotalFramesCount = FramesCount;
@@ -114,7 +114,7 @@ void SaveAllFramesDataToIni(int FramesCount)
 
 	// Итерируемся по массиву, создавая секции с номерами ключевых кадров
 	// чтобы записать в них данные
-	for (int FramesIterator = 0; FramesIterator < (int)TotalFramesCount; FramesIterator++)
+	for(int FramesIterator = 0; FramesIterator < (int)TotalFramesCount; FramesIterator++)
 	{
 		string_path section_name = "frame_";
 		strcat_s(section_name, std::to_string(FramesIterator).c_str());
@@ -143,7 +143,7 @@ void ReadAllFramesDataFromIni(const char* name)
 
 	// Итерируемся по числу ключевых кадров чтобы найти секции с соответствующими
 	// номерами и присвоить данные из строк в них к структуре из массива с таким же номером
-	for (int FramesIterator = 0; FramesIterator < (int)TotalFramesCount; FramesIterator++)
+	for(int FramesIterator = 0; FramesIterator < (int)TotalFramesCount; FramesIterator++)
 	{
 		string_path section_name = "frame_";
 		strcat_s(section_name, std::to_string(FramesIterator).c_str());
@@ -178,7 +178,7 @@ fmat4x4 MakeCameraMatrixFromFrameNumber(int Frame)
 
 bool NeedInterpolation(int Frame)
 {
-	if (FramesArray[Frame].InterpolationType == DISABLE_INTERPOLATION)
+	if(FramesArray[Frame].InterpolationType == DISABLE_INTERPOLATION)
 		return false;
 	else
 		return true;

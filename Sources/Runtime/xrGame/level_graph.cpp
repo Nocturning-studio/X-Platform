@@ -62,10 +62,10 @@ u32 CLevelGraph::vertex(const fvec3& position) const
 	float min_dist = flt_max;
 	u32 selected;
 	set_invalid_vertex(selected);
-	for (u32 i = 0; i < header().vertex_count(); ++i)
+	for(u32 i = 0; i < header().vertex_count(); ++i)
 	{
 		float dist = distance(i, position);
-		if (dist < min_dist)
+		if(dist < min_dist)
 		{
 			min_dist = dist;
 			selected = i;
@@ -78,7 +78,7 @@ u32 CLevelGraph::vertex(const fvec3& position) const
 
 u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 {
-	//OPTICK_EVENT("CLevelGraph::vertex");
+	// OPTICK_EVENT("CLevelGraph::vertex");
 
 	START_PROFILE("Level_Graph::find vertex")
 #ifndef AI_COMPILER
@@ -87,10 +87,10 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 
 	u32 id;
 
-	if (valid_vertex_position(position))
+	if(valid_vertex_position(position))
 	{
 		// so, our position is inside the level graph bounding box
-		if (valid_vertex_id(current_node_id) && inside(vertex(current_node_id), position))
+		if(valid_vertex_id(current_node_id) && inside(vertex(current_node_id), position))
 		{
 			// so, our node corresponds to the position
 #ifndef AI_COMPILER
@@ -102,11 +102,11 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 		// so, our node doesn't correspond to the position
 		// try to search it with O(logN) time algorithm
 		u32 _vertex_id = vertex_id(position);
-		if (valid_vertex_id(_vertex_id))
+		if(valid_vertex_id(_vertex_id))
 		{
 			// so, there is a node which corresponds with x and z to the position
 			bool ok = true;
-			if (valid_vertex_id(current_node_id))
+			if(valid_vertex_id(current_node_id))
 			{
 				float y0 = vertex_plane_y(current_node_id, position.x, position.z);
 				float y1 = vertex_plane_y(_vertex_id, position.x, position.z);
@@ -114,11 +114,11 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 				bool over1 = position.y > y1;
 				float y_dist0 = position.y - y0;
 				float y_dist1 = position.y - y1;
-				if (over0)
+				if(over0)
 				{
-					if (over1)
+					if(over1)
 					{
-						if (y_dist1 - y_dist0 > 1.f)
+						if(y_dist1 - y_dist0 > 1.f)
 							ok = false;
 						else
 							ok = true;
@@ -130,7 +130,7 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 				}
 				else
 				{
-					if (over1)
+					if(over1)
 					{
 						ok = true;
 					}
@@ -140,7 +140,7 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 					}
 				}
 			}
-			if (ok)
+			if(ok)
 			{
 #ifndef AI_COMPILER
 				Engine.Statistic->AI_Node.End();
@@ -150,7 +150,7 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 		}
 	}
 
-	if (!valid_vertex_id(current_node_id))
+	if(!valid_vertex_id(current_node_id))
 	{
 		// so, we do not have a correct current node
 		// performing very slow full search
@@ -174,16 +174,16 @@ u32 CLevelGraph::vertex(u32 current_node_id, const fvec3& position) const
 	float best_distance_sqr = position.distance_to_sqr(point);
 	const_iterator i, e;
 	begin(current_node_id, i, e);
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		u32 level_vertex_id = value(current_node_id, i);
-		if (!valid_vertex_id(level_vertex_id))
+		if(!valid_vertex_id(level_vertex_id))
 			continue;
 
 		contour(_contour, level_vertex_id);
 		nearest(point, position, _contour);
 		float distance_sqr = position.distance_to_sqr(point);
-		if (best_distance_sqr > distance_sqr)
+		if(best_distance_sqr > distance_sqr)
 		{
 			best_distance_sqr = distance_sqr;
 			best_vertex_id = level_vertex_id;
@@ -204,25 +204,25 @@ u32 CLevelGraph::vertex_id(const fvec3& position) const
 	CVertex* B = m_nodes;
 	CVertex* E = m_nodes + header().vertex_count();
 	CVertex* I = std::lower_bound(B, E, _vertex_position.xz());
-	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
+	if((I == E) || ((*I).position().xz() != _vertex_position.xz()))
 		return (u32(-1));
 
 	u32 best_vertex_id = u32(I - B);
 	float y = vertex_plane_y(best_vertex_id, position.x, position.z);
-	for (++I; I != E; ++I)
+	for(++I; I != E; ++I)
 	{
-		if ((*I).position().xz() != _vertex_position.xz())
+		if((*I).position().xz() != _vertex_position.xz())
 			break;
 
 		u32 new_vertex_id = u32(I - B);
 		float _y = vertex_plane_y(new_vertex_id, position.x, position.z);
-		if (y <= position.y)
+		if(y <= position.y)
 		{
 			// so, current node is under the specified position
-			if (_y <= position.y)
+			if(_y <= position.y)
 			{
 				// so, new node is under the specified position
-				if (position.y - _y < position.y - y)
+				if(position.y - _y < position.y - y)
 				{
 					// so, new node is closer to the specified position
 					y = _y;
@@ -232,7 +232,7 @@ u32 CLevelGraph::vertex_id(const fvec3& position) const
 		}
 		else
 			// so, current node is over the specified position
-			if (_y <= position.y)
+			if(_y <= position.y)
 			{
 				// so, new node is under the specified position
 				y = _y;
@@ -240,7 +240,7 @@ u32 CLevelGraph::vertex_id(const fvec3& position) const
 			}
 			else
 				// so, new node is over the specified position
-				if (_y - position.y < y - position.y)
+				if(_y - position.y < y - position.y)
 				{
 					// so, new node is closer to the specified position
 					y = _y;

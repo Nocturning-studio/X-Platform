@@ -21,7 +21,8 @@ class ENGINE_API IGame_Persistent :
 	public pureFrame
 {
   public:
-	union params {
+	union params
+	{
 		struct
 		{
 			string256 m_game_or_spawn;
@@ -37,14 +38,14 @@ class ENGINE_API IGame_Persistent :
 		}
 		void reset()
 		{
-			for (int i = 0; i < 4; ++i)
+			for(int i = 0; i < 4; ++i)
 				strcpy_s(m_params[i], "");
 		}
 		void parse_cmd_line(LPCSTR cmd_line)
 		{
 			reset();
 			int n = _min(4, _GetItemCount(cmd_line, '/'));
-			for (int i = 0; i < n; ++i)
+			for(int i = 0; i < n; ++i)
 			{
 				_GetItem(cmd_line, i, m_params[i], '/');
 				xr_strlwr(m_params[i]);
@@ -81,8 +82,8 @@ class ENGINE_API IGame_Persistent :
 	{
 		return FALSE;
 	}; // should return true if we want to have second function called
-	virtual void OnRenderPPUI_main(){};
-	virtual void OnRenderPPUI_PP(){};
+	virtual void OnRenderPPUI_main() {};
+	virtual void OnRenderPPUI_PP() {};
 
 	virtual void OnAppStart();
 	virtual void OnAppEnd();
@@ -95,24 +96,24 @@ class ENGINE_API IGame_Persistent :
 	virtual void OnGameStart();
 	virtual void OnGameEnd();
 
-	virtual void UpdateGameType(){};
-	 
+	virtual void UpdateGameType() {};
+
 	// Depth of field
 	virtual void GetCurrentDof(fvec3& dof)
 	{
 		dof.set(100.0f, 100.0f, 100.f);
 	};
-	virtual void SetBaseDof(const fvec3& dof){};
-	virtual void SetPickableEffectorDOF(bool bSet){};
-	virtual void SetEffectorDOF(const fvec3& needed_dof){};
-	virtual void RestoreEffectorDOF(){};
+	virtual void SetBaseDof(const fvec3& dof) {};
+	virtual void SetPickableEffectorDOF(bool bSet) {};
+	virtual void SetEffectorDOF(const fvec3& needed_dof) {};
+	virtual void RestoreEffectorDOF() {};
 
 	// Night vision
 	virtual bool GetNightVisionState()
 	{
 		return false;
 	};
-	virtual void SetNightVisionState(bool state){};
+	virtual void SetNightVisionState(bool state) {};
 
 	virtual void RegisterModel(IRender_Visual* V)
 #ifndef _EDITOR
@@ -156,7 +157,7 @@ class ENGINE_API IGame_Persistent :
 class IMainMenu
 {
   public:
-	virtual ~IMainMenu(){};
+	virtual ~IMainMenu() {};
 	virtual void Activate(bool bActive) = 0;
 	virtual bool IsActive() = 0;
 	virtual void DestroyInternal(bool bForce) = 0;

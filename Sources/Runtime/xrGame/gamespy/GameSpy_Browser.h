@@ -62,7 +62,7 @@ struct ServerInfo
 
 	int Index;
 
-	ServerInfo(){};
+	ServerInfo() {};
 	ServerInfo(string128 NewAddress)
 	{
 		strcpy(m_Address, NewAddress);
@@ -125,8 +125,8 @@ class CGameSpy_Browser
   private:
 	//------------------------------- GameSpy_ServerBrowser -----------------------
 	//	GAMESPY_FN_VAR_DECL(void*, ServerBrowserNew, (const char *queryForGamename, const char *queryFromGamename, const
-	//char *queryFromKey, int queryFromVersion, int maxConcUpdates, int queryVersion, SBBool bLAN_Only, fnSBCallback
-	//callback, void *instance));
+	// char *queryFromKey, int queryFromVersion, int maxConcUpdates, int queryVersion, SBBool bLAN_Only, fnSBCallback
+	// callback, void *instance));
 	GAMESPY_FN_VAR_DECL(void*, ServerBrowserNew, (SBBool bLAN_Only, fnSBCallback callback, void* instance));
 	GAMESPY_FN_VAR_DECL(void, ServerBrowserFree, (void* sb));
 	GAMESPY_FN_VAR_DECL(void, ServerBrowserClear, (void* sb));
@@ -135,12 +135,12 @@ class CGameSpy_Browser
 	GAMESPY_FN_VAR_DECL(SBState, ServerBrowserState, (void* sb));
 	GAMESPY_FN_VAR_DECL(void, ServerBrowserHalt, (void* sb));
 	//	GAMESPY_FN_VAR_DECL(SBError, ServerBrowserUpdate, (void* sb, SBBool async, SBBool disconnectOnComplete, const
-	//unsigned char *basicFields, int numBasicFields, const char *serverFilter));
+	// unsigned char *basicFields, int numBasicFields, const char *serverFilter));
 	GAMESPY_FN_VAR_DECL(SBError, ServerBrowserUpdate,
 						(void* sb, SBBool async, SBBool disconnectOnComplete, const char* serverFilter));
 
 	//	GAMESPY_FN_VAR_DECL(SBError, ServerBrowserLANUpdate, (void* sb, SBBool async, unsigned short startSearchPort,
-	//unsigned short endSearchPort));
+	// unsigned short endSearchPort));
 	GAMESPY_FN_VAR_DECL(SBError, ServerBrowserLANUpdate, (void* sb, SBBool async));
 
 	GAMESPY_FN_VAR_DECL(int, ServerBrowserCount, (void* sb));

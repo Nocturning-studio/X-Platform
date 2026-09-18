@@ -51,11 +51,11 @@ void CStalkerActionDangerGrenadeTakeCover::initialize()
 void CStalkerActionDangerGrenadeTakeCover::execute()
 {
 	inherited::execute();
-	if (!object().memory().danger().selected())
+	if(!object().memory().danger().selected())
 		return;
 
 	const CCoverPoint* point = object().agent_manager().member().member(&object()).cover();
-	if (point)
+	if(point)
 	{
 		object().movement().set_level_dest_vertex(point->level_vertex_id());
 		object().movement().set_desired_position(&point->position());
@@ -65,7 +65,7 @@ void CStalkerActionDangerGrenadeTakeCover::execute()
 
 	EMentalState temp;
 	{
-		if (!object().inventory().ActiveItem())
+		if(!object().inventory().ActiveItem())
 		{
 			object().CObjectHandler::set_goal(eObjectActionIdle);
 			temp = eMentalStatePanic;
@@ -73,11 +73,11 @@ void CStalkerActionDangerGrenadeTakeCover::execute()
 		else
 		{
 			CWeapon* weapon = smart_cast<CWeapon*>(&object().inventory().ActiveItem()->object());
-			if (weapon && weapon->can_be_strapped() && object().best_weapon() &&
-				(object().best_weapon()->object().ID() == weapon->ID()))
+			if(weapon && weapon->can_be_strapped() && object().best_weapon() &&
+			   (object().best_weapon()->object().ID() == weapon->ID()))
 			{
 				object().CObjectHandler::set_goal(eObjectActionStrapped, object().inventory().ActiveItem());
-				if (weapon->strapped_mode())
+				if(weapon->strapped_mode())
 					temp = eMentalStatePanic;
 				else
 					temp = eMentalStateDanger;
@@ -90,10 +90,10 @@ void CStalkerActionDangerGrenadeTakeCover::execute()
 		}
 	}
 
-	if (!object().movement().path_completed())
+	if(!object().movement().path_completed())
 	{
 		object().movement().set_body_state(eBodyStateStand);
-		if (object().movement().distance_to_destination_greater(2.f))
+		if(object().movement().distance_to_destination_greater(2.f))
 		{
 			object().movement().set_mental_state(temp);
 			object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, true, true));
@@ -140,10 +140,10 @@ void CStalkerActionDangerGrenadeWaitForExplosion::initialize()
 void CStalkerActionDangerGrenadeWaitForExplosion::execute()
 {
 	inherited::execute();
-	if (!object().memory().danger().selected())
+	if(!object().memory().danger().selected())
 		return;
 
-	if (fsimilar(object().movement().body_orientation().target.yaw, object().movement().body_orientation().current.yaw))
+	if(fsimilar(object().movement().body_orientation().target.yaw, object().movement().body_orientation().current.yaw))
 		object().sight().setup(CSightAction(SightManager::eSightTypeCoverLookOver, true));
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypeCover, true));
@@ -182,11 +182,11 @@ void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::initialize()
 void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::execute()
 {
 	inherited::execute();
-	if (!object().memory().danger().selected())
+	if(!object().memory().danger().selected())
 		return;
 
 	const CCoverPoint* point = object().agent_manager().member().member(&object()).cover();
-	if (point)
+	if(point)
 	{
 		object().movement().set_level_dest_vertex(point->level_vertex_id());
 		object().movement().set_desired_position(&point->position());
@@ -196,11 +196,11 @@ void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::execute()
 
 	object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon());
 
-	if (!object().movement().path_completed())
+	if(!object().movement().path_completed())
 	{
 		object().movement().set_body_state(eBodyStateStand);
 		object().movement().set_movement_type(eMovementTypeRun);
-		if (!m_direction_sight || !object().movement().distance_to_destination_greater(2.f))
+		if(!m_direction_sight || !object().movement().distance_to_destination_greater(2.f))
 			object().sight().setup(CSightAction(SightManager::eSightTypeCover, true, true));
 		else
 			object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, true, true));
@@ -242,15 +242,15 @@ void CStalkerActionDangerGrenadeLookAround::initialize()
 void CStalkerActionDangerGrenadeLookAround::execute()
 {
 	inherited::execute();
-	if (!object().memory().danger().selected())
+	if(!object().memory().danger().selected())
 		return;
 
-	if (fsimilar(object().movement().body_orientation().target.yaw, object().movement().body_orientation().current.yaw))
+	if(fsimilar(object().movement().body_orientation().target.yaw, object().movement().body_orientation().current.yaw))
 		object().sight().setup(CSightAction(SightManager::eSightTypeCoverLookOver, true));
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypeCover, true));
 
-	if (completed())
+	if(completed())
 		set_property(eWorldPropertyLookedAround, true);
 }
 

@@ -12,7 +12,7 @@
 	template <typename _Graph, typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type, \
 			  typename _iteration_type>
 
-#define CGenericPathManager                                                                                            \
+#define CGenericPathManager \
 	CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
@@ -66,17 +66,18 @@ IC _dist_type CGenericPathManager::estimate(const _index_type& vertex_id) const
 TEMPLATE_SPECIALIZATION
 IC void CGenericPathManager::init_path()
 {
-	if (path)
+	if(path)
 		path->clear();
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CGenericPathManager::create_path(T& vertex)
+template <typename T>
+IC void CGenericPathManager::create_path(T& vertex)
 {
 	VERIFY(data_storage);
 	//		Msg						("Path
 	//[IC=xxx][VNC=%d][BV=%f]",data_storage->get_visited_node_count(),data_storage->get_best().f());
-	if (path)
+	if(path)
 		data_storage->get_node_path(*path, &vertex);
 }
 

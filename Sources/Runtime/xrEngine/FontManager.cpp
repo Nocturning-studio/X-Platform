@@ -55,18 +55,18 @@ LPCSTR CFontManager::GetFontTexName(LPCSTR section)
 
 	u32 h = Device.dwHeight;
 
-	if (h <= 600)
+	if(h <= 600)
 		idx = 0;
-	else if (h <= 1024)
+	else if(h <= 1024)
 		idx = 2;
-	else if (h <= 1440)
+	else if(h <= 1440)
 		idx = 3;
 	else
 		idx = 3;
 
-	while (idx >= 0)
+	while(idx >= 0)
 	{
-		if (pSettings->line_exist(section, tex_names[idx]))
+		if(pSettings->line_exist(section, tex_names[idx]))
 			return pSettings->r_string(section, tex_names[idx]);
 		--idx;
 	}
@@ -79,7 +79,7 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	LPCSTR font_tex_name = GetFontTexName(section);
 	R_ASSERT(font_tex_name);
 
-	if (!F)
+	if(!F)
 	{
 		F = xr_new<CGameFont>("font", font_tex_name, flags);
 	}
@@ -92,15 +92,15 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	F->m_font_name = section;
 #endif
 
-	if (pSettings->line_exist(section, "size"))
+	if(pSettings->line_exist(section, "size"))
 	{
 		float sz = pSettings->r_float(section, "size");
-		if (flags & CGameFont::fsDeviceIndependent)
+		if(flags & CGameFont::fsDeviceIndependent)
 			F->SetHeightI(sz);
 		else
 			F->SetHeight(sz);
 	}
-	if (pSettings->line_exist(section, "interval"))
+	if(pSettings->line_exist(section, "interval"))
 		F->SetInterval(pSettings->r_fvector2(section, "interval"));
 }
 
@@ -110,7 +110,7 @@ void CFontManager::InitializeFonts()
 	LPCSTR sys_font_sect = "ui_font_graffiti19_russian";
 	LPCSTR sys_font_tex = GetFontTexName(sys_font_sect);
 
-	if (!pSystemFont)
+	if(!pSystemFont)
 	{
 		pSystemFont = xr_new<CGameFont>("font", sys_font_tex, 0);
 		Engine.Events.DeviceReset.Add(this, REG_PRIORITY_HIGH);
@@ -121,7 +121,7 @@ void CFontManager::InitializeFonts()
 		pSystemFont->Initialize("font", sys_font_tex);
 	}
 
-	if (pSettings->line_exist(sys_font_sect, "size"))
+	if(pSettings->line_exist(sys_font_sect, "size"))
 		pSystemFont->SetHeight(pSettings->r_float(sys_font_sect, "size"));
 
 	// 2. Инициализация игровых шрифтов (членов класса)
@@ -141,7 +141,7 @@ void CFontManager::InitializeFonts()
 void CFontManager::Destroy()
 {
 	// Удаляем системный шрифт
-	if (pSystemFont)
+	if(pSystemFont)
 	{
 		Engine.Events.Render.Remove(pSystemFont);
 		xr_delete(pSystemFont);
@@ -150,7 +150,7 @@ void CFontManager::Destroy()
 	// Удаляем игровые шрифты
 	FONTS_VEC_IT it = m_all_fonts.begin();
 	FONTS_VEC_IT it_e = m_all_fonts.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		xr_delete(**it);
 	}
@@ -160,20 +160,20 @@ void CFontManager::Destroy()
 
 void CFontManager::OnFrame()
 {
-	if (pSystemFont)
+	if(pSystemFont)
 		pSystemFont->Clear();
 }
 
 void CFontManager::Render()
 {
-	//OPTICK_EVENT("CFontManager::Render");
+	// OPTICK_EVENT("CFontManager::Render");
 
 	// Рендерим только игровые шрифты. Системный рендерится сам через seqRender.
 	FONTS_VEC_IT it = m_all_fonts.begin();
 	FONTS_VEC_IT it_e = m_all_fonts.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (*it)
+		if(*it)
 			(**it)->OnRender();
 	}
 }

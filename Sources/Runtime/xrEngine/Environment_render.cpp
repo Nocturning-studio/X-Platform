@@ -37,18 +37,32 @@ static	fvec3	hbox_verts[24]	=
 // SkyLoader: поднял скайбокс как в зп. Если не нужно, вернуть закомменченный код
 static fvec3 hbox_verts[24] = {
 	{-1.f, -1.f, -1.f}, {-1.f, -1.01f, -1.f}, // down
-	{1.f, -1.f, -1.f},	{1.f, -1.01f, -1.f},  // down
-	{-1.f, -1.f, 1.f},	{-1.f, -1.01f, 1.f},  // down
-	{1.f, -1.f, 1.f},	{1.f, -1.01f, 1.f},	  // down
-	{-1.f, 2.f, -1.f},	{-1.f, 1.f, -1.f},	  {1.f, 2.f, -1.f}, {1.f, 1.f, -1.f},  {-1.f, 2.f, 1.f},
-	{-1.f, 1.f, 1.f},	{1.f, 2.f, 1.f},	  {1.f, 1.f, 1.f},	{-1.f, 0.f, -1.f}, {-1.f, -1.f, -1.f}, // half
-	{1.f, 0.f, -1.f},	{1.f, -1.f, -1.f},															   // half
-	{1.f, 0.f, 1.f},	{1.f, -1.f, 1.f},															   // half
-	{-1.f, 0.f, 1.f},	{-1.f, -1.f, 1.f}															   // half
+	{1.f, -1.f, -1.f},
+	{1.f, -1.01f, -1.f}, // down
+	{-1.f, -1.f, 1.f},
+	{-1.f, -1.01f, 1.f}, // down
+	{1.f, -1.f, 1.f},
+	{1.f, -1.01f, 1.f}, // down
+	{-1.f, 2.f, -1.f},
+	{-1.f, 1.f, -1.f},
+	{1.f, 2.f, -1.f},
+	{1.f, 1.f, -1.f},
+	{-1.f, 2.f, 1.f},
+	{-1.f, 1.f, 1.f},
+	{1.f, 2.f, 1.f},
+	{1.f, 1.f, 1.f},
+	{-1.f, 0.f, -1.f},
+	{-1.f, -1.f, -1.f}, // half
+	{1.f, 0.f, -1.f},
+	{1.f, -1.f, -1.f}, // half
+	{1.f, 0.f, 1.f},
+	{1.f, -1.f, 1.f}, // half
+	{-1.f, 0.f, 1.f},
+	{-1.f, -1.f, 1.f} // half
 };
-static u16 hbox_faces[20 * 3] = {0,	 2, 3,	3,	1, 0, 4,  5,  7, 7, 6, 4,  0,  1, 9,  9, 8, 0, 8,  9,
-								 5,	 5, 4,	8,	1, 3, 10, 10, 9, 1, 9, 10, 7,  7, 5,  9, 3, 2, 11, 11,
-								 10, 3, 10, 11, 6, 6, 7,  10, 2, 0, 8, 8,  11, 2, 11, 8, 4, 4, 6,  11};
+static u16 hbox_faces[20 * 3] = {0, 2, 3, 3, 1, 0, 4, 5, 7, 7, 6, 4, 0, 1, 9, 9, 8, 0, 8, 9,
+								 5, 5, 4, 8, 1, 3, 10, 10, 9, 1, 9, 10, 7, 7, 5, 9, 3, 2, 11, 11,
+								 10, 3, 10, 11, 6, 6, 7, 10, 2, 0, 8, 8, 11, 2, 11, 8, 4, 4, 6, 11};
 
 #pragma pack(push, 1)
 struct v_skybox
@@ -90,12 +104,12 @@ void CEnvironment::RenderSky()
 	// OPTICK_EVENT("CEnvironment::RenderSky");
 
 #ifndef _EDITOR
-	if (0 == g_pGameLevel)
+	if(0 == g_pGameLevel)
 		return;
 #endif
 
 	// Инициализация геометрии при необходимости
-	if (bNeed_re_create_env)
+	if(bNeed_re_create_env)
 	{
 		sh_2sky.create(&m_b_skybox, "skybox_2t");
 		sh_2geom.create(v_skybox_fvf, RenderBackend.Vertex.Buffer(), RenderBackend.Index.Buffer());
@@ -123,7 +137,7 @@ void CEnvironment::RenderSky()
 
 	// Заполняем вершинный буфер
 	v_skybox* pv = (v_skybox*)RenderBackend.Vertex.Lock(12, sh_2geom.stride(), v_offset);
-	for (u32 v = 0; v < 12; v++)
+	for(u32 v = 0; v < 12; v++)
 		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
 	RenderBackend.Vertex.Unlock(12, sh_2geom.stride());
 
@@ -144,13 +158,12 @@ void CEnvironment::RenderSky()
 
 void CEnvironment::RenderClouds()
 {
-
 }
 
 void CEnvironment::RenderFlares()
 {
 #ifndef _EDITOR
-	if (0 == g_pGameLevel)
+	if(0 == g_pGameLevel)
 		return;
 #endif
 	// 1
@@ -167,7 +180,7 @@ void CEnvironment::RenderThunderbolt()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if (0 == g_pGameLevel)
+	if(0 == g_pGameLevel)
 		return;
 #endif
 	// 2
@@ -179,7 +192,7 @@ void CEnvironment::RenderRain()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if (0 == g_pGameLevel)
+	if(0 == g_pGameLevel)
 		return;
 #endif
 	// 2
@@ -199,8 +212,8 @@ void CEnvironment::OnDeviceCreate()
 		EnvsMapIt _I, _E;
 		_I = WeatherCycles.begin();
 		_E = WeatherCycles.end();
-		for (; _I != _E; _I++)
-			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+		for(; _I != _E; _I++)
+			for(EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_create();
 	}
 	// effects
@@ -208,8 +221,8 @@ void CEnvironment::OnDeviceCreate()
 		EnvsMapIt _I, _E;
 		_I = WeatherFXs.begin();
 		_E = WeatherFXs.end();
-		for (; _I != _E; _I++)
-			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+		for(; _I != _E; _I++)
+			for(EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_create();
 	}
 
@@ -239,8 +252,8 @@ void CEnvironment::OnDeviceDestroy()
 		EnvsMapIt _I, _E;
 		_I = WeatherCycles.begin();
 		_E = WeatherCycles.end();
-		for (; _I != _E; _I++)
-			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+		for(; _I != _E; _I++)
+			for(EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_destroy();
 	}
 	// effects
@@ -248,13 +261,13 @@ void CEnvironment::OnDeviceDestroy()
 		EnvsMapIt _I, _E;
 		_I = WeatherFXs.begin();
 		_E = WeatherFXs.end();
-		for (; _I != _E; _I++)
-			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
+		for(; _I != _E; _I++)
+			for(EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_destroy();
 	}
 
 	// Уничтожаем CurrentEnv
-	if (CurrentEnv)
+	if(CurrentEnv)
 		CurrentEnv->destroy();
 }
 

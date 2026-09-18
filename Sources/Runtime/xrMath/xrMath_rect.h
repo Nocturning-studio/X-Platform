@@ -3,7 +3,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct template_rect
+template <class T>
+struct template_rect
 {
   public:
 	typedef T TYPE;
@@ -13,7 +14,8 @@ template <class T> struct template_rect
 	typedef template_vector2<T> Tvector;
 
   public:
-	union {
+	union
+	{
 		struct
 		{
 			T x1, y1, x2, y2;
@@ -194,7 +196,7 @@ template <class T> struct template_rect
 
 	IC BOOL intersection(SelfCRef b1, SelfCRef b2)
 	{
-		if (!intersected(b1, b2))
+		if(!intersected(b1, b2))
 			return (FALSE);
 
 		x1 = _max(b1.x1, b2.x1);
@@ -209,7 +211,8 @@ typedef template_rect<float> Frect;
 typedef template_rect<double> Drect;
 typedef template_rect<int> Irect;
 
-template <class T> BOOL _valid(const template_rect<T>& m)
+template <class T>
+BOOL _valid(const template_rect<T>& m)
 {
 	return m.lt._valid() && m.rb._valid();
 }

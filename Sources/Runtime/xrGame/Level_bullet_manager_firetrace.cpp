@@ -20,8 +20,8 @@
 #include "xrEngine/xr_collide_defs.h"
 #include "weapon.h"
 
-//êîíñòàíòû shoot_factor, îïðåäåëÿþùèå
-//ïîâåäåíèå ïóëè ïðè ñòîëêíîâåíèè ñ îáúåêòîì
+// êîíñòàíòû shoot_factor, îïðåäåëÿþùèå
+// ïîâåäåíèå ïóëè ïðè ñòîëêíîâåíèè ñ îáúåêòîì
 #define RICOCHET_THRESHOLD 0.1
 #define STUCK_THRESHOLD 0.4
 
@@ -37,34 +37,34 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
 
-	if ((object->ID() == bullet->parent_id) && (bullet->fly_dist < PARENT_IGNORE_DIST) && (!bullet->flags.ricochet_was))
+	if((object->ID() == bullet->parent_id) && (bullet->fly_dist < PARENT_IGNORE_DIST) && (!bullet->flags.ricochet_was))
 		return FALSE;
 
 	BOOL bRes = TRUE;
-	if (object)
+	if(object)
 	{
 		CEntity* entity = smart_cast<CEntity*>(object);
-		if (entity && entity->g_Alive() && (entity->ID() != bullet->parent_id))
+		if(entity && entity->g_Alive() && (entity->ID() != bullet->parent_id))
 		{
 			ICollisionForm* cform = entity->collidable.model;
-			if ((NULL != cform) && (cftObject == cform->Type()))
+			if((NULL != cform) && (cftObject == cform->Type()))
 			{
 				CActor* actor = smart_cast<CActor*>(entity);
 				CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(entity);
 				// â êîãî ïîïàëè?
-				if (actor && IsGameTypeSingle() /**/ || stalker /**/)
+				if(actor && IsGameTypeSingle() /**/ || stalker /**/)
 				{
 					// ïîïàëè â àêòåðà èëè ñòàëêåðà
 					Fsphere S = cform->getSphere();
 					entity->Transform().transform_tiny(S.P);
 					float dist = rd.range;
 					// ïðîâåðèì ïîïàëè ëè ìû â îïèñûâàþùóþ ñôåðó
-					if (Fsphere::rpNone != S.intersect_full(bullet->pos, bullet->dir, dist))
+					if(Fsphere::rpNone != S.intersect_full(bullet->pos, bullet->dir, dist))
 					{
 						// äà ïîïàëè, íàéäåì êòî ñòðåëÿë
 						bool play_whine = true;
 						CObject* initiator = Level().Objects.net_Find(bullet->parent_id);
-						if (actor)
+						if(actor)
 						{
 							// ïîïàëè â àêòåðà
 							float hpf = 1.f;
@@ -83,15 +83,15 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 #else
 							float game_difficulty_hit_probability = actor->HitProbability();
 							CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(initiator);
-							if (stalker)
+							if(stalker)
 								hpf = stalker->SpecificCharacter().hit_probability_factor();
 
 							float dist_factor = 1.f;
 							CObject* weapon_object = Level().Objects.net_Find(bullet->weapon_id);
-							if (weapon_object)
+							if(weapon_object)
 							{
 								CWeapon* weapon = smart_cast<CWeapon*>(weapon_object);
-								if (weapon)
+								if(weapon)
 								{
 									game_difficulty_hit_probability = weapon->hit_probability();
 									float fly_dist = bullet->fly_dist + dist;
@@ -104,7 +104,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 #else
 							CAI_Stalker* i_stalker = smart_cast<CAI_Stalker*>(initiator);
 							// åñëè ñòðåëÿë ñòàëêåð, ó÷èòûâàåì - hit_probability_factor ñòàëêåða èíà÷å - 1.0
-							if (i_stalker)
+							if(i_stalker)
 							{
 								hpf = i_stalker->SpecificCharacter().hit_probability_factor();
 								float fly_dist = bullet->fly_dist + dist;
@@ -112,7 +112,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 								ahp = dist_factor * actor->HitProbability() + (1.f - dist_factor) * 1.f;
 							}
 #endif
-							if (Random.randF(0.f, 1.f) > (ahp * hpf))
+							if(Random.randF(0.f, 1.f) > (ahp * hpf))
 							{
 								bRes = FALSE;	   // don't hit actor
 								play_whine = true; // play whine sound
@@ -122,7 +122,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 								// real test actor CFORM
 								Level().BulletManager().m_rq_results.r_clear();
 
-								if (cform->_RayQuery(rd, Level().BulletManager().m_rq_results))
+								if(cform->_RayQuery(rd, Level().BulletManager().m_rq_results))
 								{
 									bRes = TRUE;		// hit actor
 									play_whine = false; // don't play whine sound
@@ -135,7 +135,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 							}
 						}
 						// play whine sound
-						if (play_whine)
+						if(play_whine)
 						{
 							fvec3 pt;
 							pt.mad(bullet->pos, bullet->dir, dist);
@@ -167,22 +167,22 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 	pData->bStopTracing = true;
 	SBullet* bullet = pData->pBullet;
 
-	//âû÷èñëèòü òî÷êó ïîïàäàíèÿ
+	// âû÷èñëèòü òî÷êó ïîïàäàíèÿ
 	fvec3 end_point;
 	end_point.mad(bullet->pos, bullet->dir, result.range);
 
 	u16 hit_material_idx = GAMEMTL_NONE_IDX;
 
-	//äèíàìè÷åñêèé îáúåêò
-	if (result.O)
+	// äèíàìè÷åñêèé îáúåêò
+	if(result.O)
 	{
-		//ïîëó÷èòü êîñòî÷êó è åå ìàòåðèàë
+		// ïîëó÷èòü êîñòî÷êó è åå ìàòåðèàë
 		CKinematics* V = 0;
-		//åñëè ìû ïîïàëè ïî ðîäèòåëþ íà ïåðâûõ æå
-		//êàäðå, òî èãíîðèðîâàòü ýòî, òàê êàê ýòî îí
-		//è ñòðåëÿë
+		// åñëè ìû ïîïàëè ïî ðîäèòåëþ íà ïåðâûõ æå
+		// êàäðå, òî èãíîðèðîâàòü ýòî, òàê êàê ýòî îí
+		// è ñòðåëÿë
 		VERIFY(!(result.O->ID() == bullet->parent_id && bullet->fly_dist < PARENT_IGNORE_DIST));
-		if (0 != (V = smart_cast<CKinematics*>(result.O->Visual())))
+		if(0 != (V = smart_cast<CKinematics*>(result.O->Visual())))
 		{
 			CBoneData& B = V->LL_GetData((u16)result.element);
 			hit_material_idx = B.game_mtl_idx;
@@ -191,13 +191,13 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 	}
 	else
 	{
-		//ñòàòè÷åñêèé îáúåêò
-		//ïîëó÷èòü òðåóãîëüíèê è óçíàòü åãî ìàòåðèàë
+		// ñòàòè÷åñêèé îáúåêò
+		// ïîëó÷èòü òðåóãîëüíèê è óçíàòü åãî ìàòåðèàë
 		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
 		hit_material_idx = T->material;
 
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(hit_material_idx);
-		if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) //Åñëè ìàòåðèàë ïîëíîñòüþ ïðîñòðåëèâàåìûé
+		if(fsimilar(mtl->fShootFactor, 1.0f, EPS)) // Åñëè ìàòåðèàë ïîëíîñòüþ ïðîñòðåëèâàåìûé
 		{
 			pData->bStopTracing = false;
 		}
@@ -205,8 +205,8 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 			Level().BulletManager().RegisterEvent(EVENT_HIT, FALSE, bullet, end_point, result, hit_material_idx);
 	}
 
-	//ïðîâåðèòü äîñòàòî÷íî ëè ñèëû õèòà, ÷òîáû äâèãàòüñÿ äàëüøå
-	if (bullet->speed < m_fMinBulletSpeed || bullet->flags.ricochet_was)
+	// ïðîâåðèòü äîñòàòî÷íî ëè ñèëû õèòà, ÷òîáû äâèãàòüñÿ äàëüøå
+	if(bullet->speed < m_fMinBulletSpeed || bullet->flags.ricochet_was)
 		return FALSE;
 	else
 		return TRUE;
@@ -220,13 +220,13 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 	SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	fvec3 particle_dir;
 
-	if (R.O)
+	if(R.O)
 	{
 		particle_dir = vDir;
 		particle_dir.invert();
 
-		//íà òåêóùåì àêòåðå îòìåòîê íå ñòàâèì
-		if (Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID())
+		// íà òåêóùåì àêòåðå îòìåòîê íå ñòàâèì
+		if(Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID())
 			return;
 
 		ref_shader* pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty())
@@ -234,19 +234,19 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 										  : &mtl_pair->CollideMarks[::Random.randI(0, mtl_pair->CollideMarks.size())];
 		;
 
-		if (pWallmarkShader && ShowMark)
+		if(pWallmarkShader && ShowMark)
 		{
-			//äîáàâèòü îòìåòêó íà ìàòåðèàëå
+			// äîáàâèòü îòìåòêó íà ìàòåðèàëå
 			fvec3 p;
 			p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
-			if (!g_dedicated_server)
+			if(!g_dedicated_server)
 				::Render->add_SkeletonWallmark(&R.O->renderable.transform, PKinematics(R.O->Visual()), *pWallmarkShader, p,
 											   bullet->dir, bullet->wallmark_size);
 		}
 	}
 	else
 	{
-		//âû÷èñëèòü íîðìàëü ê ïîðàæåííîé ïîâåðõíîñòè
+		// âû÷èñëèòü íîðìàëü ê ïîðàæåííîé ïîâåðõíîñòè
 		particle_dir = vNormal;
 		fvec3* pVerts = Level().ObjectSpace.GetStaticVerts();
 		CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
@@ -255,9 +255,9 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 										  : &mtl_pair->CollideMarks[::Random.randI(0, mtl_pair->CollideMarks.size())];
 		;
 
-		if (pWallmarkShader && ShowMark)
+		if(pWallmarkShader && ShowMark)
 		{
-			//äîáàâèòü îòìåòêó íà ìàòåðèàëå
+			// äîáàâèòü îòìåòêó íà ìàòåðèàëå
 			::Render->add_StaticWallmark(*pWallmarkShader, vEnd, bullet->wallmark_size, pTri, pVerts);
 		}
 	}
@@ -266,8 +266,8 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 							? NULL
 							: &mtl_pair->CollideSounds[::Random.randI(0, mtl_pair->CollideSounds.size())];
 
-	//ïðîèãðàòü çâóê
-	if (pSound && ShowMark)
+	// ïðîèãðàòü çâóê
+	if(pSound && ShowMark)
 	{
 		CObject* O = Level().Objects.net_Find(bullet->parent_id);
 		bullet->m_mtl_snd = *pSound;
@@ -281,7 +281,7 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 	SGameMtl* tgt_mtl = GMLib.GetMaterialByIdx(target_material);
 	BOOL bStatic = !tgt_mtl->Flags.test(SGameMtl::flDynamic);
 
-	if ((ps_name && ShowMark) || (bullet->flags.explosive && bStatic))
+	if((ps_name && ShowMark) || (bullet->flags.explosive && bStatic))
 	{
 		VERIFY2((particle_dir.x * particle_dir.x + particle_dir.y * particle_dir.y + particle_dir.z * particle_dir.z) >
 					flt_zero,
@@ -290,16 +290,16 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 		pos.k.normalize(particle_dir);
 		fvec3::generate_orthonormal_basis(pos.k, pos.j, pos.i);
 		pos.c.set(vEnd);
-		if (ps_name && ShowMark)
+		if(ps_name && ShowMark)
 		{
-			//îòûãðàòü ïàðòèêëû ïîïàäàíèÿ â ìàòåðèàë
+			// îòûãðàòü ïàðòèêëû ïîïàäàíèÿ â ìàòåðèàë
 			CParticlesObject* ps = CParticlesObject::Create(ps_name, TRUE);
 
 			ps->UpdateParent(pos, zero_vel);
 			GamePersistent().ps_needtoplay.push_back(ps);
 		}
 
-		if (bullet->flags.explosive && bStatic)
+		if(bullet->flags.explosive && bStatic)
 		{
 			PlayExplodePS(pos);
 		}
@@ -320,24 +320,24 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
 	PROFILE_FUNCTION();
 
-	//òîëüêî äëÿ äèíàìè÷åñêèõ îáúåêòîâ
+	// òîëüêî äëÿ äèíàìè÷åñêèõ îáúåêòîâ
 	VERIFY(E.R.O);
-	if (g_clear)
+	if(g_clear)
 		E.Repeated = false;
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 		E.Repeated = false;
 	bool NeedShootmark = true; //! E.Repeated;
 
-	if (E.R.O->CLS_ID == CLSID_OBJECT_ACTOR)
+	if(E.R.O->CLS_ID == CLSID_OBJECT_ACTOR)
 	{
 		game_PlayerState* ps = Game().GetPlayerByGameID(E.R.O->ID());
-		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
+		if(ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			NeedShootmark = false;
 		};
 	}
 
-	//âèçóàëüíîå îáîçíà÷åíèå ïîïàäàíèå íà îáúåêòå
+	// âèçóàëüíîå îáîçíà÷åíèå ïîïàäàíèå íà îáúåêòå
 	//	fvec3			hit_normal;
 	FireShotmark(&E.bullet, E.bullet.dir, E.point, E.R, E.tgt_material, E.normal, NeedShootmark);
 
@@ -349,7 +349,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	impulse = hit_result.second;
 
 	// object-space
-	//âû÷èñëèòü êîîðäèíàòû ïîïàäàíèÿ
+	// âû÷èñëèòü êîîðäèíàòû ïîïàäàíèÿ
 	fvec3 p_in_object_space, position_in_bone_space;
 	fmat4x4 m_inv;
 	m_inv.invert(E.R.O->Transform());
@@ -358,7 +358,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	// bone-space
 	CKinematics* V = smart_cast<CKinematics*>(E.R.O->Visual());
 
-	if (V)
+	if(V)
 	{
 		VERIFY3(V->LL_GetBoneVisible(u16(E.R.element)), *E.R.O->cNameVisual(), V->LL_BoneName_dbg(u16(E.R.element)));
 		fmat4x4& m_bone = (V->LL_GetBoneInstance(u16(E.R.element))).mTransform;
@@ -371,16 +371,16 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 		position_in_bone_space.set(p_in_object_space);
 	}
 
-	//îòïðàâèòü õèò ïîðàæåííîìó îáúåêòó
-	if (E.bullet.flags.allow_sendhit && !E.Repeated)
+	// îòïðàâèòü õèò ïîðàæåííîìó îáúåêòó
+	if(E.bullet.flags.allow_sendhit && !E.Repeated)
 	{
 		//-------------------------------------------------
 		bool AddStatistic = false;
-		if (GameID() != GAME_SINGLE && E.bullet.flags.allow_sendhit && E.R.O->CLS_ID == CLSID_OBJECT_ACTOR &&
-			Game().m_WeaponUsageStatistic->CollectData())
+		if(GameID() != GAME_SINGLE && E.bullet.flags.allow_sendhit && E.R.O->CLS_ID == CLSID_OBJECT_ACTOR &&
+		   Game().m_WeaponUsageStatistic->CollectData())
 		{
 			CActor* pActor = smart_cast<CActor*>(E.R.O);
-			if (pActor) // && pActor->g_Alive())
+			if(pActor) // && pActor->g_Alive())
 			{
 				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, E.R.O->ID(), (s16)E.R.element, E.point);
 				AddStatistic = true;
@@ -431,18 +431,18 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 												  u16 target_material, fvec3& hit_normal)
 {
 	//----------- normal - start
-	if (R.O)
+	if(R.O)
 	{
-		//âåðíóòü íîðìàëü ïî êîòîðîé èãðàòü ïàðòèêëû
+		// âåðíóòü íîðìàëü ïî êîòîðîé èãðàòü ïàðòèêëû
 		CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(R.O->CFORM());
-		if (skeleton)
+		if(skeleton)
 		{
 			fvec3 e_center;
 			hit_normal.set(0, 0, 0);
-			if (skeleton->_ElementCenter((u16)R.element, e_center))
+			if(skeleton->_ElementCenter((u16)R.element, e_center))
 				hit_normal.sub(end_point, e_center);
 			float len = hit_normal.square_magnitude();
-			if (!fis_zero(len))
+			if(!fis_zero(len))
 				hit_normal.div(std::sqrt(len));
 			else
 				hit_normal.invert(bullet->dir);
@@ -450,7 +450,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	}
 	else
 	{
-		//âû÷èñëèòü íîðìàëü ê ïîâåðõíîñòè
+		// âû÷èñëèòü íîðìàëü ê ïîâåðõíîñòè
 		fvec3* pVerts = Level().ObjectSpace.GetStaticVerts();
 		CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
 		hit_normal.mknormal(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]]);
@@ -459,16 +459,16 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	float old_speed, energy_lost;
 	old_speed = bullet->speed;
 
-	//êîýôôèöèåíò óìåíüøåíèå ñèëû ñ ïàäåíèåì ñêîðîñòè
+	// êîýôôèöèåíò óìåíüøåíèå ñèëû ñ ïàäåíèåì ñêîðîñòè
 	float speed_factor = bullet->speed / bullet->max_speed;
-	//ïîëó÷èòü ñèëó õèòà âûñòðåëà ñ ó÷åòîì ïàòðîíà
+	// ïîëó÷èòü ñèëó õèòà âûñòðåëà ñ ó÷åòîì ïàòðîíà
 	float power = bullet->hit_power * speed_factor;
 
 	SGameMtl* mtl = GMLib.GetMaterialByIdx(target_material);
 
 	// shoot_factor: êîåôôèöèåíò óêàçûâàþùèé íà òåêóùèå ñâîéñòâà ïóëè
 	//(Åñëè ìåíüøå 1, òî ïóëÿ ëèáî ðèêîøåòèò(åñëè êîíòàêò èä¸ò ïî êàñàòåëüíîé), ëèáî çàñòðÿ¸ò â òåêóùåì
-	//îáúåêòå, åñëè áîëüøå 1, òî ïóëÿ ïðîøèâàåò îáúåêò)
+	// îáúåêòå, åñëè áîëüøå 1, òî ïóëÿ ïðîøèâàåò îáúåêò)
 	float shoot_factor = mtl->fShootFactor * bullet->pierce * speed_factor;
 
 	float impulse = 0.f;
@@ -479,7 +479,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	int bullet_state = 0;
 #endif
 
-	if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) //Åñëè ìàòåðèàë ïîëíîñòüþ ïðîñòðåëèâàåìûé, òî
+	if(fsimilar(mtl->fShootFactor, 1.0f, EPS)) // Åñëè ìàòåðèàë ïîëíîñòüþ ïðîñòðåëèâàåìûé, òî
 	{
 #ifdef DEBUG
 		bullet_state = 2;
@@ -498,36 +498,36 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	float f = Random.randF(0.5f, 1.f);
 	// float f				= Random.randF	(0.0f,0.3);
 	//	if(shoot_factor<RICOCHET_THRESHOLD &&  )
-	if (((f + shoot_factor) < ricoshet_factor) && bullet->flags.allow_ricochet)
+	if(((f + shoot_factor) < ricoshet_factor) && bullet->flags.allow_ricochet)
 	{
-		//óìåíüøåíèå ñêîðîñòè ïîëåòà â çàâèñèìîñòè
-		//îò óãëà ïàäåíèÿ ïóëè (÷åì ïðÿìåå óãîë, òåì áîëüøå ïîòåðÿ)
+		// óìåíüøåíèå ñêîðîñòè ïîëåòà â çàâèñèìîñòè
+		// îò óãëà ïàäåíèÿ ïóëè (÷åì ïðÿìåå óãîë, òåì áîëüøå ïîòåðÿ)
 		float scale = 1.f - _abs(bullet->dir.dotproduct(hit_normal)) * m_fCollisionEnergyMin;
 		clamp(scale, 0.f, m_fCollisionEnergyMax);
 
-		//âû÷èñëåíèå ðèêîøåòà, äåëàåòñÿ íåìíîãî ôåéêîì,
-		//ò.ê. ïóëÿ îñòàåòñÿ â òî÷êå ñòîëêíîâåíèÿ
-		//è ñðàçó âûõîäèò èç RayQuery()
+		// âû÷èñëåíèå ðèêîøåòà, äåëàåòñÿ íåìíîãî ôåéêîì,
+		// ò.ê. ïóëÿ îñòàåòñÿ â òî÷êå ñòîëêíîâåíèÿ
+		// è ñðàçó âûõîäèò èç RayQuery()
 		bullet->dir.set(tgt_dir);
 		bullet->pos = end_point;
 		bullet->flags.ricochet_was = 1;
 
-		//óìåíüøèòü ñêîðîñòü â çàâèñèìîñòè îò ïðîñòðåëèâàåìîñòè
+		// óìåíüøèòü ñêîðîñòü â çàâèñèìîñòè îò ïðîñòðåëèâàåìîñòè
 		bullet->speed *= (1 - mtl->fShootFactor) * scale;
-		//ñêîëüêî ýíåðãèè â ïðîöåíòàõ ïîòåðÿëà ïóëÿ ïðè ñòîëêíîâåíèè
+		// ñêîëüêî ýíåðãèè â ïðîöåíòàõ ïîòåðÿëà ïóëÿ ïðè ñòîëêíîâåíèè
 		float energy_lost = 1.f - bullet->speed / old_speed;
-		//èìïóëüñ ïåðåäàííûé îáúåêòó ðàâåí ïðÿìîïðîïîðöèîíàëåí ïîòåðÿííîé ýíåðãèè
+		// èìïóëüñ ïåðåäàííûé îáúåêòó ðàâåí ïðÿìîïðîïîðöèîíàëåí ïîòåðÿííîé ýíåðãèè
 		impulse = bullet->hit_impulse * speed_factor * energy_lost;
 
 #ifdef DEBUG
 		bullet_state = 0;
 #endif
 	}
-	else if (shoot_factor < 1.0)
+	else if(shoot_factor < 1.0)
 	{
-		//çàñòðÿâàíèå ïóëè â ìàòåðèàëå
+		// çàñòðÿâàíèå ïóëè â ìàòåðèàëå
 		bullet->speed = 0.f;
-		//ïåðåäàåì âåñü èìïóëüñ öåëèêîì
+		// ïåðåäàåì âåñü èìïóëüñ öåëèêîì
 		impulse = bullet->hit_impulse * speed_factor;
 #ifdef DEBUG
 		bullet_state = 1;
@@ -535,18 +535,18 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	}
 	else
 	{
-		//ïðîáèâàíèå ìàòåðèàëà
-		//óìåíüøèòü ñêîðîñòü ïðîïîðöèàíàëüíî ïîòðà÷åíîìó èìïóëüñó
-		// float speed_lost = fis_zero(bullet->hit_impulse) ?	1.f : 		1.f - impulse/bullet->hit_impulse;
-		// clamp (speed_lost, 0.f , 1.f);
-		// float speed_lost = shoot_factor;
+		// ïðîáèâàíèå ìàòåðèàëà
+		// óìåíüøèòü ñêîðîñòü ïðîïîðöèàíàëüíî ïîòðà÷åíîìó èìïóëüñó
+		//  float speed_lost = fis_zero(bullet->hit_impulse) ?	1.f : 		1.f - impulse/bullet->hit_impulse;
+		//  clamp (speed_lost, 0.f , 1.f);
+		//  float speed_lost = shoot_factor;
 
 		bullet->speed *= mtl->fShootFactor;
 		energy_lost = 1.f - bullet->speed / old_speed;
 		impulse = bullet->hit_impulse * speed_factor * energy_lost;
 
 		bullet->pos.mad(bullet->pos, bullet->dir, EPS); // fake
-		//ââåñòè êîýôôèöèåíò ñëó÷àéíîñòè ïðè ïðîñòðåëèâàíèè
+		// ââåñòè êîýôôèöèåíò ñëó÷àéíîñòè ïðè ïðîñòðåëèâàíèè
 		fvec3 rand_normal;
 		rand_normal.random_dir(bullet->dir, deg2rad(5.f) * energy_lost, Random);
 		bullet->dir.set(rand_normal);
@@ -556,7 +556,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const fvec3& 
 	}
 #ifdef DEBUG
 	extern BOOL g_bDrawBulletHit;
-	if (g_bDrawBulletHit)
+	if(g_bDrawBulletHit)
 		g_hit[bullet_state].push_back(dbg_bullet_pos);
 #endif
 

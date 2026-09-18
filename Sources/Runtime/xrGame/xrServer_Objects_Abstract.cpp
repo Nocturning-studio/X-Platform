@@ -19,11 +19,11 @@
 ////////////////////////////////////////////////////////////////////////////
 CSE_Visual::CSE_Visual(LPCSTR name)
 {
-	if (name)
+	if(name)
 	{
 		string_path tmp;
 		strcpy(tmp, name);
-		if (strext(tmp))
+		if(strext(tmp))
 			*strext(tmp) = 0;
 		xr_strlwr(tmp);
 		visual_name = tmp;
@@ -43,7 +43,7 @@ void CSE_Visual::set_visual(LPCSTR name, bool load)
 {
 	string_path tmp;
 	strcpy(tmp, name);
-	if (strext(tmp))
+	if(strext(tmp))
 		*strext(tmp) = 0;
 	xr_strlwr(tmp);
 	visual_name = tmp;
@@ -52,7 +52,7 @@ void CSE_Visual::set_visual(LPCSTR name, bool load)
 void CSE_Visual::visual_read(NET_Packet& tNetPacket, u16 version)
 {
 	tNetPacket.r_stringZ(visual_name);
-	if (version > 103)
+	if(version > 103)
 		flags.assign(tNetPacket.r_u8());
 }
 

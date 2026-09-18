@@ -10,7 +10,8 @@
 
 #include "profiler.h"
 
-template <typename _object_type> class CQuadTree
+template <typename _object_type>
+class CQuadTree
 {
   public:
 	struct CQuadNode
@@ -34,7 +35,8 @@ template <typename _object_type> class CQuadTree
 		}
 	};
 
-	template <typename T> struct CFixedStorage
+	template <typename T>
+	struct CFixedStorage
 	{
 		T* m_objects;
 		T* m_free;
@@ -46,7 +48,7 @@ template <typename _object_type> class CQuadTree
 			T* B = 0;
 			T* I = m_objects;
 			T* E = m_objects + m_max_object_count;
-			for (; I != E; B = I, ++I)
+			for(; I != E; B = I, ++I)
 				I->next() = B;
 			m_free = E - 1;
 		}
@@ -71,7 +73,7 @@ template <typename _object_type> class CQuadTree
 			T* I = m_objects;
 			T* E = m_objects + m_max_object_count;
 			m_free = E - 1;
-			for (; I != E; ++I)
+			for(; I != E; ++I)
 				I->next() = B;
 		}
 

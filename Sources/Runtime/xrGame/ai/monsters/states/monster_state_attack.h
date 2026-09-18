@@ -3,7 +3,8 @@
 #include "../state.h"
 #include "xrGame/ai_debug.h"
 
-template <typename _Object> class CStateMonsterAttack : public CState<_Object>
+template <typename _Object>
+class CStateMonsterAttack : public CState<_Object>
 {
   protected:
 	typedef CState<_Object> inherited;

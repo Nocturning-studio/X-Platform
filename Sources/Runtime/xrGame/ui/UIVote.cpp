@@ -27,7 +27,7 @@ CUIVote::CUIVote()
 	msg->SetAutoDelete(true);
 	AttachChild(msg);
 
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		cap[i] = xr_new<CUIStatic>();
 		cap[i]->SetAutoDelete(true);
@@ -64,7 +64,7 @@ void CUIVote::Init()
 
 	string256 path;
 
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		sprintf_s(path, "vote:list_cap_%d", i + 1);
 		CUIXmlInit::InitStatic(xml_doc, path, 0, cap[i]);
@@ -89,7 +89,7 @@ void CUIVote::Update()
 	CUIDialogWnd::Update();
 
 	static string512 teaminfo;
-	if (m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 1000)
+	if(m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 1000)
 		return;
 	m_prev_upd_time = Engine.TimeManager.GetContinualTimeMs();
 	game_cl_GameState::PLAYERS_MAP_IT I = Game().players.begin();
@@ -97,7 +97,7 @@ void CUIVote::Update()
 
 	DEFINE_VECTOR(game_PlayerState*, ItemVec, ItemIt);
 	ItemVec items;
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		items.push_back(I->second);
 	};
@@ -108,12 +108,12 @@ void CUIVote::Update()
 	list[1]->Clear();
 	list[2]->Clear();
 
-	for (u32 i = 0; i < items.size(); i++)
+	for(u32 i = 0; i < items.size(); i++)
 	{
 		game_PlayerState* p = items[i];
-		if (p->m_bCurrentVoteAgreed == 1)
+		if(p->m_bCurrentVoteAgreed == 1)
 			list[0]->AddItem(p->name);
-		else if (p->m_bCurrentVoteAgreed == 0)
+		else if(p->m_bCurrentVoteAgreed == 0)
 			list[1]->AddItem(p->name);
 		else
 			list[2]->AddItem(p->name);
@@ -122,13 +122,13 @@ void CUIVote::Update()
 
 void CUIVote::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
-		if (btn_yes == pWnd)
+		if(btn_yes == pWnd)
 			OnBtnYes();
-		else if (btn_no == pWnd)
+		else if(btn_no == pWnd)
 			OnBtnNo();
-		else if (btn_cancel == pWnd)
+		else if(btn_cancel == pWnd)
 			OnBtnCancel();
 	}
 }

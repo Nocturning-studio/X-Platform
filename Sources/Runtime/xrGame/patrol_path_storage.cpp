@@ -22,12 +22,12 @@ void CPatrolPathStorage::load_raw(const CLevelGraph* level_graph, const CGameLev
 {
 	IReader* chunk = stream.open_chunk(WAY_PATROLPATH_CHUNK);
 
-	if (!chunk)
+	if(!chunk)
 		return;
 
 	u32 chunk_iterator;
-	for (IReader* sub_chunk = chunk->open_chunk_iterator(chunk_iterator); sub_chunk;
-		 sub_chunk = chunk->open_chunk_iterator(chunk_iterator, sub_chunk))
+	for(IReader* sub_chunk = chunk->open_chunk_iterator(chunk_iterator); sub_chunk;
+		sub_chunk = chunk->open_chunk_iterator(chunk_iterator, sub_chunk))
 	{
 		R_ASSERT(sub_chunk->find_chunk(WAYOBJECT_CHUNK_VERSION));
 		R_ASSERT(sub_chunk->r_u16() == WAYOBJECT_VERSION);
@@ -57,7 +57,7 @@ void CPatrolPathStorage::load(IReader& stream)
 	PATROL_REGISTRY::value_type pair;
 
 	chunk = stream.open_chunk(1);
-	for (u32 i = 0; i < size; ++i)
+	for(u32 i = 0; i < size; ++i)
 	{
 		IReader* chunk1;
 		chunk1 = chunk->open_chunk(i);
@@ -96,7 +96,7 @@ void CPatrolPathStorage::save(IWriter& stream)
 
 	PATROL_REGISTRY::iterator I = m_registry.begin();
 	PATROL_REGISTRY::iterator E = m_registry.end();
-	for (int i = 0; I != E; ++I, ++i)
+	for(int i = 0; I != E; ++I, ++i)
 	{
 		stream.open_chunk(i);
 

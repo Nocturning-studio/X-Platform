@@ -4,114 +4,111 @@
 #include "gsPlatformUtil.h"
 #include "gsMemory.h"
 
-// mj-ToDo: remove these and include the files int the linker instead. 
+// mj-ToDo: remove these and include the files int the linker instead.
 // removing reference to other platforms.
 // remove all plat specific code from here, move it to the platspecific files.
 
 // Include platform separated functions
 #if defined(_WIN32) && defined(_XBOX)
-	#include "xbox/gsSocketXBox.c"
+#include "xbox/gsSocketXBox.c"
 #elif defined(_WIN32)
-	#include "win32/gsSocketWin32.c"
+#include "win32/gsSocketWin32.c"
 #elif defined(_LINUX)
-	//#include "linux/gsSocketLinux.c"
+// #include "linux/gsSocketLinux.c"
 #elif defined(_MACOSX)
-	//#include "macosx/gsSocketMacOSX.c"
+// #include "macosx/gsSocketMacOSX.c"
 #elif defined(_NITRO)
-	#include "nitro/gsSocketNitro.c"
+#include "nitro/gsSocketNitro.c"
 #elif defined(_PS2)
-	#include "ps2/gsSocketPs2.c"
+#include "ps2/gsSocketPs2.c"
 #elif defined(_PS3)
-	#include "ps3/gsSocketPs3.c"
-	#include <sys/select.h>
+#include "ps3/gsSocketPs3.c"
+#include <sys/select.h>
 #elif defined(_PSP)
-	#include "psp/gsSocketPSP.c"
+#include "psp/gsSocketPSP.c"
 #else
-	#error "Missing or unsupported platform"
+#error "Missing or unsupported platform"
 #endif
-
 
 // Disable compiler warnings for issues that are unavoidable.
 /////////////////////////////////////////////////////////////
 #if defined(_MSC_VER) // DevStudio
-	// Level4, "conditional expression is constant". 
-	// Occurs with use of the MS provided macro FD_SET
-	#pragma warning ( disable: 4127 )
+// Level4, "conditional expression is constant".
+// Occurs with use of the MS provided macro FD_SET
+#pragma warning(disable : 4127)
 #endif // _MSC_VER
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 int SetSockBlocking(SOCKET sock, int isblocking)
 {
 	int rcode;
-	
+
 #ifdef _NITRO
 	int val;
-	
+
 	val = SOC_Fcntl(sock, SOC_F_GETFL, 0);
-	
+
 	if(isblocking)
 		val &= ~SOC_O_NONBLOCK;
 	else
 		val |= SOC_O_NONBLOCK;
-	
+
 	rcode = SOC_Fcntl(sock, SOC_F_SETFL, val);
 #else
-	#if defined(_PS2) || defined(_PS3)
-		// EENet requires int
-		// SNSystems requires int
-		// Insock requires int
-		// PS3 requires int
-		gsi_i32 argp;
-	#else
-		unsigned long argp;
-	#endif
-		
-		if(isblocking)
-			argp = 0;
-		else
-			argp = 1;
+#if defined(_PS2) || defined(_PS3)
+	// EENet requires int
+	// SNSystems requires int
+	// Insock requires int
+	// PS3 requires int
+	gsi_i32 argp;
+#else
+	unsigned long argp;
+#endif
 
-	#ifdef _PS2
-		#ifdef SN_SYSTEMS
-			rcode = setsockopt(sock, SOL_SOCKET, (isblocking) ? SO_BIO : SO_NBIO, &argp, sizeof(argp));
-		#endif
+	if(isblocking)
+		argp = 0;
+	else
+		argp = 1;
 
-		#ifdef EENET
-			rcode = setsockopt(sock, SOL_SOCKET, SO_NBIO, &argp, sizeof(argp));
-		#endif
+#ifdef _PS2
+#ifdef SN_SYSTEMS
+	rcode = setsockopt(sock, SOL_SOCKET, (isblocking) ? SO_BIO : SO_NBIO, &argp, sizeof(argp));
+#endif
 
-		#ifdef INSOCK
-			if (isblocking)
-				argp = -1;
-			else
-				argp = 3; //added longer timeout to 3ms
-			sceInsockSetRecvTimeout(sock, argp);
-			sceInsockSetSendTimeout(sock, argp);
-			sceInsockSetShutdownTimeout(sock, argp);
-			GSI_UNUSED(sock);
-			rcode = 0;
-		#endif
-	#elif defined(_PSP)
-		rcode = setsockopt(sock, SCE_NET_INET_SOL_SOCKET, SCE_NET_INET_SO_NBIO, &argp, sizeof(argp));
-	#elif defined(_PS3)
-		rcode = setsockopt(sock, SOL_SOCKET, SO_NBIO, &argp, sizeof(argp));
-	#else
-		rcode = ioctlsocket(sock, FIONBIO, &argp);
-	#endif
+#ifdef EENET
+	rcode = setsockopt(sock, SOL_SOCKET, SO_NBIO, &argp, sizeof(argp));
+#endif
+
+#ifdef INSOCK
+	if(isblocking)
+		argp = -1;
+	else
+		argp = 3; // added longer timeout to 3ms
+	sceInsockSetRecvTimeout(sock, argp);
+	sceInsockSetSendTimeout(sock, argp);
+	sceInsockSetShutdownTimeout(sock, argp);
+	GSI_UNUSED(sock);
+	rcode = 0;
+#endif
+#elif defined(_PSP)
+	rcode = setsockopt(sock, SCE_NET_INET_SOL_SOCKET, SCE_NET_INET_SO_NBIO, &argp, sizeof(argp));
+#elif defined(_PS3)
+	rcode = setsockopt(sock, SOL_SOCKET, SO_NBIO, &argp, sizeof(argp));
+#else
+	rcode = ioctlsocket(sock, FIONBIO, &argp);
+#endif
 #endif
 
 	if(rcode == 0)
 	{
 		gsDebugFormat(GSIDebugCat_Common, GSIDebugType_Network, GSIDebugLevel_Comment,
-			"SetSockBlocking: Set socket %d to %s\r\n", (unsigned int)sock, isblocking ? "blocking":"non-blocking");
+					  "SetSockBlocking: Set socket %d to %s\r\n", (unsigned int)sock, isblocking ? "blocking" : "non-blocking");
 		return 1;
 	}
 
 	gsDebugFormat(GSIDebugCat_Common, GSIDebugType_Network, GSIDebugLevel_Comment,
-			"SetSockBlocking failed: tried to set socket %d to %s\r\n", (unsigned int)sock, isblocking ? "blocking":"non-blocking");
+				  "SetSockBlocking failed: tried to set socket %d to %s\r\n", (unsigned int)sock, isblocking ? "blocking" : "non-blocking");
 	return 0;
 }
 
@@ -119,7 +116,7 @@ int SetSockBroadcast(SOCKET sock)
 {
 #if !defined(INSOCK) && !defined(_NITRO)
 	int optval = 1;
-	if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
+	if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char*)&optval, sizeof(optval)) != 0)
 		return 0;
 #else
 	GSI_UNUSED(sock);
@@ -134,8 +131,8 @@ int DisableNagle(SOCKET sock)
 	int rcode;
 	int noDelay = 1;
 
-	rcode = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&noDelay, sizeof(int));
-	return gsiSocketIsError(rcode);	
+	rcode = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&noDelay, sizeof(int));
+	return gsiSocketIsError(rcode);
 #else
 	GSI_UNUSED(sock);
 
@@ -144,107 +141,106 @@ int DisableNagle(SOCKET sock)
 #endif // moved this to here to silence VC warning
 }
 
-
 #ifndef INSOCK
-	int SetReceiveBufferSize(SOCKET sock, int size)
-	{
-		int rcode;
-		rcode = setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (const char *)&size, sizeof(int));
-		return gsiSocketIsNotError(rcode);
-	}
+int SetReceiveBufferSize(SOCKET sock, int size)
+{
+	int rcode;
+	rcode = setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (const char*)&size, sizeof(int));
+	return gsiSocketIsNotError(rcode);
+}
 
-	int SetSendBufferSize(SOCKET sock, int size)
-	{
-		int rcode;
-		rcode = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (const char *)&size, sizeof(int));
-		return gsiSocketIsNotError(rcode);
-	}
+int SetSendBufferSize(SOCKET sock, int size)
+{
+	int rcode;
+	rcode = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (const char*)&size, sizeof(int));
+	return gsiSocketIsNotError(rcode);
+}
 
-	int GetReceiveBufferSize(SOCKET sock)
-	{
-		int rcode;
-		int size;
-		int len;
+int GetReceiveBufferSize(SOCKET sock)
+{
+	int rcode;
+	int size;
+	int len;
 
-		len = sizeof(size);
+	len = sizeof(size);
 
-		rcode = getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&size, &len);
+	rcode = getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)&size, &len);
 
-		if(gsiSocketIsError(rcode))
-			return -1;
+	if(gsiSocketIsError(rcode))
+		return -1;
 
-		return size;
-	}
+	return size;
+}
 
-	int GetSendBufferSize(SOCKET sock)
-	{
-		int rcode;
-		int size;
-		int len;
+int GetSendBufferSize(SOCKET sock)
+{
+	int rcode;
+	int size;
+	int len;
 
-		len = sizeof(size);
+	len = sizeof(size);
 
-		rcode = getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&size, &len);
+	rcode = getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)&size, &len);
 
-		if(gsiSocketIsError(rcode))
-			return -1;
+	if(gsiSocketIsError(rcode))
+		return -1;
 
-		return size;
-	}
-	
-	// Formerly known as ghiSocketSelect
+	return size;
+}
+
+// Formerly known as ghiSocketSelect
 #ifdef SN_SYSTEMS
-	#undef FD_SET
-	#define FD_SET(s,p)   ((p)->array[((s) - 1) >> SN_FD_SHR] |= \
-                       (unsigned int)(1 << (((s) - 1) & SN_FD_BITS)) )
+#undef FD_SET
+#define FD_SET(s, p) ((p)->array[((s) - 1) >> SN_FD_SHR] |= \
+					  (unsigned int)(1 << (((s) - 1) & SN_FD_BITS)))
 
 #endif
 #endif
 
 #if !defined(_NITRO) && !defined(INSOCK)
-	int GSISocketSelect(SOCKET theSocket, int* theReadFlag, int* theWriteFlag, int* theExceptFlag)
-	{
-		fd_set aReadSet;
-		fd_set aWriteSet;
-		fd_set aExceptSet;
-		fd_set * aReadFds   = NULL;
-		fd_set * aWriteFds  = NULL;
-		fd_set * aExceptFds = NULL;
-		int aResult;
+int GSISocketSelect(SOCKET theSocket, int* theReadFlag, int* theWriteFlag, int* theExceptFlag)
+{
+	fd_set aReadSet;
+	fd_set aWriteSet;
+	fd_set aExceptSet;
+	fd_set* aReadFds = NULL;
+	fd_set* aWriteFds = NULL;
+	fd_set* aExceptFds = NULL;
+	int aResult;
 // 04-13-2005, Saad Nader
-// Added case for SN Systems that would 
+// Added case for SN Systems that would
 // handle errors after performing selects.
 #ifdef SN_SYSTEMS
-		int aOut, aOutLen = sizeof(aOut);
+	int aOut, aOutLen = sizeof(aOut);
 #endif
-		
-		struct timeval aTimeout = { 0, 0 };
 
-		assert(theSocket != INVALID_SOCKET);
+	struct timeval aTimeout = {0, 0};
 
-		// Setup the parameters.
-		////////////////////////
-		if(theReadFlag != NULL)
-		{
-			FD_ZERO(&aReadSet);
-			FD_SET(theSocket,&aReadSet);
-			aReadFds = &aReadSet;
-		}
-		if(theWriteFlag != NULL)
-		{
-			FD_ZERO(&aWriteSet);
-			FD_SET(theSocket, &aWriteSet);
-			aWriteFds = &aWriteSet;
-		}
-		if(theExceptFlag != NULL)
-		{
-			FD_ZERO(&aExceptSet);
-			FD_SET(theSocket, &aExceptSet);
-			aExceptFds = &aExceptSet;
-		}
+	assert(theSocket != INVALID_SOCKET);
+
+	// Setup the parameters.
+	////////////////////////
+	if(theReadFlag != NULL)
+	{
+		FD_ZERO(&aReadSet);
+		FD_SET(theSocket, &aReadSet);
+		aReadFds = &aReadSet;
+	}
+	if(theWriteFlag != NULL)
+	{
+		FD_ZERO(&aWriteSet);
+		FD_SET(theSocket, &aWriteSet);
+		aWriteFds = &aWriteSet;
+	}
+	if(theExceptFlag != NULL)
+	{
+		FD_ZERO(&aExceptSet);
+		FD_SET(theSocket, &aExceptSet);
+		aExceptFds = &aExceptSet;
+	}
 #ifdef _PS3
-		// to do, port what is below in the else
-//int socketselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout);
+	// to do, port what is below in the else
+	// int socketselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout);
 	aResult = socketselect(FD_SETSIZE, aReadFds, aWriteFds, aExceptFds, &aTimeout);
 #else
 	// Perform the select
@@ -254,48 +250,47 @@ int DisableNagle(SOCKET sock)
 		return -1;
 
 // 04-13-2005, Saad Nader
-// Added case for SN Systems that would 
+// Added case for SN Systems that would
 // handle errors after performing selects.
 #ifdef SN_SYSTEMS
-		getsockopt(theSocket, SOL_SOCKET, SO_ERROR, (char *)&aOut, &aOutLen);
-		if (aOut != 0)
-		{
-			return 0;
-		}		
-#endif
-		// Check results.
-		/////////////////
-		if(theReadFlag != NULL)
-		{
-			if((aResult > 0) && FD_ISSET(theSocket, aReadFds))
-				*theReadFlag = 1;
-			else
-				*theReadFlag = 0;
-		}
-		if(theWriteFlag != NULL)
-		{
-			if((aResult > 0) && FD_ISSET(theSocket, aWriteFds))
-				*theWriteFlag = 1;
-			else
-				*theWriteFlag = 0;
-		}
-		if(theExceptFlag != NULL)
-		{
-			if((aResult > 0) && FD_ISSET(theSocket, aExceptFds))
-				*theExceptFlag = 1;
-			else
-				*theExceptFlag = 0;
-		}
-		return aResult; // 0 or 1 at this point
+	getsockopt(theSocket, SOL_SOCKET, SO_ERROR, (char*)&aOut, &aOutLen);
+	if(aOut != 0)
+	{
+		return 0;
 	}
+#endif
+	// Check results.
+	/////////////////
+	if(theReadFlag != NULL)
+	{
+		if((aResult > 0) && FD_ISSET(theSocket, aReadFds))
+			*theReadFlag = 1;
+		else
+			*theReadFlag = 0;
+	}
+	if(theWriteFlag != NULL)
+	{
+		if((aResult > 0) && FD_ISSET(theSocket, aWriteFds))
+			*theWriteFlag = 1;
+		else
+			*theWriteFlag = 0;
+	}
+	if(theExceptFlag != NULL)
+	{
+		if((aResult > 0) && FD_ISSET(theSocket, aExceptFds))
+			*theExceptFlag = 1;
+		else
+			*theExceptFlag = 0;
+	}
+	return aResult; // 0 or 1 at this point
+}
 #endif // !nitro
-	
 
 // Return 1 for immediate recv, otherwise 0
 int CanReceiveOnSocket(SOCKET sock)
 {
 	int aReadFlag = 0;
-	if (1 == GSISocketSelect(sock, &aReadFlag, NULL, NULL))
+	if(1 == GSISocketSelect(sock, &aReadFlag, NULL, NULL))
 		return aReadFlag;
 
 	// SDKs expect 0 on SOCKET_ERROR
@@ -306,30 +301,29 @@ int CanReceiveOnSocket(SOCKET sock)
 int CanSendOnSocket(SOCKET sock)
 {
 	int aWriteFlag = 0;
-	if (1 == GSISocketSelect(sock, NULL, &aWriteFlag, NULL))
+	if(1 == GSISocketSelect(sock, NULL, &aWriteFlag, NULL))
 		return aWriteFlag;
 
 	// SDKs expect 0 on SOCKET_ERROR
 	return 0;
 }
 
-
-#if defined(_PS3) || defined (_PSP)
+#if defined(_PS3) || defined(_PSP)
 
 #else
 
-HOSTENT * getlocalhost(void)
+HOSTENT* getlocalhost(void)
 {
 #ifdef EENET
-	#define MAX_IPS  5
+#define MAX_IPS 5
 
 	static HOSTENT localhost;
-	static char * aliases = NULL;
-	static char * ipPtrs[MAX_IPS + 1];
+	static char* aliases = NULL;
+	static char* ipPtrs[MAX_IPS + 1];
 	static unsigned int ips[MAX_IPS];
 
-	struct sceEENetIfname * interfaces;
-	struct sceEENetIfname * interface;
+	struct sceEENetIfname* interfaces;
+	struct sceEENetIfname* interface;
 	int num;
 	int i;
 	int count;
@@ -346,39 +340,39 @@ HOSTENT * getlocalhost(void)
 
 	// get the local interfaces
 	sceEENetGetIfnames(NULL, &num);
-	interfaces = (struct sceEENetIfname *)gsimalloc(num * sizeof(struct sceEENetIfname));
+	interfaces = (struct sceEENetIfname*)gsimalloc(num * sizeof(struct sceEENetIfname));
 	if(!interfaces)
 		return NULL;
 	sceEENetGetIfnames(interfaces, &num);
 
 	// loop through the interfaces
 	count = 0;
-	for(i = 0 ; i < num ; i++)
+	for(i = 0; i < num; i++)
 	{
 		// the next interface
 		interface = &interfaces[i];
-		//printf("eenet%d: %s\n", i, interface->ifn_name);
+		// printf("eenet%d: %s\n", i, interface->ifn_name);
 
 		// get the flags
 		len = sizeof(flags);
 		if(sceEENetGetIfinfo(interface->ifn_name, sceEENET_IFINFO_IFFLAGS, &flags, &len) != 0)
 			continue;
-		//printf("eenet%d flags: 0x%X\n", i, flags);
+		// printf("eenet%d flags: 0x%X\n", i, flags);
 
 		// check for up, running, and non-loopback
-		if(!(flags & (IFF_UP|IFF_RUNNING)) || (flags & IFF_LOOPBACK))
+		if(!(flags & (IFF_UP | IFF_RUNNING)) || (flags & IFF_LOOPBACK))
 			continue;
-		//printf("eenet%d: up and running, non-loopback\n", i);
+		// printf("eenet%d: up and running, non-loopback\n", i);
 
 		// get the address
 		len = sizeof(address);
 		if(sceEENetGetIfinfo(interface->ifn_name, sceEENET_IFINFO_ADDR, &address, &len) != 0)
 			continue;
-		//printf("eenet%d: %s\n", i, inet_ntoa(address));
+		// printf("eenet%d: %s\n", i, inet_ntoa(address));
 
 		// add this address
 		ips[count] = address.s_addr;
-		ipPtrs[count] = (char *)&ips[count];
+		ipPtrs[count] = (char*)&ips[count];
 		count++;
 	}
 
@@ -398,11 +392,11 @@ HOSTENT * getlocalhost(void)
 	////////////////////
 	// INSOCK
 #elif defined(INSOCK)
-	// Global storage
-	#define MAX_IPS  sceLIBNET_MAX_INTERFACE
-	static HOSTENT   localhost;
-	static char    * aliases = NULL;
-	static char    * ipPtrs[MAX_IPS + 1];
+// Global storage
+#define MAX_IPS sceLIBNET_MAX_INTERFACE
+	static HOSTENT localhost;
+	static char* aliases = NULL;
+	static char* ipPtrs[MAX_IPS + 1];
 	static unsigned int ips[MAX_IPS];
 
 	// Temp storage
@@ -410,28 +404,28 @@ HOSTENT * getlocalhost(void)
 	int aNumInterfaces = 0;
 	int aInterfaceNum = 0;
 	int aCount = 0;
-	
+
 	// Get the list of interfaces
-	aNumInterfaces = sceInetGetInterfaceList(&gGSIInsockClientData, 
-		                 &gGSIInsockSocketBuffer, aInterfaceIdArray, MAX_IPS);
-	if (aNumInterfaces < 1)
+	aNumInterfaces = sceInetGetInterfaceList(&gGSIInsockClientData,
+											 &gGSIInsockSocketBuffer, aInterfaceIdArray, MAX_IPS);
+	if(aNumInterfaces < 1)
 		return NULL;
 
 	// initialize the HOSTENT
-	localhost.h_name      = "localhost";
-	localhost.h_aliases   = &aliases;
-	localhost.h_addrtype  = AF_INET;
+	localhost.h_name = "localhost";
+	localhost.h_aliases = &aliases;
+	localhost.h_addrtype = AF_INET;
 	localhost.h_addr_list = ipPtrs;
 
 	// Look up each address and copy into the HOSTENT structure
 	aCount = 0; // count of valid interfaces
-	for (aInterfaceNum = 0; aInterfaceNum < aNumInterfaces; aInterfaceNum++)
+	for(aInterfaceNum = 0; aInterfaceNum < aNumInterfaces; aInterfaceNum++)
 	{
 		sceInetAddress_t anAddr;
 		int result = sceInetInterfaceControl(&gGSIInsockClientData, &gGSIInsockSocketBuffer,
-			                    aInterfaceIdArray[aInterfaceNum], sceInetCC_GetAddress,
-								&anAddr, sizeof(anAddr));
-		if (result == 0)
+											 aInterfaceIdArray[aInterfaceNum], sceInetCC_GetAddress,
+											 &anAddr, sizeof(anAddr));
+		if(result == 0)
 		{
 			// Add this interface to the array
 			memcpy(&ips[aCount], anAddr.data, sizeof(ips[aCount]));
@@ -443,15 +437,15 @@ HOSTENT * getlocalhost(void)
 
 	// Set the final hostent data, then return
 	localhost.h_length = (gsi_u16)sizeof(ips[0]);
-	ipPtrs[aCount]     = NULL;
+	ipPtrs[aCount] = NULL;
 	return &localhost;
-	
+
 #elif defined(_NITRO)
-	#define MAX_IPS  5
+#define MAX_IPS 5
 
 	static HOSTENT localhost;
-	static char * aliases = NULL;
-	static char * ipPtrs[MAX_IPS + 1];
+	static char* aliases = NULL;
+	static char* ipPtrs[MAX_IPS + 1];
 	static unsigned int ips[MAX_IPS];
 
 	int count = 0;
@@ -460,13 +454,13 @@ HOSTENT * getlocalhost(void)
 	localhost.h_aliases = &aliases;
 	localhost.h_addrtype = AF_INET;
 	localhost.h_length = 0;
-	localhost.h_addr_list = (u8 **)ipPtrs;
+	localhost.h_addr_list = (u8**)ipPtrs;
 
 	ips[count] = 0;
 	IP_GetAddr(NULL, (u8*)&ips[count]);
 	if(ips[count] == 0)
 		return NULL;
-	ipPtrs[count] = (char *)&ips[count];
+	ipPtrs[count] = (char*)&ips[count];
 	count++;
 
 	localhost.h_length = (gsi_u16)sizeof(ips[0]);
@@ -488,7 +482,7 @@ HOSTENT * getlocalhost(void)
 }
 #endif
 
-int IsPrivateIP(IN_ADDR * addr)
+int IsPrivateIP(IN_ADDR* addr)
 {
 	int b1;
 	int b2;
@@ -525,13 +519,11 @@ gsi_u32 gsiGetBroadcastIP(void)
 #endif
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 // Re-enable previously disabled compiler warnings
 ///////////////////////////////////////////////////
 #if defined(_MSC_VER)
-#pragma warning ( default: 4127 )
+#pragma warning(default : 4127)
 #endif // _MSC_VER
-

@@ -8,12 +8,12 @@ CDetail::~CDetail()
 
 void CDetail::Unload()
 {
-	if (vertices)
+	if(vertices)
 	{
 		xr_free(vertices);
 		vertices = 0;
 	}
-	if (indices)
+	if(indices)
 	{
 		xr_free(indices);
 		indices = 0;
@@ -27,7 +27,7 @@ void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 	{
 		CDetail::fvfVertexIn *srcIt = vertices, *srcEnd = vertices + number_vertices;
 		CDetail::fvfVertexOut* dstIt = vDest;
-		for (; srcIt != srcEnd; srcIt++, dstIt++)
+		for(; srcIt != srcEnd; srcIt++, dstIt++)
 		{
 			mTransform.transform_tiny(dstIt->P, srcIt->P);
 			dstIt->C = C;
@@ -44,9 +44,9 @@ void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 		LPDWORD sit = LPDWORD(indices);
 		LPDWORD send = sit + count;
 		LPDWORD dit = LPDWORD(iDest);
-		for (; sit != send; dit++, sit++)
+		for(; sit != send; dit++, sit++)
 			*dit = *sit + item;
-		if (number_indices & 1)
+		if(number_indices & 1)
 			iDest[number_indices - 1] = u16(indices[number_indices - 1] + u16(iOffset));
 	}
 }
@@ -57,7 +57,7 @@ void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 	{
 		CDetail::fvfVertexIn *srcIt = vertices, *srcEnd = vertices + number_vertices;
 		CDetail::fvfVertexOut* dstIt = vDest;
-		for (; srcIt != srcEnd; srcIt++, dstIt++)
+		for(; srcIt != srcEnd; srcIt++, dstIt++)
 		{
 			mTransform.transform_tiny(dstIt->P, srcIt->P);
 			dstIt->C = C;
@@ -74,9 +74,9 @@ void CDetail::transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDe
 		LPDWORD sit = LPDWORD(indices);
 		LPDWORD send = sit + count;
 		LPDWORD dit = LPDWORD(iDest);
-		for (; sit != send; dit++, sit++)
+		for(; sit != send; dit++, sit++)
 			*dit = *sit + item;
-		if (number_indices & 1)
+		if(number_indices & 1)
 			iDest[number_indices - 1] = u16(indices[number_indices - 1] + u16(iOffset));
 	}
 }
@@ -109,13 +109,13 @@ void CDetail::Load(IReader* S)
 
 	// Validate indices
 #ifdef DEBUG
-	for (u32 idx = 0; idx < number_indices; idx++)
+	for(u32 idx = 0; idx < number_indices; idx++)
 		R_ASSERT(indices[idx] < (u16)number_vertices);
 #endif
 
 	// Calc BB & SphereRadius
 	bv_bb.invalidate();
-	for (u32 i = 0; i < number_vertices; i++)
+	for(u32 i = 0; i < number_vertices; i++)
 		bv_bb.modify(vertices[i].P);
 	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 }

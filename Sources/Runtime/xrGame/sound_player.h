@@ -31,16 +31,16 @@ class CSoundPlayer : public CRandom32
 
 		IC bool operator==(const CSoundCollectionParams& object) const
 		{
-			if (m_sound_prefix != object.m_sound_prefix)
+			if(m_sound_prefix != object.m_sound_prefix)
 				return (false);
 
-			if (m_sound_player_prefix != object.m_sound_player_prefix)
+			if(m_sound_player_prefix != object.m_sound_player_prefix)
 				return (false);
 
-			if (m_max_count != object.m_max_count)
+			if(m_max_count != object.m_max_count)
 				return (false);
 
-			if (m_type != object.m_type)
+			if(m_type != object.m_type)
 				return (false);
 
 			return (true);
@@ -79,7 +79,7 @@ class CSoundPlayer : public CRandom32
 		void destroy()
 		{
 			VERIFY(m_sound);
-			if (m_sound->_feedback())
+			if(m_sound->_feedback())
 				m_sound->stop();
 
 			xr_delete(m_sound);
@@ -110,7 +110,7 @@ class CSoundPlayer : public CRandom32
 			VERIFY(sound.m_sound);
 			bool result = (sound.m_synchro_mask & m_sound_mask) ||
 						  (!sound.m_sound->_feedback() && (sound.m_stop_time <= Engine.TimeManager.GetGlobalTimeMs()));
-			if (result)
+			if(result)
 				sound.destroy();
 			return (result);
 		}

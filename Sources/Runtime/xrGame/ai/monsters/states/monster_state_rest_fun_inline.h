@@ -47,12 +47,12 @@ void CStateMonsterRestFunAbstract::execute()
 
 	object->set_state_sound(MonsterSound::eMonsterSoundIdle);
 
-	if ((dist < object->db().m_fDistToCorpse + 0.5f) && (time_last_hit + REST_FUN_MIN_DELAY < Engine.TimeManager.GetGlobalTimeMs()))
+	if((dist < object->db().m_fDistToCorpse + 0.5f) && (time_last_hit + REST_FUN_MIN_DELAY < Engine.TimeManager.GetGlobalTimeMs()))
 	{
 		CEntityAlive* corpse = const_cast<CEntityAlive*>(object->CorpseMan.get_corpse());
 		CPhysicsShellHolder* target = smart_cast<CPhysicsShellHolder*>(corpse);
 
-		if (target && target->m_pPhysicsShell)
+		if(target && target->m_pPhysicsShell)
 		{
 			fvec3 dir;
 			dir.add(fvec3().sub(target->Position(), object->Position()), object->Direction());
@@ -63,7 +63,7 @@ void CStateMonsterRestFunAbstract::execute()
 			dir.normalize();
 
 			// выполнить бросок
-			for (u32 i = 0; i < target->m_pPhysicsShell->Elements().size(); i++)
+			for(u32 i = 0; i < target->m_pPhysicsShell->Elements().size(); i++)
 			{
 				target->m_pPhysicsShell->Elements()[i]->applyImpulse(
 					dir, REST_FUN_IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() /
@@ -84,9 +84,9 @@ bool CStateMonsterRestFunAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterRestFunAbstract::check_completion()
 {
-	if (!object->CorpseMan.get_corpse())
+	if(!object->CorpseMan.get_corpse())
 		return true;
-	if (time_state_started + REST_FUN_TIME_IN_STATE < Engine.TimeManager.GetGlobalTimeMs())
+	if(time_state_started + REST_FUN_TIME_IN_STATE < Engine.TimeManager.GetGlobalTimeMs())
 		return true;
 	return false;
 }

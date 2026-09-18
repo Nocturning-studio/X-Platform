@@ -34,7 +34,7 @@ void CVisualZone::AffectObjects()
 }
 void CVisualZone::SwitchZoneState(EZoneState new_state)
 {
-	if (m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
+	if(m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
 	{
 		//	CKinematicsAnimated*	SA=smart_cast<CKinematicsAnimated*>(Visual());
 		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
@@ -54,9 +54,9 @@ void CVisualZone::Load(LPCSTR section)
 void CVisualZone::UpdateBlowout()
 {
 	inherited::UpdateBlowout();
-	if (m_dwAttackAnimaionStart >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionStart < (u32)m_iStateTime)
+	if(m_dwAttackAnimaionStart >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionStart < (u32)m_iStateTime)
 		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_attack_animation);
 
-	if (m_dwAttackAnimaionEnd >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionEnd < (u32)m_iStateTime)
+	if(m_dwAttackAnimaionEnd >= (u32)m_iPreviousStateTime && m_dwAttackAnimaionEnd < (u32)m_iStateTime)
 		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_idle_animation);
 }

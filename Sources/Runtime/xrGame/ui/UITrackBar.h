@@ -55,7 +55,8 @@ class CUITrackBar : public CUIWindow, public CUIOptionsItem
 	bool m_b_invert;
 	bool m_b_is_float;
 
-	union {
+	union
+	{
 		struct
 		{
 			float m_f_val;

@@ -103,7 +103,7 @@ Matrix4x4& Matrix4x4::Invert()
 	float Det = Determinant();
 	Matrix4x4 Temp;
 
-	if (_abs(Det) < MATRIX4X4_EPSILON)
+	if(_abs(Det) < MATRIX4X4_EPSILON)
 		return *this; // The matrix is not invertible! Singular case!
 
 	float IDet = 1.0f / Det;
@@ -149,7 +149,7 @@ Matrix4x4& Matrix4x4::Shadow(const Point& light, const Point& p0, const Point& p
 	float D = -(p0 | n);
 	Plane PlaneEquation;
 	float Coeff;
-	if (_abs(D) < 0.0001f)
+	if(_abs(D) < 0.0001f)
 		Coeff = -1.0f;
 	else
 		Coeff = -1.0f / _abs(D);
@@ -255,7 +255,7 @@ Matrix4x4& Matrix4x4::Rot(float angle, Point& p1, Point& p2)
 	Matrix4x4 Rx, InvRx;
 	Rx.Identity();
 	float d = std::sqrt(Axis.y * Axis.y + Axis.z * Axis.z);
-	if (d != 0.0f)
+	if(d != 0.0f)
 	{
 		float CosAngle = Axis.z / d;
 		float SinAngle = Axis.y / d;
@@ -298,26 +298,26 @@ void Matrix::LUBackwardSubstitution(sdword* indx, float* b)
 	sdword i, j, ii = -1, ip;
 	float sum;
 
-	for (i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 	{
 		ip = indx[i];
 		sum = b[ip];
 		b[ip] = b[i];
 
-		if (ii >= 0)
+		if(ii >= 0)
 		{
-			for (j = ii; j <= i - 1; j++)
+			for(j = ii; j <= i - 1; j++)
 				sum -= (*this)(i, j) * b[j];
 		}
-		else if (sum != 0.0f)
+		else if(sum != 0.0f)
 			ii = i;
 		b[i] = sum;
 	}
 
-	for (i = 3; i >= 0; i--)
+	for(i = 3; i >= 0; i--)
 	{
 		sum = b[i];
-		for (j = i + 1; j < 4; j++)
+		for(j = i + 1; j < 4; j++)
 			sum -= (*this)(i, j) * b[j];
 		b[i] = sum / (*this)(i, i);
 	}
@@ -341,11 +341,11 @@ void Matrix::LUDecomposition(sdword* indx, float* d)
 	sdword i, imax, j, k;
 
 	*d = 1.0f;
-	for (i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 	{
 		big = 0.0f;
-		for (j = 0; j < 4; j++)
-			if ((tmp = (float)_abs((*this)(i, j))) > big)
+		for(j = 0; j < 4; j++)
+			if((tmp = (float)_abs((*this)(i, j))) > big)
 				big = tmp;
 		/*
 		if (big == 0.0f) {
@@ -355,31 +355,31 @@ void Matrix::LUDecomposition(sdword* indx, float* d)
 		*/
 		vv[i] = 1.0f / big;
 	}
-	for (j = 0; j < 4; j++)
+	for(j = 0; j < 4; j++)
 	{
-		for (i = 0; i < j; i++)
+		for(i = 0; i < j; i++)
 		{
 			sum = (*this)(i, j);
-			for (k = 0; k < i; k++)
+			for(k = 0; k < i; k++)
 				sum -= (*this)(i, k) * (*this)(k, j);
 			(*this)(i, j) = sum;
 		}
 		big = 0.0f;
-		for (i = j; i < 4; i++)
+		for(i = j; i < 4; i++)
 		{
 			sum = (*this)(i, j);
-			for (k = 0; k < j; k++)
+			for(k = 0; k < j; k++)
 				sum -= (*this)(i, k) * (*this)(k, j);
 			(*this)(i, j) = sum;
-			if ((dum = vv[i] * (float)_abs(sum)) >= big)
+			if((dum = vv[i] * (float)_abs(sum)) >= big)
 			{
 				big = dum;
 				imax = i;
 			}
 		}
-		if (j != imax)
+		if(j != imax)
 		{
-			for (k = 0; k < 4; k++)
+			for(k = 0; k < 4; k++)
 			{
 				dum = (*this)(imax, k);
 				(*this)(imax, k) = (*this)(j, k);
@@ -389,12 +389,12 @@ void Matrix::LUDecomposition(sdword* indx, float* d)
 			vv[imax] = vv[j];
 		}
 		indx[j] = imax;
-		if ((*this)(j, j) == 0.0f)
+		if((*this)(j, j) == 0.0f)
 			(*this)(j, j) = 1.0e-20f; /* can be 0.0 also... */
-		if (j != 3)
+		if(j != 3)
 		{
 			dum = 1.0f / (*this)(j, j);
-			for (i = j + 1; i < 4; i++)
+			for(i = j + 1; i < 4; i++)
 				(*this)(i, j) *= dum;
 		}
 	}
@@ -423,7 +423,7 @@ Matrix& Matrix::ComputeAxisMatrix(Point& axis, float angle)
 	Point Up = Point(0, 1, 0) - dotProduct * axis;
 
 	// This is to prevent bogus view matrix (up view vector3 equals to axis)
-	if (Up.Magnitude() < 1e-6f)
+	if(Up.Magnitude() < 1e-6f)
 	{
 		Up = Point(0, 0, 1);
 	}
@@ -464,18 +464,18 @@ Matrix::operator PRS() const
 	float ScaleFactor;
 	Point Scale, Row, NormalizedRow;
 
-	if (IsIdentity())
+	if(IsIdentity())
 	{ // The special case of the identity matrix
 		Cast.SetScale(1.0f, 1.0f, 1.0f).SetQuaternion((Quat)(*this));
 	}
 	else
 	{
-		for (dwRow = 0; dwRow < 3; dwRow++)
+		for(dwRow = 0; dwRow < 3; dwRow++)
 		{
 			Row = *GetRow(dwRow);
 			Scale[dwRow] = ScaleFactor = Row.Magnitude();
 
-			if (_abs(ScaleFactor) > mEpsilon)
+			if(_abs(ScaleFactor) > mEpsilon)
 				NormalizedRow = Row / ScaleFactor;
 			else
 			{

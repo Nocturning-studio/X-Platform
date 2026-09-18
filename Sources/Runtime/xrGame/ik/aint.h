@@ -93,7 +93,7 @@ inline float angle_distance(float a1, float a2)
 	a1 = angle_normalize(a1);
 	a2 = angle_normalize(a2);
 
-	if (a1 > a2)
+	if(a1 > a2)
 	{
 		t1 = 2 * PI - a1 + a2;
 		t2 = a1 - a2;
@@ -103,9 +103,9 @@ inline float angle_distance(float a1, float a2)
 		t1 = 2 * PI - a2 + a1;
 		t2 = a2 - a1;
 	}
-	if (t2 < t1)
+	if(t2 < t1)
 		t1 = t2;
-	if (t1 < AINT_EPSILON)
+	if(t1 < AINT_EPSILON)
 		t1 = 0.0;
 
 	return t1;
@@ -171,7 +171,7 @@ class AngleInt
 
 	int IsEmpty(float eps = AINT_BIG_EPSILON) const
 	{
-		if (low <= high)
+		if(low <= high)
 			return (_abs(low - high) < eps);
 		else
 			return (_abs(low - 2 * PI) + _abs(high) < eps);
@@ -180,11 +180,11 @@ class AngleInt
 	// returns T if a is in the angle range
 	int InRange(float a, float eps = AINT_EPSILON) const
 	{
-		if (IsEmpty())
+		if(IsEmpty())
 			return 0;
 
 		a = angle_normalize(a);
-		if (iszero(a) || istwopi(a))
+		if(iszero(a) || istwopi(a))
 			return (low > high) || iszero(low) || istwopi(high);
 		else
 			return (low < high) ? le(low, a, eps) && le(a, high, eps) : le(a, high, eps) || ge(a, low, eps);
@@ -256,7 +256,7 @@ class AngleIntList
 
 	void Clear()
 	{
-		while (head)
+		while(head)
 		{
 			AngleIntListNode* temp = head;
 			head = head->next;
@@ -278,7 +278,7 @@ class AngleIntList
 
 	void Map(void (*f)(AngleInt& a, void*), void* data = 0) const
 	{
-		for (AngleIntListNode* t = head; t; t = t->next)
+		for(AngleIntListNode* t = head; t; t = t->next)
 			f(t->D, data);
 	}
 
@@ -292,8 +292,8 @@ class AngleIntList
 	// returns T if a is in the angle range of any of the entries
 	int InRange(float a, float eps = AINT_BIG_EPSILON) const
 	{
-		for (AngleIntListNode* t = head; t; t = t->next)
-			if (t->D.InRange(a, eps))
+		for(AngleIntListNode* t = head; t; t = t->next)
+			if(t->D.InRange(a, eps))
 				return 1;
 		return 0;
 	}
@@ -335,7 +335,7 @@ class AngleIntListIterator
 	AngleInt* Next()
 	{
 		AngleIntListNode* t = a;
-		if (a)
+		if(a)
 			a = a->next;
 		return t ? &t->D : 0;
 	}

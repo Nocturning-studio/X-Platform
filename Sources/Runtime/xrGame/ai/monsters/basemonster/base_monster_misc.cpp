@@ -15,7 +15,7 @@
 // Зрение, слух, вероятность победы, выгодность противника
 void CBaseMonster::UpdateMemory()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	// Обновить память
 	EnemyMemory.update();
@@ -32,7 +32,7 @@ void CBaseMonster::UpdateMemory()
 	hear_dangerous_sound = hear_interesting_sound = false;
 	SoundElem se;
 
-	if (SoundMemory.IsRememberSound())
+	if(SoundMemory.IsRememberSound())
 	{
 		SoundMemory.GetSound(se, hear_dangerous_sound);
 		hear_interesting_sound = !hear_dangerous_sound;

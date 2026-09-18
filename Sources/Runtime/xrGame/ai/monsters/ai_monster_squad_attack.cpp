@@ -13,17 +13,17 @@ void CMonsterSquad::ProcessAttack()
 	m_temp_entities.clear();
 
 	// ¬ыделить элементы с общими врагами и сост€нием атаки
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++)
+	for(MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++)
 	{
 		//		CEntity *member = it_goal->first;
 		SMemberGoal goal = it_goal->second;
 
-		if (goal.type == MG_AttackEnemy)
+		if(goal.type == MG_AttackEnemy)
 		{
 			VERIFY(goal.entity && !goal.entity->getDestroy());
 
 			ENEMY_MAP_IT it = m_enemy_map.find(goal.entity);
-			if (it != m_enemy_map.end())
+			if(it != m_enemy_map.end())
 			{
 				it->second.push_back(it_goal->first);
 			}
@@ -36,7 +36,7 @@ void CMonsterSquad::ProcessAttack()
 	}
 
 	// ѕройти по всем группам и назначить углы всем елементам в группе
-	for (ENEMY_MAP_IT it_enemy = m_enemy_map.begin(); it_enemy != m_enemy_map.end(); it_enemy++)
+	for(ENEMY_MAP_IT it_enemy = m_enemy_map.begin(); it_enemy != m_enemy_map.end(); it_enemy++)
 	{
 		Attack_AssignTargetDir(it_enemy->second, it_enemy->first);
 	}
@@ -65,7 +65,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 
 	// сортировать по убыванию рассто€ни€ от npc до врага
 	concurrency::parallel_sort(members.begin(), members.end(), sort_predicate(enemy));
-	if (members.empty())
+	if(members.empty())
 		return;
 
 	float delta_yaw = PI_MUL_2 / members.size();
@@ -79,7 +79,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 	lines.push_back(first);
 
 	// обработать дальний элемент
-	if (!members.empty())
+	if(!members.empty())
 	{
 		last.pE = members[0];
 		last.p_from = last.pE->Position();
@@ -94,7 +94,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 	float next_left_yaw = delta_yaw;
 
 	// проходим с конца members в начало (начина€ с наименьшего рассто€ни€)
-	while (!members.empty())
+	while(!members.empty())
 	{
 		CEntity* pCur;
 
@@ -116,22 +116,22 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 
 		bool b_add_left = false;
 
-		if (angle_normalize_signed(h2 - h1) > 0)
+		if(angle_normalize_signed(h2 - h1) > 0)
 		{ // right
-			if ((next_right_yaw < PI) && !fsimilar(next_right_yaw, PI, PI / 60.f))
+			if((next_right_yaw < PI) && !fsimilar(next_right_yaw, PI, PI / 60.f))
 				b_add_left = false;
 			else
 				b_add_left = true;
 		}
 		else
 		{ // left
-			if ((next_left_yaw < PI) && !fsimilar(next_left_yaw, PI, PI / 60.f))
+			if((next_left_yaw < PI) && !fsimilar(next_left_yaw, PI, PI / 60.f))
 				b_add_left = true;
 			else
 				b_add_left = false;
 		}
 
-		if (b_add_left)
+		if(b_add_left)
 		{
 			cur_line.yaw = -next_left_yaw;
 			next_left_yaw += delta_yaw;
@@ -151,7 +151,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC& members, CEntity* enemy)
 	d.sub(target_pos, first.p_from);
 	d.getHP(first_h, first_p);
 
-	for (u32 i = 0; i < lines.size(); i++)
+	for(u32 i = 0; i < lines.size(); i++)
 	{
 		SSquadCommand command;
 		command.type = SC_ATTACK;

@@ -40,7 +40,7 @@ CScriptEngine::CScriptEngine()
 
 CScriptEngine::~CScriptEngine()
 {
-	while (!m_script_processes.empty())
+	while(!m_script_processes.empty())
 		remove_script_process(m_script_processes.begin()->first);
 
 #ifdef DEBUG
@@ -82,7 +82,7 @@ int CScriptEngine::lua_pcall_failed(lua_State* L)
 #if !XRAY_EXCEPTIONS
 	Debug.fatal(DEBUG_INFO, "LUA error: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 #endif
-	if (lua_isstring(L, -1))
+	if(lua_isstring(L, -1))
 		lua_pop(L, 1);
 	return (LUA_ERRRUN);
 }
@@ -97,12 +97,12 @@ void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
 void CScriptEngine::setup_callbacks()
 {
 #ifdef USE_DEBUGGER
-	if (debugger())
+	if(debugger())
 		debugger()->PrepareLuaBind();
 #endif
 
 #ifdef USE_DEBUGGER
-	if (!debugger() || !debugger()->Active())
+	if(!debugger() || !debugger()->Active())
 #endif
 	{
 #if !XRAY_EXCEPTIONS
@@ -123,7 +123,7 @@ void CScriptEngine::setup_callbacks()
 #include "script_thread.h"
 void CScriptEngine::lua_hook_call(lua_State* L, lua_Debug* dbg)
 {
-	if (ai().script_engine().current_thread())
+	if(ai().script_engine().current_thread())
 		ai().script_engine().current_thread()->script_hook(L, dbg);
 	else
 		ai().script_engine().m_stack_is_ready = true;
@@ -132,7 +132,7 @@ void CScriptEngine::lua_hook_call(lua_State* L, lua_Debug* dbg)
 
 int auto_load(lua_State* L)
 {
-	if ((lua_gettop(L) < 2) || !lua_istable(L, 1) || !lua_isstring(L, 2))
+	if((lua_gettop(L) < 2) || !lua_istable(L, 1) || !lua_isstring(L, 2))
 	{
 		lua_pushnil(L);
 		return (1);
@@ -172,7 +172,7 @@ void CScriptEngine::init()
 
 #ifdef DEBUG
 #ifdef USE_DEBUGGER
-	if (!debugger() || !debugger()->Active())
+	if(!debugger() || !debugger()->Active())
 #endif
 		lua_sethook(lua(), lua_hook_call, LUA_MASKLINE | LUA_MASKCALL | LUA_MASKRET, 0);
 #endif
@@ -194,7 +194,7 @@ void CScriptEngine::init()
 void CScriptEngine::remove_script_process(const EScriptProcessors& process_id)
 {
 	CScriptProcessStorage::iterator I = m_script_processes.find(process_id);
-	if (I != m_script_processes.end())
+	if(I != m_script_processes.end())
 	{
 		xr_delete((*I).second);
 		m_script_processes.erase(I);
@@ -210,21 +210,21 @@ void CScriptEngine::load_common_scripts()
 	FS.update_path(S, "$game_config$", "script.ltx");
 	CInifile* l_tpIniFile = xr_new<CInifile>(S);
 	R_ASSERT(l_tpIniFile);
-	if (!l_tpIniFile->section_exist("common"))
+	if(!l_tpIniFile->section_exist("common"))
 	{
 		xr_delete(l_tpIniFile);
 		return;
 	}
 
-	if (l_tpIniFile->line_exist("common", "script"))
+	if(l_tpIniFile->line_exist("common", "script"))
 	{
 		LPCSTR caScriptString = l_tpIniFile->r_string("common", "script");
 		u32 n = _GetItemCount(caScriptString);
 		string256 I;
-		for (u32 i = 0; i < n; ++i)
+		for(u32 i = 0; i < n; ++i)
 		{
 			process_file(_GetItem(caScriptString, i, I));
-			if (object("_G", strcat(I, "_initialize"), LUA_TFUNCTION))
+			if(object("_G", strcat(I, "_initialize"), LUA_TFUNCTION))
 			{
 				//				lua_dostring			(lua(),strcat(I,"()"));
 				luabind::functor<void> f;
@@ -240,18 +240,18 @@ void CScriptEngine::load_common_scripts()
 void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_exist)
 {
 	u32 string_length = xr_strlen(file_name);
-	if (!warn_if_not_exist && no_file_exists(file_name, string_length))
+	if(!warn_if_not_exist && no_file_exists(file_name, string_length))
 		return;
 
 	string_path S, S1;
-	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
+	if(m_reload_modules || (*file_name && !namespace_loaded(file_name)))
 	{
 		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, ".script"));
-		if (!warn_if_not_exist && !FS.exist(S))
+		if(!warn_if_not_exist && !FS.exist(S))
 		{
 #ifdef DEBUG
 #ifndef XRSE_FACTORY_EXPORTS
-			if (psAI_Flags.test(aiNilObjectAccess))
+			if(psAI_Flags.test(aiNilObjectAccess))
 #endif
 			{
 				print_stack();
@@ -265,7 +265,7 @@ void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_ex
 			return;
 		}
 #ifndef MASTER_GOLD
-		//Msg("* loading script %s", S1);
+		// Msg("* loading script %s", S1);
 #endif // MASTER_GOLD
 		m_reload_modules = false;
 		load_file_into_namespace(S, *file_name ? file_name : "_G");
@@ -294,7 +294,7 @@ void CScriptEngine::register_script_classes()
 	CInifile* l_tpIniFile = xr_new<CInifile>(S);
 	R_ASSERT(l_tpIniFile);
 
-	if (!l_tpIniFile->section_exist("common"))
+	if(!l_tpIniFile->section_exist("common"))
 	{
 		xr_delete(l_tpIniFile);
 		return;
@@ -305,11 +305,11 @@ void CScriptEngine::register_script_classes()
 
 	u32 n = _GetItemCount(*m_class_registrators);
 	string256 I;
-	for (u32 i = 0; i < n; ++i)
+	for(u32 i = 0; i < n; ++i)
 	{
 		_GetItem(*m_class_registrators, i, I);
 		luabind::functor<void> result;
-		if (!functor(I, result))
+		if(!functor(I, result))
 		{
 			script_log(eLuaMessageTypeError, "Cannot load class registrator %s!", I);
 			continue;
@@ -320,16 +320,16 @@ void CScriptEngine::register_script_classes()
 
 bool CScriptEngine::function_object(LPCSTR function_to_call, luabind::object& object, int type)
 {
-	if (!xr_strlen(function_to_call))
+	if(!xr_strlen(function_to_call))
 		return (false);
 
 	string256 name_space, function;
 
 	parse_script_namespace(function_to_call, name_space, function);
-	if (xr_strcmp(name_space, "_G"))
+	if(xr_strcmp(name_space, "_G"))
 		process_file(name_space);
 
-	if (!this->object(name_space, function, type))
+	if(!this->object(name_space, function, type))
 		return (false);
 
 	luabind::object lua_namespace = this->name_space(name_space);
@@ -340,7 +340,7 @@ bool CScriptEngine::function_object(LPCSTR function_to_call, luabind::object& ob
 #ifdef USE_DEBUGGER
 void CScriptEngine::stopDebugger()
 {
-	if (debugger())
+	if(debugger())
 	{
 		xr_delete(m_scriptDebugger);
 		Msg("Script debugger succesfully stoped.");
@@ -351,7 +351,7 @@ void CScriptEngine::stopDebugger()
 
 void CScriptEngine::restartDebugger()
 {
-	if (debugger())
+	if(debugger())
 		stopDebugger();
 
 	m_scriptDebugger = xr_new<CScriptDebugger>();
@@ -362,7 +362,7 @@ void CScriptEngine::restartDebugger()
 
 bool CScriptEngine::no_file_exists(LPCSTR file_name, u32 string_length)
 {
-	if (m_last_no_file_length != string_length)
+	if(m_last_no_file_length != string_length)
 		return (false);
 
 	return (!memcmp(m_last_no_file, file_name, string_length * sizeof(char)));

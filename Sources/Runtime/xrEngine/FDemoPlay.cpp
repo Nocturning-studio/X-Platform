@@ -19,7 +19,7 @@
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time)
 {
 	// Есть ли файл
-	if (!FS.exist(name))
+	if(!FS.exist(name))
 	{
 		Msg("Can't find file: %s", name);
 		g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
@@ -34,7 +34,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 	Log("~ Total key-frames: ", m_frames_count);
 
 	// Защита на случай если файл пришел пустым
-	if (m_frames_count == 0)
+	if(m_frames_count == 0)
 	{
 		Msg("File corrupted: frames count is zero");
 		g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
@@ -58,7 +58,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 	fSpeed = ms;
 	dwCyclesLeft = cycles ? cycles : 1;
 
-	if (strstr(Core.Params, "-loop_demo"))
+	if(strstr(Core.Params, "-loop_demo"))
 		dwCyclesLeft = 999;
 
 	// Запущен ли сбор общей статистики (для бенчмарка)
@@ -110,9 +110,9 @@ CDemoPlay::~CDemoPlay()
 fmat4x4 CDemoPlay::GetFrameMatrix(int frame)
 {
 	// Защита от выхода за границы
-	if (frame < 0)
+	if(frame < 0)
 		frame = 0;
-	if (frame >= m_frames_count)
+	if(frame >= m_frames_count)
 		frame = m_frames_count - 1;
 	return MakeCameraMatrixFromFrameNumber(frame);
 }
@@ -120,7 +120,7 @@ fmat4x4 CDemoPlay::GetFrameMatrix(int frame)
 // Проверка на разрыв (телепорт)
 bool CDemoPlay::IsCut(int frame)
 {
-	if (frame < 0 || frame >= m_frames_count)
+	if(frame < 0 || frame >= m_frames_count)
 		return true;
 	// Если тип интерполяции DISABLE, значит этот кадр - точка разрыва
 	return GetInterpolationType(frame) == DISABLE_INTERPOLATION;
@@ -133,7 +133,7 @@ void CDemoPlay::MoveCameraSpline(float t, int i0, int i1, int i2, int i3)
 	fmat4x4 m2 = GetFrameMatrix(i2);
 	fmat4x4 m3 = GetFrameMatrix(i3);
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		fvec3 v[4];
 		// Собираем векторы из строк матриц (Row-major в X-Ray?)
@@ -160,7 +160,7 @@ void CDemoPlay::MoveCameraLinear(float t, int i1, int i2)
 	fmat4x4 m1 = GetFrameMatrix(i1);
 	fmat4x4 m2 = GetFrameMatrix(i2);
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		fvec3 p0, p1;
 		p0.set(m1.m[i][0], m1.m[i][1], m1.m[i][2]);
@@ -179,11 +179,11 @@ void CDemoPlay::MoveCamera(u32 frame, float k, int interpolation_type)
 	int i3 = frame + 2;
 
 	// Коррекция границ
-	if (i0 < 0)
+	if(i0 < 0)
 		i0 = i1;
-	if (i2 >= m_frames_count)
+	if(i2 >= m_frames_count)
 		i2 = i1;
-	if (i3 >= m_frames_count)
+	if(i3 >= m_frames_count)
 		i3 = i2;
 
 	// --- ГЛАВНОЕ ИСПРАВЛЕНИЕ ---
@@ -192,7 +192,7 @@ void CDemoPlay::MoveCamera(u32 frame, float k, int interpolation_type)
 	// Переход должен случиться мгновенно при смене кадра, а пока мы в кадре i1 - стоим на месте.
 	bool targetIsCut = IsCut(i2);
 
-	if (targetIsCut)
+	if(targetIsCut)
 	{
 		// Подменяем целевые точки на текущую.
 		// Вместо интерполяции A -> B, будет интерполяция A -> A (стоять на месте).
@@ -203,13 +203,13 @@ void CDemoPlay::MoveCamera(u32 frame, float k, int interpolation_type)
 	else
 	{
 		// Стандартная защита сплайна от перегибов, если i3 - это уже следующий разрыв
-		if (IsCut(i3))
+		if(IsCut(i3))
 			i3 = i2;
-		if (IsCut(i0))
+		if(IsCut(i0))
 			i0 = i1; // На всякий случай
 	}
 
-	switch (interpolation_type)
+	switch(interpolation_type)
 	{
 	case SPLINE_INTERPOLATION_TYPE:
 		MoveCameraSpline(k, i0, i1, i2, i3);
@@ -239,9 +239,9 @@ void CDemoPlay::MoveCamera(u32 frame, float k, int interpolation_type)
 void CDemoPlay::Update(SCamEffectorInfo& info)
 {
 	// 1. Бенчмарк
-	if (m_bBenchmarkMode)
+	if(m_bBenchmarkMode)
 	{
-		if (bNeedDrawResults)
+		if(bNeedDrawResults)
 			PrintSummaryBenchmarkStatistic();
 		else
 			ShowPerFrameStatistic();
@@ -255,7 +255,7 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 	int currentFrame = iFloor(fStartTime / fSpeed);
 
 	// Если текущий кадр существует и он помечен как DISABLE (тип 0)
-	if (currentFrame < m_frames_count && !NeedInterpolation(currentFrame))
+	if(currentFrame < m_frames_count && !NeedInterpolation(currentFrame))
 	{
 		// Это значит мы достигли точки разрыва (Frame 10).
 		// Не нужно ждать, пока пройдет время этого кадра (fSpeed).
@@ -270,14 +270,14 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 	int Frame = iFloor(ip);
 
 	// --- Логика конца демо ---
-	if (m_bBenchmarkMode && Frame == (m_frames_count - 10) && !bNeedDrawResults)
+	if(m_bBenchmarkMode && Frame == (m_frames_count - 10) && !bNeedDrawResults)
 		EnableBenchmarkResultPrint();
 
-	if (Frame >= m_frames_count)
+	if(Frame >= m_frames_count)
 	{
-		if (m_bBenchmarkMode)
+		if(m_bBenchmarkMode)
 		{
-			if (strstr(Core.Params, "-loop_demo"))
+			if(strstr(Core.Params, "-loop_demo"))
 			{
 				ResetPerFrameStatistic();
 				Frame = 0;
@@ -292,7 +292,7 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 		else
 		{
 			dwCyclesLeft--;
-			if (0 == dwCyclesLeft)
+			if(0 == dwCyclesLeft)
 			{
 				Close();
 				return;
@@ -305,17 +305,17 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 		}
 	}
 
-	if (Frame >= m_frames_count)
+	if(Frame >= m_frames_count)
 		return;
 
 	ApplyFrameParameters(Frame, InterpolationFactor);
 
 	// --- ЛОГИКА ВЫЗОВА ---
 	// Вызываем движение. Все проверки "ехать или стоять" теперь внутри MoveCamera
-	if (NeedInterpolation(Frame) && (Frame + 1 < m_frames_count) && !m_bIsFirstFrame)
+	if(NeedInterpolation(Frame) && (Frame + 1 < m_frames_count) && !m_bIsFirstFrame)
 	{
 		// Можно добавить Ease-Out, если следующий кадр - разрыв
-		if (!NeedInterpolation(Frame + 1))
+		if(!NeedInterpolation(Frame + 1))
 		{
 			// Cubic Ease-Out
 			float t = InterpolationFactor;
@@ -340,15 +340,15 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 	fLifeTime -= Engine.TimeManager.GetDeltaTime();
 
 	// Скриншоты...
-	if (m_bBenchmarkMode && bNeedDrawResults)
+	if(m_bBenchmarkMode && bNeedDrawResults)
 	{
-		if ((Engine.TimeManager.GetGlobalTimeMs() >= uTimeToScreenShot) && bNeedToTakeStatsResoultScreenShot)
+		if((Engine.TimeManager.GetGlobalTimeMs() >= uTimeToScreenShot) && bNeedToTakeStatsResoultScreenShot)
 		{
 			bNeedToTakeStatsResoultScreenShot = false;
 			Screenshot();
 			SaveBenchmarkResults();
 		}
-		if (Engine.TimeManager.GetGlobalTimeMs() >= uTimeToQuit && !strstr(Core.Params, "-loop_demo"))
+		if(Engine.TimeManager.GetGlobalTimeMs() >= uTimeToQuit && !strstr(Core.Params, "-loop_demo"))
 			Console->Execute("quit");
 	}
 }
@@ -356,7 +356,7 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {
 	// Защита на случай если файл придет пустой
-	if (m_frames_count == NULL)
+	if(m_frames_count == NULL)
 		Close();
 
 	Update(info);
@@ -374,7 +374,7 @@ void CDemoPlay::Screenshot()
 void CDemoPlay::EnableBenchmarkResultPrint()
 {
 	// Не запускать повторно
-	if (bNeedDrawResults)
+	if(bNeedDrawResults)
 		return;
 
 	uTimeToQuit = Engine.TimeManager.GetGlobalTimeMs() + 5000;
@@ -401,7 +401,7 @@ void CDemoPlay::SaveBenchmarkResults()
 	strconcat(sizeof(fileName), fileName, "benchmark_", demo_file_name, "_", timeStr, ".txt");
 
 	IWriter* W = FS.w_open("$logs$", fileName);
-	if (!W)
+	if(!W)
 	{
 		Msg("! Error: Cannot create benchmark result file: %s", fileName);
 		return;
@@ -475,21 +475,21 @@ void CDemoPlay::Close()
 void CDemoPlay::IR_OnKeyboardPress(int dik)
 {
 	// Рантайм проверка вместо #ifdef BENCHMARK_BUILD
-	if (m_bBenchmarkMode)
+	if(m_bBenchmarkMode)
 	{
-		if (dik == DIK_ESCAPE)
+		if(dik == DIK_ESCAPE)
 			EnableBenchmarkResultPrint(); // В бенчмарке ESC завершает тест с показом результатов
 	}
 	else
 	{
-		if (dik == DIK_ESCAPE)
+		if(dik == DIK_ESCAPE)
 			Close(); // В обычном режиме просто закрывает демо
 
-		if (dik == DIK_GRAVE)
+		if(dik == DIK_GRAVE)
 			Console->Show();
 	}
 
-	if (dik == DIK_F12)
+	if(dik == DIK_F12)
 		Screenshot();
 }
 
@@ -513,7 +513,7 @@ void CDemoPlay::PrintSummaryBenchmarkStatistic()
 	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 255, 255, 255));
 	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", RHI()->GetDeviceCaps().Description.c_str());
 
-	if (Engine.TimeManager.GetGlobalTimeMs() > uTimeToScreenShot)
+	if(Engine.TimeManager.GetGlobalTimeMs() > uTimeToScreenShot)
 		Engine.FontManager.GetSystemFont()->OutNext("Results saved to screenshots and log folder");
 }
 
@@ -532,9 +532,9 @@ void CDemoPlay::ResetPerFrameStatistic()
 // Разные цвета для разных значений кадров в секунду
 void CDemoPlay::ChooseTextColor(float FPSValue)
 {
-	if (FPSValue > 50.0f)
+	if(FPSValue > 50.0f)
 		Engine.FontManager.GetSystemFont()->SetColor(color_rgba(101, 255, 0, 200));
-	else if (FPSValue < 50.0f && FPSValue > 24.0f)
+	else if(FPSValue < 50.0f && FPSValue > 24.0f)
 		Engine.FontManager.GetSystemFont()->SetColor(color_rgba(230, 255, 130, 200));
 	else
 		Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 59, 0, 200));
@@ -556,26 +556,26 @@ void CDemoPlay::ShowPerFrameStatistic()
 	float stat_total = stat_Timer_total.GetElapsed_sec();
 	u32 dwFramesTotal = Engine.TimeManager.GetFrameCount() - stat_StartFrame;
 
-	if (stat_total > 0.001f)
+	if(stat_total > 0.001f)
 		fFPS_avg = float(dwFramesTotal) / stat_total;
 
 	// Фильтр аномально высоких значений (например, при Alt-Tab)
-	if (fFPS_max > 256.0f)
+	if(fFPS_max > 256.0f)
 		fFPS_max = 60.0f;
 
 	// Обновление мин/макс
 	// Пропускаем первые несколько секунд стабилизации, если нужно,
 	// но здесь просто фильтруем явные нули
-	if (fps > 1.0f)
+	if(fps > 1.0f)
 	{
-		if (fFPS < fFPS_min)
+		if(fFPS < fFPS_min)
 			fFPS_min = fFPS;
-		if (fFPS > fFPS_max)
+		if(fFPS > fFPS_max)
 			fFPS_max = fFPS;
 	}
 
 	// FPS средний не может быть больше FPS максимального (защита от сбоя таймера)
-	if (fFPS_avg > fFPS_max && fFPS_max > 0)
+	if(fFPS_avg > fFPS_max && fFPS_max > 0)
 	{
 		fFPS_avg = fFPS_max;
 		stat_StartFrame = Engine.TimeManager.GetFrameCount();
@@ -585,7 +585,7 @@ void CDemoPlay::ShowPerFrameStatistic()
 	// Выравниваем надпись по левому краю строки
 	Engine.FontManager.GetSystemFont()->SetAligment(CGameFont::alLeft);
 
-	if (g_bBordersEnabled)
+	if(g_bBordersEnabled)
 		Engine.FontManager.GetSystemFont()->OutSetI(-1.0, -0.8f);
 	else
 		Engine.FontManager.GetSystemFont()->OutSetI(-1.0, -1.0f);

@@ -11,7 +11,8 @@ struct SPHNetState
 	fvec3 torque;
 	fvec3 position;
 	fvec3 previous_position;
-	union {
+	union
+	{
 		Fquaternion quaternion;
 		struct
 		{
@@ -32,8 +33,10 @@ struct SPHNetState
 	void net_Load(IReader& P, const fvec3& min, const fvec3& max);
 
   private:
-	template <typename src> void read(src& P);
-	template <typename src> void read(src& P, const fvec3& min, const fvec3& max);
+	template <typename src>
+	void read(src& P);
+	template <typename src>
+	void read(src& P, const fvec3& min, const fvec3& max);
 };
 
 DEFINE_VECTOR(SPHNetState, PHNETSTATE_VECTOR, PHNETSTATE_I);

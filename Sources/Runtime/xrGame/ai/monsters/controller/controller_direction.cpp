@@ -33,7 +33,7 @@ void CControllerDirection::assign_bones()
 	m_bone_spine = &kinematics->LL_GetBoneInstance(kinematics->LL_BoneID("bip01_spine"));
 	m_bone_head = &kinematics->LL_GetBoneInstance(kinematics->LL_BoneID("bip01_head"));
 
-	if (!m_controller->PPhysicsShell())
+	if(!m_controller->PPhysicsShell())
 	{ // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 		m_bone_spine->set_callback(bctCustom, bone_callback, this);
 		m_bone_head->set_callback(bctCustom, bone_callback, this);
@@ -90,7 +90,7 @@ void CControllerDirection::head_look_point(const fvec3& look_point)
 	clamp(bone_angle_head, 0.f, _pmt_head_bone_limit);
 	clamp(bone_angle_torso, 0.f, _pmt_torso_bone_limit);
 
-	if (!from_right(dir_yaw, cur_yaw))
+	if(!from_right(dir_yaw, cur_yaw))
 	{
 		bone_angle_head *= -1.f;
 		bone_angle_torso *= -1.f;
@@ -102,7 +102,7 @@ void CControllerDirection::head_look_point(const fvec3& look_point)
 	bonesAxis& x_head = m_bones.GetBoneParams(m_bone_head, AXIS_X);
 
 	float target_dy = _abs(bone_angle_head + bone_angle_torso);
-	if (fis_zero(target_dy))
+	if(fis_zero(target_dy))
 		bone_speed = _pmt_min_speed;
 	else
 		bone_speed =

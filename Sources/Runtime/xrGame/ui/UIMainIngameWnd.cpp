@@ -147,7 +147,7 @@ void CUIMainIngameWnd::Init()
 	UIZoneMap->Init();
 	UIZoneMap->SetScale(DEFAULT_MAP_SCALE);
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		xml_init.InitStatic(uiXml, "static_pda_online", 0, &UIPdaOnline);
 		UIZoneMap->Background().AttachChild(&UIPdaOnline);
@@ -175,7 +175,7 @@ void CUIMainIngameWnd::Init()
 	AttachChild(m_UIIcons);
 
 	// Загружаем иконки
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		xml_init.InitStatic(uiXml, "starvation_static", 0, &UIStarvationIcon);
 		UIStarvationIcon.Show(false);
@@ -196,7 +196,7 @@ void CUIMainIngameWnd::Init()
 	xml_init.InitStatic(uiXml, "invincible_static", 0, &UIInvincibleIcon);
 	UIInvincibleIcon.Show(false);
 
-	if (GameID() == GAME_ARTEFACTHUNT)
+	if(GameID() == GAME_ARTEFACTHUNT)
 	{
 		xml_init.InitStatic(uiXml, "artefact_static", 0, &UIArtefactIcon);
 		UIArtefactIcon.Show(false);
@@ -206,7 +206,7 @@ void CUIMainIngameWnd::Init()
 
 	// Загружаем пороговые значения для индикаторов
 	EWarningIcons j = ewiWeaponJammed;
-	while (j < ewiInvincible)
+	while(j < ewiInvincible)
 	{
 		// Читаем данные порогов для каждого индикатора
 		shared_str cfgRecord =
@@ -215,7 +215,7 @@ void CUIMainIngameWnd::Init()
 
 		char singleThreshold[8];
 		float f = 0;
-		for (u32 k = 0; k < count; ++k)
+		for(u32 k = 0; k < count; ++k)
 		{
 			_GetItem(*cfgRecord, k, singleThreshold);
 			sscanf(singleThreshold, "%f", &f);
@@ -238,7 +238,7 @@ void CUIMainIngameWnd::Init()
 	AttachChild(&UIMotionIcon);
 	UIMotionIcon.Init();
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		m_artefactPanel->InitFromXML(uiXml, "artefact_panel", 0);
 		this->AttachChild(m_artefactPanel);
@@ -284,7 +284,7 @@ void CUIMainIngameWnd::Draw()
 
 	FS.dwOpenCounter = 0;
 
-	if (!IsGameTypeSingle())
+	if(!IsGameTypeSingle())
 	{
 		float luminocity = smart_cast<CGameObject*>(Level().CurrentEntity())->ROS()->get_luminocity();
 		float power = logf(luminocity > .001f ? luminocity : .001f) * (1.f /*luminocity_factor*/);
@@ -295,14 +295,14 @@ void CUIMainIngameWnd::Draw()
 		UIMotionIcon.SetLuminosity((s16)iFloor(cur_lum * 100.0f));
 	}
 
-	if (!m_pActor)
+	if(!m_pActor)
 		return;
 
 	UIMotionIcon.SetNoise((s16)(0xffff & iFloor(m_pActor->m_snd_noise * 100.0f)));
 
 	CUIWindow::Draw();
 
-	if (psHUD_Flags.is(HUD_DRAW_MINIMAP))
+	if(psHUD_Flags.is(HUD_DRAW_MINIMAP))
 		UIZoneMap->Render();
 
 	RenderQuickInfos();
@@ -320,7 +320,7 @@ void CUIMainIngameWnd::SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog)
 
 void CUIMainIngameWnd::SetAmmoIcon(const shared_str& sect_name)
 {
-	if (!sect_name.size() || !psHUD_Flags.is(HUD_DRAW_AMMO_BAR))
+	if(!sect_name.size() || !psHUD_Flags.is(HUD_DRAW_AMMO_BAR))
 	{
 		UIWeaponIcon.Show(false);
 		return;
@@ -347,14 +347,14 @@ void CUIMainIngameWnd::SetAmmoIcon(const shared_str& sect_name)
 	float posx_16 = 8.0f;
 	float posx = 10.0f;
 
-	if (iGridWidth == iGridHeight == 1)
+	if(iGridWidth == iGridHeight == 1)
 	{
 		posx_16 = 28.0f;
 		posx = 30.0f;
 	}
 	UIWeaponIcon.SetWndPos(x + UI()->is_16_9_mode() ? posx_16 : posx, UIWeaponIcon_rect.y1);
 
-	if (UI()->is_16_9_mode())
+	if(UI()->is_16_9_mode())
 		UIWeaponIcon.SetWidth(w * UI()->get_current_kx() * 1.05f);
 	else
 		UIWeaponIcon.SetWidth(w);
@@ -366,13 +366,13 @@ void CUIMainIngameWnd::Update()
 #ifdef DEBUG
 	test_update();
 #endif
-	if (m_pMPChatWnd)
+	if(m_pMPChatWnd)
 		m_pMPChatWnd->Update();
-	if (m_pMPLogWnd)
+	if(m_pMPLogWnd)
 		m_pMPLogWnd->Update();
 
 	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	if (!m_pActor)
+	if(!m_pActor)
 	{
 		m_pItem = NULL;
 		m_pWeapon = NULL;
@@ -381,12 +381,12 @@ void CUIMainIngameWnd::Update()
 		return;
 	}
 
-	if (!(Engine.TimeManager.GetFrameCount() % 30) && IsGameTypeSingle())
+	if(!(Engine.TimeManager.GetFrameCount() % 30) && IsGameTypeSingle())
 	{
 		string256 text_str;
 		CPda* _pda = m_pActor->GetPDA();
 		u32 _cn = 0;
-		if (_pda && 0 != (_cn = _pda->ActiveContactsNum()))
+		if(_pda && 0 != (_cn = _pda->ActiveContactsNum()))
 		{
 			sprintf_s(text_str, "%d", _cn);
 			UIPdaOnline.SetText(text_str);
@@ -397,24 +397,24 @@ void CUIMainIngameWnd::Update()
 		}
 	};
 
-	if (!(Engine.TimeManager.GetFrameCount() % 5))
+	if(!(Engine.TimeManager.GetFrameCount() % 5))
 	{
 
-		if (!(Engine.TimeManager.GetFrameCount() % 30))
+		if(!(Engine.TimeManager.GetFrameCount() % 30))
 		{
 			bool b_God = (GodMode() || (!Game().local_player))
 							 ? true
 							 : Game().local_player->testFlag(GAME_PLAYER_FLAG_INVINCIBLE);
-			if (b_God)
+			if(b_God)
 				SetWarningIconColor(ewiInvincible, 0xffffffff);
 			else
 				SetWarningIconColor(ewiInvincible, 0x00ffffff);
 		}
 		// ewiArtefact
-		if ((GameID() == GAME_ARTEFACTHUNT) && !(Engine.TimeManager.GetFrameCount() % 30))
+		if((GameID() == GAME_ARTEFACTHUNT) && !(Engine.TimeManager.GetFrameCount() % 30))
 		{
 			bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
-			if (b_Artefact)
+			if(b_Artefact)
 				SetWarningIconColor(ewiArtefact, 0xffffffff);
 			else
 				SetWarningIconColor(ewiArtefact, 0x00ffffff);
@@ -422,7 +422,7 @@ void CUIMainIngameWnd::Update()
 
 		// Armor indicator stuff
 		PIItem pItem = m_pActor->inventory().ItemFromSlot(OUTFIT_SLOT);
-		if (pItem && psHUD_Flags.is(HUD_DRAW_HEALTH_BAR))
+		if(pItem && psHUD_Flags.is(HUD_DRAW_HEALTH_BAR))
 		{
 			UIArmorBar.Show(true);
 			UIStaticArmor.Show(true);
@@ -443,10 +443,10 @@ void CUIMainIngameWnd::Update()
 
 		EWarningIcons i = ewiWeaponJammed;
 
-		while (i < ewiInvincible)
+		while(i < ewiInvincible)
 		{
 			float value = 0;
-			switch (i)
+			switch(i)
 			{
 				// radiation
 			case ewiRadiation:
@@ -456,7 +456,7 @@ void CUIMainIngameWnd::Update()
 				value = m_pActor->conditions().BleedingSpeed();
 				break;
 			case ewiWeaponJammed:
-				if (m_pWeapon)
+				if(m_pWeapon)
 					value = 1 - m_pWeapon->GetConditionToShow();
 				break;
 			case ewiStarvation:
@@ -475,7 +475,7 @@ void CUIMainIngameWnd::Update()
 			rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
 
 			// Если его нет, то берем последнее меньшее значение ()
-			if (rit == m_Thresholds[i].rend())
+			if(rit == m_Thresholds[i].rend())
 				rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(),
 								   std::bind(std::less<float>(), std::placeholders::_1, value));
 
@@ -483,7 +483,7 @@ void CUIMainIngameWnd::Update()
 			float min = m_Thresholds[i].front();
 			float max = m_Thresholds[i].back();
 
-			if (rit != m_Thresholds[i].rend())
+			if(rit != m_Thresholds[i].rend())
 			{
 				float v = *rit;
 				SetWarningIconColor(
@@ -517,10 +517,10 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 #endif
 	// поддержка режима adjust hud mode
 	bool flag = false;
-	if (g_bHudAdjustMode)
+	if(g_bHudAdjustMode)
 	{
 		CWeaponHUD* pWpnHud = NULL;
-		if (m_pWeapon)
+		if(m_pWeapon)
 		{
 			pWpnHud = m_pWeapon->GetHUD();
 			//			if (!pWpnHud) return false;
@@ -530,13 +530,13 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 
 		fvec3 tmpV;
 
-		if (1 == g_bHudAdjustMode) // zoom offset
+		if(1 == g_bHudAdjustMode) // zoom offset
 		{
-			if (!pWpnHud)
+			if(!pWpnHud)
 				return false;
 			tmpV = pWpnHud->ZoomOffset();
 
-			switch (dik)
+			switch(dik)
 			{
 				// Rotate +y
 			case DIK_K:
@@ -605,17 +605,17 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				break;
 			}
 
-			if (tmpV.x || tmpV.y || tmpV.z)
+			if(tmpV.x || tmpV.y || tmpV.z)
 				pWpnHud->SetZoomOffset(tmpV);
 		}
-		else if (2 == g_bHudAdjustMode || 5 == g_bHudAdjustMode) // firePoints
+		else if(2 == g_bHudAdjustMode || 5 == g_bHudAdjustMode) // firePoints
 		{
-			if (TRUE == m_pWeapon->GetHUDmode())
+			if(TRUE == m_pWeapon->GetHUDmode())
 				tmpV = (2 == g_bHudAdjustMode) ? pWpnHud->FirePoint() : pWpnHud->FirePoint2();
 			else
 				tmpV = (2 == g_bHudAdjustMode) ? m_pWeapon->vLoadedFirePoint : m_pWeapon->vLoadedFirePoint2;
 
-			switch (dik)
+			switch(dik)
 			{
 				// Shift +x
 			case DIK_A:
@@ -650,13 +650,13 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				// output coordinate info to the console
 			case DIK_P:
 				string256 tmpStr;
-				if (m_pWeapon)
+				if(m_pWeapon)
 				{
 					sprintf_s(tmpStr, "%s", *m_pWeapon->cNameSect());
 					Log(tmpStr);
 				}
 
-				if (TRUE == m_pWeapon->GetHUDmode())
+				if(TRUE == m_pWeapon->GetHUDmode())
 					Msg("weapon hud section:");
 				else
 					Msg("weapon section:");
@@ -667,28 +667,28 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				break;
 			}
 #ifdef DEBUG
-			if (TRUE == m_pWeapon->GetHUDmode())
-				if (2 == g_bHudAdjustMode)
+			if(TRUE == m_pWeapon->GetHUDmode())
+				if(2 == g_bHudAdjustMode)
 					pWpnHud->dbg_SetFirePoint(tmpV);
 				else
 					pWpnHud->dbg_SetFirePoint2(tmpV);
 			else
 			{
-				if (2 == g_bHudAdjustMode)
+				if(2 == g_bHudAdjustMode)
 					m_pWeapon->vLoadedFirePoint = tmpV;
 				else
 					m_pWeapon->vLoadedFirePoint2 = tmpV;
 			}
 #endif
 		}
-		else if (4 == g_bHudAdjustMode) // ShellPoint
+		else if(4 == g_bHudAdjustMode) // ShellPoint
 		{
-			if (TRUE == m_pWeapon->GetHUDmode())
+			if(TRUE == m_pWeapon->GetHUDmode())
 				tmpV = pWpnHud->ShellPoint();
 			else
 				tmpV = m_pWeapon->vLoadedShellPoint;
 
-			switch (dik)
+			switch(dik)
 			{
 				// Shift +x
 			case DIK_A:
@@ -723,13 +723,13 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				// output coordinate info to the console
 			case DIK_P:
 				string256 tmpStr;
-				if (m_pWeapon)
+				if(m_pWeapon)
 				{
 					sprintf_s(tmpStr, "%s", *m_pWeapon->cNameSect());
 					Log(tmpStr);
 				}
 
-				if (TRUE == m_pWeapon->GetHUDmode())
+				if(TRUE == m_pWeapon->GetHUDmode())
 					Msg("weapon hud section:");
 				else
 					Msg("weapon section:");
@@ -740,14 +740,14 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				break;
 			}
 #ifdef DEBUG
-			if (TRUE == m_pWeapon->GetHUDmode())
+			if(TRUE == m_pWeapon->GetHUDmode())
 				pWpnHud->dbg_SetShellPoint(tmpV);
 			else
 				m_pWeapon->vLoadedShellPoint = tmpV;
 
 #endif
 		}
-		else if (3 == g_bHudAdjustMode) // MissileOffset
+		else if(3 == g_bHudAdjustMode) // MissileOffset
 		{
 			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
@@ -755,9 +755,9 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 
 			tmpV = pActor->GetMissileOffset();
 
-			if (!pActor)
+			if(!pActor)
 				return false;
-			switch (dik)
+			switch(dik)
 			{
 				// Shift +x
 			case DIK_E:
@@ -792,7 +792,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				// output coordinate info to the console
 			case DIK_P:
 				string256 tmpStr;
-				if (m_pWeapon)
+				if(m_pWeapon)
 				{
 					sprintf_s(tmpStr, "%s", *m_pWeapon->cNameSect());
 					Log(tmpStr);
@@ -809,71 +809,71 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			pActor->SetMissileOffset(tmpV);
 		}
 
-		if (flag)
+		if(flag)
 			return true;
 	}
 
 #ifdef DEBUG
-	if (CAttachableItem::m_dbgItem)
+	if(CAttachableItem::m_dbgItem)
 	{
 		static float rot_d = deg2rad(0.5f);
 		static float mov_d = 0.01f;
 		bool shift = !!pInput->iGetAsyncKeyState(DIK_LSHIFT);
 		flag = true;
-		switch (dik)
+		switch(dik)
 		{
 			// Shift +x
 		case DIK_A:
-			if (shift)
+			if(shift)
 				CAttachableItem::rot_dx(rot_d);
 			else
 				CAttachableItem::mov_dx(rot_d);
 			break;
 			// Shift -x
 		case DIK_D:
-			if (shift)
+			if(shift)
 				CAttachableItem::rot_dx(-rot_d);
 			else
 				CAttachableItem::mov_dx(-rot_d);
 			break;
 			// Shift +z
 		case DIK_Q:
-			if (shift)
+			if(shift)
 				CAttachableItem::rot_dy(rot_d);
 			else
 				CAttachableItem::mov_dy(rot_d);
 			break;
 			// Shift -z
 		case DIK_E:
-			if (shift)
+			if(shift)
 				CAttachableItem::rot_dy(-rot_d);
 			else
 				CAttachableItem::mov_dy(-rot_d);
 			break;
 			// Shift +y
 		case DIK_S:
-			if (shift)
+			if(shift)
 				CAttachableItem::rot_dz(rot_d);
 			else
 				CAttachableItem::mov_dz(rot_d);
 			break;
 			// Shift -y
 		case DIK_W:
-			if (shift)
+			if(shift)
 				CAttachableItem::rot_dz(-rot_d);
 			else
 				CAttachableItem::mov_dz(-rot_d);
 			break;
 
 		case DIK_SUBTRACT:
-			if (shift)
+			if(shift)
 				rot_d -= deg2rad(0.01f);
 			else
 				mov_d -= 0.001f;
 			Msg("rotation delta=[%f]; moving delta=[%f]", rot_d, mov_d);
 			break;
 		case DIK_ADD:
-			if (shift)
+			if(shift)
 				rot_d += deg2rad(0.01f);
 			else
 				mov_d += 0.001f;
@@ -889,15 +889,15 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			flag = false;
 			break;
 		}
-		if (flag)
+		if(flag)
 			return true;
 		;
 	}
 #endif
 
-	if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
+	if(Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
 	{
-		switch (dik)
+		switch(dik)
 		{
 		case DIK_NUMPADMINUS:
 			UIZoneMap->ZoomOut();
@@ -911,7 +911,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 	}
 	else
 	{
-		switch (dik)
+		switch(dik)
 		{
 		case DIK_NUMPADMINUS:
 			//.HideAll();
@@ -931,20 +931,20 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 
 void CUIMainIngameWnd::RenderQuickInfos()
 {
-	if (!m_pActor)
+	if(!m_pActor)
 		return;
 
 	static CGameObject* pObject = NULL;
 	LPCSTR actor_action = m_pActor->GetDefaultActionForObject();
 	UIStaticQuickHelp.Show(NULL != actor_action);
 
-	if (NULL != actor_action)
+	if(NULL != actor_action)
 	{
-		if (xr_stricmp(actor_action, UIStaticQuickHelp.GetText()))
+		if(xr_stricmp(actor_action, UIStaticQuickHelp.GetText()))
 			UIStaticQuickHelp.SetTextST(actor_action);
 	}
 
-	if (pObject != m_pActor->ObjectWeLookingAt())
+	if(pObject != m_pActor->ObjectWeLookingAt())
 	{
 		UIStaticQuickHelp.SetTextST(actor_action);
 		UIStaticQuickHelp.ResetClrAnimation();
@@ -965,16 +965,16 @@ void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
 	int bOn = (cl >> 24);
 	bool bIsShown = s->IsShown();
 
-	if (bOn)
+	if(bOn)
 		s->SetColor(cl);
 
-	if (bOn && !bIsShown)
+	if(bOn && !bIsShown)
 	{
 		m_UIIcons->AddWindow(s, false);
 		s->Show(true);
 	}
 
-	if (!bOn && bIsShown)
+	if(!bOn && bIsShown)
 	{
 		m_UIIcons->RemoveWindow(s);
 		s->Show(false);
@@ -986,33 +986,33 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 	bool bMagicFlag = true;
 
 	// Задаем цвет требуемой иконки
-	switch (icon)
+	switch(icon)
 	{
 	case ewiAll:
 		bMagicFlag = false;
 	case ewiWeaponJammed:
 		SetWarningIconColor(&UIWeaponJammedIcon, cl);
-		if (bMagicFlag)
+		if(bMagicFlag)
 			break;
 	case ewiRadiation:
 		SetWarningIconColor(&UIRadiaitionIcon, cl);
-		if (bMagicFlag)
+		if(bMagicFlag)
 			break;
 	case ewiWound:
 		SetWarningIconColor(&UIWoundIcon, cl);
-		if (bMagicFlag)
+		if(bMagicFlag)
 			break;
 	case ewiStarvation:
 		SetWarningIconColor(&UIStarvationIcon, cl);
-		if (bMagicFlag)
+		if(bMagicFlag)
 			break;
 	case ewiPsyHealth:
 		SetWarningIconColor(&UIPsyHealthIcon, cl);
-		if (bMagicFlag)
+		if(bMagicFlag)
 			break;
 	case ewiInvincible:
 		SetWarningIconColor(&UIInvincibleIcon, cl);
-		if (bMagicFlag)
+		if(bMagicFlag)
 			break;
 		break;
 	case ewiArtefact:
@@ -1045,7 +1045,7 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
 	CUIXmlInit xml_init;
 	CUIStatic* pIcon = NULL;
 	// Пробегаемся по всем нодам и инициализируем из них статики
-	for (int i = 0; i < staticsCount; ++i)
+	for(int i = 0; i < staticsCount; ++i)
 	{
 		pIcon = xr_new<CUIStatic>();
 		xml_init.InitStatic(*node, flashingIconNodeName, i, pIcon);
@@ -1054,9 +1054,9 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
 		// Теперь запоминаем иконку и ее тип
 		EFlashingIcons type = efiPdaTask;
 
-		if (iconType == "pda")
+		if(iconType == "pda")
 			type = efiPdaTask;
-		else if (iconType == "mail")
+		else if(iconType == "mail")
 			type = efiMail;
 		else
 			R_ASSERT(!"Unknown type of mainingame flashing icon");
@@ -1073,7 +1073,7 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
 
 void CUIMainIngameWnd::DestroyFlashingIcons()
 {
-	for (FlashingIcons_it it = m_FlashingIcons.begin(); it != m_FlashingIcons.end(); ++it)
+	for(FlashingIcons_it it = m_FlashingIcons.begin(); it != m_FlashingIcons.end(); ++it)
 	{
 		DetachChild(it->second);
 		xr_delete(it->second);
@@ -1084,7 +1084,7 @@ void CUIMainIngameWnd::DestroyFlashingIcons()
 
 void CUIMainIngameWnd::UpdateFlashingIcons()
 {
-	for (FlashingIcons_it it = m_FlashingIcons.begin(); it != m_FlashingIcons.end(); ++it)
+	for(FlashingIcons_it it = m_FlashingIcons.begin(); it != m_FlashingIcons.end(); ++it)
 	{
 		it->second->Update();
 	}
@@ -1094,7 +1094,7 @@ void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 {
 	UIPdaOnline.ResetClrAnimation();
 
-	if (b_snd)
+	if(b_snd)
 		HUD_SOUND::PlaySound(m_contactSnd, fvec3().set(0, 0, 0), 0, true);
 }
 
@@ -1105,7 +1105,7 @@ void CUIMainIngameWnd::SetPickUpItem(CInventoryItem* PickUpItem)
 
 void CUIMainIngameWnd::UpdatePickUpItem()
 {
-	if (!m_pPickUpItem || !Level().CurrentViewEntity() || Level().CurrentViewEntity()->CLS_ID != CLSID_OBJECT_ACTOR)
+	if(!m_pPickUpItem || !Level().CurrentViewEntity() || Level().CurrentViewEntity()->CLS_ID != CLSID_OBJECT_ACTOR)
 	{
 		UIPickUpItemIcon.Show(false);
 		return;
@@ -1148,7 +1148,7 @@ void CUIMainIngameWnd::UpdatePickUpItem()
 void CUIMainIngameWnd::UpdateActiveItemInfo()
 {
 	PIItem item = m_pActor->inventory().ActiveItem();
-	if (item && psHUD_Flags.is(HUD_DRAW_AMMO_BAR))
+	if(item && psHUD_Flags.is(HUD_DRAW_AMMO_BAR))
 	{
 		xr_string str_name;
 		xr_string icon_sect_name;
@@ -1205,16 +1205,16 @@ CUIFrameWindow* pUIFrame = NULL;
 
 void test_update()
 {
-	if (pUIFrame)
+	if(pUIFrame)
 		pUIFrame->Update();
 }
 
 void test_key(int dik)
 {
 
-	if (dik == DIK_K)
+	if(dik == DIK_K)
 	{
-		if (!pUIFrame)
+		if(!pUIFrame)
 		{
 			CUIXml uiXML;
 			uiXML.Init(CONFIG_PATH, UI_PATH, "talk.xml");
@@ -1229,16 +1229,16 @@ void test_key(int dik)
 
 void test_draw()
 {
-	if (pUIFrame)
+	if(pUIFrame)
 		pUIFrame->Draw();
 }
 
 void CUIMainIngameWnd::draw_adjust_mode()
 {
-	if (g_bHudAdjustMode && m_pWeapon) // draw firePoint,ShellPoint etc
+	if(g_bHudAdjustMode && m_pWeapon) // draw firePoint,ShellPoint etc
 	{
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (!pActor)
+		if(!pActor)
 			return;
 
 		bool bCamFirstEye = !!m_pWeapon->GetHUDmode();
@@ -1250,18 +1250,18 @@ void CUIMainIngameWnd::draw_adjust_mode()
 		F->OutSetI(0.f, -0.8f);
 		F->SetColor(0xffffffff);
 		F->OutNext("Hud_adjust_mode=%d", g_bHudAdjustMode);
-		if (g_bHudAdjustMode == 1)
+		if(g_bHudAdjustMode == 1)
 			F->OutNext("adjusting zoom offset");
-		else if (g_bHudAdjustMode == 2)
+		else if(g_bHudAdjustMode == 2)
 			F->OutNext("adjusting fire point for %s", bCamFirstEye ? hud_view : _3rd_person_view);
-		else if (g_bHudAdjustMode == 3)
+		else if(g_bHudAdjustMode == 3)
 			F->OutNext("adjusting missile offset");
-		else if (g_bHudAdjustMode == 4)
+		else if(g_bHudAdjustMode == 4)
 			F->OutNext("adjusting shell point for %s", bCamFirstEye ? hud_view : _3rd_person_view);
-		else if (g_bHudAdjustMode == 5)
+		else if(g_bHudAdjustMode == 5)
 			F->OutNext("adjusting fire point 2 for %s", bCamFirstEye ? hud_view : _3rd_person_view);
 
-		if (bCamFirstEye)
+		if(bCamFirstEye)
 		{
 			CWeaponHUD* pWpnHud = NULL;
 			pWpnHud = m_pWeapon->GetHUD();

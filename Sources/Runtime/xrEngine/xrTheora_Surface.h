@@ -27,18 +27,18 @@ class ENGINE_API CTheoraSurface
 	BOOL ready;
 	BOOL bShaderYUV2RGB;
 
-public:
+  public:
 	BOOL playing;
 	BOOL looped;
 
-protected:
+  protected:
 	void Reset();
 
 #ifdef SDL_OUTPUT
 	void open_sdl_video();
 	void write_sdl_video();
 #endif
-public:
+  public:
 	CTheoraSurface();
 	virtual ~CTheoraSurface();
 
@@ -61,4 +61,4 @@ public:
 	u32 Height(bool bRealSize);
 };
 
-#endif //xrTheora_SurfaceH
+#endif // xrTheora_SurfaceH

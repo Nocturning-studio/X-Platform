@@ -29,7 +29,7 @@ class CBlender_depth_of_field : public IBlender
 		IBlender::Compile(C);
 		LPCSTR sh_name = "postprocess_stage_depth_of_field";
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		// 1. Calc CoC (Pixel Exact)
 		case SE_PASS_DOF_CALC_COC:

@@ -40,7 +40,7 @@ void CStateBurerAttackTeleAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::execute()
 {
-	switch (m_action)
+	switch(m_action)
 	{
 	/************************/
 	case ACTION_TELE_STARTED:
@@ -70,9 +70,9 @@ void CStateBurerAttackTeleAbstract::execute()
 	case ACTION_WAIT_TRIPLE_END:
 		/***************************/
 
-		if (!object->com_man().ta_is_active())
+		if(!object->com_man().ta_is_active())
 		{
-			if (IsActiveObjects())
+			if(IsActiveObjects())
 				m_action = ACTION_TELE_STARTED;
 			else
 				m_action = ACTION_COMPLETED;
@@ -98,9 +98,9 @@ void CStateBurerAttackTeleAbstract::finalize()
 	object->DeactivateShield();
 
 	// clear particles on active objects
-	if (object->CTelekinesis::is_active())
+	if(object->CTelekinesis::is_active())
 	{
-		for (u32 i = 0; i < object->CTelekinesis::get_objects_count(); i++)
+		for(u32 i = 0; i < object->CTelekinesis::get_objects_count(); i++)
 		{
 			object->StopTeleObjectParticle(object->CTelekinesis::get_object_by_index(i).get_object());
 		}
@@ -122,9 +122,9 @@ void CStateBurerAttackTeleAbstract::critical_finalize()
 	tele_objects.clear();
 
 	// clear particles on active objects
-	if (object->CTelekinesis::is_active())
+	if(object->CTelekinesis::is_active())
 	{
-		for (u32 i = 0; i < object->CTelekinesis::get_objects_count(); i++)
+		for(u32 i = 0; i < object->CTelekinesis::get_objects_count(); i++)
 		{
 			object->StopTeleObjectParticle(object->CTelekinesis::get_object_by_index(i).get_object());
 		}
@@ -153,15 +153,15 @@ void CStateBurerAttackTeleAbstract::FindFreeObjects(xr_vector<CObject*>& tpObjec
 {
 	Level().ObjectSpace.GetNearest(tpObjects, pos, object->m_tele_find_radius, NULL);
 
-	for (u32 i = 0; i < tpObjects.size(); i++)
+	for(u32 i = 0; i < tpObjects.size(); i++)
 	{
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(tpObjects[i]);
 		CCustomMonster* custom_monster = smart_cast<CCustomMonster*>(tpObjects[i]);
-		if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || custom_monster ||
-			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
-			(obj->m_pPhysicsShell->getMass() < object->m_tele_object_min_mass) ||
-			(obj->m_pPhysicsShell->getMass() > object->m_tele_object_max_mass) || (obj == object) ||
-			object->CTelekinesis::is_active_object(obj) || !obj->m_pPhysicsShell->get_ApplyByGravity())
+		if(!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || custom_monster ||
+		   (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
+		   (obj->m_pPhysicsShell->getMass() < object->m_tele_object_min_mass) ||
+		   (obj->m_pPhysicsShell->getMass() > object->m_tele_object_max_mass) || (obj == object) ||
+		   object->CTelekinesis::is_active_object(obj) || !obj->m_pPhysicsShell->get_ApplyByGravity())
 			continue;
 
 		tele_objects.push_back(obj);
@@ -207,7 +207,7 @@ void CStateBurerAttackTeleAbstract::ExecuteTeleStart()
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::ExecuteTeleContinue()
 {
-	if (time_started + object->m_tele_time_to_hold > Engine.TimeManager.GetGlobalTimeMs())
+	if(time_started + object->m_tele_time_to_hold > Engine.TimeManager.GetGlobalTimeMs())
 		return;
 
 	// найти объект для атаки
@@ -215,11 +215,11 @@ void CStateBurerAttackTeleAbstract::ExecuteTeleContinue()
 	CTelekineticObject tele_object;
 
 	u32 i = 0;
-	while (i < object->CTelekinesis::get_objects_count())
+	while(i < object->CTelekinesis::get_objects_count())
 	{
 		tele_object = object->CTelekinesis::get_object_by_index(i);
 
-		if ((tele_object.get_state() == TS_Keep) && (tele_object.time_keep_started + 1500 < Engine.TimeManager.GetGlobalTimeMs()))
+		if((tele_object.get_state() == TS_Keep) && (tele_object.time_keep_started + 1500 < Engine.TimeManager.GetGlobalTimeMs()))
 		{
 
 			object_found = true;
@@ -229,14 +229,14 @@ void CStateBurerAttackTeleAbstract::ExecuteTeleContinue()
 			i++;
 	}
 
-	if (object_found)
+	if(object_found)
 	{
 		m_action = ACTION_TELE_FIRE;
 		selected_object = tele_object.get_object();
 	}
 	else
 	{
-		if (!IsActiveObjects() || (time_started + MAX_TIME_CHECK_FAILURE < Engine.TimeManager.GetGlobalTimeMs()))
+		if(!IsActiveObjects() || (time_started + MAX_TIME_CHECK_FAILURE < Engine.TimeManager.GetGlobalTimeMs()))
 		{
 			object->com_man().ta_deactivate();
 			m_action = ACTION_COMPLETED;
@@ -270,23 +270,23 @@ bool CStateBurerAttackTeleAbstract::IsActiveObjects()
 TEMPLATE_SPECIALIZATION
 bool CStateBurerAttackTeleAbstract::CheckTeleStart()
 {
-	if (object->com_man().ta_is_active())
+	if(object->com_man().ta_is_active())
 		return false;
 
 	// проверка на текущую активность
-	if (IsActiveObjects())
+	if(IsActiveObjects())
 		return false;
 
 	// проверить дистанцию до врага
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
-	if (dist < GOOD_DISTANCE_FOR_TELE)
+	if(dist < GOOD_DISTANCE_FOR_TELE)
 		return false;
 
 	// найти телекинетические объекты
 	FindObjects();
 
 	// если нет объектов
-	if (tele_objects.empty())
+	if(tele_objects.empty())
 		return false;
 
 	// всё ок можно начинать телекинез
@@ -344,10 +344,10 @@ TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::SelectObjects()
 {
 	concurrency::parallel_sort(tele_objects.begin(), tele_objects.end(),
-			  best_object_predicate2_burer_tele(object->Position(), object->EnemyMan.get_enemy()->Position()));
+							   best_object_predicate2_burer_tele(object->Position(), object->EnemyMan.get_enemy()->Position()));
 
 	// выбрать объект
-	for (u32 i = 0; i < tele_objects.size(); i++)
+	for(u32 i = 0; i < tele_objects.size(); i++)
 	{
 		CPhysicsShellHolder* obj = tele_objects[i];
 
@@ -365,7 +365,7 @@ void CStateBurerAttackTeleAbstract::SelectObjects()
 		tele_objects[i] = tele_objects[tele_objects.size() - 1];
 		tele_objects.pop_back();
 
-		if (object->CTelekinesis::get_objects_count() >= object->m_tele_max_handled_objects)
+		if(object->CTelekinesis::get_objects_count() >= object->m_tele_max_handled_objects)
 			break;
 	}
 }

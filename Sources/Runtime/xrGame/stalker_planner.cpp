@@ -75,14 +75,14 @@ void CStalkerPlanner::setup(CAI_Stalker* object)
 
 void CStalkerPlanner::update(u32 time_delta)
 {
-	//OPTICK_EVENT("CStalkerPlanner::update");
+	// OPTICK_EVENT("CStalkerPlanner::update");
 
 #ifdef LOG_ACTION
-	if ((psAI_Flags.test(aiGOAP) && !m_use_log) || (!psAI_Flags.test(aiGOAP) && m_use_log))
+	if((psAI_Flags.test(aiGOAP) && !m_use_log) || (!psAI_Flags.test(aiGOAP) && m_use_log))
 		set_use_log(!!psAI_Flags.test(aiGOAP));
 #endif
 
-	if (m_object->g_Alive())
+	if(m_object->g_Alive())
 		set_target_state(m_alive_goal);
 	else
 		set_target_state(m_dead_goal);
@@ -90,27 +90,27 @@ void CStalkerPlanner::update(u32 time_delta)
 	inherited::update();
 
 #ifdef GOAP_DEBUG
-	if (m_failed)
+	if(m_failed)
 	{
 		{
 			Msg("%d", evaluators().size());
 			EVALUATORS::const_iterator I = evaluators().begin();
 			EVALUATORS::const_iterator E = evaluators().end();
-			for (; I != E; ++I)
+			for(; I != E; ++I)
 				Msg("%d,%d", (*I).first, (*I).second->evaluate() ? 1 : 0);
 		}
 		{
 			Msg("%d", target_state().conditions().size());
 			xr_vector<COperatorCondition>::const_iterator I = target_state().conditions().begin();
 			xr_vector<COperatorCondition>::const_iterator E = target_state().conditions().end();
-			for (; I != E; ++I)
+			for(; I != E; ++I)
 				Msg("%d,%d", (*I).condition(), (*I).value() ? 1 : 0);
 		}
 		{
 			Msg("%d", operators().size());
 			const_iterator I = operators().begin();
 			const_iterator E = operators().end();
-			for (; I != E; ++I)
+			for(; I != E; ++I)
 			{
 				Msg("%d,%d", (*I).m_operator_id, (*I).m_operator->weight(target_state(), target_state()));
 				{
@@ -118,14 +118,14 @@ void CStalkerPlanner::update(u32 time_delta)
 					xr_vector<COperatorCondition>::const_iterator i =
 						(*I).m_operator->conditions().conditions().begin();
 					xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->conditions().conditions().end();
-					for (; i != e; ++i)
+					for(; i != e; ++i)
 						Msg("%d,%d", (*i).condition(), (*i).value() ? 1 : 0);
 				}
 				{
 					Msg("%d", (*I).m_operator->effects().conditions().size());
 					xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->effects().conditions().begin();
 					xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->effects().conditions().end();
-					for (; i != e; ++i)
+					for(; i != e; ++i)
 						Msg("%d,%d", (*i).condition(), (*i).value() ? 1 : 0);
 				}
 			}

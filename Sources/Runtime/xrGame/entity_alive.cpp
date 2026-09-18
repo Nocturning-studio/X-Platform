@@ -77,10 +77,10 @@ void CEntityAlive::Load(LPCSTR section)
 	m_fFood = 100 * pSettings->r_float(section, "ph_mass");
 
 	// bloody wallmarks
-	if (0 == m_pBloodMarksVector)
+	if(0 == m_pBloodMarksVector)
 		LoadBloodyWallmarks(BLOOD_MARKS_SECT);
 
-	if (0 == m_pFireParticlesVector)
+	if(0 == m_pFireParticlesVector)
 		LoadFireParticles("entity_fire_particles");
 
 	// биолог. вид к торому принадлежит монстр или персонаж
@@ -101,7 +101,7 @@ void CEntityAlive::LoadBloodyWallmarks(LPCSTR section)
 	int cnt = _GetItemCount(wallmarks_name);
 
 	ref_shader s;
-	for (int k = 0; k < cnt; ++k)
+	for(int k = 0; k < cnt; ++k)
 	{
 		s.create("effects\\wallmark", _GetItem(wallmarks_name, k, tmp));
 		m_pBloodMarksVector->push_back(s);
@@ -116,7 +116,7 @@ void CEntityAlive::LoadBloodyWallmarks(LPCSTR section)
 	wallmarks_name = pSettings->r_string(section, "blood_drops");
 	cnt = _GetItemCount(wallmarks_name);
 
-	for (int k = 0; k < cnt; ++k)
+	for(int k = 0; k < cnt; ++k)
 	{
 		s.create("effects\\wallmark", _GetItem(wallmarks_name, k, tmp));
 		m_pBloodDropsVector->push_back(s);
@@ -129,12 +129,12 @@ void CEntityAlive::LoadBloodyWallmarks(LPCSTR section)
 
 void CEntityAlive::UnloadBloodyWallmarks()
 {
-	if (m_pBloodMarksVector)
+	if(m_pBloodMarksVector)
 	{
 		m_pBloodMarksVector->clear();
 		xr_delete(m_pBloodMarksVector);
 	}
-	if (m_pBloodDropsVector)
+	if(m_pBloodDropsVector)
 	{
 		m_pBloodDropsVector->clear();
 		xr_delete(m_pBloodDropsVector);
@@ -151,7 +151,7 @@ void CEntityAlive::LoadFireParticles(LPCSTR section)
 	int cnt = _GetItemCount(particles_name);
 
 	shared_str s;
-	for (int k = 0; k < cnt; ++k)
+	for(int k = 0; k < cnt; ++k)
 	{
 		s = _GetItem(particles_name, k, tmp);
 		m_pFireParticlesVector->push_back(s);
@@ -165,7 +165,7 @@ void CEntityAlive::LoadFireParticles(LPCSTR section)
 
 void CEntityAlive::UnloadFireParticles()
 {
-	if (m_pFireParticlesVector)
+	if(m_pFireParticlesVector)
 	{
 		m_pFireParticlesVector->clear();
 		xr_delete(m_pFireParticlesVector);
@@ -194,7 +194,7 @@ void CEntityAlive::reload(LPCSTR section)
 
 void CEntityAlive::shedule_Update(u32 dt)
 {
-	//OPTICK_EVENT("CEntityAlive::shedule_Update");
+	// OPTICK_EVENT("CEntityAlive::shedule_Update");
 
 	inherited::shedule_Update(dt);
 
@@ -209,9 +209,9 @@ void CEntityAlive::shedule_Update(u32 dt)
 	conditions().UpdateWounds();
 
 	// убить сущность
-	if (Local() && !g_Alive() && !AlreadyDie())
+	if(Local() && !g_Alive() && !AlreadyDie())
 	{
-		if (conditions().GetWhoHitLastTime())
+		if(conditions().GetWhoHitLastTime())
 		{
 			//			Msg			("%6d : KillEntity from CEntityAlive (using who hit last time) for object
 			//%s",Engine.TimeManager.GetGlobalTimeMs(),*cName());
@@ -238,7 +238,7 @@ BOOL CEntityAlive::net_Spawn(CSE_Abstract* DC)
 	m_ParticleWounds.clear();
 
 	// добавить кровь и огонь на партиклы, если нужно
-	for (WOUND_VECTOR::const_iterator it = conditions().wounds().begin(); conditions().wounds().end() != it; ++it)
+	for(WOUND_VECTOR::const_iterator it = conditions().wounds().begin(); conditions().wounds().end() != it; ++it)
 	{
 		CWound* pWound = *it;
 		StartFireParticles(pWound);
@@ -265,7 +265,7 @@ void CEntityAlive::Hit(SHit* pHDS)
 {
 	SHit HDS = *pHDS;
 	//-------------------------------------------------------------------
-	if (HDS.hit_type == ALife::eHitTypeWound_2)
+	if(HDS.hit_type == ALife::eHitTypeWound_2)
 		HDS.hit_type = ALife::eHitTypeWound;
 	//-------------------------------------------------------------------
 	CDamageManager::HitScale(HDS.boneID, conditions().hit_bone_scale(), conditions().wound_bone_scale(),
@@ -274,18 +274,18 @@ void CEntityAlive::Hit(SHit* pHDS)
 	// изменить состояние, перед тем как родительский класс обработает хит
 	CWound* pWound = conditions().ConditionHit(&HDS);
 
-	if (pWound)
+	if(pWound)
 	{
-		if (ALife::eHitTypeBurn == HDS.hit_type)
+		if(ALife::eHitTypeBurn == HDS.hit_type)
 			StartFireParticles(pWound);
-		else if (ALife::eHitTypeWound == HDS.hit_type || ALife::eHitTypeFireWound == HDS.hit_type)
+		else if(ALife::eHitTypeWound == HDS.hit_type || ALife::eHitTypeFireWound == HDS.hit_type)
 			StartBloodDrops(pWound);
 	}
 
-	if (HDS.hit_type != ALife::eHitTypeTelepatic)
+	if(HDS.hit_type != ALife::eHitTypeTelepatic)
 	{
 		// добавить кровь на стены
-		if (!use_simplified_visual())
+		if(!use_simplified_visual())
 			BloodyWallmarks(HDS.damage(), HDS.dir, HDS.bone(), HDS.p_in_bone_space);
 	}
 
@@ -294,10 +294,10 @@ void CEntityAlive::Hit(SHit* pHDS)
 	//-------------------------------------------
 	inherited::Hit(&HDS);
 
-	if (g_Alive() && IsGameTypeSingle())
+	if(g_Alive() && IsGameTypeSingle())
 	{
 		CEntityAlive* EA = smart_cast<CEntityAlive*>(HDS.who);
-		if (EA && EA->g_Alive() && EA->ID() != ID())
+		if(EA && EA->g_Alive() && EA->ID() != ID())
 		{
 			RELATION_REGISTRY().FightRegister(EA->ID(), ID(), this->tfGetRelationType(EA), HDS.damage());
 			RELATION_REGISTRY().Action(EA, this, RELATION_REGISTRY::ATTACK);
@@ -307,14 +307,14 @@ void CEntityAlive::Hit(SHit* pHDS)
 
 void CEntityAlive::Die(CObject* who)
 {
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 		RELATION_REGISTRY().Action(smart_cast<CEntityAlive*>(who), this, RELATION_REGISTRY::KILL);
 	inherited::Die(who);
 
 	const CGameObject* who_object = smart_cast<const CGameObject*>(who);
 	callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : 0);
 
-	if (!getDestroy() && (GameID() == GAME_SINGLE))
+	if(!getDestroy() && (GameID() == GAME_SINGLE))
 	{
 		NET_Packet P;
 		u_EventGen(P, GE_ASSIGN_KILLER, ID());
@@ -324,7 +324,7 @@ void CEntityAlive::Die(CObject* who)
 
 	// disable react to sound
 	ISpatial* self = smart_cast<ISpatial*>(this);
-	if (self)
+	if(self)
 		self->spatial.type &= ~STYPE_REACTTOSOUND;
 }
 
@@ -340,30 +340,30 @@ float CEntityAlive::CalcCondition(float /**hit/**/)
 ///////////////////////////////////////////////////////////////////////
 u16 CEntityAlive::PHGetSyncItemsNumber()
 {
-	if (character_physics_support()->movement()->CharacterExist())
+	if(character_physics_support()->movement()->CharacterExist())
 		return 1;
 	else
 		return inherited::PHGetSyncItemsNumber();
 }
 CPHSynchronize* CEntityAlive::PHGetSyncItem(u16 item)
 {
-	if (character_physics_support()->movement()->CharacterExist())
+	if(character_physics_support()->movement()->CharacterExist())
 		return character_physics_support()->movement()->GetSyncItem();
 	else
 		return inherited::PHGetSyncItem(item);
 }
 void CEntityAlive::PHUnFreeze()
 {
-	if (character_physics_support()->movement()->CharacterExist())
+	if(character_physics_support()->movement()->CharacterExist())
 		character_physics_support()->movement()->UnFreeze();
-	else if (m_pPhysicsShell)
+	else if(m_pPhysicsShell)
 		m_pPhysicsShell->UnFreeze();
 }
 void CEntityAlive::PHFreeze()
 {
-	if (character_physics_support()->movement()->CharacterExist())
+	if(character_physics_support()->movement()->CharacterExist())
 		character_physics_support()->movement()->Freeze();
-	else if (m_pPhysicsShell)
+	else if(m_pPhysicsShell)
 		m_pPhysicsShell->Freeze();
 }
 //////////////////////////////////////////////////////////////////////
@@ -371,14 +371,14 @@ void CEntityAlive::PHFreeze()
 // добавление кровавых отметок на стенах, после получения хита
 void CEntityAlive::BloodyWallmarks(float P, const fvec3& dir, s16 element, const fvec3& position_in_object_space)
 {
-	if (BI_NONE == (u16)element)
+	if(BI_NONE == (u16)element)
 		return;
 
 	// вычислить координаты попадания
 	CKinematics* V = smart_cast<CKinematics*>(Visual());
 
 	fvec3 start_pos = position_in_object_space;
-	if (V)
+	if(V)
 	{
 		fmat4x4& m_bone = (V->LL_GetBoneInstance(u16(element))).mTransform;
 		m_bone.transform_tiny(start_pos);
@@ -386,7 +386,7 @@ void CEntityAlive::BloodyWallmarks(float P, const fvec3& dir, s16 element, const
 	Transform().transform_tiny(start_pos);
 
 	float small_entity = 1.f;
-	if (Radius() < SMALL_ENTITY_RADIUS)
+	if(Radius() < SMALL_ENTITY_RADIUS)
 		small_entity = 0.5;
 
 	float wallmark_size = m_fBloodMarkSizeMax;
@@ -406,12 +406,12 @@ void CEntityAlive::PlaceBloodWallmark(const fvec3& dir, const fvec3& start_pos, 
 		Level().ObjectSpace.RayPick(start_pos, dir, trace_dist, collide::rqtBoth, result, this) && !result.O;
 
 	// если кровь долетела до статического объекта
-	if (reach_wall)
+	if(reach_wall)
 	{
 		CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + result.element;
 		SGameMtl* pMaterial = GMLib.GetMaterialByIdx(pTri->material);
 
-		if (pMaterial->Flags.is(SGameMtl::flBloodmark))
+		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 		{
 			// вычислить нормаль к пораженной поверхности
 			fvec3* pVerts = Level().ObjectSpace.GetStaticVerts();
@@ -433,9 +433,9 @@ void CEntityAlive::PlaceBloodWallmark(const fvec3& dir, const fvec3& start_pos, 
 
 void CEntityAlive::StartFireParticles(CWound* pWound)
 {
-	if (pWound->TypeSize(ALife::eHitTypeBurn) > m_fStartBurnWoundSize)
+	if(pWound->TypeSize(ALife::eHitTypeBurn) > m_fStartBurnWoundSize)
 	{
-		if (std::find(m_ParticleWounds.begin(), m_ParticleWounds.end(), pWound) == m_ParticleWounds.end())
+		if(std::find(m_ParticleWounds.begin(), m_ParticleWounds.end(), pWound) == m_ParticleWounds.end())
 		{
 			m_ParticleWounds.push_back(pWound);
 		}
@@ -448,7 +448,7 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 		pWound->SetParticleBoneNum(particle_bone);
 		pWound->SetParticleName((*m_pFireParticlesVector)[::Random.randI(0, m_pFireParticlesVector->size())]);
 
-		if (BI_NONE != particle_bone)
+		if(BI_NONE != particle_bone)
 		{
 			CParticlesPlayer::StartParticles(pWound->GetParticleName(), pWound->GetParticleBoneNum(),
 											 fvec3().set(0, 1, 0), ID(),
@@ -464,17 +464,17 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 
 void CEntityAlive::UpdateFireParticles()
 {
-	if (m_ParticleWounds.empty())
+	if(m_ParticleWounds.empty())
 		return;
 
 	//	WOUND_VECTOR_IT last_it;
 
-	for (WOUND_VECTOR_IT it = m_ParticleWounds.begin(); it != m_ParticleWounds.end();)
+	for(WOUND_VECTOR_IT it = m_ParticleWounds.begin(); it != m_ParticleWounds.end();)
 	{
 		CWound* pWound = *it;
 		float burn_size = pWound->TypeSize(ALife::eHitTypeBurn);
 
-		if (pWound->GetDestroy() || (burn_size > 0 && (burn_size < m_fStopBurnWoundSize || !g_Alive())))
+		if(pWound->GetDestroy() || (burn_size > 0 && (burn_size < m_fStopBurnWoundSize || !g_Alive())))
 		{
 			CParticlesPlayer::AutoStopParticles(pWound->GetParticleName(), pWound->GetParticleBoneNum(),
 												u32(float(m_dwMinBurnTime) * ::Random.randF(0.5f, 1.5f)));
@@ -490,7 +490,7 @@ ALife::ERelationType CEntityAlive::tfGetRelationType(const CEntityAlive* tpEntit
 	int relation =
 		MONSTER_COMMUNITY::relation(this->monster_community->index(), tpEntityAlive->monster_community->index());
 
-	switch (relation)
+	switch(relation)
 	{
 	case 1:
 		return (ALife::eRelationTypeFriend);
@@ -519,9 +519,9 @@ bool CEntityAlive::is_relation_enemy(const CEntityAlive* tpEntityAlive) const
 
 void CEntityAlive::StartBloodDrops(CWound* pWound)
 {
-	if (pWound->BloodSize() > m_fStartBloodWoundSize)
+	if(pWound->BloodSize() > m_fStartBloodWoundSize)
 	{
-		if (std::find(m_BloodWounds.begin(), m_BloodWounds.end(), pWound) == m_BloodWounds.end())
+		if(std::find(m_BloodWounds.begin(), m_BloodWounds.end(), pWound) == m_BloodWounds.end())
 		{
 			m_BloodWounds.push_back(pWound);
 			pWound->m_fDropTime = 0.f;
@@ -534,10 +534,10 @@ void CEntityAlive::UpdateBloodDrops()
 	static float m_fBloodDropTimeMax = pSettings->r_float(BLOOD_MARKS_SECT, "blood_drop_time_max");
 	static float m_fBloodDropTimeMin = pSettings->r_float(BLOOD_MARKS_SECT, "blood_drop_time_min");
 
-	if (m_BloodWounds.empty())
+	if(m_BloodWounds.empty())
 		return;
 
-	if (!g_Alive())
+	if(!g_Alive())
 	{
 		m_BloodWounds.clear();
 		return;
@@ -545,18 +545,18 @@ void CEntityAlive::UpdateBloodDrops()
 
 	//	WOUND_VECTOR_IT last_it;
 
-	for (WOUND_VECTOR_IT it = m_BloodWounds.begin(); it != m_BloodWounds.end();)
+	for(WOUND_VECTOR_IT it = m_BloodWounds.begin(); it != m_BloodWounds.end();)
 	{
 		CWound* pWound = *it;
 		float blood_size = pWound->BloodSize();
 
-		if (pWound->GetDestroy() || blood_size < m_fStopBloodWoundSize)
+		if(pWound->GetDestroy() || blood_size < m_fStopBloodWoundSize)
 		{
 			it = m_BloodWounds.erase(it);
 			continue;
 		}
 
-		if (pWound->m_fDropTime < Engine.TimeManager.GetGlobalTime())
+		if(pWound->m_fDropTime < Engine.TimeManager.GetGlobalTime())
 		{
 			float size_k = blood_size - m_fStopBloodWoundSize;
 			size_k = size_k < 1.f ? size_k : 1.f;
@@ -564,7 +564,7 @@ void CEntityAlive::UpdateBloodDrops()
 				Engine.TimeManager.GetGlobalTime() +
 				(m_fBloodDropTimeMax - (m_fBloodDropTimeMax - m_fBloodDropTimeMin) * size_k) * Random.randF(0.8f, 1.2f);
 			VERIFY(m_pBloodDropsVector);
-			if (pWound->GetBoneNum() != BI_NONE)
+			if(pWound->GetBoneNum() != BI_NONE)
 			{
 				fvec3 pos;
 				fvec3 pos_distort;
@@ -599,7 +599,7 @@ BOOL CEntityAlive::net_SaveRelevant()
 
 CEntityConditionSimple* CEntityAlive::create_entity_condition(CEntityConditionSimple* ec)
 {
-	if (!ec)
+	if(!ec)
 		m_entity_condition = xr_new<CEntityCondition>(this);
 	else
 		m_entity_condition = smart_cast<CEntityCondition*>(ec);
@@ -642,7 +642,7 @@ float CEntityAlive::g_Radiation() const
 DLL_Pure* CEntityAlive::_construct()
 {
 	inherited::_construct();
-	if (character_physics_support())
+	if(character_physics_support())
 		m_material_manager = xr_new<CMaterialManager>(this, character_physics_support()->movement());
 	return (this);
 }
@@ -665,7 +665,7 @@ u32 CEntityAlive::ef_detector_type() const
 }
 void CEntityAlive::PHGetLinearVell(fvec3& velocity)
 {
-	if (character_physics_support())
+	if(character_physics_support())
 	{
 		character_physics_support()->PHGetLinearVell(velocity);
 	}
@@ -674,7 +674,7 @@ void CEntityAlive::PHGetLinearVell(fvec3& velocity)
 }
 CIKLimbsController* CEntityAlive::character_ik_controller()
 {
-	if (character_physics_support())
+	if(character_physics_support())
 	{
 		return character_physics_support()->ik_controller();
 	}
@@ -685,7 +685,7 @@ CIKLimbsController* CEntityAlive::character_ik_controller()
 }
 CPHSoundPlayer* CEntityAlive::ph_sound_player()
 {
-	if (character_physics_support())
+	if(character_physics_support())
 	{
 		return character_physics_support()->ph_sound_player();
 	}
@@ -698,7 +698,7 @@ CPHSoundPlayer* CEntityAlive::ph_sound_player()
 SCollisionHitCallback* CEntityAlive::get_collision_hit_callback()
 {
 	CCharacterPhysicsSupport* cs = character_physics_support();
-	if (cs)
+	if(cs)
 		return cs->get_collision_hit_callback();
 	else
 		return false;
@@ -707,7 +707,7 @@ SCollisionHitCallback* CEntityAlive::get_collision_hit_callback()
 bool CEntityAlive::set_collision_hit_callback(SCollisionHitCallback* cc)
 {
 	CCharacterPhysicsSupport* cs = character_physics_support();
-	if (cs)
+	if(cs)
 		return cs->set_collision_hit_callback(cc);
 	else
 		return false;
@@ -723,13 +723,13 @@ void CEntityAlive::create_anim_mov_ctrl(CBlend* b)
 {
 	inherited::create_anim_mov_ctrl(b);
 	CCharacterPhysicsSupport* cs = character_physics_support();
-	if (cs)
+	if(cs)
 		cs->on_create_anim_mov_ctrl();
 }
 void CEntityAlive::destroy_anim_mov_ctrl()
 {
 	inherited::destroy_anim_mov_ctrl();
 	CCharacterPhysicsSupport* cs = character_physics_support();
-	if (cs)
+	if(cs)
 		cs->on_destroy_anim_mov_ctrl();
 }

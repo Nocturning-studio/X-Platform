@@ -37,7 +37,7 @@ void CTimeManager::Initialize()
 	m_Timer_MM_Delta = 0;
 	{
 		u32 time_mm = timeGetTime();
-		while (timeGetTime() == time_mm)
+		while(timeGetTime() == time_mm)
 			; // wait for next tick
 		u32 time_system = timeGetTime();
 		u32 time_local = TimerAsync();
@@ -91,7 +91,7 @@ void CTimeManager::Update()
 	m_dwTimeContinual = m_TimerMM.GetElapsed_ms();
 
 	// Логика rsConstantFPS (обычно используется для записи демок или бенчмарков)
-	if (psDeviceFlags.test(rsConstantFPS))
+	if(psDeviceFlags.test(rsConstantFPS))
 	{
 		// 20ms = 50fps fix
 		m_fTimeDelta = 0.020f;
@@ -107,14 +107,14 @@ void CTimeManager::Update()
 
 		m_fTimeDelta = 0.1f * m_fTimeDelta + 0.9f * fPreviousFrameTime; // сглаживание
 
-		if (m_fTimeDelta > 0.1f)
+		if(m_fTimeDelta > 0.1f)
 			m_fTimeDelta = 0.1f; // лимит минимум 10fps (защита от гигантских лагов)
 
 		// Проверка на паузу (g_pauseMngr обычно управляет тем, идет ли время в игре)
 		// В оригинале: if (Paused()) fTimeDelta = 0.0f;
 		// Здесь нам нужно получить состояние паузы.
 		// Если g_pauseMngr глобален:
-		if (g_pauseMngr.Paused())
+		if(g_pauseMngr.Paused())
 			m_fTimeDelta = 0.0f;
 
 		m_fTimeGlobal = m_TimerGlobal.GetElapsed_sec();
@@ -136,14 +136,14 @@ void CTimeManager::OnFrameStart()
 
 u32 CTimeManager::CalculateFrameLimitDelay(u32 targetFPS)
 {
-	if (targetFPS == 0)
+	if(targetFPS == 0)
 		return 0; // Без лимита
 
 	m_FrameEndTime = GetGlobalTimeMs();
 	u32 frameDuration = m_FrameEndTime - m_FrameStartTime;
 	u32 targetDuration = 1000 / targetFPS;
 
-	if (frameDuration < targetDuration)
+	if(frameDuration < targetDuration)
 	{
 		return targetDuration - frameDuration;
 	}
@@ -158,7 +158,7 @@ void CTimeManager::DoFrameLimit()
 	u32 targetFPS = g_frametime > 0 ? g_frametime : 0;
 	u32 sleepTime = Engine.TimeManager.CalculateFrameLimitDelay(targetFPS);
 
-	if (sleepTime > 0)
+	if(sleepTime > 0)
 	{
 		Sleep(sleepTime);
 	}

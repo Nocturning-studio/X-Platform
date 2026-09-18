@@ -23,7 +23,8 @@ struct MotionID
 	typedef const MotionID* (MotionID::*unspecified_bool_type)() const;
 
   public:
-	union {
+	union
+	{
 		struct
 		{
 			u16 idx : 14;
@@ -76,7 +77,7 @@ struct MotionID
 	};
 	ICF operator unspecified_bool_type() const
 	{
-		if (valid())
+		if(valid())
 			return &MotionID::get;
 		else
 			return 0;
@@ -154,7 +155,7 @@ class ENGINE_API CBlendInstance // Bone Instance Blend List (per-bone data)
 	u32 mem_usage()
 	{
 		u32 sz = sizeof(*this);
-		for (BlendSVecIt it = Blend.begin(); it != Blend.end(); it++)
+		for(BlendSVecIt it = Blend.begin(); it != Blend.end(); it++)
 			sz += (*it)->mem_usage();
 		return sz;
 	}
@@ -239,14 +240,14 @@ class ENGINE_API CKinematicsAnimated : public CKinematics
 	u32 LL_CycleCount()
 	{
 		u32 cnt = 0;
-		for (u32 k = 0; k < m_Motions.size(); k++)
+		for(u32 k = 0; k < m_Motions.size(); k++)
 			cnt += m_Motions[k].motions.cycle()->size();
 		return cnt;
 	}
 	u32 LL_FXCount()
 	{
 		u32 cnt = 0;
-		for (u32 k = 0; k < m_Motions.size(); k++)
+		for(u32 k = 0; k < m_Motions.size(); k++)
 			cnt += m_Motions[k].motions.fx()->size();
 		return cnt;
 	}

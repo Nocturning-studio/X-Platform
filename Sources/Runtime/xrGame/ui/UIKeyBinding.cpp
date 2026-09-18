@@ -9,7 +9,7 @@
 
 CUIKeyBinding::CUIKeyBinding()
 {
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 		AttachChild(&m_header[i]);
 
 	AttachChild(&m_frame);
@@ -41,7 +41,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 
 	int groupsCount = xml_doc.GetNodesNum("", 0, "group");
 
-	for (int i = 0; i < groupsCount; i++)
+	for(int i = 0; i < groupsCount; i++)
 	{
 		// add group
 		shared_str grp_name = xml_doc.ReadAttrib("group", i, "name");
@@ -57,7 +57,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 		XML_NODE* tab_node = xml_doc.NavigateToNode("group", i);
 		xml_doc.SetLocalRoot(tab_node);
 
-		for (int j = 0; j < commandsCount; j++)
+		for(int j = 0; j < commandsCount; j++)
 		{
 			// first field of list item
 			shared_str command_id = xml_doc.ReadAttrib("command", j, "id");
@@ -70,7 +70,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 			shared_str exe = xml_doc.ReadAttrib("command", j, "exe");
 
 #ifdef DEBUG
-			if (kNOTBINDED == action_name_to_id(*exe))
+			if(kNOTBINDED == action_name_to_id(*exe))
 			{
 				Msg("action [%s] not exist. update data", exe.c_str());
 				continue;
@@ -106,16 +106,16 @@ void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 	bool first = true;
 	CUIStatic* pItem = false;
 
-	for (int i = 0; true; i++)
+	for(int i = 0; true; i++)
 	{
 		LPCSTR action_name = actions[i].action_name;
-		if (action_name)
+		if(action_name)
 		{
-			if (IsActionExist(action_name, xml_doc))
+			if(IsActionExist(action_name, xml_doc))
 				continue;
 			else
 			{
-				if (first)
+				if(first)
 				{
 					pItem = xr_new<CUIStatic>();
 					pItem->SetWndPos(fvec2().set(0, 0));
@@ -142,25 +142,25 @@ bool CUIKeyBinding::IsActionExist(LPCSTR action, CUIXml& xml_doc)
 	bool ret = false;
 	int groupsCount = xml_doc.GetNodesNum("", 0, "group");
 
-	for (int i = 0; i < groupsCount; i++)
+	for(int i = 0; i < groupsCount; i++)
 	{
 		// add group items
 		int commandsCount = xml_doc.GetNodesNum("group", i, "command");
 		XML_NODE* tab_node = xml_doc.NavigateToNode("group", i);
 		xml_doc.SetLocalRoot(tab_node);
 
-		for (int j = 0; j < commandsCount; j++)
+		for(int j = 0; j < commandsCount; j++)
 		{
 			// first field of list item
 			shared_str command_id = xml_doc.ReadAttrib("command", j, "exe");
-			if (0 == xr_strcmp(action, *command_id))
+			if(0 == xr_strcmp(action, *command_id))
 			{
 				ret = true;
 				break;
 			}
 		}
 		xml_doc.SetLocalRoot(xml_doc.GetRoot());
-		if (ret)
+		if(ret)
 			break;
 	}
 	return ret;

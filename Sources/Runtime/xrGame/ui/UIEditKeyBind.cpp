@@ -24,7 +24,7 @@ CUIEditKeyBind::~CUIEditKeyBind()
 
 u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, float length)
 {
-	if (pFont->IsMultibyte())
+	if(pFont->IsMultibyte())
 	{
 		u16 nPos = pFont->GetCutLengthPos(length, src);
 		VERIFY(nPos < dst_size);
@@ -40,7 +40,7 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
 		VERIFY(xr_strlen(src) <= dst_size);
 		strcpy(dst, src);
 
-		while (text_len > length)
+		while(text_len > length)
 		{
 			dst[xr_strlen(dst) - 1] = 0;
 			VERIFY(xr_strlen(dst));
@@ -54,7 +54,7 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
 
 void CUIEditKeyBind::SetText(const char* text)
 {
-	if (!text || 0 == xr_strlen(text))
+	if(!text || 0 == xr_strlen(text))
 		CUILabel::SetText("---");
 	else
 	{
@@ -86,12 +86,12 @@ void CUIEditKeyBind::OnFocusLost()
 
 bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 {
-	if (m_bEditMode)
+	if(m_bEditMode)
 	{
 		string64 message;
 
 		m_keyboard = dik_to_ptr(mouse_btn, true);
-		if (!m_keyboard)
+		if(!m_keyboard)
 			return true;
 		SetText(m_keyboard->key_local_name.c_str());
 		OnFocusLost();
@@ -105,7 +105,7 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 		return true;
 	}
 
-	if (mouse_btn == MOUSE_1)
+	if(mouse_btn == MOUSE_1)
 		m_bEditMode = m_bCursorOverWindow;
 
 	return CUILabel::OnMouseDown(mouse_btn);
@@ -113,16 +113,16 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 
 bool CUIEditKeyBind::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
+	if(dik == MOUSE_1 || dik == MOUSE_2 || dik == MOUSE_3)
 		return false;
-	if (CUILabel::OnKeyboard(dik, keyboard_action))
+	if(CUILabel::OnKeyboard(dik, keyboard_action))
 		return true;
 
 	string64 message;
-	if (m_bEditMode)
+	if(m_bEditMode)
 	{
 		m_keyboard = dik_to_ptr(dik, true);
-		if (!m_keyboard)
+		if(!m_keyboard)
 			return true;
 
 		strcpy(message, m_action->action_name);
@@ -142,7 +142,7 @@ void CUIEditKeyBind::Update()
 	CUILabel::Update();
 
 	m_bTextureAvailable = m_bCursorOverWindow;
-	if (m_bEditMode)
+	if(m_bEditMode)
 	{
 		m_pAnimation->Update();
 		m_lines.SetTextColor((subst_alpha(m_lines.GetTextColor(), color_get_A(m_pAnimation->GetColor()))));
@@ -165,7 +165,7 @@ void CUIEditKeyBind::SetCurrentValue()
 	int idx = (m_bPrimary) ? 0 : 1;
 	m_keyboard = pbinding->m_keyboard[idx];
 
-	if (m_keyboard)
+	if(m_keyboard)
 		SetText(m_keyboard->key_local_name.c_str());
 	else
 		SetText(NULL);
@@ -186,7 +186,7 @@ void CUIEditKeyBind::BindAction2Key()
 	comm_unbind += m_action->action_name;
 	Console->Execute(comm_unbind.c_str());
 
-	if (m_keyboard)
+	if(m_keyboard)
 	{
 		xr_string comm_bind = (m_bPrimary) ? "bind " : "bind_sec ";
 		comm_bind += m_action->action_name;
@@ -206,21 +206,21 @@ void CUIEditKeyBind::OnMessage(const char* message)
 	// message = "command=key"
 	int eq = (int)strcspn(message, "=");
 
-	if (!m_keyboard)
+	if(!m_keyboard)
 		return;
 
-	if (0 != xr_strcmp(m_keyboard->key_name, message + eq + 1))
+	if(0 != xr_strcmp(m_keyboard->key_name, message + eq + 1))
 		return;
 
 	string64 command;
 	strcpy(command, message);
 	command[eq] = 0;
 
-	if (0 == xr_strcmp(m_action->action_name, command))
+	if(0 == xr_strcmp(m_action->action_name, command))
 		return; // fuck
 
 	_action* other_action = action_name_to_ptr(command);
-	if (is_group_not_conflicted(m_action->key_group, other_action->key_group))
+	if(is_group_not_conflicted(m_action->key_group, other_action->key_group))
 		return;
 
 	SetText("---");

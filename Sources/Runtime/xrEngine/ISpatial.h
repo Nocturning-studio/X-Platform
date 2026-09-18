@@ -70,7 +70,7 @@ class ENGINE_API ISpatial
 	{
 		u32 type;
 		Fsphere sphere;
-		fvec3 node_center;	 // Cached node center for TBV optimization
+		fvec3 node_center;		 // Cached node center for TBV optimization
 		float node_radius;		 // Cached node bounds for TBV optimization
 		ISpatial_NODE* node_ptr; // Cached parent node for "empty-members" optimization
 		IRender_Sector* sector;
@@ -95,7 +95,7 @@ class ENGINE_API ISpatial
 	}
 	ICF void spatial_updatesector()
 	{
-		if (0 == (spatial.type & STYPEFLAG_INVALIDSECTOR))
+		if(0 == (spatial.type & STYPEFLAG_INVALIDSECTOR))
 			return;
 		spatial_updatesector_internal();
 	};
@@ -169,11 +169,11 @@ class ENGINE_API ISpatial_DB
 	IC u32 _octant(fvec3& base, fvec3& rel)
 	{
 		u32 o = 0;
-		if (rel.x > base.x)
+		if(rel.x > base.x)
 			o += 1;
-		if (rel.y > base.y)
+		if(rel.y > base.y)
 			o += 2;
-		if (rel.z > base.z)
+		if(rel.z > base.z)
 			o += 4;
 		return o;
 	}

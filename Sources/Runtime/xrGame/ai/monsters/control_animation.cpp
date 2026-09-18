@@ -33,9 +33,9 @@ void CControlAnimation::reset_data()
 
 void CControlAnimation::update_frame()
 {
-	//OPTICK_EVENT("CControlAnimation::update_frame");
+	// OPTICK_EVENT("CControlAnimation::update_frame");
 
-	if (m_freeze)
+	if(m_freeze)
 		return;
 
 	// move to schedule update
@@ -76,24 +76,24 @@ static void torso_animation_end_callback(CBlend* B)
 
 void CControlAnimation::play()
 {
-	//OPTICK_EVENT("CControlAnimation::play");
+	// OPTICK_EVENT("CControlAnimation::play");
 
-	if (!m_data.global.actual)
+	if(!m_data.global.actual)
 	{
 		play_part(m_data.global, global_animation_end_callback);
-		if (m_data.global.blend)
+		if(m_data.global.blend)
 			m_saved_global_speed = m_data.global.blend->speed;
 	}
 
-	if (!m_data.legs.actual)
+	if(!m_data.legs.actual)
 		play_part(m_data.legs, legs_animation_end_callback);
-	if (!m_data.torso.actual)
+	if(!m_data.torso.actual)
 		play_part(m_data.torso, torso_animation_end_callback);
 
 	// speed only for global
-	if (m_data.global.blend)
+	if(m_data.global.blend)
 	{
-		if (m_data.get_speed() > 0)
+		if(m_data.get_speed() > 0)
 		{
 			m_data.global.blend->speed = m_data.get_speed(); // TODO: make factor
 		}
@@ -109,18 +109,18 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
 	VERIFY(part.motion.valid());
 
 	u16 bone_or_part = m_skeleton_animated->LL_GetMotionDef(part.motion)->bone_or_part;
-	if (bone_or_part == u16(-1))
+	if(bone_or_part == u16(-1))
 		bone_or_part = m_skeleton_animated->LL_PartID("default");
 
 	// initialize synchronization of prev and current animation
 	float pos = -1.f;
-	if (part.blend && !part.blend->stop_at_end)
+	if(part.blend && !part.blend->stop_at_end)
 		pos = fmodf(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
 #ifdef DEBUG
-		// CKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
-		// Msg				("%6d Playing animation : %s , %s , Object %s",Engine.TimeManager.GetGlobalTimeMs(),
-		// K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second,
-		// *(m_object->cName()));
+	// CKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
+	// Msg				("%6d Playing animation : %s , %s , Object %s",Engine.TimeManager.GetGlobalTimeMs(),
+	// K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second,
+	// *(m_object->cName()));
 #endif
 
 	part.blend = m_skeleton_animated->LL_PlayCycle(bone_or_part, part.motion, TRUE, callback, this);
@@ -128,11 +128,11 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
 	///////////////////////////////////////////////////////////////////////////////
 	// #ifdef _DEBUG
 	//	Msg("Monster[%s] Time[%u] Anim[%s]",*(m_object->cName()),
-	//Engine.TimeManager.GetGlobalTimeMs(),*(m_object->anim().GetAnimTranslation(part.motion))); #endif
+	// Engine.TimeManager.GetGlobalTimeMs(),*(m_object->anim().GetAnimTranslation(part.motion))); #endif
 	///////////////////////////////////////////////////////////////////////////////
 
 	// synchronize prev and current animations
-	if ((pos > 0) && part.blend && !part.blend->stop_at_end)
+	if((pos > 0) && part.blend && !part.blend->stop_at_end)
 	{
 		part.blend->timeCurrent = part.blend->timeTotal * pos;
 	}
@@ -142,13 +142,13 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
 
 	m_man->notify(ControlCom::eventAnimationStart, 0);
 
-	if ((part.motion != m_data.torso.motion) && part.blend)
+	if((part.motion != m_data.torso.motion) && part.blend)
 		m_object->CStepManager::on_animation_start(part.motion, part.blend);
 
 	ANIMATION_EVENT_MAP_IT it = m_anim_events.find(part.motion);
-	if (it != m_anim_events.end())
+	if(it != m_anim_events.end())
 	{
-		for (ANIMATION_EVENT_VEC_IT event_it = it->second.begin(); event_it != it->second.end(); ++event_it)
+		for(ANIMATION_EVENT_VEC_IT event_it = it->second.begin(); event_it != it->second.end(); ++event_it)
 		{
 			event_it->handled = false;
 		}
@@ -159,13 +159,13 @@ void CControlAnimation::add_anim_event(MotionID motion, float time_perc, u32 id)
 {
 	// if there is already event with exact timing - return
 	ANIMATION_EVENT_MAP_IT it = m_anim_events.find(motion);
-	if (it != m_anim_events.end())
+	if(it != m_anim_events.end())
 	{
 		ANIMATION_EVENT_VEC& anim_vec = it->second;
 
-		for (ANIMATION_EVENT_VEC_IT I = anim_vec.begin(); I != anim_vec.end(); ++I)
+		for(ANIMATION_EVENT_VEC_IT I = anim_vec.begin(); I != anim_vec.end(); ++I)
 		{
-			if (fsimilar(I->time_perc, time_perc))
+			if(fsimilar(I->time_perc, time_perc))
 				return;
 		}
 	}
@@ -179,21 +179,21 @@ void CControlAnimation::add_anim_event(MotionID motion, float time_perc, u32 id)
 
 void CControlAnimation::check_events(SAnimationPart& part)
 {
-	//OPTICK_EVENT("CControlAnimation::check_events");
+	// OPTICK_EVENT("CControlAnimation::check_events");
 
-	if (part.motion.valid() && part.actual && part.blend)
+	if(part.motion.valid() && part.actual && part.blend)
 	{
 		ANIMATION_EVENT_MAP_IT it = m_anim_events.find(part.motion);
-		if (it != m_anim_events.end())
+		if(it != m_anim_events.end())
 		{
 
 			float cur_perc =
 				float(Engine.TimeManager.GetGlobalTimeMs() - part.time_started) / ((part.blend->timeTotal / part.blend->speed) * 1000);
 
-			for (ANIMATION_EVENT_VEC_IT event_it = it->second.begin(); event_it != it->second.end(); ++event_it)
+			for(ANIMATION_EVENT_VEC_IT event_it = it->second.begin(); event_it != it->second.end(); ++event_it)
 			{
 				SAnimationEvent& event = *event_it;
-				if (!event.handled && (event.time_perc < cur_perc))
+				if(!event.handled && (event.time_perc < cur_perc))
 				{
 					event.handled = true;
 
@@ -208,21 +208,21 @@ void CControlAnimation::check_events(SAnimationPart& part)
 
 void CControlAnimation::check_callbacks()
 {
-	//OPTICK_EVENT("CControlAnimation::check_callbacks");
+	// OPTICK_EVENT("CControlAnimation::check_callbacks");
 
-	if (m_global_animation_end)
+	if(m_global_animation_end)
 	{
 		m_man->notify(ControlCom::eventAnimationEnd, 0);
 		m_global_animation_end = false;
 	}
 
-	if (m_legs_animation_end)
+	if(m_legs_animation_end)
 	{
 		m_man->notify(ControlCom::eventLegsAnimationEnd, 0);
 		m_legs_animation_end = false;
 	}
 
-	if (m_torso_animation_end)
+	if(m_torso_animation_end)
 	{
 		m_man->notify(ControlCom::eventTorsoAnimationEnd, 0);
 		m_torso_animation_end = false;
@@ -235,7 +235,7 @@ void CControlAnimation::restart(SAnimationPart& part, PlayCallback callback)
 	VERIFY(part.blend);
 
 	u16 bone_or_part = m_skeleton_animated->LL_GetMotionDef(part.motion)->bone_or_part;
-	if (bone_or_part == u16(-1))
+	if(bone_or_part == u16(-1))
 		bone_or_part = m_skeleton_animated->LL_PartID("default");
 
 	// save
@@ -252,30 +252,30 @@ void CControlAnimation::restart()
 {
 	m_skeleton_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
 
-	if (m_data.global.blend)
+	if(m_data.global.blend)
 		restart(m_data.global, global_animation_end_callback);
-	if (m_data.legs.blend)
+	if(m_data.legs.blend)
 		restart(m_data.legs, legs_animation_end_callback);
-	if (m_data.torso.blend)
+	if(m_data.torso.blend)
 		restart(m_data.torso, torso_animation_end_callback);
 }
 void CControlAnimation::freeze()
 {
-	if (m_freeze)
+	if(m_freeze)
 		return;
 	m_freeze = true;
 
-	if (m_data.global.blend)
+	if(m_data.global.blend)
 	{
 		m_saved_global_speed = m_data.global.blend->speed;
 		m_data.global.blend->speed = 0.f;
 	}
-	if (m_data.legs.blend)
+	if(m_data.legs.blend)
 	{
 		m_saved_legs_speed = m_data.legs.blend->speed;
 		m_data.legs.blend->speed = 0.f;
 	}
-	if (m_data.torso.blend)
+	if(m_data.torso.blend)
 	{
 		m_saved_torso_speed = m_data.torso.blend->speed;
 		m_data.torso.blend->speed = 0.f;
@@ -284,19 +284,19 @@ void CControlAnimation::freeze()
 
 void CControlAnimation::unfreeze()
 {
-	if (!m_freeze)
+	if(!m_freeze)
 		return;
 	m_freeze = false;
 
-	if (m_data.global.blend)
+	if(m_data.global.blend)
 	{
 		m_data.global.blend->speed = m_saved_global_speed;
 	}
-	if (m_data.legs.blend)
+	if(m_data.legs.blend)
 	{
 		m_data.legs.blend->speed = m_saved_legs_speed;
 	}
-	if (m_data.torso.blend)
+	if(m_data.torso.blend)
 	{
 		m_data.torso.blend->speed = m_saved_torso_speed;
 	}

@@ -60,15 +60,15 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(iden
 	env_ambient = NULL;
 }
 
-#define C_CHECK(C)                                                                                                     \
-	if (C.x < 0 || C.x > 2 || C.y < 0 || C.y > 2 || C.z < 0 || C.z > 2)                                                \
-	{                                                                                                                  \
-		Msg("! Invalid '%s' in env-section '%s'", #C, m_identifier.c_str());                                           \
+#define C_CHECK(C)                                                           \
+	if(C.x < 0 || C.x > 2 || C.y < 0 || C.y > 2 || C.z < 0 || C.z > 2)       \
+	{                                                                        \
+		Msg("! Invalid '%s' in env-section '%s'", #C, m_identifier.c_str()); \
 	}
 
 float CEnvDescriptor::GetFloatIfExist(LPCSTR line_name, float default_value, CInifile& config)
 {
-	if (config.line_exist(m_identifier.c_str(), line_name))
+	if(config.line_exist(m_identifier.c_str(), line_name))
 		return config.r_float(m_identifier.c_str(), line_name);
 	else
 		return default_value;
@@ -76,7 +76,7 @@ float CEnvDescriptor::GetFloatIfExist(LPCSTR line_name, float default_value, CIn
 
 fvec3 CEnvDescriptor::GetRGBColorIfExist(LPCSTR line_name, fvec3 default_value, CInifile& config)
 {
-	if (config.line_exist(m_identifier.c_str(), line_name))
+	if(config.line_exist(m_identifier.c_str(), line_name))
 		return config.r_fvector3(m_identifier.c_str(), line_name);
 	else
 		return default_value;
@@ -84,7 +84,7 @@ fvec3 CEnvDescriptor::GetRGBColorIfExist(LPCSTR line_name, fvec3 default_value, 
 
 fvec4 CEnvDescriptor::GetRGBAColorIfExist(LPCSTR line_name, fvec4 default_value, CInifile& config)
 {
-	if (config.line_exist(m_identifier.c_str(), line_name))
+	if(config.line_exist(m_identifier.c_str(), line_name))
 		return config.r_fvector4(m_identifier.c_str(), line_name);
 	else
 		return default_value;
@@ -92,7 +92,7 @@ fvec4 CEnvDescriptor::GetRGBAColorIfExist(LPCSTR line_name, fvec4 default_value,
 
 LPCSTR CEnvDescriptor::GetStringIfExist(LPCSTR line_name, LPCSTR default_value, CInifile& config)
 {
-	if (config.line_exist(m_identifier.c_str(), line_name))
+	if(config.line_exist(m_identifier.c_str(), line_name))
 		return config.r_string(m_identifier.c_str(), line_name);
 	else
 		return default_value;
@@ -111,14 +111,14 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
 	ivec3 tm = {0, 0, 0};
 	sscanf(m_identifier.c_str(), "%d:%d:%d", &tm.x, &tm.y, &tm.z);
-	R_ASSERT3(	(tm.x >= 0) && 
-				(tm.x < 24) && 
-				(tm.y >= 0) && 
-				(tm.y < 60) && 
-				(tm.z >= 0) && 
-				(tm.z < 60),
-				"Incorrect weather time", 
-				m_identifier.c_str());
+	R_ASSERT3((tm.x >= 0) &&
+				  (tm.x < 24) &&
+				  (tm.y >= 0) &&
+				  (tm.y < 60) &&
+				  (tm.z >= 0) &&
+				  (tm.z < 60),
+			  "Incorrect weather time",
+			  m_identifier.c_str());
 	exec_time = tm.x * 3600.f + tm.y * 60.f + tm.z;
 	exec_time_loaded = exec_time;
 
@@ -154,12 +154,12 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
 	// Попытка найти ссылку на пресет ветра
 	bool bWindLoaded = false;
-	if (config.line_exist(m_identifier.c_str(), "wind_profile"))
+	if(config.line_exist(m_identifier.c_str(), "wind_profile"))
 	{
 		shared_str wind_profile = config.r_string(m_identifier.c_str(), "wind_profile");
 		CEnvWind* pWind = environment.AppendEnvWind(wind_profile);
 
-		if (pWind)
+		if(pWind)
 		{
 			wind_strength = pWind->m_wind_strength;
 			wind_direction = pWind->m_wind_direction;
@@ -177,7 +177,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 	}
 
 	// Fallback: Если профиль не задан или не найден, читаем по-старому из текущей секции
-	if (!bWindLoaded)
+	if(!bWindLoaded)
 	{
 		wind_strength = GetFloatIfExist("wind_strength", 0.35f, config);
 		wind_direction = deg2rad(GetFloatIfExist("wind_direction", 0.0f, config));
@@ -203,7 +203,6 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 	env_ambient = config.line_exist(m_identifier.c_str(), "ambient")
 					  ? environment.AppendEnvAmb(config.r_string(m_identifier.c_str(), "ambient"))
 					  : 0;
-
 
 	m_fSunShaftsIntensity = GetFloatIfExist("sun_shafts_intensity", 0.0f, config);
 	m_fWaterIntensity = GetFloatIfExist("water_intensity", 0.0f, config);
@@ -231,13 +230,13 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
 void CEnvDescriptor::on_device_create()
 {
-	if (sky_texture_name.size())
+	if(sky_texture_name.size())
 		sky_texture.create(sky_texture_name.c_str());
-	if (sky_texture_irradiance_name.size())
+	if(sky_texture_irradiance_name.size())
 		sky_texture_irradiance.create(sky_texture_irradiance_name.c_str());
-	if (clouds_texture_name.size())
+	if(clouds_texture_name.size())
 		clouds_texture.create(clouds_texture_name.c_str());
-	if (lut_texture_name.size())
+	if(lut_texture_name.size())
 		lut_texture.create(lut_texture_name.c_str());
 }
 
@@ -252,7 +251,7 @@ void CEnvDescriptor::on_device_destroy()
 CEnvDescriptor* CEnvironment::create_descriptor(shared_str const& identifier, CInifile* config)
 {
 	CEnvDescriptor* result = xr_new<CEnvDescriptor>(identifier);
-	if (config)
+	if(config)
 		result->load(*this, *config);
 	return (result);
 }

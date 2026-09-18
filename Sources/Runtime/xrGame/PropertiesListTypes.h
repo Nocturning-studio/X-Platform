@@ -81,12 +81,14 @@ class PropValue
 };
 //------------------------------------------------------------------------------
 
-template <class T> IC void set_value(T& val, const T& _val)
+template <class T>
+IC void set_value(T& val, const T& _val)
 {
 	val = _val;
 };
 
-template <class T> class CustomValue : public PropValue
+template <class T>
+class CustomValue : public PropValue
 {
   public:
 	typedef T TYPE;
@@ -128,7 +130,7 @@ template <class T> class CustomValue : public PropValue
 	}
 	bool ApplyValue(const T& val)
 	{
-		if (!(*value == val))
+		if(!(*value == val))
 		{
 			set_value(*value, val);
 			return true;
@@ -184,7 +186,7 @@ class PropItem
 	}
 	virtual ~PropItem()
 	{
-		for (PropValueIt it = values.begin(); values.end() != it; ++it)
+		for(PropValueIt it = values.begin(); values.end() != it; ++it)
 			xr_delete(*it);
 	};
 	IC TProperties* Owner()
@@ -197,13 +199,13 @@ class PropItem
 	}
 	IC void ResetValues()
 	{
-		for (PropValueIt it = values.begin(); values.end() != it; ++it)
+		for(PropValueIt it = values.begin(); values.end() != it; ++it)
 			(*it)->ResetValue();
 		CheckMixed();
 	}
 	IC void AppendValue(PropValue* value)
 	{
-		if (!values.empty() && !value->Equal(values.front()))
+		if(!values.empty() && !value->Equal(values.front()))
 			m_Flags.set(flMixed, TRUE);
 		values.push_back(value);
 	}
@@ -215,14 +217,14 @@ class PropItem
 	IC void CheckMixed()
 	{
 		m_Flags.set(flMixed, FALSE);
-		if (values.size() > 1)
+		if(values.size() > 1)
 		{
 			PropValueIt F = values.begin();
 			PropValueIt it = F;
 			++it;
-			for (; values.end() != it; ++it)
+			for(; values.end() != it; ++it)
 			{
-				if (!(*it)->Equal(*F))
+				if(!(*it)->Equal(*F))
 				{
 					m_Flags.set(flMixed, TRUE);
 					break;
@@ -231,36 +233,39 @@ class PropItem
 		}
 	}
 
-	template <class T1, class T2> IC void BeforeEdit(T2& val)
+	template <class T1, class T2>
+	IC void BeforeEdit(T2& val)
 	{
 		T1* CV = smart_cast<T1*>(values.front());
 		VERIFY(CV);
-		if (!CV->OnBeforeEditEvent.empty())
+		if(!CV->OnBeforeEditEvent.empty())
 			CV->OnBeforeEditEvent(CV, val);
 	}
-	template <class T1, class T2> IC bool AfterEdit(T2& val)
+	template <class T1, class T2>
+	IC bool AfterEdit(T2& val)
 	{
 		T1* CV = smart_cast<T1*>(values.front());
 		VERIFY(CV);
-		if (!CV->OnAfterEditEvent.empty())
+		if(!CV->OnAfterEditEvent.empty())
 			return CV->OnAfterEditEvent(CV, val);
 		return true;
 	}
-	template <class T1, class T2> IC bool ApplyValue(const T2& val)
+	template <class T1, class T2>
+	IC bool ApplyValue(const T2& val)
 	{
 		bool bChanged = false;
 		m_Flags.set(flMixed, FALSE);
-		for (PropValueIt it = values.begin(); values.end() != it; ++it)
+		for(PropValueIt it = values.begin(); values.end() != it; ++it)
 		{
 			T1* CV = smart_cast<T1*>(*it);
 			VERIFY(CV);
-			if (CV->ApplyValue(val))
+			if(CV->ApplyValue(val))
 			{
 				bChanged = true;
-				if (!CV->OnChangeEvent.empty())
+				if(!CV->OnChangeEvent.empty())
 					CV->OnChangeEvent(*it);
 			}
-			if (!CV->Equal(values.front()))
+			if(!CV->Equal(values.front()))
 				m_Flags.set(flMixed, TRUE);
 		}
 		return bChanged;
@@ -292,8 +297,8 @@ class PropItem
 	}
 	IC void OnChange()
 	{
-		for (PropValueIt it = values.begin(); values.end() != it; ++it)
-			if (!(*it)->OnChangeEvent.empty())
+		for(PropValueIt it = values.begin(); values.end() != it; ++it)
+			if(!(*it)->OnChangeEvent.empty())
 				(*it)->OnChangeEvent(*it);
 	}
 	/*
@@ -367,7 +372,7 @@ class CanvasValue : public PropValue
 	}
 	virtual bool Equal(PropValue* val)
 	{
-		if (!OnTestEqual.empty())
+		if(!OnTestEqual.empty())
 		{
 			bool res = true;
 			OnTestEqual(this, (CanvasValue*)val, res);
@@ -398,7 +403,7 @@ class ButtonValue : public PropValue
 		btn_num = -1;
 		xr_string v;
 		int cnt = _GetItemCount(val.c_str());
-		for (int k = 0; k < cnt; ++k)
+		for(int k = 0; k < cnt; ++k)
 			value.push_back(_GetItem(val.c_str(), k, v));
 	}
 	virtual xr_string GetDrawText(TOnDrawTextEvent)
@@ -416,7 +421,7 @@ class ButtonValue : public PropValue
 	}
 	bool OnBtnClick(bool& bSafe)
 	{
-		if (!OnBtnClickEvent.empty())
+		if(!OnBtnClickEvent.empty())
 		{
 			bool bDModif = true;
 			OnBtnClickEvent(this, bDModif, bSafe);
@@ -445,12 +450,12 @@ class ShortcutValue : public CustomValue<xr_shortcut>
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText);
 	bool ApplyValue(const xr_shortcut& val)
 	{
-		if (!(*value == val))
+		if(!(*value == val))
 		{
 			bool allow = true;
-			if (!OnValidateResultEvent.empty())
+			if(!OnValidateResultEvent.empty())
 				OnValidateResultEvent(this, val, allow);
-			if (allow)
+			if(allow)
 			{
 				set_value(*value, val);
 				return true;
@@ -462,11 +467,11 @@ class ShortcutValue : public CustomValue<xr_shortcut>
 class RTextValue : public CustomValue<shared_str>
 {
   public:
-	RTextValue(TYPE* val) : CustomValue<shared_str>(val){};
+	RTextValue(TYPE* val) : CustomValue<shared_str>(val) {};
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string txt = GetValue().c_str() ? GetValue().c_str() : "";
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, txt);
 		return txt;
 	}
@@ -474,11 +479,11 @@ class RTextValue : public CustomValue<shared_str>
 class STextValue : public CustomValue<xr_string>
 {
   public:
-	STextValue(TYPE* val) : CustomValue<xr_string>(val){};
+	STextValue(TYPE* val) : CustomValue<xr_string>(val) {};
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string txt = GetValue();
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, txt);
 		return txt;
 	}
@@ -509,7 +514,7 @@ class CTextValue : public PropValue
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string txt = GetValue();
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, txt);
 		return txt;
 	}
@@ -519,7 +524,7 @@ class CTextValue : public PropValue
 	}
 	bool ApplyValue(LPCSTR val)
 	{
-		if (0 != xr_strcmp(value, val))
+		if(0 != xr_strcmp(value, val))
 		{
 			strcpy(value, val);
 			return true;
@@ -574,7 +579,7 @@ IC bool operator==(const WaveForm& A, const WaveForm& B)
 class WaveValue : public CustomValue<WaveForm>
 {
   public:
-	WaveValue(TYPE* val) : CustomValue<WaveForm>(val){};
+	WaveValue(TYPE* val) : CustomValue<WaveForm>(val) {};
 	virtual xr_string GetDrawText(TOnDrawTextEvent)
 	{
 		return "[Wave]";
@@ -589,7 +594,8 @@ IC bool operator==(const Fcolor& A, const Fcolor& B)
 typedef CustomValue<Fcolor> ColorValue;
 //------------------------------------------------------------------------------
 
-template <class T> class NumericValue : public CustomValue<T>
+template <class T>
+class NumericValue : public CustomValue<T>
 {
   public:
 	T lim_mn;
@@ -620,7 +626,7 @@ template <class T> class NumericValue : public CustomValue<T>
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string draw_val;
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, draw_val);
 		else
 			draw_sprintf(draw_val, *value, dec);
@@ -629,7 +635,8 @@ template <class T> class NumericValue : public CustomValue<T>
 };
 
 //------------------------------------------------------------------------------
-template <class T> IC xr_string draw_sprintf(xr_string& s, const T& V, int tag)
+template <class T>
+IC xr_string draw_sprintf(xr_string& s, const T& V, int tag)
 {
 	string256 tmp;
 	sprintf_s(tmp, "%d", V);
@@ -711,7 +718,8 @@ class FlagValueCustom
 	virtual bool GetValueEx() = 0;
 };
 
-template <class T> class FlagValue : public CustomValue<T>, public FlagValueCustom
+template <class T>
+class FlagValue : public CustomValue<T>, public FlagValueCustom
 {
   public:
 	typedef T TYPE;
@@ -728,7 +736,7 @@ template <class T> class FlagValue : public CustomValue<T>, public FlagValueCust
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string draw_val;
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, draw_val);
 		else
 			return HaveCaption() ? caption[GetValueEx() ? 1 : 0].c_str() : "";
@@ -752,7 +760,7 @@ template <class T> class FlagValue : public CustomValue<T>, public FlagValueCust
 	}
 	bool ApplyValue(const T& val)
 	{
-		if (!val.equal(*value, mask))
+		if(!val.equal(*value, mask))
 		{
 			value->set(mask, val.is(mask));
 			return true;
@@ -765,7 +773,8 @@ typedef FlagValue<Flags8> Flag8Value;
 typedef FlagValue<Flags16> Flag16Value;
 typedef FlagValue<Flags32> Flag32Value;
 //------------------------------------------------------------------------------
-template <class T> bool operator==(template_flags<T> const& A, template_flags<T> const& B)
+template <class T>
+bool operator==(template_flags<T> const& A, template_flags<T> const& B)
 {
 	return A.flags == B.flags;
 }
@@ -780,18 +789,19 @@ class TokenValueCustom
 		;
 	}
 };
-template <class T> class TokenValue : public CustomValue<T>, public TokenValueCustom
+template <class T>
+class TokenValue : public CustomValue<T>, public TokenValueCustom
 {
   public:
-	TokenValue(T* val, xr_token* _token) : TokenValueCustom(_token), CustomValue<T>(val){};
+	TokenValue(T* val, xr_token* _token) : TokenValueCustom(_token), CustomValue<T>(val) {};
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string draw_val;
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, draw_val);
 		else
-			for (int i = 0; token[i].name; i++)
-				if (token[i].id == (int)GetValue())
+			for(int i = 0; token[i].name; i++)
+				if(token[i].id == (int)GetValue())
 					return token[i].name;
 		return draw_val;
 	}
@@ -812,18 +822,19 @@ class RTokenValueCustom
 		;
 	}
 };
-template <class T> class RTokenValue : public CustomValue<T>, public RTokenValueCustom
+template <class T>
+class RTokenValue : public CustomValue<T>, public RTokenValueCustom
 {
   public:
-	RTokenValue(T* val, xr_rtoken* _token, u32 _t_cnt) : CustomValue<T>(val), RTokenValueCustom(_token, _t_cnt){};
+	RTokenValue(T* val, xr_rtoken* _token, u32 _t_cnt) : CustomValue<T>(val), RTokenValueCustom(_token, _t_cnt) {};
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		xr_string draw_val;
-		if (!OnDrawText.empty())
+		if(!OnDrawText.empty())
 			OnDrawText(this, draw_val);
 		else
-			for (u32 k = 0; k < token_count; k++)
-				if ((T)token[k].id == GetValue())
+			for(u32 k = 0; k < token_count; k++)
+				if((T)token[k].id == GetValue())
 					return *token[k].name;
 		return draw_val;
 	}
@@ -846,12 +857,12 @@ class TokenValueSH : public CustomValue<u32>
 	const Item* items;
 
   public:
-	TokenValueSH(u32* val, const Item* _items, u32 _cnt) : CustomValue<u32>(val), cnt(_cnt), items(_items){};
+	TokenValueSH(u32* val, const Item* _items, u32 _cnt) : CustomValue<u32>(val), cnt(_cnt), items(_items) {};
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText)
 	{
 		u32 draw_val = GetValue();
-		for (u32 i = 0; i < cnt; i++)
-			if (items[i].ID == draw_val)
+		for(u32 i = 0; i < cnt; i++)
+			if(items[i].ID == draw_val)
 				return items[i].str;
 		return 0;
 	}
@@ -865,10 +876,10 @@ class RListValue : public RTextValue
 	u32 item_count;
 
   public:
-	RListValue(shared_str* val, shared_str* _items, u32 cnt) : RTextValue(val), items(_items), item_count(cnt){};
+	RListValue(shared_str* val, shared_str* _items, u32 cnt) : RTextValue(val), items(_items), item_count(cnt) {};
 	virtual bool Equal(PropValue* val)
 	{
-		if (items != ((RListValue*)val)->items)
+		if(items != ((RListValue*)val)->items)
 		{
 			m_Owner->m_Flags.set(PropItem::flDisabled, TRUE);
 			return false;
@@ -883,10 +894,10 @@ class CListValue : public CTextValue
 	u32 item_count;
 
   public:
-	CListValue(LPSTR val, u32 sz, xr_string* _items, u32 cnt) : CTextValue(val, sz), items(_items), item_count(cnt){};
+	CListValue(LPSTR val, u32 sz, xr_string* _items, u32 cnt) : CTextValue(val, sz), items(_items), item_count(cnt) {};
 	virtual bool Equal(PropValue* val)
 	{
-		if (items != ((CListValue*)val)->items)
+		if(items != ((CListValue*)val)->items)
 		{
 			m_Owner->m_Flags.set(PropItem::flDisabled, TRUE);
 			return false;

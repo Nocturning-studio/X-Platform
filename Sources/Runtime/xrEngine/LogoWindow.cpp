@@ -4,7 +4,7 @@
 
 static BOOL CALLBACK logoDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
 {
-	switch (msg)
+	switch(msg)
 	{
 	case WM_DESTROY:
 		break;

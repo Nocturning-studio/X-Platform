@@ -47,11 +47,11 @@ void CUITextVote::Init(CUIXml& xml_doc)
 
 void CUITextVote::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
-		if (pWnd == btn_ok)
+		if(pWnd == btn_ok)
 			OnBtnOk();
-		else if (pWnd == btn_cancel)
+		else if(pWnd == btn_cancel)
 			OnBtnCancel();
 	}
 }
@@ -59,7 +59,7 @@ void CUITextVote::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUITextVote::OnBtnOk()
 {
 	LPCSTR name = edit->GetText();
-	if (name && name[0])
+	if(name && name[0])
 	{
 		string512 command;
 		sprintf_s(command, "cl_votestart $%s", name);

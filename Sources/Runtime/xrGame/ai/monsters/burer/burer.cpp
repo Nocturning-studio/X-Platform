@@ -190,17 +190,17 @@ void CBurer::CheckSpecParams(u32 spec_params)
 
 void CBurer::UpdateGraviObject()
 {
-	if (!m_gravi_object.active)
+	if(!m_gravi_object.active)
 		return;
 
-	if (!m_gravi_object.enemy || (m_gravi_object.enemy && m_gravi_object.enemy->getDestroy()))
+	if(!m_gravi_object.enemy || (m_gravi_object.enemy && m_gravi_object.enemy->getDestroy()))
 	{
 		m_gravi_object.deactivate();
 		return;
 	}
 
-	if (m_gravi_object.from_pos.distance_to(m_gravi_object.cur_pos) >
-		(m_gravi_object.from_pos.distance_to(m_gravi_object.target_pos)))
+	if(m_gravi_object.from_pos.distance_to(m_gravi_object.cur_pos) >
+	   (m_gravi_object.from_pos.distance_to(m_gravi_object.target_pos)))
 	{
 		m_gravi_object.deactivate();
 		return;
@@ -209,7 +209,7 @@ void CBurer::UpdateGraviObject()
 	float dt = float(Engine.TimeManager.GetGlobalTimeMs() - m_gravi_object.time_last_update);
 	float dist = dt * float(m_gravi_speed) / 1000.f;
 
-	if (dist < m_gravi_step)
+	if(dist < m_gravi_step)
 		return;
 
 	fvec3 new_pos;
@@ -228,10 +228,10 @@ void CBurer::UpdateGraviObject()
 	float trace_dist = float(m_gravi_step);
 
 	collide::rq_result l_rq;
-	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, NULL))
+	if(Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, NULL))
 	{
 		const CObject* enemy = smart_cast<const CObject*>(m_gravi_object.enemy);
-		if ((l_rq.O == enemy) && (l_rq.range < trace_dist))
+		if((l_rq.O == enemy) && (l_rq.range < trace_dist))
 		{
 
 			// check for visibility
@@ -240,16 +240,16 @@ void CBurer::UpdateGraviObject()
 			feel_vision_get(visible_objects);
 
 			// find object
-			for (u32 i = 0; i < visible_objects.size(); i++)
+			for(u32 i = 0; i < visible_objects.size(); i++)
 			{
-				if (visible_objects[i] == enemy)
+				if(visible_objects[i] == enemy)
 				{
 					b_enemy_visible = true;
 					break;
 				}
 			}
 
-			if (b_enemy_visible)
+			if(b_enemy_visible)
 			{
 				fvec3 impulse_dir;
 
@@ -286,10 +286,10 @@ void CBurer::UpdateGraviObject()
 	Level().ObjectSpace.GetNearest(m_nearest, m_gravi_object.cur_pos, m_gravi_radius, NULL);
 	// xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
-	for (u32 i = 0; i < m_nearest.size(); i++)
+	for(u32 i = 0; i < m_nearest.size(); i++)
 	{
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
-		if (!obj || !obj->m_pPhysicsShell)
+		if(!obj || !obj->m_pPhysicsShell)
 			continue;
 
 		fvec3 dir;
@@ -301,7 +301,7 @@ void CBurer::UpdateGraviObject()
 	// играть звук
 	fvec3 snd_pos = m_gravi_object.cur_pos;
 	snd_pos.y += 0.5f;
-	if (sound_gravi_wave._feedback())
+	if(sound_gravi_wave._feedback())
 	{
 		sound_gravi_wave.set_position(snd_pos);
 	}
@@ -311,7 +311,7 @@ void CBurer::UpdateGraviObject()
 
 void CBurer::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 	TScanner::frame_update(Engine.TimeManager.GetDeltaTimeMs());
@@ -325,11 +325,11 @@ void CBurer::UpdateCL()
 void CBurer::StartGraviPrepare()
 {
 	const CEntityAlive* enemy = EnemyMan.get_enemy();
-	if (!enemy)
+	if(!enemy)
 		return;
 
 	CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(enemy));
-	if (!pA)
+	if(!pA)
 		return;
 
 	pA->CParticlesPlayer::StartParticles(particle_gravi_prepare, fvec3().set(0.0f, 0.1f, 0.0f), pA->ID());
@@ -337,7 +337,7 @@ void CBurer::StartGraviPrepare()
 void CBurer::StopGraviPrepare()
 {
 	CActor* pA = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!pA)
+	if(!pA)
 		return;
 
 	pA->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
@@ -346,14 +346,14 @@ void CBurer::StopGraviPrepare()
 void CBurer::StartTeleObjectParticle(CGameObject* pO)
 {
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pO);
-	if (!PP)
+	if(!PP)
 		return;
 	PP->StartParticles(particle_tele_object, fvec3().set(0.0f, 0.1f, 0.0f), pO->ID());
 }
 void CBurer::StopTeleObjectParticle(CGameObject* pO)
 {
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pO);
-	if (!PP)
+	if(!PP)
 		return;
 	PP->StopParticles(particle_tele_object, BI_NONE, true);
 }
@@ -362,7 +362,7 @@ void CBurer::StopTeleObjectParticle(CGameObject* pO)
 // ALife::EHitType hit_type)
 void CBurer::Hit(SHit* pHDS)
 {
-	if (m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != last_hit_frame))
+	if(m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != last_hit_frame))
 	{
 
 		// вычислить позицию и направленность партикла
@@ -376,7 +376,7 @@ void CBurer::Hit(SHit* pHDS)
 		ps->UpdateParent(pos, fvec3().set(0.f, 0.f, 0.f));
 		GamePersistent().ps_needtoplay.push_back(ps);
 	}
-	else if (!m_shield_active)
+	else if(!m_shield_active)
 		//				inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 		inherited::Hit(pHDS);
 
@@ -388,7 +388,7 @@ void CBurer::Die(CObject* who)
 	inherited::Die(who);
 	TScanner::on_destroy();
 
-	if (com_man().ta_is_active())
+	if(com_man().ta_is_active())
 		com_man().ta_deactivate();
 	CTelekinesis::Deactivate();
 }
@@ -401,7 +401,7 @@ void CBurer::on_scanning()
 void CBurer::on_scan_success()
 {
 	CActor* pA = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!pA)
+	if(!pA)
 		return;
 
 	EnemyMan.add_enemy(pA);
@@ -418,7 +418,7 @@ void CBurer::net_Relcase(CObject* O)
 CBaseMonster::SDebugInfo CBurer::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
-	if (!info.active)
+	if(!info.active)
 		return CBaseMonster::SDebugInfo();
 
 	string128 text;

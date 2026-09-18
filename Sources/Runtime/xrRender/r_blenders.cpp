@@ -15,7 +15,7 @@
 
 IBlender* CRender::blender_create(CLASS_ID cls)
 {
-	switch (cls)
+	switch(cls)
 	{
 	case B_STATIC_MESH:
 		return xr_new<CBlender_static_mesh>();

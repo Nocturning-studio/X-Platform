@@ -19,7 +19,8 @@ IC CScriptEntityAction::CScriptEntityAction(const CScriptEntityAction* entity_ac
 	*this = *entity_action;
 }
 
-template <typename T> IC void CScriptEntityAction::SetAction(const T& t, T& tt)
+template <typename T>
+IC void CScriptEntityAction::SetAction(const T& t, T& tt)
 {
 	tt = t;
 }
@@ -119,30 +120,30 @@ IC bool CScriptEntityAction::CheckIfActionCompleted()
 {
 	bool started = m_started;
 	m_started = true;
-	if (!started)
+	if(!started)
 		return (false);
 
 	u32 l_dwFlags = m_tActionCondition.m_dwFlags;
-	if ((CScriptActionCondition::MOVEMENT_FLAG & m_tActionCondition.m_dwFlags) && CheckIfMovementCompleted())
+	if((CScriptActionCondition::MOVEMENT_FLAG & m_tActionCondition.m_dwFlags) && CheckIfMovementCompleted())
 		l_dwFlags ^= CScriptActionCondition::MOVEMENT_FLAG;
-	if ((CScriptActionCondition::WATCH_FLAG & m_tActionCondition.m_dwFlags) && CheckIfWatchCompleted())
+	if((CScriptActionCondition::WATCH_FLAG & m_tActionCondition.m_dwFlags) && CheckIfWatchCompleted())
 		l_dwFlags ^= CScriptActionCondition::WATCH_FLAG;
-	if ((CScriptActionCondition::ANIMATION_FLAG & m_tActionCondition.m_dwFlags) && CheckIfAnimationCompleted())
+	if((CScriptActionCondition::ANIMATION_FLAG & m_tActionCondition.m_dwFlags) && CheckIfAnimationCompleted())
 		l_dwFlags ^= CScriptActionCondition::ANIMATION_FLAG;
-	if ((CScriptActionCondition::SOUND_FLAG & m_tActionCondition.m_dwFlags) && CheckIfSoundCompleted())
+	if((CScriptActionCondition::SOUND_FLAG & m_tActionCondition.m_dwFlags) && CheckIfSoundCompleted())
 		l_dwFlags ^= CScriptActionCondition::SOUND_FLAG;
-	if ((CScriptActionCondition::PARTICLE_FLAG & m_tActionCondition.m_dwFlags) && CheckIfParticleCompleted())
+	if((CScriptActionCondition::PARTICLE_FLAG & m_tActionCondition.m_dwFlags) && CheckIfParticleCompleted())
 		l_dwFlags ^= CScriptActionCondition::PARTICLE_FLAG;
-	if ((CScriptActionCondition::OBJECT_FLAG & m_tActionCondition.m_dwFlags) && CheckIfObjectCompleted())
+	if((CScriptActionCondition::OBJECT_FLAG & m_tActionCondition.m_dwFlags) && CheckIfObjectCompleted())
 		l_dwFlags ^= CScriptActionCondition::OBJECT_FLAG;
-	if ((CScriptActionCondition::TIME_FLAG & m_tActionCondition.m_dwFlags) && CheckIfTimeOver())
+	if((CScriptActionCondition::TIME_FLAG & m_tActionCondition.m_dwFlags) && CheckIfTimeOver())
 		l_dwFlags ^= CScriptActionCondition::TIME_FLAG;
-	if ((CScriptActionCondition::ACT_FLAG & m_tActionCondition.m_dwFlags) && CheckIfMonsterActionCompleted())
+	if((CScriptActionCondition::ACT_FLAG & m_tActionCondition.m_dwFlags) && CheckIfMonsterActionCompleted())
 		l_dwFlags ^= CScriptActionCondition::ACT_FLAG;
 
-	if (!m_tActionCondition.m_dwFlags && (m_tActionCondition.m_tLifeTime < 0) && CheckIfMovementCompleted() &&
-		CheckIfWatchCompleted() && CheckIfAnimationCompleted() && CheckIfSoundCompleted() &&
-		CheckIfParticleCompleted() && CheckIfObjectCompleted() && CheckIfMonsterActionCompleted())
+	if(!m_tActionCondition.m_dwFlags && (m_tActionCondition.m_tLifeTime < 0) && CheckIfMovementCompleted() &&
+	   CheckIfWatchCompleted() && CheckIfAnimationCompleted() && CheckIfSoundCompleted() &&
+	   CheckIfParticleCompleted() && CheckIfObjectCompleted() && CheckIfMonsterActionCompleted())
 		return (true);
 	else
 		return (!l_dwFlags);

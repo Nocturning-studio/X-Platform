@@ -1,6 +1,7 @@
 #pragma once
 
-template <class T> class template_plane2D
+template <class T>
+class template_plane2D
 {
   public:
 	typedef T TYPE;
@@ -53,7 +54,7 @@ template <class T> class template_plane2D
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 
-		if (_abs(denom) < EPS_S) // normal is orthogonal to vector3, cant intersect
+		if(_abs(denom) < EPS_S) // normal is orthogonal to vector3, cant intersect
 			return FALSE;
 
 		dist = -(numer / denom);
@@ -64,7 +65,7 @@ template <class T> class template_plane2D
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 
-		if (_abs(denom) < EPS_S)
+		if(_abs(denom) < EPS_S)
 			return FALSE; // normal is orthogonal to vector3, cant intersect
 		else
 		{
@@ -74,25 +75,25 @@ template <class T> class template_plane2D
 		}
 	}
 	IC BOOL intersect(const template_vector2<T>& u, const template_vector2<T>& v, // segment
-					  template_vector2<T>& isect)						  // intersection point
+					  template_vector2<T>& isect)								  // intersection point
 	{
 		T denom, dist;
 		template_vector2<T> t;
 
 		t.sub(v, u);
 		denom = n.dotproduct(t);
-		if (_abs(denom) < EPS)
+		if(_abs(denom) < EPS)
 			return false; // they are parallel
 
 		dist = -(n.dotproduct(u) + d) / denom;
-		if (dist < -EPS || dist > 1 + EPS)
+		if(dist < -EPS || dist > 1 + EPS)
 			return false;
 		isect.mad(u, t, dist);
 		return true;
 	}
 
 	IC BOOL intersect_2(const template_vector2<T>& u, const template_vector2<T>& v, // segment
-						template_vector2<T>& isect)							// intersection point
+						template_vector2<T>& isect)									// intersection point
 	{
 		T dist1, dist2;
 		template_vector2<T> t;
@@ -100,7 +101,7 @@ template <class T> class template_plane2D
 		dist1 = n.dotproduct(u) + d;
 		dist2 = n.dotproduct(v) + d;
 
-		if (dist1 * dist2 < 0.0f)
+		if(dist1 * dist2 < 0.0f)
 			return false;
 
 		t.sub(v, u);
@@ -113,7 +114,8 @@ template <class T> class template_plane2D
 typedef template_plane2D<float> Fplane2;
 typedef template_plane2D<double> Dplane2;
 
-template <class T> BOOL _valid(const template_plane2D<T>& s)
+template <class T>
+BOOL _valid(const template_plane2D<T>& s)
 {
 	return _valid(s.n) && _valid(s.d);
 }

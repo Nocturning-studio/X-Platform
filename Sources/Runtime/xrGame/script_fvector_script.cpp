@@ -55,7 +55,7 @@ void CScriptFvector::script_register(lua_State* L)
 			   .def("set_length", &fvec3::set_length, return_reference_to(_1))
 			   .def("align", &fvec3::align, return_reference_to(_1))
 			   //			.def("squeeze",						&fvec3::squeeze,
-			   //return_reference_to(_1))
+			   // return_reference_to(_1))
 			   .def("clamp", (fvec3 & (fvec3::*)(const fvec3&))(&fvec3::clamp), return_reference_to(_1))
 			   .def("clamp", (fvec3 & (fvec3::*)(const fvec3&, const fvec3))(&fvec3::clamp),
 					return_reference_to(_1))
@@ -81,12 +81,12 @@ void CScriptFvector::script_register(lua_State* L)
 			   .def("normalize_safe", (fvec3 & (fvec3::*)(const fvec3&))(&fvec3::normalize_safe),
 					return_reference_to(_1))
 			   //			.def("random_dir",					(fvec3 & (fvec3::*)())(&fvec3::random_dir),
-			   //return_reference_to(_1)) 			.def("random_dir",					(fvec3 & (fvec3::*)(const fvec3 &,
-			   //float))(&fvec3::random_dir),													return_reference_to(_1))
+			   // return_reference_to(_1)) 			.def("random_dir",					(fvec3 & (fvec3::*)(const fvec3 &,
+			   // float))(&fvec3::random_dir),													return_reference_to(_1))
 			   //			.def("random_point",				(fvec3 & (fvec3::*)(const fvec3
 			   //&))(&fvec3::random_point), return_reference_to(_1)) 			.def("random_point",				(fvec3 &
 			   //(fvec3::*)(float))(&fvec3::random_point),
-			   //return_reference_to(_1))
+			   // return_reference_to(_1))
 			   .def("dotproduct", &fvec3::dotproduct)
 			   .def("crossproduct", &fvec3::crossproduct, return_reference_to(_1))
 			   .def("distance_to_xz", &fvec3::distance_to_xz)
@@ -97,12 +97,12 @@ void CScriptFvector::script_register(lua_State* L)
 			   //			.def("from_bary",					(fvec3 & (fvec3::*)(const fvec3 &, const fvec3
 			   //&, const fvec3 &, const fvec3 &))(&fvec3::from_bary),		return_reference_to(_1))
 			   //			.def("from_bary4",					&fvec3::from_bary4,
-			   //return_reference_to(_1)) 			.def("mknormal_non_normalized",		&fvec3::mknormal_non_normalized,
-			   //return_reference_to(_1)) 			.def("mknormal",					&fvec3::mknormal,
-			   //return_reference_to(_1))
+			   // return_reference_to(_1)) 			.def("mknormal_non_normalized",		&fvec3::mknormal_non_normalized,
+			   // return_reference_to(_1)) 			.def("mknormal",					&fvec3::mknormal,
+			   // return_reference_to(_1))
 			   .def("setHP", &fvec3::setHP, return_reference_to(_1))
 			   //			.def("getHP",						&fvec3::getHP,
-			   //out_value(_2) + out_value(_3))
+			   // out_value(_2) + out_value(_3))
 			   .def("getH", &fvec3::getH)
 			   .def("getP", &fvec3::getP)
 

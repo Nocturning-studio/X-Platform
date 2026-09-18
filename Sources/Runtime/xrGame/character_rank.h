@@ -30,8 +30,8 @@ class CHARACTER_RANK : public CHARACTER_RANK_base
 	friend inherited;
 
   public:
-	CHARACTER_RANK() : m_current_value(NO_RANK){};
-	~CHARACTER_RANK(){};
+	CHARACTER_RANK() : m_current_value(NO_RANK) {};
+	~CHARACTER_RANK() {};
 
 	void set(CHARACTER_RANK_VALUE);
 

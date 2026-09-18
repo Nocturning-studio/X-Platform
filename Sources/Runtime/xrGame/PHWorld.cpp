@@ -75,7 +75,7 @@ void CPHWorld::SetStep(dReal s)
 	world_erp = ERP(SPRING_S(base_cfm, base_erp, base_fixed_step), DAMPING(base_cfm, base_erp));
 	world_spring = 1.0f * SPRING(world_cfm, world_erp);
 	world_damping = 1.0f * DAMPING(world_cfm, world_erp);
-	if (ph_world && ph_world->Exist())
+	if(ph_world && ph_world->Exist())
 	{
 		float frame_time = Engine.TimeManager.GetDeltaTime();
 		u32 it_number = iFloor(frame_time / fixed_step);
@@ -201,10 +201,10 @@ void CPHWorld::Step()
 	PH_OBJECT_I i_object;
 	PH_UPDATE_OBJECT_I i_update_object;
 
-	if (disable_count == 0)
+	if(disable_count == 0)
 	{
 		disable_count = worldDisablingParams.objects_params.L2frames;
-		for (i_object = m_recently_disabled_objects.begin(); m_recently_disabled_objects.end() != i_object;)
+		for(i_object = m_recently_disabled_objects.begin(); m_recently_disabled_objects.end() != i_object;)
 		{
 			CPHObject* obj = (*i_object);
 			obj->check_recently_deactivated();
@@ -216,7 +216,7 @@ void CPHWorld::Step()
 	++m_steps_num;
 	Engine.Statistic->ph_collision.Begin();
 
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		obj->Collide();
@@ -226,7 +226,7 @@ void CPHWorld::Step()
 	Engine.Statistic->ph_collision.End();
 
 #ifdef DEBUG
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		DBG_DrawPHObject(obj);
@@ -234,14 +234,14 @@ void CPHWorld::Step()
 	}
 #endif
 
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		++i_object;
 		obj->PhTune(fixed_step);
 	}
 
-	for (i_update_object = m_update_objects.begin(); m_update_objects.end() != i_update_object;)
+	for(i_update_object = m_update_objects.begin(); m_update_objects.end() != i_update_object;)
 	{
 		CPHUpdateObject* obj = (*i_update_object);
 		++i_update_object;
@@ -257,14 +257,14 @@ void CPHWorld::Step()
 	//////////////////////////////////////////////////////////////////////
 	m_commander->update();
 	//////////////////////////////////////////////////////////////////////
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		++i_object;
 #ifdef DEBUG
-		if (ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
+		if(ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
 		{
-			if (obj->Island().IsActive())
+			if(obj->Island().IsActive())
 			{
 				dbg_islands_num++;
 				dbg_joints_num += obj->Island().nj;
@@ -278,7 +278,7 @@ void CPHWorld::Step()
 
 	Engine.Statistic->ph_core.End();
 
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		++i_object;
@@ -287,7 +287,7 @@ void CPHWorld::Step()
 		obj->spatial_move();
 	}
 
-	for (i_update_object = m_update_objects.begin(); m_update_objects.end() != i_update_object;)
+	for(i_update_object = m_update_objects.begin(); m_update_objects.end() != i_update_object;)
 	{
 		CPHUpdateObject* obj = *i_update_object;
 		++i_update_object;
@@ -300,7 +300,7 @@ void CPHWorld::Step()
 	ContactFeedBacks.empty();
 	ContactEffectors.empty();
 
-	if (physics_step_time_callback)
+	if(physics_step_time_callback)
 	{
 		physics_step_time_callback(start_time, start_time + u32(fixed_step * 1000));
 		start_time += u32(fixed_step * 1000);
@@ -310,7 +310,7 @@ void CPHWorld::Step()
 void CPHWorld::StepTouch()
 {
 	PH_OBJECT_I i_object;
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		obj->Collide();
@@ -318,13 +318,13 @@ void CPHWorld::StepTouch()
 		++i_object;
 	}
 
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		++i_object;
 		obj->Island().Enable();
 	}
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		++i_object;
@@ -338,7 +338,7 @@ void CPHWorld::StepTouch()
 
 u32 CPHWorld::CalcNumSteps(u32 dTime)
 {
-	if (dTime < m_frame_time * 1000)
+	if(dTime < m_frame_time * 1000)
 		return 0;
 	u32 res = iCeil((float(dTime) - m_frame_time * 1000) / (fixed_step * 1000));
 	//	if (dTime < fixed_step*1000) return 0;
@@ -348,7 +348,7 @@ u32 CPHWorld::CalcNumSteps(u32 dTime)
 
 void CPHWorld::FrameStep(dReal step)
 {
-	if (IsFreezed())
+	if(IsFreezed())
 		return;
 
 	VERIFY(_valid(step));
@@ -364,7 +364,7 @@ void CPHWorld::FrameStep(dReal step)
 	frame_time += step;
 	// m_frame_sum+=step;
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
+	if(ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
 	{
 		static float dbg_iterations = 0.f;
 		dbg_iterations = dbg_iterations * 0.9f + step / fixed_step * 0.1f;
@@ -373,7 +373,7 @@ void CPHWorld::FrameStep(dReal step)
 		b_processing = false;
 	}
 #endif
-	if (!(frame_time < fixed_step))
+	if(!(frame_time < fixed_step))
 	{
 		it_number = iFloor(frame_time / fixed_step);
 		frame_time -= it_number * fixed_step;
@@ -390,9 +390,9 @@ void CPHWorld::FrameStep(dReal step)
 	b_processing = true;
 
 	start_time = Engine.TimeManager.GetGlobalTimeMs(); // - u32(m_frame_time*1000);
-	if (g_bDebugDumpPhysicsStep && it_number > 20)
+	if(g_bDebugDumpPhysicsStep && it_number > 20)
 		Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %d !!!", it_number);
-	for (UINT i = 0; i < it_number; ++i)
+	for(UINT i = 0; i < it_number; ++i)
 		Step();
 	b_processing = false;
 }
@@ -443,7 +443,7 @@ void CPHWorld::Freeze()
 	m_freezed_objects.move_items(m_objects);
 	PH_OBJECT_I iter = m_freezed_objects.begin(), e = m_freezed_objects.end();
 
-	for (; e != iter; ++iter)
+	for(; e != iter; ++iter)
 		(*iter)->FreezeContent();
 	m_freezed_update_objects.move_items(m_update_objects);
 	b_world_freezed = true;
@@ -452,7 +452,7 @@ void CPHWorld::UnFreeze()
 {
 	R_ASSERT2(b_world_freezed, "is not freezed!!!");
 	PH_OBJECT_I iter = m_freezed_objects.begin(), e = m_freezed_objects.end();
-	for (; e != iter; ++iter)
+	for(; e != iter; ++iter)
 		(*iter)->UnFreezeContent();
 	m_objects.move_items(m_freezed_objects);
 	m_update_objects.move_items(m_freezed_update_objects);
@@ -466,7 +466,7 @@ bool CPHWorld::IsFreezed()
 void CPHWorld::CutVelocity(float l_limit, float a_limit)
 {
 	PH_OBJECT_I i_object;
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		obj->CutVelocity(l_limit, a_limit);
@@ -494,11 +494,11 @@ void CPHWorld::GetState(V_PH_WORLD_STATE& state)
 {
 	state.clear();
 	PH_OBJECT_I i_object;
-	for (i_object = m_objects.begin(); m_objects.end() != i_object;)
+	for(i_object = m_objects.begin(); m_objects.end() != i_object;)
 	{
 		CPHObject* obj = (*i_object);
 		const u16 els = obj->get_elements_number();
-		for (u16 i = 0; els > i; ++i)
+		for(u16 i = 0; els > i; ++i)
 		{
 			std::pair<CPHSynchronize*, SPHNetState> s;
 			s.first = obj->get_element_sync(i);

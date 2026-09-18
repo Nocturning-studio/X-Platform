@@ -40,7 +40,8 @@ class CPathManager<CLevelGraph, _DataStorage, SNearestVertex<_dist_type, _index_
 	IC _dist_type estimate(const _index_type& node_index) const;
 	IC bool is_accessible(const _index_type& vertex_id) const;
 	IC bool is_limit_reached(const _iteration_type iteration_count) const;
-	template <typename T> IC void create_path(T& vertex);
+	template <typename T>
+	IC void create_path(T& vertex);
 };
 
 #include "path_manager_level_nearest_vertex_inline.h"

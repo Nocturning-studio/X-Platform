@@ -95,16 +95,16 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, boo
 	T_INIT::InitXmlIdToIndex();
 
 	T_VECTOR::iterator it = m_pItemDataVector->begin();
-	for (; m_pItemDataVector->end() != it; it++)
+	for(; m_pItemDataVector->end() != it; it++)
 	{
-		if ((*it).id == str_id)
+		if((*it).id == str_id)
 			break;
 	}
 
-	if (m_pItemDataVector->end() == it)
+	if(m_pItemDataVector->end() == it)
 	{
 		int i = 0;
-		for (T_VECTOR::iterator it = m_pItemDataVector->begin(); m_pItemDataVector->end() != it; it++, i++)
+		for(T_VECTOR::iterator it = m_pItemDataVector->begin(); m_pItemDataVector->end() != it; it++, i++)
 			Msg("[%d]=[%s]", i, *(*it).id);
 
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
@@ -117,7 +117,7 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, boo
 TEMPLATE_SPECIALIZATION
 const typename ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
 {
-	if ((size_t)index >= m_pItemDataVector->size())
+	if((size_t)index >= m_pItemDataVector->size())
 	{
 		R_ASSERT3(no_assert, "item by index not found in files", file_str);
 		return NULL;
@@ -148,7 +148,7 @@ typename void CSXML_IdToIndex::InitInternal()
 	string_path xml_file;
 	int count = _GetItemCount(file_str);
 	int index = 0;
-	for (int it = 0; it < count; ++it)
+	for(int it = 0; it < count; ++it)
 	{
 		_GetItem(file_str, it, xml_file);
 
@@ -162,7 +162,7 @@ typename void CSXML_IdToIndex::InitInternal()
 		// общий список
 		int items_num = uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
 
-		for (int i = 0; i < items_num; ++i)
+		for(int i = 0; i < items_num; ++i)
 		{
 			LPCSTR item_name = uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
 
@@ -172,9 +172,9 @@ typename void CSXML_IdToIndex::InitInternal()
 
 			// проверетить ID на уникальность
 			T_VECTOR::iterator t_it = m_pItemDataVector->begin();
-			for (; m_pItemDataVector->end() != t_it; t_it++)
+			for(; m_pItemDataVector->end() != t_it; t_it++)
 			{
-				if (shared_str((*t_it).id) == shared_str(item_name))
+				if(shared_str((*t_it).id) == shared_str(item_name))
 					break;
 			}
 
@@ -190,7 +190,7 @@ typename void CSXML_IdToIndex::InitInternal()
 
 			index++;
 		}
-		if (0 == items_num)
+		if(0 == items_num)
 			delete_data(uiXml);
 	}
 }

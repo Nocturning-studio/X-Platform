@@ -25,15 +25,15 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
 	nNumChars = 0x100;
 	TCMap = NULL;
 	Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"));
-	if (pSettings->line_exist(section, "size"))
+	if(pSettings->line_exist(section, "size"))
 	{
 		float sz = pSettings->r_float(section, "size");
-		if (uFlags & fsDeviceIndependent)
+		if(uFlags & fsDeviceIndependent)
 			SetHeightI(sz);
 		else
 			SetHeight(sz);
 	}
-	if (pSettings->line_exist(section, "interval"))
+	if(pSettings->line_exist(section, "interval"))
 		SetInterval(pSettings->r_fvector2(section, "interval"));
 }
 
@@ -55,7 +55,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 	LPCSTR _lang = pSettings->r_string("string_table", "font_prefix");
 	bool is_di = strstr(cTextureName, "ui_font_hud_01") || strstr(cTextureName, "ui_font_hud_02") ||
 				 strstr(cTextureName, "ui_font_console_02");
-	if (_lang && !is_di)
+	if(_lang && !is_di)
 		strconcat(sizeof(cTexture), cTexture, cTextureName, _lang);
 	else
 		strcpy_s(cTexture, sizeof(cTexture), cTextureName);
@@ -71,7 +71,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 	// check ini exist
 	string_path fn, buf;
 	strcpy_s(buf, cTexture);
-	if (strext(buf))
+	if(strext(buf))
 		*strext(buf) = 0;
 	R_ASSERT2(FS.exist(fn, "$game_textures$", buf, ".ini"), fn);
 	CInifile* ini = CInifile::Create(fn);
@@ -79,7 +79,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 	nNumChars = 0x100;
 	TCMap = (fvec3*)xr_realloc((void*)TCMap, nNumChars * sizeof(fvec3));
 
-	if (ini->section_exist("mb_symbol_coords"))
+	if(ini->section_exist("mb_symbol_coords"))
 	{
 		nNumChars = 0x10000;
 		TCMap = (fvec3*)xr_realloc((void*)TCMap, nNumChars * sizeof(fvec3));
@@ -88,10 +88,10 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 
 		fXStep = ceilf(fHeight / 2.0f);
 
-		for (u32 i = 0; i < nNumChars; i++)
+		for(u32 i = 0; i < nNumChars; i++)
 		{
 			sprintf_s(buf, sizeof(buf), "%05d", i);
-			if (ini->line_exist("mb_symbol_coords", buf))
+			if(ini->line_exist("mb_symbol_coords", buf))
 			{
 				fvec3 v = ini->r_fvector3("mb_symbol_coords", buf);
 				TCMap[i].set(v.x, v.y, 1 + v[2] - v[0]);
@@ -100,10 +100,10 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 				TCMap[i].set(0, 0, 0);
 		}
 	}
-	else if (ini->section_exist("symbol_coords"))
+	else if(ini->section_exist("symbol_coords"))
 	{
 		fHeight = ini->r_float("symbol_coords", "height");
-		for (u32 i = 0; i < nNumChars; i++)
+		for(u32 i = 0; i < nNumChars; i++)
 		{
 			sprintf_s(buf, sizeof(buf), "%03d", i);
 			fvec3 v = ini->r_fvector3("symbol_coords", buf);
@@ -112,11 +112,11 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 	}
 	else
 	{
-		if (ini->section_exist("char widths"))
+		if(ini->section_exist("char widths"))
 		{
 			fHeight = ini->r_float("char widths", "height");
 			int cpl = 16;
-			for (u32 i = 0; i < nNumChars; i++)
+			for(u32 i = 0; i < nNumChars; i++)
 			{
 				sprintf_s(buf, sizeof(buf), "%d", i);
 				float w = ini->r_float("char widths", buf);
@@ -129,7 +129,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 			fHeight = ini->r_float("font_size", "height");
 			float width = ini->r_float("font_size", "width");
 			const int cpl = ini->r_s32("font_size", "cpl");
-			for (u32 i = 0; i < nNumChars; i++)
+			for(u32 i = 0; i < nNumChars; i++)
 				TCMap[i].set((i % cpl) * width, (i / cpl) * fHeight, width);
 		}
 	}
@@ -146,7 +146,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 
 CGameFont::~CGameFont()
 {
-	if (TCMap)
+	if(TCMap)
 		xr_free(TCMap);
 
 	// Shading
@@ -177,10 +177,10 @@ u32 CGameFont::smart_strlen(const char* S)
 void CGameFont::OnRender()
 {
 	VERIFY(g_bRendering);
-	if (pShader)
+	if(pShader)
 		RenderBackend.set_Shader(pShader);
 
-	if (!(uFlags & fsValid))
+	if(!(uFlags & fsValid))
 	{
 		// БЫЛО: (Требует FFP)
 		// CTexture* T = RenderBackend.get_ActiveTexture(0);
@@ -190,11 +190,11 @@ void CGameFont::OnRender()
 		// m_FontTex работает как смарт-поинтер, разыменовываясь в CTexture*
 		// или имеет методы get_Width/get_Height напрямую (зависит от версии движка)
 
-		if (m_FontTex)
+		if(m_FontTex)
 		{
 			vTS.set((int)m_FontTex->get_Width(), (int)m_FontTex->get_Height());
 			// На всякий случай проверка на ноль
-			if (vTS.y == 0)
+			if(vTS.y == 0)
 				vTS.y = 1;
 
 			fTCHeight = fHeight / float(vTS.y);
@@ -202,18 +202,18 @@ void CGameFont::OnRender()
 		}
 	}
 
-	for (u32 i = 0; i < strings.size();)
+	for(u32 i = 0; i < strings.size();)
 	{
 		// calculate first-fit
 		int count = 1;
 
 		int length = smart_strlen(strings[i].string);
 
-		while ((i + count) < strings.size())
+		while((i + count) < strings.size())
 		{
 			int L = smart_strlen(strings[i + count].string);
 
-			if ((L + length) < MAX_MB_CHARS)
+			if((L + length) < MAX_MB_CHARS)
 			{
 				count++;
 				length += L;
@@ -229,14 +229,14 @@ void CGameFont::OnRender()
 
 		// fill vertices
 		u32 last = i + count;
-		for (; i < last; i++)
+		for(; i < last; i++)
 		{
 			String& PS = strings[i];
 			wide_char wsStr[MAX_MB_CHARS];
 
 			int len = IsMultibyte() ? mbhMulti2Wide(wsStr, NULL, MAX_MB_CHARS, PS.string) : xr_strlen(PS.string);
 
-			if (len)
+			if(len)
 			{
 				float X = float(iFloor(PS.x));
 				float Y = float(iFloor(PS.y));
@@ -244,10 +244,10 @@ void CGameFont::OnRender()
 				float Y2 = Y + S;
 				float fSize = 0;
 
-				if (PS.align)
+				if(PS.align)
 					fSize = IsMultibyte() ? SizeOf_(wsStr) : SizeOf_(PS.string);
 
-				switch (PS.align)
+				switch(PS.align)
 				{
 				case alCenter:
 					X -= (iFloor(fSize * 0.5f)) * g_current_font_scale.x;
@@ -259,7 +259,7 @@ void CGameFont::OnRender()
 
 				u32 clr, clr2;
 				clr2 = clr = PS.c;
-				if (uFlags & fsGradient)
+				if(uFlags & fsGradient)
 				{
 					u32 _R = color_get_R(clr) / 2;
 					u32 _G = color_get_G(clr) / 2;
@@ -269,7 +269,7 @@ void CGameFont::OnRender()
 				}
 
 				float tu, tv;
-				for (int j = 0; j < len; j++)
+				for(int j = 0; j < len; j++)
 				{
 					fvec3 l;
 
@@ -279,7 +279,7 @@ void CGameFont::OnRender()
 
 					float fTCWidth = l.z / vTS.x;
 
-					if (!fis_zero(l.z))
+					if(!fis_zero(l.z))
 					{
 						tu = (l.x / vTS.x) + (0.5f / vTS.x);
 						tv = (l.y / vTS.y) + (0.5f / vTS.y);
@@ -294,10 +294,10 @@ void CGameFont::OnRender()
 						v++;
 					}
 					X += scw * vInterval.x;
-					if (IsMultibyte())
+					if(IsMultibyte())
 					{
 						X -= 2;
-						if (IsNeedSpaceCharacter(wsStr[1 + j]))
+						if(IsNeedSpaceCharacter(wsStr[1 + j]))
 							X += fXStep;
 					}
 				}
@@ -307,7 +307,7 @@ void CGameFont::OnRender()
 		// Unlock and draw
 		u32 vCount = (u32)(v - start);
 		RenderBackend.Vertex.Unlock(vCount, pGeom.stride());
-		if (vCount)
+		if(vCount)
 		{
 			RenderBackend.set_Geometry(pGeom);
 			RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
@@ -326,14 +326,14 @@ u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
 	u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, pszText);
 
 	u16 _char = 0;
-	for (u16 i = 1; i <= len; i++)
+	for(u16 i = 1; i <= len; i++)
 	{
 		fDelta = GetCharTC(wsStr[i]).z - 2;
 
-		if (IsNeedSpaceCharacter(wsStr[i]))
+		if(IsNeedSpaceCharacter(wsStr[i]))
 			fDelta += fXStep;
 
-		if ((fCurWidth + fDelta) > fTargetWidth)
+		if((fCurWidth + fDelta) > fTargetWidth)
 		{
 			_char = i;
 			break;
@@ -357,19 +357,19 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 
 	u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, pszText);
 
-	for (u16 i = 1; i <= len; i++)
+	for(u16 i = 1; i <= len; i++)
 	{
 		fDelta = GetCharTC(wsStr[i]).z - 2;
 
-		if (IsNeedSpaceCharacter(wsStr[i]))
+		if(IsNeedSpaceCharacter(wsStr[i]))
 			fDelta += fXStep;
 
-		if (((fCurWidth + fDelta) > fTargetWidth) &&		// overlength
-			(!IsBadStartCharacter(wsStr[i])) &&				// can start with this character
-			(i < len) &&									// is not the last character
-			((i > 1) && (!IsBadEndCharacter(wsStr[i - 1]))) // && // do not stop the string on a "bad" character
-			//				( ( i > 1 ) && ( ! ( ( IsAlphaCharacter( wsStr[ i - 1 ] ) ) && (  IsAlphaCharacter( wsStr[ i
-			//] ) ) ) ) ) // do not split numbers or words
+		if(((fCurWidth + fDelta) > fTargetWidth) &&		   // overlength
+		   (!IsBadStartCharacter(wsStr[i])) &&			   // can start with this character
+		   (i < len) &&									   // is not the last character
+		   ((i > 1) && (!IsBadEndCharacter(wsStr[i - 1]))) // && // do not stop the string on a "bad" character
+														   //				( ( i > 1 ) && ( ! ( ( IsAlphaCharacter( wsStr[ i - 1 ] ) ) && (  IsAlphaCharacter( wsStr[ i
+														   //] ) ) ) ) ) // do not split numbers or words
 		)
 		{
 			fCurWidth = fDelta;
@@ -386,7 +386,7 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y,
 						  float _skip, LPCSTR fmt, va_list p)
 {
-	if (bCheckDevice && (!Device.b_is_Active))
+	if(bCheckDevice && (!Device.b_is_Active))
 		return;
 
 	String rs;
@@ -401,22 +401,22 @@ void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords,
 
 	VERIFY((vs_sz != -1) && (rs.string[vs_sz] == '\0'));
 
-	if (vs_sz == -1)
+	if(vs_sz == -1)
 		return;
 
-	if (vs_sz)
+	if(vs_sz)
 		strings.push_back(rs);
 
-	if (bUseSkip)
+	if(bUseSkip)
 		OutSkip(_skip);
 }
 
-#define MASTER_OUT(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT)                                  \
-	{                                                                                                                  \
-		va_list p;                                                                                                     \
-		va_start(p, fmt);                                                                                              \
-		MasterOut(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT, p);                               \
-		va_end(p);                                                                                                     \
+#define MASTER_OUT(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT)    \
+	{                                                                                    \
+		va_list p;                                                                       \
+		va_start(p, fmt);                                                                \
+		MasterOut(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT, p); \
+		va_end(p);                                                                       \
 	}
 
 void __cdecl CGameFont::OutI(float _x, float _y, LPCSTR fmt, ...)
@@ -453,10 +453,10 @@ float CGameFont::SizeOf_(const char cChar)
 
 float CGameFont::SizeOf_(LPCSTR s)
 {
-	if (!(s && s[0]))
+	if(!(s && s[0]))
 		return 0;
 
-	if (IsMultibyte())
+	if(IsMultibyte())
 	{
 		wide_char wsStr[MAX_MB_CHARS];
 
@@ -467,25 +467,25 @@ float CGameFont::SizeOf_(LPCSTR s)
 
 	int len = xr_strlen(s);
 	float X = 0;
-	if (len)
-		for (int j = 0; j < len; j++)
+	if(len)
+		for(int j = 0; j < len; j++)
 			X += GetCharTC((u16)(u8)s[j]).z;
 	return (X * vInterval.x /**vTS.x*/);
 }
 
 float CGameFont::SizeOf_(const wide_char* wsStr)
 {
-	if (!(wsStr && wsStr[0]))
+	if(!(wsStr && wsStr[0]))
 		return 0;
 
 	unsigned int len = wsStr[0];
 	float X = 0.0f, fDelta = 0.0f;
 
-	if (len)
-		for (unsigned int j = 1; j <= len; j++)
+	if(len)
+		for(unsigned int j = 1; j <= len; j++)
 		{
 			fDelta = GetCharTC(wsStr[j]).z - 2;
-			if (IsNeedSpaceCharacter(wsStr[j]))
+			if(IsNeedSpaceCharacter(wsStr[j]))
 				fDelta += fXStep;
 			X += fDelta;
 		}

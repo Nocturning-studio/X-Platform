@@ -101,7 +101,7 @@ void CAgentManager::update_impl()
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
 void CAgentManager::shedule_Update(u32 time_delta)
 {
-	//OPTICK_EVENT("CAgentManager::shedule_Update");
+	// OPTICK_EVENT("CAgentManager::shedule_Update");
 
 	START_PROFILE("Agent_Manager")
 
@@ -121,10 +121,10 @@ float CAgentManager::shedule_Scale()
 
 void CAgentManager::update()
 {
-	if (Engine.TimeManager.GetGlobalTimeMs() <= m_last_update_time)
+	if(Engine.TimeManager.GetGlobalTimeMs() <= m_last_update_time)
 		return;
 
-	if (Engine.TimeManager.GetGlobalTimeMs() - m_last_update_time < m_update_rate)
+	if(Engine.TimeManager.GetGlobalTimeMs() - m_last_update_time < m_update_rate)
 		return;
 
 	m_last_update_time = Engine.TimeManager.GetGlobalTimeMs();

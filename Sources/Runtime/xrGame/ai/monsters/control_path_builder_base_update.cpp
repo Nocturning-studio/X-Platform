@@ -24,19 +24,19 @@ void CControlPathBuilderBase::update_target_point()
 {
 	m_reset_actuality = false;
 
-	if (!m_enable)
+	if(!m_enable)
 		return;
-	if (m_path_type != MovementManager::ePathTypeLevelPath)
+	if(m_path_type != MovementManager::ePathTypeLevelPath)
 		return;
 
 	// проверить условия, когда путь строить не нужно
-	if (!target_point_need_update())
+	if(!target_point_need_update())
 		return;
 
 	STarget saved_target;
 	saved_target.set(m_target_found.position, m_target_found.node);
 
-	if (global_failed())
+	if(global_failed())
 		find_target_point_failed();
 	else
 		// выбрать ноду и позицию в соответствии с желаемыми нодой и позицией
@@ -44,7 +44,7 @@ void CControlPathBuilderBase::update_target_point()
 
 	//-----------------------------------------------------------------------
 	// postprocess target_point
-	if (m_target_found.node == saved_target.node)
+	if(m_target_found.node == saved_target.node)
 	{
 		// level_path останется актуальным - сбросить актуальность
 		m_reset_actuality = true;
@@ -61,7 +61,7 @@ void CControlPathBuilderBase::update_target_point()
 void CControlPathBuilderBase::set_path_builder_params()
 {
 	SControlPathBuilderData* ctrl_data = (SControlPathBuilderData*)m_man->data(this, ControlCom::eControlPath);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->use_dest_orientation = m_use_dest_orient;
@@ -85,25 +85,25 @@ void CControlPathBuilderBase::update_path_builder_state()
 	m_state = eStatePathValid;
 
 	// нет пути
-	if (m_man->path_builder().detail().path().empty())
+	if(m_man->path_builder().detail().path().empty())
 	{
 		m_state = eStateNoPath;
 	}
 	// проверка на конец пути
-	else if (m_path_end)
+	else if(m_path_end)
 	{
 		m_state = eStatePathEnd;
 	}
 
 	// ждать пока не будет построен путь (путь должен быть гарантированно построен)
-	if ((m_last_time_target_set > m_time_path_updated_external) ||
-		(!m_man->path_builder().detail().actual() &&
-		 (m_man->path_builder().detail().time_path_built() < m_last_time_target_set)))
+	if((m_last_time_target_set > m_time_path_updated_external) ||
+	   (!m_man->path_builder().detail().actual() &&
+		(m_man->path_builder().detail().time_path_built() < m_last_time_target_set)))
 	{
 		m_state |= eStateWaitNewPath;
 	}
 
-	if (m_failed)
+	if(m_failed)
 	{
 		// set
 		m_state |= eStatePathFailed;

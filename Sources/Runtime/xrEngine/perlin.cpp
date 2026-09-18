@@ -16,11 +16,11 @@
 #define PERLIN_S_CURVE(t) (t * t * (3.0f - 2.0f * t))
 #define PERLIN_LERP(t, a, b) (a + t * (b - a))
 
-#define PERLIN_SETUP(i, b0, b1, r0, r1)                                                                                \
-	t = vec[i] + PERLIN_N;                                                                                             \
-	b0 = ((int)t) & PERLIN_BM;                                                                                         \
-	b1 = (b0 + 1) & PERLIN_BM;                                                                                         \
-	r0 = t - (int)t;                                                                                                   \
+#define PERLIN_SETUP(i, b0, b1, r0, r1) \
+	t = vec[i] + PERLIN_N;              \
+	b0 = ((int)t) & PERLIN_BM;          \
+	b1 = (b0 + 1) & PERLIN_BM;          \
+	r0 = t - (int)t;                    \
 	r1 = r0 - 1.0f;
 
 //-------------------------------------------------------------------------------------------------
@@ -30,20 +30,20 @@ void CPerlinNoise1D::init()
 {
 	int i, j, k;
 
-	for (i = 0; i < PERLIN_B; i++)
+	for(i = 0; i < PERLIN_B; i++)
 	{
 		p[i] = i;
 		g1[i] = (float)((rand() % (PERLIN_B + PERLIN_B)) - PERLIN_B) / PERLIN_B;
 	}
 
-	while (--i)
+	while(--i)
 	{
 		k = p[i];
 		p[i] = p[j = rand() % PERLIN_B];
 		p[j] = k;
 	}
 
-	for (i = 0; i < PERLIN_B + 2; i++)
+	for(i = 0; i < PERLIN_B + 2; i++)
 	{
 		p[PERLIN_B + i] = p[i];
 		g1[PERLIN_B + i] = g1[i];
@@ -57,7 +57,7 @@ float CPerlinNoise1D::noise(float arg)
 
 	vec[0] = arg;
 
-	if (!mReady)
+	if(!mReady)
 	{
 		srand(mSeed);
 		mReady = true;
@@ -79,7 +79,7 @@ float CPerlinNoise1D::Get(float v)
 	float result = 0.0f;
 	float amp = mAmplitude;
 	v *= mFrequency;
-	for (int i = 0; i < mOctaves; i++)
+	for(int i = 0; i < mOctaves; i++)
 	{
 		result += noise(v) * amp;
 		v *= 2.0f;
@@ -91,7 +91,7 @@ float CPerlinNoise1D::Get(float v)
 float CPerlinNoise1D::GetContinious(float v)
 {
 	float t_v = v;
-	if (mPrevContiniousTime != 0.0f)
+	if(mPrevContiniousTime != 0.0f)
 	{
 		v -= mPrevContiniousTime;
 	}
@@ -99,7 +99,7 @@ float CPerlinNoise1D::GetContinious(float v)
 	float result = 0.0f;
 	float amp = mAmplitude;
 	v *= mFrequency;
-	for (int i = 0; i < mOctaves; i++)
+	for(int i = 0; i < mOctaves; i++)
 	{
 		float octave_time = mTimes[i];
 		mTimes[i] = octave_time + v;
@@ -117,25 +117,25 @@ void CPerlinNoise2D::init()
 {
 	int i, j, k;
 
-	for (i = 0; i < PERLIN_B; i++)
+	for(i = 0; i < PERLIN_B; i++)
 	{
 		p[i] = i;
-		for (j = 0; j < 2; j++)
+		for(j = 0; j < 2; j++)
 			g2[i][j] = (float)((rand() % (PERLIN_B + PERLIN_B)) - PERLIN_B) / PERLIN_B;
 		normalize(g2[i]);
 	}
 
-	while (--i)
+	while(--i)
 	{
 		k = p[i];
 		p[i] = p[j = rand() % PERLIN_B];
 		p[j] = k;
 	}
 
-	for (i = 0; i < PERLIN_B + 2; i++)
+	for(i = 0; i < PERLIN_B + 2; i++)
 	{
 		p[PERLIN_B + i] = p[i];
-		for (j = 0; j < 2; j++)
+		for(j = 0; j < 2; j++)
 			g2[PERLIN_B + i][j] = g2[i][j];
 	}
 }
@@ -146,7 +146,7 @@ float CPerlinNoise2D::noise(const fvec2& vec)
 	float rx0, rx1, ry0, ry1, *q, sx, sy, a, b, t, u, v;
 	int i, j;
 
-	if (!mReady)
+	if(!mReady)
 	{
 		srand(mSeed);
 		mReady = true;
@@ -201,7 +201,7 @@ float CPerlinNoise2D::Get(float x, float y)
 	float amp = mAmplitude;
 	vec[0] *= mFrequency;
 	vec[1] *= mFrequency;
-	for (int i = 0; i < mOctaves; i++)
+	for(int i = 0; i < mOctaves; i++)
 	{
 		result += noise(vec) * amp;
 		vec[0] *= 2.0f;
@@ -218,25 +218,25 @@ void CPerlinNoise3D::init()
 {
 	int i, j, k;
 
-	for (i = 0; i < PERLIN_B; i++)
+	for(i = 0; i < PERLIN_B; i++)
 	{
 		p[i] = i;
-		for (j = 0; j < 3; j++)
+		for(j = 0; j < 3; j++)
 			g3[i][j] = (float)((rand() % (PERLIN_B + PERLIN_B)) - PERLIN_B) / PERLIN_B;
 		normalize(g3[i]);
 	}
 
-	while (--i)
+	while(--i)
 	{
 		k = p[i];
 		p[i] = p[j = rand() % PERLIN_B];
 		p[j] = k;
 	}
 
-	for (i = 0; i < PERLIN_B + 2; i++)
+	for(i = 0; i < PERLIN_B + 2; i++)
 	{
 		p[PERLIN_B + i] = p[i];
-		for (j = 0; j < 3; j++)
+		for(j = 0; j < 3; j++)
 			g3[PERLIN_B + i][j] = g3[i][j];
 	}
 }
@@ -247,7 +247,7 @@ float CPerlinNoise3D::noise(const fvec3& vec)
 	float rx0, rx1, ry0, ry1, rz0, rz1, *q, sy, sz, a, b, c, d, t, u, v;
 	int i, j;
 
-	if (!mReady)
+	if(!mReady)
 	{
 		srand(mSeed);
 		mReady = true;
@@ -323,7 +323,7 @@ float CPerlinNoise3D::Get(float x, float y, float z)
 	vec[0] *= mFrequency;
 	vec[1] *= mFrequency;
 	vec[2] *= mFrequency;
-	for (int i = 0; i < mOctaves; i++)
+	for(int i = 0; i < mOctaves; i++)
 	{
 		result += noise(vec) * amp;
 		vec[0] *= 2.0f;

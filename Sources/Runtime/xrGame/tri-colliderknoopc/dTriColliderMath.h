@@ -10,13 +10,13 @@ inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, c
 {
 	dVector3 cross0, cross1, cross2;
 	dCROSS(cross0, =, triAx, triSideAx0);
-	if (dDOT(cross0, pos) < dDOT(cross0, v0))
+	if(dDOT(cross0, pos) < dDOT(cross0, v0))
 		return false;
 	dCROSS(cross1, =, triAx, triSideAx1);
-	if (dDOT(cross1, pos) < dDOT(cross1, v1))
+	if(dDOT(cross1, pos) < dDOT(cross1, v1))
 		return false;
 	dCROSS(cross2, =, triAx, triSideAx2);
-	if (dDOT(cross2, pos) < dDOT(cross2, v2))
+	if(dDOT(cross2, pos) < dDOT(cross2, v2))
 		return false;
 	return true;
 }
@@ -50,7 +50,7 @@ inline bool TriPlaneContainPoint(const dReal* v0, const dReal* v1, const dReal* 
 	dVector3 triAx;
 	dCROSS(triAx, =, triSideAx0, triSideAx1);
 
-	if (dDOT(triAx, pos) - dDOT(triAx, v0) > 0.f)
+	if(dDOT(triAx, pos) - dDOT(triAx, v0) > 0.f)
 		return true;
 	else
 		return false;
@@ -59,7 +59,7 @@ inline bool TriPlaneContainPoint(const dReal* v0, const dReal* v1, const dReal* 
 inline bool TriPlaneContainPoint(const dReal* triAx, const dReal* v0, const dReal* pos)
 {
 
-	if (dDOT(triAx, pos) - dDOT(triAx, v0) > 0.f)
+	if(dDOT(triAx, pos) - dDOT(triAx, v0) > 0.f)
 		return true;
 	else
 		return false;

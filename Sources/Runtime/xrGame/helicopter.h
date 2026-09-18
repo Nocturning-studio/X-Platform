@@ -84,7 +84,7 @@ struct SHeliMovementState
 	{
 		fvec3 point;
 		float dir_h;
-		STmpPt(const fvec3& p, const float h) : point(p), dir_h(h){};
+		STmpPt(const fvec3& p, const float h) : point(p), dir_h(h) {};
 	};
 	~SHeliMovementState();
 	CHelicopter* parent;
@@ -263,12 +263,12 @@ class CHelicopter : public CEntity,
 	void TurnLighting(bool bOn);
 	void TurnEngineSound(bool bOn);
 	// explosive
-	virtual void OnAfterExplosion(){};
+	virtual void OnAfterExplosion() {};
 	virtual void GetRayExplosionSourcePos(fvec3& pos)
 	{
 		random_point_in_object_box(pos, this);
 	}
-	virtual void ActivateExplosionBox(const fvec3& size, fvec3& in_out_pos){};
+	virtual void ActivateExplosionBox(const fvec3& size, fvec3& in_out_pos) {};
 	// general
 	EHeliState m_curState;
 
@@ -307,8 +307,8 @@ class CHelicopter : public CEntity,
 
 	virtual BOOL net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
-	virtual void net_Export(NET_Packet& P){};
-	virtual void net_Import(NET_Packet& P){};
+	virtual void net_Export(NET_Packet& P) {};
+	virtual void net_Import(NET_Packet& P) {};
 	virtual void net_Relcase(CObject* O);
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);

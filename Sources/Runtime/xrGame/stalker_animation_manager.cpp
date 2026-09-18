@@ -63,7 +63,7 @@ void CStalkerAnimationManager::reload(CAI_Stalker* _object)
 	VERIFY((m_crouch_state_config == 0) || (m_crouch_state_config == 1) || (m_crouch_state_config == -1));
 	m_crouch_state = m_crouch_state_config;
 
-	if (object().already_dead())
+	if(object().already_dead())
 		return;
 
 	m_skeleton_animated = smart_cast<CKinematicsAnimated*>(m_visual);
@@ -72,7 +72,7 @@ void CStalkerAnimationManager::reload(CAI_Stalker* _object)
 	m_data_storage = stalker_animation_data_storage().object(m_skeleton_animated);
 	VERIFY(m_data_storage);
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 #ifdef USE_HEAD_BONE_PART_FAKE
@@ -101,12 +101,12 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 
 	// Проверка и коррекция индекса
 	int safe_fx_index = fx_index;
-	if (fx_index < 0)
+	if(fx_index < 0)
 	{
 		Msg("! WARNING: [%s] FX index %d is negative, using 0", *object().cName(), fx_index);
 		safe_fx_index = 0;
 	}
-	else if (fx_index > max_fx_index)
+	else if(fx_index > max_fx_index)
 	{
 		Msg("! WARNING: [%s] FX index %d exceeds maximum %d, using %d", *object().cName(), fx_index, max_fx_index,
 			max_fx_index);
@@ -128,7 +128,7 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 #endif
 
 	// Вывод информации в обоих билдах
-	if (safe_fx_index != fx_index)
+	if(safe_fx_index != fx_index)
 	{
 		// Если индекс был скорректирован, выводим предупреждение
 		Msg("%6d [%s][FX][%s][%f] (index corrected %d->%d)", Engine.TimeManager.GetGlobalTimeMs(), *object().cName(), animation_name,

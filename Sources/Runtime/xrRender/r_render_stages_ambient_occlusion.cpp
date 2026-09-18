@@ -24,7 +24,7 @@ void CRender::render_ambient_occlusion()
 
 	int AOType = SE_AO_SSAO;
 
-	switch (ps_r_ao_quality)
+	switch(ps_r_ao_quality)
 	{
 	case 1:
 		AOType = SE_AO_SSAO;

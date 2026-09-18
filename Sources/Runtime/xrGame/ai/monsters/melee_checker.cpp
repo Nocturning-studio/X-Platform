@@ -9,7 +9,7 @@
 float CMeleeChecker::distance_to_enemy(const CEntity* enemy)
 {
 	float dist = enemy->Position().distance_to(m_object->Position());
-	if (dist > MAX_TRACE_ENEMY_RANGE)
+	if(dist > MAX_TRACE_ENEMY_RANGE)
 		return dist;
 
 	fvec3 enemy_center;
@@ -25,9 +25,9 @@ float CMeleeChecker::distance_to_enemy(const CEntity* enemy)
 							  collide::rqtObject);
 	r_res.r_clear();
 
-	if (m_object->CFORM()->_RayQuery(r_query, r_res))
+	if(m_object->CFORM()->_RayQuery(r_query, r_res))
 	{
-		if (r_res.r_begin()->O == enemy)
+		if(r_res.r_begin()->O == enemy)
 			dist = r_res.r_begin()->range;
 	}
 
@@ -37,33 +37,33 @@ float CMeleeChecker::distance_to_enemy(const CEntity* enemy)
 void CMeleeChecker::on_hit_attempt(bool hit_success)
 {
 	// добавить новый элемент в стек
-	for (u32 i = HIT_STACK_SIZE - 1; i > 0; i--)
+	for(u32 i = HIT_STACK_SIZE - 1; i > 0; i--)
 		m_hit_stack[i] = m_hit_stack[i - 1];
 	m_hit_stack[0] = hit_success;
 
 	// проверить однородность стека
 	bool stack_similar = true;
-	for (u32 i = 1; i < HIT_STACK_SIZE; i++)
-		if (m_hit_stack[i] != hit_success)
+	for(u32 i = 1; i < HIT_STACK_SIZE; i++)
+		if(m_hit_stack[i] != hit_success)
 		{
 			stack_similar = false;
 			break;
 		}
 
-	if (!stack_similar)
+	if(!stack_similar)
 		return;
 
 	// обновить m_current_min_distance
-	if (hit_success)
+	if(hit_success)
 	{
-		if (m_current_min_distance + m_as_step < m_min_attack_distance)
+		if(m_current_min_distance + m_as_step < m_min_attack_distance)
 			m_current_min_distance += m_as_step;
 		else
 			m_current_min_distance = m_min_attack_distance;
 	}
 	else
 	{
-		if (m_current_min_distance > m_as_min_dist + m_as_step)
+		if(m_current_min_distance > m_as_min_dist + m_as_step)
 			m_current_min_distance -= m_as_step;
 		else
 			m_current_min_distance = m_as_min_dist;

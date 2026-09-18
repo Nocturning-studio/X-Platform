@@ -26,11 +26,11 @@ void CPHAICharacter::Create(dVector3 sizes)
 }
 bool CPHAICharacter::TryPosition(fvec3 pos, bool exact_state)
 {
-	if (!b_exist)
+	if(!b_exist)
 		return false;
-	if (m_forced_physics_control || JumpState())
+	if(m_forced_physics_control || JumpState())
 		return false; // b_was_on_object||b_on_object||
-	if (DoCollideObj())
+	if(DoCollideObj())
 		return false;
 	fvec3 current_pos;
 	GetPosition(current_pos);
@@ -41,7 +41,7 @@ bool CPHAICharacter::TryPosition(fvec3 pos, bool exact_state)
 	displace.sub(pos, current_pos);
 	float disp_mag = displace.magnitude();
 
-	if (fis_zero(disp_mag) || fis_zero(Engine.TimeManager.GetDeltaTime()))
+	if(fis_zero(disp_mag) || fis_zero(Engine.TimeManager.GetDeltaTime()))
 		return true;
 	const u32 max_steps = 15;
 	const float fmax_steps = float(max_steps);
@@ -53,7 +53,7 @@ bool CPHAICharacter::TryPosition(fvec3 pos, bool exact_state)
 	float parts = disp_mag / disp_pstep;
 	fsteps_num = floorf(parts);
 	steps_num = iFloor(parts);
-	if (steps_num > max_steps)
+	if(steps_num > max_steps)
 	{
 		steps_num = max_steps;
 		fsteps_num = fmax_steps;
@@ -66,11 +66,11 @@ bool CPHAICharacter::TryPosition(fvec3 pos, bool exact_state)
 	bool ret = true;
 	int save_gm = dBodyGetGravityMode(m_body);
 	dBodySetGravityMode(m_body, 0);
-	for (u32 i = 0; steps_num > i; ++i)
+	for(u32 i = 0; steps_num > i; ++i)
 	{
 		SetVelocity(vel);
 		Enable();
-		if (!step_single(fixed_step))
+		if(!step_single(fixed_step))
 		{
 			SetVelocity(cur_vel);
 			ret = false;
@@ -102,7 +102,7 @@ bool CPHAICharacter::TryPosition(fvec3 pos, bool exact_state)
 	m_last_move.sub(pos_new, current_pos).mul(1.f / Engine.TimeManager.GetDeltaTime());
 	m_body_interpolation.UpdatePositions();
 	m_body_interpolation.UpdatePositions();
-	if (ret)
+	if(ret)
 		Disable();
 	m_collision_damage_info.m_contact_velocity = 0.f;
 	return ret;
@@ -124,12 +124,12 @@ void CPHAICharacter::BringToDesired(float time, float velocity, float /**force/*
 	float dist = move.magnitude();
 
 	float vel;
-	if (dist > EPS_L * 100.f)
+	if(dist > EPS_L * 100.f)
 	{
 		vel = dist / time;
 		move.mul(1.f / dist);
 	}
-	else if (dist > EPS_L * 10.f)
+	else if(dist > EPS_L * 10.f)
 	{
 		vel = dist * dist * dist;
 		move.mul(1.f / dist);
@@ -140,10 +140,10 @@ void CPHAICharacter::BringToDesired(float time, float velocity, float /**force/*
 		move.set(0, 0, 0);
 	}
 
-	if (vel > velocity) //&&velocity>EPS_L
+	if(vel > velocity) //&&velocity>EPS_L
 		vel = velocity;
 
-	if (velocity < EPS_L / fixed_step)
+	if(velocity < EPS_L / fixed_step)
 	{
 		vel = 0.f;
 		move.set(0, 0, 0);
@@ -170,18 +170,18 @@ void CPHAICharacter::ValidateWalkOn()
 void CPHAICharacter::InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2)
 {
 	inherited::InitContact(c, do_collide, material_idx_1, material_idx_2);
-	if (is_control || b_lose_control || b_jumping)
+	if(is_control || b_lose_control || b_jumping)
 		c->surface.mu = 0.00f;
 	dxGeomUserData* D1 = retrieveGeomUserData(c->geom.g1);
 	dxGeomUserData* D2 = retrieveGeomUserData(c->geom.g2);
-	if (D1 && D2 && D1->ph_object && D2->ph_object && D1->ph_object->CastType() == tpCharacter &&
-		D2->ph_object->CastType() == tpCharacter)
+	if(D1 && D2 && D1->ph_object && D2->ph_object && D1->ph_object->CastType() == tpCharacter &&
+	   D2->ph_object->CastType() == tpCharacter)
 	{
 		b_on_object = true;
 		b_valide_wall_contact = false;
 	}
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove))
+	if(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove))
 		do_collide = false;
 #endif
 }
@@ -190,7 +190,7 @@ void CPHAICharacter::OnRender()
 {
 	inherited::OnRender();
 
-	if (!b_exist)
+	if(!b_exist)
 		return;
 
 	fvec3 pos;

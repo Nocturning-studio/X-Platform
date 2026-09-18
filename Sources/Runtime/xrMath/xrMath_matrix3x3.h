@@ -3,7 +3,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> struct template_matrix3x3
+template <class T>
+struct template_matrix3x3
 {
   public:
 	typedef template_matrix3x3<T> Self;
@@ -12,7 +13,8 @@ template <class T> struct template_matrix3x3
 	typedef template_vector3<T> Tvector;
 
   public:
-	union {
+	union
+	{
 		struct
 		{ // Direct definition
 			T _11, _12, _13;
@@ -135,10 +137,10 @@ template <class T> struct template_matrix3x3
 		return *this;
 	}
 
-#define ROT(a, i, j, k, l)                                                                                             \
-	g = a.m[i][j];                                                                                                     \
-	h = a.m[k][l];                                                                                                     \
-	a.m[i][j] = g - s * (h + g * tau);                                                                                 \
+#define ROT(a, i, j, k, l)             \
+	g = a.m[i][j];                     \
+	h = a.m[k][l];                     \
+	a.m[i][j] = g - s * (h + g * tau); \
 	a.m[k][l] = h + s * (g - h * tau);
 
 	int IC Meigen(Tvector& dout, SelfRef a)
@@ -159,36 +161,36 @@ template <class T> struct template_matrix3x3
 
 		nrot = 0;
 
-		for (i = 0; i < 50; i++)
+		for(i = 0; i < 50; i++)
 		{
 			sm = 0.0f;
 			sm += _abs(a.m[0][1]);
 			sm += _abs(a.m[0][2]);
 			sm += _abs(a.m[1][2]);
-			if (sm == 0.0)
+			if(sm == 0.0)
 			{
 				set(v);
 				dout.set(d);
 				return i;
 			}
-			if (i < 3)
+			if(i < 3)
 				tresh = 0.2f * sm / (3.0f * 3.0f);
 			else
 				tresh = 0.0f;
 			{
 				g = 100.0f * abs(a.m[0][1]);
-				if (i > 3 && abs(d.x) + g == _abs(d.x) && _abs(d.y) + g == _abs(d.y))
+				if(i > 3 && abs(d.x) + g == _abs(d.x) && _abs(d.y) + g == _abs(d.y))
 					a.m[0][1] = 0.0;
-				else if (abs(a.m[0][1]) > tresh)
+				else if(abs(a.m[0][1]) > tresh)
 				{
 					h = d.y - d.x;
-					if (abs(h) + g == abs(h))
+					if(abs(h) + g == abs(h))
 						t = (a.m[0][1]) / h;
 					else
 					{
 						theta = 0.5f * h / (a.m[0][1]);
 						t = 1.0f / (abs(theta) + sqrt(1.0f + theta * theta));
-						if (theta < 0.0f)
+						if(theta < 0.0f)
 							t = -t;
 					}
 					c = 1.0f / sqrt(1 + t * t);
@@ -209,18 +211,18 @@ template <class T> struct template_matrix3x3
 			}
 			{
 				g = 100.0f * _abs(a.m[0][2]);
-				if (i > 3 && _abs(d.x) + g == _abs(d.x) && _abs(d.z) + g == _abs(d.z))
+				if(i > 3 && _abs(d.x) + g == _abs(d.x) && _abs(d.z) + g == _abs(d.z))
 					a.m[0][2] = 0.0f;
-				else if (_abs(a.m[0][2]) > tresh)
+				else if(_abs(a.m[0][2]) > tresh)
 				{
 					h = d.z - d.x;
-					if (abs(h) + g == abs(h))
+					if(abs(h) + g == abs(h))
 						t = (a.m[0][2]) / h;
 					else
 					{
 						theta = 0.5f * h / (a.m[0][2]);
 						t = 1.0f / (abs(theta) + sqrt(1.0f + theta * theta));
-						if (theta < 0.0f)
+						if(theta < 0.0f)
 							t = -t;
 					}
 					c = 1.0f / sqrt(1 + t * t);
@@ -241,18 +243,18 @@ template <class T> struct template_matrix3x3
 			}
 			{
 				g = 100.0f * _abs(a.m[1][2]);
-				if (i > 3 && _abs(d.y) + g == _abs(d.y) && _abs(d.z) + g == _abs(d.z))
+				if(i > 3 && _abs(d.y) + g == _abs(d.y) && _abs(d.z) + g == _abs(d.z))
 					a.m[1][2] = 0.0f;
-				else if (_abs(a.m[1][2]) > tresh)
+				else if(_abs(a.m[1][2]) > tresh)
 				{
 					h = d.z - d.y;
-					if (abs(h) + g == abs(h))
+					if(abs(h) + g == abs(h))
 						t = (a.m[1][2]) / h;
 					else
 					{
 						theta = 0.5f * h / (a.m[1][2]);
 						t = 1.0f / (abs(theta) + sqrt(1.0f + theta * theta));
-						if (theta < 0.0)
+						if(theta < 0.0)
 							t = -t;
 					}
 					c = 1.0f / sqrt(1 + t * t);
@@ -309,8 +311,8 @@ template <class T> struct template_matrix3x3
 	{
 		int i, j;
 
-		for (i = 0; i < 3; i++)
-			for (j = 0; j < 3; j++)
+		for(i = 0; i < 3; i++)
+			for(j = 0; j < 3; j++)
 			{
 				int i1 = (i + 1) % 3;
 				int i2 = (i + 2) % 3;
@@ -408,7 +410,8 @@ template <class T> struct template_matrix3x3
 
 typedef template_matrix3x3<float> fmat3x3;
 
-template <class T> BOOL _valid(const template_matrix3x3<T>& m)
+template <class T>
+BOOL _valid(const template_matrix3x3<T>& m)
 {
 	return _valid(m.i) && _valid(m.j) && _valid(m.k);
 }

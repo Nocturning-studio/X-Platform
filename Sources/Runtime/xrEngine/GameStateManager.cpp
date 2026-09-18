@@ -46,13 +46,13 @@ void CGameStateManager::Destroy()
 
 void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 {
-	//OPTICK_EVENT("CGameStateManager::OnEvent");
+	// OPTICK_EVENT("CGameStateManager::OnEvent");
 
-	if (E == eQuit)
+	if(E == eQuit)
 	{
 		g_QuitRequested = true;
 	}
-	else if (E == eStart)
+	else if(E == eStart)
 	{
 		LPSTR op_server = LPSTR(P1);
 		LPSTR op_client = LPSTR(P2);
@@ -80,13 +80,13 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 		xr_free(op_server);
 		xr_free(op_client);
 	}
-	else if (E == eDisconnect)
+	else if(E == eDisconnect)
 	{
-		if (g_pGameLevel)
+		if(g_pGameLevel)
 		{
 			g_pGameLevel->net_Stop();
 			DEL_INSTANCE(g_pGameLevel);
-			if ((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
+			if((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
 			{
 				Console->Execute("main_menu off");
 				Console->Execute("main_menu on");
@@ -106,11 +106,11 @@ void CGameStateManager::OnFrame()
 	g_SpatialSpacePhysic->update();
 
 	// Звуковые события уровня
-	if (g_pGameLevel)
+	if(g_pGameLevel)
 		g_pGameLevel->SoundEvent_Dispatch();
 
 	// Для выделенного сервера обновление консоли здесь
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		Console->OnFrame();
 
 #ifndef MASTER_GOLD

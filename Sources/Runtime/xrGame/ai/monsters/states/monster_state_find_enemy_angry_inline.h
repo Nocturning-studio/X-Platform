@@ -25,7 +25,7 @@ void CStateMonsterFindEnemyAngryAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterFindEnemyAngryAbstract::check_completion()
 {
-	if (time_state_started + 4000 > Engine.TimeManager.GetGlobalTimeMs())
+	if(time_state_started + 4000 > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 	return true;
 }

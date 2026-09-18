@@ -42,7 +42,7 @@ CTexture::~CTexture()
 
 void CTexture::surface_set(IDirect3DBaseTexture9* surf)
 {
-	if (surf)
+	if(surf)
 		surf->AddRef();
 	_RELEASE(pSurface);
 
@@ -51,18 +51,18 @@ void CTexture::surface_set(IDirect3DBaseTexture9* surf)
 
 IDirect3DBaseTexture9* CTexture::surface_get()
 {
-	if (pSurface)
+	if(pSurface)
 		pSurface->AddRef();
 	return pSurface;
 }
 
 void CTexture::PostLoad()
 {
-	if (pTheora)
+	if(pTheora)
 		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_theora);
-	else if (pAVI)
+	else if(pAVI)
 		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_avi);
-	else if (!seqDATA.empty())
+	else if(!seqDATA.empty())
 		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_seq);
 	else
 		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_normal);
@@ -70,7 +70,7 @@ void CTexture::PostLoad()
 
 void CTexture::apply_load(u32 dwStage)
 {
-	if (!flags.bLoaded)
+	if(!flags.bLoaded)
 		Load();
 	else
 		PostLoad();
@@ -79,7 +79,7 @@ void CTexture::apply_load(u32 dwStage)
 
 void CTexture::apply_theora(u32 dwStage)
 {
-	if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Engine.TimeManager.GetContinualTimeMs()))
+	if(pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Engine.TimeManager.GetContinualTimeMs()))
 	{
 		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
 		IDirect3DTexture9* T2D = static_cast<IDirect3DTexture9*>(pTempSurface);
@@ -104,7 +104,7 @@ void CTexture::apply_theora(u32 dwStage)
 };
 void CTexture::apply_avi(u32 dwStage)
 {
-	if (pAVI->NeedUpdate())
+	if(pAVI->NeedUpdate())
 	{
 		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
 		IDirect3DTexture9* T2D = static_cast<IDirect3DTexture9*>(pTempSurface);
@@ -127,10 +127,10 @@ void CTexture::apply_seq(u32 dwStage)
 	// SEQ
 	u32 frame = Engine.TimeManager.GetContinualTimeMs() / seqMSPF;
 	u32 frame_data = seqDATA.size();
-	if (flags.seqCycles)
+	if(flags.seqCycles)
 	{
 		u32 frame_id = frame % (frame_data * 2);
-		if (frame_id >= frame_data)
+		if(frame_id >= frame_data)
 			frame_id = (frame_data - 1) - (frame_id % frame_data);
 		pSurface = seqDATA[frame_id];
 	}
@@ -154,18 +154,18 @@ void CTexture::Preload()
 
 void CTexture::Load()
 {
-	//Msg("Loading texture: %s", *cName);
+	// Msg("Loading texture: %s", *cName);
 
 	flags.bLoaded = true;
 	desc_cache = 0;
-	if (pSurface)
+	if(pSurface)
 		return;
 
 	flags.bUser = false;
 	flags.MemoryUsage = 0;
-	if (0 == xr_stricmp(*cName, "$null"))
+	if(0 == xr_stricmp(*cName, "$null"))
 		return;
-	if (0 == strncmp(cName.c_str(), "$user$", sizeof("$user$") - 1))
+	if(0 == strncmp(cName.c_str(), "$user$", sizeof("$user$") - 1))
 	{
 		flags.bUser = true;
 		return;
@@ -175,13 +175,13 @@ void CTexture::Load()
 #ifndef DEDICATED_SERVER
 	// Check for OGM
 	string_path fn;
-	if (FS.exist(fn, "$game_textures$", *cName, ".ogm"))
+	if(FS.exist(fn, "$game_textures$", *cName, ".ogm"))
 	{
 		// AVI
 		pTheora = xr_new<CTheoraSurface>();
 		m_play_time = 0xFFFFFFFF;
 
-		if (!pTheora->Load(fn))
+		if(!pTheora->Load(fn))
 		{
 			xr_delete(pTheora);
 			FATAL("Can't open video stream");
@@ -195,12 +195,12 @@ void CTexture::Load()
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
 
-            const auto hr = RenderBackend.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
-														reinterpret_cast<IDirect3DTexture9**>(&pSurface), nullptr);
+			const auto hr = RenderBackend.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
+																	 reinterpret_cast<IDirect3DTexture9**>(&pSurface), nullptr);
 			const auto hr2 = RenderBackend.GetDevice()->CreateTexture(_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM,
-														reinterpret_cast<IDirect3DTexture9**>(&pTempSurface), nullptr);
+																	  reinterpret_cast<IDirect3DTexture9**>(&pTempSurface), nullptr);
 
-            if (FAILED(hr) || FAILED(hr2))
+			if(FAILED(hr) || FAILED(hr2))
 			{
 				FATAL("Invalid video stream");
 				xr_delete(pTheora);
@@ -210,12 +210,12 @@ void CTexture::Load()
 			}
 		}
 	}
-	else if (FS.exist(fn, "$game_textures$", *cName, ".avi"))
+	else if(FS.exist(fn, "$game_textures$", *cName, ".avi"))
 	{
 		// AVI
 		pAVI = xr_new<CAviPlayerCustom>();
 
-		if (!pAVI->Load(fn))
+		if(!pAVI->Load(fn))
 		{
 			xr_delete(pAVI);
 			FATAL("Can't open video stream");
@@ -227,12 +227,12 @@ void CTexture::Load()
 			// Now create texture
 			const auto hr =
 				RenderBackend.GetDevice()->CreateTexture(pAVI->m_dwWidth, pAVI->m_dwHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
-										  reinterpret_cast<IDirect3DTexture9**>(&pSurface), nullptr);
+														 reinterpret_cast<IDirect3DTexture9**>(&pSurface), nullptr);
 			const auto hr2 =
 				RenderBackend.GetDevice()->CreateTexture(pAVI->m_dwWidth, pAVI->m_dwHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM,
-										  reinterpret_cast<IDirect3DTexture9**>(&pTempSurface), nullptr);
+														 reinterpret_cast<IDirect3DTexture9**>(&pTempSurface), nullptr);
 
-			if (FAILED(hr) || FAILED(hr2))
+			if(FAILED(hr) || FAILED(hr2))
 			{
 				FATAL("Invalid video stream");
 				xr_delete(pAVI);
@@ -242,7 +242,7 @@ void CTexture::Load()
 			}
 		}
 	}
-	else if (FS.exist(fn, "$game_textures$", *cName, ".seq"))
+	else if(FS.exist(fn, "$game_textures$", *cName, ".seq"))
 	{
 		// Sequence
 		string256 buffer;
@@ -250,7 +250,7 @@ void CTexture::Load()
 
 		flags.seqCycles = FALSE;
 		_fs->r_string(buffer, sizeof(buffer));
-		if (0 == xr_stricmp(buffer, "cycled"))
+		if(0 == xr_stricmp(buffer, "cycled"))
 		{
 			flags.seqCycles = TRUE;
 			_fs->r_string(buffer, sizeof(buffer));
@@ -258,16 +258,16 @@ void CTexture::Load()
 		u32 fps = atoi(buffer);
 		seqMSPF = 1000 / fps;
 
-		while (!_fs->eof())
+		while(!_fs->eof())
 		{
 			_fs->r_string(buffer, sizeof(buffer));
 			_Trim(buffer);
-			if (buffer[0])
+			if(buffer[0])
 			{
 				// Load another texture
 				u32 mem = 0;
 				pSurface = Render->TextureLoad(buffer, mem);
-				if (pSurface)
+				if(pSurface)
 				{
 					seqDATA.push_back(pSurface);
 					flags.MemoryUsage += mem;
@@ -284,7 +284,7 @@ void CTexture::Load()
 		pSurface = Render->TextureLoad(*cName, mem);
 
 		// Calc memory usage and preload into vid-mem
-		if (pSurface)
+		if(pSurface)
 		{
 			flags.MemoryUsage = mem;
 		}
@@ -301,9 +301,9 @@ void CTexture::Unload()
 #endif // DEBUG
 
 	flags.bLoaded = FALSE;
-	if (!seqDATA.empty())
+	if(!seqDATA.empty())
 	{
-		for (u32 I = 0; I < seqDATA.size(); I++)
+		for(u32 I = 0; I < seqDATA.size(); I++)
 		{
 			_RELEASE(seqDATA[I]);
 		}
@@ -326,7 +326,7 @@ void CTexture::Unload()
 void CTexture::desc_update()
 {
 	desc_cache = pSurface;
-	if (pSurface && (D3DRTYPE_TEXTURE == pSurface->GetType()))
+	if(pSurface && (D3DRTYPE_TEXTURE == pSurface->GetType()))
 	{
 		IDirect3DTexture9* T = (IDirect3DTexture9*)pSurface;
 		R_CHK(T->GetLevelDesc(0, &desc));
@@ -335,19 +335,19 @@ void CTexture::desc_update()
 
 void CTexture::video_Play(BOOL looped, u32 _time)
 {
-	if (pTheora)
+	if(pTheora)
 		pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Engine.TimeManager.GetContinualTimeMs());
 }
 
 void CTexture::video_Pause(BOOL state)
 {
-	if (pTheora)
+	if(pTheora)
 		pTheora->Pause(state);
 }
 
 void CTexture::video_Stop()
 {
-	if (pTheora)
+	if(pTheora)
 		pTheora->Stop();
 }
 

@@ -26,7 +26,8 @@ bool CUIListWnd::AddItem(const char* str, const float shift, void* pData, int va
 	return AddItem<Element>(pItem, insertBeforeIdx);
 }
 
-template <class Element> bool CUIListWnd::AddItem(Element* pItem, int insertBeforeIdx)
+template <class Element>
+bool CUIListWnd::AddItem(Element* pItem, int insertBeforeIdx)
 {
 	AttachChild(pItem);
 
@@ -36,7 +37,7 @@ template <class Element> bool CUIListWnd::AddItem(Element* pItem, int insertBefo
 				m_iItemWidth, m_iItemHeight);
 
 	// добавление в конец или начало списка
-	if (-1 == insertBeforeIdx)
+	if(-1 == insertBeforeIdx)
 	{
 		m_ItemList.push_back(pItem);
 		pItem->SetIndex(m_ItemList.size() - 1);
@@ -44,12 +45,12 @@ template <class Element> bool CUIListWnd::AddItem(Element* pItem, int insertBefo
 	else
 	{
 		// изменить значения индексов уже добавленых элементов
-		if (!m_ItemList.empty())
+		if(!m_ItemList.empty())
 			R_ASSERT(static_cast<u32>(insertBeforeIdx) <= m_ItemList.size());
 
 		LIST_ITEM_LIST_it it2 = m_ItemList.begin();
 		std::advance(it2, insertBeforeIdx);
-		for (LIST_ITEM_LIST_it it = it2; m_ItemList.end() != it; ++it)
+		for(LIST_ITEM_LIST_it it = it2; m_ItemList.end() != it; ++it)
 		{
 			(*it)->SetIndex((*it)->GetIndex() + 1);
 		}

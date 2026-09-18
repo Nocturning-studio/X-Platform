@@ -39,7 +39,7 @@ void CUISpinNum::Init(float x, float y, float width, float height)
 
 void CUISpinNum::IncVal()
 {
-	if (CanPressUp())
+	if(CanPressUp())
 		m_iVal += m_iStep;
 
 	SetValue();
@@ -47,7 +47,7 @@ void CUISpinNum::IncVal()
 
 void CUISpinNum::DecVal()
 {
-	if (CanPressDown())
+	if(CanPressDown())
 		m_iVal -= m_iStep;
 
 	SetValue();

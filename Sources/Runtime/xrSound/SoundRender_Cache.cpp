@@ -21,19 +21,19 @@ CSoundRender_Cache::~CSoundRender_Cache()
 void CSoundRender_Cache::move2top(cache_line* line)
 {
 	VERIFY(line);
-	if (line == c_begin)
+	if(line == c_begin)
 		return; // already at top
 
 	// track end
-	if (line == c_end)
+	if(line == c_end)
 		c_end = c_end->prev;
 
 	// cut
 	cache_line* prev = line->prev;
 	cache_line* next = line->next;
-	if (prev)
+	if(prev)
 		prev->next = next;
-	if (next)
+	if(next)
 		next->prev = prev;
 
 	// register at top
@@ -55,7 +55,7 @@ BOOL CSoundRender_Cache::request(cache_cat& cat, u32 id)
 	id %= cat.size;
 	//.	R_ASSERT		(id<cat.size);
 	u16& cptr = cat.table[id];
-	if (CAT_FREE != cptr)
+	if(CAT_FREE != cptr)
 	{
 		// cache line exists - change it's priority and return
 		_stat_hit++;
@@ -67,7 +67,7 @@ BOOL CSoundRender_Cache::request(cache_cat& cat, u32 id)
 	// 2. purge oldest item + move it to top
 	_stat_miss++;
 	move2top(c_end);
-	if (c_begin->loopback)
+	if(c_begin->loopback)
 	{
 		*c_begin->loopback = CAT_FREE;
 		c_begin->loopback = NULL;
@@ -104,10 +104,10 @@ void CSoundRender_Cache::initialize(u32 _total_kb_approx, u32 bytes_per_line)
 void CSoundRender_Cache::disconnect()
 {
 	// disconnect from CATs
-	for (u32 it = 0; it < _count; it++)
+	for(u32 it = 0; it < _count; it++)
 	{
 		cache_line* L = c_storage + it;
-		if (L->loopback)
+		if(L->loopback)
 		{
 			*L->loopback = CAT_FREE;
 			L->loopback = NULL;
@@ -118,7 +118,7 @@ void CSoundRender_Cache::disconnect()
 void CSoundRender_Cache::format()
 {
 	// format structs
-	for (u32 it = 0; it < _count; it++)
+	for(u32 it = 0; it < _count; it++)
 	{
 		cache_line* L = c_storage + it;
 		L->prev = (0 == it) ? NULL : c_storage + it - 1;
@@ -154,7 +154,7 @@ void CSoundRender_Cache::destroy()
 void CSoundRender_Cache::cat_create(cache_cat& cat, u32 bytes)
 {
 	cat.size = bytes / _line;
-	if (bytes % _line)
+	if(bytes % _line)
 		cat.size += 1;
 	u32 allocsize = (cat.size & 1) ? cat.size + 1 : cat.size;
 	cat.table = xr_alloc<u16>(allocsize);

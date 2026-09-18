@@ -14,7 +14,7 @@ using namespace Opcode;
 
 BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 {
-	switch (ul_reason_for_call)
+	switch(ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
 	case DLL_THREAD_ATTACH:
@@ -80,17 +80,17 @@ void MODEL::build(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void
 	P->BC = bc;
 	P->BCP = bcp;
 
-	concurrency::create_task([P]() {
+	concurrency::create_task([P]()
+							 {
 		P->M->cs.Enter();
 		P->M->build_internal(P->V, P->Vcnt, P->T, P->Tcnt, P->BC, P->BCP);
 		P->M->status = S_READY;
 		P->M->cs.Leave();
 		Msg("* xrCDB: cform build completed, memory usage: %d K", P->M->memory() / 1024);
 
-		xr_delete(P);
-	});
+		xr_delete(P); });
 
-	while (S_INIT == status)
+	while(S_INIT == status)
 		Sleep(5);
 #endif
 }
@@ -108,7 +108,7 @@ void MODEL::build_internal(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback*
 	CopyMemory(tris, T, tris_count * sizeof(TRI));
 
 	// callback
-	if (bc)
+	if(bc)
 		bc(verts, Vcnt, tris, Tcnt, bcp);
 
 	// Release data pointers
@@ -116,14 +116,14 @@ void MODEL::build_internal(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback*
 
 	// Allocate temporary "OPCODE" tris + convert tris to 'pointer' form
 	u32* temp_tris = xr_alloc<u32>(tris_count * 3);
-	if (0 == temp_tris)
+	if(0 == temp_tris)
 	{
 		xr_free(verts);
 		xr_free(tris);
 		return;
 	}
 	u32* temp_ptr = temp_tris;
-	for (int i = 0; i < tris_count; i++)
+	for(int i = 0; i < tris_count; i++)
 	{
 		*temp_ptr++ = tris[i].verts[0];
 		*temp_ptr++ = tris[i].verts[1];
@@ -142,7 +142,7 @@ void MODEL::build_internal(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback*
 	// if (Memory.debug_mode) OPCC.KeepOriginal = true;
 
 	tree = xr_new<OPCODE_Model>();
-	if (!tree->Build(OPCC))
+	if(!tree->Build(OPCC))
 	{
 		xr_free(verts);
 		xr_free(tris);
@@ -157,7 +157,7 @@ void MODEL::build_internal(fvec3* V, int Vcnt, TRI* T, int Tcnt, build_callback*
 
 u32 MODEL::memory()
 {
-	if (S_BUILD == status)
+	if(S_BUILD == status)
 	{
 		Msg("! xrCDB: model still isn't ready");
 		return 0;

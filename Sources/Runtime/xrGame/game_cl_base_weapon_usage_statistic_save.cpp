@@ -10,11 +10,11 @@
 
 void WeaponUsageStatistic::SaveDataLtx(CInifile& ini)
 {
-	if (OnClient())
+	if(OnClient())
 		return;
-	if (!CollectData())
+	if(!CollectData())
 		return;
-	if (aPlayersStatistic.empty())
+	if(aPlayersStatistic.empty())
 		return;
 
 	WriteLtx(ini);
@@ -40,7 +40,7 @@ void WeaponUsageStatistic::WriteLtx(CInifile& ini)
 
 	ini.w_u32(sect, "NumPlayers", NumPlayers);
 
-	for (u32 i = 0; i < NumPlayers; i++)
+	for(u32 i = 0; i < NumPlayers; i++)
 	{
 		Player_Statistic& PS = aPlayersStatistic[i];
 		string512 save_sect;
@@ -52,16 +52,16 @@ void WeaponUsageStatistic::WriteLtx(CInifile& ini)
 void WeaponUsageStatistic::SaveData()
 {
 
-	if (OnClient())
+	if(OnClient())
 		return;
-	if (!CollectData())
+	if(!CollectData())
 		return;
-	if (aPlayersStatistic.empty())
+	if(aPlayersStatistic.empty())
 		return;
 
 	string1024 GameType;
 	SYSTEMTIME Time;
-	switch (GameID())
+	switch(GameID())
 	{
 	case GAME_DEATHMATCH:
 		sprintf_s(GameType, "dm");
@@ -83,7 +83,7 @@ void WeaponUsageStatistic::SaveData()
 	//---------------------------------------------------------
 	FS.update_path(mFileName, "$logs$", mFileName);
 	FILE* SFile = fopen(mFileName, "wb");
-	if (!SFile)
+	if(!SFile)
 		return;
 	//---------------------------------------------------------
 	u32 IDENT = WUS_IDENT;
@@ -98,7 +98,7 @@ void WeaponUsageStatistic::SaveData()
 
 void WeaponUsageStatistic::Write(FILE* pFile)
 {
-	if (!pFile)
+	if(!pFile)
 		return;
 	//---------------------------------------------
 	fwrite(m_dwTotalPlayersAliveTime, 4, 3, pFile);
@@ -108,7 +108,7 @@ void WeaponUsageStatistic::Write(FILE* pFile)
 	u32 NumPlayers = aPlayersStatistic.size();
 	fwrite(&NumPlayers, 4, 1, pFile);
 	//----------------------------------------------
-	for (u32 i = 0; i < NumPlayers; i++)
+	for(u32 i = 0; i < NumPlayers; i++)
 	{
 		Player_Statistic& PS = aPlayersStatistic[i];
 		PS.Write(pFile);
@@ -143,7 +143,7 @@ void Player_Statistic::WriteLtx(CInifile& ini, LPCSTR sect)
 
 	ini.w_u32(sect, "NumWeapons", NumWeapons);
 
-	for (u32 i = 0; i < aWeaponStats.size(); i++)
+	for(u32 i = 0; i < aWeaponStats.size(); i++)
 	{
 		string512 save_sect;
 		sprintf_s(save_sect, "%s_wpn_%d", sect, i);
@@ -154,7 +154,7 @@ void Player_Statistic::WriteLtx(CInifile& ini, LPCSTR sect)
 
 void Player_Statistic::Write(FILE* pFile)
 {
-	if (!pFile)
+	if(!pFile)
 		return;
 	//----------------------------------------------
 	fwrite(*PName, xr_strlen(PName) + 1, 1, pFile);
@@ -166,7 +166,7 @@ void Player_Statistic::Write(FILE* pFile)
 	u32 NumWeapons = aWeaponStats.size();
 	fwrite(&NumWeapons, 4, 1, pFile);
 	//----------------------------------------------
-	for (u32 i = 0; i < aWeaponStats.size(); i++)
+	for(u32 i = 0; i < aWeaponStats.size(); i++)
 	{
 		Weapon_Statistic& WS = aWeaponStats[i];
 		WS.Write(pFile);
@@ -192,19 +192,19 @@ void Weapon_Statistic::WriteLtx(CInifile& ini, LPCSTR sect)
 	//----------------------------------------------
 	u32 NumHits = 0;
 	u32 i = 0;
-	for (; i < m_Hits.size(); i++)
+	for(; i < m_Hits.size(); i++)
 	{
 		HitData& Hit = m_Hits[i];
-		if (Hit.Completed)
+		if(Hit.Completed)
 			NumHits++;
 	};
 
 	ini.w_u32(sect, "NumHits", NumHits);
 
-	for (i = 0; i < m_Hits.size(); ++i)
+	for(i = 0; i < m_Hits.size(); ++i)
 	{
 		HitData& Hit = m_Hits[i];
-		if (!Hit.Completed)
+		if(!Hit.Completed)
 			continue;
 
 		string512 save_prefix;
@@ -216,7 +216,7 @@ void Weapon_Statistic::WriteLtx(CInifile& ini, LPCSTR sect)
 
 void Weapon_Statistic::Write(FILE* pFile)
 {
-	if (!pFile)
+	if(!pFile)
 		return;
 	//----------------------------------------------
 	fwrite(*WName, xr_strlen(WName) + 1, 1, pFile);
@@ -231,17 +231,17 @@ void Weapon_Statistic::Write(FILE* pFile)
 	//----------------------------------------------
 	u32 NumHits = 0;
 	u32 i = 0;
-	for (; i < m_Hits.size(); i++)
+	for(; i < m_Hits.size(); i++)
 	{
 		HitData& Hit = m_Hits[i];
-		if (Hit.Completed)
+		if(Hit.Completed)
 			NumHits++;
 	};
 	fwrite(&NumHits, 4, 1, pFile);
-	for (i = 0; i < m_Hits.size(); i++)
+	for(i = 0; i < m_Hits.size(); i++)
 	{
 		HitData& Hit = m_Hits[i];
-		if (!Hit.Completed)
+		if(!Hit.Completed)
 			continue;
 		Hit.Write(pFile);
 	};
@@ -265,7 +265,7 @@ void HitData::WriteLtx(CInifile& ini, LPCSTR sect, LPCSTR prefix)
 
 void HitData::Write(FILE* pFile)
 {
-	if (!pFile)
+	if(!pFile)
 		return;
 	//----------------------------------------------
 	fwrite(&Pos0.x, 4, 1, pFile);

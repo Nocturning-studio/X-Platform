@@ -38,14 +38,14 @@ using namespace StalkerDecisionSpace;
 
 CInventoryItem* weapon_to_kill(const CAI_Stalker* object)
 {
-	if (!object->inventory().m_slots[1].m_pIItem)
+	if(!object->inventory().m_slots[1].m_pIItem)
 		return (object->best_weapon());
 
 	CWeaponMagazined* temp = smart_cast<CWeaponMagazined*>(object->inventory().m_slots[1].m_pIItem);
-	if (!temp)
+	if(!temp)
 		return (object->best_weapon());
 
-	if (!temp->can_kill())
+	if(!temp->can_kill())
 		return (object->best_weapon());
 
 	return (temp);
@@ -53,11 +53,11 @@ CInventoryItem* weapon_to_kill(const CAI_Stalker* object)
 
 bool should_process(CAI_Stalker& object, const CEntityAlive* enemy)
 {
-	if (object.agent_manager().enemy().wounded_processed(enemy))
+	if(object.agent_manager().enemy().wounded_processed(enemy))
 		return (false);
 
 	ALife::_OBJECT_ID processor_id = object.agent_manager().enemy().wounded_processor(enemy);
-	if ((processor_id != ALife::_OBJECT_ID(-1)) && (processor_id != object.ID()))
+	if((processor_id != ALife::_OBJECT_ID(-1)) && (processor_id != object.ID()))
 		return (false);
 
 	return (true);
@@ -98,12 +98,12 @@ void CStalkerActionReachWounded::execute()
 {
 	inherited::execute();
 
-	if (!object().memory().enemy().selected())
+	if(!object().memory().enemy().selected())
 		return;
 
 	const CEntityAlive* enemy = object().memory().enemy().selected();
 
-	if (object().agent_manager().enemy().wounded_processed(enemy))
+	if(object().agent_manager().enemy().wounded_processed(enemy))
 	{
 		object().movement().set_movement_type(eMovementTypeStand);
 		return;
@@ -111,27 +111,27 @@ void CStalkerActionReachWounded::execute()
 
 	CMemoryInfo mem_object = object().memory().memory(enemy);
 
-	if (!mem_object.m_object)
+	if(!mem_object.m_object)
 	{
 		object().movement().set_movement_type(eMovementTypeStand);
 		return;
 	}
 
-	if (object().movement().accessible(mem_object.m_object_params.m_level_vertex_id))
+	if(object().movement().accessible(mem_object.m_object_params.m_level_vertex_id))
 		object().movement().set_level_dest_vertex(mem_object.m_object_params.m_level_vertex_id);
 	else
 		object().movement().set_nearest_accessible_position(
 			ai().level_graph().vertex_position(mem_object.m_object_params.m_level_vertex_id),
 			mem_object.m_object_params.m_level_vertex_id);
 
-	if (should_process(object(), enemy))
+	if(should_process(object(), enemy))
 	{
 		object().movement().set_movement_type(eMovementTypeWalk);
 		return;
 	}
 
 	ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor(enemy);
-	if (processor_id == ALife::_OBJECT_ID(-1))
+	if(processor_id == ALife::_OBJECT_ID(-1))
 	{
 		object().movement().set_movement_type(eMovementTypeStand);
 		return;
@@ -143,7 +143,7 @@ void CStalkerActionReachWounded::execute()
 	//		return;
 	//	}
 
-	if (object().Position().distance_to_sqr(mem_object.m_object_params.m_position) < _sqr(3.f))
+	if(object().Position().distance_to_sqr(mem_object.m_object_params.m_position) < _sqr(3.f))
 	{
 		object().movement().set_movement_type(eMovementTypeStand);
 		return;
@@ -178,7 +178,7 @@ void CStalkerActionAimWounded::initialize()
 	object().sight().setup(CSightAction(enemy, true));
 	object().agent_manager().enemy().wounded_processed(enemy, true);
 
-	if (!object().memory().visual().visible_now(enemy))
+	if(!object().memory().visual().visible_now(enemy))
 		object().movement().set_movement_type(eMovementTypeWalk);
 
 	//	m_speed									= object().movement().m_head.speed;
@@ -189,23 +189,23 @@ void CStalkerActionAimWounded::execute()
 {
 	inherited::execute();
 
-	if (first_time())
+	if(first_time())
 		return;
 
-	if (!completed())
+	if(!completed())
 		return;
 
-	if (!should_process(object(), object().memory().enemy().selected()))
+	if(!should_process(object(), object().memory().enemy().selected()))
 		return;
 
 	const SBoneRotation& head = object().movement().m_head;
-	if (!fsimilar(head.current.yaw, head.target.yaw))
+	if(!fsimilar(head.current.yaw, head.target.yaw))
 		return;
 
-	if (!fsimilar(head.current.pitch, head.target.pitch))
+	if(!fsimilar(head.current.pitch, head.target.pitch))
 		return;
 
-	if (!object().memory().visual().visible_now(object().memory().enemy().selected()))
+	if(!object().memory().visual().visible_now(object().memory().enemy().selected()))
 		return;
 
 	m_storage->set_property(eWorldPropertyWoundedEnemyAimed, true);
@@ -253,10 +253,10 @@ void CStalkerActionPrepareWounded::execute()
 {
 	inherited::execute();
 
-	if (!object().memory().enemy().selected())
+	if(!object().memory().enemy().selected())
 		return;
 
-	if (!should_process(object(), object().memory().enemy().selected()))
+	if(!should_process(object(), object().memory().enemy().selected()))
 	{
 		object().sound().set_sound_mask((u32)eStalkerSoundMaskKillWounded);
 		return;
@@ -264,7 +264,7 @@ void CStalkerActionPrepareWounded::execute()
 
 	const CEntityAlive* enemy = object().memory().enemy().selected();
 
-	if (object().agent_manager().enemy().wounded_processor(enemy) != object().ID())
+	if(object().agent_manager().enemy().wounded_processor(enemy) != object().ID())
 		return;
 
 	//	not a bug since killer do not look at enemy and can be too close
@@ -272,7 +272,7 @@ void CStalkerActionPrepareWounded::execute()
 	//	VERIFY						(object().memory().visual().visible_now(enemy));
 	object().sight().setup(CSightAction(enemy, true));
 
-	if (!object().sound().active_sound_count(true))
+	if(!object().sound().active_sound_count(true))
 		m_storage->set_property(eWorldPropertyWoundedEnemyPrepared, true);
 }
 
@@ -307,14 +307,14 @@ void CStalkerActionKillWounded::execute()
 {
 	inherited::execute();
 
-	if (!object().memory().enemy().selected())
+	if(!object().memory().enemy().selected())
 		return;
 
 	const CEntityAlive* enemy = object().memory().enemy().selected();
 	object().sight().setup(CSightAction(enemy, true));
 	object().set_goal(eObjectActionFire1, weapon_to_kill(&object()), MIN_QUEUE, MAX_QUEUE, MIN_INTERVAL, MAX_INTERVAL);
 
-	if (object().memory().visual().visible_now(enemy) && object().can_kill_enemy() && !object().can_kill_member())
+	if(object().memory().visual().visible_now(enemy) && object().can_kill_enemy() && !object().can_kill_member())
 		return;
 
 	// this is fake
@@ -365,7 +365,7 @@ void CStalkerActionPauseAfterKill::execute()
 {
 	inherited::execute();
 
-	if (!completed())
+	if(!completed())
 		return;
 
 	m_storage->set_property(eWorldPropertyPausedAfterKill, false);

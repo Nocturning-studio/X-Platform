@@ -36,7 +36,7 @@ CUI::~CUI()
 
 void CUI::Load(CUIGameCustom* pGameUI)
 {
-	if (pGameUI)
+	if(pGameUI)
 	{
 		pGameUI->SetClGame(&Game());
 		m_pMessagesWnd->SetChatOwner(&Game());
@@ -56,23 +56,23 @@ void CUI::UnLoad()
 
 void CUI::UIOnFrame()
 {
-	//OPTICK_EVENT("CUI::UIOnFrame");
+	// OPTICK_EVENT("CUI::UIOnFrame");
 
 	CEntity* m_Actor = smart_cast<CEntity*>(Level().CurrentEntity());
-	if (m_Actor)
+	if(m_Actor)
 	{
 
 		// update windows
-		if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+		if(GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 		{
 			UIMainIngameWnd->Update();
 		}
 	}
 
 	// out GAME-style depend information
-	if (GameIndicatorsShown())
+	if(GameIndicatorsShown())
 	{
-		if (pUIGame)
+		if(pUIGame)
 			pUIGame->OnFrame();
 	}
 	m_pMessagesWnd->Update();
@@ -82,26 +82,26 @@ void CUI::UIOnFrame()
 #include "huditem.h"
 bool CUI::Render()
 {
-	//OPTICK_EVENT("CUI::Render");
+	// OPTICK_EVENT("CUI::Render");
 
-	if (GameIndicatorsShown())
+	if(GameIndicatorsShown())
 	{
-		if (pUIGame)
+		if(pUIGame)
 			pUIGame->Render();
 	}
 
 	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
-	if (pEntity)
+	if(pEntity)
 	{
 		CActor* pActor = smart_cast<CActor*>(pEntity);
-		if (pActor)
+		if(pActor)
 		{
 			PIItem item = pActor->inventory().ActiveItem();
-			if (item && pActor->HUDview() && smart_cast<CHudItem*>(item))
+			if(item && pActor->HUDview() && smart_cast<CHudItem*>(item))
 				(smart_cast<CHudItem*>(item))->OnDrawUI();
 		}
 
-		if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+		if(GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 		{
 			UIMainIngameWnd->Draw();
 			m_pMessagesWnd->Draw();
@@ -109,9 +109,9 @@ bool CUI::Render()
 		else
 		{ // hack - draw messagess wnd in scope mode
 			CUIGameSP* gSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-			if (gSP)
+			if(gSP)
 			{
-				if (!gSP->PdaMenu->GetVisible())
+				if(!gSP->PdaMenu->GetVisible())
 					m_pMessagesWnd->Draw();
 			}
 			else
@@ -130,16 +130,16 @@ bool CUI::Render()
 
 bool CUI::IR_OnMouseWheel(int direction)
 {
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 	{
-		if (MainInputReceiver()->IR_OnMouseWheel(direction))
+		if(MainInputReceiver()->IR_OnMouseWheel(direction))
 			return true;
 	}
 
-	if (pUIGame && pUIGame->IR_OnMouseWheel(direction))
+	if(pUIGame && pUIGame->IR_OnMouseWheel(direction))
 		return true;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return true;
 
 	return false;
@@ -148,13 +148,13 @@ bool CUI::IR_OnMouseWheel(int direction)
 //--------------------------------------------------------------------
 bool CUI::IR_OnKeyboardHold(int dik)
 {
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 	{
-		if (MainInputReceiver()->IR_OnKeyboardHold(dik))
+		if(MainInputReceiver()->IR_OnKeyboardHold(dik))
 			return true;
 	}
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return true;
 
 	return false;
@@ -163,19 +163,19 @@ bool CUI::IR_OnKeyboardHold(int dik)
 bool CUI::IR_OnKeyboardPress(int dik)
 {
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 	{
-		if (MainInputReceiver()->IR_OnKeyboardPress(dik))
+		if(MainInputReceiver()->IR_OnKeyboardPress(dik))
 			return true;
 	}
 
-	if (UIMainIngameWnd->OnKeyboardPress(dik))
+	if(UIMainIngameWnd->OnKeyboardPress(dik))
 		return true;
 
-	if (pUIGame && pUIGame->IR_OnKeyboardPress(dik))
+	if(pUIGame && pUIGame->IR_OnKeyboardPress(dik))
 		return true;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return true;
 
 	return false;
@@ -184,16 +184,16 @@ bool CUI::IR_OnKeyboardPress(int dik)
 
 bool CUI::IR_OnKeyboardRelease(int dik)
 {
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 	{
-		if (MainInputReceiver()->IR_OnKeyboardRelease(dik))
+		if(MainInputReceiver()->IR_OnKeyboardRelease(dik))
 			return true;
 	}
 
-	if (pUIGame && pUIGame->IR_OnKeyboardRelease(dik))
+	if(pUIGame && pUIGame->IR_OnKeyboardRelease(dik))
 		return true;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return true;
 
 	return false;
@@ -202,16 +202,16 @@ bool CUI::IR_OnKeyboardRelease(int dik)
 
 bool CUI::IR_OnMouseMove(int dx, int dy)
 {
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 	{
-		if (MainInputReceiver()->IR_OnMouseMove(dx, dy))
+		if(MainInputReceiver()->IR_OnMouseMove(dx, dy))
 			return true;
 	}
 
-	if (pUIGame && pUIGame->IR_OnMouseMove(dx, dy))
+	if(pUIGame && pUIGame->IR_OnMouseMove(dx, dy))
 		return true;
 
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return true;
 
 	return false;
@@ -220,7 +220,7 @@ bool CUI::IR_OnMouseMove(int dx, int dy)
 SDrawStaticStruct* CUI::AddInfoMessage(LPCSTR message)
 {
 	SDrawStaticStruct* ss = pUIGame->GetCustomStatic(message);
-	if (!ss)
+	if(!ss)
 	{
 		ss = pUIGame->AddCustomStatic(message, true);
 	}

@@ -26,7 +26,7 @@ XRSOUND_API extern float psSoundVFactor;
 XRSOUND_API extern float psSoundVMusic;
 XRSOUND_API extern float psSoundVWeaponShooting;
 XRSOUND_API extern float psSoundVAmbient;
-//XRSOUND_API extern float psSoundVAmbientDynamicMultiplier;
+// XRSOUND_API extern float psSoundVAmbientDynamicMultiplier;
 XRSOUND_API extern float psSoundRolloff;
 XRSOUND_API extern float psSoundOcclusionScale;
 XRSOUND_API extern Flags32 psSoundFlags;
@@ -39,7 +39,7 @@ XRSOUND_API extern float psTimeFactor;
 // Flags
 enum
 {
-	ss_EAX = (1ul << 1ul),		//!< Use eax
+	ss_EAX = (1ul << 1ul), //!< Use eax
 	ss_forcedword = u32(-1)
 };
 
@@ -419,49 +419,49 @@ IC void ref_sound::set_position(const fvec3& pos)
 IC void ref_sound::set_frequency(float freq)
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		_feedback()->set_frequency(freq);
 }
 
 IC void ref_sound::set_range(float min, float max)
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		_feedback()->set_range(min, max);
 }
 
 IC void ref_sound::set_volume(float vol)
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		_feedback()->set_volume(vol);
 }
 
 IC void ref_sound::set_priority(float p)
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		_feedback()->set_priority(p);
 }
 
 IC void ref_sound::stop()
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		_feedback()->stop(FALSE);
 }
 
 IC void ref_sound::stop_deffered()
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		_feedback()->stop(TRUE);
 }
 
 IC const CSound_params* ref_sound::get_params()
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 		return _feedback()->get_params();
 	else
 		return NULL;
@@ -470,7 +470,7 @@ IC const CSound_params* ref_sound::get_params()
 IC void ref_sound::set_params(CSound_params* p)
 {
 	VERIFY(!::Sound->i_locked());
-	if (_feedback())
+	if(_feedback())
 	{
 		_feedback()->set_position(p->position);
 		_feedback()->set_frequency(p->freq);

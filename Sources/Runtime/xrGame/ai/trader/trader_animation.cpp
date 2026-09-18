@@ -61,7 +61,7 @@ void CTraderAnimation::set_head_animation(LPCSTR anim)
 //////////////////////////////////////////////////////////////////////////
 void CTraderAnimation::set_sound(LPCSTR sound, LPCSTR anim)
 {
-	if (m_sound)
+	if(m_sound)
 		remove_sound();
 
 	set_head_animation(anim);
@@ -75,7 +75,7 @@ void CTraderAnimation::remove_sound()
 {
 	VERIFY(m_sound);
 
-	if (m_sound->_feedback())
+	if(m_sound->_feedback())
 		m_sound->stop();
 
 	m_sound->destroy();
@@ -87,23 +87,23 @@ void CTraderAnimation::remove_sound()
 //////////////////////////////////////////////////////////////////////////
 void CTraderAnimation::update_frame()
 {
-	if (m_sound && !m_sound->_feedback())
+	if(m_sound && !m_sound->_feedback())
 	{
 		m_trader->callback(GameObject::eTraderSoundEnd)();
 		remove_sound();
 	}
 
-	if (!m_motion_global)
+	if(!m_motion_global)
 	{
 		m_trader->callback(GameObject::eTraderGlobalAnimationRequest)();
-		if (m_anim_global)
+		if(m_anim_global)
 			m_motion_head.invalidate();
 	}
 
 	// назначить анимацию головы
-	if (!m_motion_head)
+	if(!m_motion_head)
 	{
-		if (m_sound && m_sound->_feedback())
+		if(m_sound && m_sound->_feedback())
 		{
 			m_trader->callback(GameObject::eTraderHeadAnimationRequest)();
 		}
@@ -115,7 +115,7 @@ void CTraderAnimation::update_frame()
 //////////////////////////////////////////////////////////////////////////
 void CTraderAnimation::external_sound_start(LPCSTR phrase)
 {
-	if (m_sound)
+	if(m_sound)
 		remove_sound();
 
 	m_sound = xr_new<ref_sound>();
@@ -127,7 +127,7 @@ void CTraderAnimation::external_sound_start(LPCSTR phrase)
 
 void CTraderAnimation::external_sound_stop()
 {
-	if (m_sound)
+	if(m_sound)
 		remove_sound();
 }
 //////////////////////////////////////////////////////////////////////////

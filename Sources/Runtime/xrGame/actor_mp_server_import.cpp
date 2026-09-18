@@ -8,7 +8,7 @@ void CSE_ActorMP::UPDATE_Read(NET_Packet& packet)
 	m_u16NumItems = 1;
 	velocity.set(0.f, 0.f, 0.f);
 
-	if (fHealth <= 0)
+	if(fHealth <= 0)
 	{
 		actor_mp_state_holder tmp_state_holder;
 		tmp_state_holder.read(packet);

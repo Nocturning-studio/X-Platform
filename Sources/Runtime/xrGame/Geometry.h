@@ -4,15 +4,15 @@
 #include "ExtendedGeom.h"
 
 // this is equivalent dMULTIPLYOP0_333 whith consequent transposion of A
-#define dMULTIPLYOP3_333(A, op, B, C)                                                                                  \
-	(A)[0] op dDOT14((B), (C));                                                                                        \
-	(A)[1] op dDOT14((B + 4), (C));                                                                                    \
-	(A)[2] op dDOT14((B + 8), (C));                                                                                    \
-	(A)[4] op dDOT14((B), (C + 1));                                                                                    \
-	(A)[5] op dDOT14((B + 4), (C + 1));                                                                                \
-	(A)[6] op dDOT14((B + 8), (C + 1));                                                                                \
-	(A)[8] op dDOT14((B), (C + 2));                                                                                    \
-	(A)[9] op dDOT14((B + 4), (C + 2));                                                                                \
+#define dMULTIPLYOP3_333(A, op, B, C)   \
+	(A)[0] op dDOT14((B), (C));         \
+	(A)[1] op dDOT14((B + 4), (C));     \
+	(A)[2] op dDOT14((B + 8), (C));     \
+	(A)[4] op dDOT14((B), (C + 1));     \
+	(A)[5] op dDOT14((B + 4), (C + 1)); \
+	(A)[6] op dDOT14((B + 8), (C + 1)); \
+	(A)[8] op dDOT14((B), (C + 2));     \
+	(A)[9] op dDOT14((B + 4), (C + 2)); \
 	(A)[10] op dDOT14((B + 8), (C + 2));
 
 inline void dMULTIPLY3_333(dReal* A, const dReal* B, const dReal* C)
@@ -37,10 +37,10 @@ class CODEGeom
 	void get_mass(dMass& m, const fvec3& ref_point);
 	void add_self_mass(dMass& m, const fvec3& ref_point);
 	void add_self_mass(dMass& m, const fvec3& ref_point, float density);
-	void get_local_center_bt(fvec3& center);	// for built
+	void get_local_center_bt(fvec3& center);  // for built
 	void get_global_center_bt(fvec3& center); // for built
-	void get_local_form_bt(fmat4x4& form);		// for built
-	void get_global_form_bt(fmat4x4& form);		// for built
+	void get_local_form_bt(fmat4x4& form);	  // for built
+	void get_global_form_bt(fmat4x4& form);	  // for built
 
 	void set_static_ref_form(const fmat4x4& form); // for built
 	virtual void get_max_area_dir_bt(fvec3& dir) = 0;
@@ -61,7 +61,7 @@ class CODEGeom
 	}
 	IC dGeomID geometry_bt()
 	{
-		if (is_transformed_bt())
+		if(is_transformed_bt())
 			return geom();
 		else
 			return geometry_transform();
@@ -150,7 +150,7 @@ class CSphereGeom : public CODEGeom
 	virtual float volume();
 	virtual float radius();
 	virtual void get_extensions_bt(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext);
-	virtual void get_max_area_dir_bt(fvec3& dir){};
+	virtual void get_max_area_dir_bt(fvec3& dir) {};
 	virtual void get_mass(dMass& m); // unit dencity mass;
 	virtual const fvec3& local_center();
 	virtual void get_local_form(fmat4x4& form);
@@ -168,7 +168,7 @@ class CCylinderGeom : public CODEGeom
 	virtual float volume();
 	virtual float radius();
 	virtual void get_extensions_bt(const fvec3& axis, float center_prg, float& lo_ext, float& hi_ext);
-	virtual void get_max_area_dir_bt(fvec3& dir){};
+	virtual void get_max_area_dir_bt(fvec3& dir) {};
 	virtual const fvec3& local_center();
 	virtual void get_mass(dMass& m); // unit dencity mass;
 	virtual void get_local_form(fmat4x4& form);

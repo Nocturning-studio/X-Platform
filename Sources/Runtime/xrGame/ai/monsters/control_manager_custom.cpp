@@ -40,7 +40,7 @@ void CControlManagerCustom::reinit()
 
 void CControlManagerCustom::add_ability(ControlCom::EControlType type)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eControlSequencer:
 		m_sequencer = xr_new<CAnimationSequencer>();
@@ -82,7 +82,7 @@ void CControlManagerCustom::add_ability(ControlCom::EControlType type)
 
 void CControlManagerCustom::on_start_control(ControlCom::EControlType type)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eControlSequencer:
 		m_man->subscribe(this, ControlCom::eventSequenceEnd);
@@ -113,7 +113,7 @@ void CControlManagerCustom::on_start_control(ControlCom::EControlType type)
 
 void CControlManagerCustom::on_stop_control(ControlCom::EControlType type)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eControlSequencer:
 		m_man->unsubscribe(this, ControlCom::eventSequenceEnd);
@@ -144,14 +144,15 @@ void CControlManagerCustom::on_stop_control(ControlCom::EControlType type)
 
 void CControlManagerCustom::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eventSequenceEnd:
 		m_man->release(this, ControlCom::eControlSequencer);
 		break;
-	case ControlCom::eventTAChange: {
+	case ControlCom::eventTAChange:
+	{
 		STripleAnimEventData* event_data = (STripleAnimEventData*)data;
-		if (event_data->m_current_state == eStateNone)
+		if(event_data->m_current_state == eStateNone)
 			m_man->release(this, ControlCom::eControlTripleAnimation);
 
 		break;
@@ -183,18 +184,18 @@ void CControlManagerCustom::update_frame()
 
 void CControlManagerCustom::update_schedule()
 {
-	if (m_threaten)
+	if(m_threaten)
 		check_threaten();
-	if (m_jump)
+	if(m_jump)
 	{
 		check_attack_jump();
 		// check_jump_over_physics	();
 	}
-	if (m_rotation_jump)
+	if(m_rotation_jump)
 		check_rotation_jump();
-	if (m_run_attack)
+	if(m_run_attack)
 		check_run_attack();
-	if (m_melee_jump)
+	if(m_melee_jump)
 		check_melee_jump();
 }
 
@@ -217,7 +218,7 @@ void CControlManagerCustom::ta_fill_data(SAnimationTripleData& data, LPCSTR s1, 
 
 void CControlManagerCustom::ta_activate(const SAnimationTripleData& data)
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlTripleAnimation))
+	if(!m_man->check_start_conditions(ControlCom::eControlTripleAnimation))
 		return;
 
 	m_man->capture(this, ControlCom::eControlTripleAnimation);
@@ -237,7 +238,7 @@ void CControlManagerCustom::ta_activate(const SAnimationTripleData& data)
 
 void CControlManagerCustom::ta_pointbreak()
 {
-	if (ta_is_active())
+	if(ta_is_active())
 		m_triple_anim->pointbreak();
 }
 
@@ -248,7 +249,7 @@ bool CControlManagerCustom::ta_is_active()
 
 bool CControlManagerCustom::ta_is_active(const SAnimationTripleData& data)
 {
-	if (!m_triple_anim->is_active())
+	if(!m_triple_anim->is_active())
 		return false;
 
 	SAnimationTripleData* ctrl_data = (SAnimationTripleData*)m_man->data(this, ControlCom::eControlTripleAnimation);
@@ -270,7 +271,7 @@ void CControlManagerCustom::seq_init()
 	m_man->capture(this, ControlCom::eControlSequencer);
 
 	SAnimationSequencerData* ctrl_data = (SAnimationSequencerData*)m_man->data(this, ControlCom::eControlSequencer);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->motions.clear();
@@ -279,7 +280,7 @@ void CControlManagerCustom::seq_init()
 void CControlManagerCustom::seq_add(MotionID motion)
 {
 	SAnimationSequencerData* ctrl_data = (SAnimationSequencerData*)m_man->data(this, ControlCom::eControlSequencer);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->motions.push_back(motion);
@@ -292,13 +293,13 @@ void CControlManagerCustom::seq_switch()
 
 void CControlManagerCustom::seq_run(MotionID motion)
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlSequencer))
+	if(!m_man->check_start_conditions(ControlCom::eControlSequencer))
 		return;
 
 	m_man->capture(this, ControlCom::eControlSequencer);
 
 	SAnimationSequencerData* ctrl_data = (SAnimationSequencerData*)m_man->data(this, ControlCom::eControlSequencer);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->motions.clear();
@@ -312,10 +313,10 @@ void CControlManagerCustom::seq_run(MotionID motion)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void CControlManagerCustom::jump(CObject* obj, const SControlJumpData& ta)
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
 
-	if (m_object->GetScriptControl())
+	if(m_object->GetScriptControl())
 		return;
 
 	m_man->capture(this, ControlCom::eControlJump);
@@ -343,7 +344,7 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 	m_jump->setup_data().flags.assign(flags);
 
 	CKinematicsAnimated* skel_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
-	if (s1)
+	if(s1)
 	{
 		m_jump->setup_data().state_prepare.motion = skel_animated->ID_Cycle_Safe(s1);
 		VERIFY(m_jump->setup_data().state_prepare.motion);
@@ -351,7 +352,7 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 	else
 		m_jump->setup_data().state_prepare.motion.invalidate();
 
-	if (s2)
+	if(s2)
 	{
 		m_jump->setup_data().state_prepare_in_move.motion = skel_animated->ID_Cycle_Safe(s2);
 		VERIFY(m_jump->setup_data().state_prepare_in_move.motion);
@@ -363,7 +364,7 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 	m_jump->setup_data().state_glide.motion = skel_animated->ID_Cycle_Safe(s3);
 	VERIFY(m_jump->setup_data().state_glide.motion);
 
-	if (s4)
+	if(s4)
 	{
 		m_jump->setup_data().state_ground.motion = skel_animated->ID_Cycle_Safe(s4);
 		VERIFY(m_jump->setup_data().state_ground.motion);
@@ -374,7 +375,7 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 		m_jump->setup_data().flags.bit_or(SControlJumpData::eGroundSkip);
 	}
 
-	if (!s1 && !s2)
+	if(!s1 && !s2)
 	{
 		m_jump->setup_data().flags.bit_or(SControlJumpData::ePrepareSkip);
 	}
@@ -390,10 +391,10 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 
 void CControlManagerCustom::jump(const SControlJumpData& ta)
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
 
-	if (m_object->GetScriptControl())
+	if(m_object->GetScriptControl())
 		return;
 
 	m_man->capture(this, ControlCom::eControlJump);
@@ -417,7 +418,7 @@ void CControlManagerCustom::jump(const SControlJumpData& ta)
 
 void CControlManagerCustom::jump(const fvec3& position)
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
 
 	m_man->capture(this, ControlCom::eControlJump);
@@ -435,7 +436,7 @@ void CControlManagerCustom::jump(const fvec3& position)
 
 void CControlManagerCustom::script_jump(const fvec3& position, float factor)
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
 
 	m_man->capture(this, ControlCom::eControlJump);
@@ -455,20 +456,20 @@ void CControlManagerCustom::script_jump(const fvec3& position, float factor)
 //////////////////////////////////////////////////////////////////////////
 void CControlManagerCustom::check_attack_jump()
 {
-	if (!m_object->EnemyMan.get_enemy())
+	if(!m_object->EnemyMan.get_enemy())
 		return;
-	if (m_object->GetScriptControl())
+	if(m_object->GetScriptControl())
 		return;
-	if (!m_object->check_start_conditions(ControlCom::eControlJump))
+	if(!m_object->check_start_conditions(ControlCom::eControlJump))
 		return;
-	if (!m_object->EnemyMan.see_enemy_now())
+	if(!m_object->EnemyMan.see_enemy_now())
 		return;
 
 	CEntityAlive* target = const_cast<CEntityAlive*>(m_object->EnemyMan.get_enemy());
-	if (!m_jump->can_jump(target))
+	if(!m_jump->can_jump(target))
 		return;
 
-	if (m_man->check_start_conditions(ControlCom::eControlJump))
+	if(m_man->check_start_conditions(ControlCom::eControlJump))
 	{
 
 		m_jump->setup_data().flags.set(SControlJumpData::ePrepareSkip, false);
@@ -483,20 +484,20 @@ void CControlManagerCustom::check_attack_jump()
 
 void CControlManagerCustom::check_jump_over_physics()
 {
-	if (!m_man->path_builder().is_moving_on_path())
+	if(!m_man->path_builder().is_moving_on_path())
 		return;
-	if (!m_man->check_start_conditions(ControlCom::eControlJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlJump))
 		return;
-	if (!m_object->check_start_conditions(ControlCom::eControlJump))
+	if(!m_object->check_start_conditions(ControlCom::eControlJump))
 		return;
-	if (m_object->GetScriptControl())
+	if(m_object->GetScriptControl())
 		return;
 
 	fvec3 prev_pos = m_object->Position();
 	float dist_sum = 0.f;
 
-	for (u32 i = m_man->path_builder().detail().curr_travel_point_index();
-		 i < m_man->path_builder().detail().path().size(); i++)
+	for(u32 i = m_man->path_builder().detail().curr_travel_point_index();
+		i < m_man->path_builder().detail().path().size(); i++)
 	{
 		const DetailPathManager::STravelPathPoint& travel_point = m_man->path_builder().detail().path()[i];
 
@@ -504,12 +505,12 @@ void CControlManagerCustom::check_jump_over_physics()
 		m_nearest.clear_not_free();
 		Level().ObjectSpace.GetNearest(m_nearest, travel_point.position, m_object->Radius(), NULL);
 
-		for (u32 k = 0; k < m_nearest.size(); k++)
+		for(u32 k = 0; k < m_nearest.size(); k++)
 		{
 			CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[k]);
-			if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || (obj->Radius() < 0.5f))
+			if(!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || (obj->Radius() < 0.5f))
 				continue;
-			if (m_object->Position().distance_to(obj->Position()) < MAX_DIST_SUM / 2)
+			if(m_object->Position().distance_to(obj->Position()) < MAX_DIST_SUM / 2)
 				continue;
 
 			fvec3 dir = fvec3().sub(travel_point.position, m_object->Position());
@@ -521,7 +522,7 @@ void CControlManagerCustom::check_jump_over_physics()
 			float from = angle_normalize(my_h - deg(8));
 			float to = angle_normalize(my_h + deg(8));
 
-			if (!is_angle_between(h, from, to))
+			if(!is_angle_between(h, from, to))
 				continue;
 
 			dir = fvec3().sub(obj->Position(), m_object->Position());
@@ -542,7 +543,7 @@ void CControlManagerCustom::check_jump_over_physics()
 		}
 
 		dist_sum += prev_pos.distance_to(travel_point.position);
-		if (dist_sum > MAX_DIST_SUM)
+		if(dist_sum > MAX_DIST_SUM)
 			break;
 
 		prev_pos = travel_point.position;
@@ -555,9 +556,9 @@ void CControlManagerCustom::check_jump_over_physics()
 
 void CControlManagerCustom::check_rotation_jump()
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlRotationJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlRotationJump))
 		return;
-	if (!m_object->check_start_conditions(ControlCom::eControlRotationJump))
+	if(!m_object->check_start_conditions(ControlCom::eControlRotationJump))
 		return;
 
 	VERIFY(!m_rot_jump_data.empty());
@@ -585,9 +586,9 @@ void CControlManagerCustom::add_rotation_jump_data(LPCSTR left1, LPCSTR left2, L
 
 void CControlManagerCustom::check_run_attack()
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlRunAttack))
+	if(!m_man->check_start_conditions(ControlCom::eControlRunAttack))
 		return;
-	if (!m_object->check_start_conditions(ControlCom::eControlRunAttack))
+	if(!m_object->check_start_conditions(ControlCom::eControlRunAttack))
 		return;
 
 	m_man->capture(this, ControlCom::eControlRunAttack);
@@ -596,9 +597,9 @@ void CControlManagerCustom::check_run_attack()
 
 void CControlManagerCustom::check_threaten()
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlThreaten))
+	if(!m_man->check_start_conditions(ControlCom::eControlThreaten))
 		return;
-	if (!m_object->check_start_conditions(ControlCom::eControlThreaten))
+	if(!m_object->check_start_conditions(ControlCom::eControlThreaten))
 		return;
 
 	m_man->capture(this, ControlCom::eControlThreaten);
@@ -624,9 +625,9 @@ void CControlManagerCustom::add_melee_jump_data(LPCSTR left, LPCSTR right)
 
 void CControlManagerCustom::check_melee_jump()
 {
-	if (!m_man->check_start_conditions(ControlCom::eControlMeleeJump))
+	if(!m_man->check_start_conditions(ControlCom::eControlMeleeJump))
 		return;
-	if (!m_object->check_start_conditions(ControlCom::eControlMeleeJump))
+	if(!m_object->check_start_conditions(ControlCom::eControlMeleeJump))
 		return;
 
 	m_man->capture(this, ControlCom::eControlMeleeJump);
@@ -652,7 +653,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 	data.turn_angle = angle;
 
 	MotionID motion;
-	if (left1)
+	if(left1)
 	{
 		motion = skeleton_animated->ID_Cycle_Safe(left1);
 		data.anim_stop_ls = motion;
@@ -663,7 +664,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 		data.anim_stop_ls.invalidate();
 	}
 
-	if (left2)
+	if(left2)
 	{
 		motion = skeleton_animated->ID_Cycle_Safe(left2);
 		data.anim_run_ls = motion;
@@ -674,7 +675,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 		data.anim_run_ls.invalidate();
 	}
 
-	if (right1)
+	if(right1)
 	{
 		motion = skeleton_animated->ID_Cycle_Safe(right1);
 		data.anim_stop_rs = motion;
@@ -685,7 +686,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 		data.anim_stop_rs.invalidate();
 	}
 
-	if (right2)
+	if(right2)
 	{
 		motion = skeleton_animated->ID_Cycle_Safe(right2);
 		data.anim_run_rs = motion;
@@ -700,13 +701,13 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 //////////////////////////////////////////////////////////////////////////
 void CControlManagerCustom::critical_wound(LPCSTR anim)
 {
-	if (!m_man->check_start_conditions(ControlCom::eComCriticalWound))
+	if(!m_man->check_start_conditions(ControlCom::eComCriticalWound))
 		return;
 
 	m_man->capture(this, ControlCom::eComCriticalWound);
 
 	SControlCriticalWoundData* ctrl_data = (SControlCriticalWoundData*)m_man->data(this, ControlCom::eComCriticalWound);
-	if (!ctrl_data)
+	if(!ctrl_data)
 		return;
 
 	ctrl_data->animation = anim;

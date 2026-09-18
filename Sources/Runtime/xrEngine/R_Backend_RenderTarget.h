@@ -37,16 +37,16 @@ class ENGINE_API CRT : public xr_resource_named
 		width = 0;
 		height = 0;
 
-		if (!pSurface)
+		if(!pSurface)
 			return;
 
-		if (level >= get_levels_count())
+		if(level >= get_levels_count())
 			return;
 
 		D3DSURFACE_DESC desc;
 		HRESULT hr = pSurface->GetLevelDesc(level, &desc);
 
-		if (SUCCEEDED(hr))
+		if(SUCCEEDED(hr))
 		{
 			width = desc.Width;
 			height = desc.Height;
@@ -58,10 +58,10 @@ class ENGINE_API CRT : public xr_resource_named
 	{
 		std::memset(&desc, 0, sizeof(desc));
 
-		if (!pSurface)
+		if(!pSurface)
 			return false;
 
-		if (level >= get_levels_count())
+		if(level >= get_levels_count())
 			return false;
 
 		HRESULT hr = pSurface->GetLevelDesc(level, &desc);
@@ -71,7 +71,7 @@ class ENGINE_API CRT : public xr_resource_named
 	// Получить количество mip-уровней
 	u32 get_levels_count()
 	{
-		if (!pSurface)
+		if(!pSurface)
 			return 0;
 		return pSurface->GetLevelCount();
 	}
@@ -79,13 +79,13 @@ class ENGINE_API CRT : public xr_resource_named
 	// Получить поверхность конкретного mip-уровня
 	IDirect3DSurface9* get_surface_level(u32 level)
 	{
-		if (!pSurface || level >= get_levels_count())
+		if(!pSurface || level >= get_levels_count())
 			return NULL;
 
 		IDirect3DSurface9* surface = NULL;
 		HRESULT hr = pSurface->GetSurfaceLevel(level, &surface);
 
-		if (FAILED(hr))
+		if(FAILED(hr))
 			return NULL;
 
 		return surface;
@@ -131,16 +131,16 @@ class ENGINE_API CRTC : public xr_resource_named
 	{
 		size = 0;
 
-		if (!pSurface)
+		if(!pSurface)
 			return;
 
-		if (level >= get_levels_count())
+		if(level >= get_levels_count())
 			return;
 
 		D3DSURFACE_DESC desc;
 		HRESULT hr = pSurface->GetLevelDesc(level, &desc);
 
-		if (SUCCEEDED(hr))
+		if(SUCCEEDED(hr))
 		{
 			size = desc.Width; // Для кубической текстуры Width == Height
 		}
@@ -150,10 +150,10 @@ class ENGINE_API CRTC : public xr_resource_named
 	{
 		std::memset(&desc, 0, sizeof(desc));
 
-		if (!pSurface)
+		if(!pSurface)
 			return false;
 
-		if (level >= get_levels_count())
+		if(level >= get_levels_count())
 			return false;
 
 		HRESULT hr = pSurface->GetLevelDesc(level, &desc);
@@ -162,20 +162,20 @@ class ENGINE_API CRTC : public xr_resource_named
 
 	u32 get_levels_count()
 	{
-		if (!pSurface)
+		if(!pSurface)
 			return 0;
 		return pSurface->GetLevelCount();
 	}
 
 	IDirect3DSurface9* get_surface_level(u32 face, u32 level)
 	{
-		if (!pSurface || level >= get_levels_count() || face >= 6)
+		if(!pSurface || level >= get_levels_count() || face >= 6)
 			return NULL;
 
 		IDirect3DSurface9* surface = NULL;
 		HRESULT hr = pSurface->GetCubeMapSurface((D3DCUBEMAP_FACES)face, level, &surface);
 
-		if (FAILED(hr))
+		if(FAILED(hr))
 			return NULL;
 
 		return surface;

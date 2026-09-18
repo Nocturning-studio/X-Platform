@@ -8,10 +8,10 @@ void CMonsterCorpseCoverEvaluator::evaluate(const CCoverPoint* cover_point, floa
 {
 	float my_distance = m_start_position.distance_to(cover_point->position());
 
-	if (my_distance <= m_min_distance)
+	if(my_distance <= m_min_distance)
 		return;
 
-	if (my_distance >= m_max_distance)
+	if(my_distance >= m_max_distance)
 		return;
 
 	fvec3 direction;
@@ -20,7 +20,7 @@ void CMonsterCorpseCoverEvaluator::evaluate(const CCoverPoint* cover_point, floa
 	direction.getHP(y, p);
 
 	float cover_value = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
-	if (cover_value >= 2.f * m_best_value)
+	if(cover_value >= 2.f * m_best_value)
 		return;
 
 	m_selected = cover_point;

@@ -10,7 +10,8 @@
 
 #include "property_evaluator.h"
 
-template <typename _object_type> class CPropertyEvaluatorMember : public CPropertyEvaluator<_object_type>
+template <typename _object_type>
+class CPropertyEvaluatorMember : public CPropertyEvaluator<_object_type>
 {
   protected:
 	typedef CPropertyEvaluator<_object_type> inherited;

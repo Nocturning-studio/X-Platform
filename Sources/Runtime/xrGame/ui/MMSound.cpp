@@ -22,16 +22,16 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path)
 
 	XML_NODE* tab_node = xml_doc.NavigateToNode(path, 0);
 	xml_doc.SetLocalRoot(tab_node);
-	for (int i = 0; i < nodes_num; ++i)
+	for(int i = 0; i < nodes_num; ++i)
 		m_play_list.push_back(xml_doc.Read("menu_music", i, ""));
 	xml_doc.SetLocalRoot(xml_doc.GetRoot());
 
 	strconcat(sizeof(_path), _path, path, ":whell_sound");
-	if (check_file(xml_doc.Read(_path, 0, "")))
+	if(check_file(xml_doc.Read(_path, 0, "")))
 		m_whell.create(xml_doc.Read(_path, 0, ""), st_Effect, sg_SourceType);
 
 	strconcat(sizeof(_path), _path, path, ":whell_click");
-	if (check_file(xml_doc.Read(_path, 0, "")))
+	if(check_file(xml_doc.Read(_path, 0, "")))
 		m_whell_click.create(xml_doc.Read(_path, 0, ""), st_Effect, sg_SourceType);
 }
 
@@ -44,19 +44,19 @@ bool CMMSound::check_file(LPCSTR fname)
 
 void CMMSound::whell_Play()
 {
-	if (m_whell._handle() && !m_whell._feedback())
+	if(m_whell._handle() && !m_whell._feedback())
 		m_whell.play(NULL, sm_Looped | sm_2D);
 }
 
 void CMMSound::whell_Stop()
 {
-	if (m_whell._feedback())
+	if(m_whell._feedback())
 		m_whell.stop();
 }
 
 void CMMSound::whell_Click()
 {
-	if (m_whell_click._handle())
+	if(m_whell_click._handle())
 		m_whell_click.play(NULL, sm_2D);
 }
 
@@ -67,7 +67,7 @@ void CMMSound::whell_UpdateMoving(float frequency)
 
 void CMMSound::music_Play()
 {
-	if (m_play_list.empty())
+	if(m_play_list.empty())
 		return;
 
 	int i = Random.randI(m_play_list.size());
@@ -82,10 +82,10 @@ void CMMSound::music_Play()
 
 void CMMSound::music_Update()
 {
-	if (Device.Paused())
+	if(Device.Paused())
 		return;
 
-	if (0 == m_music_stereo._feedback())
+	if(0 == m_music_stereo._feedback())
 		music_Play();
 }
 

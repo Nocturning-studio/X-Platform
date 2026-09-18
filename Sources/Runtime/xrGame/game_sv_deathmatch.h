@@ -17,12 +17,12 @@ class game_sv_Deathmatch : public game_sv_mp, private pure_relcase
 		float MinEnemyDist;
 		bool bFreezed;
 
-		RPointData(u32 ID, float Dist, bool Freezed) : PointID(ID), MinEnemyDist(Dist), bFreezed(Freezed){};
+		RPointData(u32 ID, float Dist, bool Freezed) : PointID(ID), MinEnemyDist(Dist), bFreezed(Freezed) {};
 		IC bool operator<(const RPointData& x) const
 		{
-			if (bFreezed && !x.bFreezed)
+			if(bFreezed && !x.bFreezed)
 				return false;
-			if (!bFreezed && x.bFreezed)
+			if(!bFreezed && x.bFreezed)
 				return true;
 			return MinEnemyDist < x.MinEnemyDist;
 		};
@@ -110,7 +110,7 @@ class game_sv_Deathmatch : public game_sv_mp, private pure_relcase
 	virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
 
 	virtual void OnTeamScore(u32 /**team/**/, bool); // команда выиграла
-	virtual void OnTeamsInDraw(){};					 // ничья
+	virtual void OnTeamsInDraw() {};				 // ничья
 
 	// Events
 	virtual void OnRoundStart(); // старт раунда

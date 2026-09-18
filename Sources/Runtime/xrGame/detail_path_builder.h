@@ -47,7 +47,7 @@ class CDetailPathBuilder
 
 		m_object->on_build_path();
 
-		if (m_object->detail().failed())
+		if(m_object->detail().failed())
 			m_object->m_path_state = CMovementManager::ePathStateBuildLevelPath;
 		else
 			m_object->m_path_state = CMovementManager::ePathStatePathVerification;
@@ -55,7 +55,7 @@ class CDetailPathBuilder
 
 	IC void remove()
 	{
-		if (m_object->m_wait_for_distributed_computation)
+		if(m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation = false;
 
 		Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process));

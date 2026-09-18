@@ -34,7 +34,7 @@ class optimizer
 	}
 	void enable()
 	{
-		if (!enabled_)
+		if(!enabled_)
 		{
 			Engine.tune_resume();
 			enabled_ = TRUE;
@@ -42,7 +42,7 @@ class optimizer
 	}
 	void disable()
 	{
-		if (enabled_)
+		if(enabled_)
 		{
 			Engine.tune_pause();
 			enabled_ = FALSE;
@@ -50,7 +50,7 @@ class optimizer
 	}
 	void update(float value)
 	{
-		if (value < average_ * 0.7f)
+		if(value < average_ * 0.7f)
 		{
 			// 25% deviation
 			enable();
@@ -170,7 +170,7 @@ void CStats::Show()
 	}
 
 	// calc FPS & TPS
-	if (Engine.TimeManager.GetDeltaTime() > EPS_S)
+	if(Engine.TimeManager.GetDeltaTime() > EPS_S)
 	{
 		float fps = 1.f / Engine.TimeManager.GetDeltaTime();
 		// if (Engine.tune_enabled)	vtune.update	(fps);
@@ -178,7 +178,7 @@ void CStats::Show()
 		float fInv = 1.f - fOne;
 		fFPS = fInv * fFPS + fOne * fps;
 
-		if (RenderTOTAL.result > EPS_S)
+		if(RenderTOTAL.result > EPS_S)
 		{
 			fTPS = fInv * fTPS + fOne * float(RenderBackend.stat.polys) / (RenderTOTAL.result * 1000.f);
 			fRFPS = fInv * fRFPS + fOne * 1000.f / RenderTOTAL.result;
@@ -186,7 +186,7 @@ void CStats::Show()
 	}
 	{
 		float mem_count = float(Memory.stat_calls);
-		if (mem_count > fMem_calls)
+		if(mem_count > fMem_calls)
 			fMem_calls = mem_count;
 		else
 			fMem_calls = .9f * fMem_calls + .1f * mem_count;
@@ -194,12 +194,12 @@ void CStats::Show()
 	}
 
 	////////////////////////////////////////////////
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 	////////////////////////////////////////////////
 	int frm = 2000;
 	div_t ddd = div(Engine.TimeManager.GetFrameCount(), frm);
-	if (ddd.rem < frm / 2.0f)
+	if(ddd.rem < frm / 2.0f)
 	{
 		pFont->SetColor(0xFFFFFFFF);
 		pFont->OutSet(0, 0);
@@ -213,7 +213,7 @@ void CStats::Show()
 	float f_base_size = 0.01f;
 	F.SetHeightI(f_base_size);
 
-	if (vtune.enabled())
+	if(vtune.enabled())
 	{
 		float sz = pFont->GetHeight();
 		pFont->SetHeightI(0.02f);
@@ -225,7 +225,7 @@ void CStats::Show()
 	};
 
 	// Show them
-	if (psDeviceFlags.test(rsStatistic))
+	if(psDeviceFlags.test(rsStatistic))
 	{
 		static float r_ps = 0;
 		static float b_ps = 0;
@@ -377,56 +377,56 @@ void CStats::Show()
 		pFont->OnRender();
 	};
 
-	if (psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsCameraPos))
+	if(psDeviceFlags.test(rsStatistic) || psDeviceFlags.test(rsCameraPos))
 	{
 		_draw_cam_pos(pFont);
 		pFont->OnRender();
 	};
-//#ifdef DEBUG
+	// #ifdef DEBUG
 	//////////////////////////////////////////////////////////////////////////
 	// PERF ALERT
-	if (!g_bDisableRedText)
+	if(!g_bDisableRedText)
 	{
 		F.SetColor(color_rgba(255, 16, 16, 255));
 		F.OutSet(300, 300);
 		F.SetHeightI(f_base_size * 2);
-		if (fFPS < 30)
+		if(fFPS < 30)
 			F.OutNext("FPS       < 30:   %3.1f", fFPS);
-		if (RenderBackend.stat.verts > 500000)
+		if(RenderBackend.stat.verts > 500000)
 			F.OutNext("Verts     > 500k: %d", RenderBackend.stat.verts);
 		// if (RenderBackend.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RenderBackend.stat.polys);
-		if (psDeviceFlags.test(rsStatistic))
+		if(psDeviceFlags.test(rsStatistic))
 		{
-			if (RenderBackend.stat.calls > 1000)
+			if(RenderBackend.stat.calls > 1000)
 				F.OutNext("DIP/DP    > 1k:   %d", RenderBackend.stat.calls);
 			// if (RenderBackend.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RenderBackend.stat.textures);
-			if (RenderDUMP_DT_Count > 1000)
+			if(RenderDUMP_DT_Count > 1000)
 				F.OutNext("DT_count  > 1000: %u", RenderDUMP_DT_Count);
 			F.OutSkip();
 			// if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
-			if (Sheduler.result > 3.f)
+			if(Sheduler.result > 3.f)
 				F.OutNext("Update     > 3ms:	%3.1f", Sheduler.result);
-			if (UpdateClient.result > 3.f)
+			if(UpdateClient.result > 3.f)
 				F.OutNext("UpdateCL   > 3ms: %3.1f", UpdateClient.result);
-			if (Physics.result > 5.f)
+			if(Physics.result > 5.f)
 				F.OutNext("Physics    > 5ms: %3.1f", Physics.result);
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// Show errors
-	if (!g_bDisableRedText && errors.size())
+	if(!g_bDisableRedText && errors.size())
 	{
 		F.SetColor(color_rgba(255, 16, 16, 191));
 		F.OutSet(200, 0);
 		F.SetHeightI(f_base_size);
 
-		for (u32 it = (u32)_max(int(0), (int)errors.size() - g_ErrorLineCount); it < errors.size(); it++)
+		for(u32 it = (u32)_max(int(0), (int)errors.size() - g_ErrorLineCount); it < errors.size(); it++)
 			F.OutNext("%s", errors[it].c_str());
 
 		F.OnRender();
 	}
-//#endif
+	// #endif
 
 	{
 		EngineTOTAL.FrameStart();
@@ -496,7 +496,7 @@ void CStats::Show()
 
 void _LogCallback(LPCSTR string)
 {
-	if (string && '!' == string[0] && ' ' == string[1])
+	if(string && '!' == string[0] && ' ' == string[1])
 		Engine.Statistic->errors.push_back(shared_str(string));
 }
 
@@ -509,8 +509,8 @@ void CStats::OnDeviceCreate()
 	pFont = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
 #endif
 
-	if (!pSettings->section_exist("evaluation") || !pSettings->line_exist("evaluation", "line1") ||
-		!pSettings->line_exist("evaluation", "line2") || !pSettings->line_exist("evaluation", "line3"))
+	if(!pSettings->section_exist("evaluation") || !pSettings->line_exist("evaluation", "line1") ||
+	   !pSettings->line_exist("evaluation", "line2") || !pSettings->line_exist("evaluation", "line3"))
 		FATAL("");
 
 	eval_line_1 = pSettings->r_string_wb("evaluation", "line1");
@@ -519,7 +519,7 @@ void CStats::OnDeviceCreate()
 
 	//
 #ifdef DEBUG
-	if (!g_bDisableRedText)
+	if(!g_bDisableRedText)
 		SetLogCB(_LogCallback);
 #endif
 }
@@ -531,44 +531,44 @@ void CStats::OnDeviceDestroy()
 
 void CStats::OnRender()
 {
-	//OPTICK_EVENT("CStats::OnRender");
+	// OPTICK_EVENT("CStats::OnRender");
 
 #ifdef DEBUG
-	if (g_stats_flags.is(st_sound))
+	if(g_stats_flags.is(st_sound))
 	{
 		CSound_stats_ext snd_stat_ext;
 		::Sound->statistic(0, &snd_stat_ext);
 		CSound_stats_ext::item_vec_it _I = snd_stat_ext.items.begin();
 		CSound_stats_ext::item_vec_it _E = snd_stat_ext.items.end();
-		for (; _I != _E; _I++)
+		for(; _I != _E; _I++)
 		{
 			const CSound_stats_ext::SItem& item = *_I;
-			if (item._3D)
+			if(item._3D)
 			{
 				RenderBackend.set_transform_world(Fidentity);
 				RenderBackend.set_Shader(Device.m_SelectionShader);
 				RenderBackend.set_Constant("tfactor", 1, 1, 1, 1);
 				DU.DrawCross(item.params.position, 0.5f, 0xFF0000FF, true);
-				if (g_stats_flags.is(st_sound_min_dist))
+				if(g_stats_flags.is(st_sound_min_dist))
 					DU.DrawSphere(Fidentity, item.params.position, item.params.min_distance, 0x400000FF, 0xFF0000FF,
 								  true, true);
-				if (g_stats_flags.is(st_sound_max_dist))
+				if(g_stats_flags.is(st_sound_max_dist))
 					DU.DrawSphere(Fidentity, item.params.position, item.params.max_distance, 0x4000FF00, 0xFF008000,
 								  true, true);
 				xr_string out_txt = (g_stats_flags.is(st_sound_info_name)) ? item.name.c_str() : "";
-				if (item.game_object)
+				if(item.game_object)
 				{
-					if (g_stats_flags.is(st_sound_ai_dist))
+					if(g_stats_flags.is(st_sound_ai_dist))
 						DU.DrawSphere(Fidentity, item.params.position, item.params.max_ai_distance, 0x80FF0000,
 									  0xFF800000, true, true);
-					if (g_stats_flags.is(st_sound_info_object))
+					if(g_stats_flags.is(st_sound_info_object))
 					{
 						out_txt += "  (";
 						out_txt += item.game_object->cNameSect().c_str();
 						out_txt += ")";
 					}
 				}
-				if (g_stats_flags.is_any(st_sound_info_name | st_sound_info_object))
+				if(g_stats_flags.is_any(st_sound_info_name | st_sound_info_object))
 					DU.OutText(item.params.position, out_txt.c_str(), 0xFFFFFFFF, 0xFF000000);
 			}
 		}

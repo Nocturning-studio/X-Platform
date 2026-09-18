@@ -35,12 +35,13 @@ void CRender::LevelLoad(IReader* fs)
 	std::atomic<int> active_tasks = 0;
 
 	// Хелпер
-	auto run_task = [&](concurrency::task_group& tg, auto func) {
+	auto run_task = [&](concurrency::task_group& tg, auto func)
+	{
 		active_tasks++;
-		tg.run([func, &active_tasks]() {
+		tg.run([func, &active_tasks]()
+			   {
 			func();
-			active_tasks--;
-		});
+			active_tasks--; });
 	};
 
 	Engine.LoadingScreen->Show();
@@ -56,7 +57,7 @@ void CRender::LevelLoad(IReader* fs)
 	g_pGamePersistent->LoadTitle("st_loading_components");
 
 	// --- ОПТИМИЗАЦИЯ СЕРВЕРА: Пропускаем создание визуальных эффектов ---
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		Wallmarks = xr_new<CWallmarksEngine>();
 		Details = xr_new<CDetailManager>();
@@ -76,26 +77,26 @@ void CRender::LevelLoad(IReader* fs)
 	g_pGamePersistent->LoadTitle("st_loading_shaders");
 	{
 		// RT шейдеры нужны только для картинки
-		if (!g_dedicated_server)
+		if(!g_dedicated_server)
 		{
 			Msg("* Compiling RenderTarget shaders...");
-			if (RenderTarget)
+			if(RenderTarget)
 				RenderTarget->CompileShaders();
 		}
 
 		IReader* chunk = mem_fs.open_chunk(fsL_SHADERS);
-		if (chunk)
+		if(chunk)
 		{
 			u32 count = chunk->r_u32();
 			Shaders.resize(count);
 
-			for (u32 i = 0; i < count; i++)
+			for(u32 i = 0; i < count; i++)
 			{
 				string512 n_sh, n_tlist;
 				LPCSTR n = LPCSTR(chunk->pointer());
 				chunk->skip_stringZ();
 
-				if (0 == n[0])
+				if(0 == n[0])
 					continue;
 
 				strcpy(n_sh, n);
@@ -141,20 +142,23 @@ void CRender::LevelLoad(IReader* fs)
 	IReader local_fs(level_data_ptr, level_size);
 	LoadVisuals(&local_fs);
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		// ЗАДАЧА A: HOM (Hierarchical Occlusion Culling) - только для рендеринга
-		run_task(tg_visuals, [this]() { HOM.Load(); CPUOCC.Load(HOM); });
+		run_task(tg_visuals, [this]()
+				 { HOM.Load(); CPUOCC.Load(HOM); });
 
 		// ЗАДАЧА B: Детейлы (Трава)
-		run_task(tg_visuals, [this]() { Details->Load(); });
+		run_task(tg_visuals, [this]()
+				 { Details->Load(); });
 
 		// ЗАДАЧА C: Sun Occluder
-		run_task(tg_visuals, [this]() { m_SunOccluder->Load(); });
+		run_task(tg_visuals, [this]()
+				 { m_SunOccluder->Load(); });
 	}
 
 	// === ACTIVE WAIT ===
-	while (active_tasks > 0)
+	while(active_tasks > 0)
 	{
 		Engine.LoadingScreen->ForceRender();
 		Sleep(1);
@@ -172,7 +176,7 @@ void CRender::LevelLoad(IReader* fs)
 
 	g_pGamePersistent->LoadTitle("st_loading_lights");
 	{
-		if (!g_dedicated_server)
+		if(!g_dedicated_server)
 		{
 			IReader local_fs_lights(level_data_ptr, level_size);
 			LoadLights(&local_fs_lights);
@@ -192,9 +196,9 @@ void CRender::LevelLoad(IReader* fs)
 
 void CRender::LevelUnload()
 {
-	if (0 == g_pGameLevel)
+	if(0 == g_pGameLevel)
 		return;
-	if (!SceneGraph.b_loaded)
+	if(!SceneGraph.b_loaded)
 		return;
 
 	WaitForPendingTasks();
@@ -206,14 +210,14 @@ void CRender::LevelUnload()
 	CPUOCC.Unload();
 	HOM.Unload();
 
-	if (m_SunOccluder)
+	if(m_SunOccluder)
 	{
 		m_SunOccluder->Unload();
 		xr_delete(m_SunOccluder);
 	}
 
 	//*** Details
-	if (Details)
+	if(Details)
 	{
 		g_pGamePersistent->LoadTitle("st_unloading_details");
 		Details->Unload();
@@ -226,7 +230,7 @@ void CRender::LevelUnload()
 	xr_delete(rmPortals);
 	pLastSector = 0;
 	vLastCameraPos.set(0, 0, 0);
-	for (I = 0; I < Sectors.size(); I++)
+	for(I = 0; I < Sectors.size(); I++)
 		xr_delete(Sectors[I]);
 	Sectors.clear();
 	Portals.clear();
@@ -237,7 +241,7 @@ void CRender::LevelUnload()
 
 	//*** Visuals
 	g_pGamePersistent->LoadTitle("st_unloading_spatial_db");
-	for (I = 0; I < Visuals.size(); I++)
+	for(I = 0; I < Visuals.size(); I++)
 	{
 		Visuals[I]->Release();
 		xr_delete(Visuals[I]);
@@ -246,15 +250,15 @@ void CRender::LevelUnload()
 
 	//*** VB/IB
 	g_pGamePersistent->LoadTitle("st_unloading_geometry");
-	for (I = 0; I < nVB.size(); I++)
+	for(I = 0; I < nVB.size(); I++)
 		_RELEASE(nVB[I]);
-	for (I = 0; I < xVB.size(); I++)
+	for(I = 0; I < xVB.size(); I++)
 		_RELEASE(xVB[I]);
 	nVB.clear();
 	xVB.clear();
-	for (I = 0; I < nIB.size(); I++)
+	for(I = 0; I < nIB.size(); I++)
 		_RELEASE(nIB[I]);
-	for (I = 0; I < xIB.size(); I++)
+	for(I = 0; I < xIB.size(); I++)
 		_RELEASE(xIB[I]);
 	nIB.clear();
 	xIB.clear();
@@ -265,7 +269,7 @@ void CRender::LevelUnload()
 	g_pGamePersistent->LoadTitle("st_unloading_components");
 
 	// Details уже удален выше
-	if (Wallmarks)
+	if(Wallmarks)
 	{
 		xr_delete(Wallmarks);
 	}
@@ -298,7 +302,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 		// Используем временный буфер для чтения
 		xr_vector<u8> temp_buffer;
 
-		for (u32 i = 0; i < count; i++)
+		for(u32 i = 0; i < count; i++)
 		{
 			// Читаем декларацию
 			u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
@@ -341,7 +345,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
 		xr_vector<u8> temp_buffer;
 
-		for (u32 i = 0; i < count; i++)
+		for(u32 i = 0; i < count; i++)
 		{
 			u32 iCount = fs->r_u32();
 			u32 byteSize = iCount * 2;
@@ -370,10 +374,10 @@ void CRender::LoadVisuals(IReader* fs)
 	ogf_header H;
 
 	IReader* main_chunk = fs->open_chunk(fsL_VISUALS);
-	if (!main_chunk)
+	if(!main_chunk)
 		return;
 
-	while ((chunk = main_chunk->open_chunk(index)) != 0)
+	while((chunk = main_chunk->open_chunk(index)) != 0)
 	{
 		chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
 
@@ -406,15 +410,15 @@ void CRender::LoadSectors(IReader* fs)
 	R_ASSERT(0 == size % sizeof(b_portal));
 	u32 count = size / sizeof(b_portal);
 	Portals.resize(count);
-	for (u32 c = 0; c < count; c++)
+	for(u32 c = 0; c < count; c++)
 		Portals[c] = xr_new<CPortal>();
 
 	// load sectors
 	IReader* S = fs->open_chunk(fsL_SECTORS);
-	for (u32 i = 0;; i++)
+	for(u32 i = 0;; i++)
 	{
 		IReader* P = S->open_chunk(i);
-		if (0 == P)
+		if(0 == P)
 			break;
 
 		CSector* __S = xr_new<CSector>();
@@ -426,11 +430,11 @@ void CRender::LoadSectors(IReader* fs)
 	S->close();
 
 	// load portals
-	if (count)
+	if(count)
 	{
 		CDB::Collector CL;
 		fs->find_chunk(fsL_PORTALS);
-		for (u32 i = 0; i < count; i++)
+		for(u32 i = 0; i < count; i++)
 		{
 			b_portal P;
 			fs->r(&P, sizeof(P));
@@ -439,10 +443,10 @@ void CRender::LoadSectors(IReader* fs)
 			__P->Setup(P.vertices.begin(), P.vertices.size(), (CSector*)getSector(P.sector_front),
 					   (CSector*)getSector(P.sector_back));
 
-			for (u32 j = 2; j < P.vertices.size(); j++)
+			for(u32 j = 2; j < P.vertices.size(); j++)
 				CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
 		}
-		if (CL.getTS() < 2)
+		if(CL.getTS() < 2)
 		{
 			fvec3 v1, v2, v3;
 			v1.set(-20000.f, -20000.f, -20000.f);
@@ -466,7 +470,7 @@ void CRender::LoadSectors(IReader* fs)
 void CRender::LoadSWIs(CStreamReader* base_fs)
 {
 	// allocate memory for portals
-	if (base_fs->find_chunk(fsL_SWIS))
+	if(base_fs->find_chunk(fsL_SWIS))
 	{
 		CStreamReader* fs = base_fs->open_chunk(fsL_SWIS);
 		u32 item_count = fs->r_u32();
@@ -474,13 +478,13 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 		xr_vector<FSlideWindowItem>::iterator it = SWIs.begin();
 		xr_vector<FSlideWindowItem>::iterator it_e = SWIs.end();
 
-		for (; it != it_e; ++it)
+		for(; it != it_e; ++it)
 			xr_free((*it).sw);
 
 		SWIs.clear_not_free();
 
 		SWIs.resize(item_count);
-		for (u32 c = 0; c < item_count; c++)
+		for(u32 c = 0; c < item_count; c++)
 		{
 			FSlideWindowItem& swi = SWIs[c];
 			swi.reserved[0] = fs->r_u32();

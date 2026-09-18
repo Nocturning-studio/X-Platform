@@ -28,11 +28,11 @@ void CSE_Shape::cform_read(NET_Packet& tNetPacket)
 	u8 count;
 	tNetPacket.r_u8(count);
 
-	while (count)
+	while(count)
 	{
 		shape_def S;
 		tNetPacket.r_u8(S.type);
-		switch (S.type)
+		switch(S.type)
 		{
 		case 0:
 			tNetPacket.r(&S.data.sphere, sizeof(S.data.sphere));
@@ -49,11 +49,11 @@ void CSE_Shape::cform_read(NET_Packet& tNetPacket)
 void CSE_Shape::cform_write(NET_Packet& tNetPacket)
 {
 	tNetPacket.w_u8(u8(shapes.size()));
-	for (u32 i = 0; i < shapes.size(); ++i)
+	for(u32 i = 0; i < shapes.size(); ++i)
 	{
 		shape_def& S = shapes[i];
 		tNetPacket.w_u8(S.type);
-		switch (S.type)
+		switch(S.type)
 		{
 		case 0:
 			tNetPacket.w(&S.data.sphere, sizeof(S.data.sphere));
@@ -68,7 +68,7 @@ void CSE_Shape::cform_write(NET_Packet& tNetPacket)
 void CSE_Shape::assign_shapes(CShapeData::shape_def* _shapes, u32 _cnt)
 {
 	shapes.resize(_cnt);
-	for (u32 k = 0; k < _cnt; k++)
+	for(u32 k = 0; k < _cnt; k++)
 		shapes[k] = _shapes[k];
 }
 
@@ -131,11 +131,11 @@ void CSE_Temporary::STATE_Write(NET_Packet& tNetPacket)
 	tNetPacket.w_u32(m_tNodeID);
 };
 
-void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket){};
+void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket) {};
 
-void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket){};
+void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket) {};
 
-void CSE_Temporary::FillProps(LPCSTR pref, PropItemVec& values){};
+void CSE_Temporary::FillProps(LPCSTR pref, PropItemVec& values) {};
 
 /**
 ////////////////////////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ void CSE_PHSkeleton::STATE_Read(NET_Packet& tNetPacket, u16 size)
 	tNetPacket.r_stringZ(visual->startup_animation);
 	tNetPacket.r_u8(_flags.flags);
 	tNetPacket.r_u16(source_id);
-	if (_flags.test(flSavedData))
+	if(_flags.test(flSavedData))
 	{
 		data_load(tNetPacket);
 	}
@@ -225,7 +225,7 @@ void CSE_PHSkeleton::STATE_Write(NET_Packet& tNetPacket)
 	tNetPacket.w_u8(_flags.flags);
 	tNetPacket.w_u16(source_id);
 	////////////////////////saving///////////////////////////////////////
-	if (_flags.test(flSavedData))
+	if(_flags.test(flSavedData))
 	{
 		data_save(tNetPacket);
 	}

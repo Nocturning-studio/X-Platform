@@ -34,9 +34,9 @@ extern float ps_r_Detail_l_aniso;
 extern float ps_r_Detail_density;
 
 extern float ps_r_Detail_radius; // Радиус отрисовки
-extern float ps_r_Detail_scale;  // Глобальный масштаб
+extern float ps_r_Detail_scale;	 // Глобальный масштаб
 extern float ps_r_Detail_height; // Смещение по высоте
-extern u32 ps_r_Detail_quality;  // Сам пресет (Low/Med/High)
+extern u32 ps_r_Detail_quality;	 // Сам пресет (Low/Med/High)
 
 extern float ps_r_Tree_w_rot;
 extern float ps_r_Tree_w_speed;
@@ -121,8 +121,8 @@ extern fvec3 ps_r_dof;
 extern u32 ps_r_dof_quality;
 
 extern float ps_r_ls_depth_scale; // 1.0f
-extern float ps_r_ls_depth_bias;	 // -0.0001f
-extern float ps_r_ls_squality;	 // 1.0f
+extern float ps_r_ls_depth_bias;  // -0.0001f
+extern float ps_r_ls_squality;	  // 1.0f
 extern float ps_r_tsm_bias;
 extern float ps_r_ls_far;
 
@@ -131,7 +131,7 @@ extern float ps_r_light_distance_cull;
 
 extern float ps_r_sun_near; // 10.0f
 extern float ps_r_sun_far;
-extern float ps_r_sun_tsm_bias;		   // 0.0001f
+extern float ps_r_sun_tsm_bias; // 0.0001f
 extern float ps_r_sun_depth_far_normal_bias;
 extern float ps_r_sun_depth_far_directional_bias;
 extern float ps_r_sun_depth_far_bias;
@@ -143,10 +143,10 @@ extern float ps_r_sun_depth_near_directional_bias;
 extern float ps_r_sun_depth_near_bias;
 extern float ps_r_sun_depth_normal_bias;
 extern float ps_r_sun_depth_directional_bias;
-extern float ps_r_sun_lumscale;		   // 0.5f
-extern float ps_r_sun_lumscale_hemi;	   // 1.0f
-extern float ps_r_sun_lumscale_amb;	   // 1.0f
-extern u32 ps_r_sun_shafts_quality;			   //=	0;
+extern float ps_r_sun_lumscale;		 // 0.5f
+extern float ps_r_sun_lumscale_hemi; // 1.0f
+extern float ps_r_sun_lumscale_amb;	 // 1.0f
+extern u32 ps_r_sun_shafts_quality;	 //=	0;
 extern xr_token qsun_shafts_token[];
 extern u32 ps_r_shadow_filtering;
 
@@ -154,7 +154,7 @@ extern float ps_r_zfill; // .1f
 
 extern float ps_r_dhemi_scale; // 1.5f
 extern float ps_r_dhemi_sky_scale;
-extern int ps_r_dhemi_count;	  // 5
+extern int ps_r_dhemi_count; // 5
 
 extern float ps_r_slight_fade; // 1.f
 

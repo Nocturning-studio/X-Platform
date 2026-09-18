@@ -34,31 +34,31 @@ CStateManagerZombie::~CStateManagerZombie()
 
 void CStateManagerZombie::execute()
 {
-	if (object->com_man().ta_is_active())
+	if(object->com_man().ta_is_active())
 		return;
 
 	u32 state_id = u32(-1);
 
-	if (!object->is_under_control())
+	if(!object->is_under_control())
 	{
 
 		const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-		if (enemy)
+		if(enemy)
 		{
 			state_id = eStateAttack;
 		}
-		else if (check_state(eStateHearHelpSound))
+		else if(check_state(eStateHearHelpSound))
 		{
 			state_id = eStateHearHelpSound;
 		}
-		else if (object->hear_interesting_sound || object->hear_dangerous_sound)
+		else if(object->hear_interesting_sound || object->hear_dangerous_sound)
 		{
 			state_id = eStateHearInterestingSound;
 		}
 		else
 		{
-			if (can_eat())
+			if(can_eat())
 				state_id = eStateEat;
 			else
 				state_id = eStateRest;

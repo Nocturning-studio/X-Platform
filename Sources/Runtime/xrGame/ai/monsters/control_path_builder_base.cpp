@@ -28,7 +28,7 @@ void CControlPathBuilderBase::reinit()
 {
 	inherited::reinit();
 
-	if (!m_cover_approach)
+	if(!m_cover_approach)
 		m_cover_approach = xr_new<CCoverEvaluatorCloseToEnemy>(&m_man->path_builder().restrictions());
 
 	reset();
@@ -58,7 +58,7 @@ void CControlPathBuilderBase::reset()
 
 void CControlPathBuilderBase::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eventPathBuilt:
 		on_path_built();
@@ -74,7 +74,7 @@ void CControlPathBuilderBase::on_event(ControlCom::EEventType type, ControlCom::
 
 void CControlPathBuilderBase::on_start_control(ControlCom::EControlType type)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eControlPath:
 		m_man->subscribe(this, ControlCom::eventPathBuilt);
@@ -86,7 +86,7 @@ void CControlPathBuilderBase::on_start_control(ControlCom::EControlType type)
 
 void CControlPathBuilderBase::on_stop_control(ControlCom::EControlType type)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eControlPath:
 		m_man->unsubscribe(this, ControlCom::eventPathBuilt);
@@ -105,7 +105,7 @@ void CControlPathBuilderBase::detour_graph_points(u32 game_graph_vertex_id)
 
 void CControlPathBuilderBase::set_dest_direction(const fvec3& dir)
 {
-	if (m_last_time_dir_set + m_time > time())
+	if(m_last_time_dir_set + m_time > time())
 		return;
 	m_dest_dir.set(dir);
 	m_last_time_dir_set = time();
@@ -113,7 +113,7 @@ void CControlPathBuilderBase::set_dest_direction(const fvec3& dir)
 
 void CControlPathBuilderBase::set_target_accessible(STarget& target, const fvec3& position)
 {
-	if (!m_man->path_builder().accessible(position))
+	if(!m_man->path_builder().accessible(position))
 	{
 		target.node = m_man->path_builder().restrictions().accessible_nearest(position, target.position);
 	}
@@ -128,15 +128,15 @@ void CControlPathBuilderBase::set_target_accessible(STarget& target, const fvec3
 void CControlPathBuilderBase::on_path_built()
 {
 	// проверка на конец пути
-	if (!m_man->path_builder().detail().path().empty() &&
-		(m_man->path_builder().detail().curr_travel_point_index() < m_man->path_builder().detail().path().size() - 1))
+	if(!m_man->path_builder().detail().path().empty() &&
+	   (m_man->path_builder().detail().curr_travel_point_index() < m_man->path_builder().detail().path().size() - 1))
 		m_path_end = false;
 }
 
 void CControlPathBuilderBase::on_path_updated()
 {
 	// если level_path_manager failed
-	if (m_man->path_builder().level_path().failed())
+	if(m_man->path_builder().level_path().failed())
 	{
 		m_failed = true;
 		m_man->path_builder().level_path().reset();
@@ -144,15 +144,15 @@ void CControlPathBuilderBase::on_path_updated()
 	}
 
 	// если level_path_manager failed
-	if (m_man->path_builder().detail().failed())
+	if(m_man->path_builder().detail().failed())
 		m_failed = true;
 
 	// проверка на конец пути, если этот путь не конечный
-	if ((m_man->path_builder().detail().path().empty() || (m_man->path_builder().detail().curr_travel_point_index() >=
-														   m_man->path_builder().detail().path().size() - 1)) &&
-		m_man->path_builder().detail().actual() && m_man->path_builder().enabled() &&
-		// конечный путь?
-		m_target_set.node != m_object->ai_location().level_vertex_id() && m_target_actual)
+	if((m_man->path_builder().detail().path().empty() || (m_man->path_builder().detail().curr_travel_point_index() >=
+														  m_man->path_builder().detail().path().size() - 1)) &&
+	   m_man->path_builder().detail().actual() && m_man->path_builder().enabled() &&
+	   // конечный путь?
+	   m_target_set.node != m_object->ai_location().level_vertex_id() && m_target_actual)
 	{
 		m_failed = true;
 	}
@@ -167,7 +167,7 @@ void CControlPathBuilderBase::on_path_end()
 
 void CControlPathBuilderBase::travel_point_changed()
 {
-	if (m_man->path_builder().detail().curr_travel_point_index() >= m_man->path_builder().detail().path().size() - 1)
+	if(m_man->path_builder().detail().curr_travel_point_index() >= m_man->path_builder().detail().path().size() - 1)
 	{
 		on_path_end();
 	}

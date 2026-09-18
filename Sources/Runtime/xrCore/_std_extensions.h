@@ -9,8 +9,8 @@
 #endif
 
 #ifdef MSVC_COMPILER
-typedef pstr   LPSTR;
-typedef pcstr  LPCSTR;
+typedef pstr LPSTR;
+typedef pcstr LPCSTR;
 #endif
 
 typedef char string16[16];
@@ -39,9 +39,9 @@ IC u32 xr_strlen(const char* S)
 
 IC char* xr_strlwr(char* S)
 {
-	if (S)
+	if(S)
 	{
-		for (unsigned char* p = reinterpret_cast<unsigned char*>(S); *p; ++p)
+		for(unsigned char* p = reinterpret_cast<unsigned char*>(S); *p; ++p)
 			*p = static_cast<unsigned char>(tolower(*p));
 	}
 	return S;
@@ -74,16 +74,16 @@ struct XRCORE_API xr_token
 
 IC LPCSTR get_token_name(xr_token* tokens, int key)
 {
-	for (int k = 0; tokens[k].name; k++)
-		if (key == tokens[k].id)
+	for(int k = 0; tokens[k].name; k++)
+		if(key == tokens[k].id)
 			return tokens[k].name;
 	return "";
 }
 
 IC int get_token_id(xr_token* tokens, LPCSTR key)
 {
-	for (int k = 0; tokens[k].name; k++)
-		if (_stricmp(tokens[k].name, key) == 0)
+	for(int k = 0; tokens[k].name; k++)
+		if(_stricmp(tokens[k].name, key) == 0)
 			return tokens[k].id;
 	return -1;
 }

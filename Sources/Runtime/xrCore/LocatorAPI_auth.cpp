@@ -15,9 +15,8 @@ void CLocatorAPI::auth_generate(xr_vector<xr_string>& ignore, xr_vector<xr_strin
 	_o->ignore = ignore;
 	_o->important = important;
 
-	concurrency::create_task([_o]() {
-		FS.auth_runtime(_o);
-	});
+	concurrency::create_task([_o]()
+							 { FS.auth_runtime(_o); });
 }
 
 u64 CLocatorAPI::auth_get()
@@ -36,33 +35,33 @@ void CLocatorAPI::auth_runtime(void* params)
 
 #ifdef DEBUG
 	bool b_extern_auth = !!strstr(Core.Params, "asdf");
-	if (!b_extern_auth)
+	if(!b_extern_auth)
 #endif // DEBUG
 	{
-		for (files_it it = files.begin(); it != files.end(); ++it)
+		for(files_it it = files.begin(); it != files.end(); ++it)
 		{
 			const file& f = *it;
 
 			// test for skip
 			BOOL bSkip = FALSE;
 			u32 s = 0;
-			for (; s < _o->ignore.size(); s++)
+			for(; s < _o->ignore.size(); s++)
 			{
-				if (strstr(f.name, _o->ignore[s].c_str()))
+				if(strstr(f.name, _o->ignore[s].c_str()))
 					bSkip = TRUE;
 			}
 
-			if (bSkip)
+			if(bSkip)
 				continue;
 
 			// test for important
-			for (s = 0; s < _o->important.size(); s++)
+			for(s = 0; s < _o->important.size(); s++)
 			{
-				if ((f.size_real != 0) && strstr(f.name, _o->important[s].c_str()))
+				if((f.size_real != 0) && strstr(f.name, _o->important[s].c_str()))
 				{
 					// crc for file
 					IReader* r = FS.r_open(f.name);
-					if (!r)
+					if(!r)
 					{
 						do_break = true;
 						break;
@@ -70,7 +69,7 @@ void CLocatorAPI::auth_runtime(void* params)
 					u32 crc = crc32(r->pointer(), r->length());
 
 #ifdef DEBUG
-					if (strstr(Core.Params, "qwerty"))
+					if(strstr(Core.Params, "qwerty"))
 						Msg("auth %s = %d", f.name, crc);
 #endif // DEBUG
 
@@ -79,7 +78,7 @@ void CLocatorAPI::auth_runtime(void* params)
 				}
 			}
 
-			if (do_break)
+			if(do_break)
 				break;
 		}
 #ifdef DEBUG

@@ -29,10 +29,10 @@ void CAnomalyDetector::reinit()
 
 void CAnomalyDetector::update_schedule()
 {
-	if (m_active)
+	if(m_active)
 		m_object->feel_touch_update(m_object->Position(), m_radius);
 
-	if (m_storage.empty())
+	if(m_storage.empty())
 		return;
 
 	xr_vector<u16> temp_out_restrictors;
@@ -41,9 +41,9 @@ void CAnomalyDetector::update_schedule()
 	temp_in_restrictors.reserve(m_storage.size());
 
 	// add new restrictions
-	for (ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++)
+	for(ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++)
 	{
-		if (it->time_registered == 0)
+		if(it->time_registered == 0)
 		{
 			temp_in_restrictors.push_back(it->object->ID());
 			it->time_registered = time();
@@ -54,9 +54,9 @@ void CAnomalyDetector::update_schedule()
 
 	// remove old restrictions
 	temp_in_restrictors.clear();
-	for (ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++)
+	for(ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++)
 	{
-		if (it->time_registered + m_time_to_rememeber < time())
+		if(it->time_registered + m_time_to_rememeber < time())
 		{
 			temp_in_restrictors.push_back(it->object->ID());
 		}
@@ -71,23 +71,23 @@ void CAnomalyDetector::update_schedule()
 
 void CAnomalyDetector::on_contact(CObject* obj)
 {
-	if (!m_active)
+	if(!m_active)
 		return;
 
 	CCustomZone* custom_zone = smart_cast<CCustomZone*>(obj);
-	if (!custom_zone)
+	if(!custom_zone)
 		return;
 
 	// if its NOT A restrictor - skip
-	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone)
+	if(custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone)
 		return;
 
-	if (Level().space_restriction_manager().restriction_presented(
-			m_object->control().path_builder().restrictions().in_restrictions(), custom_zone->cName()))
+	if(Level().space_restriction_manager().restriction_presented(
+		   m_object->control().path_builder().restrictions().in_restrictions(), custom_zone->cName()))
 		return;
 
 	ANOMALY_INFO_VEC_IT it = std::find(m_storage.begin(), m_storage.end(), custom_zone);
-	if (it != m_storage.end())
+	if(it != m_storage.end())
 		return;
 
 	SAnomalyInfo info;

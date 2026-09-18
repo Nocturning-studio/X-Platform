@@ -3,7 +3,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> class template_box3D
+template <class T>
+class template_box3D
 {
   public:
 	typedef T TYPE;
@@ -14,7 +15,8 @@ template <class T> class template_box3D
 	typedef template_matrix4x4<T> Tmatrix;
 
   public:
-	union {
+	union
+	{
 		struct
 		{
 			Tvector min;
@@ -188,39 +190,39 @@ template <class T> class template_box3D
 
 		// Take the transformed min & axes and find _new_ extents
 		// Using CPU code in the right place is faster...
-		if (negative(vx.x))
+		if(negative(vx.x))
 			min.x += vx.x;
 		else
 			max.x += vx.x;
-		if (negative(vx.y))
+		if(negative(vx.y))
 			min.y += vx.y;
 		else
 			max.y += vx.y;
-		if (negative(vx.z))
+		if(negative(vx.z))
 			min.z += vx.z;
 		else
 			max.z += vx.z;
-		if (negative(vy.x))
+		if(negative(vy.x))
 			min.x += vy.x;
 		else
 			max.x += vy.x;
-		if (negative(vy.y))
+		if(negative(vy.y))
 			min.y += vy.y;
 		else
 			max.y += vy.y;
-		if (negative(vy.z))
+		if(negative(vy.z))
 			min.z += vy.z;
 		else
 			max.z += vy.z;
-		if (negative(vz.x))
+		if(negative(vz.x))
 			min.x += vz.x;
 		else
 			max.x += vz.x;
-		if (negative(vz.y))
+		if(negative(vz.y))
 			min.y += vz.y;
 		else
 			max.y += vz.y;
-		if (negative(vz.z))
+		if(negative(vz.z))
 			min.z += vz.z;
 		else
 			max.z += vz.z;
@@ -284,17 +286,17 @@ template <class T> class template_box3D
 	// Detects if this box intersect other
 	ICF BOOL intersect(SelfCRef box)
 	{
-		if (max.x < box.min.x)
+		if(max.x < box.min.x)
 			return FALSE;
-		if (max.y < box.min.y)
+		if(max.y < box.min.y)
 			return FALSE;
-		if (max.z < box.min.z)
+		if(max.z < box.min.z)
 			return FALSE;
-		if (min.x > box.max.x)
+		if(min.x > box.max.x)
 			return FALSE;
-		if (min.y > box.max.y)
+		if(min.y > box.max.y)
 			return FALSE;
-		if (min.z > box.max.z)
+		if(min.z > box.max.z)
 			return FALSE;
 		return TRUE;
 	};
@@ -308,62 +310,62 @@ template <class T> class template_box3D
 		rvmin.sub(min, start);
 		rvmax.sub(max, start);
 
-		if (!fis_zero(dir.x))
+		if(!fis_zero(dir.x))
 		{
 			alpha = rvmin.x / dir.x;
 			yt = alpha * dir.y;
-			if (yt >= rvmin.y && yt <= rvmax.y)
+			if(yt >= rvmin.y && yt <= rvmax.y)
 			{
 				zt = alpha * dir.z;
-				if (zt >= rvmin.z && zt <= rvmax.z)
+				if(zt >= rvmin.z && zt <= rvmax.z)
 					return true;
 			}
 			alpha = rvmax.x / dir.x;
 			yt = alpha * dir.y;
-			if (yt >= rvmin.y && yt <= rvmax.y)
+			if(yt >= rvmin.y && yt <= rvmax.y)
 			{
 				zt = alpha * dir.z;
-				if (zt >= rvmin.z && zt <= rvmax.z)
+				if(zt >= rvmin.z && zt <= rvmax.z)
 					return true;
 			}
 		}
 
-		if (!fis_zero(dir.y))
+		if(!fis_zero(dir.y))
 		{
 			alpha = rvmin.y / dir.y;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x && xt <= rvmax.x)
+			if(xt >= rvmin.x && xt <= rvmax.x)
 			{
 				zt = alpha * dir.z;
-				if (zt >= rvmin.z && zt <= rvmax.z)
+				if(zt >= rvmin.z && zt <= rvmax.z)
 					return true;
 			}
 			alpha = rvmax.y / dir.y;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x && xt <= rvmax.x)
+			if(xt >= rvmin.x && xt <= rvmax.x)
 			{
 				zt = alpha * dir.z;
-				if (zt >= rvmin.z && zt <= rvmax.z)
+				if(zt >= rvmin.z && zt <= rvmax.z)
 					return true;
 			}
 		}
 
-		if (!fis_zero(dir.z))
+		if(!fis_zero(dir.z))
 		{
 			alpha = rvmin.z / dir.z;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x && xt <= rvmax.x)
+			if(xt >= rvmin.x && xt <= rvmax.x)
 			{
 				yt = alpha * dir.y;
-				if (yt >= rvmin.y && yt <= rvmax.y)
+				if(yt >= rvmin.y && yt <= rvmax.y)
 					return true;
 			}
 			alpha = rvmax.z / dir.z;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x && xt <= rvmax.x)
+			if(xt >= rvmin.x && xt <= rvmax.x)
 			{
 				yt = alpha * dir.y;
-				if (yt >= rvmin.y && yt <= rvmax.y)
+				if(yt >= rvmin.y && yt <= rvmax.y)
 					return true;
 			}
 		}
@@ -389,56 +391,56 @@ template <class T> class template_box3D
 
 		// Find candidate planes.
 		{
-			if (origin[0] < min[0])
+			if(origin[0] < min[0])
 			{
 				coord[0] = min[0];
 				Inside = FALSE;
-				if (IR(dir[0]))
+				if(IR(dir[0]))
 					MaxT[0] = (min[0] - origin[0]) / dir[0]; // Calculate T distances to candidate planes
 			}
-			else if (origin[0] > max[0])
+			else if(origin[0] > max[0])
 			{
 				coord[0] = max[0];
 				Inside = FALSE;
-				if (IR(dir[0]))
+				if(IR(dir[0]))
 					MaxT[0] = (max[0] - origin[0]) / dir[0]; // Calculate T distances to candidate planes
 			}
 		}
 		{
-			if (origin[1] < min[1])
+			if(origin[1] < min[1])
 			{
 				coord[1] = min[1];
 				Inside = FALSE;
-				if (IR(dir[1]))
+				if(IR(dir[1]))
 					MaxT[1] = (min[1] - origin[1]) / dir[1]; // Calculate T distances to candidate planes
 			}
-			else if (origin[1] > max[1])
+			else if(origin[1] > max[1])
 			{
 				coord[1] = max[1];
 				Inside = FALSE;
-				if (IR(dir[1]))
+				if(IR(dir[1]))
 					MaxT[1] = (max[1] - origin[1]) / dir[1]; // Calculate T distances to candidate planes
 			}
 		}
 		{
-			if (origin[2] < min[2])
+			if(origin[2] < min[2])
 			{
 				coord[2] = min[2];
 				Inside = FALSE;
-				if (IR(dir[2]))
+				if(IR(dir[2]))
 					MaxT[2] = (min[2] - origin[2]) / dir[2]; // Calculate T distances to candidate planes
 			}
-			else if (origin[2] > max[2])
+			else if(origin[2] > max[2])
 			{
 				coord[2] = max[2];
 				Inside = FALSE;
-				if (IR(dir[2]))
+				if(IR(dir[2]))
 					MaxT[2] = (max[2] - origin[2]) / dir[2]; // Calculate T distances to candidate planes
 			}
 		}
 
 		// Ray origin inside bounding box
-		if (Inside)
+		if(Inside)
 		{
 			coord = origin;
 			return rpOriginInside;
@@ -446,45 +448,45 @@ template <class T> class template_box3D
 
 		// Get largest of the maxT's for final choice of intersection
 		u32 WhichPlane = 0;
-		if (MaxT[1] > MaxT[0])
+		if(MaxT[1] > MaxT[0])
 			WhichPlane = 1;
-		if (MaxT[2] > MaxT[WhichPlane])
+		if(MaxT[2] > MaxT[WhichPlane])
 			WhichPlane = 2;
 
 		// Check final candidate actually inside box
-		if (IR(MaxT[WhichPlane]) & 0x80000000)
+		if(IR(MaxT[WhichPlane]) & 0x80000000)
 			return rpNone;
 
-		if (0 == WhichPlane)
+		if(0 == WhichPlane)
 		{
 			// 1 & 2
 			coord[1] = origin[1] + MaxT[0] * dir[1];
-			if ((coord[1] < min[1]) || (coord[1] > max[1]))
+			if((coord[1] < min[1]) || (coord[1] > max[1]))
 				return rpNone;
 			coord[2] = origin[2] + MaxT[0] * dir[2];
-			if ((coord[2] < min[2]) || (coord[2] > max[2]))
+			if((coord[2] < min[2]) || (coord[2] > max[2]))
 				return rpNone;
 			return rpOriginOutside;
 		}
-		if (1 == WhichPlane)
+		if(1 == WhichPlane)
 		{
 			// 0 & 2
 			coord[0] = origin[0] + MaxT[1] * dir[0];
-			if ((coord[0] < min[0]) || (coord[0] > max[0]))
+			if((coord[0] < min[0]) || (coord[0] > max[0]))
 				return rpNone;
 			coord[2] = origin[2] + MaxT[1] * dir[2];
-			if ((coord[2] < min[2]) || (coord[2] > max[2]))
+			if((coord[2] < min[2]) || (coord[2] > max[2]))
 				return rpNone;
 			return rpOriginOutside;
 		}
-		if (2 == WhichPlane)
+		if(2 == WhichPlane)
 		{
 			// 0 & 1
 			coord[0] = origin[0] + MaxT[2] * dir[0];
-			if ((coord[0] < min[0]) || (coord[0] > max[0]))
+			if((coord[0] < min[0]) || (coord[0] > max[0]))
 				return rpNone;
 			coord[1] = origin[1] + MaxT[2] * dir[1];
-			if ((coord[1] < min[1]) || (coord[1] > max[1]))
+			if((coord[1] < min[1]) || (coord[1] > max[1]))
 				return rpNone;
 			return rpOriginOutside;
 		}
@@ -493,7 +495,7 @@ template <class T> class template_box3D
 
 	IC void getpoint(int index, Tvector& result) const
 	{
-		switch (index)
+		switch(index)
 		{
 		case 0:
 			result.set(min.x, min.y, min.z);
@@ -539,7 +541,7 @@ template <class T> class template_box3D
 	IC SelfRef modify(SelfCRef src, const Tmatrix& M)
 	{
 		Tvector pt;
-		for (int i = 0; i < 8; i++)
+		for(int i = 0; i < 8; i++)
 		{
 			src.getpoint(i, pt);
 			M.transform_tiny(pt);
@@ -552,7 +554,8 @@ template <class T> class template_box3D
 typedef template_box3D<float> Fbox;
 typedef template_box3D<float> Fbox3;
 
-template <class T> BOOL _valid(const template_box3D<T>& c)
+template <class T>
+BOOL _valid(const template_box3D<T>& c)
 {
 	return _valid(c.min) && _valid(c.max);
 }

@@ -41,7 +41,7 @@ class CSwitchPredicate
 
 	IC bool operator()(CALifeLevelRegistry::_iterator& i, u64 cycle_count, bool) const
 	{
-		if ((*i).second->m_switch_counter == cycle_count)
+		if((*i).second->m_switch_counter == cycle_count)
 			return (false);
 
 		(*i).second->m_switch_counter = cycle_count;
@@ -82,21 +82,21 @@ float CALifeUpdateManager::shedule_Scale()
 
 void CALifeUpdateManager::update_switch()
 {
-	//OPTICK_EVENT("CALifeUpdateManager::update_switch");
+	// OPTICK_EVENT("CALifeUpdateManager::update_switch");
 
 	init_ef_storage();
 
 	START_PROFILE("ALife/switch");
-	reset_online_counter(); 
+	reset_online_counter();
 	graph().level().update(CSwitchPredicate(this));
 	STOP_PROFILE
 }
 
 void CALifeUpdateManager::update_scheduled(bool init_ef)
 {
-	//OPTICK_EVENT("CALifeUpdateManager::update_scheduled");
+	// OPTICK_EVENT("CALifeUpdateManager::update_scheduled");
 
-	if (init_ef)
+	if(init_ef)
 		init_ef_storage();
 
 	START_PROFILE("ALife/scheduled");
@@ -116,10 +116,10 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 {
 	ISheduled::shedule_Update(dt);
 
-	if (!initialized())
+	if(!initialized())
 		return;
 
-	if (!m_first_time)
+	if(!m_first_time)
 	{
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update),
 											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
@@ -150,7 +150,7 @@ void CALifeUpdateManager::init_ef_storage() const
 
 bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
 {
-	if (m_changing_level)
+	if(m_changing_level)
 		return (false);
 
 	//	prepare_objects_for_save		();
@@ -186,7 +186,7 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
 	graph().actor()->o_torso.pitch = graph().actor()->o_Angle.x;
 	graph().actor()->o_torso.roll = 0.f;
 
-	if (graph().actor()->m_holderID != 0xffff)
+	if(graph().actor()->m_holderID != 0xffff)
 	{
 		holder = objects().object(graph().actor()->m_holderID);
 
@@ -216,7 +216,7 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
 	graph().actor()->o_Angle = safe_angles;
 	graph().actor()->o_torso = safe_torso;
 
-	if (graph().actor()->m_holderID != 0xffff)
+	if(graph().actor()->m_holderID != 0xffff)
 	{
 		VERIFY(holder);
 		holder->m_tGraphID = holder_safe_graph_vertex_id;
@@ -252,7 +252,7 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I).second->on_register();
 
 	save(save_name);
@@ -271,7 +271,7 @@ void CALifeUpdateManager::load(LPCSTR game_name, bool no_assert, bool new_only)
 
 	strcpy(g_last_saved_game, game_name);
 
-	if (new_only || !CALifeStorageManager::load(game_name))
+	if(new_only || !CALifeStorageManager::load(game_name))
 	{
 		R_ASSERT3(new_only || no_assert && xr_strlen(game_name), "Cannot find the specified saved game ", game_name);
 		new_game(game_name);
@@ -297,7 +297,7 @@ bool CALifeUpdateManager::load_game(LPCSTR game_name, bool no_assert)
 		string_path temp, file_name;
 		strconcat(sizeof(temp), temp, game_name, SAVE_EXTENSION);
 		FS.update_path(file_name, "$game_saves$", temp);
-		if (!FS.exist(file_name))
+		if(!FS.exist(file_name))
 		{
 			R_ASSERT3(no_assert, "There is no saved game ", file_name);
 			return (false);
@@ -340,23 +340,23 @@ void CALifeUpdateManager::jump_to_level(LPCSTR level_name) const
 	GraphEngineSpace::CGameLevelParams evaluator(level.id());
 	bool failed = !ai().graph_engine().search(ai().game_graph(), graph().actor()->m_tGraphID, GameGraph::_GRAPH_ID(-1),
 											  0, evaluator);
-	if (failed)
+	if(failed)
 	{
 		Msg("! Cannot build path via game graph from the current level to the level %s!", level_name);
 		float min_dist = flt_max;
 		fvec3 current = ai().game_graph().vertex(graph().actor()->m_tGraphID)->game_point();
 		GameGraph::_GRAPH_ID n = ai().game_graph().header().vertex_count();
-		for (GameGraph::_GRAPH_ID i = 0; i < n; ++i)
-			if (ai().game_graph().vertex(i)->level_id() == level.id())
+		for(GameGraph::_GRAPH_ID i = 0; i < n; ++i)
+			if(ai().game_graph().vertex(i)->level_id() == level.id())
 			{
 				float distance = ai().game_graph().vertex(i)->game_point().distance_to_sqr(current);
-				if (distance < min_dist)
+				if(distance < min_dist)
 				{
 					min_dist = distance;
 					dest = i;
 				}
 			}
-		if (!ai().game_graph().vertex(dest))
+		if(!ai().game_graph().vertex(dest))
 		{
 			Msg("! There is no game vertices on the level %s, cannot jump to the specified level", level_name);
 			return;
@@ -381,14 +381,14 @@ void CALifeUpdateManager::teleport_object(ALife::_OBJECT_ID id, GameGraph::_GRAP
 										  u32 level_vertex_id, const fvec3& position)
 {
 	CSE_ALifeDynamicObject* object = objects().object(id, true);
-	if (!object)
+	if(!object)
 	{
 		Msg("! cannot teleport entity with id %d", id);
 		return;
 	}
 
 #ifdef DEBUG
-	if (psAI_Flags.test(aiALife))
+	if(psAI_Flags.test(aiALife))
 	{
 		Msg("[LSS] teleporting object [%s][%s][%d] from level [%s], position [%f][%f][%f] to level [%s], position "
 			"[%f][%f][%f]",
@@ -400,13 +400,13 @@ void CALifeUpdateManager::teleport_object(ALife::_OBJECT_ID id, GameGraph::_GRAP
 	}
 #endif
 
-	if (object->m_bOnline)
+	if(object->m_bOnline)
 		switch_offline(object);
 	graph().change(object, object->m_tGraphID, game_vertex_id);
 	object->m_tNodeID = level_vertex_id;
 	object->o_Position = position;
 	CSE_ALifeMonsterAbstract* monster_abstract = smart_cast<CSE_ALifeMonsterAbstract*>(object);
-	if (monster_abstract)
+	if(monster_abstract)
 		monster_abstract->m_tNextGraphID = object->m_tGraphID;
 }
 
@@ -414,7 +414,7 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 										  const RestrictionSpace::ERestrictorTypes& restriction_type)
 {
 	CSE_ALifeDynamicObject* object = objects().object(id, true);
-	if (!object)
+	if(!object)
 	{
 #ifdef DEBUG
 		Msg("! cannot add restriction with id %d to the entity with id %d, because there is no creature with the "
@@ -425,7 +425,7 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 	}
 
 	CSE_ALifeDynamicObject* object_restrictor = objects().object(restriction_id, true);
-	if (!object_restrictor)
+	if(!object_restrictor)
 	{
 #ifdef DEBUG
 		Msg("! cannot add restriction with id %d to the entity with id %d, because there is no space restrictor with "
@@ -436,7 +436,7 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 	}
 
 	CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(object);
-	if (!creature)
+	if(!creature)
 	{
 #ifdef DEBUG
 		Msg("! cannot add restriction with id %d to the entity with id %d, because there is an object with the "
@@ -447,7 +447,7 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 	}
 
 	CSE_ALifeSpaceRestrictor* restrictor = smart_cast<CSE_ALifeSpaceRestrictor*>(object_restrictor);
-	if (!restrictor)
+	if(!restrictor)
 	{
 #ifdef DEBUG
 		Msg("! cannot add restriction with id %d to the entity with id %d, because there is an object with the "
@@ -457,12 +457,13 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 		return;
 	}
 
-	switch (restriction_type)
+	switch(restriction_type)
 	{
-	case RestrictionSpace::eRestrictorTypeOut: {
+	case RestrictionSpace::eRestrictorTypeOut:
+	{
 #ifdef DEBUG
-		if (std::find(creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(),
-					  restriction_id) != creature->m_dynamic_out_restrictions.end())
+		if(std::find(creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(),
+					 restriction_id) != creature->m_dynamic_out_restrictions.end())
 		{
 			Msg("! cannot add out-restriction with id %d, name %s to the entity with id %d, name %s, because it is "
 				"already added",
@@ -475,10 +476,11 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 
 		break;
 	}
-	case RestrictionSpace::eRestrictorTypeIn: {
+	case RestrictionSpace::eRestrictorTypeIn:
+	{
 #ifdef DEBUG
-		if (std::find(creature->m_dynamic_in_restrictions.begin(), creature->m_dynamic_in_restrictions.end(),
-					  restriction_id) != creature->m_dynamic_in_restrictions.end())
+		if(std::find(creature->m_dynamic_in_restrictions.begin(), creature->m_dynamic_in_restrictions.end(),
+					 restriction_id) != creature->m_dynamic_in_restrictions.end())
 		{
 			Msg("! cannot add in-restriction with id %d, name %s to the entity with id %d, name %s, because it is "
 				"already added",
@@ -491,7 +493,8 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 
 		break;
 	}
-	default: {
+	default:
+	{
 		Msg("! Invalid restriction type!");
 		return;
 	}
@@ -502,7 +505,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 											 const RestrictionSpace::ERestrictorTypes& restriction_type)
 {
 	CSE_ALifeDynamicObject* object = objects().object(id, true);
-	if (!object)
+	if(!object)
 	{
 #ifdef DEBUG
 		Msg("! cannot remove restriction with id %d to the entity with id %d, because there is no creature with the "
@@ -513,7 +516,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 	}
 
 	CSE_ALifeDynamicObject* object_restrictor = objects().object(restriction_id, true);
-	if (!object_restrictor)
+	if(!object_restrictor)
 	{
 #ifdef DEBUG
 		Msg("! cannot remove restriction with id %d to the entity with id %d, because there is no space restrictor "
@@ -524,7 +527,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 	}
 
 	CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(object);
-	if (!creature)
+	if(!creature)
 	{
 #ifdef DEBUG
 		Msg("! cannot remove restriction with id %d to the entity with id %d, because there is an object with the "
@@ -535,7 +538,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 	}
 
 	CSE_ALifeSpaceRestrictor* restrictor = smart_cast<CSE_ALifeSpaceRestrictor*>(object_restrictor);
-	if (!restrictor)
+	if(!restrictor)
 	{
 #ifdef DEBUG
 		Msg("! cannot remove restriction with id %d to the entity with id %d, because there is an object with the "
@@ -545,12 +548,13 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 		return;
 	}
 
-	switch (restriction_type)
+	switch(restriction_type)
 	{
-	case RestrictionSpace::eRestrictorTypeOut: {
+	case RestrictionSpace::eRestrictorTypeOut:
+	{
 		xr_vector<ALife::_OBJECT_ID>::iterator I = std::find(
 			creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(), restriction_id);
-		if (I == creature->m_dynamic_out_restrictions.end())
+		if(I == creature->m_dynamic_out_restrictions.end())
 		{
 #ifdef DEBUG
 			Msg("~ cannot remove restriction with id [%d][%s] to the entity with id [%d][%s], because it is not added",
@@ -563,10 +567,11 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 
 		break;
 	}
-	case RestrictionSpace::eRestrictorTypeIn: {
+	case RestrictionSpace::eRestrictorTypeIn:
+	{
 		xr_vector<ALife::_OBJECT_ID>::iterator I = std::find(creature->m_dynamic_in_restrictions.begin(),
 															 creature->m_dynamic_in_restrictions.end(), restriction_id);
-		if (I == creature->m_dynamic_in_restrictions.end())
+		if(I == creature->m_dynamic_in_restrictions.end())
 		{
 #ifdef DEBUG
 			Msg("~ cannot remove restriction with id [%d][%s] to the entity with id [%d][%s], because it is not added",
@@ -579,7 +584,8 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 
 		break;
 	}
-	default: {
+	default:
+	{
 		Msg("! Invalid restriction type!");
 		return;
 	}
@@ -590,7 +596,7 @@ void CALifeUpdateManager::remove_all_restrictions(ALife::_OBJECT_ID id,
 												  const RestrictionSpace::ERestrictorTypes& restriction_type)
 {
 	CSE_ALifeDynamicObject* object = objects().object(id, true);
-	if (!object)
+	if(!object)
 	{
 #ifdef DEBUG
 		Msg("! cannot remove restrictions to the entity with id %d, because there is no creature with the specified id",
@@ -600,7 +606,7 @@ void CALifeUpdateManager::remove_all_restrictions(ALife::_OBJECT_ID id,
 	}
 
 	CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(object);
-	if (!creature)
+	if(!creature)
 	{
 #ifdef DEBUG
 		Msg("! cannot remove restriction to the entity with id %d, because there is an object with the specified id, "
@@ -610,13 +616,15 @@ void CALifeUpdateManager::remove_all_restrictions(ALife::_OBJECT_ID id,
 		return;
 	}
 
-	switch (restriction_type)
+	switch(restriction_type)
 	{
-	case RestrictionSpace::eRestrictorTypeOut: {
+	case RestrictionSpace::eRestrictorTypeOut:
+	{
 		creature->m_dynamic_out_restrictions.clear();
 		break;
 	}
-	case RestrictionSpace::eRestrictorTypeIn: {
+	case RestrictionSpace::eRestrictorTypeIn:
+	{
 		creature->m_dynamic_in_restrictions.clear();
 		break;
 	}

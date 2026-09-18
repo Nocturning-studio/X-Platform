@@ -37,7 +37,7 @@ void CUIZoneMap::Init()
 	CUIXmlInit xml_init;
 	xml_init.InitStatic(uiXml, "minimap:background", 0, &m_background);
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		xml_init.InitStatic(uiXml, "minimap:background:dist_text", 0, &m_pointerDistanceText);
 		m_background.AttachChild(&m_pointerDistanceText);
@@ -62,7 +62,7 @@ void CUIZoneMap::Init()
 
 void CUIZoneMap::Render()
 {
-	//OPTICK_EVENT("CUIZoneMap::Render");
+	// OPTICK_EVENT("CUIZoneMap::Render");
 
 	m_clipFrame.Draw();
 	m_background.Draw();
@@ -81,9 +81,9 @@ void CUIZoneMap::UpdateRadar(fvec3 pos)
 	m_background.Update();
 	m_activeMap->SetActivePoint(pos);
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
-		if (m_activeMap->GetPointerDistance() > 0.5f)
+		if(m_activeMap->GetPointerDistance() > 0.5f)
 		{
 			string64 str;
 			sprintf_s(str, "%.1f m.", m_activeMap->GetPointerDistance());
@@ -110,7 +110,7 @@ void CUIZoneMap::SetupCurrentMap()
 {
 	CInifile* pLtx = pGameIni;
 
-	if (!pLtx->section_exist(Level().name()))
+	if(!pLtx->section_exist(Level().name()))
 		pLtx = Level().pLevel;
 
 	m_activeMap->Init(Level().name(), *pLtx, "hud\\default");
@@ -123,12 +123,12 @@ void CUIZoneMap::SetupCurrentMap()
 	float zoom_factor = float(m_clipFrame.GetWndRect().width()) / 100.0f;
 
 	LPCSTR ln = Level().name().c_str();
-	if (pGameIni->section_exist(ln))
+	if(pGameIni->section_exist(ln))
 	{
-		if (pGameIni->line_exist(ln, "minimap_zoom"))
+		if(pGameIni->line_exist(ln, "minimap_zoom"))
 			zoom_factor *= pGameIni->r_float(ln, "minimap_zoom");
 	}
-	else if (g_pGameLevel->pLevel->section_exist("minimap_zoom"))
+	else if(g_pGameLevel->pLevel->section_exist("minimap_zoom"))
 	{
 		zoom_factor *= g_pGameLevel->pLevel->r_float("minimap_zoom", "value");
 	}

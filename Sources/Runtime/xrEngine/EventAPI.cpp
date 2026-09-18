@@ -37,18 +37,18 @@ class ENGINE_API CEvent
 
 	void Attach(IEventReceiver* H)
 	{
-		if (std::find(Handlers.begin(), Handlers.end(), H) == Handlers.end())
+		if(std::find(Handlers.begin(), Handlers.end(), H) == Handlers.end())
 			Handlers.push_back(H);
 	}
 	void Detach(IEventReceiver* H)
 	{
 		xr_vector<IEventReceiver*>::iterator I = std::find(Handlers.begin(), Handlers.end(), H);
-		if (I != Handlers.end())
+		if(I != Handlers.end())
 			Handlers.erase(I);
 	}
 	void Signal(u64 P1, u64 P2)
 	{
-		for (u32 I = 0; I < Handlers.size(); I++)
+		for(u32 I = 0; I < Handlers.size(); I++)
 			Handlers[I]->OnEvent(this, P1, P2);
 	}
 };
@@ -73,7 +73,7 @@ IC bool ev_sort(CEvent* E1, CEvent* E2)
 void CEventAPI::Dump()
 {
 	concurrency::parallel_sort(Events.begin(), Events.end(), ev_sort);
-	for (u32 i = 0; i < Events.size(); i++)
+	for(u32 i = 0; i < Events.size(); i++)
 		Msg("* [%d] %s", Events[i]->RefCount(), Events[i]->GetFull());
 }
 
@@ -81,9 +81,9 @@ EVENT CEventAPI::Create(const char* N)
 {
 	CS.Enter();
 	CEvent E(N);
-	for (xr_vector<CEvent*>::iterator I = Events.begin(); I != Events.end(); I++)
+	for(xr_vector<CEvent*>::iterator I = Events.begin(); I != Events.end(); I++)
 	{
-		if ((*I)->Equal(E))
+		if((*I)->Equal(E))
 		{
 			EVENT F = *I;
 			F->dwRefCount++;
@@ -101,7 +101,7 @@ void CEventAPI::Destroy(EVENT& E)
 {
 	CS.Enter();
 	E->dwRefCount--;
-	if (E->dwRefCount == 0)
+	if(E->dwRefCount == 0)
 	{
 		xr_vector<CEvent*>::iterator I = std::find(Events.begin(), Events.end(), E);
 		R_ASSERT(I != Events.end());
@@ -122,7 +122,7 @@ EVENT CEventAPI::Handler_Attach(const char* N, IEventReceiver* H)
 
 void CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
 {
-	if (0 == E)
+	if(0 == E)
 		return;
 	CS.Enter();
 	E->Detach(H);
@@ -165,11 +165,11 @@ void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
 #ifdef DEBUG
 void msParse(LPCSTR c)
 {
-	if (0 == xr_stricmp(c, "exit"))
+	if(0 == xr_stricmp(c, "exit"))
 	{
 		Console->Execute("quit");
 	}
-	if (0 == xr_stricmp(c, "quit"))
+	if(0 == xr_stricmp(c, "quit"))
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
 		Console->Execute("quit");
@@ -183,12 +183,12 @@ void CEventAPI::OnFrame()
 	msRead();
 #endif
 	CS.Enter();
-	if (Events_Deferred.empty())
+	if(Events_Deferred.empty())
 	{
 		CS.Leave();
 		return;
 	}
-	for (u32 I = 0; I < Events_Deferred.size(); I++)
+	for(u32 I = 0; I < Events_Deferred.size(); I++)
 	{
 		Deferred& DEF = Events_Deferred[I];
 		Signal(DEF.E, DEF.P1, DEF.P2);
@@ -201,15 +201,15 @@ void CEventAPI::OnFrame()
 BOOL CEventAPI::Peek(LPCSTR EName)
 {
 	CS.Enter();
-	if (Events_Deferred.empty())
+	if(Events_Deferred.empty())
 	{
 		CS.Leave();
 		return FALSE;
 	}
-	for (u32 I = 0; I < Events_Deferred.size(); I++)
+	for(u32 I = 0; I < Events_Deferred.size(); I++)
 	{
 		Deferred& DEF = Events_Deferred[I];
-		if (xr_stricmp(DEF.E->GetFull(), EName) == 0)
+		if(xr_stricmp(DEF.E->GetFull(), EName) == 0)
 		{
 			CS.Leave();
 			return TRUE;
@@ -222,8 +222,8 @@ BOOL CEventAPI::Peek(LPCSTR EName)
 void CEventAPI::_destroy()
 {
 	Dump();
-	if (Events.empty())
+	if(Events.empty())
 		Events.clear();
-	if (Events_Deferred.empty())
+	if(Events_Deferred.empty())
 		Events_Deferred.clear();
 }

@@ -12,7 +12,7 @@ void CRenderTarget::u_calc_tc_duality_ss(fvec2& r0, fvec2& r1, fvec2& l0, fvec2&
 	// Calculate ordinaty TCs from blur and SS
 	float tw = float(dwWidth);
 	float th = float(dwHeight);
-	if (dwHeight != Device.dwHeight)
+	if(dwHeight != Device.dwHeight)
 		RenderImplementation.EffectorsManager->set_blur(1.f);
 	fvec2 shift, p0, p1;
 	shift.set(.5f / tw, .5f / th);
@@ -77,7 +77,7 @@ void CRender::render_effectors_pass_color_blind_filter()
 	fvec3 GreenMatrix;
 	fvec3 BlueMatrix;
 
-	switch (ps_r_color_blind_mode)
+	switch(ps_r_color_blind_mode)
 	{
 	case 1: // achromatomaly
 		RedMatrix.set(0.618, 0.32, 0.062);
@@ -162,7 +162,7 @@ void CRender::render_effectors_pass_combine()
 
 	float NightVisionEnabled = 0.0f;
 
-	if (g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
+	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
 		NightVisionEnabled = 1.0f;
 
 	// Fill vertex buffer
@@ -179,15 +179,15 @@ void CRender::render_effectors_pass_combine()
 	RenderBackend.Vertex.Unlock(4, RenderTarget->g_effectors.stride());
 
 	// Actual rendering
-	RenderBackend.set_Constant(	"c_colormap", 
-								RenderImplementation.EffectorsManager->get_cm_imfluence(),
-							    RenderImplementation.EffectorsManager->get_cm_interpolate());
+	RenderBackend.set_Constant("c_colormap",
+							   RenderImplementation.EffectorsManager->get_cm_imfluence(),
+							   RenderImplementation.EffectorsManager->get_cm_interpolate());
 
-	RenderBackend.set_Constant(	"c_brightness", 
-								color_get_R(p_brightness) / 255.f, 
-								color_get_G(p_brightness) / 255.f, 
-								color_get_B(p_brightness) / 255.f, 
-								RenderImplementation.EffectorsManager->get_noise());
+	RenderBackend.set_Constant("c_brightness",
+							   color_get_R(p_brightness) / 255.f,
+							   color_get_G(p_brightness) / 255.f,
+							   color_get_B(p_brightness) / 255.f,
+							   RenderImplementation.EffectorsManager->get_noise());
 
 	RenderBackend.set_Constant("night_vision_enabled", NightVisionEnabled);
 

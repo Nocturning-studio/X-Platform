@@ -8,7 +8,8 @@
 
 #pragma once
 
-template <typename _edge_weight_type, typename _vertex_type> class CEdge
+template <typename _edge_weight_type, typename _vertex_type>
+class CEdge
 {
   public:
 	typedef _edge_weight_type _edge_weight_type;

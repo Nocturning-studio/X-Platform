@@ -11,7 +11,8 @@ class XRCORE_API shared_value
 	}
 };
 
-template <class T> class shared_container
+template <class T>
+class shared_container
 {
   protected:
 	typedef xr_map<shared_str, T*> SharedMap;
@@ -26,17 +27,18 @@ template <class T> class shared_container
 	{
 		VERIFY(container.empty());
 	}
-	template <typename _on_new> T* dock(shared_str key, const _on_new& p)
+	template <typename _on_new>
+	T* dock(shared_str key, const _on_new& p)
 	{
 		T* result = 0;
 		SharedMapIt I = container.find(key);
-		if (I != container.end())
+		if(I != container.end())
 			result = I->second;
-		if (0 == result)
+		if(0 == result)
 		{
 			result = xr_new<T>();
 			result->m_ref_cnt = 0;
-			if (p(key, result))
+			if(p(key, result))
 				container.insert(mk_pair(key, result));
 			else
 				xr_delete(result);
@@ -47,9 +49,9 @@ template <class T> class shared_container
 	{
 		SharedMapIt it = container.begin();
 		SharedMapIt _E = container.end();
-		if (force_destroy)
+		if(force_destroy)
 		{
-			for (; it != _E; it++)
+			for(; it != _E; it++)
 			{
 				T* sv = it->second;
 				xr_delete(sv);
@@ -58,10 +60,10 @@ template <class T> class shared_container
 		}
 		else
 		{
-			for (; it != _E;)
+			for(; it != _E;)
 			{
 				T* sv = it->second;
-				if (0 == sv->m_ref_cnt)
+				if(0 == sv->m_ref_cnt)
 				{
 					SharedMapIt i_current = it;
 					SharedMapIt i_next = ++it;
@@ -78,7 +80,8 @@ template <class T> class shared_container
 	}
 };
 
-template <class T> class shared_item
+template <class T>
+class shared_item
 {
   protected:
 	T* p_;
@@ -87,16 +90,16 @@ template <class T> class shared_item
 	// ref-counting
 	void destroy()
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return;
 		p_->m_ref_cnt--;
-		if (0 == p_->m_ref_cnt)
+		if(0 == p_->m_ref_cnt)
 			p_ = 0;
 	}
 	void create(shared_item const& rhs)
 	{
 		T* v = rhs.p_;
-		if (0 != v)
+		if(0 != v)
 			v->m_ref_cnt++;
 		destroy();
 		p_ = v;
@@ -128,10 +131,11 @@ template <class T> class shared_item
 		return p_;
 	}
 	// creating
-	template <typename _on_new> void create(shared_str key, shared_container<T>* container, const _on_new& p)
+	template <typename _on_new>
+	void create(shared_str key, shared_container<T>* container, const _on_new& p)
 	{
 		T* v = container->dock(key, p);
-		if (0 != v)
+		if(0 != v)
 			v->m_ref_cnt++;
 		destroy();
 		p_ = v;

@@ -10,7 +10,7 @@ void CRender::RenderScene()
 {
 	PROFILE_FUNCTION();
 
-	if (m_bFirstFrameAfterReset)
+	if(m_bFirstFrameAfterReset)
 	{
 		m_saved_viewproj.set(Engine.RenderView.ViewProjection);
 		m_saved_invview.invert(Engine.RenderView.View);
@@ -31,9 +31,9 @@ void CRender::RenderScene()
 
 	render_ambient_occlusion();
 
-	//render_bent_normals();
+	// render_bent_normals();
 
-	if (ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
+	if(ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
 	{
 		create_hi_z_mip_chain();
 
@@ -52,12 +52,12 @@ void CRender::RenderScene()
 
 	render_stage_forward();
 
-	//if (ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
+	// if (ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
 	combine_sun_shafts();
 
 	render_postprocess();
 
-	if (g_pGamePersistent)
+	if(g_pGamePersistent)
 		g_pGamePersistent->OnRenderPPUI_main();
 
 	if(!m_bFirstFrameAfterReset)

@@ -20,11 +20,11 @@ void CPHCollisionDamageReceiver::Init()
 	CPhysicsShellHolder* sh = PPhysicsShellHolder();
 	CKinematics* K = smart_cast<CKinematics*>(sh->Visual());
 	CInifile* ini = K->LL_UserData();
-	if (ini->section_exist("collision_damage"))
+	if(ini->section_exist("collision_damage"))
 	{
 
 		CInifile::Sect& data = ini->r_section("collision_damage");
-		for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
+		for(CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
 		{
 			const CInifile::Item& item = *I;
 			u16 index = K->LL_BoneID(*item.first);
@@ -32,7 +32,7 @@ void CPHCollisionDamageReceiver::Init()
 			BoneInsert(index, float(atof(*item.second)));
 			CODEGeom* og = sh->PPhysicsShell()->get_GeomByID(index);
 			// R_ASSERT3(og, "collision damage bone has no physics collision", *item.first);
-			if (og)
+			if(og)
 				og->add_obj_contact_cb(CollisionCallback);
 		}
 	}
@@ -41,7 +41,7 @@ void CPHCollisionDamageReceiver::Init()
 void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1,
 												   SGameMtl* material_2)
 {
-	if (material_1->Flags.test(SGameMtl::flPassable) || material_2->Flags.test(SGameMtl::flPassable))
+	if(material_1->Flags.test(SGameMtl::flPassable) || material_2->Flags.test(SGameMtl::flPassable))
 		return;
 	dBodyID b1 = dGeomGetBody(c.geom.g1);
 	dBodyID b2 = dGeomGetBody(c.geom.g2);
@@ -53,7 +53,7 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dC
 	VERIFY(ud_self);
 	CPhysicsShellHolder* o_self = ud_self->ph_ref_object;
 	CPhysicsShellHolder* o_damager = NULL;
-	if (ud_damager)
+	if(ud_damager)
 		o_damager = ud_damager->ph_ref_object;
 	u16 source_id = o_damager ? o_damager->ID() : u16(-1);
 	CPHCollisionDamageReceiver* dr = o_self->PHCollisionDamageReceiver();
@@ -61,15 +61,15 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dC
 
 	float damager_material_factor = material_damager->fBounceDamageFactor;
 
-	if (ud_damager && ud_damager->ph_object && ud_damager->ph_object->CastType() == CPHObject::tpCharacter)
+	if(ud_damager && ud_damager->ph_object && ud_damager->ph_object->CastType() == CPHObject::tpCharacter)
 	{
 		CCharacterPhysicsSupport* phs = o_damager->character_physics_support();
-		if (phs->IsSpecificDamager())
+		if(phs->IsSpecificDamager())
 			damager_material_factor = phs->BonceDamageFactor();
 	}
 
 	float dfs = (material_self->fBounceDamageFactor + damager_material_factor);
-	if (fis_zero(dfs))
+	if(fis_zero(dfs))
 		return;
 	fvec3 dir;
 	dir.set(*(fvec3*)c.geom.normal);
@@ -84,10 +84,10 @@ void CPHCollisionDamageReceiver::Hit(u16 source_id, u16 bone_id, float power, co
 {
 
 	DAMAGE_BONES_I i = FindBone(bone_id);
-	if (i == m_controled_bones.end())
+	if(i == m_controled_bones.end())
 		return;
 	power *= i->second;
-	if (power < hit_threthhold)
+	if(power < hit_threthhold)
 		return;
 
 	NET_Packet P;

@@ -48,7 +48,7 @@ class CBlender_multiple_usage : public IBlender
 	{
 		IBlender::Load(fs, version);
 		xrPREAD_PROP(fs, xrPID_BOOL, oBlend);
-		if (version >= 1)
+		if(version >= 1)
 		{
 			xrPREAD_PROP(fs, xrPID_BOOL, oNotAnTree);
 		}
@@ -62,7 +62,7 @@ class CBlender_multiple_usage : public IBlender
 		LPCSTR tvs = "multiple_usage_object_animated";
 		LPCSTR tvs_s = "shadow_depth_stage_multiple_usage_object_animated";
 
-		if (oNotAnTree.value)
+		if(oNotAnTree.value)
 		{
 			tvs = "multiple_usage_object";
 			tvs_s = "shadow_depth_stage_multiple_usage_object";
@@ -75,7 +75,7 @@ class CBlender_multiple_usage : public IBlender
 		bool bUseCustomWeight = false;
 		string_path CustomWeightTexture;
 
-		#pragma todo("NSDeathman to NSDeathman : Rewrite")
+#pragma todo("NSDeathman to NSDeathman : Rewrite")
 		bool bUseConfigurator = false;
 		CInifile* MaterialConfiguration;
 		string_path MaterialConfiguratorSearchPath;
@@ -84,7 +84,7 @@ class CBlender_multiple_usage : public IBlender
 		strconcat(sizeof(MaterialConfiguratorSearchPath), MaterialConfiguratorSearchPath, MaterialConfiguratorSearchPath, "_material_configuration.ltx");
 		FS.update_path(MaterialConfiguratorRealPath, "$game_textures$", MaterialConfiguratorSearchPath);
 
-		if (FS.exist(MaterialConfiguratorRealPath))
+		if(FS.exist(MaterialConfiguratorRealPath))
 		{
 			MaterialConfiguration = CInifile::Create(MaterialConfiguratorRealPath);
 			bUseConfigurator = true;
@@ -101,18 +101,18 @@ class CBlender_multiple_usage : public IBlender
 		bool bInvertWeightAxis = false;
 		int WindTypeNum = 0;
 
-		if (bUseConfigurator)
+		if(bUseConfigurator)
 		{
 			LPCSTR AlphaTestType = GetStringValueIfExist("material_configuration", "shadows_alpha_test_type",
 														 "alpha_hashed", MaterialConfiguration);
 
-			if (StringsIsSimilar(AlphaTestType, "alpha_clip"))
+			if(StringsIsSimilar(AlphaTestType, "alpha_clip"))
 				bNeedHashedAlphaTest = false;
 
-			if (StringsIsSimilar(AlphaTestType, "alpha_hashed"))
+			if(StringsIsSimilar(AlphaTestType, "alpha_hashed"))
 				bNeedHashedAlphaTest = true;
 
-			if (StringsIsSimilar(AlphaTestType, "none"))
+			if(StringsIsSimilar(AlphaTestType, "none"))
 			{
 				bNeedHashedAlphaTest = false;
 				bUseAlphaTest = false;
@@ -125,13 +125,13 @@ class CBlender_multiple_usage : public IBlender
 			bUseWind = GetBoolValueIfExist("wind_configuration", "use_wind", bUseWind, MaterialConfiguration);
 			LPCSTR WindType = GetStringValueIfExist("wind_configuration", "wind_type", "none", MaterialConfiguration);
 
-			if (StringsIsSimilar(WindType, "legacy"))
+			if(StringsIsSimilar(WindType, "legacy"))
 				WindTypeNum = 0;
-			else if (StringsIsSimilar(WindType, "trunk"))
+			else if(StringsIsSimilar(WindType, "trunk"))
 				WindTypeNum = 1;
-			else if (StringsIsSimilar(WindType, "branchcard"))
+			else if(StringsIsSimilar(WindType, "branchcard"))
 				WindTypeNum = 2;
-			else if (StringsIsSimilar(WindType, "leafcard"))
+			else if(StringsIsSimilar(WindType, "leafcard"))
 				WindTypeNum = 3;
 
 			bUseXAxisAsWeight = GetBoolValueIfExist("wind_configuration", "use_x_axis_as_weight", bUseXAxisAsWeight, MaterialConfiguration);
@@ -143,7 +143,7 @@ class CBlender_multiple_usage : public IBlender
 		// Get weight texture
 		strcpy_s(CustomWeightTexture, sizeof(CustomWeightTexture), AlbedoTexture);
 		strconcat(sizeof(CustomWeightTexture), CustomWeightTexture, CustomWeightTexture, "_weight");
-		if (FS.exist(Dummy, "$game_textures$", CustomWeightTexture, ".dds"))
+		if(FS.exist(Dummy, "$game_textures$", CustomWeightTexture, ".dds"))
 			bUseCustomWeight = true;
 
 		// Get opacity texture
@@ -151,10 +151,10 @@ class CBlender_multiple_usage : public IBlender
 		string_path CustomOpacityTexture;
 		strcpy_s(CustomOpacityTexture, sizeof(CustomOpacityTexture), AlbedoTexture);
 		strconcat(sizeof(CustomOpacityTexture), CustomOpacityTexture, CustomOpacityTexture, "_opacity");
-		if (FS.exist(Dummy, "$game_textures$", CustomOpacityTexture, ".dds"))
+		if(FS.exist(Dummy, "$game_textures$", CustomOpacityTexture, ".dds"))
 			bUseCustomOpacity = true;
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_NORMAL_HQ: // deffer
 			configure_shader(C, true, tvs, "static_mesh", oBlend.value);
@@ -184,7 +184,7 @@ class CBlender_multiple_usage : public IBlender
 			//	C.begin_Pass(tvs_s, "shadow_depth_stage_static_mesh_alphatest");
 
 			//	C.set_Sampler("s_custom_opacity", CustomOpacityTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-			//D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			// D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 			//}
 			// else
 			//{
@@ -194,7 +194,7 @@ class CBlender_multiple_usage : public IBlender
 
 			// if (bUseCustomWeight)
 			//	C.set_Sampler("s_custom_weight", CustomWeightTexture, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC,
-			//D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+			// D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 
 			// jitter(C);
 			configure_shader(C, true, tvs, "static_mesh", oBlend.value, true);

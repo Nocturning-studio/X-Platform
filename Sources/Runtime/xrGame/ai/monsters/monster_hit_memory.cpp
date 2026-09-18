@@ -39,7 +39,7 @@ void CMonsterHitMemory::add_hit(CObject* who, EHitSide side)
 
 	MONSTER_HIT_VECTOR_IT it = std::find(m_hits.begin(), m_hits.end(), who);
 
-	if (it == m_hits.end())
+	if(it == m_hits.end())
 		m_hits.push_back(new_hit_info);
 	else
 		*it = new_hit_info;
@@ -58,12 +58,12 @@ struct predicate_old_hit
 
 	IC bool operator()(const SMonsterHit& hit_info)
 	{
-		if ((mem_time + hit_info.time) < cur_time)
+		if((mem_time + hit_info.time) < cur_time)
 			return true;
-		if (hit_info.object)
+		if(hit_info.object)
 		{
 			CEntityAlive* entity = smart_cast<CEntityAlive*>(hit_info.object);
-			if (entity && !entity->g_Alive())
+			if(entity && !entity->g_Alive())
 				return true;
 		}
 		return false;
@@ -85,20 +85,20 @@ fvec3 CMonsterHitMemory::get_last_hit_dir()
 	last_hit.time = 0;
 	last_hit.side = eSideFront;
 
-	for (u32 i = 0; i < m_hits.size(); i++)
+	for(u32 i = 0; i < m_hits.size(); i++)
 	{
-		if (m_hits[i].time > last_hit.time)
+		if(m_hits[i].time > last_hit.time)
 			last_hit = m_hits[i];
 	}
 
 	// если есть хит, вычислить направление
-	if (last_hit.time != 0)
+	if(last_hit.time != 0)
 	{
 
 		float h, p;
 		dir.getHP(h, p);
 
-		switch (last_hit.side)
+		switch(last_hit.side)
 		{
 		case eSideBack:
 			h += PI;
@@ -123,9 +123,9 @@ TTime CMonsterHitMemory::get_last_hit_time()
 	SMonsterHit last_hit;
 	last_hit.time = 0;
 
-	for (u32 i = 0; i < m_hits.size(); i++)
+	for(u32 i = 0; i < m_hits.size(); i++)
 	{
-		if (m_hits[i].time > last_hit.time)
+		if(m_hits[i].time > last_hit.time)
 			last_hit = m_hits[i];
 	}
 
@@ -138,9 +138,9 @@ CObject* CMonsterHitMemory::get_last_hit_object()
 	last_hit.object = 0;
 	last_hit.time = 0;
 
-	for (u32 i = 0; i < m_hits.size(); i++)
+	for(u32 i = 0; i < m_hits.size(); i++)
 	{
-		if (m_hits[i].time > last_hit.time)
+		if(m_hits[i].time > last_hit.time)
 			last_hit = m_hits[i];
 	}
 
@@ -153,9 +153,9 @@ fvec3 CMonsterHitMemory::get_last_hit_position()
 	last_hit.time = 0;
 	last_hit.position.set(0.f, 0.f, 0.f);
 
-	for (u32 i = 0; i < m_hits.size(); i++)
+	for(u32 i = 0; i < m_hits.size(); i++)
 	{
-		if (m_hits[i].time > last_hit.time)
+		if(m_hits[i].time > last_hit.time)
 			last_hit = m_hits[i];
 	}
 

@@ -35,7 +35,7 @@ CAttachableItem::~CAttachableItem()
 
 void CAttachableItem::reload(LPCSTR section)
 {
-	if (!pSettings->line_exist(section, "attach_angle_offset"))
+	if(!pSettings->line_exist(section, "attach_angle_offset"))
 		return;
 
 	fvec3 angle_offset = pSettings->r_fvector3(section, "attach_angle_offset");
@@ -55,7 +55,7 @@ void CAttachableItem::OnH_A_Chield()
 {
 	//	VERIFY							(m_valid);
 	const CInventoryOwner* inventory_owner = smart_cast<const CInventoryOwner*>(object().H_Parent());
-	if (inventory_owner && inventory_owner->attached(&item()))
+	if(inventory_owner && inventory_owner->attached(&item()))
 		object().setVisible(true);
 }
 
@@ -75,18 +75,18 @@ void CAttachableItem::OnH_A_Independent()
 void CAttachableItem::enable(bool value)
 {
 	//	VERIFY							(m_valid);
-	if (!object().H_Parent())
+	if(!object().H_Parent())
 	{
 		m_enabled = value;
 		return;
 	}
 
-	if (value && !enabled() && object().H_Parent())
+	if(value && !enabled() && object().H_Parent())
 	{
 		CGameObject* game_object = smart_cast<CGameObject*>(object().H_Parent());
 		CAttachmentOwner* owner = smart_cast<CAttachmentOwner*>(game_object);
 		//		VERIFY				(owner);
-		if (owner)
+		if(owner)
 		{
 			m_enabled = value;
 			owner->attach(&item());
@@ -94,12 +94,12 @@ void CAttachableItem::enable(bool value)
 		}
 	}
 
-	if (!value && enabled() && object().H_Parent())
+	if(!value && enabled() && object().H_Parent())
 	{
 		CGameObject* game_object = smart_cast<CGameObject*>(object().H_Parent());
 		CAttachmentOwner* owner = smart_cast<CAttachmentOwner*>(game_object);
 		//		VERIFY				(owner);
-		if (owner)
+		if(owner)
 		{
 			m_enabled = value;
 			owner->detach(&item());
@@ -111,13 +111,13 @@ void CAttachableItem::enable(bool value)
 bool CAttachableItem::can_be_attached() const
 {
 	//	VERIFY							(m_valid);
-	if (!item().m_pCurrentInventory)
+	if(!item().m_pCurrentInventory)
 		return (false);
 
-	if (!item().m_pCurrentInventory->IsBeltUseful())
+	if(!item().m_pCurrentInventory->IsBeltUseful())
 		return (true);
 
-	if (item().m_eItemPlace != eItemPlaceBelt)
+	if(item().m_eItemPlace != eItemPlaceBelt)
 		return (false);
 
 	return (true);

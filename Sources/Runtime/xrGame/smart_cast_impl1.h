@@ -24,14 +24,17 @@ void add_smart_cast_stats_all(LPCSTR, LPCSTR);
 namespace SmartDynamicCast
 {
 
-template <typename List, typename Target> struct exists
+template <typename List, typename Target>
+struct exists
 {
-	template <typename P> struct iterator
+	template <typename P>
+	struct iterator
 	{
 		typedef typename P::Head Head;
 		typedef typename P::Tail Tail;
 
-		template <typename T> struct selector
+		template <typename T>
+		struct selector
 		{
 			enum
 			{
@@ -39,7 +42,8 @@ template <typename List, typename Target> struct exists
 			};
 		};
 
-		template <> struct selector<Target>
+		template <>
+		struct selector<Target>
 		{
 			enum
 			{
@@ -53,7 +57,8 @@ template <typename List, typename Target> struct exists
 		};
 	};
 
-	template <> struct iterator<Loki::NullType>
+	template <>
+	struct iterator<Loki::NullType>
 	{
 		enum
 		{
@@ -67,14 +72,17 @@ template <typename List, typename Target> struct exists
 	};
 };
 
-template <typename List1, typename List2> struct merge
+template <typename List1, typename List2>
+struct merge
 {
-	template <typename T> struct iterator
+	template <typename T>
+	struct iterator
 	{
 		typedef Loki::Typelist<typename T::Head, typename iterator<typename T::Tail>::result> result;
 	};
 
-	template <> struct iterator<Loki::NullType>
+	template <>
+	struct iterator<Loki::NullType>
 	{
 		typedef List2 result;
 	};
@@ -82,19 +90,23 @@ template <typename List1, typename List2> struct merge
 	typedef typename iterator<List1>::result result;
 };
 
-template <typename Base, typename Source> struct has_conversion
+template <typename Base, typename Source>
+struct has_conversion
 {
-	template <typename T> struct search_base
+	template <typename T>
+	struct search_base
 	{
 		typedef typename T::Head Head;
 		typedef typename T::Tail Tail;
 
-		template <bool> struct selector
+		template <bool>
+		struct selector
 		{
 			typedef typename Head result;
 		};
 
-		template <> struct selector<false>
+		template <>
+		struct selector<false>
 		{
 			typedef typename search_base<Tail>::result result;
 		};
@@ -102,14 +114,17 @@ template <typename Base, typename Source> struct has_conversion
 		typedef typename selector<is_type<Base, typename Head::Head>::value>::result result;
 	};
 
-	template <> struct search_base<Loki::NullType>
+	template <>
+	struct search_base<Loki::NullType>
 	{
 		typedef Loki::NullType result;
 	};
 
-	template <typename T> struct search_conversion
+	template <typename T>
+	struct search_conversion
 	{
-		template <bool> struct selector
+		template <bool>
+		struct selector
 		{
 			enum
 			{
@@ -117,7 +132,8 @@ template <typename Base, typename Source> struct has_conversion
 			};
 		};
 
-		template <> struct selector<false>
+		template <>
+		struct selector<false>
 		{
 			enum
 			{
@@ -132,7 +148,8 @@ template <typename Base, typename Source> struct has_conversion
 		};
 	};
 
-	template <> struct search_conversion<Loki::NullType>
+	template <>
+	struct search_conversion<Loki::NullType>
 	{
 		enum
 		{
@@ -146,14 +163,17 @@ template <typename Base, typename Source> struct has_conversion
 	};
 };
 
-template <typename T> struct has_any_conversion
+template <typename T>
+struct has_any_conversion
 {
-	template <typename P> struct iterator
+	template <typename P>
+	struct iterator
 	{
 		typedef typename P::Head Head;
 		typedef typename P::Tail Tail;
 
-		template <typename Q> struct _selector
+		template <typename Q>
+		struct _selector
 		{
 			enum
 			{
@@ -161,7 +181,8 @@ template <typename T> struct has_any_conversion
 			};
 		};
 
-		template <> struct _selector<T>
+		template <>
+		struct _selector<T>
 		{
 			enum
 			{
@@ -175,7 +196,8 @@ template <typename T> struct has_any_conversion
 		};
 	};
 
-	template <> struct iterator<Loki::NullType>
+	template <>
+	struct iterator<Loki::NullType>
 	{
 		enum
 		{
@@ -189,27 +211,34 @@ template <typename T> struct has_any_conversion
 	};
 };
 
-template <typename Target, typename Source> struct CMatcher
+template <typename Target, typename Source>
+struct CMatcher
 {
 
-	template <typename T> struct CMatchHelper;
+	template <typename T>
+	struct CMatchHelper;
 
-	template <typename HeadTail, typename T> struct CMatchHelper2
+	template <typename HeadTail, typename T>
+	struct CMatchHelper2
 	{
-		template <typename P> struct CMatchHelper3
+		template <typename P>
+		struct CMatchHelper3
 		{
 			typedef typename P::Head Head;
 			typedef typename P::Tail Tail;
 			typedef typename T::Head PrevHead;
 
-			template <bool> struct selector
+			template <bool>
+			struct selector
 			{
-				template <bool> struct _selector
+				template <bool>
+				struct _selector
 				{
 					typedef Loki::Typelist<typename PrevHead::Head, Loki::Typelist<Target, Loki::NullType>> result;
 				};
 
-				template <> struct _selector<false>
+				template <>
+				struct _selector<false>
 				{
 					typedef Loki::Typelist<typename PrevHead::Head,
 										   Loki::Typelist<Head, Loki::Typelist<Target, Loki::NullType>>>
@@ -220,7 +249,8 @@ template <typename Target, typename Source> struct CMatcher
 					result;
 			};
 
-			template <> struct selector<false>
+			template <>
+			struct selector<false>
 			{
 				typedef typename CMatchHelper3<Tail>::result result;
 			};
@@ -228,7 +258,8 @@ template <typename Target, typename Source> struct CMatcher
 			typedef typename selector<has_conversion<Head, Target>::value>::result result;
 		};
 
-		template <> struct CMatchHelper3<Loki::NullType>
+		template <>
+		struct CMatchHelper3<Loki::NullType>
 		{
 			typedef typename CMatchHelper<typename T::Tail>::result result;
 		};
@@ -236,18 +267,21 @@ template <typename Target, typename Source> struct CMatcher
 		typedef typename CMatchHelper3<HeadTail>::result result;
 	};
 
-	template <typename T> struct CMatchHelper
+	template <typename T>
+	struct CMatchHelper
 	{
 		typedef typename T::Head Head;
 		typedef typename T::Tail Tail;
 		typedef typename Head::Tail HeadTail;
 
-		template <bool> struct selector
+		template <bool>
+		struct selector
 		{
 			typedef typename CMatchHelper2<Head, T>::result result;
 		};
 
-		template <> struct selector<false>
+		template <>
+		struct selector<false>
 		{
 			typedef typename CMatchHelper<Tail>::result result;
 		};
@@ -256,7 +290,8 @@ template <typename Target, typename Source> struct CMatcher
 								  object_type_traits::is_same<typename Head::Head, Source>::value>::result result;
 	};
 
-	template <> struct CMatchHelper<Loki::NullType>
+	template <>
+	struct CMatchHelper<Loki::NullType>
 	{
 		typedef Loki::NullType result;
 	};
@@ -264,26 +299,31 @@ template <typename Target, typename Source> struct CMatcher
 	typedef typename CMatchHelper<cast_type_list>::result result;
 };
 
-template <typename Target, typename Source, int max_length, bool can_use_heritage> struct conversion_sequence
+template <typename Target, typename Source, int max_length, bool can_use_heritage>
+struct conversion_sequence
 {
 
-	template <typename T> struct list_iterator
+	template <typename T>
+	struct list_iterator
 	{
 		typedef typename T::Head Head;
 		typedef typename T::Tail Tail;
 		typedef typename Head::Tail HeadTail;
 
-		template <typename T, int length, bool use_heritage> struct helper
+		template <typename T, int length, bool use_heritage>
+		struct helper
 		{
 			typedef
 				typename conversion_sequence<Target, T, length, use_heritage /**,new_visited/**/>::result search_result;
 
-			template <bool> struct selector
+			template <bool>
+			struct selector
 			{
 				typedef typename list_iterator<Tail>::result result;
 			};
 
-			template <> struct selector<false>
+			template <>
+			struct selector<false>
 			{
 				typedef search_result result;
 			};
@@ -291,16 +331,19 @@ template <typename Target, typename Source, int max_length, bool can_use_heritag
 			typedef typename selector<is_type<Loki::NullType, search_result>::value>::result result;
 		};
 
-		template <bool> struct selector
+		template <bool>
+		struct selector
 		{
 			typedef typename helper<typename Head::Head, max_length, false>::result helper_result;
 
-			template <bool> struct _selector
+			template <bool>
+			struct _selector
 			{
 				typedef helper_result result;
 			};
 
-			template <> struct _selector<false>
+			template <>
+			struct _selector<false>
 			{
 				typedef typename list_iterator<Tail>::result result;
 			};
@@ -308,18 +351,22 @@ template <typename Target, typename Source, int max_length, bool can_use_heritag
 			typedef typename _selector<!is_type<Loki::NullType, helper_result>::value>::result result;
 		};
 
-		template <> struct selector<false>
+		template <>
+		struct selector<false>
 		{
-			template <bool> struct _selector
+			template <bool>
+			struct _selector
 			{
 				typedef typename helper<typename Head::Head, max_length - 1, true>::result helper_result;
 
-				template <bool> struct _selector2
+				template <bool>
+				struct _selector2
 				{
 					typedef Loki::Typelist<Source, helper_result> result;
 				};
 
-				template <> struct _selector2<false>
+				template <>
+				struct _selector2<false>
 				{
 					typedef typename list_iterator<Tail>::result result;
 				};
@@ -327,7 +374,8 @@ template <typename Target, typename Source, int max_length, bool can_use_heritag
 				typedef typename _selector2<!is_type<Loki::NullType, helper_result>::value>::result result;
 			};
 
-			template <> struct _selector<false>
+			template <>
+			struct _selector<false>
 			{
 				typedef typename list_iterator<Tail>::result result;
 			};
@@ -340,23 +388,27 @@ template <typename Target, typename Source, int max_length, bool can_use_heritag
 			result;
 	};
 
-	template <> struct list_iterator<Loki::NullType>
+	template <>
+	struct list_iterator<Loki::NullType>
 	{
 		typedef Loki::NullType result;
 	};
 
-	template <int length> struct selector
+	template <int length>
+	struct selector
 	{
 		STATIC_CHECK(length > 1, Internal_error_please_report);
 
 		typedef typename selector<1>::result nearest;
 
-		template <bool> struct _selector
+		template <bool>
+		struct _selector
 		{
 			typedef nearest result;
 		};
 
-		template <> struct _selector<false>
+		template <>
+		struct _selector<false>
 		{
 			typedef typename list_iterator<cast_type_list>::result result;
 		};
@@ -364,12 +416,14 @@ template <typename Target, typename Source, int max_length, bool can_use_heritag
 		typedef typename _selector<!is_type<Loki::NullType, nearest>::value>::result result;
 	};
 
-	template <> struct selector<1>
+	template <>
+	struct selector<1>
 	{
 		typedef typename CMatcher<Target, Source>::result result;
 	};
 
-	template <> struct selector<0>
+	template <>
+	struct selector<0>
 	{
 		typedef Loki::NullType result;
 	};
@@ -377,18 +431,21 @@ template <typename Target, typename Source, int max_length, bool can_use_heritag
 	typedef typename selector<max_length>::result result;
 };
 
-template <typename T1, typename T2> struct get_conversion_sequence
+template <typename T1, typename T2>
+struct get_conversion_sequence
 {
 	typedef typename conversion_sequence<T1, T2, MAX_SEQUENCE_LENGTH, true>::result result;
 };
 
-template <typename T, typename Target> struct CSmartCaster
+template <typename T, typename Target>
+struct CSmartCaster
 {
 	typedef typename T::Head Head;
 	typedef typename T::Tail Tail;
 	typedef typename Tail::Head NextHead;
 
-	template <typename P> struct CHelper
+	template <typename P>
+	struct CHelper
 	{
 		IC static Target* smart_cast(Head* p)
 		{
@@ -396,7 +453,8 @@ template <typename T, typename Target> struct CSmartCaster
 		}
 	};
 
-	template <> struct CHelper<Loki::NullType>
+	template <>
+	struct CHelper<Loki::NullType>
 	{
 		IC static Target* smart_cast(Head* p)
 		{
@@ -406,20 +464,23 @@ template <typename T, typename Target> struct CSmartCaster
 
 	IC static Target* smart_cast(Head* p)
 	{
-		if (!p)
+		if(!p)
 			return (reinterpret_cast<Target*>(p));
 		return (CHelper<typename Tail::Tail>::smart_cast(p));
 	}
 };
 
-template <typename T1, typename T2> struct CSmartMatcher
+template <typename T1, typename T2>
+struct CSmartMatcher
 {
-	template <typename T3> IC static T1* smart_cast(T2* p)
+	template <typename T3>
+	IC static T1* smart_cast(T2* p)
 	{
 		return (CSmartCaster<T3, T1>::smart_cast(static_cast<typename T3::Head*>(p)));
 	}
 
-	template <> IC static T1* smart_cast<Loki::NullType>(T2* p)
+	template <>
+	IC static T1* smart_cast<Loki::NullType>(T2* p)
 	{
 #ifdef SHOW_SMART_CAST_UNOPTIMIZED_CASES
 #pragma todo("Dima to all : this smart_cast is not optimized!")
@@ -431,28 +492,34 @@ template <typename T1, typename T2> struct CSmartMatcher
 	}
 };
 
-template <typename T1, typename T2> struct CHelper1
+template <typename T1, typename T2>
+struct CHelper1
 {
-	template <bool base> IC static T1* smart_cast(T2* p)
+	template <bool base>
+	IC static T1* smart_cast(T2* p)
 	{
 		return (CSmartMatcher<T1, T2>::smart_cast<get_conversion_sequence<T1, T2>::result>(p));
 	}
 
-	template <> IC static T1* smart_cast<true>(T2* p)
+	template <>
+	IC static T1* smart_cast<true>(T2* p)
 	{
 		return (static_cast<T1*>(p));
 	}
 };
 
-template <typename T1, typename T2> IC T1* smart_cast(T2* p)
+template <typename T1, typename T2>
+IC T1* smart_cast(T2* p)
 {
 	return (CHelper1<T1, T2>::smart_cast < object_type_traits::is_base_and_derived<T1, T2>::value ||
 			object_type_traits::is_same<T1, T2>::value > (p));
 }
 
-template <typename T2> struct CHelper2
+template <typename T2>
+struct CHelper2
 {
-	template <typename T1> IC static T1* smart_cast(T2* p)
+	template <typename T1>
+	IC static T1* smart_cast(T2* p)
 	{
 		STATIC_CHECK(!object_type_traits::is_const<T2>::value || object_type_traits::is_const<T1>::value,
 					 Cannot_use_smart_cast_to_convert_const_to_non_const);
@@ -470,7 +537,8 @@ template <typename T2> struct CHelper2
 #endif
 	}
 
-	template <> IC static void* smart_cast<void>(T2* p)
+	template <>
+	IC static void* smart_cast<void>(T2* p)
 	{
 #ifdef SHOW_SMART_CAST_UNOPTIMIZED_CASES
 #pragma todo("Dima to all : this smart_cast is not optimized!")
@@ -478,14 +546,15 @@ template <typename T2> struct CHelper2
 #ifdef DEBUG
 		add_smart_cast_stats(typeid(T2*).name(), typeid(void*).name());
 #endif
-		if (!p)
+		if(!p)
 			return ((void*)0);
 		return (dynamic_cast<void*>(p));
 	}
 };
 }; // namespace SmartDynamicCast
 
-template <typename T1, typename T2> IC T1 smart_cast(T2* p)
+template <typename T1, typename T2>
+IC T1 smart_cast(T2* p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
 	STATIC_CHECK(object_type_traits::is_pointer<T1>::value, Invalid_target_type_for_Dynamic_Cast);
@@ -497,12 +566,13 @@ template <typename T1, typename T2> IC T1 smart_cast(T2* p)
 #ifdef SMART_CAST_STATS_ALL
 	add_smart_cast_stats_all(typeid(T2*).name(), typeid(T1).name());
 #endif
-	if (!p)
+	if(!p)
 		return (reinterpret_cast<T1>(p));
 	return (SmartDynamicCast::CHelper2<T2>::smart_cast<object_type_traits::remove_pointer<T1>::type>(p));
 }
 
-template <typename T1, typename T2> IC T1 smart_cast(T2& p)
+template <typename T1, typename T2>
+IC T1 smart_cast(T2& p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
 	STATIC_CHECK(object_type_traits::is_reference<T1>::value, Invalid_target_type_for_Dynamic_Cast);
@@ -517,5 +587,6 @@ template <typename T1, typename T2> IC T1 smart_cast(T2& p)
 }
 
 #ifdef XRGAME_EXPORTS
-template <> extern CGameObject* SmartDynamicCast::smart_cast<CGameObject, CObject>(CObject* p);
+template <>
+extern CGameObject* SmartDynamicCast::smart_cast<CGameObject, CObject>(CObject* p);
 #endif

@@ -77,16 +77,16 @@ void CWallmarksEngine::clear()
 	////OPTICK_EVENT("CWallmarksEngine::clear");
 
 	{
-		for (WMSlotVecIt p_it = marks.begin(); p_it != marks.end(); p_it++)
+		for(WMSlotVecIt p_it = marks.begin(); p_it != marks.end(); p_it++)
 		{
-			for (StaticWMVecIt m_it = (*p_it)->static_items.begin(); m_it != (*p_it)->static_items.end(); m_it++)
+			for(StaticWMVecIt m_it = (*p_it)->static_items.begin(); m_it != (*p_it)->static_items.end(); m_it++)
 				static_wm_destroy(*m_it);
 			xr_delete(*p_it);
 		}
 		marks.clear();
 	}
 	{
-		for (u32 it = 0; it < static_pool.size(); it++)
+		for(u32 it = 0; it < static_pool.size(); it++)
 			xr_delete(static_pool[it]);
 		static_pool.clear();
 	}
@@ -98,7 +98,7 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::static_wm_allocate()
 	////OPTICK_EVENT("CWallmarksEngine::static_wm_allocate");
 
 	static_wallmark* W = 0;
-	if (static_pool.empty())
+	if(static_pool.empty())
 		W = xr_new<static_wallmark>();
 	else
 	{
@@ -129,7 +129,7 @@ void CWallmarksEngine::static_wm_render(CWallmarksEngine::static_wallmark* W, FV
 	clamp(aC, 0, 255);
 	u32 C = color_rgba(128, 128, 128, aC);
 
-	for (const auto& vert : W->verts)
+	for(const auto& vert : W->verts)
 	{
 		V->p.set(vert.p);
 		V->color = C;
@@ -144,7 +144,7 @@ void CWallmarksEngine::RecurseTri(u32 t, fmat4x4& mView, CWallmarksEngine::stati
 	////OPTICK_EVENT("CWallmarksEngine::RecurseTri");
 
 	CDB::TRI* T = sml_collector.getT() + t;
-	if (T->dummy)
+	if(T->dummy)
 		return;
 	T->dummy = 0xffffffff;
 
@@ -163,7 +163,7 @@ void CWallmarksEngine::RecurseTri(u32 t, fmat4x4& mView, CWallmarksEngine::stati
 	// uv_gen = mView * []
 	// UV = pos*uv_gen
 
-	if (P)
+	if(P)
 	{
 		// Create vertices and triangulate poly (tri-fan style triangulation)
 		FVF::LIT V0, V1, V2;
@@ -174,7 +174,7 @@ void CWallmarksEngine::RecurseTri(u32 t, fmat4x4& mView, CWallmarksEngine::stati
 		mView.transform_tiny(UV, (*P)[1]);
 		V1.set((*P)[1], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);
 
-		for (u32 i = 2; i < P->size(); i++)
+		for(u32 i = 2; i < P->size(); i++)
 		{
 			mView.transform_tiny(UV, (*P)[i]);
 			V2.set((*P)[i], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);
@@ -185,10 +185,10 @@ void CWallmarksEngine::RecurseTri(u32 t, fmat4x4& mView, CWallmarksEngine::stati
 		}
 
 		// recurse
-		for (u32 i = 0; i < 3; i++)
+		for(u32 i = 0; i < 3; i++)
 		{
 			u32 adj = sml_adjacency[3 * t + i];
-			if (0xffffffff == adj)
+			if(0xffffffff == adj)
 				continue;
 			CDB::TRI* SML = sml_collector.getT() + adj;
 			v_ids = SML->verts;
@@ -196,7 +196,7 @@ void CWallmarksEngine::RecurseTri(u32 t, fmat4x4& mView, CWallmarksEngine::stati
 			fvec3 test_normal;
 			test_normal.mknormal(v_data[v_ids[0]], v_data[v_ids[1]], v_data[v_ids[2]]);
 			float cosa = test_normal.dotproduct(sml_normal);
-			if (cosa < 0.034899f)
+			if(cosa < 0.034899f)
 				continue; // cos(88)
 			RecurseTri(adj, mView, W);
 		}
@@ -212,7 +212,7 @@ void CWallmarksEngine::BuildMatrix(fmat4x4& mView, float invsz, const fvec3& fro
 	fvec3 at, up, right, y;
 	at.sub(from, sml_normal);
 	y.set(0, 1, 0);
-	if (_abs(sml_normal.y) > .99f)
+	if(_abs(sml_normal.y) > .99f)
 		y.set(1, 0, 0);
 	right.crossproduct(y, sml_normal);
 	up.crossproduct(sml_normal, right);
@@ -237,15 +237,15 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const fvec3* pVerts,
 		xrc.box_options(CDB::OPT_FULL_TEST);
 		xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), bbc, bbd);
 		u32 triCount = xrc.r_count();
-		if (0 == triCount)
+		if(0 == triCount)
 			return;
 		CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
 		sml_collector.clear();
 		sml_collector.add_face_packed_D(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]], 0);
-		for (u32 t = 0; t < triCount; t++)
+		for(u32 t = 0; t < triCount; t++)
 		{
 			CDB::TRI* T = tris + xrc.r_begin()[t].id;
-			if (T == pTri)
+			if(T == pTri)
 				continue;
 			sml_collector.add_face_packed_D(pVerts[T->verts[0]], pVerts[T->verts[1]], pVerts[T->verts[2]], 0);
 		}
@@ -269,7 +269,7 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const fvec3* pVerts,
 	RecurseTri(0, mView, *W);
 
 	// calc sphere
-	if (W->verts.size() < 3)
+	if(W->verts.size() < 3)
 	{
 		static_wm_destroy(W);
 		return;
@@ -279,24 +279,24 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const fvec3* pVerts,
 		Fbox bb;
 		bb.invalidate();
 
-		for (const auto& I : W->verts)
+		for(const auto& I : W->verts)
 			bb.modify(I.p);
 
 		bb.getsphere(W->bounds.P, W->bounds.R);
 	}
 
-	if (W->bounds.R < 1.f)
+	if(W->bounds.R < 1.f)
 	{
 		// search if similar wallmark exists
 		wm_slot* slot = FindSlot(hShader);
-		if (slot)
+		if(slot)
 		{
 			StaticWMVecIt it = slot->static_items.begin();
 			StaticWMVecIt end = slot->static_items.end();
-			for (; it != end; it++)
+			for(; it != end; it++)
 			{
 				static_wallmark* wm = *it;
-				if (wm->bounds.P.similar(W->bounds.P, 0.02f))
+				if(wm->bounds.P.similar(W->bounds.P, 0.02f))
 				{ // replace
 					static_wm_destroy(wm);
 					*it = W;
@@ -320,7 +320,7 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const fvec3* pVerts, co
 	////OPTICK_EVENT("CWallmarksEngine::AddStaticWallmark");
 
 	// optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
-	if (contact_point.distance_to_sqr(Engine.RenderView.Position) > _sqr(100.f))
+	if(contact_point.distance_to_sqr(Engine.RenderView.Position) > _sqr(100.f))
 		return;
 
 	// Physics may add wallmarks in parallel with rendering
@@ -334,12 +334,12 @@ void CWallmarksEngine::AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, 
 {
 	PROFILE_FUNCTION();
 
-	if (::RenderImplementation.active_phase() != CRender::PHASE_NORMAL &&
-		::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)
+	if(::RenderImplementation.active_phase() != CRender::PHASE_NORMAL &&
+	   ::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)
 		return;
 
 	// optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
-	if (xf->c.distance_to_sqr(Engine.RenderView.Position) > _sqr(50.f))
+	if(xf->c.distance_to_sqr(Engine.RenderView.Position) > _sqr(50.f))
 		return;
 
 	VERIFY(obj && xf && (size > EPS_L));
@@ -352,17 +352,17 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
 	////OPTICK_EVENT("CWallmarksEngine::AddSkeletonWallmark");
 
-	if (::RenderImplementation.active_phase() != CRender::PHASE_NORMAL &&
-		::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)
+	if(::RenderImplementation.active_phase() != CRender::PHASE_NORMAL &&
+	   ::RenderImplementation.active_phase() != CRender::PHASE_DEPTH_PREPASS)
 		return;
 
 	// Используем геттер get_HUD() вместо прямого доступа к m_is_hud_pass
-	if (!::RenderImplementation.get_HUD())
+	if(!::RenderImplementation.get_HUD())
 	{
 		lock.Enter();
 		// search if similar wallmark exists
 		wm_slot* slot = FindSlot(wm->Shader());
-		if (0 == slot)
+		if(0 == slot)
 			slot = AppendSlot(wm->Shader());
 		// no similar - register _new_
 		slot->skeleton_items.push_back(wm);
@@ -386,14 +386,14 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 {
 	u32 w_count = u32(w_verts - w_start);
 	RenderBackend.Vertex.Unlock(w_count, hGeom->vb_stride);
-	if (w_count)
+	if(w_count)
 	{
 		RenderBackend.set_Shader(shader);
 		RenderBackend.set_Geometry(hGeom);
-		if (bSuppressCull)
+		if(bSuppressCull)
 			RenderBackend.set_CullMode(CULL_DISABLE);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, w_offset, w_count / 3);
-		if (bSuppressCull)
+		if(bSuppressCull)
 			RenderBackend.set_CullMode(CULL_BACKFACE);
 		Engine.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
@@ -425,25 +425,25 @@ void CWallmarksEngine::Render()
 
 	lock.Enter(); // Physics may add wallmarks in parallel with rendering
 
-	for (WMSlotVecIt slot_it = marks.begin(); slot_it != marks.end(); slot_it++)
+	for(WMSlotVecIt slot_it = marks.begin(); slot_it != marks.end(); slot_it++)
 	{
 		u32 w_offset;
 		FVF::LIT *w_verts, *w_start;
 		BeginStream(hGeom, w_offset, w_verts, w_start);
 		wm_slot* slot = *slot_it;
 		// static wallmarks
-		for (StaticWMVecIt w_it = slot->static_items.begin(); w_it != slot->static_items.end();)
+		for(StaticWMVecIt w_it = slot->static_items.begin(); w_it != slot->static_items.end();)
 		{
 			static_wallmark* W = *w_it;
-			if (RenderImplementation.ViewBase.testSphere_dirty(W->bounds.P, W->bounds.R))
+			if(RenderImplementation.ViewBase.testSphere_dirty(W->bounds.P, W->bounds.R))
 			{
 				Engine.Statistic->RenderDUMP_WMS_Count++;
 				float dst = Engine.RenderView.Position.distance_to_sqr(W->bounds.P);
 				float screenSpaceArea = W->bounds.R * W->bounds.R / dst;
-				if (screenSpaceArea >= ssaCLIP)
+				if(screenSpaceArea >= ssaCLIP)
 				{
 					u32 w_count = u32(w_verts - w_start);
-					if ((w_count + W->verts.size()) >= (MAX_TRIS * 3))
+					if((w_count + W->verts.size()) >= (MAX_TRIS * 3))
 					{
 						FlushStream(hGeom, slot->shader, w_offset, w_verts, w_start, FALSE);
 						BeginStream(hGeom, w_offset, w_verts, w_start);
@@ -456,7 +456,7 @@ void CWallmarksEngine::Render()
 			{
 				W->ttl -= Engine.TimeManager.GetDeltaTime();
 			}
-			if (W->ttl <= EPS)
+			if(W->ttl <= EPS)
 			{
 				static_wm_destroy(W);
 				*w_it = slot->static_items.back();
@@ -472,17 +472,17 @@ void CWallmarksEngine::Render()
 		BeginStream(hGeom, w_offset, w_verts, w_start);
 
 		// dynamic wallmarks
-		for (xr_vector<intrusive_ptr<CSkeletonWallmark>>::iterator w_it = slot->skeleton_items.begin();
-			 w_it != slot->skeleton_items.end(); w_it++)
+		for(xr_vector<intrusive_ptr<CSkeletonWallmark>>::iterator w_it = slot->skeleton_items.begin();
+			w_it != slot->skeleton_items.end(); w_it++)
 		{
 			intrusive_ptr<CSkeletonWallmark> W = *w_it;
-			if (!W)
+			if(!W)
 			{
 				continue;
 			}
 
 #ifdef DEBUG
-			if (W->used_in_render != Engine.TimeManager.GetFrameCount())
+			if(W->used_in_render != Engine.TimeManager.GetFrameCount())
 			{
 				Log("W->used_in_render", W->used_in_render);
 				Log("Engine.TimeManager.GetFrameCount()", Engine.TimeManager.GetFrameCount());
@@ -492,11 +492,11 @@ void CWallmarksEngine::Render()
 
 			float dst = Engine.RenderView.Position.distance_to_sqr(W->m_Bounds.P);
 			float screenSpaceArea = W->m_Bounds.R * W->m_Bounds.R / dst;
-			if (screenSpaceArea >= ssaCLIP)
+			if(screenSpaceArea >= ssaCLIP)
 			{
 				Engine.Statistic->RenderDUMP_WMD_Count++;
 				u32 w_count = u32(w_verts - w_start);
-				if ((w_count + W->VCount()) >= (MAX_TRIS * 3))
+				if((w_count + W->VCount()) >= (MAX_TRIS * 3))
 				{
 					FlushStream(hGeom, slot->shader, w_offset, w_verts, w_start, TRUE);
 					BeginStream(hGeom, w_offset, w_verts, w_start);
@@ -507,7 +507,7 @@ void CWallmarksEngine::Render()
 				{
 					W->Parent()->RenderWallmark(W, w_verts);
 				}
-				catch (...)
+				catch(...)
 				{
 					Msg("! Failed to render dynamic wallmark");
 					w_verts = w_save;

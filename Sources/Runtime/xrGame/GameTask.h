@@ -115,7 +115,7 @@ DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
 class CGameTask
 {
   private:
-	CGameTask(const CGameTask&){}; // disable copy ctor
+	CGameTask(const CGameTask&) {}; // disable copy ctor
   protected:
 	void Load(const TASK_ID& id);
 

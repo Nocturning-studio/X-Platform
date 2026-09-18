@@ -44,23 +44,23 @@ bool CAgentCorpseManager::process_corpse(CMemberOrder& member)
 	CMemberCorpse* best_corpse = 0;
 	xr_vector<CMemberCorpse>::iterator I = m_corpses.begin();
 	xr_vector<CMemberCorpse>::iterator E = m_corpses.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!member.object().memory().visual().visible_now((*I).corpse()))
+		if(!member.object().memory().visual().visible_now((*I).corpse()))
 			continue;
 
 		float dist_sqr = (*I).corpse()->Position().distance_to_sqr(member.object().Position());
-		if (dist_sqr < min_dist_sqr)
+		if(dist_sqr < min_dist_sqr)
 		{
-			if ((*I).reactor() &&
-				((*I).reactor()->Position().distance_to_sqr((*I).corpse()->Position()) <= min_dist_sqr))
+			if((*I).reactor() &&
+			   ((*I).reactor()->Position().distance_to_sqr((*I).corpse()->Position()) <= min_dist_sqr))
 				continue;
 			min_dist_sqr = dist_sqr;
 			best_corpse = &*I;
 		}
 	}
 
-	if (!best_corpse)
+	if(!best_corpse)
 		return (false);
 
 	best_corpse->reactor(&member.object());
@@ -69,25 +69,25 @@ bool CAgentCorpseManager::process_corpse(CMemberOrder& member)
 
 void CAgentCorpseManager::react_on_member_death()
 {
-	for (;;)
+	for(;;)
 	{
 		bool changed = false;
 		CAgentMemberManager::MEMBER_STORAGE::iterator I = object().member().combat_members().begin();
 		CAgentMemberManager::MEMBER_STORAGE::iterator E = object().member().combat_members().end();
-		for (; I != E; ++I)
-			if (!(*I)->member_death_reaction().m_processing)
+		for(; I != E; ++I)
+			if(!(*I)->member_death_reaction().m_processing)
 				changed = process_corpse(**I);
 
-		if (!changed)
+		if(!changed)
 			break;
 	}
 
 	{
 		MEMBER_CORPSES::iterator I = m_corpses.begin();
 		MEMBER_CORPSES::iterator E = m_corpses.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			if (!(*I).reactor())
+			if(!(*I).reactor())
 				continue;
 
 			CMemberOrder::CMemberDeathReaction& reaction =

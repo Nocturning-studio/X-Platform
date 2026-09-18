@@ -51,7 +51,7 @@ void CAbstractOperator::setup(bool* actuality)
 TEMPLATE_SPECIALIZATION
 IC void CAbstractOperator::actual(bool value)
 {
-	if (!m_actuality)
+	if(!m_actuality)
 		return;
 
 	*m_actuality = *m_actuality && value;
@@ -107,16 +107,16 @@ IC bool CAbstractOperator::applicable_reverse(const CSConditionState& condition,
 	xr_vector<COperatorCondition>::const_iterator E = condition.conditions().end();
 	xr_vector<COperatorCondition>::const_iterator J = start.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator EE = start.conditions().end();
-	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+	for(; (I != E) && (i != e);)
+		if((*I).condition() < (*i).condition())
 			++I;
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 		{
-			while ((J != EE) && ((*J).condition() < (*i).condition()))
+			while((J != EE) && ((*J).condition() < (*i).condition()))
 				++J;
-			if ((J != EE) && ((*J).condition() == (*i).condition()))
+			if((J != EE) && ((*J).condition() == (*i).condition()))
 			{
-				if ((*J).value() != (*i).value())
+				if((*J).value() != (*i).value())
 					return (false);
 				++J;
 			}
@@ -124,23 +124,23 @@ IC bool CAbstractOperator::applicable_reverse(const CSConditionState& condition,
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				return (false);
 			++I;
 			++i;
 		}
 
-	if (i == e)
+	if(i == e)
 		return (true);
 
-	for (; (J != EE) && (i != e);)
-		if ((*J).condition() < (*i).condition())
+	for(; (J != EE) && (i != e);)
+		if((*J).condition() < (*i).condition())
 			++J;
-		else if ((*J).condition() > (*i).condition())
+		else if((*J).condition() > (*i).condition())
 			++i;
 		else
 		{
-			if ((*J).value() != (*i).value())
+			if((*J).value() != (*i).value())
 				return (false);
 			++J;
 			++i;
@@ -160,12 +160,12 @@ IC bool CAbstractOperator::apply_reverse(const CSConditionState& condition, cons
 	xr_vector<COperatorCondition>::const_iterator E = condition.conditions().end();
 	xr_vector<COperatorCondition>::const_iterator J = start.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator EE = start.conditions().end();
-	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+	for(; (I != E) && (i != e);)
+		if((*I).condition() < (*i).condition())
 		{
-			while ((J != EE) && ((*J).condition() < (*I).condition()))
+			while((J != EE) && ((*J).condition() < (*I).condition()))
 				++J;
-			if ((J != EE) && ((*J).condition() == (*I).condition()))
+			if((J != EE) && ((*J).condition() == (*I).condition()))
 			{
 				VERIFY((*J).value() == (*I).value());
 				changed = true;
@@ -175,33 +175,33 @@ IC bool CAbstractOperator::apply_reverse(const CSConditionState& condition, cons
 				result.add_condition_back(*I);
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 		{
 			result.add_condition_back(*i);
 			++i;
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				changed = true;
 			result.add_condition_back(*i);
 			++I;
 			++i;
 		}
 
-	if (I == E)
+	if(I == E)
 	{
-		if (!changed)
+		if(!changed)
 			return (false);
-		for (; (i != e); ++i)
+		for(; (i != e); ++i)
 			result.add_condition_back(*i);
 		return (true);
 	}
 
-	for (; (J != EE) && (I != E);)
-		if ((*J).condition() < (*I).condition())
+	for(; (J != EE) && (I != E);)
+		if((*J).condition() < (*I).condition())
 			++J;
-		else if ((*J).condition() > (*I).condition())
+		else if((*J).condition() > (*I).condition())
 		{
 			result.add_condition_back(*I);
 			++I;
@@ -214,11 +214,11 @@ IC bool CAbstractOperator::apply_reverse(const CSConditionState& condition, cons
 			++I;
 		}
 
-	if (!changed)
+	if(!changed)
 		return (false);
 
-	if ((J == EE) && (I != E))
-		for (; (I != E); ++I)
+	if((J == EE) && (I != E))
+		for(; (I != E); ++I)
 			result.add_condition_back(*I);
 
 	return (true);
@@ -235,31 +235,31 @@ IC bool CAbstractOperator::applicable(const CSConditionState& current, const CSC
 	xr_vector<COperatorCondition>::const_iterator e = conditions.conditions().end();
 	xr_vector<COperatorCondition>::const_iterator II = start.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator EE = start.conditions().end();
-	for (; (I != E) && (i != e);)
+	for(; (I != E) && (i != e);)
 	{
-		if ((*I).condition() < (*i).condition())
+		if((*I).condition() < (*i).condition())
 			++I;
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 		{
-			for (; (II != EE) && ((*II).condition() < (*i).condition());)
+			for(; (II != EE) && ((*II).condition() < (*i).condition());)
 				++II;
-			if ((II == EE) || ((*II).condition() > (*i).condition()))
+			if((II == EE) || ((*II).condition() > (*i).condition()))
 				problem_solver.evaluate_condition(II, EE, (*i).condition());
-			if ((*II).value() != (*i).value())
+			if((*II).value() != (*i).value())
 				return (false);
 			++II;
 			++i;
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				return (false);
 			++I;
 			++i;
 		}
 	}
 
-	if (I == E)
+	if(I == E)
 	{
 		I = II;
 		E = EE;
@@ -267,17 +267,17 @@ IC bool CAbstractOperator::applicable(const CSConditionState& current, const CSC
 	else
 		return (true);
 
-	for (; i != e;)
+	for(; i != e;)
 	{
-		if ((I == E) || ((*I).condition() > (*i).condition()))
+		if((I == E) || ((*I).condition() > (*i).condition()))
 			problem_solver.evaluate_condition(I, E, (*i).condition());
 
-		if ((*I).condition() < (*i).condition())
+		if((*I).condition() < (*i).condition())
 			++I;
 		else
 		{
 			VERIFY((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				return (false);
 			++I;
 			++i;
@@ -302,55 +302,55 @@ IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(
 	xr_vector<COperatorCondition>::const_iterator e = effects.conditions().end();
 	xr_vector<COperatorCondition>::const_iterator II = start.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator EE = start.conditions().end();
-	for (; (I != E) && (i != e);)
+	for(; (I != E) && (i != e);)
 	{
-		if ((*I).condition() < (*i).condition())
+		if((*I).condition() < (*i).condition())
 		{
 			result.add_condition_back(*I);
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 		{
-			for (; (II != EE) && ((*II).condition() < (*i).condition());)
+			for(; (II != EE) && ((*II).condition() < (*i).condition());)
 				++II;
-			if ((II == EE) || ((*II).condition() > (*i).condition()))
+			if((II == EE) || ((*II).condition() > (*i).condition()))
 				problem_solver.evaluate_condition(II, EE, (*i).condition());
-			if ((*II).value() != (*i).value())
+			if((*II).value() != (*i).value())
 				result.add_condition_back(*i);
 			++II;
 			++i;
 		}
 		else
 		{
-			if ((*I).value() == (*i).value())
+			if((*I).value() == (*i).value())
 				result.add_condition_back(*i);
 			++I;
 			++i;
 		}
 	}
-	if (I == E)
+	if(I == E)
 	{
 		I = II;
 		E = EE;
 	}
 	else
 	{
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			result.add_condition_back(*I);
 		return (result);
 	}
 
-	for (; i != e;)
+	for(; i != e;)
 	{
-		if ((I == E) || ((*I).condition() > (*i).condition()))
+		if((I == E) || ((*I).condition() > (*i).condition()))
 			problem_solver.evaluate_condition(I, E, (*i).condition());
 
-		if ((*I).condition() < (*i).condition())
+		if((*I).condition() < (*i).condition())
 			++I;
 		else
 		{
 			VERIFY((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				result.add_condition_back(*i);
 			++I;
 			++i;
@@ -370,13 +370,13 @@ IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(
 	xr_vector<COperatorCondition>::const_iterator e = self_condition.conditions().end();
 	xr_vector<COperatorCondition>::const_iterator I = condition.conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator E = condition.conditions().end();
-	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+	for(; (I != E) && (i != e);)
+		if((*I).condition() < (*i).condition())
 		{
 			result.add_condition_back(*I);
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 		{
 			result.add_condition_back(*i);
 			++i;
@@ -389,14 +389,14 @@ IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(
 			++i;
 		}
 
-	if (i == e)
+	if(i == e)
 	{
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			result.add_condition_back(*I);
 	}
 	else
 	{
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			result.add_condition_back(*i);
 	}
 
@@ -413,7 +413,7 @@ IC typename CAbstractOperator::_edge_value_type CAbstractOperator::weight(const 
 TEMPLATE_SPECIALIZATION
 IC typename CAbstractOperator::_edge_value_type CAbstractOperator::min_weight() const
 {
-	if (m_weight_actual)
+	if(m_weight_actual)
 		return (m_min_weight);
 
 	m_min_weight = 0;
@@ -421,24 +421,24 @@ IC typename CAbstractOperator::_edge_value_type CAbstractOperator::min_weight() 
 	xr_vector<COperatorCondition>::const_iterator E = conditions().conditions().end();
 	xr_vector<COperatorCondition>::const_iterator i = effects().conditions().begin();
 	xr_vector<COperatorCondition>::const_iterator e = effects().conditions().end();
-	for (; (i != e) && (I != E);)
+	for(; (i != e) && (I != E);)
 	{
-		if ((*I).condition() < (*i).condition())
+		if((*I).condition() < (*i).condition())
 			++I;
-		else if ((*I).condition() > (*i).condition())
+		else if((*I).condition() > (*i).condition())
 		{
 			++m_min_weight;
 			++i;
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if((*I).value() != (*i).value())
 				++m_min_weight;
 			++I;
 			++i;
 		}
 	}
-	if (i != e)
+	if(i != e)
 		m_min_weight = m_min_weight + _edge_value_type(e - i);
 
 	m_weight_actual = true;

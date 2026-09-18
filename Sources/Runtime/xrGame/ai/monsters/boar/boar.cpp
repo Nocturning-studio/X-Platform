@@ -102,7 +102,7 @@ void CAI_Boar::Load(LPCSTR section)
 void CAI_Boar::reinit()
 {
 	inherited::reinit();
-	if (CCustomMonster::use_simplified_visual())
+	if(CCustomMonster::use_simplified_visual())
 		return;
 	com_man().add_rotation_jump_data("stand_jump_left_0", 0, "stand_jump_right_0", 0, PI - PI_DIV_6,
 									 SControlRotationJumpData::eStopAtOnce | SControlRotationJumpData::eRotateOnce);
@@ -112,7 +112,7 @@ void CAI_Boar::BoneCallback(CBoneInstance* B)
 {
 	CAI_Boar* P = static_cast<CAI_Boar*>(B->Callback_Param);
 
-	if (!P->look_at_enemy)
+	if(!P->look_at_enemy)
 		return;
 
 	fmat4x4 M;
@@ -122,10 +122,10 @@ void CAI_Boar::BoneCallback(CBoneInstance* B)
 
 BOOL CAI_Boar::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
-	if (!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+	if(!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 	{
 		CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(
 			smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
@@ -175,7 +175,7 @@ void CAI_Boar::CheckSpecParams(u32 spec_params)
 
 void CAI_Boar::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 	angle_lerp(_cur_delta, _target_delta, _velocity, client_update_fdelta());

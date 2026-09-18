@@ -15,7 +15,7 @@ inline void spline1(float t, fvec3* p, fvec3* ret)
 	m[2] = (0.5f * ((-3.0f * t3) + (4.0f * t2) + (1.0f * t)));
 	m[3] = (0.5f * ((1.0f * t3) + (-1.0f * t2) + (0.0f * t)));
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		ret->x += p[i].x * m[i];
 		ret->y += p[i].y * m[i];

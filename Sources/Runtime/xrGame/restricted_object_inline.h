@@ -33,7 +33,7 @@ IC bool CRestrictedObject::actual() const
 #ifdef DEBUG
 IC void CRestrictedObject::initialize()
 {
-	if (m_applied)
+	if(m_applied)
 		remove_border();
 }
 #endif

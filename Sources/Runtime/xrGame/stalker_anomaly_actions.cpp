@@ -51,8 +51,8 @@ void CStalkerActionGetOutOfAnomaly::initialize()
 	object().movement().set_movement_type(eMovementTypeWalk);
 	object().movement().set_mental_state(eMentalStateDanger);
 	object().sight().setup(SightManager::eSightTypeCurrentDirection);
-	if (object().memory().enemy().selected() && object().inventory().ActiveItem() && object().best_weapon() &&
-		(object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+	if(object().memory().enemy().selected() && object().inventory().ActiveItem() && object().best_weapon() &&
+	   (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
 		object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
 	else
 		object().CObjectHandler::set_goal(eObjectActionIdle);
@@ -63,7 +63,7 @@ void CStalkerActionGetOutOfAnomaly::finalize()
 {
 	inherited::finalize();
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().sound().set_sound_mask(0);
@@ -85,10 +85,10 @@ void CStalkerActionGetOutOfAnomaly::execute()
 
 	xr_vector<CObject*>::const_iterator I = object().feel_touch.begin();
 	xr_vector<CObject*>::const_iterator E = object().feel_touch.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CCustomZone* zone = smart_cast<CCustomZone*>(*I);
-		if (zone)
+		if(zone)
 			m_temp0.push_back(zone->ID());
 	}
 
@@ -120,7 +120,7 @@ void CStalkerActionDetectAnomaly::finalize()
 {
 	inherited::finalize();
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().CObjectHandler::set_goal(eObjectActionIdle);
@@ -131,7 +131,7 @@ void CStalkerActionDetectAnomaly::execute()
 {
 	inherited::execute();
 
-	if (completed() || object().memory().enemy().selected())
+	if(completed() || object().memory().enemy().selected())
 	{
 		set_property(eWorldPropertyAnomaly, false);
 		return;

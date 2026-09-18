@@ -10,7 +10,8 @@
 
 #include "restricted_object.h"
 
-template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type> class CAbstractLocationSelector
+template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>
+class CAbstractLocationSelector
 {
   protected:
 	bool m_failed;

@@ -43,13 +43,13 @@ class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer
   public:
 	void SheduleRegister()
 	{
-		if (!IsSheduled())
+		if(!IsSheduled())
 			shedule_register();
 		b_sheduled = true;
 	}
 	void SheduleUnregister()
 	{
-		if (IsSheduled())
+		if(IsSheduled())
 			shedule_unregister();
 		b_sheduled = false;
 	}

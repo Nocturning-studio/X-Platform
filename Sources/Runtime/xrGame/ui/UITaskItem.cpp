@@ -129,7 +129,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	SetHeight(h);
 
 	m_curr_descr_mode = m_EventsWnd->GetDescriptionMode();
-	if (m_curr_descr_mode)
+	if(m_curr_descr_mode)
 		m_switchDescriptionBtn->InitTexture("ui_icons_newPDA_showtext");
 	else
 		m_switchDescriptionBtn->InitTexture("ui_icons_newPDA_showmap");
@@ -137,7 +137,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_remTimeStatic->Show(GameTask()->Objective(0).TaskState() == eTaskStateInProgress &&
 						  (GameTask()->m_ReceiveTime != GameTask()->m_TimeToComplete));
 
-	if (m_remTimeStatic->IsShown())
+	if(m_remTimeStatic->IsShown())
 	{
 		float _height = GetWndSize().y;
 		fvec2 _pos = m_captionTime->GetWndPos();
@@ -155,10 +155,10 @@ void CUITaskRootItem::Update()
 {
 	inherited::Update();
 
-	if (m_curr_descr_mode != m_EventsWnd->GetDescriptionMode())
+	if(m_curr_descr_mode != m_EventsWnd->GetDescriptionMode())
 	{
 		m_curr_descr_mode = m_EventsWnd->GetDescriptionMode();
-		if (m_curr_descr_mode)
+		if(m_curr_descr_mode)
 			m_switchDescriptionBtn->InitTexture("ui_icons_newPDA_showtext");
 		else
 			m_switchDescriptionBtn->InitTexture("ui_icons_newPDA_showmap");
@@ -167,7 +167,7 @@ void CUITaskRootItem::Update()
 	m_switchDescriptionBtn->SetButtonMode(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL
 																			: CUIButton::BUTTON_PUSHED);
 
-	if (m_remTimeStatic->IsShown())
+	if(m_remTimeStatic->IsShown())
 	{
 		string512 buff, buff2;
 		InventoryUtilities::GetTimePeriodAsString(buff, sizeof(buff), Level().GetGameTime(),
@@ -252,7 +252,7 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	float h = _max(m_ActiveObjectiveStatic->GetWndPos().y + m_ActiveObjectiveStatic->GetHeight(),
 				   m_descriptionStatic->GetWndPos().y + m_descriptionStatic->GetHeight());
 	SetHeight(h);
-	switch (obj->TaskState())
+	switch(obj->TaskState())
 	{
 		//.		case eTaskUserDefined:
 	case eTaskStateInProgress:
@@ -284,7 +284,7 @@ void CUITaskSubItem::Update()
 bool CUITaskSubItem::OnDbClick()
 {
 	SGameTaskObjective* obj = &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
-	if (obj->TaskState() != eTaskStateInProgress)
+	if(obj->TaskState() != eTaskStateInProgress)
 		return true;
 
 	bool bIsActive = (Actor()->GameTaskManager().ActiveObjective() == obj);

@@ -32,10 +32,10 @@ void CStalkerAnimationManager::global_play_callback(CBlend* blend)
 
 MotionID CStalkerAnimationManager::global_critical_hit()
 {
-	if (!object().critically_wounded())
+	if(!object().critically_wounded())
 		return (MotionID());
 
-	if (global().animation())
+	if(global().animation())
 		return (global().animation());
 
 	CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
@@ -55,10 +55,10 @@ MotionID CStalkerAnimationManager::global_critical_hit()
 
 MotionID CStalkerAnimationManager::assign_global_animation()
 {
-	if (eMentalStatePanic != object().movement().mental_state())
+	if(eMentalStatePanic != object().movement().mental_state())
 		return (global_critical_hit());
 
-	if (fis_zero(object().movement().speed(object().character_physics_support()->movement())))
+	if(fis_zero(object().movement().speed(object().character_physics_support()->movement())))
 		return (MotionID());
 
 	return (global().select(m_data_storage->m_part_animations.A[body_state()].m_global.A[1].A));

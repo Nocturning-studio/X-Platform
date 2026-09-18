@@ -72,7 +72,7 @@ void CGameObject::Load(LPCSTR section)
 {
 	inherited::Load(section);
 	ISpatial* self = smart_cast<ISpatial*>(this);
-	if (self)
+	if(self)
 	{
 		// #pragma todo("to Dima: All objects are visible for AI ???")
 		// self->spatial.type	|=	STYPE_VISIBLEFORAI;
@@ -83,11 +83,11 @@ void CGameObject::Load(LPCSTR section)
 void CGameObject::reinit()
 {
 	m_visual_callback.clear();
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		ai_location().reinit();
 
 	// clear callbacks
-	for (CALLBACK_MAP_IT it = m_callbacks->begin(); it != m_callbacks->end(); ++it)
+	for(CALLBACK_MAP_IT it = m_callbacks->begin(); it != m_callbacks->end(); ++it)
 		it->second.clear();
 }
 
@@ -99,25 +99,25 @@ void CGameObject::reload(LPCSTR section)
 void CGameObject::net_Destroy()
 {
 #ifdef DEBUG
-	if (psAI_Flags.test(aiDestroy))
+	if(psAI_Flags.test(aiDestroy))
 		Msg("Destroying client object [%d][%s][%x]", ID(), *cName(), this);
 #endif
 
 	VERIFY(m_spawned);
-	if (animation_movement_controlled())
+	if(animation_movement_controlled())
 		destroy_anim_mov_ctrl();
 
 	xr_delete(m_ini_file);
 
 	m_script_clsid = -1;
-	if (Visual() && smart_cast<CKinematics*>(Visual()))
+	if(Visual() && smart_cast<CKinematics*>(Visual()))
 		smart_cast<CKinematics*>(Visual())->Callback(0, 0);
 
 	inherited::net_Destroy();
 	setReady(FALSE);
 	g_pGameLevel->Objects.net_Unregister(this);
 
-	if (this == Level().CurrentEntity())
+	if(this == Level().CurrentEntity())
 	{
 		Level().SetEntity(0);
 		Level().SetControlEntity(0);
@@ -135,10 +135,11 @@ void CGameObject::net_Destroy()
 
 void CGameObject::OnEvent(NET_Packet& P, u16 type)
 {
-	switch (type)
+	switch(type)
 	{
 	case GE_HIT:
-	case GE_HIT_STATISTIC: {
+	case GE_HIT_STATISTIC:
+	{
 		/*
 					u16				id,weapon_id;
 					fvec3			dir;
@@ -175,28 +176,31 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 		CObject* Weapon = Level().Objects.net_Find(HDS.weaponID);
 		HDS.who = Hitter;
 		//-------------------------------------------------------
-		switch (HDS.PACKET_TYPE)
+		switch(HDS.PACKET_TYPE)
 		{
-		case GE_HIT_STATISTIC: {
-			if (GameID() != GAME_SINGLE)
+		case GE_HIT_STATISTIC:
+		{
+			if(GameID() != GAME_SINGLE)
 				Game().m_WeaponUsageStatistic->OnBullet_Check_Request(&HDS);
 		}
 		break;
-		default: {
+		default:
+		{
 		}
 		break;
 		}
 		SetHitInfo(Hitter, Weapon, HDS.bone(), HDS.p_in_bone_space, HDS.dir);
 		Hit(&HDS);
 		//---------------------------------------------------------------------------
-		if (GameID() != GAME_SINGLE)
+		if(GameID() != GAME_SINGLE)
 			Game().m_WeaponUsageStatistic->OnBullet_Check_Result(false);
 		//---------------------------------------------------------------------------
 	}
 	break;
-	case GE_DESTROY: {
+	case GE_DESTROY:
+	{
 #ifdef DEBUG
-		if (H_Parent())
+		if(H_Parent())
 		{
 			Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%d]", ID(), cName().c_str(),
 				H_Parent()->ID(), H_Parent()->cName().c_str(), Engine.TimeManager.GetFrameCount());
@@ -219,10 +223,10 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	VERIFY(E);
 
 	const CSE_Visual* visual = smart_cast<const CSE_Visual*>(E);
-	if (visual)
+	if(visual)
 	{
 		cNameVisual_set(visual_name(E));
-		if (visual->flags.test(CSE_Visual::flObstacle))
+		if(visual->flags.test(CSE_Visual::flObstacle))
 		{
 			ISpatial* self = smart_cast<ISpatial*>(this);
 			self->spatial.type |= STYPE_OBSTACLE;
@@ -232,7 +236,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	// Naming
 	cName_set(E->s_name);
 	cNameSect_set(E->s_name);
-	if (E->name_replace()[0])
+	if(E->name_replace()[0])
 		cName_set(E->name_replace());
 
 	setID(E->ID);
@@ -244,7 +248,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	Transform().setXYZ(E->o_Angle);
 	Position().set(E->o_Position);
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
+	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
 	{
 		Msg("CGameObject::net_Spawn obj %s Position set from CSE_Abstract %f,%f,%f", PH_DBG_ObjectTrack(), Position().x,
 			Position().y, Position().z);
@@ -253,7 +257,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	VERIFY(_valid(renderable.transform));
 	VERIFY(!fis_zero(DET(renderable.transform)));
 	CSE_ALifeObject* O = smart_cast<CSE_ALifeObject*>(E);
-	if (O && xr_strlen(O->m_ini_string))
+	if(O && xr_strlen(O->m_ini_string))
 	{
 #pragma warning(push)
 #pragma warning(disable : 4238)
@@ -263,12 +267,12 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	}
 
 	m_story_id = ALife::_STORY_ID(-1);
-	if (O)
+	if(O)
 		m_story_id = O->m_story_id;
 
 	// Net params
 	setLocal(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
-	if (Level().IsDemoPlay() && OnClient())
+	if(Level().IsDemoPlay() && OnClient())
 	{
 		setLocal(FALSE);
 	};
@@ -277,31 +281,31 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	g_pGameLevel->Objects.net_Register(this);
 
 	m_server_flags.one();
-	if (O)
+	if(O)
 	{
 		m_server_flags = O->m_flags;
-		if (O->m_flags.is(CSE_ALifeObject::flVisibleForAI))
+		if(O->m_flags.is(CSE_ALifeObject::flVisibleForAI))
 			spatial.type |= STYPE_VISIBLEFORAI;
 		else
 			spatial.type = (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
 	}
 
 	reload(*cNameSect());
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		CScriptBinder::reload(*cNameSect());
 
 	reinit();
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		CScriptBinder::reinit();
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
+	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
 	{
 		Msg("CGameObject::net_Spawn obj %s After Script Binder reinit %f,%f,%f", PH_DBG_ObjectTrack(), Position().x,
 			Position().y, Position().z);
 	}
 #endif
 	// load custom user data from server
-	if (!E->client_data.empty())
+	if(!E->client_data.empty())
 	{
 		//		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
 		IReader ireader = IReader(&*E->client_data.begin(), E->client_data.size());
@@ -313,10 +317,10 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	}
 
 	// if we have a parent
-	if (0xffff != E->ID_Parent)
+	if(0xffff != E->ID_Parent)
 	{
 
-		if (!Parent)
+		if(!Parent)
 		{
 			// // we need this to prevent illegal ref_dec/ref_add
 			// this is obsolete, since ref_dec/ref_add are removed
@@ -331,23 +335,23 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	}
 	else
 	{
-		if (ai().get_level_graph())
+		if(ai().get_level_graph())
 		{
 			CSE_ALifeObject* l_tpALifeObject = smart_cast<CSE_ALifeObject*>(E);
 			CSE_Temporary* l_tpTemporary = smart_cast<CSE_Temporary*>(E);
-			if (l_tpALifeObject && ai().level_graph().valid_vertex_id(l_tpALifeObject->m_tNodeID))
+			if(l_tpALifeObject && ai().level_graph().valid_vertex_id(l_tpALifeObject->m_tNodeID))
 				ai_location().level_vertex(l_tpALifeObject->m_tNodeID);
-			else if (l_tpTemporary && ai().level_graph().valid_vertex_id(l_tpTemporary->m_tNodeID))
+			else if(l_tpTemporary && ai().level_graph().valid_vertex_id(l_tpTemporary->m_tNodeID))
 				ai_location().level_vertex(l_tpTemporary->m_tNodeID);
 
-			if (l_tpALifeObject && ai().game_graph().valid_vertex_id(l_tpALifeObject->m_tGraphID))
+			if(l_tpALifeObject && ai().game_graph().valid_vertex_id(l_tpALifeObject->m_tGraphID))
 				ai_location().game_vertex(l_tpALifeObject->m_tGraphID);
 
 			validate_ai_locations(false);
 
 			// validating position
-			if (UsedAI_Locations() && ai().level_graph().inside(ai_location().level_vertex_id(), Position()) &&
-				can_validate_position_on_spawn())
+			if(UsedAI_Locations() && ai().level_graph().inside(ai_location().level_vertex_id(), Position()) &&
+			   can_validate_position_on_spawn())
 				Position().y = EPS_L + ai().level_graph().vertex_plane_y(*ai_location().level_vertex(), Position().x,
 																		 Position().z);
 		}
@@ -358,7 +362,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 
 	spawn_supplies();
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
+	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
 	{
 		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(),
 			Position().x, Position().y, Position().z);
@@ -369,7 +373,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 #endif
 
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
+	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
 	{
 		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(),
 			Position().x, Position().y, Position().z);
@@ -386,7 +390,7 @@ void CGameObject::net_Save(NET_Packet& net_packet)
 
 	// Script Binder Save ---------------------------------------
 #ifdef DEBUG
-	if (psAI_Flags.test(aiSerialize))
+	if(psAI_Flags.test(aiSerialize))
 	{
 		Msg(">> **** Save script object [%s] *****", *cName());
 		Msg(">> Before save :: packet position = [%u]", net_packet.w_tell());
@@ -398,7 +402,7 @@ void CGameObject::net_Save(NET_Packet& net_packet)
 
 #ifdef DEBUG
 
-	if (psAI_Flags.test(aiSerialize))
+	if(psAI_Flags.test(aiSerialize))
 	{
 		Msg(">> After save :: packet position = [%u]", net_packet.w_tell());
 	}
@@ -415,7 +419,7 @@ void CGameObject::net_Load(IReader& ireader)
 
 	// Script Binder Load ---------------------------------------
 #ifdef DEBUG
-	if (psAI_Flags.test(aiSerialize))
+	if(psAI_Flags.test(aiSerialize))
 	{
 		Msg(">> **** Load script object [%s] *****", *cName());
 		Msg(">> Before load :: reader position = [%i]", ireader.tell());
@@ -427,14 +431,14 @@ void CGameObject::net_Load(IReader& ireader)
 
 #ifdef DEBUG
 
-	if (psAI_Flags.test(aiSerialize))
+	if(psAI_Flags.test(aiSerialize))
 	{
 		Msg(">> After load :: reader position = [%i]", ireader.tell());
 	}
 #endif
 	// ----------------------------------------------------------
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
+	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && xr_stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
 	{
 		Msg("CGameObject::net_Load obj %s (loaded) %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y,
 			Position().z);
@@ -453,10 +457,10 @@ void CGameObject::load(IReader& input_packet)
 
 void CGameObject::spawn_supplies()
 {
-	if (!spawn_ini() || ai().get_alife())
+	if(!spawn_ini() || ai().get_alife())
 		return;
 
-	if (!spawn_ini()->section_exist("spawn"))
+	if(!spawn_ini()->section_exist("spawn"))
 		return;
 
 	LPCSTR N, V;
@@ -465,49 +469,49 @@ void CGameObject::spawn_supplies()
 	bool bSilencer = false;
 	bool bLauncher = false;
 
-	for (u32 k = 0, j; spawn_ini()->r_line("spawn", k, &N, &V); k++)
+	for(u32 k = 0, j; spawn_ini()->r_line("spawn", k, &N, &V); k++)
 	{
 		VERIFY(xr_strlen(N));
 		j = 1;
 		p = 1.f;
 
 		float f_cond = 1.0f;
-		if (V && xr_strlen(V))
+		if(V && xr_strlen(V))
 		{
 			int n = _GetItemCount(V);
 			string16 temp;
-			if (n > 0)
+			if(n > 0)
 				j = atoi(_GetItem(V, 0, temp)); // count
 
-			if (NULL != strstr(V, "prob="))
+			if(NULL != strstr(V, "prob="))
 				p = (float)atof(strstr(V, "prob=") + 5);
-			if (fis_zero(p))
+			if(fis_zero(p))
 				p = 1.f;
-			if (!j)
+			if(!j)
 				j = 1;
-			if (NULL != strstr(V, "cond="))
+			if(NULL != strstr(V, "cond="))
 				f_cond = (float)atof(strstr(V, "cond=") + 5);
 			bScope = (NULL != strstr(V, "scope"));
 			bSilencer = (NULL != strstr(V, "silencer"));
 			bLauncher = (NULL != strstr(V, "launcher"));
 		}
-		for (u32 i = 0; i < j; ++i)
-			if (::Random.randF(1.f) < p)
+		for(u32 i = 0; i < j; ++i)
+			if(::Random.randF(1.f) < p)
 			{
 				CSE_Abstract* A = Level().spawn_item(N, Position(), ai_location().level_vertex_id(), ID(), true);
 
 				CSE_ALifeInventoryItem* pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(A);
-				if (pSE_InventoryItem)
+				if(pSE_InventoryItem)
 					pSE_InventoryItem->m_fCondition = f_cond;
 
 				CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(A);
-				if (W)
+				if(W)
 				{
-					if (W->m_scope_status == CSE_ALifeItemWeapon::eAddonAttachable)
+					if(W->m_scope_status == CSE_ALifeItemWeapon::eAddonAttachable)
 						W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, bScope);
-					if (W->m_silencer_status == CSE_ALifeItemWeapon::eAddonAttachable)
+					if(W->m_silencer_status == CSE_ALifeItemWeapon::eAddonAttachable)
 						W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonSilencer, bSilencer);
-					if (W->m_grenade_launcher_status == CSE_ALifeItemWeapon::eAddonAttachable)
+					if(W->m_grenade_launcher_status == CSE_ALifeItemWeapon::eAddonAttachable)
 						W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, bLauncher);
 				}
 
@@ -527,18 +531,18 @@ void CGameObject::setup_parent_ai_locations(bool assign_position)
 	VERIFY(l_tpGameObject);
 
 	// get parent's position
-	if (assign_position && use_parent_ai_locations())
+	if(assign_position && use_parent_ai_locations())
 		Position().set(l_tpGameObject->Position());
 
 	// setup its ai locations
-	if (!UsedAI_Locations())
+	if(!UsedAI_Locations())
 		return;
 
-	if (!ai().get_level_graph())
+	if(!ai().get_level_graph())
 		return;
 
-	if (l_tpGameObject->UsedAI_Locations() &&
-		ai().level_graph().valid_vertex_id(l_tpGameObject->ai_location().level_vertex_id()))
+	if(l_tpGameObject->UsedAI_Locations() &&
+	   ai().level_graph().valid_vertex_id(l_tpGameObject->ai_location().level_vertex_id()))
 		ai_location().level_vertex(l_tpGameObject->ai_location().level_vertex_id());
 	else
 		validate_ai_locations(false);
@@ -547,7 +551,7 @@ void CGameObject::setup_parent_ai_locations(bool assign_position)
 	//(ai().level_graph().valid_vertex_id(l_tpGameObject->ai_location().level_vertex_id()),*cNameSect());
 	//	ai_location().level_vertex	(l_tpGameObject->ai_location().level_vertex_id());
 
-	if (ai().game_graph().valid_vertex_id(l_tpGameObject->ai_location().game_vertex_id()))
+	if(ai().game_graph().valid_vertex_id(l_tpGameObject->ai_location().game_vertex_id()))
 		ai_location().game_vertex(l_tpGameObject->ai_location().game_vertex_id());
 	else
 		ai_location().game_vertex(ai().cross_table().vertex(ai_location().level_vertex_id()).game_vertex_id());
@@ -558,10 +562,10 @@ void CGameObject::setup_parent_ai_locations(bool assign_position)
 
 void CGameObject::validate_ai_locations(bool decrement_reference)
 {
-	if (!ai().get_level_graph())
+	if(!ai().get_level_graph())
 		return;
 
-	if (!UsedAI_Locations())
+	if(!UsedAI_Locations())
 	{
 		//		if (ai().get_game_graph() && ai().get_cross_table())
 		//			set_game_vertex		(ai().cross_table().vertex(level_vertex_id()).game_vertex_id());
@@ -578,7 +582,7 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 
 #ifdef _DEBUG
 //	Msg								("%6d Searching for node for object %s (%.5f
-//seconds)",Engine.TimeManager.GetGlobalTimeMs(),*cName(),timer.GetElapsed_sec());
+// seconds)",Engine.TimeManager.GetGlobalTimeMs(),*cName(),timer.GetElapsed_sec());
 #endif
 	VERIFY(ai().level_graph().valid_vertex_id(l_dwNewLevelVertexID));
 
@@ -592,12 +596,12 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 	}
 #endif
 
-	if (decrement_reference && (ai_location().level_vertex_id() == l_dwNewLevelVertexID))
+	if(decrement_reference && (ai_location().level_vertex_id() == l_dwNewLevelVertexID))
 		return;
 
 	ai_location().level_vertex(l_dwNewLevelVertexID);
 
-	if (ai().get_game_graph() && ai().get_cross_table())
+	if(ai().get_game_graph() && ai().get_cross_table())
 	{
 		ai_location().game_vertex(ai().cross_table().vertex(ai_location().level_vertex_id()).game_vertex_id());
 		VERIFY(ai().game_graph().valid_vertex_id(ai_location().game_vertex_id()));
@@ -606,9 +610,9 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 
 void CGameObject::spatial_move()
 {
-	if (H_Parent())
+	if(H_Parent())
 		setup_parent_ai_locations();
-	else if (Visual())
+	else if(Visual())
 		validate_ai_locations();
 
 	inherited::spatial_move();
@@ -618,25 +622,27 @@ void CGameObject::spatial_move()
 void CGameObject::dbg_DrawSkeleton()
 {
 	CCF_Skeleton* Skeleton = smart_cast<CCF_Skeleton*>(collidable.model);
-	if (!Skeleton)
+	if(!Skeleton)
 		return;
 	Skeleton->_dbg_refresh();
 
 	const CCF_Skeleton::ElementVec& Elements = Skeleton->_GetElements();
-	for (CCF_Skeleton::ElementVec::const_iterator I = Elements.begin(); I != Elements.end(); I++)
+	for(CCF_Skeleton::ElementVec::const_iterator I = Elements.begin(); I != Elements.end(); I++)
 	{
-		if (!I->valid())
+		if(!I->valid())
 			continue;
-		switch (I->type)
+		switch(I->type)
 		{
-		case SBoneShape::stBox: {
+		case SBoneShape::stBox:
+		{
 			fmat4x4 M;
 			M.invert(I->b_IM);
 			fvec3 h_size = I->b_hsize;
 			Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 255, 0, 255));
 		}
 		break;
-		case SBoneShape::stCylinder: {
+		case SBoneShape::stCylinder:
+		{
 			fmat4x4 M;
 			M.c.set(I->c_cylinder.m_center);
 			M.k.set(I->c_cylinder.m_direction);
@@ -646,7 +652,8 @@ void CGameObject::dbg_DrawSkeleton()
 			Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 127, 255, 255));
 		}
 		break;
-		case SBoneShape::stSphere: {
+		case SBoneShape::stSphere:
+		{
 			fmat4x4 l_ball;
 			l_ball.scale(I->s_sphere.R, I->s_sphere.R, I->s_sphere.R);
 			l_ball.translate_add(I->s_sphere.P);
@@ -709,7 +716,7 @@ void CGameObject::OnH_B_Independent(bool just_before_destroy)
 
 	CGameObject* parent = smart_cast<CGameObject*>(H_Parent());
 	VERIFY(parent);
-	if (ai().get_level_graph() && ai().level_graph().valid_vertex_id(parent->ai_location().level_vertex_id()))
+	if(ai().get_level_graph() && ai().level_graph().valid_vertex_id(parent->ai_location().level_vertex_id()))
 		validate_ai_locations(false);
 }
 
@@ -717,7 +724,7 @@ void CGameObject::OnH_B_Independent(bool just_before_destroy)
 
 void CGameObject::OnRender()
 {
-	if (bDebug && Visual())
+	if(bDebug && Visual())
 	{
 		fvec3 bc, bd;
 		Visual()->vis.box.get_CD(bc, bd);
@@ -744,7 +751,7 @@ void CGameObject::add_visual_callback(visual_callback* callback)
 	CALLBACK_VECTOR_IT I = std::find(visual_callbacks().begin(), visual_callbacks().end(), callback);
 	VERIFY(I == visual_callbacks().end());
 
-	if (m_visual_callback.empty())
+	if(m_visual_callback.empty())
 		SetKinematicsCallback(true);
 	//		smart_cast<CKinematics*>(Visual())->Callback(VisualCallback,this);
 	m_visual_callback.push_back(callback);
@@ -755,16 +762,16 @@ void CGameObject::remove_visual_callback(visual_callback* callback)
 	CALLBACK_VECTOR_IT I = std::find(m_visual_callback.begin(), m_visual_callback.end(), callback);
 	VERIFY(I != m_visual_callback.end());
 	m_visual_callback.erase(I);
-	if (m_visual_callback.empty())
+	if(m_visual_callback.empty())
 		SetKinematicsCallback(false);
 	//		smart_cast<CKinematics*>(Visual())->Callback(0,0);
 }
 
 void CGameObject::SetKinematicsCallback(bool set)
 {
-	if (!Visual())
+	if(!Visual())
 		return;
-	if (set)
+	if(set)
 		smart_cast<CKinematics*>(Visual())->Callback(VisualCallback, this);
 	else
 		smart_cast<CKinematics*>(Visual())->Callback(0, 0);
@@ -777,18 +784,18 @@ void VisualCallback(CKinematics* tpKinematics)
 
 	CGameObject::CALLBACK_VECTOR_IT I = game_object->visual_callbacks().begin();
 	CGameObject::CALLBACK_VECTOR_IT E = game_object->visual_callbacks().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I)(tpKinematics);
 }
 
 CScriptGameObject* CGameObject::lua_game_object() const
 {
 #ifdef DEBUG
-	if (!m_spawned)
+	if(!m_spawned)
 		Msg("! you are trying to use a destroyed object [%x]", this);
 #endif
 	THROW(m_spawned);
-	if (!m_lua_game_object)
+	if(!m_lua_game_object)
 		m_lua_game_object = xr_new<CScriptGameObject>(const_cast<CGameObject*>(this));
 	return (m_lua_game_object);
 }
@@ -801,13 +808,13 @@ bool CGameObject::NeedToDestroyObject() const
 void CGameObject::DestroyObject()
 {
 
-	if (m_bObjectRemoved)
+	if(m_bObjectRemoved)
 		return;
 	m_bObjectRemoved = true;
-	if (getDestroy())
+	if(getDestroy())
 		return;
 
-	if (Local())
+	if(Local())
 	{
 		NET_Packet P;
 		u_EventGen(P, GE_DESTROY, ID());
@@ -818,7 +825,7 @@ void CGameObject::DestroyObject()
 void CGameObject::shedule_Update(u32 dt)
 {
 	// уничтожить
-	if (!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
+	if(!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
 		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Engine.TimeManager.GetFrameCount());
@@ -829,7 +836,7 @@ void CGameObject::shedule_Update(u32 dt)
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update(dt);
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		CScriptBinder::shedule_Update(dt);
 }
 
@@ -898,7 +905,7 @@ u32 CGameObject::ef_detector_type() const
 void CGameObject::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		CScriptBinder::net_Relcase(O);
 }
 
@@ -916,14 +923,14 @@ LPCSTR CGameObject::visual_name(CSE_Abstract* server_entity)
 
 void CGameObject::update_animation_movement_controller()
 {
-	//OPTICK_EVENT("CGameObject::update_animation_movement_controller");
+	// OPTICK_EVENT("CGameObject::update_animation_movement_controller");
 
-	if (!animation_movement_controlled())
+	if(!animation_movement_controlled())
 		return;
 
 	m_anim_mov_ctrl->OnFrame();
 
-	if (m_anim_mov_ctrl->isActive())
+	if(m_anim_mov_ctrl->isActive())
 		return;
 
 	destroy_anim_mov_ctrl();
@@ -937,7 +944,7 @@ void CGameObject::UpdateCL()
 void CGameObject::OnChangeVisual()
 {
 	inherited::OnChangeVisual();
-	if (animation_movement_controlled())
+	if(animation_movement_controlled())
 	{
 		destroy_anim_mov_ctrl();
 	}

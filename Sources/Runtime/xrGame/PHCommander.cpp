@@ -19,7 +19,7 @@ bool CPHCall::obsolete()
 
 void CPHCall::check()
 {
-	if (m_condition->is_true())
+	if(m_condition->is_true())
 		m_action->run();
 }
 
@@ -38,7 +38,7 @@ void delete_call(CPHCall*& call)
 	{
 		xr_delete(call);
 	}
-	catch (...)
+	catch(...)
 	{
 		call = NULL;
 	}
@@ -50,15 +50,15 @@ CPHCommander::~CPHCommander()
 }
 void CPHCommander::clear()
 {
-	while (m_calls.size())
+	while(m_calls.size())
 	{
 		remove_call(m_calls.end() - 1);
 	}
-	while (m_calls_as_add_buffer.size())
+	while(m_calls_as_add_buffer.size())
 	{
 		remove_call(m_calls_as_add_buffer.end() - 1);
 	}
-	while (m_calls_as_remove_buffer.size())
+	while(m_calls_as_remove_buffer.size())
 	{
 		remove_call(m_calls_as_remove_buffer.end() - 1);
 	}
@@ -68,20 +68,20 @@ void CPHCommander::update()
 {
 	PROFILE_FUNCTION();
 
-	for (u32 i = 0; i < m_calls.size(); i++)
+	for(u32 i = 0; i < m_calls.size(); i++)
 	{
 		try
 		{
 			m_calls[i]->check();
 		}
-		catch (...)
+		catch(...)
 		{
 			remove_call(m_calls.begin() + i);
 			i--;
 			continue;
 		}
 
-		if (m_calls[i]->obsolete())
+		if(m_calls[i]->obsolete())
 		{
 			remove_call(m_calls.begin() + i);
 			i--;
@@ -132,7 +132,7 @@ struct SFRemovePred2
 	}
 	bool operator()(CPHCall* call)
 	{
-		if (call->equal(cmp_condition, cmp_action))
+		if(call->equal(cmp_condition, cmp_action))
 		{
 			delete_call(call);
 			return true;
@@ -162,7 +162,7 @@ void CPHCommander::remove_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* 
 void CPHCommander::add_call_unique(CPHCondition* condition, CPHReqComparerV* cmp_condition, CPHAction* action,
 								   CPHReqComparerV* cmp_action, PHCALL_STORAGE& cs)
 {
-	if (cs.end() == find_call(cmp_condition, cmp_action, cs))
+	if(cs.end() == find_call(cmp_condition, cmp_action, cs))
 	{
 		add_call(condition, action, cs);
 	}
@@ -181,7 +181,7 @@ struct SRemoveRped
 	}
 	bool operator()(CPHCall* call)
 	{
-		if (call->is_any(cmp_object))
+		if(call->is_any(cmp_object))
 		{
 			delete_call(call);
 			return true;

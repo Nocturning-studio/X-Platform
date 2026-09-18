@@ -22,7 +22,7 @@ CAI_Flesh::~CAI_Flesh()
 
 BOOL CAI_Flesh::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	return TRUE;
@@ -106,20 +106,20 @@ void CAI_Flesh::Load(LPCSTR section)
 // т.е. если активирована последовательность
 void CAI_Flesh::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_DRAG_CORPSE) == ASP_DRAG_CORPSE)
+	if((spec_params & ASP_DRAG_CORPSE) == ASP_DRAG_CORPSE)
 		anim().SetCurAnim(eAnimDragCorpse);
 
-	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
+	if((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
 	}
 
-	if ((spec_params & ASP_BACK_ATTACK) == ASP_BACK_ATTACK)
+	if((spec_params & ASP_BACK_ATTACK) == ASP_BACK_ATTACK)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimAttackFromBack));
 	}
 
-	if ((spec_params & ASP_THREATEN) == ASP_THREATEN)
+	if((spec_params & ASP_THREATEN) == ASP_THREATEN)
 		anim().SetCurAnim(eAnimThreaten);
 }
 
@@ -144,14 +144,14 @@ bool CAI_Flesh::ConeSphereIntersection(fvec3 ConeVertex, float ConeAngle, fvec3 
 
 	float fDSqrLen = kD.square_magnitude();
 	float fE = kD.dotproduct(ConeDir);
-	if (fE > 0.0f && fE * fE >= fDSqrLen * fCosSqr)
+	if(fE > 0.0f && fE * fE >= fDSqrLen * fCosSqr)
 	{
 
 		float fSinSqr = std::sin(ConeAngle) * std::sin(ConeAngle);
 
 		fDSqrLen = kCmV.square_magnitude();
 		fE = -kCmV.dotproduct(ConeDir);
-		if (fE > 0.0f && fE * fE >= fDSqrLen * fSinSqr)
+		if(fE > 0.0f && fE * fE >= fDSqrLen * fSinSqr)
 		{
 			float fRSqr = SphereRadius * SphereRadius;
 			return fDSqrLen <= fRSqr;

@@ -27,7 +27,7 @@ void CLight_DB::Load(IReader* fs)
 		u32 count = size / element;
 		VERIFY(count * element == size);
 		v_static.reserve(count);
-		for (u32 i = 0; i < count; i++)
+		for(u32 i = 0; i < count; i++)
 		{
 			Flight Ldata;
 			light* L = Create();
@@ -38,7 +38,7 @@ void CLight_DB::Load(IReader* fs)
 			u32 controller = 0;
 			F->r(&controller, 4);
 			F->r(&Ldata, sizeof(Flight));
-			if (Ldata.type == D3DLIGHT_DIRECTIONAL)
+			if(Ldata.type == D3DLIGHT_DIRECTIONAL)
 			{
 				fvec3 tmp_R;
 				tmp_R.set(1, 0, 0);
@@ -97,14 +97,14 @@ light* CLight_DB::Create()
 
 void CLight_DB::add_light(light* L)
 {
-	if (Engine.TimeManager.GetFrameCount() == L->get_frame_render())
+	if(Engine.TimeManager.GetFrameCount() == L->get_frame_render())
 		return;
 	L->set_frame_render(Engine.TimeManager.GetFrameCount());
-	if (RenderImplementation.o.noshadows)
+	if(RenderImplementation.o.noshadows)
 		L->LightFlags.bShadow = FALSE;
-	if (L->LightFlags.bStatic && !ps_r_lighting_flags.test(RFLAG_R1LIGHTS))
+	if(L->LightFlags.bStatic && !ps_r_lighting_flags.test(RFLAG_R1LIGHTS))
 		return;
-	if (Engine.RenderView.Position.distance_to(L->spatial.sphere.P) > ps_r_ls_far)
+	if(Engine.RenderView.Position.distance_to(L->spatial.sphere.P) > ps_r_ls_far)
 		return;
 	L->_export(package);
 }
@@ -112,29 +112,29 @@ void CLight_DB::add_light(light* L)
 void CLight_DB::Update()
 {
 	// set sun params
-	if (sun_original && sun_adapted)
+	if(sun_original && sun_adapted)
 	{
 		light* _sun_original = (light*)sun_original._get();
 		light* _sun_adapted = (light*)sun_adapted._get();
 		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
-//		VERIFY(_valid(E.sun_dir));
-//#ifdef DEBUG
-//		if (E.sun_dir.y >= 0)
-//		{
-//			Log("sect_name", E->sect_name.c_str());
-//			Log("E.sun_dir", E->sun_dir);
-//			Log("E.wind_direction", E->wind_direction);
-//			Log("E.wind_strength", E->wind_strength);
-//			Log("E.sun_color", E->sun_color);
-//			Log("E.rain_color", E->rain_color);
-//			Log("E.rain_density", E->rain_density);
-//			Log("E.fog_density", E->fog_density);
-//			Log("E.fog_color", E->fog_color);
-//			Log("E.far_plane", E->far_plane);
-//			Log("E.sky_rotation", E->sky_rotation);
-//			Log("E.sky_color", E->sky_color);
-//		}
-//#endif
+		//		VERIFY(_valid(E.sun_dir));
+		// #ifdef DEBUG
+		//		if (E.sun_dir.y >= 0)
+		//		{
+		//			Log("sect_name", E->sect_name.c_str());
+		//			Log("E.sun_dir", E->sun_dir);
+		//			Log("E.wind_direction", E->wind_direction);
+		//			Log("E.wind_strength", E->wind_strength);
+		//			Log("E.sun_color", E->sun_color);
+		//			Log("E.rain_color", E->rain_color);
+		//			Log("E.rain_density", E->rain_density);
+		//			Log("E.fog_density", E->fog_density);
+		//			Log("E.fog_color", E->fog_color);
+		//			Log("E.far_plane", E->far_plane);
+		//			Log("E.sky_rotation", E->sky_rotation);
+		//			Log("E.sky_color", E->sky_color);
+		//		}
+		// #endif
 		VERIFY2(E->sun_dir.y < 0, "Invalid sun direction settings in evironment-config");
 		fvec3 OD, OP, AD, AP;
 		OD.set(E->sun_dir).normalize();
@@ -143,7 +143,7 @@ void CLight_DB::Update()
 
 		// for some reason E.sun_dir can point-up
 		int counter = 0;
-		while (AD.magnitude() < 0.001 && counter < 10)
+		while(AD.magnitude() < 0.001 && counter < 10)
 		{
 			AD.add(E->sun_dir);
 			counter++;

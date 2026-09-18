@@ -56,7 +56,7 @@ void CDetailManager::hw_Load()
 	u32 dwVerts = 0;
 	u32 dwIndices = 0;
 
-	for (u32 o = 0; o < objects.size(); o++)
+	for(u32 o = 0; o < objects.size(); o++)
 	{
 		CDetail& D = *objects[o];
 		dwVerts += D.number_vertices;
@@ -71,7 +71,7 @@ void CDetailManager::hw_Load()
 	R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
 
 	// Create Instance VB (DYNAMIC !!!)
-	for (int i = 0; i < 3; ++i)
+	for(int i = 0; i < 3; ++i)
 	{
 		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData),
 															D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
@@ -82,19 +82,19 @@ void CDetailManager::hw_Load()
 	{
 		vertHW* pV;
 		R_CHK(hw_VB->Lock(0, 0, (void**)&pV, 0));
-		for (u32 o = 0; o < objects.size(); o++)
+		for(u32 o = 0; o < objects.size(); o++)
 		{
 			CDetail& D = *objects[o];
 			float fMinY = D.bv_bb.min.y;
 			float fHeight = D.bv_bb.max.y - fMinY;
-			if (fHeight < EPS_S)
+			if(fHeight < EPS_S)
 				fHeight = EPS_S;
 
 			D.bv_bb.min.y -= fMinY;
 			D.bv_bb.max.y -= fMinY;
 			D.bv_sphere.P.y -= fMinY;
 
-			for (u32 v = 0; v < D.number_vertices; v++)
+			for(u32 v = 0; v < D.number_vertices; v++)
 			{
 				fvec3& vP = D.vertices[v].P;
 				pV->x = vP.x;
@@ -114,10 +114,10 @@ void CDetailManager::hw_Load()
 	{
 		u16* pI;
 		R_CHK(hw_IB->Lock(0, 0, (void**)(&pI), 0));
-		for (u32 o = 0; o < objects.size(); o++)
+		for(u32 o = 0; o < objects.size(); o++)
 		{
 			CDetail& D = *objects[o];
-			for (u32 i = 0; i < u32(D.number_indices); i++)
+			for(u32 i = 0; i < u32(D.number_indices); i++)
 				*pI++ = u16(D.indices[i]);
 		}
 		R_CHK(hw_IB->Unlock());
@@ -135,7 +135,7 @@ void CDetailManager::hw_Unload()
 	_RELEASE(hw_IB);
 	_RELEASE(hw_VB);
 	// Освобождаем буферы инстансов
-	for (int i = 0; i < 3; ++i)
+	for(int i = 0; i < 3; ++i)
 		_RELEASE(hw_InstanceVB[i]);
 }
 
@@ -146,26 +146,25 @@ void CalculateCullAABB(const fmat4x4& viewProj, float& minX, float& maxX, float&
 	inv.invert(viewProj);
 
 	// 8 углов NDC куба
-	fvec3 corners[8] = {{-1, -1, 0}, {-1, -1, 1}, {-1, 1, 0}, {-1, 1, 1},
-						  {1, -1, 0},  {1, -1, 1},	{1, 1, 0},	{1, 1, 1}};
+	fvec3 corners[8] = {{-1, -1, 0}, {-1, -1, 1}, {-1, 1, 0}, {-1, 1, 1}, {1, -1, 0}, {1, -1, 1}, {1, 1, 0}, {1, 1, 1}};
 
 	minX = minZ = FLT_MAX;
 	maxX = maxZ = -FLT_MAX;
 
-	for (int i = 0; i < 8; ++i)
+	for(int i = 0; i < 8; ++i)
 	{
 		// Трансформируем точку из NDC в World Space
 		fvec3& p = corners[i];
 		inv.transform(p);
 
 		// Находим экстремумы
-		if (p.x < minX)
+		if(p.x < minX)
 			minX = p.x;
-		if (p.x > maxX)
+		if(p.x > maxX)
 			maxX = p.x;
-		if (p.z < minZ)
+		if(p.z < minZ)
 			minZ = p.z;
-		if (p.z > maxZ)
+		if(p.z > maxZ)
 			maxZ = p.z;
 	}
 }
@@ -175,9 +174,9 @@ void CDetailManager::Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix, const 
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if (0 == dtFS)
+	if(0 == dtFS)
 		return;
-	if (!psDeviceFlags.is(rsDetails))
+	if(!psDeviceFlags.is(rsDetails))
 		return;
 #endif
 
@@ -195,11 +194,11 @@ void CDetailManager::Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix, const 
 	// 2. Если нет, но есть матрица (pCullMatrix) — строим фрустум по ней (старый метод).
 	// 3. Если нет ни того, ни другого — куллинг по фрустуму не выполняется (рисуем всё, что в списке видимости).
 
-	if (pExternalCull)
+	if(pExternalCull)
 	{
 		ctx.cullFrustum = pExternalCull;
 	}
-	else if (pCullMatrix)
+	else if(pCullMatrix)
 	{
 		localFrustum.CreateFromMatrix(*pCullMatrix, FRUSTUM_P_ALL);
 		ctx.cullFrustum = &localFrustum;
@@ -208,7 +207,7 @@ void CDetailManager::Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix, const 
 	// === FAST REJECT (AABB) ===
 	// Даже если мы используем внешний фрустум, нам все равно полезно знать
 	// границы проекции (текстуры) света, чтобы быстро отсечь объекты, выходящие за края шэдоу-мапы.
-	if (pCullMatrix)
+	if(pCullMatrix)
 	{
 		CalculateCullAABB(*pCullMatrix, ctx.minX, ctx.maxX, ctx.minZ, ctx.maxZ);
 		ctx.useAABB = true;
@@ -267,7 +266,7 @@ void CDetailManager::ExecuteRenderPasses(const SDetailRenderContext& ctx)
 ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mode, EDetailShaderType shaderType)
 {
 	int id = 0;
-	switch (mode)
+	switch(mode)
 	{
 	case DetailsRenderMode::Default:
 		id = (shaderType == DST_Animated) ? SE_DETAIL_NORMAL_ANIMATED : SE_DETAIL_NORMAL_STATIC;
@@ -280,7 +279,7 @@ ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mod
 }
 
 void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
-	EDetailShaderType shaderType)
+									EDetailShaderType shaderType)
 {
 	Engine.Statistic->RenderDUMP_DT_Count = 0;
 	vis_per_wave& list = m_visibles[m_vis_render_id][visListType];
@@ -292,7 +291,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		DetailBatch* batch;
 		u32 vOffset;
 		u32 iOffset;
-		u32 instanceOffset;  // будет заполнен во время копирования
+		u32 instanceOffset; // будет заполнен во время копирования
 		u32 instanceCount;
 		ref_selement shader;
 	};
@@ -303,12 +302,12 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 	u32 iOffset = 0;
 	u32 totalInstances = 0;
 
-	for (u32 O = 0; O < objects.size(); O++)
+	for(u32 O = 0; O < objects.size(); O++)
 	{
 		CDetail& Object = *objects[O];
 		DetailBatch& batch = list[O];
 
-		if (Object.number_indices == 0 || batch.empty())
+		if(Object.number_indices == 0 || batch.empty())
 		{
 			vOffset += Object.number_vertices;
 			iOffset += Object.number_indices;
@@ -316,17 +315,17 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		}
 
 		// CPU куллинг целой модели (теневой проход)
-		if (ctx.useAABB)
+		if(ctx.useAABB)
 		{
 			// используем агрегированный bbox батча
-			if (batch.bbox.max.x < ctx.minX || batch.bbox.min.x > ctx.maxX ||
-				batch.bbox.max.z < ctx.minZ || batch.bbox.min.z > ctx.maxZ)
+			if(batch.bbox.max.x < ctx.minX || batch.bbox.min.x > ctx.maxX ||
+			   batch.bbox.max.z < ctx.minZ || batch.bbox.min.z > ctx.maxZ)
 			{
 				vOffset += Object.number_vertices;
 				iOffset += Object.number_indices;
 				continue;
 			}
-			if (ctx.cullFrustum && !ctx.cullFrustum->testAABB_dirty(batch.bbox))
+			if(ctx.cullFrustum && !ctx.cullFrustum->testAABB_dirty(batch.bbox))
 			{
 				vOffset += Object.number_vertices;
 				iOffset += Object.number_indices;
@@ -349,7 +348,8 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		iOffset += Object.number_indices;
 	}
 
-	if (visibleModels.empty()) return;
+	if(visibleModels.empty())
+		return;
 
 	// ------------------ ПРОХОД 2: заливка буфера инстансов ------------------
 	// Если буфер не вмещает всё, потребуется несколько циклов (для простоты предположим, что вмещает)
@@ -361,12 +361,13 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 	hw_BatchOffset = 0; // начинаем с начала
 	void* ptr = nullptr;
 	HRESULT hr = pCurrentVB->Lock(0, totalInstances * sizeof(InstanceData), &ptr, D3DLOCK_DISCARD);
-	if (FAILED(hr)) return;
+	if(FAILED(hr))
+		return;
 
 	InstanceData* pDest = (InstanceData*)ptr;
 
 	// Копирование всех инстансов подряд с использованием non-temporal writes
-	for (u32 i = 0; i < visibleModels.size(); i++)
+	for(u32 i = 0; i < visibleModels.size(); i++)
 	{
 		ModelBatch& mb = visibleModels[i];
 		const InstanceData* src = mb.batch->instances.data();
@@ -378,7 +379,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		__m128i* pDst = (__m128i*)pDest;
 		u32 simdCount = count * 4; // 4 регистра на инстанс (64 байта)
 
-		for (u32 j = 0; j < simdCount; j += 4)
+		for(u32 j = 0; j < simdCount; j += 4)
 		{
 			_mm_stream_si128(pDst + 0, _mm_loadu_si128(pSrc + 0));
 			_mm_stream_si128(pDst + 1, _mm_loadu_si128(pSrc + 1));
@@ -395,7 +396,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 	pCurrentVB->Unlock();
 
 	// ------------------ ПРОХОД 3: отрисовка ------------------
-	for (u32 i = 0; i < visibleModels.size(); i++)
+	for(u32 i = 0; i < visibleModels.size(); i++)
 	{
 		ModelBatch& mb = visibleModels[i];
 		RenderBackend.set_Element(mb.shader);
@@ -408,7 +409,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 
 		u32 primCount = mb.object->number_indices / 3;
 		RenderBackend.Render(D3DPT_TRIANGLELIST, mb.vOffset, 0, mb.object->number_vertices,
-			mb.iOffset, primCount);
+							 mb.iOffset, primCount);
 
 		Engine.Statistic->RenderDUMP_DT_Count += mb.instanceCount;
 		RenderBackend.stat.r.s_details.add(mb.instanceCount * mb.object->number_vertices);

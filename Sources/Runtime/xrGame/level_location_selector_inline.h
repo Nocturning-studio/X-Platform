@@ -20,9 +20,9 @@ IC CLevelLocationSelector::CBaseLocationSelector(CRestrictedObject* object) : in
 TEMPLATE_SPECIALIZATION
 IC void CLevelLocationSelector::before_search(_vertex_id_type& vertex_id)
 {
-	if (m_restricted_object)
+	if(m_restricted_object)
 	{
-		if (!m_restricted_object->accessible(vertex_id))
+		if(!m_restricted_object->accessible(vertex_id))
 		{
 			fvec3 dest_pos;
 			vertex_id = m_restricted_object->accessible_nearest(m_graph->vertex_position(vertex_id), dest_pos);
@@ -34,7 +34,7 @@ IC void CLevelLocationSelector::before_search(_vertex_id_type& vertex_id)
 TEMPLATE_SPECIALIZATION
 IC void CLevelLocationSelector::after_search()
 {
-	if (m_restricted_object)
+	if(m_restricted_object)
 		m_restricted_object->remove_border();
 }
 

@@ -55,7 +55,7 @@ void CUIMessagesWindow::Init(float x, float y, float width, float height)
 	m_pGameLog->SetAutoDelete(true);
 	m_pGameLog->Show(true);
 	AttachChild(m_pGameLog);
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		CUIXmlInit::InitScrollView(xml, "sp_log_list", 0, m_pGameLog);
 	}
@@ -91,7 +91,7 @@ void CUIMessagesWindow::AddIconedPdaMessage(LPCSTR textureName, Frect originalRe
 	pItem->UIMsgText.SetWndPos(pItem->UIIcon.GetWidth(), pItem->UIMsgText.GetWndPos().y);
 	pItem->UIMsgText.AdjustHeightToText();
 
-	if (pItem->UIIcon.GetHeight() > pItem->UIMsgText.GetHeight())
+	if(pItem->UIIcon.GetHeight() > pItem->UIMsgText.GetHeight())
 		pItem->SetHeight(pItem->UIIcon.GetHeight());
 	else
 		pItem->SetHeight(pItem->UIMsgText.GetHeight());
@@ -105,7 +105,7 @@ void CUIMessagesWindow::AddChatMessage(shared_str msg, shared_str author)
 
 void CUIMessagesWindow::SetChatOwner(game_cl_GameState* owner)
 {
-	if (m_pChatWnd)
+	if(m_pChatWnd)
 		m_pChatWnd->SetOwner(owner);
 }
 

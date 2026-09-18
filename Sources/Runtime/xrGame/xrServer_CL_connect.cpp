@@ -10,29 +10,29 @@ xr_vector<u16> g_perform_spawn_ids;
 void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Packet& P)
 {
 	xr_vector<u16>::iterator it = std::find(g_perform_spawn_ids.begin(), g_perform_spawn_ids.end(), E->ID);
-	if (it != g_perform_spawn_ids.end())
+	if(it != g_perform_spawn_ids.end())
 		return;
 
 	g_perform_spawn_ids.push_back(E->ID);
 
-	if (E->net_Processed)
+	if(E->net_Processed)
 		return;
-	if (E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))
+	if(E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))
 		return;
 
 	// Connectivity order
 	CSE_Abstract* Parent = ID_to_entity(E->ID_Parent);
-	if (Parent)
+	if(Parent)
 		Perform_connect_spawn(Parent, CL, P);
 
 	// Process
 	Flags16 save = E->s_flags;
 	//-------------------------------------------------
 	E->s_flags.set(M_SPAWN_UPDATE, TRUE);
-	if (0 == E->owner)
+	if(0 == E->owner)
 	{
 		// PROCESS NAME; Name this entity
-		if (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+		if(E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 		{
 			CL->owner = E;
 			E->set_name_replace(*CL->name);
@@ -63,9 +63,9 @@ void xrServer::SendConnectionData(IClient* _CL)
 	u32 mode = net_flags(TRUE, TRUE);
 	// Replicate current entities on to this client
 	xrS_entities::iterator I = entities.begin(), E = entities.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		I->second->net_Processed = FALSE;
-	for (I = entities.begin(); I != E; ++I)
+	for(I = entities.begin(); I != E; ++I)
 		Perform_connect_spawn(I->second, CL, P);
 
 	// Send "finished" signal
@@ -105,7 +105,7 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
 	P.w_u8(res1);
 	P.w_stringZ(ResultStr);
 
-	if (SV_Client && SV_Client == CL)
+	if(SV_Client && SV_Client == CL)
 		P.w_u8(1);
 	else
 		P.w_u8(0);
@@ -116,7 +116,7 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
 
 void xrServer::Check_GameSpy_CDKey_Success(IClient* CL)
 {
-	if (NeedToCheckClient_BuildVersion(CL))
+	if(NeedToCheckClient_BuildVersion(CL))
 		return;
 	//-------------------------------------------------------------
 	Check_BuildVersion_Success(CL);
@@ -130,7 +130,7 @@ bool xrServer::NeedToCheckClient_BuildVersion(IClient* CL)
 	// return false;
 	// #else
 
-	if (g_SV_Disable_Auth_Check)
+	if(g_SV_Disable_Auth_Check)
 		return false;
 	CL->flags.bVerified = FALSE;
 	NET_Packet P;
@@ -141,7 +141,7 @@ bool xrServer::NeedToCheckClient_BuildVersion(IClient* CL)
 	// #endif
 };
 
-#pragma todo(NSDeathman to NSDeathman: Переписать проверку версии при соединении)
+#pragma todo(NSDeathman to NSDeathman : Переписать проверку версии при соединении)
 void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 {
 	u16 Type;
@@ -156,7 +156,7 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 
 	// --- НАЧАЛО ИСПРАВЛЕНИЯ ---
 	// Мы намеренно ломаем проверку. Если версии разные - просто пишем в лог, но не кикаем.
-	if (_our != _him)
+	if(_our != _him)
 	{
 		Msg("! Version mismatch ignored for Dedicated Server: Server[%llu] != Client[%llu]", _our, _him);
 		// SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]"); <--- ЗАКОММЕНТИРОВАНО
@@ -168,12 +168,12 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 		bool bAccessUser = false;
 		string512 res_check;
 
-		if (!CL->flags.bLocal)
+		if(!CL->flags.bLocal)
 		{
 			bAccessUser = Check_ServerAccess(CL, res_check);
 		}
 
-		if (CL->flags.bLocal || bAccessUser)
+		if(CL->flags.bLocal || bAccessUser)
 		{
 			Check_BuildVersion_Success(CL);
 		}

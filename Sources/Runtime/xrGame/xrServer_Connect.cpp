@@ -21,7 +21,7 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 #endif
 
 	// Parse options and create game
-	if (0 == strchr(*session_name, '/'))
+	if(0 == strchr(*session_name, '/'))
 		return ErrConnect;
 
 	string1024 options;
@@ -32,7 +32,7 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 	string1024 type;
 	R_ASSERT2(xr_strlen(options) <= sizeof(type), "session_name too BIIIGGG!!!");
 	strcpy(type, options);
-	if (strchr(type, '/'))
+	if(strchr(type, '/'))
 		*strchr(type, '/') = 0;
 	game = NULL;
 
@@ -40,7 +40,7 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 	game = smart_cast<game_sv_GameState*>(NEW_INSTANCE(clsid));
 
 	// Options
-	if (0 == game)
+	if(0 == game)
 		return ErrConnect;
 	csPlayers.Enter();
 //	game->type				= type_id;
@@ -52,18 +52,18 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 	csPlayers.Leave();
 
 #ifdef BATTLEYE
-	if (game->get_option_i(*session_name, "battleye", 1) != 0) // default => battleye enable (always)
+	if(game->get_option_i(*session_name, "battleye", 1) != 0) // default => battleye enable (always)
 	{
 		// if level exist & if server in internet
-		if (g_pGameLevel && (game->get_option_i(*session_name, "public", 0) != 0))
+		if(g_pGameLevel && (game->get_option_i(*session_name, "public", 0) != 0))
 		{
-			if (Level().battleye_system.server)
+			if(Level().battleye_system.server)
 			{
 				Msg("Warning: BattlEye already loaded!");
 			}
 			else
 			{
-				if (!Level().battleye_system.LoadServer(this))
+				if(!Level().battleye_system.LoadServer(this))
 				{
 					return ErrBELoad;
 				}
@@ -100,7 +100,7 @@ IClient* xrServer::new_client(SClientConnectData* cl_data)
 	strcpy_s(new_name, cl_data->name);
 	CL->name._set(new_name);
 
-	if (!HasProtected() && game->NewPlayerName_Exists(CL, new_name))
+	if(!HasProtected() && game->NewPlayerName_Exists(CL, new_name))
 	{
 		game->NewPlayerName_Generate(CL, new_name);
 		game->NewPlayerName_Replace(CL, new_name);
@@ -113,7 +113,7 @@ IClient* xrServer::new_client(SClientConnectData* cl_data)
 	P.r_pos = 0;
 
 	game->AddDelayedEvent(P, GAME_EVENT_CREATE_CLIENT, 0, CL->ID);
-	if (client_Count() == 1)
+	if(client_Count() == 1)
 	{
 		Update();
 	}
@@ -131,7 +131,7 @@ void xrServer::AttachNewClient(IClient* CL)
 	msgConfig.is_battleye = (g_pGameLevel && Level().battleye_system.server != 0) ? 1 : 0;
 #endif // BATTLEYE
 
-	if (psNET_direct_connect) // single_game
+	if(psNET_direct_connect) // single_game
 	{
 		SV_Client = CL;
 		CL->flags.bLocal = 1;
@@ -144,7 +144,7 @@ void xrServer::AttachNewClient(IClient* CL)
 	}
 
 	// gen message
-	if (!NeedToCheckClient_GameSpy_CDKey(CL))
+	if(!NeedToCheckClient_GameSpy_CDKey(CL))
 	{
 		//-------------------------------------------------------------
 		Check_GameSpy_CDKey_Success(CL);

@@ -14,7 +14,7 @@
 #include "xrGame/cover_manager.h"
 #include "xrGame/stalker_movement_restriction.h"
 #include "xrGame/level_graph.h"
-#include "xrGame/inventory_item.h" 
+#include "xrGame/inventory_item.h"
 #include "xrGame/weapon.h"
 #include "xrGame/inventory.h"
 
@@ -43,7 +43,7 @@ void CAI_Stalker::on_best_cover_changed(const CCoverPoint* new_cover, const CCov
 {
 	cover_delegates::const_iterator I = m_cover_delegates.begin();
 	cover_delegates::const_iterator E = m_cover_delegates.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		(*I)(new_cover, old_cover);
 }
 
@@ -58,7 +58,7 @@ const CCoverPoint* CAI_Stalker::find_best_cover(const fvec3& position_to_cover_f
 	m_ce_best->setup(position_to_cover_from, MIN_SUITABLE_ENEMY_DISTANCE, 170.f, MIN_SUITABLE_ENEMY_DISTANCE);
 	const CCoverPoint* point =
 		ai().cover_manager().best_cover(Position(), 10.f, *m_ce_best, CStalkerMovementRestrictor(this, true));
-	if (point)
+	if(point)
 		return (point);
 
 #ifdef _DEBUG
@@ -73,17 +73,17 @@ const CCoverPoint* CAI_Stalker::find_best_cover(const fvec3& position_to_cover_f
 	int rank = Rank();
 
 	// 1. Агрессия с дробовиком
-	if (inventory().ActiveItem() && inventory().ActiveItem()->object().ef_weapon_type() >= 7)
+	if(inventory().ActiveItem() && inventory().ActiveItem()->object().ef_weapon_type() >= 7)
 	{
-		if (conditions().health() > 0.7f)
+		if(conditions().health() > 0.7f)
 			search_radius = 40.f;
 	}
 	// 2. Ветераны и Мастера ищут укрытия в более широком радиусе (для флангования)
-	else if (rank >= 50)
+	else if(rank >= 50)
 	{
 		search_radius = 30.f;
 		// Если здоровье полное, поджимаем врага (разрешаем укрытия ближе к врагу)
-		if (conditions().health() > 0.9f)
+		if(conditions().health() > 0.9f)
 			min_enemy_dist = 5.0f;
 	}
 
@@ -103,10 +103,10 @@ float CAI_Stalker::best_cover_value(const fvec3& position_to_cover_from)
 
 void CAI_Stalker::best_cover_can_try_advance()
 {
-	if (!m_best_cover_actual)
+	if(!m_best_cover_actual)
 		return;
 
-	if (m_best_cover_advance_cover == m_best_cover)
+	if(m_best_cover_advance_cover == m_best_cover)
 		return;
 
 	m_best_cover_can_try_advance = true;
@@ -114,21 +114,21 @@ void CAI_Stalker::best_cover_can_try_advance()
 
 void CAI_Stalker::update_best_cover_actuality(const fvec3& position_to_cover_from)
 {
-	if (!m_best_cover_actual)
+	if(!m_best_cover_actual)
 		return;
 
-	if (!m_best_cover)
+	if(!m_best_cover)
 		return;
 
 	// [IMPROVEMENT] Anti-Bodyblock: Если мы долго блокируем линию огня союзникам
 	// Сбрасиваем актуальность укрытия, чтобы найти новое
-	if (m_body_block_time > 1000)
+	if(m_body_block_time > 1000)
 	{ // Если блокируем > 1 сек
 		m_best_cover_actual = false;
 		return;
 	}
 
-	if (m_best_cover->position().distance_to_sqr(position_to_cover_from) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE))
+	if(m_best_cover->position().distance_to_sqr(position_to_cover_from) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE))
 	{
 		m_best_cover_actual = false;
 #if 0 // def _DEBUG
@@ -138,7 +138,7 @@ void CAI_Stalker::update_best_cover_actuality(const fvec3& position_to_cover_fro
 	}
 
 	float cover_value = best_cover_value(position_to_cover_from);
-	if (cover_value >= m_best_cover_value + 1.f)
+	if(cover_value >= m_best_cover_value + 1.f)
 	{
 		m_best_cover_actual = false;
 #if 0 // def _DEBUG
@@ -153,10 +153,10 @@ void CAI_Stalker::update_best_cover_actuality(const fvec3& position_to_cover_fro
 	//		return;
 	//	}
 
-	if (!m_best_cover_can_try_advance)
+	if(!m_best_cover_can_try_advance)
 		return;
 
-	if (m_best_cover_advance_cover == m_best_cover)
+	if(m_best_cover_advance_cover == m_best_cover)
 		return;
 
 	m_best_cover_advance_cover = m_best_cover;
@@ -177,13 +177,13 @@ const CCoverPoint* CAI_Stalker::best_cover(const fvec3& position_to_cover_from)
 {
 	update_best_cover_actuality(position_to_cover_from);
 
-	if (m_best_cover_actual)
+	if(m_best_cover_actual)
 		return (m_best_cover);
 
 	m_best_cover_actual = true;
 
 	const CCoverPoint* best_cover = find_best_cover(position_to_cover_from);
-	if (best_cover != m_best_cover)
+	if(best_cover != m_best_cover)
 	{
 		on_best_cover_changed(best_cover, m_best_cover);
 		m_best_cover = best_cover;
@@ -216,10 +216,10 @@ void CAI_Stalker::on_enemy_change(const CEntityAlive* enemy)
 
 void CAI_Stalker::on_danger_location_add(const CDangerLocation& location)
 {
-	if (!m_best_cover)
+	if(!m_best_cover)
 		return;
 
-	if (m_best_cover->position().distance_to_sqr(location.position()) <= _sqr(location.m_radius))
+	if(m_best_cover->position().distance_to_sqr(location.position()) <= _sqr(location.m_radius))
 	{
 #ifdef _DEBUG
 //		Msg								("* [%6d][%s] on_danger_add",Engine.TimeManager.GetGlobalTimeMs(),*cName());
@@ -230,9 +230,9 @@ void CAI_Stalker::on_danger_location_add(const CDangerLocation& location)
 
 void CAI_Stalker::on_danger_location_remove(const CDangerLocation& location)
 {
-	if (!m_best_cover)
+	if(!m_best_cover)
 	{
-		if (Position().distance_to_sqr(location.position()) <= _sqr(location.m_radius))
+		if(Position().distance_to_sqr(location.position()) <= _sqr(location.m_radius))
 		{
 #ifdef _DEBUG
 //			Msg							("* [%6d][%s] on_danger_remove",Engine.TimeManager.GetGlobalTimeMs(),*cName());
@@ -243,7 +243,7 @@ void CAI_Stalker::on_danger_location_remove(const CDangerLocation& location)
 		return;
 	}
 
-	if (m_best_cover->position().distance_to_sqr(location.position()) <= _sqr(location.m_radius))
+	if(m_best_cover->position().distance_to_sqr(location.position()) <= _sqr(location.m_radius))
 	{
 #ifdef _DEBUG
 //		Msg								("* [%6d][%s] on_danger_remove",Engine.TimeManager.GetGlobalTimeMs(),*cName());

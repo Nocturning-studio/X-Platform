@@ -54,7 +54,7 @@ CALifeSwitchManager::~CALifeSwitchManager()
 
 void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update_registries)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::add_online");
+	// OPTICK_EVENT("CALifeSwitchManager::add_online");
 
 	START_PROFILE("ALife/switch/add_online")
 	VERIFY((ai().game_graph().vertex(object->m_tGraphID)->level_id() == graph().level().level_id()));
@@ -73,7 +73,7 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update
 			  "Invalid vertex for object ", object->name_replace());
 
 #ifdef DEBUG
-	if (psAI_Flags.test(aiALife))
+	if(psAI_Flags.test(aiALife))
 		Msg("[LSS] Spawning object [%s][%s][%d]", object->name_replace(), *object->s_name, object->ID);
 #endif
 
@@ -83,14 +83,14 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update
 
 void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject* object, bool update_registries)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::remove_online");
+	// OPTICK_EVENT("CALifeSwitchManager::remove_online");
 
 	START_PROFILE("ALife/switch/remove_online")
 	object->m_bOnline = false;
 
 	m_saved_chidren = object->children;
 	CSE_ALifeTraderAbstract* inventory_owner = smart_cast<CSE_ALifeTraderAbstract*>(object);
-	if (inventory_owner)
+	if(inventory_owner)
 	{
 		m_saved_chidren.erase(
 			std::remove_if(m_saved_chidren.begin(), m_saved_chidren.end(), remove_non_savable_predicate(&server())),
@@ -104,7 +104,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject* object, bool upd
 	object->ID = server().PerformIDgen(object_id);
 
 #ifdef DEBUG
-	if (psAI_Flags.test(aiALife))
+	if(psAI_Flags.test(aiALife))
 		Msg("[LSS] Destroying object [%s][%s][%d]", object->name_replace(), *object->s_name, object->ID);
 #endif
 
@@ -114,7 +114,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject* object, bool upd
 
 void CALifeSwitchManager::switch_online(CSE_ALifeDynamicObject* object)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::switch_online");
+	// OPTICK_EVENT("CALifeSwitchManager::switch_online");
 
 	START_PROFILE("ALife/switch/switch_online")
 #ifdef DEBUG
@@ -129,7 +129,7 @@ void CALifeSwitchManager::switch_online(CSE_ALifeDynamicObject* object)
 
 void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject* object)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::switch_offline");
+	// OPTICK_EVENT("CALifeSwitchManager::switch_offline");
 
 	START_PROFILE("ALife/switch/switch_offline")
 #ifdef DEBUG
@@ -144,19 +144,19 @@ void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject* object)
 
 bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::synchronize_location");
+	// OPTICK_EVENT("CALifeSwitchManager::synchronize_location");
 
 	START_PROFILE("ALife/switch/synchronize_location")
 #ifdef DEBUG
 	VERIFY3(ai().level_graph().level_id() == ai().game_graph().vertex(I->m_tGraphID)->level_id(), *I->s_name,
 			I->name_replace());
-	if (!I->children.empty())
+	if(!I->children.empty())
 	{
 		u32 size = I->children.size();
 		ALife::_OBJECT_ID* test = (ALife::_OBJECT_ID*)_alloca(size * sizeof(ALife::_OBJECT_ID));
 		std::memcpy(test, &*I->children.begin(), size * sizeof(ALife::_OBJECT_ID));
 		concurrency::parallel_sort(test, test + size);
-		for (u32 i = 1; i < size; ++i)
+		for(u32 i = 1; i < size; ++i)
 		{
 			VERIFY3(test[i - 1] != test[i], "Child is registered twice in the child list", (*I).name_replace());
 		}
@@ -164,15 +164,15 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 #endif // DEBUG
 
 	// check if we do not use ai locations
-	if (!I->used_ai_locations())
+	if(!I->used_ai_locations())
 		return (true);
 
 	// check if we are not attached
-	if (0xffff != I->ID_Parent)
+	if(0xffff != I->ID_Parent)
 		return (true);
 
 	// check if we are not online and have an invalid level vertex id
-	if (!I->m_bOnline && !ai().level_graph().valid_vertex_id(I->m_tNodeID))
+	if(!I->m_bOnline && !ai().level_graph().valid_vertex_id(I->m_tNodeID))
 		return (true);
 
 	return ((*I).synchronize_location());
@@ -181,26 +181,26 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject* I)
 
 void CALifeSwitchManager::try_switch_online(CSE_ALifeDynamicObject* I)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::try_switch_online");
+	// OPTICK_EVENT("CALifeSwitchManager::try_switch_online");
 
 	START_PROFILE("ALife/switch/try_switch_online")
 	// so, the object is offline
 	// checking if the object is not attached
-	if (0xffff != I->ID_Parent)
+	if(0xffff != I->ID_Parent)
 	{
 		// so, object is attached
 		// checking if parent is offline too
 #ifdef DEBUG
-		if (psAI_Flags.test(aiALife))
+		if(psAI_Flags.test(aiALife))
 		{
 			CSE_ALifeCreatureAbstract* l_tpALifeCreatureAbstract =
 				smart_cast<CSE_ALifeCreatureAbstract*>(objects().object(I->ID_Parent));
-			if (l_tpALifeCreatureAbstract && (l_tpALifeCreatureAbstract->fHealth < EPS_L))
+			if(l_tpALifeCreatureAbstract && (l_tpALifeCreatureAbstract->fHealth < EPS_L))
 				Msg("! uncontrolled situation [%d][%d][%s][%f]", I->ID, I->ID_Parent,
 					l_tpALifeCreatureAbstract->name_replace(), l_tpALifeCreatureAbstract->fHealth);
 			VERIFY2(!l_tpALifeCreatureAbstract || (l_tpALifeCreatureAbstract->fHealth >= EPS_L),
 					"Parent online, item offline...");
-			if (objects().object(I->ID_Parent)->m_bOnline)
+			if(objects().object(I->ID_Parent)->m_bOnline)
 				Msg("! uncontrolled situation [%d][%d][%s][%f]", I->ID, I->ID_Parent,
 					l_tpALifeCreatureAbstract->name_replace(), l_tpALifeCreatureAbstract->fHealth);
 		}
@@ -214,19 +214,19 @@ void CALifeSwitchManager::try_switch_online(CSE_ALifeDynamicObject* I)
 			make_string("frame [%d] time [%d] object [%s] with id [%d] is offline, but is on the level", Engine.TimeManager.GetFrameCount(),
 						Engine.TimeManager.GetGlobalTimeMs(), I->name_replace(), I->ID));
 
-	if (m_online_switched_current >= m_online_limit_per_update)
+	if(m_online_switched_current >= m_online_limit_per_update)
 	{
 		return;
 	}
 
 	I->try_switch_online();
 
-	if (I->m_bOnline)
+	if(I->m_bOnline)
 	{
 		m_online_switched_current++;
 	}
 
-	if (!I->m_bOnline && !I->keep_saved_data_anyway())
+	if(!I->m_bOnline && !I->keep_saved_data_anyway())
 		I->client_data.clear();
 
 	STOP_PROFILE
@@ -234,17 +234,17 @@ void CALifeSwitchManager::try_switch_online(CSE_ALifeDynamicObject* I)
 
 void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 {
-	//OPTICK_EVENT("CALifeSwitchManager::try_switch_offline");
+	// OPTICK_EVENT("CALifeSwitchManager::try_switch_offline");
 
 	START_PROFILE("ALife/switch/try_switch_offline")
 	// checking if the object is not attached
-	if (0xffff != I->ID_Parent)
+	if(0xffff != I->ID_Parent)
 	{
 #ifdef DEBUG
 		// checking if parent is online too
 		CSE_ALifeCreatureAbstract* l_tpALifeCreatureAbstract =
 			smart_cast<CSE_ALifeCreatureAbstract*>(objects().object(I->ID_Parent));
-		if (l_tpALifeCreatureAbstract && (l_tpALifeCreatureAbstract->fHealth < EPS_L))
+		if(l_tpALifeCreatureAbstract && (l_tpALifeCreatureAbstract->fHealth < EPS_L))
 			Msg("! uncontrolled situation [%d][%d][%s][%f]", I->ID, I->ID_Parent,
 				l_tpALifeCreatureAbstract->name_replace(), l_tpALifeCreatureAbstract->fHealth);
 
@@ -252,7 +252,7 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 					(smart_cast<CSE_ALifeCreatureAbstract*>(objects().object(I->ID_Parent))->fHealth >= EPS_L),
 				"Parent offline, item online...");
 
-		if (!objects().object(I->ID_Parent)->m_bOnline)
+		if(!objects().object(I->ID_Parent)->m_bOnline)
 			Msg("! uncontrolled situation [%d][%d][%s][%f]", I->ID, I->ID_Parent,
 				l_tpALifeCreatureAbstract->name_replace(), l_tpALifeCreatureAbstract->fHealth);
 
@@ -267,20 +267,20 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 
 void CALifeSwitchManager::switch_object(CSE_ALifeDynamicObject* I)
 {
-	if (I->redundant())
+	if(I->redundant())
 	{
 		release(I);
 		return;
 	}
 
-	if (!synchronize_location(I))
+	if(!synchronize_location(I))
 		return;
 
-	if (I->m_bOnline)
+	if(I->m_bOnline)
 		try_switch_offline(I);
 	else
 		try_switch_online(I);
 
-	if (I->redundant())
+	if(I->redundant())
 		release(I);
 }

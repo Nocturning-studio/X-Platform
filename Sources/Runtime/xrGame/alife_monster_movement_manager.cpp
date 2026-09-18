@@ -40,13 +40,15 @@ bool CALifeMonsterMovementManager::actual() const
 
 void CALifeMonsterMovementManager::update()
 {
-	switch (path_type())
+	switch(path_type())
 	{
-	case MovementManager::ePathTypeGamePath: {
+	case MovementManager::ePathTypeGamePath:
+	{
 		detail().update();
 		break;
 	};
-	case MovementManager::ePathTypePatrolPath: {
+	case MovementManager::ePathTypePatrolPath:
+	{
 		patrol().update();
 
 		detail().target(patrol().target_game_vertex_id(), patrol().target_level_vertex_id(),
@@ -56,7 +58,8 @@ void CALifeMonsterMovementManager::update()
 
 		break;
 	};
-	case MovementManager::ePathTypeNoPath: {
+	case MovementManager::ePathTypeNoPath:
+	{
 		break;
 	};
 	default:

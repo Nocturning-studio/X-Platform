@@ -8,9 +8,11 @@
 
 #pragma once
 
-template <u32 reserved_vertex_count> struct CVertexAllocatorFixed
+template <u32 reserved_vertex_count>
+struct CVertexAllocatorFixed
 {
-	template <typename _vertex> class CDataStorage
+	template <typename _vertex>
+	class CDataStorage
 	{
 	  public:
 		typedef _vertex CGraphVertex;

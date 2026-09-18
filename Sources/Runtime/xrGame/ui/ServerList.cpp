@@ -27,13 +27,13 @@ CServerList::CServerList()
 	m_GSBrowser = MainMenu()->GetGS()->m_pGS_SB;
 	m_GSBrowser->Init(this);
 
-	for (int i = 0; i < LST_COLUMN_COUNT; i++)
+	for(int i = 0; i < LST_COLUMN_COUNT; i++)
 		AttachChild(&m_header_frames[i]);
 
-	for (int i = 0; i < LST_COLUMN_COUNT; i++)
+	for(int i = 0; i < LST_COLUMN_COUNT; i++)
 		AttachChild(&m_header[i]);
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 		AttachChild(&m_header2[i]);
 
 	m_pAnimation = xr_new<CUIColorAnimatorWrapper>("ui_mm_mp_srvinfo");
@@ -41,7 +41,7 @@ CServerList::CServerList()
 
 	AttachChild(&m_edit_gs_filter);
 
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		m_list[i].ShowSelectedItem();
 		AttachChild(&m_frame[i]);
@@ -81,26 +81,26 @@ void CServerList::Update()
 
 	//	if (m_GSBrowser) m_GSBrowser->Update();
 
-	if (m_need_refresh_fr < Engine.TimeManager.GetFrameCount() + 10)
+	if(m_need_refresh_fr < Engine.TimeManager.GetFrameCount() + 10)
 		RefreshList_internal();
 
-	if (m_bAnimation)
+	if(m_bAnimation)
 	{
 		m_pAnimation->Update();
 
 		m_frame[LST_SRV_PROP].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
 		m_frame[LST_PLAYERS].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
 
-		for (int i = 0; i < 4; i++)
+		for(int i = 0; i < 4; i++)
 		{
 			m_header2[i].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
 			m_header2[i].SetTextColor(subst_alpha(m_header2[i].GetTextColor(), color_get_A(m_pAnimation->GetColor())));
 		}
 
-		if (m_pAnimation->Done())
+		if(m_pAnimation->Done())
 		{
 			m_bAnimation = false;
-			if (m_bShowServerInfo)
+			if(m_bShowServerInfo)
 				AfterAppear();
 			else
 				AfterDisappear();
@@ -112,7 +112,7 @@ void CServerList::Update()
 bool CServerList::NeedToRefreshCurServer()
 {
 	int SvId = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == SvId)
+	if(-1 == SvId)
 		return false;
 	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(SvId);
 	return m_GSBrowser->HasAllKeys(pItem->GetInfo()->info.Index) == false;
@@ -120,9 +120,9 @@ bool CServerList::NeedToRefreshCurServer()
 
 void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (m_bShowServerInfo && (LIST_ITEM_CLICKED == msg) && (&m_list[LST_SERVER] == pWnd))
+	if(m_bShowServerInfo && (LIST_ITEM_CLICKED == msg) && (&m_list[LST_SERVER] == pWnd))
 	{
-		if (NeedToRefreshCurServer())
+		if(NeedToRefreshCurServer())
 		{
 			RefreshQuick();
 		}
@@ -132,42 +132,42 @@ void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 			FillUpDetailedServerInfo();
 		}
 	}
-	else if (BUTTON_CLICKED == msg)
+	else if(BUTTON_CLICKED == msg)
 	{
-		if (pWnd == &m_header[1])
+		if(pWnd == &m_header[1])
 		{
 			SetSortFunc("server_name", true);
 		}
-		else if (pWnd == &m_header[2])
+		else if(pWnd == &m_header[2])
 		{
 			SetSortFunc("map", true);
 		}
-		else if (pWnd == &m_header[3])
+		else if(pWnd == &m_header[3])
 		{
 			SetSortFunc("game_type", true);
 		}
-		else if (pWnd == &m_header[4])
+		else if(pWnd == &m_header[4])
 		{
 			SetSortFunc("player", true);
 		}
-		else if (pWnd == &m_header[5])
+		else if(pWnd == &m_header[5])
 		{
 			SetSortFunc("ping", true);
 		}
-		else if (pWnd == &m_header[6])
+		else if(pWnd == &m_header[6])
 		{
 			SetSortFunc("version", true);
 		}
 	}
-	else if (EDIT_TEXT_COMMIT == msg && pWnd == &m_edit_gs_filter)
+	else if(EDIT_TEXT_COMMIT == msg && pWnd == &m_edit_gs_filter)
 	{
 		RefreshGameSpyList(m_b_local);
 	}
-	else if (MESSAGE_BOX_YES_CLICKED == msg)
+	else if(MESSAGE_BOX_YES_CLICKED == msg)
 	{
 
 		int sel = m_list[LST_SERVER].GetSelectedItem();
-		if (-1 == sel)
+		if(-1 == sel)
 			return;
 
 		CUIListItemServer* item = smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(sel));
@@ -211,17 +211,17 @@ void CServerList::FillUpDetailedServerInfo()
 	bool t2 = false;
 	bool spect = false;
 
-	if (-1 != si)
+	if(-1 != si)
 	{
 		CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(si);
 		R_ASSERT(pItem);
 
 		ServerInfo srvInfo;
-		if (m_GSBrowser)
+		if(m_GSBrowser)
 			m_GSBrowser->GetServerInfoByIndex(&srvInfo, pItem->GetInfo()->info.Index);
 		u32 teams = srvInfo.m_aTeams.size();
 
-		if (2 == teams)
+		if(2 == teams)
 		{
 			string256 _buff;
 
@@ -229,15 +229,15 @@ void CServerList::FillUpDetailedServerInfo()
 
 			// TEAM 1
 			xr_vector<PlayerInfo>::iterator it;
-			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
+			for(it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
 				PlayerInfo pf = *it;
-				if (1 != pf.Team)
+				if(1 != pf.Team)
 					continue;
-				if (pf.Spectator)
+				if(pf.Spectator)
 					continue;
 
-				if (!t1) // add header
+				if(!t1) // add header
 				{
 					sprintf_s(_buff, "team \"%s\"", *CTeamInfo::GetTeam1_name());
 					pItemAdv = xr_new<CUIListItemAdv>();
@@ -260,15 +260,15 @@ void CServerList::FillUpDetailedServerInfo()
 			}
 
 			// TEAM 2
-			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
+			for(it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
 				PlayerInfo pf = *it;
-				if (2 != pf.Team)
+				if(2 != pf.Team)
 					continue;
-				if (pf.Spectator)
+				if(pf.Spectator)
 					continue;
 
-				if (!t2)
+				if(!t2)
 				{
 					sprintf_s(_buff, "team \"%s\"", *CTeamInfo::GetTeam2_name());
 					pItemAdv = xr_new<CUIListItemAdv>();
@@ -291,13 +291,13 @@ void CServerList::FillUpDetailedServerInfo()
 			}
 
 			// SPECTATORS
-			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
+			for(it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
 				PlayerInfo pf = *it;
-				if (!pf.Spectator)
+				if(!pf.Spectator)
 					continue;
 
-				if (!spect)
+				if(!spect)
 				{
 					sprintf_s(_buff, "spectator");
 					pItemAdv = xr_new<CUIListItemAdv>();
@@ -322,7 +322,7 @@ void CServerList::FillUpDetailedServerInfo()
 		else
 		{
 			xr_vector<PlayerInfo>::iterator it;
-			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
+			for(it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
 				PlayerInfo pf = *it;
 				CUIListItemAdv* pItemAdv = xr_new<CUIListItemAdv>();
@@ -339,7 +339,7 @@ void CServerList::FillUpDetailedServerInfo()
 		}
 
 		xr_vector<GameInfo>::iterator it;
-		for (it = srvInfo.m_aInfos.begin(); it != srvInfo.m_aInfos.end(); it++)
+		for(it = srvInfo.m_aInfos.begin(); it != srvInfo.m_aInfos.end(); it++)
 		{
 			GameInfo gi = *it;
 			CUIListItemAdv* pItemAdv = xr_new<CUIListItemAdv>();
@@ -362,7 +362,7 @@ void CServerList::ClearDetailedServerInfo()
 
 void CServerList::ShowServerInfo()
 {
-	if (!m_bShowServerInfo && NeedToRefreshCurServer())
+	if(!m_bShowServerInfo && NeedToRefreshCurServer())
 	{
 		RefreshQuick();
 	}
@@ -370,7 +370,7 @@ void CServerList::ShowServerInfo()
 	m_bAnimation = true;
 	m_pAnimation->Reverese(!m_bShowServerInfo);
 	m_pAnimation->Reset();
-	if (m_bShowServerInfo)
+	if(m_bShowServerInfo)
 		BeforeAppear();
 	else
 		BeforeDisapear();
@@ -392,7 +392,7 @@ void CServerList::UpdateVisibility()
 	m_frame[LST_SRV_PROP].Show(m_bShowServerInfo ? true : m_bAnimation);
 	m_frame[LST_PLAYERS].Show(m_bShowServerInfo ? true : m_bAnimation);
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 		m_header2[i].Show(m_bShowServerInfo ? true : m_bAnimation);
 }
 
@@ -417,7 +417,7 @@ bool CServerList::IsValidItem(ServerInfo& item)
 	result &= !m_sf.without_pass ? (m_sf.without_pass != item.m_bPassword) : true;
 	result &= !m_sf.without_ff ? (m_sf.without_ff != item.m_bFFire) : true;
 #ifdef BATTLEYE
-	if (!m_b_local)
+	if(!m_b_local)
 	{
 		result &= m_sf.with_battleye ? (/*m_sf.with_battleye	== */ item.m_bBattlEye) : true;
 	}
@@ -461,7 +461,7 @@ void CServerList::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 	m_itemInfo.size.version = xml_doc.ReadAttribFlt(buf, 0, "version");
 
 	// init header elements
-	for (int i = 0; i < LST_COLUMN_COUNT; i++)
+	for(int i = 0; i < LST_COLUMN_COUNT; i++)
 	{
 		CUIXmlInit::Init3tButton(xml_doc, strconcat(sizeof(buf), buf, path, ":header"), 0, &m_header[i]);
 		CUIXmlInit::InitFrameLine(xml_doc, strconcat(sizeof(buf), buf, path, ":header_frames"), 0, &m_header_frames[i]);
@@ -472,32 +472,32 @@ void CServerList::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 	UpdateVisibility();
 }
 
-#pragma todo(NSDeathman to NSDeathman: Починить проверку версий)
+#pragma todo(NSDeathman to NSDeathman : Починить проверку версий)
 void CServerList::ConnectToSelected()
 {
 	int sel = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == sel)
+	if(-1 == sel)
 		return;
 
 	//-----------------------------------------
-	if (!MainMenu()->ValidateCDKey())
+	if(!MainMenu()->ValidateCDKey())
 		return;
 	//-----------------------------------------
 
 	CUIListItemServer* item = smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(sel));
-	if (!m_GSBrowser->CheckDirectConnection(item->GetInfo()->info.Index))
+	if(!m_GSBrowser->CheckDirectConnection(item->GetInfo()->info.Index))
 	{
 		Msg("! Direct connection to this server is not available -> its behind firewall");
 		return;
 	}
 
-	if (xr_strcmp(item->GetInfo()->info.version, GAME_VERSION))
+	if(xr_strcmp(item->GetInfo()->info.version, GAME_VERSION))
 	{
-		//MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
-		//return;
+		// MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
+		// return;
 	}
 
-	if (item->GetInfo()->info.icons.pass || item->GetInfo()->info.icons.user_pass)
+	if(item->GetInfo()->info.icons.pass || item->GetInfo()->info.icons.user_pass)
 	{
 		m_message_box->m_pMessageBox->SetUserPasswordMode(item->GetInfo()->info.icons.user_pass);
 		m_message_box->m_pMessageBox->SetPasswordMode(item->GetInfo()->info.icons.pass);
@@ -544,7 +544,7 @@ void CServerList::InitHeader()
 	m_header[6].SetWndPos(pos);
 	m_header[6].SetTextST("version");
 
-	for (int i = 0; i < LST_COLUMN_COUNT; ++i)
+	for(int i = 0; i < LST_COLUMN_COUNT; ++i)
 	{
 		m_header_frames[i].SetWndPos(m_header[i].GetWndPos());
 		m_header_frames[i].SetWidth(m_header[i].GetWndSize().x);
@@ -564,7 +564,7 @@ void CServerList::RefreshGameSpyList(bool Local)
 {
 	SetSortFunc("", false);
 	SetSortFunc("ping", false);
-	if (m_GSBrowser)
+	if(m_GSBrowser)
 		m_GSBrowser->RefreshList_Full(Local, m_edit_gs_filter.GetText());
 
 	ResetCurItem();
@@ -573,7 +573,7 @@ void CServerList::RefreshGameSpyList(bool Local)
 
 void CServerList::AddServerToList(ServerInfo* pServerInfo)
 {
-	if (!IsValidItem(*pServerInfo))
+	if(!IsValidItem(*pServerInfo))
 		return;
 	CUIListWnd& _list = m_list[LST_SERVER];
 
@@ -591,10 +591,10 @@ void CServerList::UpdateServerInList(ServerInfo* pServerInfo, int index)
 {
 	int sz = m_list[LST_SERVER].GetItemsCount();
 
-	for (int i = 0; i < sz; i++)
+	for(int i = 0; i < sz; i++)
 	{
 		CUIListItemServer* pItem = static_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(i));
-		if (pItem->Get_gs_index() == index)
+		if(pItem->Get_gs_index() == index)
 		{
 			UpdateServerInList(pServerInfo, pItem);
 			return;
@@ -622,35 +622,35 @@ void CServerList::RefreshList_internal()
 	m_list[LST_SERVER].RemoveAll();
 	ClearSrvItems();
 
-	if (!m_GSBrowser)
+	if(!m_GSBrowser)
 		return;
 
 	u32 NumServersFound = m_GSBrowser->GetServersCount();
 	g_gs_browser = m_GSBrowser;
 	m_tmp_srv_lst.resize(NumServersFound);
 
-	for (u32 i = 0; i < NumServersFound; i++)
+	for(u32 i = 0; i < NumServersFound; i++)
 		m_tmp_srv_lst[i] = i;
 
-	if (0 == xr_strcmp(m_sort_func, "server_name"))
+	if(0 == xr_strcmp(m_sort_func, "server_name"))
 		concurrency::parallel_sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_ServerName);
 
-	else if (0 == xr_strcmp(m_sort_func, "map"))
+	else if(0 == xr_strcmp(m_sort_func, "map"))
 		concurrency::parallel_sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Map);
 
-	else if (0 == xr_strcmp(m_sort_func, "game_type"))
+	else if(0 == xr_strcmp(m_sort_func, "game_type"))
 		concurrency::parallel_sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_GameType);
 
-	else if (0 == xr_strcmp(m_sort_func, "player"))
+	else if(0 == xr_strcmp(m_sort_func, "player"))
 		concurrency::parallel_sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Players);
 
-	else if (0 == xr_strcmp(m_sort_func, "ping"))
+	else if(0 == xr_strcmp(m_sort_func, "ping"))
 		concurrency::parallel_sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Ping);
 
-	else if (0 == xr_strcmp(m_sort_func, "version"))
+	else if(0 == xr_strcmp(m_sort_func, "version"))
 		concurrency::parallel_sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Version);
 
-	for (u32 i = 0; i < NumServersFound; i++)
+	for(u32 i = 0; i < NumServersFound; i++)
 	{
 		ServerInfo NewServerInfo;
 		m_GSBrowser->GetServerInfoByIndex(&NewServerInfo, m_tmp_srv_lst[i]);
@@ -663,15 +663,15 @@ void CServerList::RefreshList_internal()
 void CServerList::RefreshQuick()
 {
 	int SvId = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == SvId)
+	if(-1 == SvId)
 		return;
 	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(SvId);
-	if (m_GSBrowser)
+	if(m_GSBrowser)
 		m_GSBrowser->RefreshQuick(pItem->GetInfo()->info.Index);
 
 	RefreshList();
 
-	if (m_bShowServerInfo)
+	if(m_bShowServerInfo)
 	{
 		ClearDetailedServerInfo();
 		FillUpDetailedServerInfo();
@@ -681,7 +681,7 @@ void CServerList::RefreshQuick()
 bool g_bSort_Ascending = true;
 void CServerList::SetSortFunc(LPCSTR func_name, bool make_sort)
 {
-	if (!xr_strcmp(m_sort_func, func_name))
+	if(!xr_strcmp(m_sort_func, func_name))
 	{
 		g_bSort_Ascending = !g_bSort_Ascending;
 	}
@@ -690,7 +690,7 @@ void CServerList::SetSortFunc(LPCSTR func_name, bool make_sort)
 
 	m_sort_func = func_name;
 
-	if (make_sort)
+	if(make_sort)
 		RefreshList();
 }
 
@@ -789,7 +789,7 @@ bool CServerList::sort_by_Version(int p1, int p2)
 void CServerList::SaveCurItem()
 {
 	int SvId = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == SvId)
+	if(-1 == SvId)
 	{
 		m_cur_item = -1;
 		return;
@@ -803,7 +803,7 @@ void CServerList::SaveCurItem()
 
 void CServerList::RestoreCurItem()
 {
-	if (-1 == m_cur_item)
+	if(-1 == m_cur_item)
 		return;
 
 	int index = m_list[LST_SERVER].FindItemWithValue(m_cur_item);
@@ -826,7 +826,7 @@ void CServerList::DestroySrvItems()
 	SrvItems_It it = m_items_cache.begin();
 	SrvItems_It it_e = m_items_cache.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 		xr_delete((*it).m_ui_item);
 }
 
@@ -834,7 +834,7 @@ void CServerList::ClearSrvItems()
 {
 	SrvItems_It it = m_items_cache.begin();
 	SrvItems_It it_e = m_items_cache.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 		(*it).m_busy = false;
 
 	m_last_retreived_index = u32(-1);
@@ -845,12 +845,12 @@ CUIListItemServer* CServerList::GetFreeItem()
 	SrvItems_It it = m_items_cache.begin();
 	SrvItems_It it_e = m_items_cache.end();
 
-	if (m_last_retreived_index != u32(-1))
+	if(m_last_retreived_index != u32(-1))
 		std::advance(it, m_last_retreived_index);
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (false == (*it).m_busy)
+		if(false == (*it).m_busy)
 		{
 			(*it).m_busy = true;
 			m_last_retreived_index = (u32)(it - m_items_cache.begin());

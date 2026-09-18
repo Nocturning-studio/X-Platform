@@ -13,7 +13,7 @@
 
 bool CDangerExplosive::operator==(const u16& object_id) const
 {
-	if (!m_grenade)
+	if(!m_grenade)
 		return (false);
 
 	const CGameObject* game_object = smart_cast<const CGameObject*>(m_grenade);

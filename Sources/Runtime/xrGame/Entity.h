@@ -143,7 +143,7 @@ class CEntity : public CPhysicsShellHolder, public CDamageManager
 	{
 		return g_Alive();
 	}
-	virtual void g_fireParams(const CHudItem*, fvec3&, fvec3&){};
+	virtual void g_fireParams(const CHudItem*, fvec3&, fvec3&) {};
 
 	// time of entity death
 	u32 m_level_death_time;

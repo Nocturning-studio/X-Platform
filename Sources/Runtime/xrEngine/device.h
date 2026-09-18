@@ -78,8 +78,7 @@ class ENGINE_API CRenderDevice
 	void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
 	BOOL Paused();
 
-public:
-
+  public:
 	// Scene control
 	void Begin();
 	void End();

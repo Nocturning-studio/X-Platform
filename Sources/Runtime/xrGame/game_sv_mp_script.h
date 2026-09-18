@@ -10,9 +10,9 @@ class game_sv_mp_script : public game_sv_mp
 	virtual void Create(shared_str& options);
 
   public:
-	game_sv_mp_script() : inherited(){};
-	virtual ~game_sv_mp_script(){};
-	virtual void Create(LPCSTR options){};
+	game_sv_mp_script() : inherited() {};
+	virtual ~game_sv_mp_script() {};
+	virtual void Create(LPCSTR options) {};
 	virtual void Update()
 	{
 		inherited::Update();
@@ -27,13 +27,13 @@ class game_sv_mp_script : public game_sv_mp
 		return inherited::createPlayerState();
 	};
 
-	virtual void OnPlayerKillPlayer(ClientID id_killer, ClientID id_killed){};
-	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; // игрок получил Hit
+	virtual void OnPlayerKillPlayer(ClientID id_killer, ClientID id_killed) {};
+	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P) {}; // игрок получил Hit
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE)
 	{
 		return true;
 	}; // TRUE=allow ownership, FALSE=denied
-	virtual void OnDetach(u16 eid_who, u16 eid_target){};
+	virtual void OnDetach(u16 eid_who, u16 eid_target) {};
 
   protected:
 	void SetHitParams(NET_Packet* P, float impulse, float power);

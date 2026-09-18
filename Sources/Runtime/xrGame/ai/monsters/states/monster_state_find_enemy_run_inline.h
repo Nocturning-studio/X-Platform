@@ -32,10 +32,10 @@ void CStateMonsterFindEnemyRunAbstract::initialize()
 	test_position.mad(target_point, dir, 10.f);
 
 	// провериь возможность пробежать дальше
-	if (ai().level_graph().valid_vertex_position(test_position))
+	if(ai().level_graph().valid_vertex_position(test_position))
 	{
 		u32 vertex_id = ai().level_graph().vertex_id(test_position);
-		if (ai().level_graph().valid_vertex_id(vertex_id))
+		if(ai().level_graph().valid_vertex_id(vertex_id))
 		{
 			target_point = test_position;
 			target_vertex = vertex_id;
@@ -60,8 +60,8 @@ void CStateMonsterFindEnemyRunAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterFindEnemyRunAbstract::check_completion()
 {
-	if ((object->ai_location().level_vertex_id() == target_vertex) &&
-		!object->control().path_builder().is_moving_on_path())
+	if((object->ai_location().level_vertex_id() == target_vertex) &&
+	   !object->control().path_builder().is_moving_on_path())
 		return true;
 
 	return false;

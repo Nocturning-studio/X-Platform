@@ -29,7 +29,8 @@ CScriptIniFile* get_spawn_ini(CSE_Abstract* abstract)
 	return ((CScriptIniFile*)&abstract->spawn_ini());
 }
 
-template <typename T> struct CWrapperBaseObjectsScript : public T, public luabind::wrap_base
+template <typename T>
+struct CWrapperBaseObjectsScript : public T, public luabind::wrap_base
 {
 	typedef T inherited;
 	typedef CWrapperBaseObjectsScript<T> self_type;

@@ -11,7 +11,7 @@ CUIArtefactParams::CUIArtefactParams()
 
 CUIArtefactParams::~CUIArtefactParams()
 {
-	for (u32 i = _item_start; i < _max_item_index; ++i)
+	for(u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		CUIStatic* _s = m_info_items[i];
 		xr_delete(_s);
@@ -19,12 +19,21 @@ CUIArtefactParams::~CUIArtefactParams()
 }
 
 LPCSTR af_item_sect_names[] = {
-	"health_restore_speed",	  "radiation_restore_speed", "satiety_restore_speed",
-	"power_restore_speed",	  "bleeding_restore_speed",
+	"health_restore_speed",
+	"radiation_restore_speed",
+	"satiety_restore_speed",
+	"power_restore_speed",
+	"bleeding_restore_speed",
 
-	"burn_immunity",		  "strike_immunity",		 "shock_immunity",
-	"wound_immunity",		  "radiation_immunity",		 "telepatic_immunity",
-	"chemical_burn_immunity", "explosion_immunity",		 "fire_wound_immunity",
+	"burn_immunity",
+	"strike_immunity",
+	"shock_immunity",
+	"wound_immunity",
+	"radiation_immunity",
+	"telepatic_immunity",
+	"chemical_burn_immunity",
+	"explosion_immunity",
+	"fire_wound_immunity",
 };
 
 LPCSTR af_item_param_names[] = {
@@ -46,18 +55,22 @@ LPCSTR af_item_param_names[] = {
 };
 
 LPCSTR af_actor_param_names[] = {
-	"satiety_health_v", "radiation_v", "satiety_v", "satiety_power_v", "wound_incarnation_v",
+	"satiety_health_v",
+	"radiation_v",
+	"satiety_v",
+	"satiety_power_v",
+	"wound_incarnation_v",
 };
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 {
 	LPCSTR _base = "af_params";
-	if (!xml_doc.NavigateToNode(_base, 0))
+	if(!xml_doc.NavigateToNode(_base, 0))
 		return;
 
 	string256 _buff;
 	CUIXmlInit::InitWindow(xml_doc, _base, 0, this);
 
-	for (u32 i = _item_start; i < _max_item_index; ++i)
+	for(u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		m_info_items[i] = xr_new<CUIStatic>();
 		CUIStatic* _s = m_info_items[i];
@@ -78,17 +91,17 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 	string128 _buff;
 	float _h = 0.0f;
 	DetachAll();
-	for (u32 i = _item_start; i < _max_item_index; ++i)
+	for(u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		CUIStatic* _s = m_info_items[i];
 
 		float _val;
-		if (i < _max_item_index1)
+		if(i < _max_item_index1)
 		{
 			float _actor_val = pSettings->r_float("actor_condition", af_actor_param_names[i]);
 			_val = pSettings->r_float(af_section, af_item_sect_names[i]);
 
-			if (fis_zero(_val))
+			if(fis_zero(_val))
 				continue;
 
 			_val = (_val / _actor_val) * 100.0f;
@@ -97,13 +110,13 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 		{
 			shared_str _sect = pSettings->r_string(af_section, "hit_absorbation_sect");
 			_val = pSettings->r_float(_sect, af_item_sect_names[i]);
-			if (fsimilar(_val, 1.0f))
+			if(fsimilar(_val, 1.0f))
 				continue;
 			_val = (1.0f - _val);
 			_val *= 100.0f;
 		}
 		LPCSTR _sn = "%";
-		if (i == _item_radiation_restore_speed || i == _item_power_restore_speed)
+		if(i == _item_radiation_restore_speed || i == _item_power_restore_speed)
 		{
 			_val /= 100.0f;
 			_sn = "";
@@ -111,10 +124,10 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 
 		LPCSTR _color = (_val > 0) ? "%c[green]" : "%c[red]";
 
-		if (i == _item_bleeding_restore_speed)
+		if(i == _item_bleeding_restore_speed)
 			_val *= -1.0f;
 
-		if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
+		if(i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
 			_color = (_val > 0) ? "%c[red]" : "%c[green]";
 
 		sprintf_s(_buff, "%s %s %+.0f %s", CStringTable().translate(af_item_param_names[i]).c_str(), _color, _val, _sn);

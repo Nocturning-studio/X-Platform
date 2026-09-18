@@ -41,7 +41,7 @@ void XR_EPROPS_API CheckWindowPos(TForm* form);
 IC xr_string FolderAppend(LPCSTR val)
 {
 	xr_string tmp = (val && val[0]) ? val : "";
-	if (val && val[0])
+	if(val && val[0])
 		tmp += "\\";
 	return tmp;
 }

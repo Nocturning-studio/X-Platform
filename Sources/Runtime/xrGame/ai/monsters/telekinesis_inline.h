@@ -1,15 +1,18 @@
 #pragma once
 
-template <typename _Object> CTelekinesis<_Object>::CTelekinesis()
+template <typename _Object>
+CTelekinesis<_Object>::CTelekinesis()
 {
 	active = false;
 }
 
-template <typename _Object> CTelekinesis<_Object>::~CTelekinesis()
+template <typename _Object>
+CTelekinesis<_Object>::~CTelekinesis()
 {
 }
 
-template <typename _Object> void CTelekinesis<_Object>::InitExtern(_Object* pO, float s, float h, u32 keep_time)
+template <typename _Object>
+void CTelekinesis<_Object>::InitExtern(_Object* pO, float s, float h, u32 keep_time)
 {
 	control_object = pO;
 	strength = s;
@@ -17,9 +20,10 @@ template <typename _Object> void CTelekinesis<_Object>::InitExtern(_Object* pO, 
 	max_time_keep = keep_time;
 }
 
-template <typename _Object> void CTelekinesis<_Object>::Activate()
+template <typename _Object>
+void CTelekinesis<_Object>::Activate()
 {
-	if (active)
+	if(active)
 		return;
 	VERIFY(objects.empty());
 
@@ -31,11 +35,11 @@ template <typename _Object> void CTelekinesis<_Object>::Activate()
 	// xr_vector<CObject*> &m_nearest		= Level().ObjectSpace.q_nearest;
 
 	// все объекты внести в список
-	for (u32 i = 0; i < m_nearest.size(); i++)
+	for(u32 i = 0; i < m_nearest.size(); i++)
 	{
 
 		CGameObject* obj = smart_cast<CGameObject*>(m_nearest[i]);
-		if (!obj || !obj->m_pPhysicsShell)
+		if(!obj || !obj->m_pPhysicsShell)
 			continue;
 
 		// отключить гравитацию
@@ -48,15 +52,16 @@ template <typename _Object> void CTelekinesis<_Object>::Activate()
 		objects.push_back(tele_object);
 	}
 
-	if (!objects.empty())
+	if(!objects.empty())
 		CPHUpdateObject::Activate();
 }
 
-template <typename _Object> void CTelekinesis<_Object>::Deactivate()
+template <typename _Object>
+void CTelekinesis<_Object>::Deactivate()
 {
 	active = false;
 
-	for (u32 i = 0; i < objects.size(); i++)
+	for(u32 i = 0; i < objects.size(); i++)
 	{
 		objects[i].release();
 	}
@@ -66,12 +71,13 @@ template <typename _Object> void CTelekinesis<_Object>::Deactivate()
 	CPHUpdateObject::Deactivate();
 }
 
-template <typename _Object> void CTelekinesis<_Object>::Throw(const fvec3& target)
+template <typename _Object>
+void CTelekinesis<_Object>::Throw(const fvec3& target)
 {
-	if (!active)
+	if(!active)
 		return;
 
-	for (u32 i = 0; i < objects.size(); i++)
+	for(u32 i = 0; i < objects.size(); i++)
 	{
 		objects[i].fire(target);
 	}
@@ -79,30 +85,31 @@ template <typename _Object> void CTelekinesis<_Object>::Throw(const fvec3& targe
 	Deactivate();
 }
 
-template <typename _Object> void CTelekinesis<_Object>::UpdateSched()
+template <typename _Object>
+void CTelekinesis<_Object>::UpdateSched()
 {
-	if (!active)
+	if(!active)
 		return;
 
 	// обновить состояние объектов
-	for (u32 i = 0; i < objects.size(); i++)
+	for(u32 i = 0; i < objects.size(); i++)
 	{
 		CTelekineticObject* cur_obj = &objects[i];
-		switch (cur_obj->get_state())
+		switch(cur_obj->get_state())
 		{
 		case TS_Raise:
-			if (cur_obj->check_height())
+			if(cur_obj->check_height())
 				cur_obj->prepare_keep(); // начать удержание предмета
 			break;
 		case TS_Keep:
-			if (cur_obj->time_keep_elapsed())
+			if(cur_obj->time_keep_elapsed())
 			{
 				cur_obj->release();
 
 				// удалить объект из массива
-				if (objects.size() > 1)
+				if(objects.size() > 1)
 				{
-					if (i != (objects.size() - 1))
+					if(i != (objects.size() - 1))
 						objects[i] = objects.back();
 					objects.pop_back();
 				}
@@ -119,14 +126,15 @@ template <typename _Object> void CTelekinesis<_Object>::UpdateSched()
 	}
 }
 
-template <typename _Object> void CTelekinesis<_Object>::PhDataUpdate(dReal step)
+template <typename _Object>
+void CTelekinesis<_Object>::PhDataUpdate(dReal step)
 {
-	if (!active)
+	if(!active)
 		return;
 
-	for (u32 i = 0; i < objects.size(); i++)
+	for(u32 i = 0; i < objects.size(); i++)
 	{
-		switch (objects[i].get_state())
+		switch(objects[i].get_state())
 		{
 		case TS_Raise:
 			objects[i].raise(strength * step);
@@ -140,11 +148,12 @@ template <typename _Object> void CTelekinesis<_Object>::PhDataUpdate(dReal step)
 	}
 }
 
-template <typename _Object> void CTelekinesis<_Object>::PhTune(dReal step)
+template <typename _Object>
+void CTelekinesis<_Object>::PhTune(dReal step)
 {
-	for (u32 i = 0; i < objects.size(); i++)
+	for(u32 i = 0; i < objects.size(); i++)
 	{
-		switch (objects[i].get_state())
+		switch(objects[i].get_state())
 		{
 		case TS_Raise:
 		case TS_Keep:

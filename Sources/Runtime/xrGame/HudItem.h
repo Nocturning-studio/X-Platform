@@ -51,13 +51,13 @@ class CHudItem
 	{
 		return m_bPending;
 	}
-	virtual void StopHUDSounds(){};
+	virtual void StopHUDSounds() {};
 
 	// для предачи команд владельцем
 	virtual bool Action(s32 cmd, u32 flags);
-	virtual void onMovementChanged(ACTOR_DEFS::EMoveCommand cmd){};
+	virtual void onMovementChanged(ACTOR_DEFS::EMoveCommand cmd) {};
 
-	virtual void OnDrawUI(){};
+	virtual void OnDrawUI() {};
 
 	IC u32 GetNextState() const
 	{
@@ -90,7 +90,7 @@ class CHudItem
 	virtual BOOL net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
 
-	virtual void StartIdleAnim(){};
+	virtual void StartIdleAnim() {};
 
 	virtual bool Activate();
 	virtual void Deactivate();
@@ -98,10 +98,10 @@ class CHudItem
 	void IR_OnKeyboardPress(int key);
 	void IR_OnKeyboardRelease(int key);
 
-	virtual void OnActiveItem(){};
-	virtual void OnHiddenItem(){};
+	virtual void OnActiveItem() {};
+	virtual void OnHiddenItem() {};
 
-	virtual void OnAnimationEnd(u32 state){};
+	virtual void OnAnimationEnd(u32 state) {};
 
 	virtual void UpdateCL();
 	virtual void renderable_Render();

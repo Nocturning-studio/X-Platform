@@ -18,10 +18,10 @@ namespace RAPID
 void XRCollide::add_raypick(const raypick_info& rp_inf)
 {
 	RayContact.push_back(rp_inf);
-	if (min_raypick_id >= 0)
+	if(min_raypick_id >= 0)
 	{
 		VERIFY(min_raypick_id < int(RayContact.size()));
-		if (RayContact[min_raypick_id].range > rp_inf.range)
+		if(RayContact[min_raypick_id].range > rp_inf.range)
 			min_raypick_id = RayContact.size() - 1;
 	}
 	else
@@ -48,37 +48,37 @@ IC BOOL TestAABB(const fvec3& bMax, const fvec3& rP, const fvec3& rD, fvec3& coo
 	bMin.set(-bMax.x, -bMax.y, -bMax.z);
 
 	// Find candidate planes.
-	if (rP[0] < bMin[0])
+	if(rP[0] < bMin[0])
 	{
 		Inside = FALSE;
 		coord[0] = bMin[0];
 		MaxT[0] = (bMin[0] - rP[0]) / rD[0]; // Calculate T distances to candidate planes
 	}
-	else if (rP[0] > bMax[0])
+	else if(rP[0] > bMax[0])
 	{
 		Inside = FALSE;
 		coord[0] = bMax[0];
 		MaxT[0] = (bMax[0] - rP[0]) / rD[0]; // Calculate T distances to candidate planes
 	}
-	if (rP[1] < bMin[1])
+	if(rP[1] < bMin[1])
 	{
 		Inside = FALSE;
 		coord[1] = bMin[1];
 		MaxT[1] = (bMin[1] - rP[1]) / rD[1]; // Calculate T distances to candidate planes
 	}
-	else if (rP[1] > bMax[1])
+	else if(rP[1] > bMax[1])
 	{
 		Inside = FALSE;
 		coord[1] = bMax[1];
 		MaxT[1] = (bMax[1] - rP[1]) / rD[1]; // Calculate T distances to candidate planes
 	}
-	if (rP[2] < bMin[2])
+	if(rP[2] < bMin[2])
 	{
 		Inside = FALSE;
 		coord[2] = bMin[2];
 		MaxT[2] = (bMin[2] - rP[2]) / rD[2]; // Calculate T distances to candidate planes
 	}
-	else if (rP[2] > bMax[2])
+	else if(rP[2] > bMax[2])
 	{
 		Inside = FALSE;
 		coord[2] = bMax[2];
@@ -86,7 +86,7 @@ IC BOOL TestAABB(const fvec3& bMax, const fvec3& rP, const fvec3& rD, fvec3& coo
 	}
 
 	// Ray rP inside bounding box
-	if (Inside)
+	if(Inside)
 	{
 		coord.set(rP);
 		return true;
@@ -94,42 +94,42 @@ IC BOOL TestAABB(const fvec3& bMax, const fvec3& rP, const fvec3& rD, fvec3& coo
 
 	// Get largest of the maxT's for final choice of intersection
 	DWORD WhichPlane = 0;
-	if (MaxT[1] > MaxT[0])
+	if(MaxT[1] > MaxT[0])
 		WhichPlane = 1;
-	if (MaxT[2] > MaxT[WhichPlane])
+	if(MaxT[2] > MaxT[WhichPlane])
 		WhichPlane = 2;
 
 	// Check final candidate actually inside box
-	if (IR(MaxT[WhichPlane]) & 0x80000000)
+	if(IR(MaxT[WhichPlane]) & 0x80000000)
 		return false;
 
-	switch (WhichPlane)
+	switch(WhichPlane)
 	{
 	case 0:
 		// 1 & 2
 		coord[1] = rP[1] + MaxT[0] * rD[1]; // 1 1 0 1
-		if (fabsf(coord[1]) > bMax[1])
+		if(fabsf(coord[1]) > bMax[1])
 			return false;
 		coord[2] = rP[2] + MaxT[0] * rD[2]; // 2 2 0 2
-		if (fabsf(coord[2]) > bMax[2])
+		if(fabsf(coord[2]) > bMax[2])
 			return false;
 		return true;
 	case 1:
 		// 0 & 2
 		coord[0] = rP[0] + MaxT[1] * rD[0]; // 0 0 1 0
-		if (fabsf(coord[0]) > bMax[0])
+		if(fabsf(coord[0]) > bMax[0])
 			return false;
 		coord[2] = rP[2] + MaxT[1] * rD[2]; // 2 2 1 2
-		if (fabsf(coord[2]) > bMax[2])
+		if(fabsf(coord[2]) > bMax[2])
 			return false;
 		return true;
 	case 2:
 		// 0 & 1
 		coord[0] = rP[0] + MaxT[2] * rD[0]; // 0 0 2 0
-		if (fabsf(coord[0]) > bMax[0])
+		if(fabsf(coord[0]) > bMax[0])
 			return false;
 		coord[1] = rP[1] + MaxT[2] * rD[1]; // 1 1 2 1
-		if (fabsf(coord[1]) > bMax[1])
+		if(fabsf(coord[1]) > bMax[1])
 			return false;
 		return true;
 	default:
@@ -143,7 +143,7 @@ IC BOOL TestAABB(const fvec3& bMax, const fvec3& rP, const fvec3& rD, fvec3& coo
 
 void XRCollide::raypick_fast(const box* B, const fvec3& rC, const fvec3& rD)
 {
-	if ((ray_flags & RAY_ONLYFIRST) && (RayContact.size() > 1))
+	if((ray_flags & RAY_ONLYFIRST) && (RayContact.size() > 1))
 		return;
 	//		if (!B) return;
 
@@ -154,24 +154,24 @@ void XRCollide::raypick_fast(const box* B, const fvec3& rC, const fvec3& rD)
 	B->pR.MTxV(C, P);
 
 	// 2. Actual ray/aabb test
-	if (TestAABB(B->d, C, D, P))
+	if(TestAABB(B->d, C, D, P))
 	{
-		if (P.distance_to_sqr(C) < rmodel_range_sq)
+		if(P.distance_to_sqr(C) < rmodel_range_sq)
 		{
-			if (B->leaf())
+			if(B->leaf())
 			{
 				// 3. Test triangle(s)
-				for (int i = 0; i < B->num_tris; i++)
+				for(int i = 0; i < B->num_tris; i++)
 				{
 					raypick_info rp_inf;
 					rp_inf.id = B->tri_index[i];
 					rp_inf.range = 0;
 					tri& T = model1->tris[rp_inf.id];
-					if (TestRayTri(rmodel_C, rmodel_D, T.verts, rp_inf.u, rp_inf.v, rp_inf.range, ray_flags & RAY_CULL))
+					if(TestRayTri(rmodel_C, rmodel_D, T.verts, rp_inf.u, rp_inf.v, rp_inf.range, ray_flags & RAY_CULL))
 					{
-						if (rp_inf.range > 0)
+						if(rp_inf.range > 0)
 						{
-							if (rmodel_L2W)
+							if(rmodel_L2W)
 							{
 								rmodel_L2W->transform_tiny(rp_inf.p[0], *T.verts[0]);
 								rmodel_L2W->transform_tiny(rp_inf.p[1], *T.verts[1]);
@@ -206,24 +206,24 @@ void XRCollide::raypick_fast_nearest(const box* B, const fvec3& rC, const fvec3&
 	B->pR.MTxV(C, P);
 
 	// 2. Actual ray/aabb test
-	if (TestAABB(B->d, C, D, P))
+	if(TestAABB(B->d, C, D, P))
 	{
-		if (P.distance_to_sqr(C) < rmodel_range_sq)
+		if(P.distance_to_sqr(C) < rmodel_range_sq)
 		{
-			if (B->leaf())
+			if(B->leaf())
 			{
 				// 3. Test triangle(s)
-				for (int i = 0; i < B->num_tris; i++)
+				for(int i = 0; i < B->num_tris; i++)
 				{
 					raypick_info rp_inf;
 					rp_inf.id = B->tri_index[i];
 					rp_inf.range = 0;
 					tri& T = model1->tris[rp_inf.id];
-					if (TestRayTri(rmodel_C, rmodel_D, T.verts, rp_inf.u, rp_inf.v, rp_inf.range, ray_flags & RAY_CULL))
+					if(TestRayTri(rmodel_C, rmodel_D, T.verts, rp_inf.u, rp_inf.v, rp_inf.range, ray_flags & RAY_CULL))
 					{
-						if (rp_inf.range > 0)
+						if(rp_inf.range > 0)
 						{
-							if (rmodel_L2W)
+							if(rmodel_L2W)
 							{
 								rmodel_L2W->transform_tiny(rp_inf.p[0], *T.verts[0]);
 								rmodel_L2W->transform_tiny(rp_inf.p[1], *T.verts[1]);
@@ -235,7 +235,7 @@ void XRCollide::raypick_fast_nearest(const box* B, const fvec3& rC, const fvec3&
 								rp_inf.p[1].set(*T.verts[1]);
 								rp_inf.p[2].set(*T.verts[2]);
 							}
-							if (rp_inf.range < rmodel_range)
+							if(rp_inf.range < rmodel_range)
 							{
 								min_raypick_id = RayContact.size();
 								rmodel_range = rp_inf.range;
@@ -259,7 +259,7 @@ void XRCollide::raypick_fast_nearest(const box* B, const fvec3& rC, const fvec3&
 void XRCollide::RayPick(const fmat4x4* parent, const Model* o1, const fvec3& C, const fvec3& D, float max_range)
 {
 	R_BEGIN;
-	if (parent)
+	if(parent)
 	{
 		fmat4x4 rTransform;
 		rTransform.invert(*parent);			   // create W2L transform
@@ -281,7 +281,7 @@ void XRCollide::RayPick(const fmat4x4* parent, const Model* o1, const fvec3& C, 
 	RayContact.clear();
 
 	// make the call
-	if (ray_flags & RAY_ONLYNEAREST)
+	if(ray_flags & RAY_ONLYNEAREST)
 		raypick_fast_nearest(o1->b, rmodel_C, rmodel_D);
 	else
 		raypick_fast(o1->b, rmodel_C, rmodel_D);

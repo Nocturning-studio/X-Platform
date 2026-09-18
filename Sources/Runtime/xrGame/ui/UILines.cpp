@@ -41,7 +41,7 @@ CUILines::~CUILines()
 void CUILines::SetTextComplexMode(bool mode)
 {
 	uFlags.set(flComplexMode, mode);
-	if (mode)
+	if(mode)
 		uFlags.set(flPasswordMode, FALSE);
 }
 
@@ -53,7 +53,7 @@ bool CUILines::GetTextComplexMode() const
 void CUILines::SetPasswordMode(bool mode)
 {
 	uFlags.set(flPasswordMode, mode);
-	if (mode)
+	if(mode)
 		uFlags.set(flComplexMode, false);
 }
 
@@ -80,12 +80,12 @@ void CUILines::Init(float x, float y, float width, float heigt)
 void CUILines::SetText(const char* text)
 {
 
-	if (!m_pFont)
+	if(!m_pFont)
 		m_pFont = UI()->Font()->pFontLetterica16Russian;
 
-	if (text && text[0] != 0)
+	if(text && text[0] != 0)
 	{
-		if (m_text == text)
+		if(m_text == text)
 			return;
 
 		m_text = text;
@@ -115,7 +115,7 @@ void CUILines::MoveCursorToEnd()
 void CUILines::DelChar()
 {
 	const int sz = (int)m_text.size();
-	if (m_iCursorPos < sz)
+	if(m_iCursorPos < sz)
 	{
 		m_text.erase(m_text.begin() + m_iCursorPos);
 		uFlags.set(flNeedReparse, TRUE);
@@ -124,7 +124,7 @@ void CUILines::DelChar()
 
 void CUILines::DelLeftChar()
 {
-	if (m_iCursorPos > 0)
+	if(m_iCursorPos > 0)
 	{
 		DecCursorPos();
 		DelChar();
@@ -150,23 +150,23 @@ float get_str_width(CGameFont* pFont, char ch)
 
 void CUILines::ParseText()
 {
-	if (!fsimilar(m_oldWidth, m_wndSize.x))
+	if(!fsimilar(m_oldWidth, m_wndSize.x))
 	{
 		uFlags.set(flNeedReparse, TRUE);
 		m_oldWidth = m_wndSize.x;
 	}
-	if (!uFlags.test(flComplexMode) || !uFlags.test(flNeedReparse))
+	if(!uFlags.test(flComplexMode) || !uFlags.test(flNeedReparse))
 		return;
 
-	if (NULL == m_pFont)
+	if(NULL == m_pFont)
 		return;
 
 	Reset();
-	if (!m_text.empty() && NULL == m_pFont)
+	if(!m_text.empty() && NULL == m_pFont)
 		R_ASSERT2(false, "can't parse text without font");
 
 	CUILine* line = NULL;
-	if (uFlags.test(flColoringMode))
+	if(uFlags.test(flColoringMode))
 		line = ParseTextToColoredLine(m_text.c_str());
 	else
 	{
@@ -179,13 +179,13 @@ void CUILines::ParseText()
 
 	BOOL bNewLines = FALSE;
 
-	if (uFlags.test(flRecognizeNewLine))
-		if (m_pFont->IsMultibyte())
+	if(uFlags.test(flRecognizeNewLine))
+		if(m_pFont->IsMultibyte())
 		{
 			CUILine* ptmp_line = xr_new<CUILine>();
 			int vsz = line->m_subLines.size();
 			VERIFY(vsz);
-			for (int i = 0; i < vsz; i++)
+			for(int i = 0; i < vsz; i++)
 			{
 				char* pszTemp = NULL;
 				const u32 tcolor = line->m_subLines[i].m_color;
@@ -194,7 +194,7 @@ void CUILines::ParseText()
 				VERIFY(llen < MAX_MB_CHARS);
 				strcpy(szTempLine, line->m_subLines[i].m_text.c_str());
 				pszSearch = szTempLine;
-				while ((pszTemp = strstr(pszSearch, "\\n")) != NULL)
+				while((pszTemp = strstr(pszSearch, "\\n")) != NULL)
 				{
 					bNewLines = TRUE;
 					*pszTemp = '\0';
@@ -210,7 +210,7 @@ void CUILines::ParseText()
 		else
 			line->ProcessNewLines(); // process "\n"
 
-	if (m_pFont->IsMultibyte())
+	if(m_pFont->IsMultibyte())
 	{
 #define UBUFFER_SIZE 100
 		u16 aMarkers[UBUFFER_SIZE];
@@ -222,9 +222,9 @@ void CUILines::ParseText()
 		fTargetWidth = m_wndSize.x / fTargetWidth;
 		int vsz = line->m_subLines.size();
 		VERIFY(vsz);
-		if ((vsz > 1) && (!bNewLines))
+		if((vsz > 1) && (!bNewLines))
 		{ // only colored line, pizdets
-			for (int i = 0; i < vsz; i++)
+			for(int i = 0; i < vsz; i++)
 			{
 				const char* pszText = line->m_subLines[i].m_text.c_str();
 				const u32 tcolor = line->m_subLines[i].m_color;
@@ -236,14 +236,14 @@ void CUILines::ParseText()
 		}
 		else
 		{
-			for (int i = 0; i < vsz; i++)
+			for(int i = 0; i < vsz; i++)
 			{
 				const char* pszText = line->m_subLines[i].m_text.c_str();
 				const u32 tcolor = line->m_subLines[i].m_color;
 				u16 uFrom = 0, uPartLen = 0;
 				VERIFY(pszText);
 				u16 nMarkers = m_pFont->SplitByWidth(aMarkers, UBUFFER_SIZE, fTargetWidth, pszText);
-				for (u16 j = 0; j < nMarkers; j++)
+				for(u16 j = 0; j < nMarkers; j++)
 				{
 					uPartLen = aMarkers[j] - uFrom;
 					VERIFY((uPartLen > 0) && (uPartLen < MAX_MB_CHARS));
@@ -273,7 +273,7 @@ void CUILines::ParseText()
 		float curr_width = 0.0f;
 		bool bnew_line = false;
 		float __eps = get_str_width(m_pFont, 'o'); // hack -(
-		for (u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
+		for(u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
 		{
 			bool b_last_subl = (sbl_idx == sbl_cnt - 1);
 			CUISubLine& sbl = line->m_subLines[sbl_idx];
@@ -282,19 +282,19 @@ void CUILines::ParseText()
 			u32 curr_w_pos = 0;
 
 			u32 last_space_idx = 0;
-			for (u32 idx = 0; idx < sub_len; ++idx)
+			for(u32 idx = 0; idx < sub_len; ++idx)
 			{
 				bool b_last_ch = (idx == sub_len - 1);
 
-				if (std::isspace(static_cast<unsigned char>(sbl.m_text[idx])))
+				if(std::isspace(static_cast<unsigned char>(sbl.m_text[idx])))
 					last_space_idx = idx;
 
 				float w1 = get_str_width(m_pFont, sbl.m_text[idx]);
 				bool bOver = (curr_width + w1 + __eps > max_width);
 
-				if (bOver || b_last_ch)
+				if(bOver || b_last_ch)
 				{
-					if (last_space_idx && !b_last_ch)
+					if(last_space_idx && !b_last_ch)
 					{
 						idx = last_space_idx;
 						last_space_idx = 0;
@@ -308,7 +308,7 @@ void CUILines::ParseText()
 				else
 					curr_width += w1;
 
-				if (bOver || (b_last_ch && sbl.m_last_in_line))
+				if(bOver || (b_last_ch && sbl.m_last_in_line))
 				{
 					m_lines.push_back(tmp_line);
 					tmp_line.Clear();
@@ -316,7 +316,7 @@ void CUILines::ParseText()
 					bnew_line = false;
 				}
 			}
-			if (b_last_subl && !tmp_line.IsEmpty())
+			if(b_last_subl && !tmp_line.IsEmpty())
 			{
 				m_lines.push_back(tmp_line);
 				tmp_line.Clear();
@@ -337,9 +337,9 @@ float CUILines::GetVisibleHeight()
 	float _curr_h = m_pFont->CurrentHeight_();
 	UI()->ClientToScreenScaledHeight(_curr_h);
 
-	if (uFlags.test(flComplexMode))
+	if(uFlags.test(flComplexMode))
 	{
-		if (uFlags.test(flNeedReparse))
+		if(uFlags.test(flNeedReparse))
 			ParseText();
 		return (_curr_h + m_interval) * m_lines.size() - m_interval;
 	}
@@ -349,7 +349,7 @@ float CUILines::GetVisibleHeight()
 
 void CUILines::SetTextColor(u32 color)
 {
-	if (color == m_dwTextColor)
+	if(color == m_dwTextColor)
 		return;
 	uFlags.set(flNeedReparse, true);
 	m_dwTextColor = color;
@@ -357,7 +357,7 @@ void CUILines::SetTextColor(u32 color)
 
 void CUILines::SetFont(CGameFont* pFont)
 {
-	if (pFont == m_pFont)
+	if(pFont == m_pFont)
 		return;
 	uFlags.set(flNeedReparse, true);
 	m_pFont = pFont;
@@ -367,13 +367,13 @@ void CUILines::Draw(float x, float y)
 {
 	static string256 passText;
 
-	if (m_text.empty())
+	if(m_text.empty())
 		return;
 
 	R_ASSERT(m_pFont);
 	m_pFont->SetColor(m_dwTextColor);
 
-	if (!uFlags.is(flComplexMode))
+	if(!uFlags.is(flComplexMode))
 	{
 		fvec2 text_pos;
 		text_pos.set(0, 0);
@@ -382,10 +382,10 @@ void CUILines::Draw(float x, float y)
 		text_pos.y = y + GetVIndentByAlign();
 		UI()->ClientToScreenScaled(text_pos);
 
-		if (uFlags.test(flPasswordMode))
+		if(uFlags.test(flPasswordMode))
 		{
 			int sz = (int)m_text.size();
-			for (int i = 0; i < sz; i++)
+			for(int i = 0; i < sz; i++)
 				passText[i] = '*';
 			passText[sz] = 0;
 			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
@@ -411,7 +411,7 @@ void CUILines::Draw(float x, float y)
 		u32 size = m_lines.size();
 
 		m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
-		for (int i = 0; i < (int)size; i++)
+		for(int i = 0; i < (int)size; i++)
 		{
 			pos.x = x + GetIndentByAlign();
 			m_lines[i].Draw(m_pFont, pos.x, pos.y);
@@ -439,19 +439,22 @@ void CUILines::OnDeviceReset()
 
 float CUILines::GetIndentByAlign() const
 {
-	switch (m_eTextAlign)
+	switch(m_eTextAlign)
 	{
-	case CGameFont::alCenter: {
+	case CGameFont::alCenter:
+	{
 		//			GetFont()->SetAligment(CGameFont::alCenter);
 		return (m_wndSize.x /*- length*/) / 2;
 	}
 	break;
-	case CGameFont::alLeft: {
+	case CGameFont::alLeft:
+	{
 		//			GetFont()->SetAligment(CGameFont::alLeft);
 		return 0;
 	}
 	break;
-	case CGameFont::alRight: {
+	case CGameFont::alRight:
+	{
 		//			GetFont()->SetAligment(CGameFont::alRight);
 		return (m_wndSize.x /*- length*/);
 	}
@@ -466,7 +469,7 @@ float CUILines::GetIndentByAlign() const
 
 float CUILines::GetVIndentByAlign()
 {
-	switch (m_eVTextAlign)
+	switch(m_eVTextAlign)
 	{
 	case valTop:
 		return 0;
@@ -495,16 +498,16 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
 	R_ASSERT2(npos != end, "CUISubLine::GetColorFromText -- can't find ending tag ]");
 
 	// try default color
-	if (npos != str.find("%c[default]", begin, end - begin))
+	if(npos != str.find("%c[default]", begin, end - begin))
 		return m_dwTextColor;
 
 	// Try predefined in XML colors
 	//	CUIXmlInit xml;
-	for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin();
-		 it != CUIXmlInit::GetColorDefs()->end(); ++it)
+	for(CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin();
+		it != CUIXmlInit::GetColorDefs()->end(); ++it)
 	{
 		int cmp = str.compare(begin + 3, end - begin - 3, *it->first);
-		if (cmp == 0)
+		if(cmp == 0)
 			return it->second;
 	}
 
@@ -545,7 +548,7 @@ CUILine* CUILines::ParseTextToColoredLine(const xr_string& str)
 	{
 		CutFirstColoredTextEntry(entry, color, tmp);
 		line->AddSubLine(entry, subst_alpha(color, color_get_A(GetTextColor())));
-	} while (tmp.size() > 0);
+	} while(tmp.size() > 0);
 
 	return line;
 }
@@ -556,21 +559,21 @@ void CUILines::CutFirstColoredTextEntry(xr_string& entry, u32& color, xr_string&
 
 	StrSize begin = text.find(BEGIN);
 	StrSize end = text.find(END, begin);
-	if (xr_string::npos == end)
+	if(xr_string::npos == end)
 		begin = end;
 	StrSize begin2 = text.find(BEGIN, end);
 	StrSize end2 = text.find(END, begin2);
-	if (xr_string::npos == end2)
+	if(xr_string::npos == end2)
 		begin2 = end2;
 
 	// if we do not have any color entry or it is single with 0 position
-	if (xr_string::npos == begin)
+	if(xr_string::npos == begin)
 	{
 		entry = text;
 		color = m_dwTextColor;
 		text.clear();
 	}
-	else if (0 == begin && xr_string::npos == begin2)
+	else if(0 == begin && xr_string::npos == begin2)
 	{
 		entry = text;
 		color = GetColorFromText(entry);
@@ -578,14 +581,14 @@ void CUILines::CutFirstColoredTextEntry(xr_string& entry, u32& color, xr_string&
 		text.clear();
 	}
 	// if we have color entry not at begin
-	else if (0 != begin)
+	else if(0 != begin)
 	{
 		entry = text.substr(0, begin);
 		color = m_dwTextColor;
 		text.replace(0, begin, "");
 	}
 	// if we have two color entries. and first has 0 position
-	else if (0 == begin && xr_string::npos != begin2)
+	else if(0 == begin && xr_string::npos != begin2)
 	{
 		entry = text.substr(0, begin2);
 		color = GetColorFromText(entry);
@@ -603,10 +606,10 @@ void CUILines::IncCursorPos()
 {
 	const int txt_len = (int)m_text.size();
 
-	if (0 == txt_len)
+	if(0 == txt_len)
 		return;
 
-	if (m_iCursorPos < txt_len)
+	if(m_iCursorPos < txt_len)
 		m_iCursorPos++;
 
 	return;
@@ -616,25 +619,25 @@ void CUILines::DecCursorPos()
 {
 	const int txt_len = (int)m_text.size();
 
-	if (0 == txt_len)
+	if(0 == txt_len)
 		return;
 
-	if (m_iCursorPos > 0)
+	if(m_iCursorPos > 0)
 		m_iCursorPos--;
 	return;
 }
 
 void CUILines::UpdateCursor()
 {
-	if (uFlags.test(flComplexMode) && !m_text.empty())
+	if(uFlags.test(flComplexMode) && !m_text.empty())
 	{
 		ParseText();
 		const int sz = (int)m_lines.size();
 		int len = 0;
-		for (int i = 0; i < sz; i++)
+		for(int i = 0; i < sz; i++)
 		{
 			int curlen = m_lines[i].GetSize();
-			if (m_iCursorPos <= len + curlen)
+			if(m_iCursorPos <= len + curlen)
 			{
 				m_cursor_pos.y = i;
 				m_cursor_pos.x = m_iCursorPos - len;

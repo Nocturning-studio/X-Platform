@@ -102,7 +102,7 @@ class CLevel : public IGame_Level, public IPureClient
 	CStatGraph* pStatGraphR;
 	u32 m_dwRPC; // ReceivedPacketsCount
 	u32 m_dwRPS; // ReceivedPacketsSize
-	//---------------------------------------------
+				 //---------------------------------------------
 
   public:
 #ifdef DEBUG
@@ -282,7 +282,7 @@ class CLevel : public IGame_Level, public IPureClient
 	virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 
 	void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, fvec3 pos); // only ask server
-	void g_sv_Spawn(CSE_Abstract* E);							 // server reply/command spawning
+	void g_sv_Spawn(CSE_Abstract* E);						   // server reply/command spawning
 
 	// Save/Load/State
 	void SLS_Load(LPCSTR name); // Game Load

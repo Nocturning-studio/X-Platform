@@ -93,7 +93,7 @@ class CBlender_Screen_SET : public IBlender
 	{
 		IBlender::Load(fs, version);
 
-		switch (version)
+		switch(version)
 		{
 		case 2:
 			xrPREAD_PROP(fs, xrPID_TOKEN, oBlend);
@@ -125,7 +125,7 @@ class CBlender_Screen_SET : public IBlender
 	{
 		IBlender::Compile(C);
 
-		if (oBlend.IDselected == 6)
+		if(oBlend.IDselected == 6)
 		{
 			// Usually for wallmarks
 			C.begin_Pass("stub_notransform_t", "stub_default_ma");
@@ -133,19 +133,19 @@ class CBlender_Screen_SET : public IBlender
 			VERIFY(C.L_textures.size() > 0);
 			C.set_Sampler_linear("s_base", C.L_textures[0].c_str());
 			u32 iSmp = C.i_Sampler("s_base"); // Получаем stage текстуры
-			if (oClamp.value)
+			if(oClamp.value)
 				C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 		}
 		else
 		{
-			if (9 == oBlend.IDselected)
+			if(9 == oBlend.IDselected)
 			{
 				// 4x R
 				C.begin_Pass("stub_notransform_t_m4", "stub_default");
 			}
 			else
 			{
-				if ((7 == oBlend.IDselected) || (8 == oBlend.IDselected))
+				if((7 == oBlend.IDselected) || (8 == oBlend.IDselected))
 				{
 					// 2x R
 					C.begin_Pass("stub_notransform_t_m2", "stub_default");
@@ -159,13 +159,13 @@ class CBlender_Screen_SET : public IBlender
 			VERIFY(C.L_textures.size() > 0);
 			C.set_Sampler_linear("s_base", C.L_textures[0].c_str());
 			u32 iSmp = C.i_Sampler("s_base");
-			if ((oClamp.value) && (iSmp != u32(-1)))
+			if((oClamp.value) && (iSmp != u32(-1)))
 				C.i_Address(iSmp, D3DTADDRESS_CLAMP);
 		}
 
 		C.PassSET_ZB(oZTest.value, oZWrite.value);
 
-		switch (oBlend.IDselected)
+		switch(oBlend.IDselected)
 		{
 		case 0: // SET
 			C.PassSET_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);

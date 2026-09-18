@@ -28,7 +28,7 @@ CUIVotingCategory::CUIVotingCategory()
 	btn_cancel->SetAutoDelete(true);
 	AttachChild(btn_cancel);
 
-	for (int i = 0; i < 7; i++)
+	for(int i = 0; i < 7; i++)
 	{
 		btn[i] = xr_new<CUI3tButton>();
 		btn[i]->SetAutoDelete(true);
@@ -53,7 +53,7 @@ CUIVotingCategory::~CUIVotingCategory()
 
 void CUIVotingCategory::Init()
 {
-	if (!xml_doc)
+	if(!xml_doc)
 		xml_doc = xr_new<CUIXml>();
 
 	xml_doc->Init(CONFIG_PATH, UI_PATH, "voting_category.xml");
@@ -64,7 +64,7 @@ void CUIVotingCategory::Init()
 	CUIXmlInit::InitStatic(*xml_doc, "category:background", 0, bkgrnd);
 
 	string256 _path;
-	for (int i = 0; i < 7; i++)
+	for(int i = 0; i < 7; i++)
 	{
 		sprintf_s(_path, "category:btn_%d", i + 1);
 		CUIXmlInit::Init3tButton(*xml_doc, _path, 0, btn[i]);
@@ -77,13 +77,13 @@ void CUIVotingCategory::Init()
 
 void CUIVotingCategory::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
-		if (btn_cancel == pWnd)
+		if(btn_cancel == pWnd)
 			OnBtnCancel();
-		for (int i = 0; i < 7; i++)
+		for(int i = 0; i < 7; i++)
 		{
-			if (btn[i] == pWnd)
+			if(btn[i] == pWnd)
 			{
 				OnBtn(i);
 				return;
@@ -98,14 +98,14 @@ bool CUIVotingCategory::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	CUIDialogWnd::OnKeyboard(dik, keyboard_action);
 
-	if (WINDOW_KEY_PRESSED == keyboard_action)
+	if(WINDOW_KEY_PRESSED == keyboard_action)
 	{
-		if (DIK_ESCAPE == dik)
+		if(DIK_ESCAPE == dik)
 		{
 			OnBtnCancel();
 			return true;
 		}
-		if (dik >= DIK_1 && dik <= DIK_7)
+		if(dik >= DIK_1 && dik <= DIK_7)
 			OnBtn(dik - DIK_1);
 		return true;
 	}
@@ -120,9 +120,9 @@ void CUIVotingCategory::OnBtn(int i)
 
 	// check buttons state, based on voting mask
 	u16 flag = 1 << (u16(i + 1) & 0xff);
-	if (Game().IsVotingEnabled(flag))
+	if(Game().IsVotingEnabled(flag))
 	{
-		switch (i)
+		switch(i)
 		{
 		case 0:
 			Console->Execute("cl_votestart restart");
@@ -134,35 +134,35 @@ void CUIVotingCategory::OnBtn(int i)
 			break;
 		case 2:
 			game->StartStopMenu(this, true);
-			if (!kick)
+			if(!kick)
 				kick = xr_new<CUIKickPlayer>();
 			kick->InitKick(*xml_doc);
 			game->StartStopMenu(kick, true);
 			break;
 		case 3:
 			game->StartStopMenu(this, true);
-			if (!kick)
+			if(!kick)
 				kick = xr_new<CUIKickPlayer>();
 			kick->InitBan(*xml_doc);
 			game->StartStopMenu(kick, true);
 			break;
 		case 4:
 			game->StartStopMenu(this, true);
-			if (!change_map)
+			if(!change_map)
 				change_map = xr_new<CUIChangeMap>();
 			change_map->Init(*xml_doc);
 			game->StartStopMenu(change_map, true);
 			break;
 		case 5:
 			game->StartStopMenu(this, true);
-			if (!change_weather)
+			if(!change_weather)
 				change_weather = xr_new<CUIChangeWeather>();
 			change_weather->Init(*xml_doc);
 			game->StartStopMenu(change_weather, true);
 			break;
 		case 6:
 			game->StartStopMenu(this, true);
-			if (!text_vote)
+			if(!text_vote)
 				text_vote = xr_new<CUITextVote>();
 			text_vote->Init(*xml_doc);
 			game->StartStopMenu(text_vote, true);
@@ -182,7 +182,7 @@ void CUIVotingCategory::OnBtnCancel()
 void CUIVotingCategory::Update()
 {
 	// check buttons state, based on voting mask
-	for (int i = 0; i < 7; i++)
+	for(int i = 0; i < 7; i++)
 	{
 		u16 flag = 1 << (u16(i + 1) & 0xff);
 

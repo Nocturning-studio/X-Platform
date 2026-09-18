@@ -45,9 +45,9 @@ void CUIGameSP::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!pActor)
+	if(!pActor)
 		return;
-	if (pActor->g_Alive())
+	if(pActor->g_Alive())
 		return;
 
 	HideShownDialogs();
@@ -56,7 +56,7 @@ void CUIGameSP::shedule_Update(u32 dt)
 void CUIGameSP::HideShownDialogs()
 {
 	CUIDialogWnd* mir = MainInputReceiver();
-	if (mir && (mir == InventoryMenu || mir == PdaMenu || mir == TalkMenu || mir == UICarBodyMenu))
+	if(mir && (mir == InventoryMenu || mir == PdaMenu || mir == TalkMenu || mir == UICarBodyMenu))
 		mir->GetHolder()->StartStopMenu(mir, true);
 }
 
@@ -69,22 +69,22 @@ void CUIGameSP::SetClGame(game_cl_GameState* g)
 
 bool CUIGameSP::IR_OnKeyboardPress(int dik)
 {
-	if (inherited::IR_OnKeyboardPress(dik))
+	if(inherited::IR_OnKeyboardPress(dik))
 		return true;
 
-	if (Device.Paused())
+	if(Device.Paused())
 		return false;
 
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!pActor)
+	if(!pActor)
 		return false;
-	if (pActor && !pActor->g_Alive())
+	if(pActor && !pActor->g_Alive())
 		return false;
 
-	switch (get_binded_action(dik))
+	switch(get_binded_action(dik))
 	{
 	case kINVENTORY:
-		if (!MainInputReceiver() || MainInputReceiver() == InventoryMenu)
+		if(!MainInputReceiver() || MainInputReceiver() == InventoryMenu)
 		{
 			m_game->StartStopMenu(InventoryMenu, true);
 			return true;
@@ -92,7 +92,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		break;
 
 	case kACTIVE_JOBS:
-		if (!MainInputReceiver() || MainInputReceiver() == PdaMenu)
+		if(!MainInputReceiver() || MainInputReceiver() == PdaMenu)
 		{
 			PdaMenu->SetActiveSubdialog(eptQuests);
 			m_game->StartStopMenu(PdaMenu, true);
@@ -101,7 +101,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		break;
 
 	case kMAP:
-		if (!MainInputReceiver() || MainInputReceiver() == PdaMenu)
+		if(!MainInputReceiver() || MainInputReceiver() == PdaMenu)
 		{
 			PdaMenu->SetActiveSubdialog(eptMap);
 			m_game->StartStopMenu(PdaMenu, true);
@@ -110,7 +110,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		break;
 
 	case kCONTACTS:
-		if (!MainInputReceiver() || MainInputReceiver() == PdaMenu)
+		if(!MainInputReceiver() || MainInputReceiver() == PdaMenu)
 		{
 			PdaMenu->SetActiveSubdialog(eptContacts);
 			m_game->StartStopMenu(PdaMenu, true);
@@ -118,10 +118,11 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		}
 		break;
 
-	case kSCORES: {
+	case kSCORES:
+	{
 		SDrawStaticStruct* ss = AddCustomStatic("main_task", true);
 		SGameTaskObjective* o = pActor->GameTaskManager().ActiveObjective();
-		if (!o)
+		if(!o)
 			ss->m_static->SetTextST("st_no_active_task");
 		else
 			ss->m_static->SetTextST(*(o->description));
@@ -133,10 +134,10 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 
 bool CUIGameSP::IR_OnKeyboardRelease(int dik)
 {
-	if (inherited::IR_OnKeyboardRelease(dik))
+	if(inherited::IR_OnKeyboardRelease(dik))
 		return true;
 
-	if (is_binded(kSCORES, dik))
+	if(is_binded(kSCORES, dik))
 		RemoveCustomStatic("main_task");
 
 	return false;
@@ -149,14 +150,14 @@ void CUIGameSP::StartTalk()
 
 void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
 {
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return;
 	UICarBodyMenu->InitCarBody(pOurInv, pOthers);
 	m_game->StartStopMenu(UICarBodyMenu, true);
 }
 void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
 {
-	if (MainInputReceiver())
+	if(MainInputReceiver())
 		return;
 	UICarBodyMenu->InitCarBody(pOurInv, pBox);
 	m_game->StartStopMenu(UICarBodyMenu, true);
@@ -164,9 +165,9 @@ void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
 
 void CUIGameSP::ReInitShownUI()
 {
-	if (InventoryMenu->IsShown())
+	if(InventoryMenu->IsShown())
 		InventoryMenu->InitInventory_delayed();
-	else if (UICarBodyMenu->IsShown())
+	else if(UICarBodyMenu->IsShown())
 		UICarBodyMenu->UpdateLists_delayed();
 };
 
@@ -174,7 +175,7 @@ extern ENGINE_API BOOL bShowPauseString;
 void CUIGameSP::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, fvec3 pos, fvec3 ang,
 							fvec3 pos2, fvec3 ang2, bool b)
 {
-	if (!MainInputReceiver() || MainInputReceiver() != UIChangeLevelWnd)
+	if(!MainInputReceiver() || MainInputReceiver() != UIChangeLevelWnd)
 	{
 		UIChangeLevelWnd->m_game_vertex_id = game_vert_id;
 		UIChangeLevelWnd->m_level_vertex_id = level_vert_id;
@@ -209,13 +210,13 @@ CChangeLevelWnd::CChangeLevelWnd()
 }
 void CChangeLevelWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == m_messageBox)
+	if(pWnd == m_messageBox)
 	{
-		if (msg == MESSAGE_BOX_YES_CLICKED)
+		if(msg == MESSAGE_BOX_YES_CLICKED)
 		{
 			OnOk();
 		}
-		else if (msg == MESSAGE_BOX_NO_CLICKED)
+		else if(msg == MESSAGE_BOX_NO_CLICKED)
 		{
 			OnCancel();
 		}
@@ -240,7 +241,7 @@ void CChangeLevelWnd::OnOk()
 void CChangeLevelWnd::OnCancel()
 {
 	Game().StartStopMenu(this, true);
-	if (m_b_position_cancel)
+	if(m_b_position_cancel)
 	{
 		Actor()->MoveActor(m_position_cancel, m_angles_cancel);
 	}
@@ -248,9 +249,9 @@ void CChangeLevelWnd::OnCancel()
 
 bool CChangeLevelWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (keyboard_action == WINDOW_KEY_PRESSED)
+	if(keyboard_action == WINDOW_KEY_PRESSED)
 	{
-		if (is_binded(kQUIT, dik))
+		if(is_binded(kQUIT, dik))
 			OnCancel();
 		return true;
 	}

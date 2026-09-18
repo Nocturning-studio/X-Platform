@@ -22,7 +22,7 @@ STATIC inline FILE* file()
 {
 	static FILE* m_file = 0;
 	static char buffer[buffer_size];
-	if (!m_file)
+	if(!m_file)
 	{
 		_mkdir(output_folder);
 
@@ -43,7 +43,8 @@ STATIC inline FILE* file()
 	return (m_file);
 }
 
-union _allocation_size {
+union _allocation_size
+{
 	struct
 	{
 		u32 allocation : 1;
@@ -60,11 +61,11 @@ STATIC bool use_monitor()
 
 void memory_monitor::flush_each_time(const bool& value)
 {
-	if (!use_monitor())
+	if(!use_monitor())
 		return;
 
 	detaching = value;
-	if (detaching)
+	if(detaching)
 		fflush(file());
 }
 
@@ -80,11 +81,11 @@ STATIC void initialize()
 void memory_monitor::monitor_alloc(const void* allocation_address, const u32& allocation_size,
 								   LPCSTR allocation_description)
 {
-	if (!use_monitor())
+	if(!use_monitor())
 		return;
 
 	STATIC bool initialized = false;
-	if (!initialized)
+	if(!initialized)
 	{
 		initialized = true;
 		initialize();
@@ -100,7 +101,7 @@ void memory_monitor::monitor_alloc(const void* allocation_address, const u32& al
 	fwrite(&temp, sizeof(temp), 1, file());
 	fwrite(allocation_description, (xr_strlen(allocation_description) + 1) * sizeof(char), 1, file());
 
-	if (!detaching)
+	if(!detaching)
 		//		LeaveCriticalSection	(&critical_section)
 		;
 	else
@@ -109,13 +110,13 @@ void memory_monitor::monitor_alloc(const void* allocation_address, const u32& al
 
 void memory_monitor::monitor_free(const void* deallocation_address)
 {
-	if (!use_monitor())
+	if(!use_monitor())
 		return;
 
 	//	if (!detaching)
 	//		EnterCriticalSection	(&critical_section);
 
-	if (deallocation_address)
+	if(deallocation_address)
 	{
 		_allocation_size temp;
 		temp.allocation_size = 0;
@@ -123,7 +124,7 @@ void memory_monitor::monitor_free(const void* deallocation_address)
 		fwrite(&temp, sizeof(temp), 1, file());
 	}
 
-	if (!detaching)
+	if(!detaching)
 		//		LeaveCriticalSection	(&critical_section)
 		;
 	else

@@ -20,9 +20,10 @@ void CWeaponSVD::switch2_Fire()
 
 void CWeaponSVD::OnAnimationEnd(u32 state)
 {
-	switch (state)
+	switch(state)
 	{
-	case eFire: {
+	case eFire:
+	{
 		m_bPending = false;
 	}
 	break; // End of reload animation

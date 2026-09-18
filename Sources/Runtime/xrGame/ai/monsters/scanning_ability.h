@@ -1,6 +1,7 @@
 #pragma once
 
-template <typename _Object> class CScanningAbility
+template <typename _Object>
+class CScanningAbility
 {
 	_Object* object;
 

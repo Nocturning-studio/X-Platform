@@ -2,7 +2,8 @@
 #define xrPoolH
 #pragma once
 
-template <class T, int granularity> class poolSS
+template <class T, int granularity>
+class poolSS
 {
   private:
 	T* list;
@@ -21,7 +22,7 @@ template <class T, int granularity> class poolSS
 		blocks.push_back(list);
 
 		// Partition
-		for (int it = 0; it < (granularity - 1); it++)
+		for(int it = 0; it < (granularity - 1); it++)
 		{
 			T* E = list + it;
 			*access(E) = E + 1;
@@ -36,17 +37,17 @@ template <class T, int granularity> class poolSS
 	}
 	~poolSS()
 	{
-		for (u32 b = 0; b < blocks.size(); b++)
+		for(u32 b = 0; b < blocks.size(); b++)
 			xr_free(blocks[b]);
 	}
 	T* create()
 	{
-		if (0 == list)
+		if(0 == list)
 			block_create();
 
 		T* E = list;
 		list = *access(list);
-		return new (E) T();
+		return new(E) T();
 	}
 	void destroy(T*& P)
 	{
@@ -58,7 +59,7 @@ template <class T, int granularity> class poolSS
 	void clear()
 	{
 		list = 0;
-		for (u32 b = 0; b < blocks.size(); b++)
+		for(u32 b = 0; b < blocks.size(); b++)
 			xr_free(blocks[b]);
 		blocks.clear();
 	}

@@ -3,7 +3,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template <class T> class template_box2D
+template <class T>
+class template_box2D
 {
   public:
 	typedef T TYPE;
@@ -13,7 +14,8 @@ template <class T> class template_box2D
 	typedef template_vector2<T> Tvector;
 
   public:
-	union {
+	union
+	{
 		struct
 		{
 			Tvector min;
@@ -177,13 +179,13 @@ template <class T> class template_box2D
 	// Detects if this box intersect other
 	IC BOOL intersect(SelfCRef box)
 	{
-		if (max.x < box.min.x)
+		if(max.x < box.min.x)
 			return FALSE;
-		if (max.y < box.min.y)
+		if(max.y < box.min.y)
 			return FALSE;
-		if (min.x > box.max.x)
+		if(min.x > box.max.x)
 			return FALSE;
-		if (min.y > box.max.y)
+		if(min.y > box.max.y)
 			return FALSE;
 		return TRUE;
 	};
@@ -192,13 +194,13 @@ template <class T> class template_box2D
 	IC SelfRef sort()
 	{
 		T tmp;
-		if (min.x > max.x)
+		if(min.x > max.x)
 		{
 			tmp = min.x;
 			min.x = max.x;
 			max.x = tmp;
 		}
-		if (min.y > max.y)
+		if(min.y > max.y)
 		{
 			tmp = min.y;
 			min.y = max.y;
@@ -216,27 +218,27 @@ template <class T> class template_box2D
 		rvmin.sub(min, start);
 		rvmax.sub(max, start);
 
-		if (!fis_zero(dir.x))
+		if(!fis_zero(dir.x))
 		{
 			alpha = rvmin.x / dir.x;
 			yt = alpha * dir.y;
-			if (yt >= rvmin.y && yt <= rvmax.y)
+			if(yt >= rvmin.y && yt <= rvmax.y)
 				return true;
 			alpha = rvmax.x / dir.x;
 			yt = alpha * dir.y;
-			if (yt >= rvmin.y && yt <= rvmax.y)
+			if(yt >= rvmin.y && yt <= rvmax.y)
 				return true;
 		}
 
-		if (!fis_zero(dir.y))
+		if(!fis_zero(dir.y))
 		{
 			alpha = rvmin.y / dir.y;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x && xt <= rvmax.x)
+			if(xt >= rvmin.x && xt <= rvmax.x)
 				return true;
 			alpha = rvmax.y / dir.y;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x && xt <= rvmax.x)
+			if(xt >= rvmin.x && xt <= rvmax.x)
 				return true;
 		}
 		return false;
@@ -249,26 +251,26 @@ template <class T> class template_box2D
 		rvmin.sub(min, start);
 		rvmax.sub(max, start);
 
-		if (_abs(dir.x) != 0)
+		if(_abs(dir.x) != 0)
 		{
 			alpha = rvmin.x / dir.x;
 			yt = alpha * dir.y;
-			if (yt >= rvmin.y - EPS && yt <= rvmax.y + EPS)
+			if(yt >= rvmin.y - EPS && yt <= rvmax.y + EPS)
 				return true;
 			alpha = rvmax.x / dir.x;
 			yt = alpha * dir.y;
-			if (yt >= rvmin.y - EPS && yt <= rvmax.y + EPS)
+			if(yt >= rvmin.y - EPS && yt <= rvmax.y + EPS)
 				return true;
 		}
-		if (_abs(dir.y) != 0)
+		if(_abs(dir.y) != 0)
 		{
 			alpha = rvmin.y / dir.y;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x - EPS && xt <= rvmax.x + EPS)
+			if(xt >= rvmin.x - EPS && xt <= rvmax.x + EPS)
 				return true;
 			alpha = rvmax.y / dir.y;
 			xt = alpha * dir.x;
-			if (xt >= rvmin.x - EPS && xt <= rvmax.x + EPS)
+			if(xt >= rvmin.x - EPS && xt <= rvmax.x + EPS)
 				return true;
 		}
 		return false;
@@ -286,40 +288,40 @@ template <class T> class template_box2D
 
 		// Find candidate planes.
 		{
-			if (origin[0] < min[0])
+			if(origin[0] < min[0])
 			{
 				coord[0] = min[0];
 				Inside = FALSE;
-				if (IR(dir[0]))
+				if(IR(dir[0]))
 					MaxT[0] = (min[0] - origin[0]) / dir[0]; // Calculate T distances to candidate planes
 			}
-			else if (origin[0] > max[0])
+			else if(origin[0] > max[0])
 			{
 				coord[0] = max[0];
 				Inside = FALSE;
-				if (IR(dir[0]))
+				if(IR(dir[0]))
 					MaxT[0] = (max[0] - origin[0]) / dir[0]; // Calculate T distances to candidate planes
 			}
 		}
 		{
-			if (origin[1] < min[1])
+			if(origin[1] < min[1])
 			{
 				coord[1] = min[1];
 				Inside = FALSE;
-				if (IR(dir[1]))
+				if(IR(dir[1]))
 					MaxT[1] = (min[1] - origin[1]) / dir[1]; // Calculate T distances to candidate planes
 			}
-			else if (origin[1] > max[1])
+			else if(origin[1] > max[1])
 			{
 				coord[1] = max[1];
 				Inside = FALSE;
-				if (IR(dir[1]))
+				if(IR(dir[1]))
 					MaxT[1] = (max[1] - origin[1]) / dir[1]; // Calculate T distances to candidate planes
 			}
 		}
 
 		// Ray origin inside bounding box
-		if (Inside)
+		if(Inside)
 		{
 			coord = origin;
 			return true;
@@ -327,18 +329,18 @@ template <class T> class template_box2D
 
 		// Get largest of the maxT's for final choice of intersection
 		u32 WhichPlane = 0;
-		if (MaxT[1] > MaxT[0])
+		if(MaxT[1] > MaxT[0])
 			WhichPlane = 1;
 
 		// Check final candidate actually inside box
-		if (IR(MaxT[WhichPlane]) & 0x80000000)
+		if(IR(MaxT[WhichPlane]) & 0x80000000)
 			return false;
 
-		if (0 == WhichPlane)
+		if(0 == WhichPlane)
 		{
 			// 1
 			coord[1] = origin[1] + MaxT[0] * dir[1];
-			if ((coord[1] < min[1]) || (coord[1] > max[1]))
+			if((coord[1] < min[1]) || (coord[1] > max[1]))
 				return false;
 			return true;
 		}
@@ -346,7 +348,7 @@ template <class T> class template_box2D
 		{
 			// 0
 			coord[0] = origin[0] + MaxT[1] * dir[0];
-			if ((coord[0] < min[0]) || (coord[0] > max[0]))
+			if((coord[0] < min[0]) || (coord[0] > max[0]))
 				return false;
 			return true;
 		}
@@ -354,7 +356,7 @@ template <class T> class template_box2D
 
 	IC void getpoint(int index, Tvector& result)
 	{
-		switch (index)
+		switch(index)
 		{
 		case 0:
 			result.set(min.x, min.y);
@@ -385,7 +387,8 @@ template <class T> class template_box2D
 typedef template_box2D<float> Fbox2;
 typedef template_box2D<double> Dbox2;
 
-template <class T> BOOL _valid(const template_box2D<T>& c)
+template <class T>
+BOOL _valid(const template_box2D<T>& c)
 {
 	return _valid(c.min) && _valid(c.max);
 }

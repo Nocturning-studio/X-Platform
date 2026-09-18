@@ -54,7 +54,7 @@ BOOL CAlienEffectorPP::Process(SPPInfo& pp)
 {
 	inherited::Process(pp);
 
-	if (fsimilar(factor, target_factor))
+	if(fsimilar(factor, target_factor))
 	{
 		target_factor = (target_factor > 0.5f) ? .3f : .6f;
 	}
@@ -132,17 +132,17 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	Mdef.c.set(info.p);
 
 	// set angle
-	if (angle_lerp(dangle_current.x, dangle_target.x, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+	if(angle_lerp(dangle_current.x, dangle_target.x, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		dangle_target.x = angle_normalize(Random.randFs(BSA_DELTA_ANGLE_X));
 	}
 
-	if (angle_lerp(dangle_current.y, dangle_target.y, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+	if(angle_lerp(dangle_current.y, dangle_target.y, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		dangle_target.y = angle_normalize(Random.randFs(BSA_DELTA_ANGLE_Y));
 	}
 
-	if (angle_lerp(dangle_current.z, dangle_target.z, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+	if(angle_lerp(dangle_current.z, dangle_target.z, BSA_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		dangle_target.z = angle_normalize(Random.randFs(BSA_DELTA_ANGLE_Z));
 	}
@@ -215,14 +215,14 @@ void CBloodsuckerAlien::reinit()
 
 void CBloodsuckerAlien::activate()
 {
-	if (m_active)
+	if(m_active)
 		return;
 
 	VERIFY(Actor());
 	m_object->CControlledActor::install(Actor());
 	m_object->CControlledActor::dont_need_turn();
 
-	if (!m_object->EnemyMan.get_enemy())
+	if(!m_object->EnemyMan.get_enemy())
 		m_object->EnemyMan.add_enemy(Actor());
 
 	//.	Actor()->inventory().setSlotsBlocked			(true);
@@ -230,7 +230,7 @@ void CBloodsuckerAlien::activate()
 
 	// hide crosshair
 	m_crosshair_show = !!psHUD_Flags.is(HUD_CROSSHAIR_RT);
-	if (m_crosshair_show)
+	if(m_crosshair_show)
 		psHUD_Flags.set(HUD_CROSSHAIR_RT, FALSE);
 
 	// Start effector
@@ -249,13 +249,13 @@ void CBloodsuckerAlien::activate()
 
 void CBloodsuckerAlien::deactivate()
 {
-	if (!m_active)
+	if(!m_active)
 		return;
 
 	m_object->CControlledActor::release();
 
 	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
-	if (m_crosshair_show)
+	if(m_crosshair_show)
 		psHUD_Flags.set(HUD_CROSSHAIR_RT, TRUE);
 
 	// Stop camera effector

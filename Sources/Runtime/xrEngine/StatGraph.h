@@ -84,7 +84,7 @@ class ENGINE_API CStatGraph : public pureRender
 
 	IC void SetStyle(EStyle s, u32 SubGraphID = 0)
 	{
-		if (SubGraphID >= subgraphs.size())
+		if(SubGraphID >= subgraphs.size())
 			return;
 		SubGraphVecIt it = subgraphs.begin() + SubGraphID;
 		it->SetStyle(s);
@@ -109,22 +109,22 @@ class ENGINE_API CStatGraph : public pureRender
 		mn = _mn;
 		mx = _mx;
 		max_item_count = item_count;
-		for (SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
+		for(SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
 		{
-			while (it->elements.size() > max_item_count)
+			while(it->elements.size() > max_item_count)
 				it->elements.pop_front();
 		};
 	}
 	IC void AppendItem(float d, u32 clr, u32 SubGraphID = 0)
 	{
-		if (SubGraphID >= subgraphs.size())
+		if(SubGraphID >= subgraphs.size())
 			return;
 
 		clamp(d, mn, mx);
 
 		SubGraphVecIt it = subgraphs.begin() + SubGraphID;
 		it->elements.push_back(SElement(d, clr));
-		while (it->elements.size() > max_item_count)
+		while(it->elements.size() > max_item_count)
 			it->elements.pop_front();
 	};
 	IC u32 AppendSubGraph(EStyle S)
@@ -151,7 +151,7 @@ class ENGINE_API CStatGraph : public pureRender
 
 	IC void UpdateMarkerPos(u32 ID, float NewPos)
 	{
-		if (ID >= m_Markers.size())
+		if(ID >= m_Markers.size())
 			return;
 		SMarker& pMarker = m_Markers[ID];
 		pMarker.m_fPos = NewPos;
@@ -163,7 +163,7 @@ class ENGINE_API CStatGraph : public pureRender
 
 	IC void RemoveMarker(u32 ID)
 	{
-		if (ID >= m_Markers.size())
+		if(ID >= m_Markers.size())
 			return;
 		m_Markers.erase(m_Markers.begin() + ID);
 	}

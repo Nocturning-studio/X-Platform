@@ -36,7 +36,7 @@ CEntity::~CEntity()
 
 CEntityConditionSimple* CEntity::create_entity_condition(CEntityConditionSimple* ec)
 {
-	if (!ec)
+	if(!ec)
 		m_entity_condition = xr_new<CEntityConditionSimple>();
 	else
 		m_entity_condition = smart_cast<CEntityCondition*>(ec);
@@ -48,21 +48,22 @@ void CEntity::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 
-	switch (type)
+	switch(type)
 	{
 
-	case GE_DIE: {
+	case GE_DIE:
+	{
 		u16 id;
 		u32 cl;
 		P.r_u16(id);
 		P.r_u32(cl);
 		CObject* who = Level().Objects.net_Find(id);
-		if (who)
+		if(who)
 		{
-			if (this != who)
-				if (bDebug)
+			if(this != who)
+				if(bDebug)
 					Msg("%s %s %s %s", *cName(), "Killed by ", *(who->cName()), "...");
-				else if (bDebug)
+				else if(bDebug)
 					Msg("%s %s", *cName(), "Crashed...");
 		};
 		Die(who);
@@ -73,17 +74,17 @@ void CEntity::OnEvent(NET_Packet& P, u16 type)
 
 void CEntity::Die(CObject* who)
 {
-	if (!AlreadyDie())
+	if(!AlreadyDie())
 		set_death_time();
 	set_ready_to_save();
 	SetfHealth(-1.f);
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		VERIFY(m_registered_member);
 	}
 	m_registered_member = false;
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 }
 
@@ -92,7 +93,7 @@ float CEntity::CalcCondition(float hit)
 {
 
 	// If Local() - perform some logic
-	if (Local() && g_Alive())
+	if(Local() && g_Alive())
 	{
 		SetfHealth(GetfHealth() - hit);
 		SetfHealth((GetfHealth() < -1000) ? -1000 : GetfHealth());
@@ -105,7 +106,7 @@ float CEntity::CalcCondition(float hit)
 void CEntity::Hit(SHit* pHDS)
 {
 
-	if (bDebug)
+	if(bDebug)
 		Log("Process HIT: ", *cName());
 
 	// *** process hit calculations
@@ -121,18 +122,18 @@ void CEntity::Hit(SHit* pHDS)
 	vLocalDir.invert();
 
 	// hit impulse
-	if (pHDS->impulse)
+	if(pHDS->impulse)
 		HitImpulse(pHDS->impulse, pHDS->dir, vLocalDir); // @@@: WT
 
 	// Calc amount (correct only on local player)
 	float lost_health = CalcCondition(pHDS->damage());
 
 	// Signal hit
-	if (BI_NONE != pHDS->bone())
+	if(BI_NONE != pHDS->bone())
 		HitSignal(lost_health, vLocalDir, pHDS->who, pHDS->boneID);
 
 	// If Local() - perform some logic
-	if (Local() && !g_Alive() && !AlreadyDie() && (m_killer_id == ALife::_OBJECT_ID(-1)))
+	if(Local() && !g_Alive() && !AlreadyDie() && (m_killer_id == ALife::_OBJECT_ID(-1)))
 	{
 		KillEntity(pHDS->whoID);
 	}
@@ -164,19 +165,19 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeCreatureAbstract* E = smart_cast<CSE_ALifeCreatureAbstract*>(e);
 
 	// Initialize variables
-	if (E)
+	if(E)
 	{
 		SetfHealth(E->fHealth);
 		VERIFY((E->m_killer_id == ALife::_OBJECT_ID(-1)) || !g_Alive());
 		m_killer_id = E->m_killer_id;
-		if (m_killer_id == ID())
+		if(m_killer_id == ID())
 			m_killer_id = ALife::_OBJECT_ID(-1);
 	}
 	else
 		SetfHealth(1.0f);
 
 	// load damage params
-	if (!E)
+	if(!E)
 	{
 		// Car or trader only!!!!
 		CSE_ALifeCar* C = smart_cast<CSE_ALifeCar*>(e);
@@ -194,42 +195,42 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
 		id_Group = E->g_group();
 
 		CSE_ALifeMonsterBase* monster = smart_cast<CSE_ALifeMonsterBase*>(E);
-		if (monster)
+		if(monster)
 		{
 			MONSTER_COMMUNITY monster_community;
 			monster_community.set(pSettings->r_string(*cNameSect(), "species"));
 
-			if (monster_community.team() != 255)
+			if(monster_community.team() != 255)
 				id_Team = monster_community.team();
 		}
 	}
 
-	if (g_Alive() && IsGameTypeSingle())
+	if(g_Alive() && IsGameTypeSingle())
 	{
 		m_registered_member = true;
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).register_member(this);
 		++Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).m_dwAliveCount;
 	}
 
-	if (!g_Alive())
+	if(!g_Alive())
 	{
 		m_level_death_time = Engine.TimeManager.GetGlobalTimeMs();
 		m_game_death_time = E->m_game_death_time;
 		;
 	}
 
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	//	SetfHealth			(E->fHealth);
 	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual());
 	CInifile* ini = NULL;
 
-	if (pKinematics)
+	if(pKinematics)
 		ini = pKinematics->LL_UserData();
-	if (ini)
+	if(ini)
 	{
-		if (ini->section_exist("damage_section") && !use_simplified_visual())
+		if(ini->section_exist("damage_section") && !use_simplified_visual())
 			CDamageManager::reload(pSettings->r_string("damage_section", "damage"), ini);
 
 		CParticlesPlayer::LoadParticles(pKinematics);
@@ -239,10 +240,10 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
 
 void CEntity::net_Destroy()
 {
-	if (m_registered_member)
+	if(m_registered_member)
 	{
 		m_registered_member = false;
-		if (IsGameTypeSingle())
+		if(IsGameTypeSingle())
 			Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 	}
 
@@ -253,10 +254,10 @@ void CEntity::net_Destroy()
 
 void CEntity::KillEntity(u16 whoID)
 {
-	if (whoID != ID())
+	if(whoID != ID())
 	{
 #ifdef DEBUG
-		if (m_killer_id != ALife::_OBJECT_ID(-1))
+		if(m_killer_id != ALife::_OBJECT_ID(-1))
 		{
 			Msg("! Entity [%s][%s] already has killer with id %d, but new killer id arrived - %d", *cNameSect(),
 				*cName(), m_killer_id, whoID);
@@ -273,7 +274,7 @@ void CEntity::KillEntity(u16 whoID)
 	}
 	else
 	{
-		if (m_killer_id != ALife::_OBJECT_ID(-1))
+		if(m_killer_id != ALife::_OBJECT_ID(-1))
 			return;
 	}
 
@@ -281,13 +282,13 @@ void CEntity::KillEntity(u16 whoID)
 
 	set_death_time();
 
-	if (!getDestroy())
+	if(!getDestroy())
 	{
 		NET_Packet P;
 		u_EventGen(P, GE_DIE, ID());
 		P.w_u16(u16(whoID));
 		P.w_u32(0);
-		if (OnServer())
+		if(OnServer())
 			u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
 	}
 };
@@ -306,7 +307,7 @@ void CEntity::reinit()
 void CEntity::reload(LPCSTR section)
 {
 	inherited::reload(section);
-	if (!use_simplified_visual())
+	if(!use_simplified_visual())
 		CDamageManager::reload(section, "damage", pSettings);
 }
 
@@ -342,15 +343,15 @@ const u32 FORGET_KILLER_TIME = 180000;
 void CEntity::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
-	if (!getDestroy() && !g_Alive() && (m_killer_id != u16(-1)))
+	if(!getDestroy() && !g_Alive() && (m_killer_id != u16(-1)))
 	{
-		if (Engine.TimeManager.GetGlobalTimeMs() > m_level_death_time + FORGET_KILLER_TIME)
+		if(Engine.TimeManager.GetGlobalTimeMs() > m_level_death_time + FORGET_KILLER_TIME)
 		{
 			m_killer_id = u16(-1);
 			NET_Packet P;
 			u_EventGen(P, GE_ASSIGN_KILLER, ID());
 			P.w_u16(u16(-1));
-			if (IsGameTypeSingle())
+			if(IsGameTypeSingle())
 				u_EventSend(P);
 		}
 	}
@@ -366,12 +367,12 @@ void CEntity::on_after_change_team()
 
 void CEntity::ChangeTeam(int team, int squad, int group)
 {
-	if ((team == g_Team()) && (squad == g_Squad()) && (group == g_Group()))
+	if((team == g_Team()) && (squad == g_Squad()) && (group == g_Group()))
 		return;
 
 	VERIFY2(g_Alive(), "Try to change team of a dead object");
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		VERIFY(m_registered_member);
 	}

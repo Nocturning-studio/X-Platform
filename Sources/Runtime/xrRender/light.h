@@ -46,7 +46,8 @@ class light : public IRender_Light, public ISpatial
 		u16 smap_ID;
 	} VisibilityData;
 
-	union _TransformContext {
+	union _TransformContext
+	{
 		struct _Sun
 		{
 			fmat4x4 combine;
@@ -75,18 +76,18 @@ class light : public IRender_Light, public ISpatial
 	} LightFlags;
 
   public:
-	fvec3 get_position(){return position;}
-	fvec3 get_direction(){return direction;}
-	fvec3 get_right(){return right;}
-	float get_range(){return range;}
-	float get_cone(){return cone;}
-	Fcolor get_color(){return color;}
-	u32 get_frame_render(){return frame_render;}
-	ref_shader get_shader_spot(){return s_spot;}
-	ref_shader get_shader_point(){return s_point;}
-	u32 get_transform_frame(){return m_transform_frame;}
-	fmat4x4 get_transform(){return m_transform;}
-	smapvis get_smapvis(){return svis;}
+	fvec3 get_position() { return position; }
+	fvec3 get_direction() { return direction; }
+	fvec3 get_right() { return right; }
+	float get_range() { return range; }
+	float get_cone() { return cone; }
+	Fcolor get_color() { return color; }
+	u32 get_frame_render() { return frame_render; }
+	ref_shader get_shader_spot() { return s_spot; }
+	ref_shader get_shader_point() { return s_point; }
+	u32 get_transform_frame() { return m_transform_frame; }
+	fmat4x4 get_transform() { return m_transform; }
+	smapvis get_smapvis() { return svis; }
 	virtual vis_data& get_homdata();
 
 	virtual void set_type(LT type)
@@ -104,7 +105,7 @@ class light : public IRender_Light, public ISpatial
 	virtual void set_rotation(const fvec3& D, const fvec3& R);
 	virtual void set_cone(float angle);
 	virtual void set_range(float R);
-	virtual void set_virtual_size(float R){};
+	virtual void set_virtual_size(float R) {};
 	virtual void set_color(const Fcolor& C)
 	{
 		color.set(C);

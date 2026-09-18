@@ -26,7 +26,7 @@ IC const CVisualMemoryManager::NOT_YET_VISIBLES& CVisualMemoryManager::not_yet_v
 IC void CVisualMemoryManager::set_squad_objects(VISIBLES* squad_objects)
 {
 	m_objects = squad_objects;
-	if (!m_objects)
+	if(!m_objects)
 		m_not_yet_visible_objects.clear();
 }
 

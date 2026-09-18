@@ -10,12 +10,11 @@
 
 #include "script_game_object.h"
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <\
-		typename _object_type,\
-		template <typename _base_object_type> class ancestor,\
-		typename _base_object_type\
-	>
+#define TEMPLATE_SPECIALIZATION                               \
+	template <                                                \
+		typename _object_type,                                \
+		template <typename _base_object_type> class ancestor, \
+		typename _base_object_type>
 namespace xrServerObjectsScript
 {
 #define CWrapper CWrapperAbstract<_object_type, ancestor, _base_object_type>
@@ -28,7 +27,8 @@ IC CWrapper::CWrapperAbstract()
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T1> IC CWrapper::CWrapperAbstract(T1 t1) : inherited(t1)
+template <typename T1>
+IC CWrapper::CWrapperAbstract(T1 t1) : inherited(t1)
 {
 	m_object = 0;
 }
@@ -68,7 +68,7 @@ IC _object_type& CWrapper::object() const
 	VERIFY(m_object);
 	return (*m_object);
 }
-}
+} // namespace xrServerObjectsScript
 //////////////////////////////////////////////////////////////////////////
 // CWrapperAbstract2
 //////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,8 @@ IC CWrapper2::CWrapperAbstract2()
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T1> IC CWrapper2::CWrapperAbstract2(T1 t1) : inherited(t1)
+template <typename T1>
+IC CWrapper2::CWrapperAbstract2(T1 t1) : inherited(t1)
 {
 	m_object = 0;
 }
@@ -100,7 +101,8 @@ IC CWrapper2::CWrapperAbstract2(T1 t1, T2 t2, T3 t3) : inherited(t1, t2, t3)
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T1, typename T2> IC CWrapper2::CWrapperAbstract2(T1 t1, T2 t2) : inherited(t1, t2)
+template <typename T1, typename T2>
+IC CWrapper2::CWrapperAbstract2(T1 t1, T2 t2) : inherited(t1, t2)
 {
 	m_object = 0;
 }
@@ -139,6 +141,6 @@ void CWrapper2::setup(CScriptGameObject* object, CPropertyStorage* storage)
 	inherited::setup(object, storage);
 	m_object = smart_cast<_object_type*>(&object->object());
 	VERIFY(m_object);
-} 
+}
 #undef TEMPLATE_SPECIALIZATION
 #undef CWrapper

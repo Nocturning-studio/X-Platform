@@ -32,7 +32,7 @@ void CHudItemObject::Load(LPCSTR section)
 
 bool CHudItemObject::Action(s32 cmd, u32 flags)
 {
-	if (CInventoryItemObject::Action(cmd, flags))
+	if(CInventoryItemObject::Action(cmd, flags))
 		return (true);
 	return (CHudItem::Action(cmd, flags));
 }

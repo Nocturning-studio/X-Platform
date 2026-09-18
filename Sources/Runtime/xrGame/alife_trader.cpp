@@ -22,7 +22,7 @@ void CSE_ALifeTrader::spawn_supplies()
 u32 CSE_ALifeTrader::dwfGetItemCost(CSE_ALifeInventoryItem* tpALifeInventoryItem)
 {
 	CSE_ALifeItemArtefact* l_tpALifeItemArtefact = smart_cast<CSE_ALifeItemArtefact*>(tpALifeInventoryItem);
-	if (!l_tpALifeItemArtefact)
+	if(!l_tpALifeItemArtefact)
 		return (tpALifeInventoryItem->m_dwCost);
 
 	u32 l_dwPurchasedCount = 0;
@@ -30,8 +30,8 @@ u32 CSE_ALifeTrader::dwfGetItemCost(CSE_ALifeInventoryItem* tpALifeInventoryItem
 	{
 		ALife::OBJECT_IT i = children.begin();
 		ALife::OBJECT_IT e = children.end();
-		for (; i != e; ++i)
-			if (!xr_strcmp(ai().alife().objects().object(*i)->s_name, l_tpALifeItemArtefact->s_name))
+		for(; i != e; ++i)
+			if(!xr_strcmp(ai().alife().objects().object(*i)->s_name, l_tpALifeItemArtefact->s_name))
 				++l_dwPurchasedCount;
 	}
 	return (tpALifeInventoryItem->m_dwCost);

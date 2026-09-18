@@ -86,7 +86,7 @@ void CMissile::Load(LPCSTR section)
 	m_sAnimThrowAct = pSettings->r_string(*hud_sect, "anim_throw_act");
 	m_sAnimThrowEnd = pSettings->r_string(*hud_sect, "anim_throw_end");
 
-	if (pSettings->line_exist(section, "snd_playing"))
+	if(pSettings->line_exist(section, "snd_playing"))
 		HUD_SOUND::LoadSound(section, "snd_playing", sndPlaying);
 
 	m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", u32(-1));
@@ -115,14 +115,14 @@ void CMissile::OnActiveItem()
 	inherited::OnActiveItem();
 	SetState(MS_IDLE);
 	SetNextState(MS_IDLE);
-	if (m_pHUD)
+	if(m_pHUD)
 		m_pHUD->Show();
 }
 
 void CMissile::OnHiddenItem()
 {
 	inherited::OnHiddenItem();
-	if (m_pHUD)
+	if(m_pHUD)
 		m_pHUD->Hide();
 	SetState(MS_HIDDEN);
 	SetNextState(MS_HIDDEN);
@@ -130,10 +130,10 @@ void CMissile::OnHiddenItem()
 
 void CMissile::spawn_fake_missile()
 {
-	if (OnClient())
+	if(OnClient())
 		return;
 
-	if (!getDestroy())
+	if(!getDestroy())
 	{
 		CSE_Abstract* object = Level().spawn_item(
 			*cNameSect(), Position(), (g_dedicated_server) ? u32(-1) : ai_location().level_vertex_id(), ID(), true);
@@ -163,7 +163,7 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 
 	m_pHUD->Hide();
 
-	if (!m_dwDestroyTime && Local())
+	if(!m_dwDestroyTime && Local())
 	{
 		DestroyObject();
 		return;
@@ -174,19 +174,19 @@ void CMissile::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if (GetState() == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME)
+	if(GetState() == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME)
 		OnStateSwitch(MS_PLAYING);
 
-	if (GetState() == MS_READY)
+	if(GetState() == MS_READY)
 	{
-		if (m_throw)
+		if(m_throw)
 		{
 			SwitchState(MS_THROW);
 		}
 		else
 		{
 			CActor* actor = smart_cast<CActor*>(H_Parent());
-			if (actor)
+			if(actor)
 			{
 				m_fThrowForce += (m_fForceGrowSpeed * Engine.TimeManager.GetDeltaTimeMs()) * .001f;
 				clamp(m_fThrowForce, m_fMinForce, m_fMaxForce);
@@ -197,9 +197,9 @@ void CMissile::UpdateCL()
 void CMissile::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
-	if (!H_Parent() && getVisible() && m_pPhysicsShell)
+	if(!H_Parent() && getVisible() && m_pPhysicsShell)
 	{
-		if (m_dwDestroyTime <= Level().timeServer())
+		if(m_dwDestroyTime <= Level().timeServer())
 		{
 			m_dwDestroyTime = 0xffffffff;
 			VERIFY(!m_pCurrentInventory);
@@ -216,32 +216,36 @@ void CMissile::StartIdleAnim()
 
 void CMissile::State(u32 state)
 {
-	switch (GetState())
+	switch(GetState())
 	{
-	case MS_SHOWING: {
+	case MS_SHOWING:
+	{
 		m_bPending = true;
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimShow), FALSE, this, GetState());
 	}
 	break;
-	case MS_IDLE: {
+	case MS_IDLE:
+	{
 		m_bPending = false;
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimIdle), TRUE, this, GetState());
 	}
 	break;
-	case MS_HIDING: {
+	case MS_HIDING:
+	{
 		m_bPending = true;
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimHide), TRUE, this, GetState());
 	}
 	break;
-	case MS_HIDDEN: {
+	case MS_HIDDEN:
+	{
 
-		if (m_pHUD)
+		if(m_pHUD)
 		{
 			m_pHUD->StopCurrentAnimWithoutCallback();
 			m_pHUD->Hide();
 		};
 
-		if (H_Parent())
+		if(H_Parent())
 		{
 			setVisible(FALSE);
 			setEnabled(FALSE);
@@ -249,28 +253,33 @@ void CMissile::State(u32 state)
 		m_bPending = false;
 	}
 	break;
-	case MS_THREATEN: {
+	case MS_THREATEN:
+	{
 		m_bPending = true;
 		m_fThrowForce = m_fMinForce;
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowBegin), TRUE, this, GetState());
 	}
 	break;
-	case MS_READY: {
+	case MS_READY:
+	{
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowIdle), TRUE, this, GetState());
 	}
 	break;
-	case MS_THROW: {
+	case MS_THROW:
+	{
 		m_bPending = true;
 		m_throw = false;
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowAct), TRUE, this, GetState());
 	}
 	break;
-	case MS_END: {
+	case MS_END:
+	{
 		m_bPending = true;
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimThrowEnd), TRUE, this, GetState());
 	}
 	break;
-	case MS_PLAYING: {
+	case MS_PLAYING:
+	{
 		PlaySound(sndPlaying, Position());
 		m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimPlaying), TRUE, this, GetState());
 	}
@@ -286,33 +295,36 @@ void CMissile::OnStateSwitch(u32 S)
 
 void CMissile::OnAnimationEnd(u32 state)
 {
-	switch (state)
+	switch(state)
 	{
-	case MS_HIDING: {
+	case MS_HIDING:
+	{
 		setVisible(FALSE);
 		OnStateSwitch(MS_HIDDEN);
 	}
 	break;
-	case MS_SHOWING: {
+	case MS_SHOWING:
+	{
 		setVisible(TRUE);
 		OnStateSwitch(MS_IDLE);
 	}
 	break;
-	case MS_THREATEN: {
-		if (!m_fake_missile)
+	case MS_THREATEN:
+	{
+		if(!m_fake_missile)
 		{
 			CMissile* missile = smart_cast<CMissile*>(H_Parent());
-			if (!missile)
+			if(!missile)
 			{
 				CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(H_Parent());
-				if (!entity_alive || entity_alive->g_Alive())
+				if(!entity_alive || entity_alive->g_Alive())
 				{
 					spawn_fake_missile();
 				}
 			}
 		}
 
-		if (m_throw)
+		if(m_throw)
 			SwitchState(MS_THROW);
 		//				OnStateSwitch(MS_THROW);
 		else
@@ -320,16 +332,19 @@ void CMissile::OnAnimationEnd(u32 state)
 		//				OnStateSwitch(MS_READY);
 	}
 	break;
-	case MS_THROW: {
+	case MS_THROW:
+	{
 		Throw();
 		OnStateSwitch(MS_END);
 	}
 	break;
-	case MS_END: {
+	case MS_END:
+	{
 		OnStateSwitch(MS_SHOWING);
 	}
 	break;
-	case MS_PLAYING: {
+	case MS_PLAYING:
+	{
 		OnStateSwitch(MS_IDLE);
 	}
 	break;
@@ -343,24 +358,24 @@ void CMissile::UpdatePosition(const fmat4x4& trans)
 
 void CMissile::UpdateTransform()
 {
-	if (Engine.TimeManager.GetFrameCount() != dwXF_Frame)
+	if(Engine.TimeManager.GetFrameCount() != dwXF_Frame)
 	{
 		dwXF_Frame = Engine.TimeManager.GetFrameCount();
 
-		if (0 == H_Parent())
+		if(0 == H_Parent())
 			return;
 
 		// Get access to entity and its visual
 		CEntityAlive* E = smart_cast<CEntityAlive*>(H_Parent());
 
-		if (!E)
+		if(!E)
 			return;
 
 		const CInventoryOwner* parent = smart_cast<const CInventoryOwner*>(E);
-		if (parent && parent->use_simplified_visual())
+		if(parent && parent->use_simplified_visual())
 			return;
 
-		if (parent->attached(this))
+		if(parent->attached(this))
 			return;
 
 		VERIFY(E);
@@ -399,7 +414,7 @@ void CMissile::Show()
 
 void CMissile::Hide()
 {
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 		SwitchState(MS_HIDING);
 	else
 		SwitchState(MS_HIDDEN);
@@ -414,10 +429,10 @@ void CMissile::setup_throw_params()
 	fmat4x4 trans;
 	trans.identity();
 	fvec3 FirePos, FireDir;
-	if (this == inventory_owner->inventory().ActiveItem())
+	if(this == inventory_owner->inventory().ActiveItem())
 	{
 		CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
-		if (NULL == io->inventory().ActiveItem())
+		if(NULL == io->inventory().ActiveItem())
 		{
 			Log("current_state", GetState());
 			Log("next_state", GetNextState());
@@ -450,14 +465,14 @@ void CMissile::Throw()
 
 	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(H_Parent());
 	VERIFY(inventory_owner);
-	if (inventory_owner->use_default_throw_force())
+	if(inventory_owner->use_default_throw_force())
 		m_fake_missile->m_fThrowForce = m_constpower ? m_fConstForce : m_fThrowForce;
 	else
 		m_fake_missile->m_fThrowForce = inventory_owner->missile_throw_force();
 
 	m_fThrowForce = m_fMinForce;
 
-	if (Local() && H_Parent())
+	if(Local() && H_Parent())
 	{
 		NET_Packet P;
 		u_EventGen(P, GE_OWNERSHIP_REJECT, ID());
@@ -470,9 +485,10 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 	u16 id;
-	switch (type)
+	switch(type)
 	{
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		P.r_u16(id);
 		CMissile* missile = smart_cast<CMissile*>(Level().Objects.net_Find(id));
 		m_fake_missile = missile;
@@ -480,22 +496,23 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
 		missile->Position().set(Position());
 		break;
 	}
-	case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		P.r_u16(id);
 		bool IsFakeMissile = false;
-		if (m_fake_missile && (id == m_fake_missile->ID()))
+		if(m_fake_missile && (id == m_fake_missile->ID()))
 		{
 			m_fake_missile = NULL;
 			IsFakeMissile = true;
 		}
 
 		CMissile* missile = smart_cast<CMissile*>(Level().Objects.net_Find(id));
-		if (!missile)
+		if(!missile)
 		{
 			break;
 		}
 		missile->H_SetParent(0, !P.r_eof() && P.r_u8());
-		if (IsFakeMissile && OnClient())
+		if(IsFakeMissile && OnClient())
 			missile->set_destroy_time(m_dwDestroyTimeMax);
 		break;
 	}
@@ -504,45 +521,47 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
 
 void CMissile::Destroy()
 {
-	if (Local())
+	if(Local())
 		DestroyObject();
 }
 
 bool CMissile::Action(s32 cmd, u32 flags)
 {
-	if (inherited::Action(cmd, flags))
+	if(inherited::Action(cmd, flags))
 		return true;
 
-	switch (cmd)
+	switch(cmd)
 	{
-	case kWPN_FIRE: {
+	case kWPN_FIRE:
+	{
 		m_constpower = true;
-		if (flags & CMD_START)
+		if(flags & CMD_START)
 		{
 			m_throw = true;
-			if (GetState() == MS_IDLE)
+			if(GetState() == MS_IDLE)
 				SwitchState(MS_THREATEN);
 		}
 		return true;
 	}
 	break;
 
-	case kWPN_ZOOM: {
+	case kWPN_ZOOM:
+	{
 		m_constpower = false;
-		if (flags & CMD_START)
+		if(flags & CMD_START)
 		{
 			m_throw = false;
-			if (GetState() == MS_IDLE)
+			if(GetState() == MS_IDLE)
 				SwitchState(MS_THREATEN);
-			else if (GetState() == MS_READY)
+			else if(GetState() == MS_READY)
 			{
 				m_throw = true;
 			}
 		}
-		else if (GetState() == MS_READY || GetState() == MS_THREATEN || GetState() == MS_IDLE)
+		else if(GetState() == MS_READY || GetState() == MS_THREATEN || GetState() == MS_IDLE)
 		{
 			m_throw = true;
-			if (GetState() == MS_READY)
+			if(GetState() == MS_READY)
 				SwitchState(MS_THROW);
 		}
 		return true;
@@ -554,16 +573,16 @@ bool CMissile::Action(s32 cmd, u32 flags)
 
 void CMissile::UpdateFireDependencies_internal()
 {
-	if (0 == H_Parent())
+	if(0 == H_Parent())
 		return;
 
-	if (Engine.TimeManager.GetFrameCount() != dwFP_Frame)
+	if(Engine.TimeManager.GetFrameCount() != dwFP_Frame)
 	{
 		dwFP_Frame = Engine.TimeManager.GetFrameCount();
 
 		UpdateTransform();
 
-		if (GetHUDmode() && !IsHidden())
+		if(GetHUDmode() && !IsHidden())
 		{
 			// 1st person view - skeletoned
 			CKinematics* V = smart_cast<CKinematics*>(m_pHUD->Visual());
@@ -587,10 +606,10 @@ void CMissile::UpdateFireDependencies_internal()
 
 void CMissile::activate_physic_shell()
 {
-	if (!smart_cast<CMissile*>(H_Parent()))
+	if(!smart_cast<CMissile*>(H_Parent()))
 	{
 		inherited::activate_physic_shell();
-		if (m_pPhysicsShell && m_pPhysicsShell->isActive() && !IsGameTypeSingle())
+		if(m_pPhysicsShell && m_pPhysicsShell->isActive() && !IsGameTypeSingle())
 		{
 			m_pPhysicsShell->add_ObjectContactCallback(ExitContactCallback);
 			m_pPhysicsShell->set_CallbackData(smart_cast<CPhysicsShellHolder*>(H_Root()));
@@ -605,7 +624,7 @@ void CMissile::activate_physic_shell()
 
 	fvec3 a_vel;
 	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(H_Root());
-	if (inventory_owner && inventory_owner->use_throw_randomness())
+	if(inventory_owner && inventory_owner->use_throw_randomness())
 	{
 		float fi, teta, r;
 		fi = ::Random.randF(0.f, 2.f * PI);
@@ -620,7 +639,7 @@ void CMissile::activate_physic_shell()
 	Transform().set(m_throw_matrix);
 
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(H_Root());
-	if (entity_alive && entity_alive->character_physics_support())
+	if(entity_alive && entity_alive->character_physics_support())
 	{
 		fvec3 parent_vel;
 		entity_alive->character_physics_support()->movement()->GetCharacterVelocity(parent_vel);
@@ -646,9 +665,9 @@ void CMissile::activate_physic_shell()
 void CMissile::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
-	if (PPhysicsShell() && PPhysicsShell()->isActive())
+	if(PPhysicsShell() && PPhysicsShell()->isActive())
 	{
-		if (O == smart_cast<CObject*>((CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData()))
+		if(O == smart_cast<CObject*>((CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData()))
 		{
 			PPhysicsShell()->remove_ObjectContactCallback(ExitContactCallback);
 			PPhysicsShell()->set_CallbackData(NULL);
@@ -680,12 +699,12 @@ u32 CMissile::ef_weapon_type() const
 
 void CMissile::OnDrawUI()
 {
-	if (GetState() == MS_READY && !m_throw)
+	if(GetState() == MS_READY && !m_throw)
 	{
 		CActor* actor = smart_cast<CActor*>(H_Parent());
-		if (actor)
+		if(actor)
 		{
-			if (!g_MissileForceShape)
+			if(!g_MissileForceShape)
 				create_force_progress();
 			float k = (m_fThrowForce - m_fMinForce) / (m_fMaxForce - m_fMinForce);
 			g_MissileForceShape->SetPos(k);
@@ -698,7 +717,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
 								   SGameMtl* /*material_2*/)
 {
 	dxGeomUserData *gd1 = NULL, *gd2 = NULL;
-	if (bo1)
+	if(bo1)
 	{
 		gd1 = retrieveGeomUserData(c.geom.g1);
 		gd2 = retrieveGeomUserData(c.geom.g2);
@@ -708,7 +727,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
 		gd2 = retrieveGeomUserData(c.geom.g1);
 		gd1 = retrieveGeomUserData(c.geom.g2);
 	}
-	if (gd1 && gd2 && (CPhysicsShellHolder*)gd1->callback_data == gd2->ph_ref_object)
+	if(gd1 && gd2 && (CPhysicsShellHolder*)gd1->callback_data == gd2->ph_ref_object)
 		do_colide = false;
 }
 

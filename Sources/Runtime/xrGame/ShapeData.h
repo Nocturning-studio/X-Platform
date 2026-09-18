@@ -8,7 +8,8 @@ struct CShapeData
 		cfSphere = 0,
 		cfBox
 	};
-	union shape_data {
+	union shape_data
+	{
 		Fsphere sphere;
 		fmat4x4 box;
 	};

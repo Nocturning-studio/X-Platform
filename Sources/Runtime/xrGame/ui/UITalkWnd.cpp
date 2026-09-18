@@ -70,7 +70,7 @@ void CUITalkWnd::Init()
 void CUITalkWnd::InitTalkDialog()
 {
 	m_pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (m_pActor && !m_pActor->IsTalking())
+	if(m_pActor && !m_pActor->IsTalking())
 		return;
 
 	m_pOurInvOwner = smart_cast<CInventoryOwner*>(m_pActor);
@@ -101,7 +101,7 @@ void CUITalkWnd::InitTalkDialog()
 void CUITalkWnd::InitOthersStartDialog()
 {
 	m_pOthersDialogManager->UpdateAvailableDialogs(m_pOurDialogManager);
-	if (!m_pOthersDialogManager->AvailableDialogs().empty())
+	if(!m_pOthersDialogManager->AvailableDialogs().empty())
 	{
 		m_pCurrentDialog = m_pOthersDialogManager->AvailableDialogs().front();
 		m_pOthersDialogManager->InitDialog(m_pOurDialogManager, m_pCurrentDialog);
@@ -112,7 +112,7 @@ void CUITalkWnd::InitOthersStartDialog()
 		m_pOthersDialogManager->SayPhrase(m_pCurrentDialog, "0");
 
 		// если диалог завершился, перейти в режим выбора темы
-		if (!m_pCurrentDialog || m_pCurrentDialog->IsFinished())
+		if(!m_pCurrentDialog || m_pCurrentDialog->IsFinished())
 			ToTopicMode();
 	}
 }
@@ -128,10 +128,10 @@ void CUITalkWnd::UpdateQuestions()
 
 	// если нет активного диалога, то
 	// режима выбора темы
-	if (!m_pCurrentDialog)
+	if(!m_pCurrentDialog)
 	{
 		m_pOurDialogManager->UpdateAvailableDialogs(m_pOthersDialogManager);
-		for (u32 i = 0; i < m_pOurDialogManager->AvailableDialogs().size(); ++i)
+		for(u32 i = 0; i < m_pOurDialogManager->AvailableDialogs().size(); ++i)
 		{
 			const DIALOG_SHARED_PTR& phrase_dialog = m_pOurDialogManager->AvailableDialogs()[i];
 			AddQuestion(phrase_dialog->DialogCaption(), phrase_dialog->GetDialogID(), i);
@@ -139,22 +139,22 @@ void CUITalkWnd::UpdateQuestions()
 	}
 	else
 	{
-		if (m_pCurrentDialog->IsWeSpeaking(m_pOurDialogManager))
+		if(m_pCurrentDialog->IsWeSpeaking(m_pOurDialogManager))
 		{
 			// если в списке допустимых фраз только одна фраза пустышка, то просто
 			// сказать (игрок сам не производит никаких действий)
-			if (!m_pCurrentDialog->PhraseList().empty() && m_pCurrentDialog->allIsDummy())
+			if(!m_pCurrentDialog->PhraseList().empty() && m_pCurrentDialog->allIsDummy())
 			{
 				CPhrase* phrase = m_pCurrentDialog->PhraseList()[Random.randI(m_pCurrentDialog->PhraseList().size())];
 				SayPhrase(phrase->GetID());
 			};
 
 			// выбор доступных фраз из активного диалога
-			if (m_pCurrentDialog && !m_pCurrentDialog->allIsDummy())
+			if(m_pCurrentDialog && !m_pCurrentDialog->allIsDummy())
 			{
 				int number = 0;
-				for (PHRASE_VECTOR::const_iterator it = m_pCurrentDialog->PhraseList().begin();
-					 it != m_pCurrentDialog->PhraseList().end(); it++, number++)
+				for(PHRASE_VECTOR::const_iterator it = m_pCurrentDialog->PhraseList().begin();
+					it != m_pCurrentDialog->PhraseList().end(); it++, number++)
 				{
 					CPhrase* phrase = *it;
 					AddQuestion(m_pCurrentDialog->GetPhraseText(phrase->GetID()), phrase->GetID(), number);
@@ -171,15 +171,15 @@ void CUITalkWnd::UpdateQuestions()
 
 void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED)
+	if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED)
 	{
 		SwitchToTrade();
 	}
-	else if (pWnd == UITalkDialogWnd && msg == TALK_DIALOG_QUESTION_CLICKED)
+	else if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_QUESTION_CLICKED)
 	{
 		AskQuestion();
 	}
-	else if (pWnd == UITradeWnd && msg == TRADE_WND_CLOSED)
+	else if(pWnd == UITradeWnd && msg == TRADE_WND_CLOSED)
 	{
 		UITalkDialogWnd->Show();
 		UITradeWnd->Hide();
@@ -203,17 +203,17 @@ void UpdateCameraDirection(CGameObject* pTo)
 	float p, h;
 	des_dir.getHP(h, p);
 
-	if (angle_difference(cam->yaw, -h) > 0.2)
+	if(angle_difference(cam->yaw, -h) > 0.2)
 		cam->yaw = angle_inertion_var(cam->yaw, -h, 0.15f, 0.2f, PI_DIV_6, Engine.TimeManager.GetDeltaTime());
 
-	if (angle_difference(cam->pitch, -p) > 0.2)
+	if(angle_difference(cam->pitch, -p) > 0.2)
 		cam->pitch = angle_inertion_var(cam->pitch, -p, 0.15f, 0.2f, PI_DIV_6, Engine.TimeManager.GetDeltaTime());
 }
 
 void CUITalkWnd::Update()
 {
 	// остановить разговор, если нужно
-	if (g_actor && m_pActor && !m_pActor->IsTalking())
+	if(g_actor && m_pActor && !m_pActor->IsTalking())
 	{
 		Game().StartStopMenu(this, true);
 	}
@@ -222,12 +222,12 @@ void CUITalkWnd::Update()
 		CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurInvOwner);
 		CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
 
-		if (NULL == pOurGO || NULL == pOtherGO ||
-			((pOurGO->Position().distance_to(pOtherGO->Position()) > 3.0f) && !m_pOthersInvOwner->NeedOsoznanieMode()))
+		if(NULL == pOurGO || NULL == pOtherGO ||
+		   ((pOurGO->Position().distance_to(pOtherGO->Position()) > 3.0f) && !m_pOthersInvOwner->NeedOsoznanieMode()))
 			Game().StartStopMenu(this, true);
 	}
 
-	if (m_bNeedToUpdateQuestions)
+	if(m_bNeedToUpdateQuestions)
 	{
 		UpdateQuestions();
 	}
@@ -258,12 +258,12 @@ void CUITalkWnd::Hide()
 
 	inherited::Hide();
 	UITradeWnd->Hide();
-	if (!m_pActor)
+	if(!m_pActor)
 		return;
 
 	ToTopicMode();
 
-	if (m_pActor->IsTalking())
+	if(m_pActor->IsTalking())
 		m_pActor->StopTalk();
 	m_pActor = NULL;
 }
@@ -286,15 +286,15 @@ void CUITalkWnd::ToTopicMode()
 
 void CUITalkWnd::AskQuestion()
 {
-	if (m_bNeedToUpdateQuestions)
+	if(m_bNeedToUpdateQuestions)
 		return; // quick dblclick:(
 	shared_str phrase_id;
 
 	// игрок выбрал тему разговора
-	if (TopicMode())
+	if(TopicMode())
 	{
-		if ((UITalkDialogWnd->m_ClickedQuestionID == "") ||
-			(!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
+		if((UITalkDialogWnd->m_ClickedQuestionID == "") ||
+		   (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
 		{
 
 			string128 s;
@@ -329,7 +329,7 @@ void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 			AddAnswer(m_pCurrentDialog->GetLastPhraseText(), m_pOthersInvOwner->Name());
 	*/
 	// если диалог завершился, перейти в режим выбора темы
-	if (m_pCurrentDialog->IsFinished())
+	if(m_pCurrentDialog->IsFinished())
 		ToTopicMode();
 }
 
@@ -337,7 +337,7 @@ void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 
 void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, int number)
 {
-	if (text.size() == 0)
+	if(text.size() == 0)
 		return;
 	UITalkDialogWnd->AddQuestion(*CStringTable().translate(text), value.c_str(), number);
 }
@@ -347,7 +347,7 @@ void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, in
 void CUITalkWnd::AddAnswer(const shared_str& text, LPCSTR SpeakerName)
 {
 	// для пустой фразы вообще ничего не выводим
-	if (text.size() == 0)
+	if(text.size() == 0)
 		return;
 	PlaySnd(text.c_str());
 
@@ -359,7 +359,7 @@ void CUITalkWnd::AddAnswer(const shared_str& text, LPCSTR SpeakerName)
 
 void CUITalkWnd::SwitchToTrade()
 {
-	if (m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled())
+	if(m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled())
 	{
 
 		UITalkDialogWnd->Hide();
@@ -376,9 +376,9 @@ bool CUITalkWnd::IR_OnKeyboardPress(int dik)
 {
 	//.	StopSnd						();
 	EGameActions cmd = get_binded_action(dik);
-	if (cmd == kUSE)
+	if(cmd == kUSE)
 	{
-		if (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
+		if(m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
 		{
 			return true;
 		}
@@ -390,7 +390,7 @@ bool CUITalkWnd::IR_OnKeyboardPress(int dik)
 
 bool CUITalkWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
+	if(m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
 	{
 		return true;
 	}
@@ -399,16 +399,16 @@ bool CUITalkWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 void CUITalkWnd::PlaySnd(LPCSTR text)
 {
-	if (xr_strlen(text) == 0)
+	if(xr_strlen(text) == 0)
 		return;
 	StopSnd();
 
 	string_path fn;
 	strconcat(sizeof(fn), fn, "characters_voice\\dialogs\\", text, ".ogg");
-	if (FS.exist("$game_sounds$", fn))
+	if(FS.exist("$game_sounds$", fn))
 	{
 		VERIFY(m_pActor);
-		if (!m_pActor->OnDialogSoundHandlerStart(m_pOthersInvOwner, fn))
+		if(!m_pActor->OnDialogSoundHandlerStart(m_pOthersInvOwner, fn))
 		{
 			m_sound.create(fn, st_Effect, sg_SourceType);
 			m_sound.play(0, sm_2D);
@@ -418,10 +418,10 @@ void CUITalkWnd::PlaySnd(LPCSTR text)
 
 void CUITalkWnd::StopSnd()
 {
-	if (m_pActor && m_pActor->OnDialogSoundHandlerStop(m_pOthersInvOwner))
+	if(m_pActor && m_pActor->OnDialogSoundHandlerStop(m_pOthersInvOwner))
 		return;
 
-	if (m_sound._feedback())
+	if(m_sound._feedback())
 		m_sound.stop();
 }
 

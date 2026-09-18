@@ -27,11 +27,13 @@ inline bool dis_zero(double val, double cmp = EPS_S)
 // degree 2 radians and vice-versa
 namespace implement
 {
-template <class T> inline T deg2rad(T val)
+template <class T>
+inline T deg2rad(T val)
 {
 	return (val * T(::PI) / T(180));
 };
-template <class T> inline T rad2deg(T val)
+template <class T>
+inline T rad2deg(T val)
 {
 	return (val * T(180) / T(::PI));
 };
@@ -54,19 +56,21 @@ inline double rad2deg(double val)
 }
 
 // clamping/snapping
-template <class T> inline void clamp(T& val, const T& _low, const T& _high)
+template <class T>
+inline void clamp(T& val, const T& _low, const T& _high)
 {
-	if (val < _low)
+	if(val < _low)
 		val = _low;
-	else if (val > _high)
+	else if(val > _high)
 		val = _high;
 };
 
-template <class T> inline T clampr(const T& val, const T& _low, const T& _high)
+template <class T>
+inline T clampr(const T& val, const T& _low, const T& _high)
 {
-	if (val < _low)
+	if(val < _low)
 		return _low;
-	else if (val > _high)
+	else if(val > _high)
 		return _high;
 	else
 		return val;
@@ -74,7 +78,7 @@ template <class T> inline T clampr(const T& val, const T& _low, const T& _high)
 
 inline float snapto(float value, float snap)
 {
-	if (snap <= 0.f)
+	if(snap <= 0.f)
 		return value;
 	return float(iFloor((value + (snap * 0.5f)) / snap)) * snap;
 };
@@ -85,7 +89,7 @@ inline float angle_normalize_always(float a)
 	float div = a / PI_MUL_2;
 	int rnd = (div > 0) ? iFloor(div) : iCeil(div);
 	float frac = div - rnd;
-	if (frac < 0)
+	if(frac < 0)
 		frac += 1.f;
 	return frac * PI_MUL_2;
 }
@@ -93,7 +97,7 @@ inline float angle_normalize_always(float a)
 // normalize angle (0..2PI)
 inline float angle_normalize(float a)
 {
-	if (a >= 0 && a <= PI_MUL_2)
+	if(a >= 0 && a <= PI_MUL_2)
 		return a;
 	else
 		return angle_normalize_always(a);
@@ -102,10 +106,10 @@ inline float angle_normalize(float a)
 // -PI .. +PI
 inline float angle_normalize_signed(float a)
 {
-	if (a >= (-PI) && a <= PI)
+	if(a >= (-PI) && a <= PI)
 		return a;
 	float angle = angle_normalize_always(a);
-	if (angle > PI)
+	if(angle > PI)
 		angle -= PI_MUL_2;
 	return angle;
 }
@@ -114,14 +118,14 @@ inline float angle_normalize_signed(float a)
 inline float angle_difference_signed(float a, float b)
 {
 	float diff = angle_normalize_signed(a) - angle_normalize_signed(b);
-	if (diff > 0)
+	if(diff > 0)
 	{
-		if (diff > PI)
+		if(diff > PI)
 			diff -= PI_MUL_2;
 	}
 	else
 	{
-		if (diff < -PI)
+		if(diff < -PI)
 			diff += PI_MUL_2;
 	}
 	return diff;
@@ -137,29 +141,29 @@ inline float angle_difference(float a, float b)
 inline bool angle_lerp(float& c, float t, float s, float dt)
 {
 	float diff = t - c;
-	if (diff > 0)
+	if(diff > 0)
 	{
-		if (diff > PI)
+		if(diff > PI)
 			diff -= PI_MUL_2;
 	}
 	else
 	{
-		if (diff < -PI)
+		if(diff < -PI)
 			diff += PI_MUL_2;
 	}
 	float diff_a = std::abs(diff);
 
-	if (diff_a < EPS_S)
+	if(diff_a < EPS_S)
 		return true;
 
 	float mot = s * dt;
-	if (mot > diff_a)
+	if(mot > diff_a)
 		mot = diff_a;
 	c += (diff / diff_a) * mot;
 
-	if (c < 0)
+	if(c < 0)
 		c += PI_MUL_2;
-	else if (c > PI_MUL_2)
+	else if(c > PI_MUL_2)
 		c -= PI_MUL_2;
 
 	return false;
@@ -169,9 +173,9 @@ inline bool angle_lerp(float& c, float t, float s, float dt)
 inline float angle_lerp(float A, float B, float f)
 {
 	float diff = B - A;
-	if (diff > PI)
+	if(diff > PI)
 		diff -= PI_MUL_2;
-	else if (diff < -PI)
+	else if(diff < -PI)
 		diff += PI_MUL_2;
 
 	return A + diff * f;
@@ -202,15 +206,18 @@ inline float angle_inertion_var(float src, float tgt, float min_speed, float max
 }
 
 // generic
-template <class T> IC T _min(T a, T b)
+template <class T>
+IC T _min(T a, T b)
 {
 	return a < b ? a : b;
 }
-template <class T> IC T _max(T a, T b)
+template <class T>
+IC T _max(T a, T b)
 {
 	return a > b ? a : b;
 }
-template <class T> IC T _sqr(T a)
+template <class T>
+IC T _sqr(T a)
 {
 	return a * a;
 }
@@ -238,7 +245,7 @@ IC BOOL _valid(const float x)
 	// Positive denormalized
 	int cls = _fpclass(double(x));
 
-	if (cls & (_FPCLASS_SNAN + _FPCLASS_QNAN + _FPCLASS_NINF + _FPCLASS_PINF + _FPCLASS_ND + _FPCLASS_PD))
+	if(cls & (_FPCLASS_SNAN + _FPCLASS_QNAN + _FPCLASS_NINF + _FPCLASS_PINF + _FPCLASS_ND + _FPCLASS_PD))
 		return false;
 
 	return true;
@@ -267,7 +274,7 @@ IC BOOL _valid(const double x)
 	// Positive denormalized
 	int cls = _fpclass(x);
 
-	if (cls & (_FPCLASS_SNAN + _FPCLASS_QNAN + _FPCLASS_NINF + _FPCLASS_PINF + _FPCLASS_ND + _FPCLASS_PD))
+	if(cls & (_FPCLASS_SNAN + _FPCLASS_QNAN + _FPCLASS_NINF + _FPCLASS_PINF + _FPCLASS_ND + _FPCLASS_PD))
 		return false;
 
 	return true;

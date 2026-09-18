@@ -89,11 +89,11 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 		.def("team", &CScriptGameObject::Team)
 		.def("squad", &CScriptGameObject::Squad)
 		.def("group", &CScriptGameObject::Group)
-		.def("change_team", (void(CScriptGameObject::*)(u8, u8, u8))(&CScriptGameObject::ChangeTeam))
+		.def("change_team", (void (CScriptGameObject::*)(u8, u8, u8))(&CScriptGameObject::ChangeTeam))
 		.def("kill", &CScriptGameObject::Kill)
 		.def("hit", &CScriptGameObject::Hit)
-		.def("play_cycle", (void(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_cycle))
-		.def("play_cycle", (void(CScriptGameObject::*)(LPCSTR, bool))(&CScriptGameObject::play_cycle))
+		.def("play_cycle", (void (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_cycle))
+		.def("play_cycle", (void (CScriptGameObject::*)(LPCSTR, bool))(&CScriptGameObject::play_cycle))
 		.def("fov", &CScriptGameObject::GetFOV)
 		.def("range", &CScriptGameObject::GetRange)
 		.def("relation", &CScriptGameObject::GetRelationType)
@@ -115,24 +115,24 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 		.def("object", (CScriptGameObject * (CScriptGameObject::*)(int))(&CScriptGameObject::GetObjectByIndex))
 		.def("active_item", &CScriptGameObject::GetActiveItem)
 
-		.def("set_callback", (void(CScriptGameObject::*)(GameObject::ECallbackType, const luabind::functor<void>&))(
+		.def("set_callback", (void (CScriptGameObject::*)(GameObject::ECallbackType, const luabind::functor<void>&))(
 								 &CScriptGameObject::SetCallback))
-		.def("set_callback", (void(CScriptGameObject::*)(GameObject::ECallbackType, const luabind::functor<void>&,
-														 const luabind::object&))(&CScriptGameObject::SetCallback))
-		.def("set_callback", (void(CScriptGameObject::*)(GameObject::ECallbackType))(&CScriptGameObject::SetCallback))
+		.def("set_callback", (void (CScriptGameObject::*)(GameObject::ECallbackType, const luabind::functor<void>&,
+														  const luabind::object&))(&CScriptGameObject::SetCallback))
+		.def("set_callback", (void (CScriptGameObject::*)(GameObject::ECallbackType))(&CScriptGameObject::SetCallback))
 
 		.def("set_patrol_extrapolate_callback",
-			 (void(CScriptGameObject::*)())(&CScriptGameObject::set_patrol_extrapolate_callback))
-		.def("set_patrol_extrapolate_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&))(
+			 (void (CScriptGameObject::*)())(&CScriptGameObject::set_patrol_extrapolate_callback))
+		.def("set_patrol_extrapolate_callback", (void (CScriptGameObject::*)(const luabind::functor<bool>&))(
 													&CScriptGameObject::set_patrol_extrapolate_callback))
 		.def("set_patrol_extrapolate_callback",
-			 (void(CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(
+			 (void (CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(
 				 &CScriptGameObject::set_patrol_extrapolate_callback))
 
-		.def("set_enemy_callback", (void(CScriptGameObject::*)())(&CScriptGameObject::set_enemy_callback))
+		.def("set_enemy_callback", (void (CScriptGameObject::*)())(&CScriptGameObject::set_enemy_callback))
 		.def("set_enemy_callback",
-			 (void(CScriptGameObject::*)(const luabind::functor<bool>&))(&CScriptGameObject::set_enemy_callback))
-		.def("set_enemy_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(
+			 (void (CScriptGameObject::*)(const luabind::functor<bool>&))(&CScriptGameObject::set_enemy_callback))
+		.def("set_enemy_callback", (void (CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(
 									   &CScriptGameObject::set_enemy_callback))
 
 		.def("patrol", &CScriptGameObject::GetPatrolPathName)
@@ -150,7 +150,7 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 		.def("action_by_index", &CScriptGameObject::GetActionByIndex)
 
 		//.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::object &,
-		//LPCSTR))(&CScriptGameObject::SetSoundCallback)) .def("set_hear_callback",			(void
+		// LPCSTR))(&CScriptGameObject::SetSoundCallback)) .def("set_hear_callback",			(void
 		//(CScriptGameObject::*)(const luabind::functor<void> &))(&CScriptGameObject::SetSoundCallback))
 		//.def("clear_hear_callback",		&CScriptGameObject::ClearSoundCallback)
 
@@ -208,18 +208,18 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 		.def("detail_path_type", &CScriptGameObject::detail_path_type)
 
 		//
-		.def("set_desired_position", (void(CScriptGameObject::*)())(&CScriptGameObject::set_desired_position))
+		.def("set_desired_position", (void (CScriptGameObject::*)())(&CScriptGameObject::set_desired_position))
 		.def("set_desired_position",
-			 (void(CScriptGameObject::*)(const fvec3*))(&CScriptGameObject::set_desired_position))
-		.def("set_desired_direction", (void(CScriptGameObject::*)())(&CScriptGameObject::set_desired_direction))
+			 (void (CScriptGameObject::*)(const fvec3*))(&CScriptGameObject::set_desired_position))
+		.def("set_desired_direction", (void (CScriptGameObject::*)())(&CScriptGameObject::set_desired_direction))
 		.def("set_desired_direction",
-			 (void(CScriptGameObject::*)(const fvec3*))(&CScriptGameObject::set_desired_direction))
+			 (void (CScriptGameObject::*)(const fvec3*))(&CScriptGameObject::set_desired_direction))
 		.def("set_patrol_path", &CScriptGameObject::set_patrol_path)
 		.def("set_dest_level_vertex_id", &CScriptGameObject::set_dest_level_vertex_id)
 		.def("level_vertex_id", &CScriptGameObject::level_vertex_id)
 		.def("level_vertex_light", &CScriptGameObject::level_vertex_light)
 		.def("game_vertex_id", &CScriptGameObject::game_vertex_id)
-		.def("add_animation", (void(CScriptGameObject::*)(LPCSTR, bool, bool))(&CScriptGameObject::add_animation))
+		.def("add_animation", (void (CScriptGameObject::*)(LPCSTR, bool, bool))(&CScriptGameObject::add_animation))
 		.def("clear_animations", &CScriptGameObject::clear_animations)
 		.def("animation_count", &CScriptGameObject::animation_count)
 		.def("animation_slot", &CScriptGameObject::animation_slot)
@@ -233,8 +233,8 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 
 		.def("eat", &CScriptGameObject::eat)
 
-		.def("extrapolate_length", (float(CScriptGameObject::*)() const)(&CScriptGameObject::extrapolate_length))
-		.def("extrapolate_length", (void(CScriptGameObject::*)(float))(&CScriptGameObject::extrapolate_length))
+		.def("extrapolate_length", (float (CScriptGameObject::*)() const)(&CScriptGameObject::extrapolate_length))
+		.def("extrapolate_length", (void (CScriptGameObject::*)(float))(&CScriptGameObject::extrapolate_length))
 
 		.def("set_fov", &CScriptGameObject::set_fov)
 		.def("set_range", &CScriptGameObject::set_range)
@@ -253,8 +253,8 @@ class_<CScriptGameObject>& script_register_game_object1(class_<CScriptGameObject
 #ifdef DEBUG
 		.def("debug_planner", &CScriptGameObject::debug_planner)
 #endif // DEBUG
-		.def("invulnerable", (bool(CScriptGameObject::*)() const) & CScriptGameObject::invulnerable)
-		.def("invulnerable", (void(CScriptGameObject::*)(bool)) & CScriptGameObject::invulnerable)
+		.def("invulnerable", (bool (CScriptGameObject::*)() const) & CScriptGameObject::invulnerable)
+		.def("invulnerable", (void (CScriptGameObject::*)(bool))&CScriptGameObject::invulnerable)
 
 		;
 	return (instance);

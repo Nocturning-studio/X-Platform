@@ -24,29 +24,29 @@ CStalkerSoundDataVisitor::~CStalkerSoundDataVisitor()
 
 void CStalkerSoundDataVisitor::visit(CStalkerSoundData* data)
 {
-	if (object().memory().enemy().selected())
+	if(object().memory().enemy().selected())
 		return;
 
-	if (object().is_relation_enemy(&data->object()))
+	if(object().is_relation_enemy(&data->object()))
 		return;
 
-	if (!data->object().memory().enemy().selected())
+	if(!data->object().memory().enemy().selected())
 	{
-		if (!object().memory().danger().selected() && data->object().memory().danger().selected())
+		if(!object().memory().danger().selected() && data->object().memory().danger().selected())
 			object().memory().danger().add(*data->object().memory().danger().selected());
 		return;
 	}
 
-	if (data->object().memory().enemy().selected()->getDestroy())
+	if(data->object().memory().enemy().selected()->getDestroy())
 		return;
 
-	if (!object().is_relation_enemy(data->object().memory().enemy().selected()))
+	if(!object().is_relation_enemy(data->object().memory().enemy().selected()))
 		return;
 
-	if (!data->object().g_Alive())
+	if(!data->object().g_Alive())
 		return;
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	Msg("%s : Adding fiction hit by sound info from stalker %s", *object().cName(), *data->object().cName());
@@ -54,6 +54,6 @@ void CStalkerSoundDataVisitor::visit(CStalkerSoundData* data)
 	object().memory().make_object_visible_somewhen(data->object().memory().enemy().selected());
 
 	//	const MemorySpace::CHitObject	*m =
-	//data->object().memory().hit().hit(data->object().memory().enemy().selected()); 	if (!m) 		return;
+	// data->object().memory().hit().hit(data->object().memory().enemy().selected()); 	if (!m) 		return;
 	//	object().memory().hit().add		(*m);
 }

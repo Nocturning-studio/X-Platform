@@ -117,7 +117,7 @@ class CPHObject : public ISpatial
 	virtual void PhTune(dReal step) = 0;
 	virtual void spatial_move();
 	virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) = 0;
-	virtual void CutVelocity(float l_limit, float a_limit){};
+	virtual void CutVelocity(float l_limit, float a_limit) {};
 
 	void Freeze();
 	void UnFreeze();

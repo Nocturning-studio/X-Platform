@@ -31,7 +31,7 @@ CUIGameAHunt::CUIGameAHunt()
 {
 	CUIXml uiXml;
 	uiXml.Init(CONFIG_PATH, UI_PATH, "ui_game_ahunt.xml");
-	if (m_pFragLimitIndicator)
+	if(m_pFragLimitIndicator)
 		xr_delete(m_pFragLimitIndicator);
 
 	m_pFragLimitIndicator = xr_new<CUIStatic>();
@@ -137,7 +137,7 @@ void CUIGameAHunt::SetBuyMsgCaption(LPCSTR str)
 
 void CUIGameAHunt::Render()
 {
-	//OPTICK_EVENT("CUIGameAHunt::Render");
+	// OPTICK_EVENT("CUIGameAHunt::Render");
 
 	m_pReinforcementInidcator->Draw();
 	inherited::Render();
@@ -145,7 +145,7 @@ void CUIGameAHunt::Render()
 
 void CUIGameAHunt::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::OnFrame();
 	m_pReinforcementInidcator->Update();

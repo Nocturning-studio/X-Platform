@@ -33,7 +33,7 @@ CPatternFunction::~CPatternFunction()
 	xr_free(m_dwaVariableTypes);
 	xr_free(m_dwaAtomicFeatureRange);
 	xr_free(m_dwaPatternIndexes);
-	for (u32 i = 0; i < m_dwPatternCount; ++i)
+	for(u32 i = 0; i < m_dwPatternCount; ++i)
 		xr_free(m_tpPatterns[i].dwaVariableIndexes);
 	xr_free(m_tpPatterns);
 	xr_free(m_faParameters);
@@ -43,7 +43,7 @@ CPatternFunction::~CPatternFunction()
 void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 {
 	string_path caPath;
-	if (!FS.exist(caPath, "$game_ai$", caFileName))
+	if(!FS.exist(caPath, "$game_ai$", caFileName))
 	{
 		Msg("! Evaluation function : File not found \"%s\"", caPath);
 		R_ASSERT(false);
@@ -53,7 +53,7 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 	IReader* F = FS.r_open(caPath);
 	F->r(&m_tEFHeader, sizeof(SEFHeader));
 
-	if (EFC_VERSION != m_tEFHeader.dwBuilderVersion)
+	if(EFC_VERSION != m_tEFHeader.dwBuilderVersion)
 	{
 		FS.r_close(F);
 		Msg("! Evaluation function (%s) : Not supported version of the Evaluation Function Contructor", caPath);
@@ -68,10 +68,10 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 	ZeroMemory(m_dwaAtomicIndexes, m_dwVariableCount * sizeof(u32));
 
 	u32 i = 0;
-	for (; i < m_dwVariableCount; ++i)
+	for(; i < m_dwVariableCount; ++i)
 	{
 		F->r(m_dwaAtomicFeatureRange + i, sizeof(u32));
-		if (i)
+		if(i)
 			m_dwaAtomicIndexes[i] = m_dwaAtomicIndexes[i - 1] + m_dwaAtomicFeatureRange[i - 1];
 	}
 
@@ -88,15 +88,15 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 	m_dwaPatternIndexes = xr_alloc<u32>(m_dwPatternCount);
 	ZeroMemory(m_dwaPatternIndexes, m_dwPatternCount * sizeof(u32));
 	m_dwParameterCount = 0;
-	for (i = 0; i < m_dwPatternCount; ++i)
+	for(i = 0; i < m_dwPatternCount; ++i)
 	{
-		if (i)
+		if(i)
 			m_dwaPatternIndexes[i] = m_dwParameterCount;
 		F->r(&(m_tpPatterns[i].dwCardinality), sizeof(m_tpPatterns[i].dwCardinality));
 		m_tpPatterns[i].dwaVariableIndexes = xr_alloc<u32>(m_tpPatterns[i].dwCardinality);
 		F->r(m_tpPatterns[i].dwaVariableIndexes, m_tpPatterns[i].dwCardinality * sizeof(u32));
 		u32 m_dwComplexity = 1;
-		for (int j = 0; j < (int)m_tpPatterns[i].dwCardinality; ++j)
+		for(int j = 0; j < (int)m_tpPatterns[i].dwCardinality; ++j)
 			m_dwComplexity *= m_dwaAtomicFeatureRange[m_tpPatterns[i].dwaVariableIndexes[j]];
 		m_dwParameterCount += m_dwComplexity;
 	}
@@ -119,26 +119,26 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 float CPatternFunction::ffEvaluate()
 {
 	float fResult = 0.0;
-	for (u32 i = 0; i < m_dwPatternCount; ++i)
+	for(u32 i = 0; i < m_dwPatternCount; ++i)
 		fResult += m_faParameters[dwfGetPatternIndex(m_dwaVariableValues, i)];
 	return (fResult);
 }
 
 float CPatternFunction::ffGetValue()
 {
-	for (u32 i = 0; i < m_dwVariableCount; ++i)
+	for(u32 i = 0; i < m_dwVariableCount; ++i)
 		m_dwaVariableValues[i] =
 			ef_storage().m_fpaBaseFunctions[m_dwaVariableTypes[i]]->dwfGetDiscreteValue(m_dwaAtomicFeatureRange[i]);
 
 #ifdef DEBUG
-	if (psAI_Flags.test(aiFuncs))
+	if(psAI_Flags.test(aiFuncs))
 	{
 		float value = ffEvaluate();
 		string256 caString;
 
 		int j = sprintf_s(caString, sizeof(caString), "%32s (", m_caName);
 
-		for (u32 i = 0; i < m_dwVariableCount; ++i)
+		for(u32 i = 0; i < m_dwVariableCount; ++i)
 			j += sprintf_s(caString + j, sizeof(caString) - j, " %3d", m_dwaVariableValues[i] + 1);
 
 		sprintf_s(caString + j, sizeof(caString) - j, ") = %7.2f", value);

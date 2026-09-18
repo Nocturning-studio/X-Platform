@@ -12,7 +12,8 @@
 
 class CScriptGameObject;
 
-template <typename _object_type> class CActionPlannerActionScript : public CScriptActionPlannerAction
+template <typename _object_type>
+class CActionPlannerActionScript : public CScriptActionPlannerAction
 {
   protected:
 	typedef CScriptActionPlannerAction inherited;

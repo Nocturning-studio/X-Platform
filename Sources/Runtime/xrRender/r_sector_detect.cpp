@@ -3,12 +3,12 @@
 
 int CRender::translateSector(IRender_Sector* pSector)
 {
-	if (!pSector)
+	if(!pSector)
 		return -1;
 
-	for (u32 i = 0; i < Sectors.size(); ++i)
+	for(u32 i = 0; i < Sectors.size(); ++i)
 	{
-		if (Sectors[i] == pSector)
+		if(Sectors[i] == pSector)
 			return i;
 	}
 
@@ -28,7 +28,7 @@ IRender_Sector* CRender::detectSector(const fvec3& P)
 
 	dir.set(0, -1, 0);
 	S = detectSector(P, dir);
-	if (NULL == S)
+	if(NULL == S)
 	{
 		dir.set(0, 1, 0);
 		S = detectSector(P, dir);
@@ -41,10 +41,10 @@ IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 	// Portals model
 	int id1 = -1;
 	float range1 = 500.f;
-	if (rmPortals)
+	if(rmPortals)
 	{
 		Sectors_xrc.ray_query(rmPortals, P, dir, range1);
-		if (Sectors_xrc.r_count())
+		if(Sectors_xrc.r_count())
 		{
 			CDB::RESULT* RP1 = Sectors_xrc.r_begin();
 			id1 = RP1->id;
@@ -56,7 +56,7 @@ IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 	int id2 = -1;
 	float range2 = range1;
 	Sectors_xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
-	if (Sectors_xrc.r_count())
+	if(Sectors_xrc.r_count())
 	{
 		CDB::RESULT* RP2 = Sectors_xrc.r_begin();
 		id2 = RP2->id;
@@ -65,19 +65,19 @@ IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 
 	// Select ID
 	int ID;
-	if (id1 >= 0)
+	if(id1 >= 0)
 	{
-		if (id2 >= 0)
+		if(id2 >= 0)
 			ID = (range1 <= range2 + EPS) ? id1 : id2; // both was found
 		else
 			ID = id1; // only id1 found
 	}
-	else if (id2 >= 0)
+	else if(id2 >= 0)
 		ID = id2; // only id2 found
 	else
 		return 0;
 
-	if (ID == id1)
+	if(ID == id1)
 	{
 		// Take sector, facing to our point from portal
 		CDB::TRI* pTri = rmPortals->get_tris() + ID;

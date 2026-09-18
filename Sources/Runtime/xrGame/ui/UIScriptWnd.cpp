@@ -29,7 +29,7 @@ CUIDialogWndEx::~CUIDialogWndEx()
 	{
 		delete_data(m_callbacks);
 	}
-	catch (...)
+	catch(...)
 	{
 	}
 }
@@ -49,7 +49,7 @@ void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	event_comparer_t ec(pWnd->WindowName(), msg);
 
 	CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
-	if (it == m_callbacks.end())
+	if(it == m_callbacks.end())
 		return inherited::SendMessage(pWnd, msg, pData);
 
 	((*it)->m_callback)();

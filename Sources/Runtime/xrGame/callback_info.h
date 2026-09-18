@@ -9,5 +9,5 @@ struct SCallbackInfo
 	fastdelegate::FastDelegate2<CUIWindow*, void*, void> m_cpp_callback;
 	shared_str m_controlName;
 	s16 m_event;
-	SCallbackInfo() : m_controlName(""), m_event(-1){};
+	SCallbackInfo() : m_controlName(""), m_event(-1) {};
 };

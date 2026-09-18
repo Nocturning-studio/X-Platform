@@ -29,7 +29,8 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 		u32 dwTime;
 		fvec3 vPosition;
 	};
-	union ObjectProperties {
+	union ObjectProperties
+	{
 		struct
 		{
 			u32 net_ID : 16;
@@ -295,9 +296,9 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	virtual void UpdateCL(); // Called each frame, so no need for dt
 	virtual BOOL net_Spawn(CSE_Abstract* data);
 	virtual void net_Destroy();
-	virtual void net_Export(NET_Packet& P){}; // export to server
-	virtual void net_Import(NET_Packet& P){}; // import from server
-	virtual void net_ImportInput(NET_Packet& P){};
+	virtual void net_Export(NET_Packet& P) {}; // export to server
+	virtual void net_Import(NET_Packet& P) {}; // import from server
+	virtual void net_ImportInput(NET_Packet& P) {};
 	virtual BOOL net_Relevant()
 	{
 		return FALSE;
@@ -310,7 +311,7 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 	{
 		Props.net_Local = TRUE;
 	};
-	virtual void net_Relcase(CObject* O){}; // destroy all links to another objects
+	virtual void net_Relcase(CObject* O) {}; // destroy all links to another objects
 
 	// Position stack
 	IC u32 ps_Size() const
@@ -318,10 +319,10 @@ class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, p
 		return PositionStack.size();
 	}
 	virtual SavedPosition ps_Element(u32 ID) const;
-	virtual void ForceTransform(const fmat4x4& m){};
+	virtual void ForceTransform(const fmat4x4& m) {};
 
 	// HUD
-	virtual void OnHUDDraw(CCustomHUD* hud){};
+	virtual void OnHUDDraw(CCustomHUD* hud) {};
 
 	// Active/non active
 	virtual void OnH_B_Chield(); // before

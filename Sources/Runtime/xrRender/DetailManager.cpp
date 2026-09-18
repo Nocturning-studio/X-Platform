@@ -43,10 +43,10 @@ void bwdithermap(int levels, int magic[16][16])
 	 */
 
 	float magicfact = (N - 1) / 16;
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			for (int k = 0; k < 4; k++)
-				for (int l = 0; l < 4; l++)
+	for(int i = 0; i < 4; i++)
+		for(int j = 0; j < 4; j++)
+			for(int k = 0; k < 4; k++)
+				for(int l = 0; l < 4; l++)
 					magic[4 * k + i][4 * l + j] =
 						(int)(0.5 + magic4x4[i][j] * magicfact + (magic4x4[k][l] / 16.) * magicfact);
 }
@@ -67,7 +67,8 @@ CDetailManager::CDetailManager()
 	m_vCameraPos_calc = Engine.RenderView.Position;
 	m_mFullTransform_calc = Engine.RenderView.ViewProjection;
 	hw_CurrentVB = 0;
-	for (int i = 0; i < 3; ++i) hw_InstanceVB[i] = 0;
+	for(int i = 0; i < 3; ++i)
+		hw_InstanceVB[i] = 0;
 }
 
 CDetailManager::~CDetailManager()
@@ -78,7 +79,7 @@ CDetailManager::~CDetailManager()
 void CDetailManager::Load()
 {
 	// Open file stream
-	if (!FS.exist("$level$", "level.details"))
+	if(!FS.exist("$level$", "level.details"))
 	{
 		dtFS = NULL;
 		return;
@@ -94,7 +95,7 @@ void CDetailManager::Load()
 
 	// Models
 	IReader* m_fs = dtFS->open_chunk(1);
-	for (u32 m_id = 0; m_id < m_count; m_id++)
+	for(u32 m_id = 0; m_id < m_count; m_id++)
 	{
 		CDetail* dt = xr_new<CDetail>();
 		IReader* S = m_fs->open_chunk(m_id);
@@ -111,9 +112,9 @@ void CDetailManager::Load()
 
 	// Initialize 'vis' and 'cache'
 	// === ИЗМЕНЕНИЕ: Инициализируем 2 буфера * 3 типа волн ===
-	for (u32 buf_id = 0; buf_id < 2; ++buf_id)
+	for(u32 buf_id = 0; buf_id < 2; ++buf_id)
 	{
-		for (u32 wave_id = 0; wave_id < 3; ++wave_id)
+		for(u32 wave_id = 0; wave_id < 3; ++wave_id)
 		{
 			// Ресайзим под количество уникальных объектов (моделей травы)
 			m_visibles[buf_id][wave_id].resize(objects.size());
@@ -133,7 +134,7 @@ void CDetailManager::Unload()
 {
 	hw_Unload();
 
-	for (DetailIt it = objects.begin(); it != objects.end(); it++)
+	for(DetailIt it = objects.begin(); it != objects.end(); it++)
 	{
 		(*it)->Unload();
 		xr_delete(*it);
@@ -141,9 +142,9 @@ void CDetailManager::Unload()
 	objects.clear();
 
 	// === ИЗМЕНЕНИЕ: Очистка двойного буфера ===
-	for (u32 buf_id = 0; buf_id < 2; ++buf_id)
+	for(u32 buf_id = 0; buf_id < 2; ++buf_id)
 	{
-		for (u32 wave_id = 0; wave_id < 3; ++wave_id)
+		for(u32 wave_id = 0; wave_id < 3; ++wave_id)
 		{
 			m_visibles[buf_id][wave_id].clear();
 		}
@@ -167,14 +168,14 @@ void CDetailManager::UpdateVisibility()
 
 	float max_physical_radius = float(dm_size * dm_slot_size);
 	float current_radius = ps_r_Detail_radius;
-	if (current_radius > max_physical_radius)
+	if(current_radius > max_physical_radius)
 		current_radius = max_physical_radius;
-	if (current_radius < 20.f)
+	if(current_radius < 20.f)
 		current_radius = 20.f;
 
 	float fade_limit = current_radius * current_radius;
 	float fade_range_start = current_radius - 15.f;
-	if (fade_range_start < 0)
+	if(fade_range_start < 0)
 		fade_range_start = 0;
 	float fade_start = fade_range_start * fade_range_start;
 	float fade_range = fade_limit - fade_start;
@@ -184,50 +185,50 @@ void CDetailManager::UpdateVisibility()
 
 	Engine.Statistic->RenderDUMP_DT_VIS.Begin();
 
-	for (int _mz = 0; _mz < dm_cache1_line; _mz++)
+	for(int _mz = 0; _mz < dm_cache1_line; _mz++)
 	{
-		for (int _mx = 0; _mx < dm_cache1_line; _mx++)
+		for(int _mx = 0; _mx < dm_cache1_line; _mx++)
 		{
 			CacheSlot1& MS = cache_level1[_mz][_mx];
-			if (MS.empty)
+			if(MS.empty)
 				continue;
 
 			u32 mask = 0xff;
 			u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
-			if (fcvNone == res)
+			if(fcvNone == res)
 				continue;
 
 #ifndef _EDITOR
-			if (RenderImplementation.HOM.invisible(MS.vis))
+			if(RenderImplementation.HOM.invisible(MS.vis))
 				continue;
 #endif
 
-			for (int _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
+			for(int _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
 			{
 				Slot* PS = *MS.slots[_i];
 				Slot& S = *PS;
-				if (S.empty)
+				if(S.empty)
 					continue;
 
-				if (fcvPartial == res)
+				if(fcvPartial == res)
 				{
 					u32 _mask = mask;
 					u32 _res = View.testSAABB(S.vis.sphere.P, S.vis.sphere.R, S.vis.box.data(), _mask);
-					if (fcvNone == _res)
+					if(fcvNone == _res)
 						continue;
 				}
 
 #ifndef _EDITOR
-				if (RenderImplementation.HOM.invisible(S.vis))
+				if(RenderImplementation.HOM.invisible(S.vis))
 					continue;
 #endif
 
 				float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
-				if (dist_sq > fade_limit)
+				if(dist_sq > fade_limit)
 					continue;
 
 				// === 1. ОБНОВЛЕНИЕ ПАРАМЕТРОВ (редко) ===
-				if (current_frame > S.frame)
+				if(current_frame > S.frame)
 				{
 					float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
 					float alpha_i = 1.f - alpha;
@@ -235,25 +236,25 @@ void CDetailManager::UpdateVisibility()
 
 					S.frame = current_frame + Random.randI(15, 30);
 
-					if (alpha_i > 0.01f)
+					if(alpha_i > 0.01f)
 					{
-						for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+						for(int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 						{
 							SlotPart& sp = S.G[sp_id];
-							if (sp.id == DetailSlot::ID_Empty)
+							if(sp.id == DetailSlot::ID_Empty)
 								continue;
 
 							float R = objects[sp.id]->bv_sphere.R;
 							float Rq_drcp = R * R * dist_sq_rcp;
 
-							for (auto& item : sp.items)
+							for(auto& item : sp.items)
 							{
 								item.scale_calculated = item.scale * alpha_i;
 								float screenSpaceArea = item.scale_calculated * item.scale_calculated * Rq_drcp;
 
-								if (screenSpaceArea < r_ssaDISCARD)
+								if(screenSpaceArea < r_ssaDISCARD)
 									item.vis_ID = 0xff;
-								else if (screenSpaceArea > r_ssaCHEAP)
+								else if(screenSpaceArea > r_ssaCHEAP)
 									item.vis_ID = item.vis_ID_backup;
 								else
 									item.vis_ID = 0;
@@ -263,10 +264,10 @@ void CDetailManager::UpdateVisibility()
 				}
 
 				// === 2. ЗАПОЛНЕНИЕ ДАННЫХ ДЛЯ GPU (прямо в глобальные батчи) ===
-				for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+				for(int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 				{
 					SlotPart& sp = S.G[sp_id];
-					if (sp.id == DetailSlot::ID_Empty)
+					if(sp.id == DetailSlot::ID_Empty)
 						continue;
 
 					// Прямые ссылки на батчи в буфере видимости (calc_id)
@@ -274,13 +275,13 @@ void CDetailManager::UpdateVisibility()
 					DetailBatch& batch_wave1 = m_visibles[m_vis_calc_id][DVL_Wave1][sp.id];
 					DetailBatch& batch_wave2 = m_visibles[m_vis_calc_id][DVL_Wave2][sp.id];
 
-					for (auto& Item : sp.items)
+					for(auto& Item : sp.items)
 					{
-						if (Item.scale_calculated > EPS && Item.vis_ID != 0xff)
+						if(Item.scale_calculated > EPS && Item.vis_ID != 0xff)
 						{
 							u32 v_id = (Item.vis_ID > 2) ? 0 : Item.vis_ID;
-							DetailBatch& destBatch = (v_id == DVL_Wave2) ? batch_wave2 :
-								(v_id == DVL_Wave1) ? batch_wave1 : batch_static;
+							DetailBatch& destBatch = (v_id == DVL_Wave2) ? batch_wave2 : (v_id == DVL_Wave1) ? batch_wave1
+																											 : batch_static;
 
 							destBatch.bbox.modify(Item.mRotY.c);
 
@@ -329,8 +330,8 @@ void CDetailManager::PrepareToCalc()
 	std::swap(m_vis_render_id, m_vis_calc_id);
 
 	// 2. Очистка буфера, в который будем писать
-	for (int wave = 0; wave < 3; ++wave)
-		for (u32 obj = 0; obj < objects.size(); ++obj)
+	for(int wave = 0; wave < 3; ++wave)
+		for(u32 obj = 0; obj < objects.size(); ++obj)
 			m_visibles[m_vis_calc_id][wave][obj].clear_not_free();
 
 	// 3. Захват состояния камеры для потока
@@ -345,11 +346,11 @@ void __stdcall CDetailManager::MT_CALC()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if (0 == RenderImplementation.Details)
+	if(0 == RenderImplementation.Details)
 		return;
-	if (0 == dtFS)
+	if(0 == dtFS)
 		return;
-	if (!psDeviceFlags.is(rsDetails))
+	if(!psDeviceFlags.is(rsDetails))
 		return;
 #endif
 
@@ -380,21 +381,21 @@ void CDetailManager::cache_Initialize()
 
 	// Initialize cache-grid
 	Slot* slt = cache_pool;
-	for (u32 i = 0; i < dm_cache_line; i++)
-		for (u32 j = 0; j < dm_cache_line; j++, slt++)
+	for(u32 i = 0; i < dm_cache_line; i++)
+		for(u32 j = 0; j < dm_cache_line; j++, slt++)
 		{
 			cache[i][j] = slt;
 			cache_Task(j, i, slt);
 		}
 	VERIFY(cache_Validate());
 
-	for (int _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
+	for(int _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
 	{
-		for (int _mx1 = 0; _mx1 < dm_cache1_line; _mx1++)
+		for(int _mx1 = 0; _mx1 < dm_cache1_line; _mx1++)
 		{
 			CacheSlot1& MS = cache_level1[_mz1][_mx1];
-			for (int _z = 0; _z < dm_cache1_count; _z++)
-				for (int _x = 0; _x < dm_cache1_count; _x++)
+			for(int _z = 0; _z < dm_cache1_count; _z++)
+				for(int _x = 0; _x < dm_cache1_count; _x++)
 					MS.slots[_z * dm_cache1_count + _x] =
 						&cache[_mz1 * dm_cache1_count + _z][_mx1 * dm_cache1_count + _x];
 		}
@@ -429,13 +430,13 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 	D->vis.box.max.set(D->vis.box.min.x + dm_slot_size, DS.r_ybase() + DS.r_yheight(), D->vis.box.min.z + dm_slot_size);
 	D->vis.box.grow(EPS_L);
 
-	for (u32 i = 0; i < dm_obj_in_slot; i++)
+	for(u32 i = 0; i < dm_obj_in_slot; i++)
 	{
 		D->G[i].id = DS.r_id(i);
 		D->G[i].items.clear();
 	}
 
-	if (old_type != stPending)
+	if(old_type != stPending)
 	{
 		VERIFY(stPending == D->type);
 		cache_task.push_back(D);
@@ -444,17 +445,17 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 
 BOOL CDetailManager::cache_Validate()
 {
-	for (int z = 0; z < dm_cache_line; z++)
+	for(int z = 0; z < dm_cache_line; z++)
 	{
-		for (int x = 0; x < dm_cache_line; x++)
+		for(int x = 0; x < dm_cache_line; x++)
 		{
 			int w_x = cg2w_X(x);
 			int w_z = cg2w_Z(z);
 			Slot* D = cache[z][x];
 
-			if (D->sx != w_x)
+			if(D->sx != w_x)
 				return FALSE;
-			if (D->sz != w_z)
+			if(D->sz != w_z)
 				return FALSE;
 		}
 	}
@@ -466,15 +467,15 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 	bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
 
 	// Сдвиг кеша (оставляем код сдвига)
-	while (cache_cx != v_x)
+	while(cache_cx != v_x)
 	{
-		if (v_x > cache_cx)
+		if(v_x > cache_cx)
 		{
 			cache_cx++;
-			for (int z = 0; z < dm_cache_line; z++)
+			for(int z = 0; z < dm_cache_line; z++)
 			{
 				Slot* S = cache[z][0];
-				for (int x = 1; x < dm_cache_line; x++)
+				for(int x = 1; x < dm_cache_line; x++)
 					cache[z][x - 1] = cache[z][x];
 				cache[z][dm_cache_line - 1] = S;
 				cache_Task(dm_cache_line - 1, z, S);
@@ -483,25 +484,25 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 		else
 		{
 			cache_cx--;
-			for (int z = 0; z < dm_cache_line; z++)
+			for(int z = 0; z < dm_cache_line; z++)
 			{
 				Slot* S = cache[z][dm_cache_line - 1];
-				for (int x = dm_cache_line - 1; x > 0; x--)
+				for(int x = dm_cache_line - 1; x > 0; x--)
 					cache[z][x] = cache[z][x - 1];
 				cache[z][0] = S;
 				cache_Task(0, z, S);
 			}
 		}
 	}
-	while (cache_cz != v_z)
+	while(cache_cz != v_z)
 	{
-		if (v_z > cache_cz)
+		if(v_z > cache_cz)
 		{
 			cache_cz++;
-			for (int x = 0; x < dm_cache_line; x++)
+			for(int x = 0; x < dm_cache_line; x++)
 			{
 				Slot* S = cache[dm_cache_line - 1][x];
-				for (int z = dm_cache_line - 1; z > 0; z--)
+				for(int z = dm_cache_line - 1; z > 0; z--)
 					cache[z][x] = cache[z - 1][x];
 				cache[0][x] = S;
 				cache_Task(x, 0, S);
@@ -510,10 +511,10 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 		else
 		{
 			cache_cz--;
-			for (int x = 0; x < dm_cache_line; x++)
+			for(int x = 0; x < dm_cache_line; x++)
 			{
 				Slot* S = cache[0][x];
-				for (int z = 1; z < dm_cache_line; z++)
+				for(int z = 1; z < dm_cache_line; z++)
 					cache[z - 1][x] = cache[z][x];
 				cache[dm_cache_line - 1][x] = S;
 				cache_Task(x, dm_cache_line - 1, S);
@@ -524,37 +525,37 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 	bool bTasksProcessed = !cache_task.empty();
 
 	// PPL Распаковка
-	if (bTasksProcessed)
+	if(bTasksProcessed)
 	{
-		concurrency::parallel_for(size_t(0), cache_task.size(), [&](size_t i) {
+		concurrency::parallel_for(size_t(0), cache_task.size(), [&](size_t i)
+								  {
 			xrXRC thread_local_xrc;
-			cache_Decompress(cache_task[i], thread_local_xrc);
-		});
+			cache_Decompress(cache_task[i], thread_local_xrc); });
 		cache_task.clear();
 	}
 
 	// Обновление глобального AABB (MegaUpdate)
 	// ВАЖНО: обновляем если сдвинулись ИЛИ если распаковали новые слоты
-	if (bNeedMegaUpdate || bTasksProcessed)
+	if(bNeedMegaUpdate || bTasksProcessed)
 	{
-		for (int _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
+		for(int _mz1 = 0; _mz1 < dm_cache1_line; _mz1++)
 		{
-			for (int _mx1 = 0; _mx1 < dm_cache1_line; _mx1++)
+			for(int _mx1 = 0; _mx1 < dm_cache1_line; _mx1++)
 			{
 				CacheSlot1& MS = cache_level1[_mz1][_mx1];
 				MS.empty = TRUE;
 				MS.vis.clear();
-				for (int _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
+				for(int _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
 				{
 					Slot* PS = *MS.slots[_i];
 					Slot& S = *PS;
-					if (!S.empty)
+					if(!S.empty)
 					{
 						MS.empty = FALSE;
 						MS.vis.box.merge(S.vis.box);
 					}
 				}
-				if (!MS.empty)
+				if(!MS.empty)
 					MS.vis.box.getsphere(MS.vis.sphere.P, MS.vis.sphere.R);
 			}
 		}
@@ -565,7 +566,7 @@ DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 {
 	int db_x = sx + dtH.offs_x;
 	int db_z = sz + dtH.offs_z;
-	if ((db_x >= 0) && (db_x < int(dtH.size_x)) && (db_z >= 0) && (db_z < int(dtH.size_z)))
+	if((db_x >= 0) && (db_x < int(dtH.size_x)) && (db_z >= 0) && (db_z < int(dtH.size_z)))
 	{
 		u32 linear_id = db_z * dtH.size_x + db_x;
 		return dtSlots[linear_id];
@@ -588,14 +589,14 @@ void CDetailManager::InvalidateCache()
 	cache_task.clear();
 
 	// Очистка всех слотов и перезапуск их декомпрессии
-	for (int z = 0; z < dm_cache_line; z++)
+	for(int z = 0; z < dm_cache_line; z++)
 	{
-		for (int x = 0; x < dm_cache_line; x++)
+		for(int x = 0; x < dm_cache_line; x++)
 		{
 			Slot* S = cache[z][x];
-			if (S->type != stPending && !S->empty)
+			if(S->type != stPending && !S->empty)
 			{
-				for (u32 i = 0; i < dm_obj_in_slot; i++)
+				for(u32 i = 0; i < dm_obj_in_slot; i++)
 				{
 					S->G[i].items.clear();
 					// r_items удалены, больше ничего не чистим здесь
@@ -605,7 +606,7 @@ void CDetailManager::InvalidateCache()
 
 			int gx = w2cg_X(S->sx);
 			int gz = w2cg_Z(S->sz);
-			if (gx >= 0 && gx < dm_cache_line && gz >= 0 && gz < dm_cache_line)
+			if(gx >= 0 && gx < dm_cache_line && gz >= 0 && gz < dm_cache_line)
 			{
 				cache_Task(gx, gz, S);
 			}
@@ -613,9 +614,9 @@ void CDetailManager::InvalidateCache()
 	}
 
 	// Сброс видимости 1 уровня
-	for (int mz = 0; mz < dm_cache1_line; mz++)
+	for(int mz = 0; mz < dm_cache1_line; mz++)
 	{
-		for (int mx = 0; mx < dm_cache1_line; mx++)
+		for(int mx = 0; mx < dm_cache1_line; mx++)
 		{
 			cache_level1[mz][mx].empty = TRUE;
 			cache_level1[mz][mx].vis.clear();
@@ -623,11 +624,11 @@ void CDetailManager::InvalidateCache()
 	}
 
 	// Очистка централизованных буферов видимости (оба буфера, все волны)
-	for (int buf = 0; buf < 2; ++buf)
+	for(int buf = 0; buf < 2; ++buf)
 	{
-		for (int wave = 0; wave < 3; ++wave)
+		for(int wave = 0; wave < 3; ++wave)
 		{
-			for (u32 obj_id = 0; obj_id < m_visibles[buf][wave].size(); ++obj_id)
+			for(u32 obj_id = 0; obj_id < m_visibles[buf][wave].size(); ++obj_id)
 			{
 				m_visibles[buf][wave][obj_id].clear_not_free();
 			}
@@ -688,7 +689,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	VERIFY(S);
 	Slot& D = *S;
 	D.type = stReady;
-	if (D.empty)
+	if(D.empty)
 		return;
 
 	DetailSlot& DS = QueryDB(D.sx, D.sz);
@@ -706,12 +707,12 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	fvec3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 #endif
 
-	if (0 == triCount)
+	if(0 == triCount)
 		return;
 
 	float alpha255[dm_obj_in_slot][4];
 	const float k_alpha = 255.f / 15.f;
-	for (int i = 0; i < dm_obj_in_slot; i++)
+	for(int i = 0; i < dm_obj_in_slot; i++)
 	{
 		alpha255[i][0] = k_alpha * float(DS.palette[i].a0);
 		alpha255[i][1] = k_alpha * float(DS.palette[i].a1);
@@ -743,7 +744,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	u32 cached_tris_count = _min(triCount, MAX_TRIS_CACHE);
 
 #ifndef _EDITOR
-	for (u32 t = 0; t < cached_tris_count; ++t)
+	for(u32 t = 0; t < cached_tris_count; ++t)
 	{
 		CDB::TRI& T = tris[local_xrc.r_begin()[t].id];
 		t_cache[t].v0 = verts[T.verts[0]];
@@ -756,19 +757,19 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	}
 #endif
 
-	for (u32 z = 0; z <= d_size; z++)
+	for(u32 z = 0; z <= d_size; z++)
 	{
 		float fz = float(z) * inv_d_size;
 		float rz_base = fz * dm_slot_size + D.vis.box.min.z;
 		float ify = 1.f - fz;
 		float c_y_0[4], c_y_1[4];
-		for (int i = 0; i < 4; ++i)
+		for(int i = 0; i < 4; ++i)
 		{
 			c_y_0[i] = alpha255[i][0] * ify + alpha255[i][2] * fz;
 			c_y_1[i] = alpha255[i][1] * ify + alpha255[i][3] * fz;
 		}
 
-		for (u32 x = 0; x <= d_size; x++)
+		for(u32 x = 0; x <= d_size; x++)
 		{
 			float fx = float(x) * inv_d_size;
 			float ifx = 1.f - fx;
@@ -779,16 +780,16 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			int dither_val = dither[d_col][d_row];
 
 			selected.clear();
-			if (DS.id0 != DetailSlot::ID_Empty && (int(ifx * c_y_0[0] + fx * c_y_1[0] + 0.5f) > dither_val))
+			if(DS.id0 != DetailSlot::ID_Empty && (int(ifx * c_y_0[0] + fx * c_y_1[0] + 0.5f) > dither_val))
 				selected.push_back(0);
-			if (DS.id1 != DetailSlot::ID_Empty && (int(ifx * c_y_0[1] + fx * c_y_1[1] + 0.5f) > dither_val))
+			if(DS.id1 != DetailSlot::ID_Empty && (int(ifx * c_y_0[1] + fx * c_y_1[1] + 0.5f) > dither_val))
 				selected.push_back(1);
-			if (DS.id2 != DetailSlot::ID_Empty && (int(ifx * c_y_0[2] + fx * c_y_1[2] + 0.5f) > dither_val))
+			if(DS.id2 != DetailSlot::ID_Empty && (int(ifx * c_y_0[2] + fx * c_y_1[2] + 0.5f) > dither_val))
 				selected.push_back(2);
-			if (DS.id3 != DetailSlot::ID_Empty && (int(ifx * c_y_0[3] + fx * c_y_1[3] + 0.5f) > dither_val))
+			if(DS.id3 != DetailSlot::ID_Empty && (int(ifx * c_y_0[3] + fx * c_y_1[3] + 0.5f) > dither_val))
 				selected.push_back(3);
 
-			if (selected.empty())
+			if(selected.empty())
 				continue;
 
 			u32 index = (selected.size() == 1) ? selected[0] : selected[r_selection.randI(selected.size())];
@@ -806,24 +807,24 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			dir.set(0, -1, 0);
 			float r_u, r_v, r_range;
 
-			for (u32 tid = 0; tid < cached_tris_count; tid++)
+			for(u32 tid = 0; tid < cached_tris_count; tid++)
 			{
 				TriCache& TC = t_cache[tid];
-				if (Item_P.x < TC.min_x || Item_P.x > TC.max_x || Item_P.z < TC.min_z || Item_P.z > TC.max_z)
+				if(Item_P.x < TC.min_x || Item_P.x > TC.max_x || Item_P.z < TC.min_z || Item_P.z > TC.max_z)
 					continue;
 				fvec3 Tv[3] = {TC.v0, TC.v1, TC.v2};
-				if (CDB::TestRayTri(Item_P, dir, Tv, r_u, r_v, r_range, TRUE))
+				if(CDB::TestRayTri(Item_P, dir, Tv, r_u, r_v, r_range, TRUE))
 				{
-					if (r_range >= 0)
+					if(r_range >= 0)
 					{
 						float y_test = Item_P.y - r_range;
-						if (y_test > y)
+						if(y_test > y)
 							y = y_test;
 					}
 				}
 			}
 
-			if (y < D.vis.box.min.y)
+			if(y < D.vis.box.min.y)
 				continue;
 
 			Item_P.y = y - 0.17f; // Высота
@@ -843,7 +844,7 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 			Item.c_hemi = DS.r_qclr(DS.c_hemi, 15);
 			Item.c_sun = DS.r_qclr(DS.c_dir, 15);
 
-			if (Dobj->m_Flags.is(DO_NO_WAVING))
+			if(Dobj->m_Flags.is(DO_NO_WAVING))
 				Item.vis_ID = 0;
 			else
 				Item.vis_ID = (::Random.randI(0, 3) == 0) ? 2 : 1;

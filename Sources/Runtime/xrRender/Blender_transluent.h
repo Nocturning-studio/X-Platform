@@ -46,7 +46,7 @@ class CBlender_transluent : public IBlender
 	void Load(IReader& fs, u16 version)
 	{
 		IBlender::Load(fs, version);
-		if (1 == version)
+		if(1 == version)
 		{
 			xrPREAD_PROP(fs, xrPID_INTEGER, oAREF);
 			xrPREAD_PROP(fs, xrPID_BOOL, oBlend);
@@ -57,13 +57,13 @@ class CBlender_transluent : public IBlender
 	{
 		IBlender::Compile(C);
 
-		if (oBlend.value)
+		if(oBlend.value)
 		{
-			switch (C.iElement)
+			switch(C.iElement)
 			{
 			case SE_NORMAL_HQ:
 			case SE_NORMAL_LQ:
-				if (lmapped)
+				if(lmapped)
 				{
 					C.begin_Pass("alpha_blend_lightmap_lighted", "alpha_blend_lightmap_lighted", "main", "main", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 					C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
@@ -89,7 +89,7 @@ class CBlender_transluent : public IBlender
 
 			// codepath is the same, only the shaders differ
 			// ***only pixel shaders differ***
-			switch (C.iElement)
+			switch(C.iElement)
 			{
 			case SE_NORMAL_HQ: // deffer
 				configure_shader(C, true, "static_mesh", "static_mesh", true);

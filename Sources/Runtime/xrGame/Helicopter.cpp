@@ -22,7 +22,7 @@ CHelicopter::CHelicopter()
 	m_lanim = NULL;
 
 	ISpatial* self = smart_cast<ISpatial*>(this);
-	if (self)
+	if(self)
 		self->spatial.type |= STYPE_VISIBLEFORAI;
 
 	m_movement.parent = this;
@@ -145,11 +145,11 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 	m_ready_explode = false;
 	m_dead = false;
 
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	CPHSkeleton::Spawn((CSE_Abstract*)(DC));
-	for (u32 i = 0; i < 4; ++i)
+	for(u32 i = 0; i < 4; ++i)
 		CRocketLauncher::SpawnRocket(*m_sRocketSection, smart_cast<CGameObject*>(this));
 
 	// assigning m_animator here
@@ -176,13 +176,13 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 
 	LPCSTR s = pUserData->r_string("helicopter_definition", "hit_section");
 
-	if (pUserData->section_exist(s))
+	if(pUserData->section_exist(s))
 	{
 		int lc = pUserData->line_count(s);
 		LPCSTR name;
 		LPCSTR value;
 		s16 boneID;
-		for (int i = 0; i < lc; ++i)
+		for(int i = 0; i < lc; ++i)
 		{
 			pUserData->r_line(s, i, &name, &value);
 			boneID = K->LL_BoneID(name);
@@ -211,7 +211,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 	m_bind_y.set(matrices[m_rotate_y_bone].c);
 
 	CKinematicsAnimated* A = smart_cast<CKinematicsAnimated*>(Visual());
-	if (A)
+	if(A)
 	{
 		A->PlayCycle(*heli->startup_animation);
 		A->CalculateBones();
@@ -234,10 +234,10 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 	m_light_render->set_range(m_light_range);
 	m_light_render->set_color(m_light_color);
 
-	if (g_Alive())
+	if(g_Alive())
 		processing_activate();
 	TurnEngineSound(false);
-	if (pUserData->section_exist("destroyed"))
+	if(pUserData->section_exist("destroyed"))
 		CPHDestroyable::Load(pUserData, "destroyed");
 #ifdef DEBUG
 	Engine.Events.Render.Add(this, REG_PRIORITY_LOW - 1);
@@ -268,7 +268,7 @@ void CHelicopter::SpawnInitPhysics(CSE_Abstract* D)
 {
 
 	PPhysicsShell() = P_build_Shell(this, false);
-	if (g_Alive())
+	if(g_Alive())
 	{
 		PPhysicsShell()->EnabledCallbacks(FALSE);
 		PPhysicsShell()->set_ObjectContactCallback(CollisionCallbackAlife);
@@ -290,7 +290,7 @@ void CHelicopter::MoveStep()
 	fvec3 dir, pathDir;
 	float desired_H = m_movement.currPathH;
 	float desired_P;
-	if (m_movement.type != eMovNone)
+	if(m_movement.type != eMovNone)
 	{
 
 		float dist = m_movement.currP.distance_to(m_movement.desiredPoint);
@@ -302,7 +302,7 @@ void CHelicopter::MoveStep()
 		float speed_ = _min(m_movement.GetSpeedInDestPoint(), GetMaxVelocity());
 
 		static float ang = pSettings->r_float(cNameSect(), "magic_angle");
-		if (m_movement.curLinearSpeed > GetMaxVelocity() || angle_difference(m_movement.currPathH, desired_H) > ang)
+		if(m_movement.curLinearSpeed > GetMaxVelocity() || angle_difference(m_movement.currPathH, desired_H) > ang)
 			m_movement.curLinearAcc = -m_movement.LinearAcc_bk;
 		else
 			m_movement.curLinearAcc = GetCurrAcc(m_movement.curLinearSpeed, speed_, dist * 0.95f,
@@ -317,15 +317,15 @@ void CHelicopter::MoveStep()
 		m_movement.currP.mad(dir, vp);
 		m_movement.curLinearSpeed += m_movement.curLinearAcc * STEP;
 		static bool aaa = false;
-		if (aaa)
+		if(aaa)
 			Log("1-m_movement.curLinearSpeed=", m_movement.curLinearSpeed);
 		clamp(m_movement.curLinearSpeed, 0.0f, 1000.0f);
-		if (aaa)
+		if(aaa)
 			Log("2-m_movement.curLinearSpeed=", m_movement.curLinearSpeed);
 	}
 	else
 	{ // go stopping
-		if (!fis_zero(m_movement.curLinearSpeed))
+		if(!fis_zero(m_movement.curLinearSpeed))
 		{
 			m_movement.curLinearAcc = -m_movement.LinearAcc_bk;
 
@@ -344,7 +344,7 @@ void CHelicopter::MoveStep()
 		}
 	};
 
-	if (m_body.b_looking_at_point)
+	if(m_body.b_looking_at_point)
 	{
 		fvec3 desired_dir;
 		desired_dir.sub(m_body.looking_point, m_movement.currP).normalize_safe();
@@ -361,7 +361,7 @@ void CHelicopter::MoveStep()
 	}
 
 	float needBodyP = -m_body.model_pitch_k * m_movement.curLinearSpeed;
-	if (m_movement.curLinearAcc < 0)
+	if(m_movement.curLinearAcc < 0)
 		needBodyP *= -1;
 	angle_lerp(m_body.currBodyHPB.y, needBodyP, m_body.model_angSpeedPitch, STEP);
 
@@ -383,7 +383,7 @@ void CHelicopter::UpdateCL()
 {
 	inherited::UpdateCL();
 	CExplosive::UpdateCL();
-	if (PPhysicsShell() && (state() == CHelicopter::eDead))
+	if(PPhysicsShell() && (state() == CHelicopter::eDead))
 	{
 
 		PPhysicsShell()->InterpolateGlobalTransform(&Transform());
@@ -393,7 +393,7 @@ void CHelicopter::UpdateCL()
 		// smoke
 		UpdateHeliParticles();
 
-		if (m_brokenSound._feedback())
+		if(m_brokenSound._feedback())
 			m_brokenSound.set_position(Transform().c);
 
 		return;
@@ -404,14 +404,14 @@ void CHelicopter::UpdateCL()
 	m_movement.Update();
 
 	m_stepRemains += Engine.TimeManager.GetDeltaTime();
-	while (m_stepRemains > STEP)
+	while(m_stepRemains > STEP)
 	{
 		MoveStep();
 		m_stepRemains -= STEP;
 	}
 
 #ifdef DEBUG
-	if (bDebug)
+	if(bDebug)
 	{
 		CGameFont* F = UI()->Font()->pFontDI;
 		F->SetAligment(CGameFont::alCenter);
@@ -423,7 +423,7 @@ void CHelicopter::UpdateCL()
 	}
 #endif
 
-	if (m_engineSound._feedback())
+	if(m_engineSound._feedback())
 		m_engineSound.set_position(Transform().c);
 
 	m_enemy.Update();
@@ -437,21 +437,21 @@ void CHelicopter::UpdateCL()
 
 void CHelicopter::shedule_Update(u32 time_delta)
 {
-	if (!getEnabled())
+	if(!getEnabled())
 		return;
 
 	inherited::shedule_Update(time_delta);
-	if (CPHDestroyable::Destroyed())
+	if(CPHDestroyable::Destroyed())
 		CPHDestroyable::SheduleUpdate(time_delta);
 	else
 		CPHSkeleton::Update(time_delta);
 
-	if (state() != CHelicopter::eDead)
+	if(state() != CHelicopter::eDead)
 	{
-		for (u32 i = getRocketCount(); i < 4; ++i)
+		for(u32 i = getRocketCount(); i < 4; ++i)
 			CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
 	}
-	if (m_ready_explode)
+	if(m_ready_explode)
 		ExplodeHelicopter();
 }
 

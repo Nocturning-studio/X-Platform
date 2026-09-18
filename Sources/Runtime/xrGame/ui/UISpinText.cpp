@@ -16,7 +16,7 @@ void CUISpinText::AddItem_(const char* item, int id)
 	_info._id = id;
 
 	m_list.push_back(_info);
-	if (-1 == m_curItem)
+	if(-1 == m_curItem)
 	{
 		m_curItem = 0;
 		SetItem();
@@ -39,15 +39,15 @@ void CUISpinText::SetCurrentValue()
 {
 	xr_token* tok = GetOptToken();
 
-	while (tok->name)
+	while(tok->name)
 	{
 		AddItem_(tok->name, tok->id);
 		tok++;
 	}
 	xr_string val = GetOptTokenValue();
 
-	for (u32 i = 0; i < m_list.size(); i++)
-		if (val == m_list[i]._orig.c_str())
+	for(u32 i = 0; i < m_list.size(); i++)
+		if(val == m_list[i]._orig.c_str())
 		{
 			m_curItem = i;
 			break;
@@ -69,7 +69,7 @@ bool CUISpinText::IsChanged()
 
 void CUISpinText::OnBtnUpClick()
 {
-	if (CanPressUp())
+	if(CanPressUp())
 	{
 		m_curItem++;
 		SetItem();
@@ -80,7 +80,7 @@ void CUISpinText::OnBtnUpClick()
 
 void CUISpinText::OnBtnDownClick()
 {
-	if (CanPressDown())
+	if(CanPressDown())
 	{
 		m_curItem--;
 		SetItem();

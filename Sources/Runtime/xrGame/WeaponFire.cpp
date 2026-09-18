@@ -21,15 +21,15 @@ float _nrand(float sigma)
 {
 #define ONE_OVER_SIGMA_EXP (1.0f / 0.7975f)
 
-	if (sigma == 0)
+	if(sigma == 0)
 		return 0;
 
 	float y;
 	do
 	{
 		y = -logf(Random.randF());
-	} while (Random.randF() > expf(-_sqr(y - 1.0f) * 0.5f));
-	if (rand() & 0x1)
+	} while(Random.randF() > expf(-_sqr(y - 1.0f) * 0.5f));
+	if(rand() & 0x1)
 		return y * sigma * ONE_OVER_SIGMA_EXP;
 	else
 		return -y * sigma * ONE_OVER_SIGMA_EXP;
@@ -63,7 +63,7 @@ void CWeapon::FireTrace(const fvec3& P, const fvec3& D)
 	VERIFY(u16(-1) != l_cartridge.bullet_material_idx);
 	//-------------------------------------------------------------
 	l_cartridge.m_flags.set(CCartridge::cfTracer, (m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
-	if (m_u8TracerColorID != u8(-1))
+	if(m_u8TracerColorID != u8(-1))
 		l_cartridge.m_u8ColorID = m_u8TracerColorID;
 	//-------------------------------------------------------------
 	// повысить изношенность оружия с учетом влияния конкретного патрона
@@ -75,14 +75,14 @@ void CWeapon::FireTrace(const fvec3& P, const fvec3& D)
 
 	bool SendHit = SendHitAllowed(H_Parent());
 	// выстерлить пулю (с учетом возможной стрельбы дробью)
-	for (int i = 0; i < l_cartridge.m_buckShot; ++i)
+	for(int i = 0; i < l_cartridge.m_buckShot; ++i)
 	{
 		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
 	}
 
 	StartShotParticles();
 
-	if (m_bLightShotEnabled)
+	if(m_bLightShotEnabled)
 		Light_Start();
 
 	// Ammo
@@ -100,7 +100,7 @@ void CWeapon::Fire2Start()
 void CWeapon::Fire2End()
 {
 	// принудительно останавливать зацикленные партиклы
-	if (m_pFlameParticles2 && m_pFlameParticles2->IsLooped())
+	if(m_pFlameParticles2 && m_pFlameParticles2->IsLooped())
 		StopFlameParticles2();
 
 	bWorking2 = false;
@@ -111,7 +111,7 @@ void CWeapon::StopShooting()
 	m_bPending = true;
 
 	// принудительно останавливать зацикленные партиклы
-	if (m_pFlameParticles && m_pFlameParticles->IsLooped())
+	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
 		StopFlameParticles();
 
 	SwitchState(eIdle);
@@ -136,6 +136,6 @@ void CWeapon::StopFlameParticles2()
 }
 void CWeapon::UpdateFlameParticles2()
 {
-	if (m_pFlameParticles2)
+	if(m_pFlameParticles2)
 		CShootingObject::UpdateParticles(m_pFlameParticles2, get_LastFP2());
 }

@@ -67,7 +67,7 @@ class CPHWorld : public pureFrame
 	u16 disable_count;
 	float m_gravity;
 	CPHWorld();
-	virtual ~CPHWorld(){};
+	virtual ~CPHWorld() {};
 
 	// IC	dSpaceID					GetSpace						()			{return Space;}	;
 	IC bool Exist()

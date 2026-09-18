@@ -12,23 +12,23 @@ using namespace collide;
 
 void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
 {
-	if (!Engine.IsLoaded())
+	if(!Engine.IsLoaded())
 		return;
-	if (!S)
+	if(!S)
 		return;
-	if (S->g_object && S->g_object->getDestroy())
+	if(S->g_object && S->g_object->getDestroy())
 	{
 		S->g_object = 0;
 		return;
 	}
-	if (0 == S->feedback)
+	if(0 == S->feedback)
 		return;
 
 	clamp(range, 0.1f, 500.f);
 
 	const CSound_params* p = S->feedback->get_params();
 	fvec3 snd_position = p->position;
-	if (S->feedback->is_2D())
+	if(S->feedback->is_2D())
 	{
 		snd_position.add(Sound->listener_position());
 	}
@@ -46,31 +46,31 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
 	// Iterate
 	xr_vector<ISpatial*>::iterator it = snd_ER.begin();
 	xr_vector<ISpatial*>::iterator end = snd_ER.end();
-	for (; it != end; it++)
+	for(; it != end; it++)
 	{
 		Feel::Sound* L = (*it)->dcast_FeelSound();
-		if (0 == L)
+		if(0 == L)
 			continue;
 		CObject* CO = (*it)->dcast_CObject();
 		VERIFY(CO);
-		if (CO->getDestroy())
+		if(CO->getDestroy())
 			continue;
 
 		// Energy and signal
 		VERIFY(_valid((*it)->spatial.sphere.P));
 		float dist = snd_position.distance_to((*it)->spatial.sphere.P);
-		if (dist > p->max_ai_distance)
+		if(dist > p->max_ai_distance)
 			continue;
 		VERIFY(_valid(dist));
 		VERIFY2(!fis_zero(p->max_ai_distance), S->handle->file_name());
 		float Power = (1.f - dist / p->max_ai_distance) * p->volume;
 		VERIFY(_valid(Power));
-		if (Power > EPS_S)
+		if(Power > EPS_S)
 		{
 			float occ = Sound->get_occlusion_to((*it)->spatial.sphere.P, snd_position);
 			VERIFY(_valid(occ));
 			Power *= occ;
-			if (Power > EPS_S)
+			if(Power > EPS_S)
 			{
 				_esound_delegate D = {L, S, Power};
 				snd_Events.push_back(D);
@@ -82,11 +82,11 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
 
 void IGame_Level::SoundEvent_Dispatch()
 {
-	while (!snd_Events.empty())
+	while(!snd_Events.empty())
 	{
 		_esound_delegate& D = snd_Events.back();
 		VERIFY(D.dest && D.source);
-		if (D.source->feedback)
+		if(D.source->feedback)
 		{
 			D.dest->feel_sound_new(D.source->g_object, D.source->g_type, D.source->g_userdata,
 								   D.source->feedback->get_params()->position, D.power);
@@ -97,7 +97,7 @@ void IGame_Level::SoundEvent_Dispatch()
 
 void __stdcall _sound_event(ref_sound_data_ptr S, float range)
 {
-	if (g_pGameLevel && S && S->feedback)
+	if(g_pGameLevel && S && S->feedback)
 		g_pGameLevel->SoundEvent_Register(S, range);
 }
 
@@ -146,15 +146,15 @@ IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const fvec3& poi
 	// Iterate
 	xr_vector<ISpatial*>::iterator it = r_spatial.begin();
 	xr_vector<ISpatial*>::iterator end = r_spatial.end();
-	for (; it != end; it++)
+	for(; it != end; it++)
 	{
 		CObject* O = (*it)->dcast_CObject();
-		if (0 == O)
+		if(0 == O)
 			continue;
-		if (O == ignore_object)
+		if(O == ignore_object)
 			continue;
 		Fsphere mS = {O->spatial.sphere.P, O->spatial.sphere.R};
-		if (Q.intersect(mS))
+		if(Q.intersect(mS))
 			q_nearest.push_back(O);
 	}
 
@@ -199,7 +199,7 @@ void CObjectSpace::dbgRender()
 	R_ASSERT(bDebug);
 
 	RenderBackend.set_Shader(sh_debug);
-	for (u32 i = 0; i < q_debug.boxes.size(); i++)
+	for(u32 i = 0; i < q_debug.boxes.size(); i++)
 	{
 		Fobb& obb = q_debug.boxes[i];
 		fmat4x4 X, S, R;
@@ -211,7 +211,7 @@ void CObjectSpace::dbgRender()
 	}
 	q_debug.boxes.clear();
 
-	for (u32 i = 0; i < dbg_S.size(); i++)
+	for(u32 i = 0; i < dbg_S.size(); i++)
 	{
 		std::pair<Fsphere, u32>& P = dbg_S[i];
 		Fsphere& S = P.first;

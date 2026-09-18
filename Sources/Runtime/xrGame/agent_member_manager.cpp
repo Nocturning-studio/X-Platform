@@ -40,7 +40,7 @@ CAgentMemberManager::~CAgentMemberManager()
 void CAgentMemberManager::add(CEntity* member)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(member);
-	if (!stalker || !stalker->g_Alive())
+	if(!stalker || !stalker->g_Alive())
 		return;
 
 	VERIFY2(sizeof(squad_mask_type) * 8 > members().size(),
@@ -56,10 +56,10 @@ void CAgentMemberManager::add(CEntity* member)
 void CAgentMemberManager::remove(CEntity* member)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(member);
-	if (!stalker)
+	if(!stalker)
 		return;
 
-	if (registered_in_combat(stalker))
+	if(registered_in_combat(stalker))
 		unregister_in_combat(stalker);
 
 	squad_mask_type m = mask(stalker);
@@ -80,20 +80,20 @@ void CAgentMemberManager::remove_links(CObject* object)
 {
 	MEMBER_STORAGE::iterator I = m_members.begin();
 	MEMBER_STORAGE::iterator E = m_members.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((*I)->grenade_reaction().m_grenade)
+		if((*I)->grenade_reaction().m_grenade)
 		{
 			const CGameObject* explosive = smart_cast<const CGameObject*>((*I)->grenade_reaction().m_grenade);
 			VERIFY(explosive);
-			if (explosive->ID() == object->ID())
+			if(explosive->ID() == object->ID())
 				(*I)->grenade_reaction().clear();
 		}
 
-		if ((*I)->grenade_reaction().m_game_object && ((*I)->grenade_reaction().m_game_object->ID() == object->ID()))
+		if((*I)->grenade_reaction().m_game_object && ((*I)->grenade_reaction().m_game_object->ID() == object->ID()))
 			(*I)->grenade_reaction().clear();
 
-		if ((*I)->member_death_reaction().m_member && ((*I)->member_death_reaction().m_member->ID() == object->ID()))
+		if((*I)->member_death_reaction().m_member && ((*I)->member_death_reaction().m_member->ID() == object->ID()))
 			(*I)->member_death_reaction().clear();
 	}
 }
@@ -147,7 +147,7 @@ bool CAgentMemberManager::registered_in_combat(const CAI_Stalker* object) const
 
 CAgentMemberManager::MEMBER_STORAGE& CAgentMemberManager::combat_members()
 {
-	if (m_actuality)
+	if(m_actuality)
 		return (m_combat_members);
 
 	m_actuality = true;
@@ -155,9 +155,9 @@ CAgentMemberManager::MEMBER_STORAGE& CAgentMemberManager::combat_members()
 	m_combat_members.clear();
 	MEMBER_STORAGE::iterator I = members().begin();
 	MEMBER_STORAGE::iterator E = members().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (registered_in_combat(&(*I)->object()))
+		if(registered_in_combat(&(*I)->object()))
 			m_combat_members.push_back(*I);
 	}
 
@@ -170,9 +170,9 @@ CAgentMemberManager::squad_mask_type CAgentMemberManager::non_combat_members_mas
 
 	MEMBER_STORAGE::const_iterator I = members().begin();
 	MEMBER_STORAGE::const_iterator E = members().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!registered_in_combat(&(*I)->object()))
+		if(!registered_in_combat(&(*I)->object()))
 			result |= mask(&(*I)->object());
 	}
 
@@ -184,8 +184,8 @@ u32 CAgentMemberManager::in_detour() const
 	u32 in_detour = 0;
 	MEMBER_STORAGE::const_iterator I = members().begin();
 	MEMBER_STORAGE::const_iterator E = members().end();
-	for (; I != E; ++I)
-		if ((*I)->detour())
+	for(; I != E; ++I)
+		if((*I)->detour())
 			++in_detour;
 
 	return (in_detour);
@@ -201,8 +201,8 @@ bool CAgentMemberManager::cover_detouring() const
 {
 	MEMBER_STORAGE::const_iterator I = members().begin();
 	MEMBER_STORAGE::const_iterator E = members().end();
-	for (; I != E; ++I)
-		if ((*I)->detour())
+	for(; I != E; ++I)
+		if((*I)->detour())
 			return (true);
 	return (false);
 }
@@ -211,12 +211,12 @@ bool CAgentMemberManager::can_cry_noninfo_phrase() const
 {
 	MEMBER_STORAGE::const_iterator I = members().begin();
 	MEMBER_STORAGE::const_iterator E = members().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!registered_in_combat(&(*I)->object()))
+		if(!registered_in_combat(&(*I)->object()))
 			continue;
 
-		if ((*I)->object().sound().active_sound_count(false))
+		if((*I)->object().sound().active_sound_count(false))
 			return (false);
 	}
 
@@ -233,7 +233,7 @@ MemorySpace::squad_mask_type CAgentMemberManager::mask(const ALife::_OBJECT_ID& 
 CMemberOrder* CAgentMemberManager::get_member(const ALife::_OBJECT_ID& object_id)
 {
 	iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
-	if (I == members().end())
+	if(I == members().end())
 		return (0);
 
 	return (&**I);

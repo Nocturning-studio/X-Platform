@@ -25,14 +25,14 @@ void CStateMonsterTestStateAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateCustom)
+	if(current_substate == eStateCustom)
 	{
 		SStateDataMoveToPointEx data;
 
 		fvec3 dest_pos = Level().CurrentEntity()->Position();
 		dest_pos = random_position(dest_pos, 20.f);
 
-		if (!object->control().path_builder().restrictions().accessible(dest_pos))
+		if(!object->control().path_builder().restrictions().accessible(dest_pos))
 		{
 			data.vertex = object->control().path_builder().restrictions().accessible_nearest(dest_pos, data.point);
 		}
@@ -77,21 +77,21 @@ void CStateMonsterTestCoverAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterTestCoverAbstract::check_force_state()
 {
-	if (m_last_node != object->m_target_node)
+	if(m_last_node != object->m_target_node)
 	{
 		m_last_node = object->m_target_node;
 		current_substate = u32(-1);
 		return;
 	}
 
-	if (current_substate == eStateAttack_CampInCover)
-		if (object->ai_location().level_vertex_id() != m_last_node)
+	if(current_substate == eStateAttack_CampInCover)
+		if(object->ai_location().level_vertex_id() != m_last_node)
 			current_substate = u32(-1);
 }
 TEMPLATE_SPECIALIZATION
 void CStateMonsterTestCoverAbstract::reselect_state()
 {
-	if (object->ai_location().level_vertex_id() != m_last_node)
+	if(object->ai_location().level_vertex_id() != m_last_node)
 		select_state(eStateAttack_HideInCover);
 	else
 		select_state(eStateAttack_CampInCover);
@@ -102,7 +102,7 @@ void CStateMonsterTestCoverAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateAttack_HideInCover)
+	if(current_substate == eStateAttack_HideInCover)
 	{
 		SStateDataMoveToPointEx data;
 		data.vertex = m_last_node;
@@ -121,7 +121,7 @@ void CStateMonsterTestCoverAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateAttack_CampInCover)
+	if(current_substate == eStateAttack_CampInCover)
 	{
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;

@@ -38,7 +38,7 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 	m_kAP = READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
 	m_u8ColorID = READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
 
-	if (pSettings->line_exist(section, "k_air_resistance"))
+	if(pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes = pSettings->r_float(section, "k_air_resistance");
 	else
 		m_kAirRes = pSettings->r_float(BULLET_MANAGER_SECTION, "air_resistance_k");
@@ -49,10 +49,10 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 	fWallmarkSize = pSettings->r_float(section, "wm_size");
 
 	m_flags.set(cfCanBeUnlimited | cfRicochet, TRUE);
-	if (pSettings->line_exist(section, "can_be_unlimited"))
+	if(pSettings->line_exist(section, "can_be_unlimited"))
 		m_flags.set(cfCanBeUnlimited, pSettings->r_bool(section, "can_be_unlimited"));
 
-	if (pSettings->line_exist(section, "explosive"))
+	if(pSettings->line_exist(section, "explosive"))
 		m_flags.set(cfExplosive, pSettings->r_bool(section, "explosive"));
 
 	bullet_material_idx = GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
@@ -84,7 +84,7 @@ void CWeaponAmmo::Load(LPCSTR section)
 	m_kAP = READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
 	m_u8ColorID = READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
 
-	if (pSettings->line_exist(section, "k_air_resistance"))
+	if(pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes = pSettings->r_float(section, "k_air_resistance");
 	else
 		m_kAirRes = pSettings->r_float(BULLET_MANAGER_SECTION, "air_resistance_k");
@@ -105,7 +105,7 @@ BOOL CWeaponAmmo::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeItemAmmo* l_pW = smart_cast<CSE_ALifeItemAmmo*>(e);
 	m_boxCurr = l_pW->a_elapsed;
 
-	if (m_boxCurr > m_boxSize)
+	if(m_boxCurr > m_boxSize)
 		l_pW->a_elapsed = m_boxCurr = m_boxSize;
 
 	return bResult;
@@ -123,10 +123,10 @@ void CWeaponAmmo::OnH_B_Chield()
 
 void CWeaponAmmo::OnH_B_Independent(bool just_before_destroy)
 {
-	if (!Useful())
+	if(!Useful())
 	{
 
-		if (Local())
+		if(Local())
 		{
 			DestroyObject();
 		}
@@ -154,7 +154,7 @@ s32 CWeaponAmmo::Sort(PIItem pIItem)
 */
 bool CWeaponAmmo::Get(CCartridge& cartridge)
 {
-	if (!m_boxCurr)
+	if(!m_boxCurr)
 		return false;
 	cartridge.m_ammoSect = cNameSect();
 	cartridge.m_kDist = m_kDist;
@@ -172,14 +172,14 @@ bool CWeaponAmmo::Get(CCartridge& cartridge)
 	cartridge.bullet_material_idx = GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
 	cartridge.m_InvShortName = NameShort();
 	--m_boxCurr;
-	if (m_pCurrentInventory)
+	if(m_pCurrentInventory)
 		m_pCurrentInventory->InvalidateState();
 	return true;
 }
 
 void CWeaponAmmo::renderable_Render()
 {
-	if (!m_ready_to_destroy)
+	if(!m_ready_to_destroy)
 		inherited::renderable_Render();
 }
 
@@ -189,7 +189,7 @@ void CWeaponAmmo::UpdateCL()
 	inherited::UpdateCL();
 	VERIFY2(_valid(renderable.transform), *cName());
 
-	if (!IsGameTypeSingle())
+	if(!IsGameTypeSingle())
 		make_Interpolation();
 
 	VERIFY2(_valid(renderable.transform), *cName());
@@ -215,14 +215,14 @@ CInventoryItem* CWeaponAmmo::can_make_killing(const CInventory* inventory) const
 
 	TIItemContainer::const_iterator I = inventory->m_all.begin();
 	TIItemContainer::const_iterator E = inventory->m_all.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CWeapon* weapon = smart_cast<CWeapon*>(*I);
-		if (!weapon)
+		if(!weapon)
 			continue;
 		xr_vector<shared_str>::const_iterator i =
 			std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), cNameSect());
-		if (i != weapon->m_ammoTypes.end())
+		if(i != weapon->m_ammoTypes.end())
 			return (weapon);
 	}
 

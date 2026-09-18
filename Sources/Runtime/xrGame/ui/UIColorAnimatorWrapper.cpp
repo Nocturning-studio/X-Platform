@@ -43,7 +43,7 @@ CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName
 
 void CUIColorAnimatorWrapper::SetColorAnimation(const shared_str& animationName)
 {
-	if (animationName.size() != 0)
+	if(animationName.size() != 0)
 	{
 		colorAnimation = LALib.FindItem(*animationName);
 		R_ASSERT2(colorAnimation, *animationName);
@@ -65,11 +65,11 @@ void CUIColorAnimatorWrapper::SetColorToModify(u32* colorToModify)
 
 void CUIColorAnimatorWrapper::Update()
 {
-	if (colorAnimation && !isDone)
+	if(colorAnimation && !isDone)
 	{
-		if (!isCyclic)
+		if(!isCyclic)
 		{
-			if (animationTime < (colorAnimation->iFrameCount / colorAnimation->fFPS))
+			if(animationTime < (colorAnimation->iFrameCount / colorAnimation->fFPS))
 			{
 				currColor = colorAnimation->CalculateBGR(std::abs(animationTime - kRev), currFrame);
 				// Msg("name: %s, color: %x, frame: %d", *colorAnimation->cName,currColor, currFrame);
@@ -96,7 +96,7 @@ void CUIColorAnimatorWrapper::Update()
 								   color_get_A(currColor));
 		}
 
-		if (color)
+		if(color)
 		{
 			*color = currColor;
 		}
@@ -118,7 +118,7 @@ void CUIColorAnimatorWrapper::Reset()
 
 int CUIColorAnimatorWrapper::TotalFrames() const
 {
-	if (colorAnimation)
+	if(colorAnimation)
 	{
 		return colorAnimation->iFrameCount;
 	}
@@ -131,7 +131,7 @@ void CUIColorAnimatorWrapper::Reverese(bool value)
 {
 	reverse = value;
 
-	if (value)
+	if(value)
 	{
 		kRev = (colorAnimation->iFrameCount - 1) / colorAnimation->fFPS;
 	}
@@ -140,7 +140,7 @@ void CUIColorAnimatorWrapper::Reverese(bool value)
 		kRev = 0.0f;
 	}
 
-	if (!Done())
+	if(!Done())
 	{
 		animationTime = colorAnimation->iFrameCount / colorAnimation->fFPS - animationTime;
 	}

@@ -38,7 +38,7 @@ void CUIMpTradeWnd::TryUsePreset(ETradePreset idx)
 	VERIFY(IsShown());
 	u32 _cost = GetPresetCost(idx);
 	bool b_has_enought_money = _cost <= GetMoneyAmount();
-	if (!b_has_enought_money)
+	if(!b_has_enought_money)
 		return;
 
 	ApplyPreset(idx);
@@ -48,7 +48,7 @@ void CUIMpTradeWnd::TryUsePreset(ETradePreset idx)
 void CUIMpTradeWnd::OnBtnPreset1Clicked(CUIWindow* w, void* d)
 {
 	CheckDragItemToDestroy();
-	if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	if(pInput->iGetAsyncKeyState(DIK_LSHIFT))
 	{
 		DumpPreset(_preset_idx_1);
 		return;
@@ -60,7 +60,7 @@ void CUIMpTradeWnd::OnBtnPreset1Clicked(CUIWindow* w, void* d)
 void CUIMpTradeWnd::OnBtnPreset2Clicked(CUIWindow* w, void* d)
 {
 	CheckDragItemToDestroy();
-	if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	if(pInput->iGetAsyncKeyState(DIK_LSHIFT))
 	{
 		DumpPreset(_preset_idx_2);
 		return;
@@ -71,7 +71,7 @@ void CUIMpTradeWnd::OnBtnPreset2Clicked(CUIWindow* w, void* d)
 void CUIMpTradeWnd::OnBtnPreset3Clicked(CUIWindow* w, void* d)
 {
 	CheckDragItemToDestroy();
-	if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	if(pInput->iGetAsyncKeyState(DIK_LSHIFT))
 	{
 		DumpPreset(_preset_idx_3);
 		return;
@@ -83,7 +83,7 @@ void CUIMpTradeWnd::OnBtnPreset3Clicked(CUIWindow* w, void* d)
 void CUIMpTradeWnd::OnBtnLastSetClicked(CUIWindow* w, void* d)
 {
 	CheckDragItemToDestroy();
-	if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	if(pInput->iGetAsyncKeyState(DIK_LSHIFT))
 	{
 		DumpPreset(_preset_idx_last);
 		return;
@@ -95,7 +95,7 @@ void xr_stdcall CUIMpTradeWnd::OnBtnPresetDefaultClicked(CUIWindow* w, void* d)
 {
 	CheckDragItemToDestroy();
 	{
-		if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+		if(pInput->iGetAsyncKeyState(DIK_LSHIFT))
 		{
 			DumpPreset(_preset_idx_default);
 			return;
@@ -155,15 +155,15 @@ void CUIMpTradeWnd::UpdateShop()
 
 	bool b_matched_root = m_store_hierarchy->CurrentIsRoot();
 	m_btn_shop_back->Enable(!b_matched_root);
-	if (b_matched_root)
+	if(b_matched_root)
 		m_root_tab_control->ResetTab();
 
 	Msg("current level=[%s]", m_store_hierarchy->CurrentLevel().m_name.c_str());
 	SetCurrentItem(NULL);
-	if (m_store_hierarchy->CurrentIsRoot())
+	if(m_store_hierarchy->CurrentIsRoot())
 		return;
 
-	if (m_store_hierarchy->CurrentLevel().HasSubLevels())
+	if(m_store_hierarchy->CurrentLevel().HasSubLevels())
 	{ // show sub-levels
 		FillUpSubLevelButtons();
 	}
@@ -180,7 +180,7 @@ void CUIMpTradeWnd::FillUpSubLevelButtons()
 	fvec2 pos;
 	pos.set(40.0f, 90.0f);
 
-	for (u32 i = 0; i < root_cnt; ++i)
+	for(u32 i = 0; i < root_cnt; ++i)
 	{
 		const CStoreHierarchy::item& it = m_store_hierarchy->CurrentLevel().ChildAt(i);
 		CUITabButtonMP* btn = it.m_button;
@@ -202,7 +202,7 @@ void CUIMpTradeWnd::FillUpSubLevelItems()
 
 	const CStoreHierarchy::item& curr_level = m_store_hierarchy->CurrentLevel();
 
-	for (u32 idx = 0; idx < curr_level.m_items_in_group.size(); ++idx)
+	for(u32 idx = 0; idx < curr_level.m_items_in_group.size(); ++idx)
 	{
 		const shared_str& sect = curr_level.m_items_in_group[idx];
 		RenewShopItem(sect, false);
@@ -216,7 +216,7 @@ void CUIMpTradeWnd::Show()
 	inherited::Show();
 
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (pActor)
+	if(pActor)
 		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, true);
 
 	m_static_information->SetText("");
@@ -229,7 +229,7 @@ void CUIMpTradeWnd::Hide()
 	inherited::Hide();
 
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (pActor)
+	if(pActor)
 		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, false);
 
 	CleanUserItems();

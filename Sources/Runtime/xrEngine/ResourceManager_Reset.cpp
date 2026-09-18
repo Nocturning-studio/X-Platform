@@ -16,16 +16,16 @@ void CResourceManager::reset_begin()
 	// destroy everything, renderer may use
 	Render->ResetBegin();
 
-	if (0)
+	if(0)
 	{
 		// destroy state-blocks
-		for (u32 _it = 0; _it < v_states.size(); _it++)
+		for(u32 _it = 0; _it < v_states.size(); _it++)
 			_RELEASE(v_states[_it]->state);
 
 		// destroy RTs
-		for (map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
+		for(map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
 			rt_it->second->reset_begin();
-		for (map_RTCIt rtc_it = m_rtargets_c.begin(); rtc_it != m_rtargets_c.end(); rtc_it++)
+		for(map_RTCIt rtc_it = m_rtargets_c.begin(); rtc_it != m_rtargets_c.end(); rtc_it++)
 			rtc_it->second->reset_begin();
 	}
 
@@ -35,7 +35,7 @@ void CResourceManager::reset_begin()
 	RenderBackend.Index.reset_begin();
 	RenderBackend.Vertex.reset_begin();
 
-	//DeferredUnload();
+	// DeferredUnload();
 }
 
 bool cmp_rt(const CRT* A, const CRT* B)
@@ -57,10 +57,10 @@ void CResourceManager::reset_end()
 
 	// remark geom's which point to dynamic VB/IB
 	{
-		for (u32 _it = 0; _it < v_geoms.size(); _it++)
+		for(u32 _it = 0; _it < v_geoms.size(); _it++)
 		{
 			SGeometry* _G = v_geoms[_it];
-			if (_G->vb == RenderBackend.Vertex.old_pVB)
+			if(_G->vb == RenderBackend.Vertex.old_pVB)
 			{
 				_G->vb = RenderBackend.Vertex.Buffer();
 			}
@@ -68,11 +68,11 @@ void CResourceManager::reset_end()
 			// Here we may recover the buffer using one of
 			// RenderBackend's index buffers.
 			// Do not remove else.
-			if (_G->ib == RenderBackend.Index.old_pIB)
+			if(_G->ib == RenderBackend.Index.old_pIB)
 			{
 				_G->ib = RenderBackend.Index.Buffer();
 			}
-			else if (_G->ib == RenderBackend.old_QuadIB)
+			else if(_G->ib == RenderBackend.old_QuadIB)
 			{
 				_G->ib = RenderBackend.QuadIB;
 			}
@@ -83,11 +83,12 @@ void CResourceManager::reset_end()
 	Render->ResetEnd();
 }
 
-template <class C> void mdump(C c)
+template <class C>
+void mdump(C c)
 {
-	if (0 == c.size())
+	if(0 == c.size())
 		return;
-	for (C::iterator I = c.begin(); I != c.end(); I++)
+	for(C::iterator I = c.begin(); I != c.end(); I++)
 		Msg("*        : %3d: %s", I->second->dwReference, I->second->cName.c_str());
 }
 

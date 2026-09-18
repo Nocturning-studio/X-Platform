@@ -56,13 +56,13 @@ IC void CDangerObject::clear_dependent_object()
 
 IC bool CDangerObject::operator==(const CDangerObject& object) const
 {
-	if (!m_object && object.object())
+	if(!m_object && object.object())
 		return (false);
 
-	if (m_object && !object.object())
+	if(m_object && !object.object())
 		return (false);
 
-	if (m_object && (m_object->ID() != object.object()->ID()))
+	if(m_object && (m_object->ID() != object.object()->ID()))
 		return (false);
 
 	return ((type() == object.type()) && (perceive_type() == object.perceive_type()));

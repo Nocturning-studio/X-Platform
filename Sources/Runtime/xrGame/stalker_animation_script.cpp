@@ -35,7 +35,7 @@ void CStalkerAnimationManager::script_play_callback(CBlend* blend)
 	);
 #endif
 
-	if (pair.animation() && !animations.empty() && (pair.animation() == animations.front().animation()))
+	if(pair.animation() && !animations.empty() && (pair.animation() == animations.front().animation()))
 		animation_manager.pop_script_animation();
 
 	animation_manager.m_call_script_callback = true;
@@ -46,7 +46,7 @@ void CStalkerAnimationManager::script_play_callback(CBlend* blend)
 void CStalkerAnimationManager::add_script_animation(LPCSTR animation, bool hand_usage, bool use_movement_controller)
 {
 	const MotionID& motion = m_skeleton_animated->ID_Cycle_Safe(animation);
-	if (!motion)
+	if(!motion)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "There is no animation %s (object %s)!", animation,
 										*object().cName());

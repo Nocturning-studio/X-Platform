@@ -5,32 +5,31 @@
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static fvec3 corners[8] = 
-{
-	{-1, -1, 0.7}, 
-	{-1, -1, +1},	
-	{-1, +1, +1}, 
-	{-1, +1, 0.7},
-	{+1, +1, +1},	 
-	{+1, +1, 0.7}, 
-	{+1, -1, +1}, 
-	{+1, -1, 0.7}
-};
+static fvec3 corners[8] =
+	{
+		{-1, -1, 0.7},
+		{-1, -1, +1},
+		{-1, +1, +1},
+		{-1, +1, 0.7},
+		{+1, +1, +1},
+		{+1, +1, 0.7},
+		{+1, -1, +1},
+		{+1, -1, 0.7}};
 
-static u16 facetable[16][3] = 
-{
-	{3, 2, 1}, 
-	{3, 1, 0}, 
-	{7, 6, 5}, 
-	{5, 6, 4}, 
-	{3, 5, 2}, 
-	{4, 2, 5}, 
-	{1, 6, 7}, 
-	{7, 0, 1},
-	{5, 3, 0}, 
-	{7, 5, 0},
-	{1, 4, 6}, 
-	{2, 4, 1},
+static u16 facetable[16][3] =
+	{
+		{3, 2, 1},
+		{3, 1, 0},
+		{7, 6, 5},
+		{5, 6, 4},
+		{3, 5, 2},
+		{4, 2, 5},
+		{1, 6, 7},
+		{7, 0, 1},
+		{5, 3, 0},
+		{7, 5, 0},
+		{1, 4, 6},
+		{2, 4, 1},
 };
 
 void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transform_prev)
@@ -48,7 +47,7 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	L_dir.normalize();
 
 	// Perform masking (only once - on the first/near phase)
-	if (SE_SUN_NEAR == sub_phase)
+	if(SE_SUN_NEAR == sub_phase)
 	{
 		set_light_accumulator();
 		RenderBackend.set_CullMode(CULL_DISABLE);
@@ -77,7 +76,7 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	float fRange = 0.0f;
 	float fBias = 0.0f;
 
-	switch (sub_phase)
+	switch(sub_phase)
 	{
 	case SE_SUN_NEAR:
 		fBias = ps_r_sun_depth_near_bias;
@@ -93,10 +92,10 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 		break;
 	}
 
-	fmat4x4 m_TexelAdjust = {0.5f,              0.0f,              0.0f,   0.0f,
-							  0.0f,             -0.5f,              0.0f,   0.0f,
-							  0.0f,              0.0f,              fRange, 0.0f,
-							  0.5f + fTexelOffs, 0.5f + fTexelOffs, fBias,  1.0f};
+	fmat4x4 m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f,
+							 0.0f, -0.5f, 0.0f, 0.0f,
+							 0.0f, 0.0f, fRange, 0.0f,
+							 0.5f + fTexelOffs, 0.5f + fTexelOffs, fBias, 1.0f};
 
 	// Compute shadow matrix
 	fmat4x4 xf_invview;
@@ -119,7 +118,7 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	float NormalBias = 0.0f;
 	float DirectionalBias = 0.0f;
 
-	switch (sub_phase)
+	switch(sub_phase)
 	{
 	case SE_SUN_NEAR:
 		NormalBias = ps_r_sun_depth_near_normal_bias;
@@ -156,12 +155,12 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 		FVF::L* pv = (FVF::L*)RenderBackend.Vertex.Lock(ver_count, RenderTarget->g_cuboid.stride(), v_offset);
 
 		fmat4x4 inv_XDcombine;
-		if (sub_phase == SE_SUN_FAR)
+		if(sub_phase == SE_SUN_FAR)
 			inv_XDcombine.invert(transform_prev);
 		else
 			inv_XDcombine.invert(transform);
 
-		for (u32 i = 0; i < ver_count; ++i)
+		for(u32 i = 0; i < ver_count; ++i)
 		{
 			fvec3 tmp_vec;
 			inv_XDcombine.transform(tmp_vec, corners[i]);
@@ -182,15 +181,15 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	RenderBackend.set_Constant("m_shadow", m_shadow);
 
 	// Setup depth testing
-	if ((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
+	if((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
 		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
-	else if (!ps_r_lighting_flags.is(RFLAGEXT_SUN_ZCULLING))
+	else if(!ps_r_lighting_flags.is(RFLAGEXT_SUN_ZCULLING))
 		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 	else
 		RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
 
 	// Setup stencil
-	if (SE_SUN_NEAR == sub_phase || sub_phase == SE_SUN_MIDDLE)
+	if(SE_SUN_NEAR == sub_phase || sub_phase == SE_SUN_MIDDLE)
 		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0xFE, D3DSTENCILOP_KEEP, D3DSTENCILOP_ZERO, D3DSTENCILOP_KEEP);
 	else
 		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
@@ -207,9 +206,9 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 {
 	////OPTICK_EVENT("CRender::accumulate_volumetric_sun");
 
-	if (!(g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity > 0.05f) || !ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
+	if(!(g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity > 0.05f) || !ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
 	{
-		if (!bVolumetricSunTextureCleared)
+		if(!bVolumetricSunTextureCleared)
 		{
 			RenderBackend.ClearTexture(RenderTarget->rt_Volumetric_Sun, color_rgba(0, 0, 0, 0));
 			bVolumetricSunTextureCleared = true;
@@ -217,7 +216,7 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 		return;
 	}
 
-	if (bVolumetricSunTextureCleared)
+	if(bVolumetricSunTextureCleared)
 		bVolumetricSunTextureCleared = false;
 
 	// Убираем ВСЕ ограничения для объемного света
@@ -226,7 +225,7 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 	RenderBackend.set_Depth_Buffer(NULL);
 	RenderBackend.set_ColorWriteEnable();
 
-	switch (sub_phase)
+	switch(sub_phase)
 	{
 	case SE_SUN_NEAR:
 		sub_phase = SE_SUN_VOL_NEAR;

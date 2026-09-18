@@ -24,28 +24,28 @@ void CUIMapInfo::Init(float x, float y, float width, float height)
 	m_view->SetFixedScrollBar(false);
 }
 
-#define ADD_TEXT(x, y, z)                                                                                              \
-	text = *str_tbl.translate(x);                                                                                      \
-	text += ": ";                                                                                                      \
-	text += txt_color_tag;                                                                                             \
-	if (ltx.line_exist("map_info", y))                                                                                 \
-		text += *str_tbl.translate(ltx.r_string_wb("map_info", y));                                                    \
-	else                                                                                                               \
-		text += *str_tbl.translate(z);                                                                                 \
-	text += "%c[default]\\n";                                                                                          \
-	st = xr_new<CUIStatic>();                                                                                          \
-	st->SetTextComplexMode(true);                                                                                      \
-	st->SetFont(txt_font);                                                                                             \
-	st->SetTextColor(header_color);                                                                                    \
-	st->SetText(text.c_str());                                                                                         \
-	st->SetWidth(m_view->GetDesiredChildWidth());                                                                      \
-	st->AdjustHeightToText();                                                                                          \
+#define ADD_TEXT(x, y, z)                                           \
+	text = *str_tbl.translate(x);                                   \
+	text += ": ";                                                   \
+	text += txt_color_tag;                                          \
+	if(ltx.line_exist("map_info", y))                               \
+		text += *str_tbl.translate(ltx.r_string_wb("map_info", y)); \
+	else                                                            \
+		text += *str_tbl.translate(z);                              \
+	text += "%c[default]\\n";                                       \
+	st = xr_new<CUIStatic>();                                       \
+	st->SetTextComplexMode(true);                                   \
+	st->SetFont(txt_font);                                          \
+	st->SetTextColor(header_color);                                 \
+	st->SetText(text.c_str());                                      \
+	st->SetWidth(m_view->GetDesiredChildWidth());                   \
+	st->AdjustHeightToText();                                       \
 	m_view->AddWindow(st, true)
 
 void CUIMapInfo::InitMap(const char* map_name)
 {
 	m_view->Clear();
-	if (NULL == map_name)
+	if(NULL == map_name)
 		return;
 
 	CStringTable str_tbl;
@@ -60,7 +60,7 @@ void CUIMapInfo::InitMap(const char* map_name)
 	info_path += map_name;
 	info_path += ".ltx";
 
-	if (FS.exist("$game_config$", info_path.c_str()))
+	if(FS.exist("$game_config$", info_path.c_str()))
 	{
 		string_path ltxPath;
 		FS.update_path(ltxPath, CONFIG_PATH, info_path.c_str());
@@ -95,21 +95,21 @@ void CUIMapInfo::InitMap(const char* map_name)
 		text += ": ";
 		text += txt_color_tag;
 		bool b_ = false;
-		if (strstr(_modes.c_str(), "st_deathmatch"))
+		if(strstr(_modes.c_str(), "st_deathmatch"))
 		{
 			text += *str_tbl.translate("st_deathmatch");
 			b_ = true;
 		}
-		if (strstr(_modes.c_str(), "st_team_deathmatch"))
+		if(strstr(_modes.c_str(), "st_team_deathmatch"))
 		{
-			if (b_)
+			if(b_)
 				text += ", ";
 			text += *str_tbl.translate("st_team_deathmatch");
 			b_ = true;
 		}
-		if (strstr(_modes.c_str(), "st_artefacthunt"))
+		if(strstr(_modes.c_str(), "st_artefacthunt"))
 		{
-			if (b_)
+			if(b_)
 				text += ", ";
 			text += *str_tbl.translate("st_artefacthunt");
 		}
@@ -127,7 +127,7 @@ void CUIMapInfo::InitMap(const char* map_name)
 
 		ADD_TEXT("mp_description", "short_desc", "");
 
-		if (ltx.line_exist("map_info", "large_desc"))
+		if(ltx.line_exist("map_info", "large_desc"))
 			m_large_desc = str_tbl.translate(ltx.r_string_wb("map_info", "large_desc"));
 	}
 	else

@@ -97,7 +97,7 @@ void CUIPdaWnd::Init()
 	UIMapWnd = xr_new<CUIMapWnd>();
 	UIMapWnd->Init("pda_map.xml", "map_wnd");
 
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 	{
 		// Oкно коммуникaции
 		UIPdaContactsWnd = xr_new<CUIPdaContactsWnd>();
@@ -129,7 +129,7 @@ void CUIPdaWnd::Init()
 	xml_init.InitTabControl(uiXml, "tab", 0, UITabControl);
 	UITabControl->SetMessageTarget(this);
 
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 	{
 		UITabControl->GetButtonsVector()->at(0)->Enable(false);
 		UITabControl->GetButtonsVector()->at(2)->Enable(false);
@@ -152,9 +152,9 @@ void CUIPdaWnd::Init()
 
 void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == UITabControl)
+	if(pWnd == UITabControl)
 	{
-		if (TAB_CHANGED == msg)
+		if(TAB_CHANGED == msg)
 		{
 			SetActiveSubdialog((EPdaTabs)UITabControl->GetActiveIndex());
 		}
@@ -188,7 +188,7 @@ void CUIPdaWnd::UpdateDateTime()
 	strTime += " ";
 	strTime += *InventoryUtilities::GetGameDateAsString(InventoryUtilities::edpDateToDay);
 
-	if (xr_strcmp(strTime.c_str(), prevStrTime))
+	if(xr_strcmp(strTime.c_str(), prevStrTime))
 	{
 		UITimerBackground->UITitleText.SetText(strTime.c_str());
 		prevStrTime = strTime.c_str();
@@ -203,16 +203,16 @@ void CUIPdaWnd::Update()
 
 void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 {
-	if (m_pActiveSection == section)
+	if(m_pActiveSection == section)
 		return;
 
-	if (m_pActiveDialog)
+	if(m_pActiveDialog)
 	{
 		UIMainPdaFrame->DetachChild(m_pActiveDialog);
 		m_pActiveDialog->Show(false);
 	}
 
-	switch (section)
+	switch(section)
 	{
 	case eptDiary:
 		m_pActiveDialog = smart_cast<CUIWindow*>(UIDiaryWnd);
@@ -253,7 +253,7 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 	UIMainPdaFrame->AttachChild(m_pActiveDialog);
 	m_pActiveDialog->Show(true);
 
-	if (UITabControl->GetActiveIndex() != section)
+	if(UITabControl->GetActiveIndex() != section)
 		UITabControl->SetNewActiveTab(section);
 
 	m_pActiveSection = section;
@@ -269,26 +269,26 @@ void CUIPdaWnd::PdaContentsChanged(pda_section::part type)
 {
 	bool b = true;
 
-	if (type == pda_section::encyclopedia)
+	if(type == pda_section::encyclopedia)
 	{
 		UIEncyclopediaWnd->ReloadArticles();
 	}
-	else if (type == pda_section::news)
+	else if(type == pda_section::news)
 	{
 		UIDiaryWnd->AddNews();
 		UIDiaryWnd->MarkNewsAsRead(UIDiaryWnd->IsShown());
 	}
-	else if (type == pda_section::quests)
+	else if(type == pda_section::quests)
 	{
 		UIEventsWnd->Reload();
 	}
-	else if (type == pda_section::contacts)
+	else if(type == pda_section::contacts)
 	{
 		UIPdaContactsWnd->Reload();
 		b = false;
 	}
 
-	if (b)
+	if(b)
 	{
 		g_pda_info_state |= type;
 		HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
@@ -312,49 +312,49 @@ void CUIPdaWnd::DrawUpdatedSections()
 
 	pos = m_sign_places_main[eptQuests];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::quests)
+	if(g_pda_info_state & pda_section::quests)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[eptMap];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::map)
+	if(g_pda_info_state & pda_section::map)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[eptDiary];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::diary)
+	if(g_pda_info_state & pda_section::diary)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[eptContacts];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::contacts)
+	if(g_pda_info_state & pda_section::contacts)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[eptRanking];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::ranking)
+	if(g_pda_info_state & pda_section::ranking)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[eptActorStatistic];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::statistics)
+	if(g_pda_info_state & pda_section::statistics)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places_main[eptEncyclopedia];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::encyclopedia)
+	if(g_pda_info_state & pda_section::encyclopedia)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
@@ -363,19 +363,19 @@ void CUIPdaWnd::DrawUpdatedSections()
 void CUIPdaWnd::Reset()
 {
 	inherited::Reset();
-	if (UIMapWnd)
+	if(UIMapWnd)
 		UIMapWnd->Reset();
-	if (UIPdaContactsWnd)
+	if(UIPdaContactsWnd)
 		UIPdaContactsWnd->Reset();
-	if (UIEncyclopediaWnd)
+	if(UIEncyclopediaWnd)
 		UIEncyclopediaWnd->Reset();
-	if (UIDiaryWnd)
+	if(UIDiaryWnd)
 		UIDiaryWnd->Reset();
-	if (UIActorInfo)
+	if(UIActorInfo)
 		UIActorInfo->Reset();
-	if (UIStalkersRanking)
+	if(UIStalkersRanking)
 		UIStalkersRanking->Reset();
-	if (UIEventsWnd)
+	if(UIEventsWnd)
 		UIEventsWnd->Reset();
 }
 
@@ -395,9 +395,9 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<fvec2>& vec_sign_places)
 	float btn_text_len = 0.0f;
 	CUIStatic* st = NULL;
 
-	for (; it != it_e; ++it, ++idx)
+	for(; it != it_e; ++it, ++idx)
 	{
-		if (idx != 0)
+		if(idx != 0)
 		{
 			st = xr_new<CUIStatic>();
 			st->SetAutoDelete(true);

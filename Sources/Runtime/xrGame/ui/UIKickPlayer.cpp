@@ -85,7 +85,7 @@ void CUIKickPlayer::InitKick(CUIXml& xml_doc)
 #include <dinput.h>
 bool CUIKickPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (dik == DIK_ESCAPE)
+	if(dik == DIK_ESCAPE)
 	{
 		OnBtnCancel();
 		return true;
@@ -95,16 +95,16 @@ bool CUIKickPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 void CUIKickPlayer::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (LIST_ITEM_SELECT == msg && pWnd == m_ui_players_list)
+	if(LIST_ITEM_SELECT == msg && pWnd == m_ui_players_list)
 	{
 		CUIListBoxItem* itm = smart_cast<CUIListBoxItem*>(m_ui_players_list->GetSelected());
 		m_selected_item_text = itm->GetText();
 	}
-	else if (BUTTON_CLICKED == msg)
+	else if(BUTTON_CLICKED == msg)
 	{
-		if (pWnd == btn_ok)
+		if(pWnd == btn_ok)
 			OnBtnOk();
-		else if (pWnd == btn_cancel)
+		else if(pWnd == btn_cancel)
 			OnBtnCancel();
 	}
 }
@@ -112,15 +112,16 @@ void CUIKickPlayer::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUIKickPlayer::OnBtnOk()
 {
 	CUIListBoxItem* item = smart_cast<CUIListBoxItem*>(m_ui_players_list->GetSelected());
-	if (item)
+	if(item)
 	{
 		string512 command;
-		switch (mode)
+		switch(mode)
 		{
 		case MODE_KICK:
 			sprintf_s(command, "cl_votestart kick %s", item->GetText());
 			break;
-		case MODE_BAN: {
+		case MODE_BAN:
+		{
 			sprintf_s(command, "cl_votestart ban %s %d", item->GetText(), m_spin_ban_sec->Value());
 		}
 		break;
@@ -179,7 +180,7 @@ void CUIKickPlayer::Update()
 {
 	CUIDialogWnd::Update();
 
-	if (m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 1000)
+	if(m_prev_upd_time > Engine.TimeManager.GetContinualTimeMs() - 1000)
 		return;
 
 	m_prev_upd_time = Engine.TimeManager.GetContinualTimeMs();
@@ -190,19 +191,21 @@ void CUIKickPlayer::Update()
 
 	//.init
 	static bool b_inited = false;
-	if (!b_inited)
+	if(!b_inited)
 	{
-		for (u32 e = 0; e < 15; ++e)
+		for(u32 e = 0; e < 15; ++e)
 		{
 			game_PlayerState* ps = xr_new<game_PlayerState>();
 			strcpy(ps->name, _names[e]);
 			g_ps.push_back(ps);
 		}
-		for (u32 _i = 0; _i < 3; ++_i)
+		for(u32 _i = 0; _i < 3; ++_i)
 		{
-			game_cl_GameState::PLAYERS_MAP& items1 = (_i == 0) ? test_map1 : (_i == 1) ? test_map2 : test_map3;
-			u32* vn = (_i == 0) ? ids1 : (_i == 1) ? ids2 : ids3;
-			for (u32 i = 0; i < szs[_i]; ++i)
+			game_cl_GameState::PLAYERS_MAP& items1 = (_i == 0) ? test_map1 : (_i == 1) ? test_map2
+																					   : test_map3;
+			u32* vn = (_i == 0) ? ids1 : (_i == 1) ? ids2
+												   : ids3;
+			for(u32 i = 0; i < szs[_i]; ++i)
 			{
 				cid.set(_i * 500 + i);
 				items1[cid] = g_ps[vn[i]];
@@ -211,7 +214,8 @@ void CUIKickPlayer::Update()
 		b_inited = true;
 	}
 	static int iiii = 0;
-	const game_cl_GameState::PLAYERS_MAP& items = (iiii == 0) ? test_map1 : (iiii == 1) ? test_map2 : test_map3;
+	const game_cl_GameState::PLAYERS_MAP& items = (iiii == 0) ? test_map1 : (iiii == 1) ? test_map2
+																						: test_map3;
 
 #endif
 
@@ -222,34 +226,34 @@ void CUIKickPlayer::Update()
 	bool bHasSelected = false;
 
 	xr_vector<game_PlayerState*>::iterator fit; //, fite;
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		game_PlayerState* pI = I->second;
-		if (m_selected_item_text.size() && !xr_stricmp(pI->name, m_selected_item_text.c_str()))
+		if(m_selected_item_text.size() && !xr_stricmp(pI->name, m_selected_item_text.c_str()))
 			bHasSelected = true;
 
 		fit = std::find(m_current_set.begin(), m_current_set.end(), pI);
-		if (fit == m_current_set.end())
+		if(fit == m_current_set.end())
 			bNeedRefresh = true;
-		else if (xr_stricmp((*fit)->name, pI->name))
+		else if(xr_stricmp((*fit)->name, pI->name))
 			bNeedRefresh = true;
 	}
-	if (m_current_set.size() != items.size())
+	if(m_current_set.size() != items.size())
 		bNeedRefresh = true;
 
-	if (bNeedRefresh)
+	if(bNeedRefresh)
 	{
 		I = items.begin();
 		m_ui_players_list->Clear();
 		m_current_set.clear();
 
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			game_PlayerState* p = I->second;
 			m_current_set.push_back(p);
 			m_ui_players_list->AddItem(p->name);
 		}
-		if (bHasSelected)
+		if(bHasSelected)
 			m_ui_players_list->SetSelectedText(m_selected_item_text.c_str());
 	}
 }

@@ -21,7 +21,7 @@ CUIChangeWeather::CUIChangeWeather()
 	btn_cancel->SetAutoDelete(true);
 	AttachChild(btn_cancel);
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		btn[i] = xr_new<CUI3tButton>();
 		btn[i]->SetAutoDelete(true);
@@ -43,7 +43,7 @@ void CUIChangeWeather::Init(CUIXml& xml_doc)
 	CUIXmlInit::InitStatic(xml_doc, "change_weather:background", 0, bkgrnd);
 
 	string256 _path;
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		sprintf_s(_path, "change_weather:btn_%d", i + 1);
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, btn[i]);
@@ -58,13 +58,13 @@ void CUIChangeWeather::Init(CUIXml& xml_doc)
 
 void CUIChangeWeather::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
-		if (btn_cancel == pWnd)
+		if(btn_cancel == pWnd)
 			OnBtnCancel();
-		for (int i = 0; i < 4; i++)
+		for(int i = 0; i < 4; i++)
 		{
-			if (btn[i] == pWnd)
+			if(btn[i] == pWnd)
 			{
 				OnBtn(i);
 				return;
@@ -78,14 +78,14 @@ void CUIChangeWeather::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 bool CUIChangeWeather::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	CUIDialogWnd::OnKeyboard(dik, keyboard_action);
-	if (WINDOW_KEY_PRESSED == keyboard_action)
+	if(WINDOW_KEY_PRESSED == keyboard_action)
 	{
-		if (DIK_ESCAPE == dik)
+		if(DIK_ESCAPE == dik)
 		{
 			OnBtnCancel();
 			return true;
 		}
-		if (dik >= DIK_1 && dik <= DIK_4)
+		if(dik >= DIK_1 && dik <= DIK_4)
 		{
 			OnBtn(dik - DIK_1);
 			return true;
@@ -123,7 +123,7 @@ void CUIChangeWeather::ParseWeather()
 	GAME_WEATHERS_CIT it = game_weathers.begin();
 	GAME_WEATHERS_CIT it_e = game_weathers.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		AddWeather((*it).m_weather_name, (*it).m_start_time);
 	}

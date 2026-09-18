@@ -71,10 +71,10 @@ void CALifeMonsterDetailPathManager::target(const CALifeSmartTerrainTask* task)
 
 bool CALifeMonsterDetailPathManager::completed() const
 {
-	if (m_destination.m_game_vertex_id != object().m_tGraphID)
+	if(m_destination.m_game_vertex_id != object().m_tGraphID)
 		return (false);
 
-	if (m_destination.m_level_vertex_id != object().m_tNodeID)
+	if(m_destination.m_level_vertex_id != object().m_tNodeID)
 		return (false);
 
 	return (true);
@@ -82,10 +82,10 @@ bool CALifeMonsterDetailPathManager::completed() const
 
 bool CALifeMonsterDetailPathManager::actual() const
 {
-	if (failed())
+	if(failed())
 		return (false);
 
-	if (m_destination.m_game_vertex_id != m_path.front())
+	if(m_destination.m_game_vertex_id != m_path.front())
 		return (false);
 
 	return (true);
@@ -99,7 +99,7 @@ bool CALifeMonsterDetailPathManager::failed() const
 void CALifeMonsterDetailPathManager::update()
 {
 	ALife::_TIME_ID current_time = ai().alife().time_manager().game_time();
-	if (current_time <= m_last_update_time)
+	if(current_time <= m_last_update_time)
 		return;
 
 	//	if (ai().game_graph().vertex(object().m_tGraphID)->level_id() == ai().level_graph().level_id())
@@ -121,7 +121,7 @@ void CALifeMonsterDetailPathManager::actualize()
 											  &m_path, temp);
 
 #ifdef DEBUG
-	if (failed)
+	if(failed)
 	{
 		Msg("! %s couldn't build game path from", object().name_replace());
 		{
@@ -136,12 +136,12 @@ void CALifeMonsterDetailPathManager::actualize()
 		}
 	}
 #endif
-	if (failed)
+	if(failed)
 		return;
 
 	VERIFY(!m_path.empty());
 
-	if (m_path.size() == 1)
+	if(m_path.size() == 1)
 	{
 		VERIFY(m_path.back() == object().m_tGraphID);
 		return;
@@ -155,17 +155,17 @@ void CALifeMonsterDetailPathManager::actualize()
 void CALifeMonsterDetailPathManager::update(const ALife::_TIME_ID& time_delta)
 {
 	// first update has enormous time delta, therefore just skip it
-	if (!m_last_update_time)
+	if(!m_last_update_time)
 		return;
 
-	if (completed())
+	if(completed())
 		return;
 
-	if (!actual())
+	if(!actual())
 	{
 		actualize();
 
-		if (failed())
+		if(failed())
 			return;
 	}
 
@@ -174,7 +174,7 @@ void CALifeMonsterDetailPathManager::update(const ALife::_TIME_ID& time_delta)
 
 void CALifeMonsterDetailPathManager::setup_current_speed()
 {
-	if (ai().game_graph().vertex(object().m_tGraphID)->level_id() == ai().level_graph().level_id())
+	if(ai().game_graph().vertex(object().m_tGraphID)->level_id() == ai().level_graph().level_id())
 		speed(object().m_fCurrentLevelGoingSpeed);
 	else
 		speed(object().m_fGoingSpeed);
@@ -188,7 +188,7 @@ void CALifeMonsterDetailPathManager::follow_path(const ALife::_TIME_ID& time_del
 	VERIFY(!m_path.empty());
 	VERIFY(m_path.back() == object().m_tGraphID);
 
-	if (m_path.size() == 1)
+	if(m_path.size() == 1)
 	{
 		VERIFY(object().m_tGraphID == m_destination.m_game_vertex_id);
 		m_walked_distance = 0.f;
@@ -203,14 +203,14 @@ void CALifeMonsterDetailPathManager::follow_path(const ALife::_TIME_ID& time_del
 	}
 
 	float last_time_delta = float(time_delta) / 1000.f;
-	for (; m_path.size() > 1;)
+	for(; m_path.size() > 1;)
 	{
 		setup_current_speed();
 		float update_distance = (last_time_delta / ai().alife().time_manager().normal_time_factor()) * speed();
 
 		float distance_between =
 			ai().game_graph().distance(object().m_tGraphID, (GameGraph::_GRAPH_ID)m_path[m_path.size() - 2]);
-		if (distance_between > (update_distance + m_walked_distance))
+		if(distance_between > (update_distance + m_walked_distance))
 		{
 			m_walked_distance += update_distance;
 #ifdef DEBUG
@@ -249,18 +249,18 @@ void CALifeMonsterDetailPathManager::on_switch_offline()
 
 fvec3 CALifeMonsterDetailPathManager::draw_level_position() const
 {
-	if (path().empty())
+	if(path().empty())
 		return (object().Position());
 
 	u32 path_size = path().size();
-	if (path_size == 1)
+	if(path_size == 1)
 		return (object().Position());
 
 	VERIFY(m_path.back() == object().m_tGraphID);
 
 	const GameGraph::CVertex* current = ai().game_graph().vertex(object().m_tGraphID);
 	const GameGraph::CVertex* next = ai().game_graph().vertex(m_path[path_size - 2]);
-	if (current->level_id() != next->level_id())
+	if(current->level_id() != next->level_id())
 		return (object().Position());
 
 	fvec3 current_vertex = current->level_point();

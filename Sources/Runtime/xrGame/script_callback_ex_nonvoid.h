@@ -8,7 +8,8 @@
 
 #pragma once
 
-template <typename _return_type> class CScriptCallbackEx : public CScriptCallbackEx_<_return_type>
+template <typename _return_type>
+class CScriptCallbackEx : public CScriptCallbackEx_<_return_type>
 {
   public:
 #define macros_return_operator return return_type

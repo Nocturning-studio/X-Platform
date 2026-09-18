@@ -16,13 +16,13 @@ struct XRCORE_API smem_value
 // generic predicate for "less"
 IC bool smem_sort(const smem_value* A, const smem_value* B)
 {
-	if (A->dwCRC < B->dwCRC)
+	if(A->dwCRC < B->dwCRC)
 		return true;
-	if (A->dwCRC > B->dwCRC)
+	if(A->dwCRC > B->dwCRC)
 		return false;
-	if (A->dwLength < B->dwLength)
+	if(A->dwLength < B->dwLength)
 		return true;
-	if (A->dwLength > B->dwLength)
+	if(A->dwLength > B->dwLength)
 		return false;
 	return memcmp(A->value, B->value, A->dwLength) < 0;
 };
@@ -30,9 +30,9 @@ IC bool smem_sort(const smem_value* A, const smem_value* B)
 // predicate for insertion - just a quick estimate
 IC bool smem_search(const smem_value* A, const smem_value* B)
 {
-	if (A->dwCRC < B->dwCRC)
+	if(A->dwCRC < B->dwCRC)
 		return true;
-	if (A->dwCRC > B->dwCRC)
+	if(A->dwCRC > B->dwCRC)
 		return false;
 	return A->dwLength < B->dwLength;
 };
@@ -40,9 +40,9 @@ IC bool smem_search(const smem_value* A, const smem_value* B)
 // predicate for exact (byte level) comparition
 IC bool smem_equal(const smem_value* A, u32 dwCRC, u32 dwLength, u8* ptr)
 {
-	if (A->dwCRC != dwCRC)
+	if(A->dwCRC != dwCRC)
 		return false;
-	if (A->dwLength != dwLength)
+	if(A->dwLength != dwLength)
 		return false;
 	return 0 == memcmp(A->value, ptr, dwLength);
 };
@@ -71,7 +71,8 @@ class XRCORE_API smem_container
 XRCORE_API extern smem_container* g_pSharedMemoryContainer;
 
 //////////////////////////////////////////////////////////////////////////
-template <class T> class ref_smem
+template <class T>
+class ref_smem
 {
   private:
 	smem_value* p_;
@@ -80,10 +81,10 @@ template <class T> class ref_smem
 	// ref-counting
 	void _dec()
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return;
 		p_->dwReference--;
-		if (0 == p_->dwReference)
+		if(0 == p_->dwReference)
 			p_ = 0;
 	}
 
@@ -91,7 +92,7 @@ template <class T> class ref_smem
 	void _set(ref_smem const& rhs)
 	{
 		smem_value* v = rhs.p_;
-		if (0 != v)
+		if(0 != v)
 			v->dwReference++;
 		_dec();
 		p_ = v;
@@ -120,7 +121,7 @@ template <class T> class ref_smem
 	void create(u32 dwCRC, u32 dwLength, T* ptr)
 	{
 		smem_value* v = g_pSharedMemoryContainer->dock(dwCRC, dwLength * sizeof(T), ptr);
-		if (0 != v)
+		if(0 != v)
 			v->dwReference++;
 		_dec();
 		p_ = v;
@@ -151,7 +152,7 @@ template <class T> class ref_smem
 	// misc func
 	u32 size()
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return 0;
 		else
 			return p_->dwLength / sizeof(T);
@@ -168,7 +169,7 @@ template <class T> class ref_smem
 	}
 	u32 ref_count()
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return 0;
 		else
 			return p_->dwReference;
@@ -183,25 +184,30 @@ template <class T> class ref_smem
 // ptr != const res_ptr
 // res_ptr < res_ptr
 // res_ptr > res_ptr
-template <class T> IC bool operator==(ref_smem<T> const& a, ref_smem<T> const& b)
+template <class T>
+IC bool operator==(ref_smem<T> const& a, ref_smem<T> const& b)
 {
 	return a._get() == b._get();
 }
-template <class T> IC bool operator!=(ref_smem<T> const& a, ref_smem<T> const& b)
+template <class T>
+IC bool operator!=(ref_smem<T> const& a, ref_smem<T> const& b)
 {
 	return a._get() != b._get();
 }
-template <class T> IC bool operator<(ref_smem<T> const& a, ref_smem<T> const& b)
+template <class T>
+IC bool operator<(ref_smem<T> const& a, ref_smem<T> const& b)
 {
 	return a._get() < b._get();
 }
-template <class T> IC bool operator>(ref_smem<T> const& a, ref_smem<T> const& b)
+template <class T>
+IC bool operator>(ref_smem<T> const& a, ref_smem<T> const& b)
 {
 	return a._get() > b._get();
 }
 
 // externally visible standart functionality
-template <class T> IC void swap(ref_smem<T>& lhs, ref_smem<T>& rhs)
+template <class T>
+IC void swap(ref_smem<T>& lhs, ref_smem<T>& rhs)
 {
 	lhs.swap(rhs);
 }

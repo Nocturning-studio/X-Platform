@@ -11,11 +11,11 @@ CDamagableItem::CDamagableItem()
 u16 CDamagableItem::DamageLevel()
 {
 	float health = Health();
-	if (health < 0.f)
+	if(health < 0.f)
 		health = 0.f;
 	u16 dl = u16((1.f - Health() / m_max_health) * m_levels_num);
 
-	if (dl < m_levels_num)
+	if(dl < m_levels_num)
 		return dl;
 	else
 		return m_levels_num;
@@ -34,7 +34,7 @@ void CDamagableItem::Init(float max_health, u16 level_num)
 void CDamagableItem::HitEffect()
 {
 	u16 new_lewel = DamageLevel();
-	for (u16 i = m_level_applied + 1; i <= new_lewel; i++)
+	for(u16 i = m_level_applied + 1; i <= new_lewel; i++)
 		ApplyDamage(i);
 }
 void CDamagableItem::ApplyDamage(u16 level)
@@ -50,10 +50,10 @@ void CDamagableHealthItem::Init(float max_health, u16 level_num)
 
 void CDamagableHealthItem::Hit(float P)
 {
-	if (m_level_applied == m_levels_num)
+	if(m_level_applied == m_levels_num)
 		return;
 	m_health -= P;
-	if (m_health < 0.f)
+	if(m_health < 0.f)
 		m_health = 0.f;
 	HitEffect();
 }
@@ -61,6 +61,6 @@ void CDamagableHealthItem::Hit(float P)
 void CDamagableItem::RestoreEffect()
 {
 	u16 dl = DamageLevel();
-	for (u16 i = 1; i <= dl; i++)
+	for(u16 i = 1; i <= dl; i++)
 		ApplyDamage(i);
 }

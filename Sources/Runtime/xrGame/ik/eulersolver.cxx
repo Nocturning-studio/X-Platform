@@ -134,9 +134,9 @@ void euler_extract(const EulerTableEntry& E, const Matrix R, float vals[3], int 
 	y[1] = p->sign * R[p->row][p->col];
 	x[1] = q->sign * R[q->row][q->col];
 
-	if (E.simple_jt_type == SinJtLimit)
+	if(E.simple_jt_type == SinJtLimit)
 	{
-		if (family == 1)
+		if(family == 1)
 		{
 			// Family1 cos(v) > 0
 
@@ -189,7 +189,7 @@ void euler_extract2(const EulerTableEntry& E, const Matrix R, float f1[3], float
 	y[1] = p->sign * R[p->row][p->col];
 	x[1] = q->sign * R[q->row][q->col];
 
-	if (E.simple_jt_type == SinJtLimit)
+	if(E.simple_jt_type == SinJtLimit)
 	{
 		// Family1 cos(v) > 0
 
@@ -207,7 +207,7 @@ void euler_extract2(const EulerTableEntry& E, const Matrix R, float f1[3], float
 
 inline EulerTableEntry* euler_entry(int euler_type)
 {
-	if (euler_type < 0 || euler_type >= (sizeof(EulerTable) / sizeof(EulerTable[0])))
+	if(euler_type < 0 || euler_type >= (sizeof(EulerTable) / sizeof(EulerTable[0])))
 	{
 		fprintf(stderr, "bad euler entry %d detected\n", euler_type);
 		exit(0);
@@ -239,7 +239,7 @@ void EulerEval(int euler_type, const float t[3], Matrix R)
 	float* a[3];
 	int s[3];
 
-	switch (euler_type)
+	switch(euler_type)
 	{
 	case ZXY:
 		a[0] = Z;
@@ -287,7 +287,7 @@ void EulerEval(int euler_type, const float t[3], Matrix R)
 inline void get_psi_parameters(const Matrix c, const Matrix s, const Matrix o, const matrix_entry& m, float& alpha,
 							   float& beta, float& gamma)
 {
-	if (m.sign == 1)
+	if(m.sign == 1)
 	{
 		alpha = c[m.row][m.col];
 		beta = s[m.row][m.col];
@@ -334,7 +334,7 @@ EulerPsiSolver::EulerPsiSolver(int etype, const Matrix c, const Matrix s, const 
 
 int EulerPsiSolver::Singularities(float psi[2]) const
 {
-	for (int i = 0; i < num_singular; i++)
+	for(int i = 0; i < num_singular; i++)
 		psi[i] = singular[i];
 	return num_singular;
 }

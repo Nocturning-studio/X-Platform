@@ -43,18 +43,18 @@ void CStateBloodsuckerPredatorLiteAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerPredatorLiteAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
-		if (enemy_see_me())
+		if(enemy_see_me())
 			select_state(eStatePredator_MoveToCover);
 		else
 			select_state(eStatePredator_LookOpenPlace);
 		return;
 	}
 
-	if (prev_substate == eStatePredator_MoveToCover)
+	if(prev_substate == eStatePredator_MoveToCover)
 	{
-		if (enemy_see_me())
+		if(enemy_see_me())
 		{
 			select_state(eStatePredator_MoveToCover);
 			object->set_berserk();
@@ -64,13 +64,13 @@ void CStateBloodsuckerPredatorLiteAbstract::reselect_state()
 		return;
 	}
 
-	if (prev_substate == eStatePredator_LookOpenPlace)
+	if(prev_substate == eStatePredator_LookOpenPlace)
 	{
 		select_state(eStatePredator_Camp);
 		return;
 	}
 
-	if (prev_substate == eStatePredator_Camp)
+	if(prev_substate == eStatePredator_Camp)
 	{
 		select_state(eStatePredator_MoveToCover);
 		return;
@@ -84,10 +84,10 @@ void CStateBloodsuckerPredatorLiteAbstract::finalize()
 {
 	inherited::finalize();
 	object->predator_stop();
-	if (m_freezed)
+	if(m_freezed)
 		object->predator_unfreeze();
 
-	if (m_target_node != u32(-1))
+	if(m_target_node != u32(-1))
 		monster_squad().get_squad(object)->unlock_cover(m_target_node);
 }
 
@@ -96,23 +96,23 @@ void CStateBloodsuckerPredatorLiteAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
 	object->predator_stop();
-	if (m_freezed)
+	if(m_freezed)
 		object->predator_unfreeze();
 
-	if (m_target_node != u32(-1))
+	if(m_target_node != u32(-1))
 		monster_squad().get_squad(object)->unlock_cover(m_target_node);
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerPredatorLiteAbstract::check_completion()
 {
-	if (object->EnemyMan.see_enemy_now() &&
-		(object->Position().distance_to(object->EnemyMan.get_enemy()->Position()) < 4.f))
+	if(object->EnemyMan.see_enemy_now() &&
+	   (object->Position().distance_to(object->EnemyMan.get_enemy()->Position()) < 4.f))
 	{
 		object->set_berserk();
 		return true;
 	}
-	if (object->conditions().health() > 0.9f)
+	if(object->conditions().health() > 0.9f)
 		return true;
 
 	return false;
@@ -123,7 +123,7 @@ void CStateBloodsuckerPredatorLiteAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStatePredator_Camp)
+	if(current_substate == eStatePredator_Camp)
 	{
 		object->predator_freeze();
 		m_freezed = true;
@@ -134,7 +134,7 @@ void CStateBloodsuckerPredatorLiteAbstract::setup_substates()
 		m_freezed = false;
 	}
 
-	if (current_substate == eStatePredator_MoveToCover)
+	if(current_substate == eStatePredator_MoveToCover)
 	{
 		select_camp_point();
 
@@ -155,7 +155,7 @@ void CStateBloodsuckerPredatorLiteAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStatePredator_LookOpenPlace)
+	if(current_substate == eStatePredator_LookOpenPlace)
 	{
 
 		SStateDataLookToPoint data;
@@ -174,7 +174,7 @@ void CStateBloodsuckerPredatorLiteAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStatePredator_Camp)
+	if(current_substate == eStatePredator_Camp)
 	{
 
 		SStateDataAction data;
@@ -195,13 +195,13 @@ void CStateBloodsuckerPredatorLiteAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerPredatorLiteAbstract::check_force_state()
 {
-	if (prev_substate == eStatePredator_Camp)
+	if(prev_substate == eStatePredator_Camp)
 	{
-		if (object->HitMemory.get_last_hit_time() > time_state_started)
+		if(object->HitMemory.get_last_hit_time() > time_state_started)
 		{
 
-			if (object->EnemyMan.get_enemy() &&
-				(object->EnemyMan.get_enemy()->Position().distance_to(object->Position()) < 10.f))
+			if(object->EnemyMan.get_enemy() &&
+			   (object->EnemyMan.get_enemy()->Position().distance_to(object->Position()) < 10.f))
 			{
 				object->set_berserk();
 			}
@@ -214,29 +214,29 @@ void CStateBloodsuckerPredatorLiteAbstract::check_force_state()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerPredatorLiteAbstract::select_camp_point()
 {
-	if (m_target_node != u32(-1))
+	if(m_target_node != u32(-1))
 		monster_squad().get_squad(object)->unlock_cover(m_target_node);
 
 	m_target_node = u32(-1);
-	if (object->Home->has_home())
+	if(object->Home->has_home())
 	{
 		m_target_node = object->Home->get_place_in_cover();
-		if (m_target_node == u32(-1))
+		if(m_target_node == u32(-1))
 		{
 			m_target_node = object->Home->get_place();
 		}
 	}
 
-	if (m_target_node == u32(-1))
+	if(m_target_node == u32(-1))
 	{
 		const CCoverPoint* point = object->CoverMan->find_cover(object->Position(), 20.f, 30.f);
-		if (point)
+		if(point)
 		{
 			m_target_node = point->level_vertex_id();
 		}
 	}
 
-	if (m_target_node == u32(-1))
+	if(m_target_node == u32(-1))
 		m_target_node = object->ai_location().level_vertex_id();
 
 	monster_squad().get_squad(object)->lock_cover(m_target_node);

@@ -47,11 +47,11 @@ IC const u32& CAbstractOperatorCondition::hash_value() const
 TEMPLATE_SPECIALIZATION
 IC bool CAbstractOperatorCondition::operator<(const COperatorCondition& _condition) const
 {
-	if (condition() < _condition.condition())
+	if(condition() < _condition.condition())
 		return (true);
-	if (condition() > _condition.condition())
+	if(condition() > _condition.condition())
 		return (false);
-	if (value() < _condition.value())
+	if(value() < _condition.value())
 		return (true);
 	return (false);
 }
@@ -59,7 +59,7 @@ IC bool CAbstractOperatorCondition::operator<(const COperatorCondition& _conditi
 TEMPLATE_SPECIALIZATION
 IC bool CAbstractOperatorCondition::operator==(const COperatorCondition& _condition) const
 {
-	if ((condition() == _condition.condition()) && (value() == _condition.value()))
+	if((condition() == _condition.condition()) && (value() == _condition.value()))
 		return (true);
 	return (false);
 }

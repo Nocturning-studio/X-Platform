@@ -126,7 +126,7 @@ class ENGINE_API CBoneData
 	virtual u32 mem_usage()
 	{
 		u32 sz = sizeof(*this) + sizeof(vecBones::value_type) * children.size();
-		for (ChildFacesVecIt c_it = child_faces.begin(); c_it != child_faces.end(); c_it++)
+		for(ChildFacesVecIt c_it = child_faces.begin(); c_it != child_faces.end(); c_it++)
 			sz += c_it->size() * sizeof(FacesVec::value_type) + sizeof(*c_it);
 		return sz;
 	}
@@ -137,11 +137,11 @@ class ENGINE_API CBoneData
 class ENGINE_API CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
 {
 #pragma warning(pop)
-	CKinematics* m_Parent;	 // 4
-	const fmat4x4* m_Transform;	 // 4
-	ref_shader m_Shader;	 // 4
-	fvec3 m_ContactPoint; // 12		model space
-	float m_fTimeStart;		 // 4
+	CKinematics* m_Parent;		// 4
+	const fmat4x4* m_Transform; // 4
+	ref_shader m_Shader;		// 4
+	fvec3 m_ContactPoint;		// 12		model space
+	float m_fTimeStart;			// 4
   public:
 #ifdef DEBUG
 	u32 used_in_render;
@@ -409,10 +409,10 @@ class ENGINE_API CKinematics : public FHierrarhyVisual
 	{
 		u32 sz = sizeof(*this);
 		sz += bone_instances ? bone_instances->mem_usage() : 0;
-		if (!bInstance)
+		if(!bInstance)
 		{
 			//			sz					+= pUserData?pUserData->mem_usage():0;
-			for (vecBonesIt b_it = bones->begin(); b_it != bones->end(); b_it++)
+			for(vecBonesIt b_it = bones->begin(); b_it != bones->end(); b_it++)
 				sz += sizeof(vecBones::value_type) + (*b_it)->mem_usage();
 		}
 		return sz;

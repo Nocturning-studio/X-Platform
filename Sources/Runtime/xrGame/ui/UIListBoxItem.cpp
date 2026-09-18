@@ -59,7 +59,7 @@ bool CUIListBoxItem::OnDbClick()
 
 bool CUIListBoxItem::OnMouseDown(int mouse_btn)
 {
-	if (mouse_btn == MOUSE_1)
+	if(mouse_btn == MOUSE_1)
 	{
 		smart_cast<CUIScrollView*>(GetParent()->GetParent())->SetSelected(this);
 		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, &tag);
@@ -74,13 +74,13 @@ void CUIListBoxItem::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
 	u32 col;
-	if (b)
+	if(b)
 		col = txt_color_s;
 	else
 		col = txt_color;
 
 	SetTextColor(col);
-	for (u32 i = 0; i < fields.size(); i++)
+	for(u32 i = 0; i < fields.size(); i++)
 		fields[i]->SetTextColor(col);
 }
 
@@ -94,7 +94,7 @@ void CUIListBoxItem::SetTextColor(u32 color, u32 color_s)
 float CUIListBoxItem::FieldsLength()
 {
 	float c = 0;
-	for (u32 i = 0; i < fields.size(); i++)
+	for(u32 i = 0; i < fields.size(); i++)
 		c += fields[i]->GetWidth();
 	return c;
 }
@@ -122,9 +122,9 @@ CUIStatic* CUIListBoxItem::AddField(LPCSTR txt, float len, LPCSTR key)
 
 LPCSTR CUIListBoxItem::GetField(LPCSTR key)
 {
-	for (u32 i = 0; i < fields.size(); i++)
+	for(u32 i = 0; i < fields.size(); i++)
 	{
-		if (0 == xr_strcmp(fields[i]->WindowName(), key))
+		if(0 == xr_strcmp(fields[i]->WindowName(), key))
 			return fields[i]->GetText();
 	}
 	return NULL;

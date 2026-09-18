@@ -14,7 +14,7 @@ CUIOutfitInfo::CUIOutfitInfo()
 
 CUIOutfitInfo::~CUIOutfitInfo()
 {
-	for (u32 i = _item_start; i < _max_item_index; ++i)
+	for(u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		CUIStatic* _s = m_items[i];
 		xr_delete(_s);
@@ -22,15 +22,26 @@ CUIOutfitInfo::~CUIOutfitInfo()
 }
 
 LPCSTR _imm_names[] = {
-	"burn_immunity",	  "strike_immunity",		"shock_immunity",	  "wound_immunity",		 "radiation_immunity",
-	"telepatic_immunity", "chemical_burn_immunity", "explosion_immunity", "fire_wound_immunity",
+	"burn_immunity",
+	"strike_immunity",
+	"shock_immunity",
+	"wound_immunity",
+	"radiation_immunity",
+	"telepatic_immunity",
+	"chemical_burn_immunity",
+	"explosion_immunity",
+	"fire_wound_immunity",
 };
 
 LPCSTR _imm_st_names[] = {
-	"ui_inv_outfit_burn_protection",		  "ui_inv_outfit_shock_protection",
-	"ui_inv_outfit_strike_protection",		  "ui_inv_outfit_wound_protection",
-	"ui_inv_outfit_radiation_protection",	  "ui_inv_outfit_telepatic_protection",
-	"ui_inv_outfit_chemical_burn_protection", "ui_inv_outfit_explosion_protection",
+	"ui_inv_outfit_burn_protection",
+	"ui_inv_outfit_shock_protection",
+	"ui_inv_outfit_strike_protection",
+	"ui_inv_outfit_wound_protection",
+	"ui_inv_outfit_radiation_protection",
+	"ui_inv_outfit_telepatic_protection",
+	"ui_inv_outfit_chemical_burn_protection",
+	"ui_inv_outfit_explosion_protection",
 	"ui_inv_outfit_fire_wound_protection",
 };
 
@@ -47,7 +58,7 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 	strconcat(sizeof(_buff), _buff, _base, ":scroll_view");
 	CUIXmlInit::InitScrollView(xml_doc, _buff, 0, m_listWnd);
 
-	for (u32 i = ALife::eHitTypeBurn; i <= ALife::eHitTypeFireWound; ++i)
+	for(u32 i = ALife::eHitTypeBurn; i <= ALife::eHitTypeFireWound; ++i)
 	{
 		m_items[i] = xr_new<CUIStatic>();
 		CUIStatic* _s = m_items[i];
@@ -86,9 +97,9 @@ void CUIOutfitInfo::SetItem(u32 hitType, bool force_add)
 	_val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(hitType));
 	_val_af = 1.0f - _val_af;
 
-	if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
+	if(fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
 	{
-		if (_s->GetParent() != NULL)
+		if(_s->GetParent() != NULL)
 			m_listWnd->RemoveWindow(_s);
 		return;
 	}
@@ -100,13 +111,13 @@ void CUIOutfitInfo::SetItem(u32 hitType, bool force_add)
 	_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_outfit > 0.0f) ? "%c[green]" : "%c[red]",
 					 _val_outfit * 100.0f);
 
-	if (!fsimilar(_val_af, 0.0f))
+	if(!fsimilar(_val_af, 0.0f))
 	{
 		_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]",
 						 _val_af * 100.0f);
 	}
 	_s->SetText(_buff);
 
-	if (_s->GetParent() == NULL)
+	if(_s->GetParent() == NULL)
 		m_listWnd->AddWindow(_s, false);
 }

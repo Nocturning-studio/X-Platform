@@ -6,13 +6,13 @@
 
 void CResourceManager::OnDeviceDestroy(BOOL)
 {
-	if (Device.b_is_Ready)
+	if(Device.b_is_Ready)
 		return;
 
 	m_textures_description.UnLoad();
 
 	// Release blenders
-	for (map_BlenderIt b = m_blenders.begin(); b != m_blenders.end(); b++)
+	for(map_BlenderIt b = m_blenders.begin(); b != m_blenders.end(); b++)
 	{
 		xr_free((char*&)b->first);
 		IBlender::Destroy(b->second);
@@ -20,7 +20,7 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 	m_blenders.clear();
 
 	// destroy TD
-	for (map_TDIt _t = m_td.begin(); _t != m_td.end(); _t++)
+	for(map_TDIt _t = m_td.begin(); _t != m_td.end(); _t++)
 	{
 		xr_free((char*&)_t->first);
 		xr_free((char*&)_t->second.T);
@@ -36,7 +36,7 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 
 void CResourceManager::OnDeviceCreate(IReader* F)
 {
-	if (!Device.b_is_Ready)
+	if(!Device.b_is_Ready)
 		return;
 
 #ifndef _EDITOR
@@ -47,17 +47,17 @@ void CResourceManager::OnDeviceCreate(IReader* F)
 
 	// Load blenders
 	fs = F->open_chunk(2);
-	if (fs)
+	if(fs)
 	{
 		IReader* chunk = NULL;
 		int chunk_id = 0;
 
-		while ((chunk = fs->open_chunk(chunk_id)) != NULL)
+		while((chunk = fs->open_chunk(chunk_id)) != NULL)
 		{
 			CBlender_DESC desc;
 			chunk->r(&desc, sizeof(desc));
 			IBlender* B = IBlender::Create(desc.CLS);
-			if (0 == B)
+			if(0 == B)
 			{
 #ifdef EDITOR
 				Msg("! Renderer doesn't support blender '%s'", desc.cName);
@@ -66,7 +66,7 @@ void CResourceManager::OnDeviceCreate(IReader* F)
 			else
 			{
 #ifdef EDITOR
-				if (B->getDescription().version != desc.version)
+				if(B->getDescription().version != desc.version)
 				{
 					Msg("! Version conflict in shader '%s'", desc.cName);
 				}
@@ -90,7 +90,7 @@ void CResourceManager::OnDeviceCreate(IReader* F)
 void CResourceManager::OnDeviceCreate(LPCSTR shName)
 {
 #ifdef _EDITOR
-	if (!FS.exist(shName))
+	if(!FS.exist(shName))
 		return;
 #endif
 
@@ -100,7 +100,7 @@ void CResourceManager::OnDeviceCreate(LPCSTR shName)
 	IReader* F = FS.r_open(shName);
 	R_ASSERT2(F, shName);
 	F->r(&id, 8);
-	if (0 == strncmp(id, ID, 8))
+	if(0 == strncmp(id, ID, 8))
 	{
 		FATAL("Unsupported blender library. Compressed?");
 	}
@@ -110,18 +110,18 @@ void CResourceManager::OnDeviceCreate(LPCSTR shName)
 
 void CResourceManager::StoreNecessaryTextures()
 {
-	if (!m_necessary.empty())
+	if(!m_necessary.empty())
 		return;
 
 	map_TextureIt it = m_textures.begin();
 	map_TextureIt it_e = m_textures.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		LPCSTR texture_name = it->first;
-		if (strstr(texture_name, "\\levels\\"))
+		if(strstr(texture_name, "\\levels\\"))
 			continue;
-		if (!strchr(texture_name, '\\'))
+		if(!strchr(texture_name, '\\'))
 			continue;
 
 		ref_texture T;

@@ -24,7 +24,7 @@ void CStateChimeraThreatenRoarAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraThreatenRoarAbstract::check_completion()
 {
-	if (time_state_started + STATE_TIME_OUT < Engine.TimeManager.GetGlobalTimeMs())
+	if(time_state_started + STATE_TIME_OUT < Engine.TimeManager.GetGlobalTimeMs())
 		return true;
 	return false;
 }

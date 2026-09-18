@@ -11,23 +11,23 @@
 
 static int ParseName(LPCSTR N)
 {
-	if (0 == xr_strcmp(N, "$null"))
+	if(0 == xr_strcmp(N, "$null"))
 		return -1;
-	if (0 == xr_strcmp(N, "$base0"))
+	if(0 == xr_strcmp(N, "$base0"))
 		return 0;
-	if (0 == xr_strcmp(N, "$base1"))
+	if(0 == xr_strcmp(N, "$base1"))
 		return 1;
-	if (0 == xr_strcmp(N, "$base2"))
+	if(0 == xr_strcmp(N, "$base2"))
 		return 2;
-	if (0 == xr_strcmp(N, "$base3"))
+	if(0 == xr_strcmp(N, "$base3"))
 		return 3;
-	if (0 == xr_strcmp(N, "$base4"))
+	if(0 == xr_strcmp(N, "$base4"))
 		return 4;
-	if (0 == xr_strcmp(N, "$base5"))
+	if(0 == xr_strcmp(N, "$base5"))
 		return 5;
-	if (0 == xr_strcmp(N, "$base6"))
+	if(0 == xr_strcmp(N, "$base6"))
 		return 6;
-	if (0 == xr_strcmp(N, "$base7"))
+	if(0 == xr_strcmp(N, "$base7"))
 		return 7;
 	return -1;
 }
@@ -38,11 +38,12 @@ static int ParseName(LPCSTR N)
 
 CBlender_Compile::CBlender_Compile()
 	: detail_texture(nullptr), detail_scaler(nullptr),
-	bEditor(FALSE), bDetail(FALSE),
-	bDetail_Diffuse(FALSE), bDetail_Bump(FALSE),
-	bSteepParallax(FALSE), iElement(0),
-	BT(nullptr), SH(nullptr), dwStage(0)
-{ }
+	  bEditor(FALSE), bDetail(FALSE),
+	  bDetail_Diffuse(FALSE), bDetail_Bump(FALSE),
+	  bSteepParallax(FALSE), iElement(0),
+	  BT(nullptr), SH(nullptr), dwStage(0)
+{
+}
 CBlender_Compile::~CBlender_Compile()
 {
 }
@@ -55,20 +56,20 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
 	detail_texture = NULL;
 	detail_scaler = NULL;
 	LPCSTR base = NULL;
-	if (bDetail && BT->canBeDetailed())
+	if(bDetail && BT->canBeDetailed())
 	{
 		//
 		sh_list& lst = L_textures;
 		int id = ParseName(BT->oT_Name);
 		base = BT->oT_Name;
-		if (id >= 0)
+		if(id >= 0)
 		{
-			if (id >= int(lst.size()))
+			if(id >= int(lst.size()))
 				Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
 			base = *lst[id];
 		}
 		//.		if (!Engine.ResourceManager->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-		if (!Engine.ResourceManager->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
+		if(!Engine.ResourceManager->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
 			bDetail = FALSE;
 	}
 	else
@@ -79,7 +80,7 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
 	// Validate for R1 or R2
 	bDetail_Diffuse = FALSE;
 	bDetail_Bump = FALSE;
-	if (bDetail)
+	if(bDetail)
 		Engine.ResourceManager->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
 	bSteepParallax = FALSE;
@@ -152,7 +153,7 @@ void CBlender_Compile::PassSET_PS(LPCSTR name, LPCSTR entry)
 	xr_strlwr(pass_ps);
 
 	// Если entry задан, копируем, иначе main
-	if (entry && entry[0])
+	if(entry && entry[0])
 		strcpy_s(pass_ps_entry, entry);
 	else
 		strcpy_s(pass_ps_entry, "main");
@@ -164,7 +165,7 @@ void CBlender_Compile::PassSET_VS(LPCSTR name, LPCSTR entry)
 	xr_strlwr(pass_vs);
 
 	// Если entry задан, копируем, иначе main
-	if (entry && entry[0])
+	if(entry && entry[0])
 		strcpy_s(pass_vs_entry, entry);
 	else
 		strcpy_s(pass_vs_entry, "main");
@@ -172,7 +173,7 @@ void CBlender_Compile::PassSET_VS(LPCSTR name, LPCSTR entry)
 
 void CBlender_Compile::PassSET_ZB(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest)
 {
-	if (Pass())
+	if(Pass())
 		bZWrite = FALSE;
 	RS.SetRS(D3DRS_ZFUNC, bZTest ? (bInvertZTest ? D3DCMP_GREATER : D3DCMP_LESSEQUAL) : D3DCMP_ALWAYS);
 	RS.SetRS(D3DRS_ZWRITEENABLE, BC(bZWrite));
@@ -180,7 +181,7 @@ void CBlender_Compile::PassSET_ZB(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest)
 
 void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
 {
-	if (bABlend && D3DBLEND_ONE == abSRC && D3DBLEND_ZERO == abDST)
+	if(bABlend && D3DBLEND_ONE == abSRC && D3DBLEND_ZERO == abDST)
 		bABlend = FALSE;
 	RS.SetRS(D3DRS_ALPHABLENDENABLE, BC(bABlend));
 	RS.SetRS(D3DRS_SRCBLEND, bABlend ? abSRC : D3DBLEND_ONE);
@@ -240,9 +241,9 @@ void CBlender_Compile::commit_Pass()
 
 	// Проверяем, создались ли шейдеры, прежде чем лезть в их константы.
 	// Если шейдер "null", реф-каунтер (p_) будет равен nullptr.
-	if (ps)
+	if(ps)
 		ctable.merge(&ps->constants);
-	if (vs)
+	if(vs)
 		ctable.merge(&vs->constants);
 
 	// SetMapping привязывает сэмплеры к симулятору.
@@ -254,7 +255,7 @@ void CBlender_Compile::set_Constant(LPCSTR name, R_constant_setup* s)
 {
 	R_ASSERT(s);
 	ref_constant C = ctable.get(name);
-	if (C)
+	if(C)
 		C->handler = s;
 }
 
@@ -266,7 +267,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 
 	// Find index
 	ref_constant C = ctable.get(name);
-	if (!C)
+	if(!C)
 		return u32(-1);
 	R_ASSERT(C->type == RC_sampler);
 	u32 stage = C->samp.offset;
@@ -276,7 +277,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 
 void CBlender_Compile::i_Texture(u32 s, LPCSTR name)
 {
-	if (name && xr_strcmp(name, "$null") != 0)
+	if(name && xr_strcmp(name, "$null") != 0)
 		passTextures.push_back(mk_pair(s, ref_texture(Engine.ResourceManager->_CreateTexture(name))));
 }
 
@@ -317,17 +318,17 @@ void CBlender_Compile::i_Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
 u32 CBlender_Compile::set_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, u32 address, u32 fmin, u32 fmip, u32 fmag, bool b_srgb)
 {
 	dwStage = i_Sampler(_name);
-	if (u32(-1) != dwStage)
+	if(u32(-1) != dwStage)
 	{
 		i_Texture(dwStage, texture);
 
 		// force ANISO-TF for "s_base"
-		if ((0 == xr_strcmp(_name, "s_base")) && (fmin == D3DTEXF_LINEAR))
+		if((0 == xr_strcmp(_name, "s_base")) && (fmin == D3DTEXF_LINEAR))
 		{
 			fmin = D3DTEXF_ANISOTROPIC;
 			fmag = D3DTEXF_ANISOTROPIC;
 		}
-		if ((0 == xr_strcmp(_name, "s_detail")) && (fmin == D3DTEXF_LINEAR))
+		if((0 == xr_strcmp(_name, "s_detail")) && (fmin == D3DTEXF_LINEAR))
 		{
 			fmin = D3DTEXF_ANISOTROPIC;
 			fmag = D3DTEXF_ANISOTROPIC;
@@ -353,7 +354,7 @@ void CBlender_Compile::set_Sampler_linear(LPCSTR name, LPCSTR texture, bool b_ps
 void CBlender_Compile::set_Sampler_linear_wrap(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, bool b_SRGB)
 {
 	u32 s = set_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR, b_SRGB);
-	if (u32(-1) != s)
+	if(u32(-1) != s)
 		RS.SetSAMP(s, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
 }
 

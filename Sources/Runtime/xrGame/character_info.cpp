@@ -58,13 +58,13 @@ void CCharacterInfo::InitSpecificCharacter(shared_str new_id)
 	m_SpecificCharacterId = new_id;
 
 	m_SpecificCharacter.Load(m_SpecificCharacterId);
-	if (Rank().value() == NO_RANK)
+	if(Rank().value() == NO_RANK)
 		SetRank(m_SpecificCharacter.Rank());
-	if (Reputation().value() == NO_REPUTATION)
+	if(Reputation().value() == NO_REPUTATION)
 		SetReputation(m_SpecificCharacter.Reputation());
-	if (Community().index() == NO_COMMUNITY_INDEX)
+	if(Community().index() == NO_COMMUNITY_INDEX)
 		SetCommunity(m_SpecificCharacter.Community());
-	if (!m_StartDialog || !m_StartDialog.size())
+	if(!m_StartDialog || !m_StartDialog.size())
 		m_StartDialog = m_SpecificCharacter.data()->m_StartDialog;
 }
 
@@ -83,13 +83,13 @@ void CCharacterInfo::load_shared(LPCSTR)
 	pXML->SetLocalRoot(item_node);
 
 	LPCSTR spec_char = pXML->Read("specific_character", 0, NULL);
-	if (!spec_char)
+	if(!spec_char)
 	{
 		data()->m_CharacterId = NULL;
 
 		LPCSTR char_class = pXML->Read("class", 0, NULL);
 
-		if (char_class)
+		if(char_class)
 		{
 			char* buf_str = xr_strdup(char_class);
 			xr_strlwr(buf_str);
@@ -173,8 +173,8 @@ void CCharacterInfo::save(NET_Packet& stream)
 
 void CCharacterInfo::InitXmlIdToIndex()
 {
-	if (!id_to_index::tag_name)
+	if(!id_to_index::tag_name)
 		id_to_index::tag_name = "character";
-	if (!id_to_index::file_str)
+	if(!id_to_index::file_str)
 		id_to_index::file_str = pSettings->r_string("profiles", "files");
 }

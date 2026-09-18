@@ -25,15 +25,15 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 {
 	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>(itm);
-	if (!itm)
+	if(!itm)
 		return false;
-	if (object()->object().cNameSect() != ci->object()->object().cNameSect())
+	if(object()->object().cNameSect() != ci->object()->object().cNameSect())
 		return false;
-	if (!fsimilar(object()->GetCondition(), ci->object()->GetCondition(), 0.01f))
+	if(!fsimilar(object()->GetCondition(), ci->object()->GetCondition(), 0.01f))
 		return false;
-	if (object()->cast_missile() && ci->object()->cast_missile())
+	if(object()->cast_missile() && ci->object()->cast_missile())
 		return true;
-	if (object()->m_eItemPlace != ci->object()->m_eItemPlace)
+	if(object()->m_eItemPlace != ci->object()->m_eItemPlace)
 		return false;
 	return true;
 }
@@ -44,13 +44,13 @@ CUIAmmoCellItem::CUIAmmoCellItem(CWeaponAmmo* itm) : inherited(itm)
 
 bool CUIAmmoCellItem::EqualTo(CUICellItem* itm)
 {
-	if (!inherited::EqualTo(itm))
+	if(!inherited::EqualTo(itm))
 		return false;
 
 	CUIAmmoCellItem* ci = smart_cast<CUIAmmoCellItem*>(itm);
-	if (!ci)
+	if(!ci)
 		return false;
-	if (object()->cNameSect() != ci->object()->cNameSect())
+	if(object()->cNameSect() != ci->object()->cNameSect())
 		return false;
 
 	return true;
@@ -64,13 +64,13 @@ void CUIAmmoCellItem::Update()
 
 void CUIAmmoCellItem::UpdateItemText()
 {
-	if (NULL == m_custom_draw)
+	if(NULL == m_custom_draw)
 	{
 		xr_vector<CUICellItem*>::iterator it = m_childs.begin();
 		xr_vector<CUICellItem*>::iterator it_e = m_childs.end();
 
 		u16 total = object()->m_boxCurr;
-		for (; it != it_e; ++it)
+		for(; it != it_e; ++it)
 			total = total + ((CUIAmmoCellItem*)(*it))->object()->m_boxCurr;
 
 		string32 str;
@@ -90,13 +90,13 @@ CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm) : inherited(itm)
 	m_addons[eScope] = NULL;
 	m_addons[eLauncher] = NULL;
 
-	if (itm->SilencerAttachable())
+	if(itm->SilencerAttachable())
 		m_addon_offset[eSilencer].set(object()->GetSilencerX(), object()->GetSilencerY());
 
-	if (itm->ScopeAttachable())
+	if(itm->ScopeAttachable())
 		m_addon_offset[eScope].set(object()->GetScopeX(), object()->GetScopeY());
 
-	if (itm->GrenadeLauncherAttachable())
+	if(itm->GrenadeLauncherAttachable())
 		m_addon_offset[eLauncher].set(object()->GetGrenadeLauncherX(), object()->GetGrenadeLauncherY());
 }
 
@@ -144,11 +144,11 @@ void CUIWeaponCellItem::Update()
 {
 	inherited::Update();
 
-	if (object()->SilencerAttachable())
+	if(object()->SilencerAttachable())
 	{
-		if (object()->IsSilencerAttached())
+		if(object()->IsSilencerAttached())
 		{
-			if (!GetIcon(eSilencer))
+			if(!GetIcon(eSilencer))
 			{
 				CreateIcon(eSilencer);
 				InitAddon(GetIcon(eSilencer), *object()->GetSilencerName(), m_addon_offset[eSilencer]);
@@ -156,16 +156,16 @@ void CUIWeaponCellItem::Update()
 		}
 		else
 		{
-			if (m_addons[eSilencer])
+			if(m_addons[eSilencer])
 				DestroyIcon(eSilencer);
 		}
 	}
 
-	if (object()->ScopeAttachable())
+	if(object()->ScopeAttachable())
 	{
-		if (object()->IsScopeAttached())
+		if(object()->IsScopeAttached())
 		{
-			if (!GetIcon(eScope))
+			if(!GetIcon(eScope))
 			{
 				CreateIcon(eScope);
 				InitAddon(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope]);
@@ -173,16 +173,16 @@ void CUIWeaponCellItem::Update()
 		}
 		else
 		{
-			if (m_addons[eScope])
+			if(m_addons[eScope])
 				DestroyIcon(eScope);
 		}
 	}
 
-	if (object()->GrenadeLauncherAttachable())
+	if(object()->GrenadeLauncherAttachable())
 	{
-		if (object()->IsGrenadeLauncherAttached())
+		if(object()->IsGrenadeLauncherAttached())
 		{
-			if (!GetIcon(eLauncher))
+			if(!GetIcon(eLauncher))
 			{
 				CreateIcon(eLauncher);
 				InitAddon(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(), m_addon_offset[eLauncher]);
@@ -190,7 +190,7 @@ void CUIWeaponCellItem::Update()
 		}
 		else
 		{
-			if (m_addons[eLauncher])
+			if(m_addons[eLauncher])
 				DestroyIcon(eLauncher);
 		}
 	}
@@ -198,13 +198,13 @@ void CUIWeaponCellItem::Update()
 
 void CUIWeaponCellItem::OnAfterChild()
 {
-	if (is_silencer() && GetIcon(eSilencer))
+	if(is_silencer() && GetIcon(eSilencer))
 		InitAddon(GetIcon(eSilencer), *object()->GetSilencerName(), m_addon_offset[eSilencer]);
 
-	if (is_scope() && GetIcon(eScope))
+	if(is_scope() && GetIcon(eScope))
 		InitAddon(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope]);
 
-	if (is_launcher() && GetIcon(eLauncher))
+	if(is_launcher() && GetIcon(eLauncher))
 		InitAddon(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(), m_addon_offset[eLauncher]);
 }
 
@@ -239,7 +239,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	CUIDragItem* i = inherited::CreateDragItem();
 	CUIStatic* s = NULL;
 
-	if (GetIcon(eSilencer))
+	if(GetIcon(eSilencer))
 	{
 		s = xr_new<CUIStatic>();
 		s->SetAutoDelete(true);
@@ -249,7 +249,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 		i->wnd()->AttachChild(s);
 	}
 
-	if (GetIcon(eScope))
+	if(GetIcon(eScope))
 	{
 		s = xr_new<CUIStatic>();
 		s->SetAutoDelete(true);
@@ -259,7 +259,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 		i->wnd()->AttachChild(s);
 	}
 
-	if (GetIcon(eLauncher))
+	if(GetIcon(eLauncher))
 	{
 		s = xr_new<CUIStatic>();
 		s->SetAutoDelete(true);
@@ -273,14 +273,14 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 
 bool CUIWeaponCellItem::EqualTo(CUICellItem* itm)
 {
-	if (!inherited::EqualTo(itm))
+	if(!inherited::EqualTo(itm))
 		return false;
 
 	CUIWeaponCellItem* ci = smart_cast<CUIWeaponCellItem*>(itm);
-	if (!ci)
+	if(!ci)
 		return false;
 
-	if (object()->GetAddonsState() != ci->object()->GetAddonsState())
+	if(object()->GetAddonsState() != ci->object()->GetAddonsState())
 		return false;
 
 	return true;

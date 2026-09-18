@@ -43,7 +43,8 @@ struct DemoDataStruct
 	u32 m_dwDataType;
 	u32 m_dwFrame;
 	u32 m_dwTimeReceive;
-	union {
+	union
+	{
 		NET_Packet Packet;
 		DemoFrameTime FrameTime;
 	};

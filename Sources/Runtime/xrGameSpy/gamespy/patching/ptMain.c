@@ -1,5 +1,5 @@
 /*
-GameSpy PT SDK 
+GameSpy PT SDK
 Dan "Mr. Pants" Schoenblum
 dan@gamespy.com
 
@@ -20,10 +20,10 @@ Fax: 949.798.4299
 /************
 ** DEFINES **
 ************/
-#define PTA_DEFAULT_VERCHECK_URL    "http://motd." GSI_DOMAIN_NAME "/motd/vercheck.asp"
-#define PTA_DEFAULT_MOTD_URL        "http://motd." GSI_DOMAIN_NAME "/motd/motd.asp"
-#define PTA_DEFAULT_FILEPLANET_URL  "http://www.fileplanet.com/dlfileraw.asp"
-#define MAX_MIRRORS         32
+#define PTA_DEFAULT_VERCHECK_URL "http://motd." GSI_DOMAIN_NAME "/motd/vercheck.asp"
+#define PTA_DEFAULT_MOTD_URL "http://motd." GSI_DOMAIN_NAME "/motd/motd.asp"
+#define PTA_DEFAULT_FILEPLANET_URL "http://www.fileplanet.com/dlfileraw.asp"
+#define MAX_MIRRORS 32
 #define PTA_MAX_STRING_SIZE 256
 
 char gPTAVercheckURL[PTA_MAX_STRING_SIZE];
@@ -36,32 +36,30 @@ char gPTAFilePlanetURL[PTA_MAX_STRING_SIZE];
 typedef struct ptaPatchData
 {
 	ptPatchCallback callback;
-	void * param;
+	void* param;
 } ptaPatchData;
 
 typedef struct ptaFilePlanetInfoData
 {
 	int fileID;
 	ptFilePlanetInfoCallback callback;
-	void * param;
+	void* param;
 } ptaFilePlanetInfoData;
 
 /************
 ** GLOBALS **
 ************/
-//static char URL[PTA_MAX_STRING_SIZE];
+// static char URL[PTA_MAX_STRING_SIZE];
 
 /**************
 ** FUNCTIONS **
 **************/
-static const char * ptaGetKeyValue
-(
-	const char * buffer,
-	const char * key
-)
+static const char* ptaGetKeyValue(
+	const char* buffer,
+	const char* key)
 {
 	static char value[PTA_MAX_STRING_SIZE];
-	const char * str;
+	const char* str;
 	int len;
 
 	str = strstr(buffer, key);
@@ -77,17 +75,15 @@ static const char * ptaGetKeyValue
 }
 
 static char Line[PTA_MAX_STRING_SIZE];
-static int ptaFillLine
-(
-	const char * buffer
-)
+static int ptaFillLine(
+	const char* buffer)
 {
-	char * str = Line;
+	char* str = Line;
 	int i;
 
 	// Skip white space.
 	////////////////////
-	for(i = 0 ; isspace(*buffer) ; i++)
+	for(i = 0; isspace(*buffer); i++)
 		buffer++;
 
 	// Check for EOF.
@@ -97,7 +93,7 @@ static int ptaFillLine
 
 	// Copy off the line.
 	/////////////////////
-	for( ; *buffer && ((*buffer != 0x0A) && (*buffer != 0x0D)) ; i++)
+	for(; *buffer && ((*buffer != 0x0A) && (*buffer != 0x0D)); i++)
 	{
 		if(i == sizeof(Line) - 1)
 		{
@@ -113,15 +109,13 @@ static int ptaFillLine
 	return i;
 }
 
-static void ptaCallPatchCallback
-(
-	ptaPatchData * data,
+static void ptaCallPatchCallback(
+	ptaPatchData* data,
 	PTBool available,
 	PTBool mandatory,
-	const char * versionName,
+	const char* versionName,
 	int fileID,
-	const char * downloadURL
-)
+	const char* downloadURL)
 {
 	if(data->callback)
 	{
@@ -140,32 +134,28 @@ static void ptaCallPatchCallback
 }
 
 // already returns ghttptrue
-static GHTTPBool ptaPatchFailed
-(
-	ptaPatchData * data
-)
+static GHTTPBool ptaPatchFailed(
+	ptaPatchData* data)
 {
 	ptaCallPatchCallback(data, PTFalse, PTFalse, "", 0, "");
 
 	return GHTTPTrue;
 }
 
-static void ptaCallFilePlanetInfoCallback
-(
-	ptaFilePlanetInfoData * data,
+static void ptaCallFilePlanetInfoCallback(
+	ptaFilePlanetInfoData* data,
 	PTBool found,
-	const char * description,
-	const char * size,
+	const char* description,
+	const char* size,
 	int numMirrors,
-	char ** mirrorNames,
-	char ** mirrorURLs
-)
+	char** mirrorNames,
+	char** mirrorURLs)
 {
 	int i;
 
 	if(data->callback)
 	{
-		if (!found)
+		if(!found)
 			data->callback(data->fileID, PTFalse, NULL, NULL, 0, NULL, NULL, data->param);
 		else
 		{
@@ -180,11 +170,11 @@ static void ptaCallFilePlanetInfoCallback
 
 			UTF8ToUCS2String(description, description_W);
 			AsciiToUCS2String(size, size_W);
-			mirrorNames_W = UTF8ToUCS2StringArrayAlloc((const UTF8String *)mirrorNames, numMirrors);
-			mirrorURLs_W = UTF8ToUCS2StringArrayAlloc((const UTF8String *)mirrorURLs, numMirrors);
+			mirrorNames_W = UTF8ToUCS2StringArrayAlloc((const UTF8String*)mirrorNames, numMirrors);
+			mirrorURLs_W = UTF8ToUCS2StringArrayAlloc((const UTF8String*)mirrorURLs, numMirrors);
 			data->callback(data->fileID, found, description_W, size_W, numMirrors, (const unsigned short**)mirrorNames_W, (const unsigned short**)mirrorURLs_W, data->param);
 
-			for (i=0; i < numMirrors; i++)
+			for(i = 0; i < numMirrors; i++)
 			{
 				gsifree(mirrorNames[i]);
 				gsifree(mirrorURLs[i]);
@@ -195,7 +185,7 @@ static void ptaCallFilePlanetInfoCallback
 		}
 	}
 
-	for(i = 0 ; i < numMirrors ; i++)
+	for(i = 0; i < numMirrors; i++)
 	{
 		gsifree(mirrorNames[i]);
 		gsifree(mirrorURLs[i]);
@@ -205,27 +195,23 @@ static void ptaCallFilePlanetInfoCallback
 }
 
 // already returns ghttptrue
-static GHTTPBool ptaFilePlanetInfoFailed
-(
-	ptaFilePlanetInfoData * data
-)
+static GHTTPBool ptaFilePlanetInfoFailed(
+	ptaFilePlanetInfoData* data)
 {
 	ptaCallFilePlanetInfoCallback(data, PTFalse, NULL, NULL, 0, NULL, NULL);
 
 	return GHTTPTrue;
 }
 
-static GHTTPBool ptaPatchCompletedCallback
-(
+static GHTTPBool ptaPatchCompletedCallback(
 	GHTTPRequest request,
 	GHTTPResult result,
-	char * buffer,
+	char* buffer,
 	GHTTPByteCount bufferLen,
-	void * param
-)
+	void* param)
 {
-	ptaPatchData * data = (ptaPatchData *)param;
-	const char * value;
+	ptaPatchData* data = (ptaPatchData*)param;
+	const char* value;
 	PTBool mandatory;
 	int fileID;
 	char versionName[PTA_MAX_STRING_SIZE];
@@ -287,19 +273,17 @@ static GHTTPBool ptaPatchCompletedCallback
 	return GHTTPTrue;
 }
 
-PTBool ptCheckForPatchA
-(
+PTBool ptCheckForPatchA(
 	int productID,
-	const char * versionUniqueID,
+	const char* versionUniqueID,
 	int distributionID,
 	ptPatchCallback callback,
 	PTBool blocking,
-	void * param
-)
+	void* param)
 {
 	int charsWritten;
 	char aURL[PTA_MAX_STRING_SIZE];
-	ptaPatchData * data;
+	ptaPatchData* data;
 
 	// check if the backend is available
 	if(__GSIACResult != GSIACAvailable)
@@ -315,12 +299,12 @@ PTBool ptCheckForPatchA
 		return PTFalse;
 
 	// override hostname?
-	if (gPTAVercheckURL[0] == '\0')
+	if(gPTAVercheckURL[0] == '\0')
 		sprintf(gPTAVercheckURL, PTA_DEFAULT_VERCHECK_URL);
 
 	// Store some data.
 	///////////////////
-	data = (ptaPatchData *)gsimalloc(sizeof(ptaPatchData));
+	data = (ptaPatchData*)gsimalloc(sizeof(ptaPatchData));
 	if(!data)
 		return PTFalse;
 	memset(data, 0, sizeof(ptaPatchData));
@@ -329,14 +313,14 @@ PTBool ptCheckForPatchA
 
 	// Build the URL.
 	/////////////////
-	charsWritten = 
+	charsWritten =
 		snprintf(aURL, PTA_MAX_STRING_SIZE,
-		"%s?productid=%d&versionuniqueid=%s&distid=%d&gamename=%s",
-		gPTAVercheckURL, productID, versionUniqueID, distributionID,
-		__GSIACGamename);
-	
+				 "%s?productid=%d&versionuniqueid=%s&distid=%d&gamename=%s",
+				 gPTAVercheckURL, productID, versionUniqueID, distributionID,
+				 __GSIACGamename);
+
 	assert(charsWritten >= 0);
-	if (charsWritten < 0)
+	if(charsWritten < 0)
 		return PTFalse;
 
 	// Send the request.
@@ -347,15 +331,13 @@ PTBool ptCheckForPatchA
 	return PTTrue;
 }
 #ifdef GSI_UNICODE
-PTBool ptCheckForPatchW
-(
+PTBool ptCheckForPatchW(
 	int productID,
 	const unsigned short* versionUniqueID,
 	int distributionID,
 	ptPatchCallback callback,
 	PTBool blocking,
-	void * param
-)
+	void* param)
 {
 	char versionUniqueID_A[255];
 	UCS2ToUTF8String(versionUniqueID, versionUniqueID_A);
@@ -363,18 +345,16 @@ PTBool ptCheckForPatchW
 }
 #endif
 
-PTBool ptTrackUsageA
-(
+PTBool ptTrackUsageA(
 	int userID,
 	int productID,
-	const char * versionUniqueID,
+	const char* versionUniqueID,
 	int distributionID,
-	PTBool blocking
-)
+	PTBool blocking)
 {
 	int charsWritten;
 	char aURL[PTA_MAX_STRING_SIZE];
-	
+
 	// check if the backend is available
 	if(__GSIACResult != GSIACAvailable)
 		return PTFalse;
@@ -386,17 +366,17 @@ PTBool ptTrackUsageA
 		return PTFalse;
 
 	// override hostname?
-	if (gPTAMOTDURL[0] == '\0')
+	if(gPTAMOTDURL[0] == '\0')
 		sprintf(gPTAMOTDURL, PTA_DEFAULT_MOTD_URL);
 
 	// Build the URL.
 	/////////////////
-	charsWritten = snprintf(aURL, PTA_MAX_STRING_SIZE, 
-		"%s?userid=%d&productid=%d&versionuniqueid=%s&distid=%d&uniqueid=%s&gamename=%s",
-		gPTAMOTDURL, userID, productID, versionUniqueID,	distributionID,	GOAGetUniqueID(),
-		__GSIACGamename);
+	charsWritten = snprintf(aURL, PTA_MAX_STRING_SIZE,
+							"%s?userid=%d&productid=%d&versionuniqueid=%s&distid=%d&uniqueid=%s&gamename=%s",
+							gPTAMOTDURL, userID, productID, versionUniqueID, distributionID, GOAGetUniqueID(),
+							__GSIACGamename);
 	assert(charsWritten >= 0);
-	if (charsWritten < 0)
+	if(charsWritten < 0)
 		return PTFalse;
 	// Send the info.
 	/////////////////
@@ -406,14 +386,12 @@ PTBool ptTrackUsageA
 	return PTTrue;
 }
 #ifdef GSI_UNICODE
-PTBool ptTrackUsageW
-(
+PTBool ptTrackUsageW(
 	int userID,
 	int productID,
 	const unsigned short* versionUniqueID,
 	int distributionID,
-	PTBool blocking
-)
+	PTBool blocking)
 {
 	char versionUniqueID_A[255];
 	UCS2ToUTF8String(versionUniqueID, versionUniqueID_A);
@@ -421,20 +399,18 @@ PTBool ptTrackUsageW
 }
 #endif
 
-int ptCreateCheckPatchTrackUsageReqA
-(
+int ptCreateCheckPatchTrackUsageReqA(
 	int userID,
 	int productID,
-	const char * versionUniqueID,
+	const char* versionUniqueID,
 	int distributionID,
 	ptPatchCallback callback,
 	PTBool blocking,
-	void * param
-)
+	void* param)
 {
 	int charsWritten;
 	char aURL[PTA_MAX_STRING_SIZE];
-	ptaPatchData * data;
+	ptaPatchData* data;
 	GHTTPRequest aRequest;
 
 	// check if the backend is available
@@ -452,7 +428,7 @@ int ptCreateCheckPatchTrackUsageReqA
 
 	// Store some data.
 	///////////////////
-	data = (ptaPatchData *)gsimalloc(sizeof(ptaPatchData));
+	data = (ptaPatchData*)gsimalloc(sizeof(ptaPatchData));
 	if(!data)
 		return -1;
 	memset(data, 0, sizeof(ptaPatchData));
@@ -460,37 +436,35 @@ int ptCreateCheckPatchTrackUsageReqA
 	data->param = param;
 
 	// override hostname?
-	if (gPTAVercheckURL[0] == '\0')
+	if(gPTAVercheckURL[0] == '\0')
 		sprintf(gPTAVercheckURL, PTA_DEFAULT_VERCHECK_URL);
 
 	// Build the URL.
 	/////////////////
-	charsWritten = snprintf(aURL, PTA_MAX_STRING_SIZE,  
-		"%s?userid=%d&productid=%d&versionuniqueid=%s&distid=%d&uniqueid=%s&gamename=%s",
-		gPTAVercheckURL, userID, productID, versionUniqueID, distributionID,	GOAGetUniqueID(),
-		__GSIACGamename);
+	charsWritten = snprintf(aURL, PTA_MAX_STRING_SIZE,
+							"%s?userid=%d&productid=%d&versionuniqueid=%s&distid=%d&uniqueid=%s&gamename=%s",
+							gPTAVercheckURL, userID, productID, versionUniqueID, distributionID, GOAGetUniqueID(),
+							__GSIACGamename);
 
 	assert(charsWritten >= 0);
-	if (charsWritten < 0)
+	if(charsWritten < 0)
 		return -1;
 
 	// Send the request.
 	////////////////////
 	aRequest = ghttpGetFileA(aURL, (GHTTPBool)blocking, ptaPatchCompletedCallback, data);
-	
+
 	return (int)aRequest;
 }
 
-PTBool ptCheckForPatchAndTrackUsageA
-(
+PTBool ptCheckForPatchAndTrackUsageA(
 	int userID,
 	int productID,
-	const char * versionUniqueID,
+	const char* versionUniqueID,
 	int distributionID,
 	ptPatchCallback callback,
 	PTBool blocking,
-	void * param
-)
+	void* param)
 {
 	// create the request and send it.
 	///////////////////////////////////
@@ -501,16 +475,14 @@ PTBool ptCheckForPatchAndTrackUsageA
 }
 
 #ifdef GSI_UNICODE
-PTBool ptCheckForPatchAndTrackUsageW
-(
+PTBool ptCheckForPatchAndTrackUsageW(
 	int userID,
 	int productID,
-	const unsigned short * versionUniqueID,
+	const unsigned short* versionUniqueID,
 	int distributionID,
 	ptPatchCallback callback,
 	PTBool blocking,
-	void * param
-)
+	void* param)
 {
 	char versionUniqueID_A[255];
 	UCS2ToUTF8String(versionUniqueID, versionUniqueID_A);
@@ -519,16 +491,14 @@ PTBool ptCheckForPatchAndTrackUsageW
 #endif
 
 #ifdef GSI_UNICODE
-int ptCreateCheckPatchTrackUsageReqW
-(
- int userID,
- int productID,
- const unsigned short * versionUniqueID,
- int distributionID,
- ptPatchCallback callback,
- PTBool blocking,
- void * param
- )
+int ptCreateCheckPatchTrackUsageReqW(
+	int userID,
+	int productID,
+	const unsigned short* versionUniqueID,
+	int distributionID,
+	ptPatchCallback callback,
+	PTBool blocking,
+	void* param)
 {
 	char versionUniqueID_A[255];
 	UCS2ToUTF8String(versionUniqueID, versionUniqueID_A);
@@ -536,23 +506,21 @@ int ptCreateCheckPatchTrackUsageReqW
 }
 #endif
 
-static GHTTPBool ptaFilePlanetCompletedCallback
-(
+static GHTTPBool ptaFilePlanetCompletedCallback(
 	GHTTPRequest request,
 	GHTTPResult result,
-	char * buffer,
+	char* buffer,
 	GHTTPByteCount bufferLen,
-	void * param
-)
+	void* param)
 {
-	ptaFilePlanetInfoData * data = (ptaFilePlanetInfoData *)param;
+	ptaFilePlanetInfoData* data = (ptaFilePlanetInfoData*)param;
 	int len;
 	char description[256];
 	char size[64];
-	char * mirrorNames[MAX_MIRRORS];
-	char * mirrorURLs[MAX_MIRRORS];
+	char* mirrorNames[MAX_MIRRORS];
+	char* mirrorURLs[MAX_MIRRORS];
 	int i;
-	char * str;
+	char* str;
 
 	// check if the backend is available
 	if(__GSIACResult != GSIACAvailable)
@@ -586,7 +554,7 @@ static GHTTPBool ptaFilePlanetCompletedCallback
 
 	// Get the mirrors.
 	///////////////////
-	for(i = 0 ; (i < MAX_MIRRORS) && ((len = ptaFillLine(buffer)) != EOF) ; )
+	for(i = 0; (i < MAX_MIRRORS) && ((len = ptaFillLine(buffer)) != EOF);)
 	{
 		// Adjust the buffer.
 		/////////////////////
@@ -601,7 +569,7 @@ static GHTTPBool ptaFilePlanetCompletedCallback
 		// Copy off the name.
 		/////////////////////
 		len = (str - Line);
-		mirrorNames[i] = (char *)gsimalloc((unsigned int)len + 1);
+		mirrorNames[i] = (char*)gsimalloc((unsigned int)len + 1);
 		if(!mirrorNames[i])
 			break;
 		memcpy(mirrorNames[i], Line, (unsigned int)len);
@@ -611,7 +579,7 @@ static GHTTPBool ptaFilePlanetCompletedCallback
 		////////////////////
 		str++;
 		len = (int)strlen(str);
-		mirrorURLs[i] = (char *)gsimalloc((unsigned int)len + 1);
+		mirrorURLs[i] = (char*)gsimalloc((unsigned int)len + 1);
 		if(!mirrorURLs[i])
 		{
 			gsifree(mirrorNames[i]);
@@ -633,16 +601,14 @@ static GHTTPBool ptaFilePlanetCompletedCallback
 
 // 9/7/2004 (xgd) ptLookupFilePlanetInfo() deprecated; per case 2724.
 //
-PTBool ptLookupFilePlanetInfo
-(
+PTBool ptLookupFilePlanetInfo(
 	int fileID,
 	ptFilePlanetInfoCallback callback,
 	PTBool blocking,
-	void * param
-)
+	void* param)
 {
 	char aURL[PTA_MAX_STRING_SIZE];
-	ptaFilePlanetInfoData * data;
+	ptaFilePlanetInfoData* data;
 
 	// Check the arguments.
 	///////////////////////
@@ -651,12 +617,12 @@ PTBool ptLookupFilePlanetInfo
 		return PTFalse;
 
 	// override hostname?
-	if (gPTAFilePlanetURL[0] == '\0')
+	if(gPTAFilePlanetURL[0] == '\0')
 		sprintf(gPTAFilePlanetURL, PTA_DEFAULT_FILEPLANET_URL);
 
 	// Store some data.
 	///////////////////
-	data = (ptaFilePlanetInfoData *)gsimalloc(sizeof(ptaFilePlanetInfoData));
+	data = (ptaFilePlanetInfoData*)gsimalloc(sizeof(ptaFilePlanetInfoData));
 	if(!data)
 		return PTFalse;
 	memset(data, 0, sizeof(ptaFilePlanetInfoData));
@@ -670,10 +636,9 @@ PTBool ptLookupFilePlanetInfo
 	// Now using string size as limit for printing
 	// also null terminate string automatically
 	///////////////////////////////////////////////
-	snprintf(aURL, PTA_MAX_STRING_SIZE, 
-		"%s?file=%d&gamename=%s", gPTAFilePlanetURL, fileID, __GSIACGamename);
-	
-	
+	snprintf(aURL, PTA_MAX_STRING_SIZE,
+			 "%s?file=%d&gamename=%s", gPTAFilePlanetURL, fileID, __GSIACGamename);
+
 	// Send the request.
 	////////////////////
 	if((ghttpGetFileA(aURL, (GHTTPBool)blocking, ptaFilePlanetCompletedCallback, data) == -1) && !blocking)

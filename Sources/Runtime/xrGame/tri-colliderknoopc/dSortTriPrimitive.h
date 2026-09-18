@@ -25,7 +25,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 
 	CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
 	const fvec3* V_array = Level().ObjectSpace.GetStaticVerts();
-	if (no_last_pos || !last_box.contains(box))
+	if(no_last_pos || !last_box.contains(box))
 	{
 
 		fvec3 aabb;
@@ -43,7 +43,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 		dbg_new_queries_per_step++;
 #endif
 		data->cashed_tries.clear();
-		for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
+		for(CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
 		{
 			data->cashed_tries.push_back(Res->id);
 		}
@@ -66,7 +66,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 	bool intersect = false;
 
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgDrawTriTestAABB))
+	if(ph_dbg_draw_mask.test(phDbgDrawTriTestAABB))
 		DBG_DrawAABB(cast_fv(p), AABB, D3DCOLOR_XRGB(0, 0, 255));
 #endif
 
@@ -76,10 +76,10 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 	bool spushing_b_neg = *pushing_b_neg;
 	Triangle neg_tri;	//=&(data->neg_tri);
 	Triangle b_neg_tri; //=&(data->b_neg_tri);
-	if (*pushing_neg)
+	if(*pushing_neg)
 	{
 		CalculateTri(data->neg_tri, p, neg_tri, V_array);
-		if (neg_tri.dist < 0.f)
+		if(neg_tri.dist < 0.f)
 		{
 			dReal sidePr = primitive.Proj(o1, neg_tri.norm);
 			neg_tri.depth = sidePr - neg_tri.dist;
@@ -91,15 +91,15 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 		}
 
 #ifdef DEBUG
-		if (ph_dbg_draw_mask.test(phDbgDrawSavedTries))
+		if(ph_dbg_draw_mask.test(phDbgDrawSavedTries))
 			DBG_DrawTri(neg_tri.T, V_array, D3DCOLOR_XRGB(255, 0, 0));
 #endif
 	}
 
-	if (*pushing_b_neg)
+	if(*pushing_b_neg)
 	{
 		CalculateTri(data->b_neg_tri, p, b_neg_tri, V_array);
-		if (b_neg_tri.dist < 0.f)
+		if(b_neg_tri.dist < 0.f)
 		{
 			dReal sidePr = primitive.Proj(o1, b_neg_tri.norm);
 			b_neg_tri.depth = sidePr - b_neg_tri.dist;
@@ -111,7 +111,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 		}
 
 #ifdef DEBUG
-		if (ph_dbg_draw_mask.test(phDbgDrawSavedTries))
+		if(ph_dbg_draw_mask.test(phDbgDrawSavedTries))
 			DBG_DrawTri(b_neg_tri.T, V_array, D3DCOLOR_XRGB(0, 0, 255));
 #endif
 	}
@@ -119,7 +119,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 	bool b_pushing = *pushing_neg || *pushing_b_neg;
 	gl_cl_tries_state.resize(data->cashed_tries.size(), Flags8().assign(0));
 	B = data->cashed_tries.begin(), E = data->cashed_tries.end();
-	for (I = B; I != E; ++I)
+	for(I = B; I != E; ++I)
 	{
 #ifdef DEBUG
 		dbg_saved_tries_for_active_objects++;
@@ -128,43 +128,43 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 		CDB::TRI* T = T_array + *I;
 		const Point vertices[3] = {Point((dReal*)&V_array[T->verts[0]]), Point((dReal*)&V_array[T->verts[1]]),
 								   Point((dReal*)&V_array[T->verts[2]])};
-		if (!aabb_tri_aabb(Point(p), Point((float*)&AABB), vertices))
+		if(!aabb_tri_aabb(Point(p), Point((float*)&AABB), vertices))
 			continue;
 #ifdef DEBUG
-		if (ph_dbg_draw_mask.test(phDBgDrawIntersectedTries))
+		if(ph_dbg_draw_mask.test(phDBgDrawIntersectedTries))
 			DBG_DrawTri(T, V_array, D3DCOLOR_XRGB(0, 255, 0));
 		dbg_tries_num++;
 #endif
 		Triangle tri;
 		CalculateTri(T, p, tri, vertices);
-		if (tri.dist < 0.f)
+		if(tri.dist < 0.f)
 		{
 #ifdef DEBUG
-			if (ph_dbg_draw_mask.test(phDBgDrawNegativeTries))
+			if(ph_dbg_draw_mask.test(phDBgDrawNegativeTries))
 				DBG_DrawTri(T, V_array, D3DCOLOR_XRGB(0, 0, 255));
 #endif
 			float last_pos_dist = dDOT(last_pos, tri.norm) - tri.pos;
-			if ((!(last_pos_dist < 0.f)) || b_pushing)
-				if (__aabb_tri(Point(p), Point((float*)&AABB), vertices))
+			if((!(last_pos_dist < 0.f)) || b_pushing)
+				if(__aabb_tri(Point(p), Point((float*)&AABB), vertices))
 				{
 #ifdef DEBUG
-					if (ph_dbg_draw_mask.test(phDBgDrawTriesChangesSign))
+					if(ph_dbg_draw_mask.test(phDBgDrawTriesChangesSign))
 						DBG_DrawTri(T, V_array, D3DCOLOR_XRGB(0, 255, 0));
 #endif
 					bool contain_pos =
 						TriContainPoint(vertices[0], vertices[1], vertices[2], tri.norm, tri.side0, tri.side1, p);
-					if (!b_pushing)
+					if(!b_pushing)
 					{
-						if (!no_last_pos)
+						if(!no_last_pos)
 						{
 #ifdef DEBUG
-							if (ph_dbg_draw_mask.test(phDbgDrawTriTrace))
+							if(ph_dbg_draw_mask.test(phDbgDrawTriTrace))
 								DBG_DrawLine(cast_fv(last_pos), cast_fv(p), D3DCOLOR_XRGB(255, 0, 255));
 #endif
 							dVector3 tri_point;
 							PlanePoint(tri, last_pos, p, last_pos_dist, tri_point);
 #ifdef DEBUG
-							if (ph_dbg_draw_mask.test(phDbgDrawTriPoint))
+							if(ph_dbg_draw_mask.test(phDbgDrawTriPoint))
 								DBG_DrawPoint(cast_fv(tri_point), 0.01f, D3DCOLOR_XRGB(255, 0, 255));
 #endif
 							intersect = intersect || TriContainPoint(vertices[0], vertices[1], vertices[2], tri.norm,
@@ -172,7 +172,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 						}
 						else
 						{
-							if (contain_pos && primitive.Proj(o1, tri.norm) > -tri.dist)
+							if(contain_pos && primitive.Proj(o1, tri.norm) > -tri.dist)
 								intersect = true;
 						}
 					}
@@ -181,16 +181,16 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 						intersect = true;
 					}
 
-					if (contain_pos)
+					if(contain_pos)
 					{
 						dReal sidePr = primitive.Proj(o1, tri.norm);
 						tri.depth = sidePr - tri.dist;
-						if (neg_depth > tri.depth &&
-							(!(*pushing_neg || spushing_neg) || dDOT(neg_tri.norm, tri.norm) > -M_SQRT1_2) &&
-							(!(*pushing_b_neg || spushing_b_neg) ||
-							 dDOT(b_neg_tri.norm, tri.norm) >
-								 -M_SQRT1_2)) // exclude switching on opposite side
-											  // &&(!*pushing_b_neg||dDOT(b_neg_tri->norm,tri.norm)>-M_SQRT1_2)
+						if(neg_depth > tri.depth &&
+						   (!(*pushing_neg || spushing_neg) || dDOT(neg_tri.norm, tri.norm) > -M_SQRT1_2) &&
+						   (!(*pushing_b_neg || spushing_b_neg) ||
+							dDOT(b_neg_tri.norm, tri.norm) >
+								-M_SQRT1_2)) // exclude switching on opposite side
+											 // &&(!*pushing_b_neg||dDOT(b_neg_tri->norm,tri.norm)>-M_SQRT1_2)
 						{
 							neg_depth = tri.depth;
 							neg_tri = tri;
@@ -204,9 +204,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 						++b_count;
 						dReal sidePr = primitive.Proj(o1, tri.norm);
 						tri.depth = sidePr - tri.dist;
-						if (b_neg_depth > tri.depth &&
-							(!(*pushing_b_neg || spushing_b_neg) || dDOT(b_neg_tri.norm, tri.norm) > -M_SQRT1_2) &&
-							((!*pushing_neg || !spushing_neg) || dDOT(neg_tri.norm, tri.norm) > -M_SQRT1_2))
+						if(b_neg_depth > tri.depth &&
+						   (!(*pushing_b_neg || spushing_b_neg) || dDOT(b_neg_tri.norm, tri.norm) > -M_SQRT1_2) &&
+						   ((!*pushing_neg || !spushing_neg) || dDOT(neg_tri.norm, tri.norm) > -M_SQRT1_2))
 						{ // exclude switching on opposite side
 						  // &&(!*pushing_neg||dDOT(neg_tri->norm,tri.norm)>-M_SQRT1_2)
 							b_neg_depth = tri.depth;
@@ -221,15 +221,15 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 		else
 		{
 #ifdef DEBUG
-			if (ph_dbg_draw_mask.test(phDBgDrawPositiveTries))
+			if(ph_dbg_draw_mask.test(phDBgDrawPositiveTries))
 				DBG_DrawTri(T, V_array, D3DCOLOR_XRGB(255, 0, 0));
 #endif
-			if (ret > flags - 10)
+			if(ret > flags - 10)
 				continue;
-			if (!b_pushing && (!intersect || no_last_pos))
+			if(!b_pushing && (!intersect || no_last_pos))
 				ret += primitive.Collide(vertices[0], vertices[1], vertices[2], &tri, o1, o2, 3,
 										 CONTACT(contact, ret * skip), skip);
-			if (no_last_pos)
+			if(no_last_pos)
 				pos_tries.push_back(tri);
 		}
 	}
@@ -237,34 +237,34 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 	// if(intersect) ret=0;
 	xr_vector<Triangle>::iterator i;
 
-	if (intersect)
+	if(intersect)
 	{
 
-		if (neg_depth < dInfinity)
+		if(neg_depth < dInfinity)
 		{
 			bool include = true;
-			if (no_last_pos)
-				for (i = pos_tries.begin(); pos_tries.end() != i; ++i)
+			if(no_last_pos)
+				for(i = pos_tries.begin(); pos_tries.end() != i; ++i)
 				{
 					VERIFY(neg_tri.T);
-					if (TriContainPoint((dReal*)&V_array[i->T->verts[0]], (dReal*)&V_array[i->T->verts[1]],
-										(dReal*)&V_array[i->T->verts[2]], i->norm, i->side0, i->side1, p))
-						if (!((dDOT(neg_tri.norm, (dReal*)&V_array[i->T->verts[0]]) - neg_tri.pos) > 0.f) ||
-							!((dDOT(neg_tri.norm, (dReal*)&V_array[i->T->verts[1]]) - neg_tri.pos) > 0.f) ||
-							!((dDOT(neg_tri.norm, (dReal*)&V_array[i->T->verts[2]]) - neg_tri.pos) > 0.f))
+					if(TriContainPoint((dReal*)&V_array[i->T->verts[0]], (dReal*)&V_array[i->T->verts[1]],
+									   (dReal*)&V_array[i->T->verts[2]], i->norm, i->side0, i->side1, p))
+						if(!((dDOT(neg_tri.norm, (dReal*)&V_array[i->T->verts[0]]) - neg_tri.pos) > 0.f) ||
+						   !((dDOT(neg_tri.norm, (dReal*)&V_array[i->T->verts[1]]) - neg_tri.pos) > 0.f) ||
+						   !((dDOT(neg_tri.norm, (dReal*)&V_array[i->T->verts[2]]) - neg_tri.pos) > 0.f))
 						{
 							include = false;
 							break;
 						}
 				};
 
-			if (include)
+			if(include)
 			{
 				VERIFY(neg_tri.T && neg_tri.dist != -dInfinity);
 				int bret = primitive.CollidePlain(neg_tri.side0, neg_tri.side1, neg_tri.norm, neg_tri.T, neg_tri.dist,
 												  o1, o2, flags, CONTACT(contact, 0), skip);
 				*pushing_neg = !!bret;
-				if (*pushing_neg)
+				if(*pushing_neg)
 					ret = bret;
 			}
 		}
@@ -283,17 +283,17 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 
 		//}
 
-		if (b_neg_depth < dInfinity)
+		if(b_neg_depth < dInfinity)
 		{
 
 			bool include = true;
-			if (no_last_pos)
-				for (i = pos_tries.begin(); pos_tries.end() != i; ++i)
+			if(no_last_pos)
+				for(i = pos_tries.begin(); pos_tries.end() != i; ++i)
 				{
 					VERIFY(b_neg_tri.T && b_neg_tri.dist != -dInfinity);
-					if (!((dDOT(b_neg_tri.norm, (dReal*)&V_array[i->T->verts[0]]) - b_neg_tri.pos) > 0.f) ||
-						!((dDOT(b_neg_tri.norm, (dReal*)&V_array[i->T->verts[1]]) - b_neg_tri.pos) > 0.f) ||
-						!((dDOT(b_neg_tri.norm, (dReal*)&V_array[i->T->verts[2]]) - b_neg_tri.pos) > 0.f)
+					if(!((dDOT(b_neg_tri.norm, (dReal*)&V_array[i->T->verts[0]]) - b_neg_tri.pos) > 0.f) ||
+					   !((dDOT(b_neg_tri.norm, (dReal*)&V_array[i->T->verts[1]]) - b_neg_tri.pos) > 0.f) ||
+					   !((dDOT(b_neg_tri.norm, (dReal*)&V_array[i->T->verts[2]]) - b_neg_tri.pos) > 0.f)
 
 					)
 					{
@@ -302,18 +302,18 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGe
 					}
 				};
 
-			if (include)
+			if(include)
 			{
 				VERIFY(b_neg_tri.T);
 				int bret = 0;
-				if (ret < flags - 10)
+				if(ret < flags - 10)
 					bret = primitive.CollidePlain(b_neg_tri.side0, b_neg_tri.side1, b_neg_tri.norm, b_neg_tri.T,
 												  b_neg_tri.dist, o1, o2, flags,
 												  CONTACT(contact, *pushing_neg ? ret * skip : 0), skip);
 				*pushing_b_neg = !!bret;
-				if (*pushing_neg)
+				if(*pushing_neg)
 					ret += bret;
-				else if (*pushing_b_neg)
+				else if(*pushing_b_neg)
 					ret = bret;
 			}
 		}

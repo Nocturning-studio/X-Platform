@@ -25,7 +25,7 @@ class XRCORE_API CInifile
 			  ,
 			  comment(0)
 #endif
-				  {};
+		{};
 	};
 	typedef xr_vector<Item> Items;
 	typedef Items::const_iterator SectCIt;
@@ -95,7 +95,7 @@ class XRCORE_API CInifile
 	LPCSTR r_string(const shared_str& S, LPCSTR L)
 	{
 		return r_string(*S, L);
-	}											// оставляет кавычки
+	} // оставляет кавычки
 	shared_str r_string_wb(LPCSTR S, LPCSTR L); // убирает кавычки
 	shared_str r_string_wb(const shared_str& S, LPCSTR L)
 	{

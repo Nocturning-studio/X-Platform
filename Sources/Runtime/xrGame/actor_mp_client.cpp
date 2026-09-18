@@ -18,7 +18,7 @@ void CActorMP::Die(CObject* killer)
 	conditions().health() = 0.f;
 	inherited::Die(killer);
 
-	if (OnServer())
+	if(OnServer())
 	{ // transfer all items to bag
 	}
 }

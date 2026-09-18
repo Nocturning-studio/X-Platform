@@ -47,7 +47,7 @@ class CPatternFunction : public CBaseFunction
 		u32 dwIndex = dwpTest[tPattern.dwaVariableIndexes[0]];
 		u32 i = 1;
 
-		for (; i < (int)tPattern.dwCardinality; ++i)
+		for(; i < (int)tPattern.dwCardinality; ++i)
 			dwIndex = dwIndex * m_dwaAtomicFeatureRange[tPattern.dwaVariableIndexes[i]] + dwpTest[tPattern.dwaVariableIndexes[i]];
 
 		return (dwIndex + m_dwaPatternIndexes[iPatternIndex]);

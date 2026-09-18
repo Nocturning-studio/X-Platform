@@ -57,7 +57,7 @@ CScriptActionWrapper::_edge_value_type CScriptActionWrapper::weight(const CSCond
 {
 	_edge_value_type _weight = luabind::call_member<_edge_value_type>(const_cast<CScriptActionWrapper*>(this), "weight",
 																	  condition0, condition1);
-	if (_weight < min_weight())
+	if(_weight < min_weight())
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError,
 										"Weight is less than effect count! It is corrected from %d to %d", _weight,

@@ -39,7 +39,7 @@ void CScriptParticlesCustom::PSI_destroy()
 void CScriptParticlesCustom::shedule_Update(u32 _dt)
 {
 	CParticlesObject::shedule_Update(_dt);
-	if (m_animator)
+	if(m_animator)
 	{
 		float dt = float(_dt) / 1000.f;
 		fvec3 prev_pos = m_animator->Transform().c;
@@ -51,9 +51,9 @@ void CScriptParticlesCustom::shedule_Update(u32 _dt)
 }
 void CScriptParticlesCustom::LoadPath(LPCSTR caPathName)
 {
-	if (!m_animator)
+	if(!m_animator)
 		m_animator = xr_new<CObjectAnimator>();
-	if ((0 == m_animator->Name()) || (0 != xr_strcmp(m_animator->Name(), caPathName)))
+	if((0 == m_animator->Name()) || (0 != xr_strcmp(m_animator->Name(), caPathName)))
 	{
 		m_animator->Clear();
 		m_animator->Load(caPathName);
@@ -82,7 +82,7 @@ CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
 
 CScriptParticles::~CScriptParticles()
 {
-	if (m_particles)
+	if(m_particles)
 	{
 		// destroy particles
 		m_particles->PSI_destroy();

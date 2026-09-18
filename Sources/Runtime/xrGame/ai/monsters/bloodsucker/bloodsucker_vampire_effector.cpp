@@ -25,11 +25,11 @@ BOOL CVampirePPEffector::Process(SPPInfo& pp)
 	float time_past_perc = (m_total - fLifeTime) / m_total;
 
 	float factor;
-	if (time_past_perc < TIME_ATTACK)
+	if(time_past_perc < TIME_ATTACK)
 	{
 		factor = 0.75f * time_past_perc / TIME_ATTACK;
 	}
-	else if (time_past_perc > (1 - TIME_ATTACK))
+	else if(time_past_perc > (1 - TIME_ATTACK))
 	{
 		factor = 0.75f * (1 - time_past_perc) / TIME_ATTACK;
 	}
@@ -61,7 +61,7 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const fvec3& src, con
 
 	m_dist = src.distance_to(tgt);
 
-	if (m_dist < V_EFF_BEST_DISTANCE)
+	if(m_dist < V_EFF_BEST_DISTANCE)
 	{
 		m_direction.sub(src, tgt);
 		m_dist = V_EFF_BEST_DISTANCE - m_dist;
@@ -74,7 +74,7 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const fvec3& src, con
 
 	m_direction.normalize();
 
-	dangle_target.set(Random.randFs(V_EFF_DELTA_ANGLE_X), 
+	dangle_target.set(Random.randFs(V_EFF_DELTA_ANGLE_X),
 					  Random.randFs(V_EFF_DELTA_ANGLE_Y),
 					  Random.randFs(V_EFF_DELTA_ANGLE_Z));
 	dangle_current.set(0.f, 0.f, 0.f);
@@ -83,7 +83,7 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const fvec3& src, con
 BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	fLifeTime -= Engine.TimeManager.GetDeltaTime();
-	if (fLifeTime < 0)
+	if(fLifeTime < 0)
 		return FALSE;
 
 	// процент оставшегося времени
@@ -106,7 +106,7 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	Mdef.c.mad(m_direction, cur_dist);
 
 	// check the time to return
-	if (time_left_perc < 0.2f)
+	if(time_left_perc < 0.2f)
 	{
 
 		dangle_target.x = 0.f;
@@ -120,17 +120,17 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	else
 	{
 
-		if (angle_lerp(dangle_current.x, dangle_target.x, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+		if(angle_lerp(dangle_current.x, dangle_target.x, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 		{
 			dangle_target.x = Random.randFs(V_EFF_DELTA_ANGLE_X);
 		}
 
-		if (angle_lerp(dangle_current.y, dangle_target.y, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+		if(angle_lerp(dangle_current.y, dangle_target.y, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 		{
 			dangle_target.y = Random.randFs(V_EFF_DELTA_ANGLE_Y);
 		}
 
-		if (angle_lerp(dangle_current.z, dangle_target.z, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+		if(angle_lerp(dangle_current.z, dangle_target.z, V_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 		{
 			dangle_target.z = Random.randFs(V_EFF_DELTA_ANGLE_Z);
 		}

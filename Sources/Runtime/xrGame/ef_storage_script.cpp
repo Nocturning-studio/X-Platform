@@ -28,14 +28,14 @@ float evaluate(CEF_Storage* ef_storage, LPCSTR function, CScriptGameObject* _0, 
 	ef_storage->alife_evaluation(false);
 
 	CBaseFunction* f = ef_storage->function(function);
-	if (!f)
+	if(!f)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "Cannot find evaluation function %s", function);
 		return (0.f);
 	}
 
 	ef_storage->non_alife().member() = smart_cast<CEntityAlive*>(_0 ? &_0->object() : 0);
-	if (_0 && !ef_storage->non_alife().member())
+	if(_0 && !ef_storage->non_alife().member())
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "object %s is not herited from CSE_ALifeSchedulable!",
 										*_0->cName());
@@ -43,7 +43,7 @@ float evaluate(CEF_Storage* ef_storage, LPCSTR function, CScriptGameObject* _0, 
 	}
 
 	ef_storage->non_alife().enemy() = smart_cast<CEntityAlive*>(_1 ? &_1->object() : 0);
-	if (_1 && !ef_storage->non_alife().enemy())
+	if(_1 && !ef_storage->non_alife().enemy())
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "object %s is not herited from CSE_ALifeSchedulable!",
 										*_1->cName());
@@ -78,14 +78,14 @@ float evaluate(CEF_Storage* ef_storage, LPCSTR function, CSE_ALifeObject* _0, CS
 	ef_storage->alife_evaluation(true);
 
 	CBaseFunction* f = ef_storage->function(function);
-	if (!f)
+	if(!f)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "Cannot find evaluation function %s", function);
 		return (0.f);
 	}
 
 	ef_storage->alife().member() = smart_cast<CSE_ALifeSchedulable*>(_0);
-	if (_0 && !ef_storage->alife().member())
+	if(_0 && !ef_storage->alife().member())
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "object %s is not herited from CSE_ALifeSchedulable!",
 										_1->name_replace());
@@ -93,7 +93,7 @@ float evaluate(CEF_Storage* ef_storage, LPCSTR function, CSE_ALifeObject* _0, CS
 	}
 
 	ef_storage->alife().enemy() = smart_cast<CSE_ALifeSchedulable*>(_1);
-	if (_1 && !ef_storage->alife().enemy())
+	if(_1 && !ef_storage->alife().enemy())
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "object %s is not herited from CSE_ALifeSchedulable!",
 										_1->name_replace());

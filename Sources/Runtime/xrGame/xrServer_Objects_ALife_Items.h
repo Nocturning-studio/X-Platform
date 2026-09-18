@@ -30,7 +30,8 @@ enum
 	inventory_item_linear_null = u8(1) << 2,
 };
 
-union mask_num_items {
+union mask_num_items
+{
 	struct
 	{
 		u8 num_items : 5;

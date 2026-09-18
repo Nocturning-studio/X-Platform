@@ -124,7 +124,7 @@ void CChimera::reinit()
 
 void CChimera::SetTurnAnimation(bool turn_left)
 {
-	if (b_upper_state)
+	if(b_upper_state)
 		(turn_left) ? anim().SetCurAnim(eAnimUpperStandTurnLeft) : anim().SetCurAnim(eAnimUpperStandTurnRight);
 	else
 		(turn_left) ? anim().SetCurAnim(eAnimStandTurnLeft) : anim().SetCurAnim(eAnimStandTurnRight);
@@ -132,22 +132,22 @@ void CChimera::SetTurnAnimation(bool turn_left)
 
 void CChimera::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_THREATEN) == ASP_THREATEN)
+	if((spec_params & ASP_THREATEN) == ASP_THREATEN)
 	{
-		if (b_upper_state)
+		if(b_upper_state)
 			anim().SetCurAnim(eAnimUpperThreaten);
 		else
 			anim().SetCurAnim(eAnimThreaten);
 	}
 
-	if ((spec_params & ASP_ATTACK_RUN) == ASP_ATTACK_RUN)
+	if((spec_params & ASP_ATTACK_RUN) == ASP_ATTACK_RUN)
 	{
 		anim().SetCurAnim(eAnimAttackRun);
 	}
 
-	if (b_upper_state)
+	if(b_upper_state)
 	{
-		switch (anim().GetCurAnim())
+		switch(anim().GetCurAnim())
 		{
 		case eAnimAttack:
 			anim().SetCurAnim(eAnimUpperAttack);
@@ -174,7 +174,7 @@ void CChimera::CheckSpecParams(u32 spec_params)
 
 EAction CChimera::CustomVelocityIndex2Action(u32 velocity_index)
 {
-	switch (velocity_index)
+	switch(velocity_index)
 	{
 	case MonsterMovement::eChimeraVelocityParameterUpperWalkFwd:
 		return ACT_WALK_FWD;
@@ -189,7 +189,7 @@ void CChimera::TranslateActionToPathParams()
 	u32 vel_mask = 0;
 	u32 des_mask = 0;
 
-	switch (anim().m_tAction)
+	switch(anim().m_tAction)
 	{
 	case ACT_STAND_IDLE:
 	case ACT_SIT_IDLE:
@@ -202,14 +202,14 @@ void CChimera::TranslateActionToPathParams()
 		bEnablePath = false;
 		break;
 	case ACT_WALK_FWD:
-		if (b_upper_state)
+		if(b_upper_state)
 		{
 			vel_mask = MonsterMovement::eChimeraVelocityParamsUpperWalkFwd;
 			des_mask = MonsterMovement::eChimeraVelocityParameterUpperWalkFwd;
 		}
 		else
 		{
-			if (m_bDamaged)
+			if(m_bDamaged)
 			{
 				vel_mask = MonsterMovement::eVelocityParamsWalkDamaged;
 				des_mask = MonsterMovement::eVelocityParameterWalkDamaged;
@@ -224,14 +224,14 @@ void CChimera::TranslateActionToPathParams()
 	case ACT_WALK_BKWD:
 		break;
 	case ACT_RUN:
-		if (b_upper_state)
+		if(b_upper_state)
 		{
 			vel_mask = MonsterMovement::eChimeraVelocityParamsUpperWalkFwd;
 			des_mask = MonsterMovement::eChimeraVelocityParameterUpperWalkFwd;
 		}
 		else
 		{
-			if (m_bDamaged)
+			if(m_bDamaged)
 			{
 				vel_mask = MonsterMovement::eVelocityParamsRunDamaged;
 				des_mask = MonsterMovement::eVelocityParameterRunDamaged;
@@ -256,10 +256,10 @@ void CChimera::TranslateActionToPathParams()
 		break;
 	}
 
-	if (m_force_real_speed)
+	if(m_force_real_speed)
 		vel_mask = des_mask;
 
-	if (bEnablePath)
+	if(bEnablePath)
 	{
 		path().set_velocity_mask(vel_mask);
 		path().set_desirable_mask(des_mask);

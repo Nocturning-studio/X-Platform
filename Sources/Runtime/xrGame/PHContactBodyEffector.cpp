@@ -29,14 +29,14 @@ void CPHContactBodyEffector::Apply()
 	dMass mass;
 	dBodyGetMass(m_body, &mass);
 	dReal l_air = linear_velocity_mag * effect; // force/velocity !!!
-	if (l_air > mass.mass / fixed_step)
+	if(l_air > mass.mass / fixed_step)
 		l_air = mass.mass / fixed_step; // validate
 
-	if (!fis_zero(l_air))
+	if(!fis_zero(l_air))
 	{
 		dVector3 force = {-linear_velocity[0] * l_air, -linear_velocity[1] * l_air, -linear_velocity[2] * l_air, 0.f};
 
-		if (!m_material->Flags.is(SGameMtl::flPassable))
+		if(!m_material->Flags.is(SGameMtl::flPassable))
 		{
 			dVector3& norm = m_contact.geom.normal;
 			accurate_normalize(norm);

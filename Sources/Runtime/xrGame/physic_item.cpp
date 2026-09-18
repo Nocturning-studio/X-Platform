@@ -12,23 +12,23 @@
 #include "xrserver_objects.h"
 #include "xrEngine/fbasicvisual.h"
 #include "xrEngine/SkeletonCustom.h"
-#define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z)                                                                    \
-	if (x > y)                                                                                                         \
-		if (x > z)                                                                                                     \
-		{                                                                                                              \
-			inst_x;                                                                                                    \
-		}                                                                                                              \
-		else                                                                                                           \
-		{                                                                                                              \
-			inst_z;                                                                                                    \
-		}                                                                                                              \
-	else if (y > z)                                                                                                    \
-	{                                                                                                                  \
-		inst_y;                                                                                                        \
-	}                                                                                                                  \
-	else                                                                                                               \
-	{                                                                                                                  \
-		inst_z;                                                                                                        \
+#define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z) \
+	if(x > y)                                       \
+		if(x > z)                                   \
+		{                                           \
+			inst_x;                                 \
+		}                                           \
+		else                                        \
+		{                                           \
+			inst_z;                                 \
+		}                                           \
+	else if(y > z)                                  \
+	{                                               \
+		inst_y;                                     \
+	}                                               \
+	else                                            \
+	{                                               \
+		inst_z;                                     \
 	}
 
 CPhysicItem::CPhysicItem()
@@ -66,13 +66,13 @@ void CPhysicItem::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	if (m_ready_to_destroy)
+	if(m_ready_to_destroy)
 		return;
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
 
-	if (!just_before_destroy)
+	if(!just_before_destroy)
 		activate_physic_shell();
 }
 
@@ -88,14 +88,14 @@ void CPhysicItem::OnH_B_Chield()
 
 BOOL CPhysicItem::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate();
 	smart_cast<CKinematics*>(Visual())->CalculateBones();
 	CSE_Abstract* abstract = (CSE_Abstract*)DC;
-	if (0xffff == abstract->ID_Parent)
+	if(0xffff == abstract->ID_Parent)
 	{
-		if (!PPhysicsShell())
+		if(!PPhysicsShell())
 			setup_physic_shell();
 		// else processing_deactivate();//.
 	}
@@ -115,7 +115,7 @@ void CPhysicItem::UpdateCL()
 {
 	//	if (!xr_strcmp("bolt",cName()))
 	//		Log					("--- B - CBolt",renderable.transform);
-	if (!H_Parent() && m_pPhysicsShell && m_pPhysicsShell->isActive())
+	if(!H_Parent() && m_pPhysicsShell && m_pPhysicsShell->isActive())
 		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 	//	if (!xr_strcmp("bolt",cName()))
 	//		Log						("--- C - CBolt",renderable.transform);
@@ -131,7 +131,7 @@ void CPhysicItem::activate_physic_shell()
 	Transform().set(object->Transform());
 	inherited::activate_physic_shell();
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	if (K)
+	if(K)
 	{
 		K->CalculateBones_Invalidate();
 		K->CalculateBones();
@@ -143,7 +143,7 @@ void CPhysicItem::setup_physic_shell()
 {
 	inherited::setup_physic_shell();
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	if (K)
+	if(K)
 	{
 		K->CalculateBones_Invalidate();
 		K->CalculateBones();

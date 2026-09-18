@@ -8,11 +8,11 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CNearestVertexPathManager                                                                                      \
-	CPathManager<CLevelGraph, _DataStorage, SNearestVertex<_dist_type, _index_type, _iteration_type>, _dist_type,      \
+#define CNearestVertexPathManager                                                                                 \
+	CPathManager<CLevelGraph, _DataStorage, SNearestVertex<_dist_type, _index_type, _iteration_type>, _dist_type, \
 				 _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
@@ -44,7 +44,7 @@ IC bool CNearestVertexPathManager::is_goal_reached(const _index_type& node_index
 	best_node = graph->vertex(node_index);
 
 	float current_distance = m_target_position.distance_to_xz_sqr(graph->vertex_position(best_node));
-	if (current_distance < m_best_distance_to_target)
+	if(current_distance < m_best_distance_to_target)
 	{
 		m_best_distance_to_target = current_distance;
 		path->clear();
@@ -72,7 +72,7 @@ IC _dist_type CNearestVertexPathManager::estimate(const _index_type& node_index)
 TEMPLATE_SPECIALIZATION
 IC bool CNearestVertexPathManager::is_accessible(const _index_type& vertex_id) const
 {
-	if (!inherited::is_accessible(vertex_id))
+	if(!inherited::is_accessible(vertex_id))
 		return (false);
 
 	int x4, y4;
@@ -89,7 +89,8 @@ IC bool CNearestVertexPathManager::is_limit_reached(const _iteration_type iterat
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CNearestVertexPathManager::create_path(T& vertex)
+template <typename T>
+IC void CNearestVertexPathManager::create_path(T& vertex)
 {
 }
 

@@ -69,7 +69,7 @@ void CAI_Trader::reload(LPCSTR section)
 
 bool CAI_Trader::bfAssignSound(CScriptEntityAction* tpEntityAction)
 {
-	if (!CScriptEntity::bfAssignSound(tpEntityAction))
+	if(!CScriptEntity::bfAssignSound(tpEntityAction))
 	{
 		// m_cur_head_anim_type	= MonsterSpace::eHeadAnimNone;
 		return (false);
@@ -105,7 +105,7 @@ void CAI_Trader::LookAtActor(CBoneInstance* B)
 	float dy = _abs(angle_normalize_signed(yaw - cur_yaw));
 	clamp(dy, 0.f, 1.f); // FIX BY IXRAY(THANKS BY NSDeathman)
 
-	if (angle_normalize_signed(yaw - cur_yaw) > 0)
+	if(angle_normalize_signed(yaw - cur_yaw) > 0)
 		dy *= -1.f;
 
 	fmat4x4 M;
@@ -122,10 +122,10 @@ BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT(l_tpTrader);
 
 	// проспавнить PDA у InventoryOwner
-	if (!CInventoryOwner::net_Spawn(DC))
+	if(!CInventoryOwner::net_Spawn(DC))
 		return (FALSE);
 
-	if (!inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
 		return (FALSE);
 
 	setVisible(TRUE);
@@ -172,13 +172,13 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	u16 id;
 	CObject* Obj;
 
-	switch (type)
+	switch(type)
 	{
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 		P.r_u16(id);
 		Obj = Level().Objects.net_Find(id);
-		if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(Obj)))
+		if(inventory().CanTakeItem(smart_cast<CInventoryItem*>(Obj)))
 		{
 			Obj->H_SetParent(this);
 			inventory().Take(smart_cast<CGameObject*>(Obj), false, false);
@@ -192,7 +192,8 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 		}
 		break;
 	case GE_TRADE_SELL:
-	case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		P.r_u16(id);
 		Obj = Level().Objects.net_Find(id);
 		bool just_before_destroy = !P.r_eof() && P.r_u8();
@@ -210,15 +211,15 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 
 void CAI_Trader::feel_touch_new(CObject* O)
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
-	if (Remote())
+	if(Remote())
 		return;
 
 	// Now, test for game specific logical objects to minimize traffic
 	CInventoryItem* I = smart_cast<CInventoryItem*>(O);
 
-	if (I && I->useful_for_NPC())
+	if(I && I->useful_for_NPC())
 	{
 		Msg("Taking item %s!", *I->object().cName());
 		NET_Packet P;
@@ -230,7 +231,7 @@ void CAI_Trader::feel_touch_new(CObject* O)
 
 void CAI_Trader::DropItemSendMessage(CObject* O)
 {
-	if (!O || !O->H_Parent() || (this != O->H_Parent()))
+	if(!O || !O->H_Parent() || (this != O->H_Parent()))
 		return;
 
 	Msg("Dropping item!");
@@ -246,7 +247,7 @@ void CAI_Trader::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 	UpdateInventoryOwner(dt);
 
-	if (GetScriptControl())
+	if(GetScriptControl())
 		ProcessScripts();
 	else
 		Think();
@@ -263,7 +264,7 @@ void CAI_Trader::g_WeaponBones(int& L, int& R1, int& R2)
 void CAI_Trader::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 {
 	VERIFY(inventory().ActiveItem());
-	if (g_Alive() && inventory().ActiveItem())
+	if(g_Alive() && inventory().ActiveItem())
 	{
 		Center(P);
 		D.setHP(0, 0);
@@ -288,12 +289,12 @@ void CAI_Trader::net_Destroy()
 
 void CAI_Trader::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 	sound().update(Engine.TimeManager.GetDeltaTime());
 
-	if (!GetScriptControl() && !bfScriptAnimation())
+	if(!GetScriptControl() && !bfScriptAnimation())
 		animation().update_frame();
 }
 
@@ -362,10 +363,10 @@ ALife::ERelationType CAI_Trader::tfGetRelationType(const CEntityAlive* tpEntityA
 
 	ALife::ERelationType relation = ALife::eRelationTypeDummy;
 
-	if (pOtherIO && !(const_cast<CEntityAlive*>(tpEntityAlive)->cast_base_monster()))
+	if(pOtherIO && !(const_cast<CEntityAlive*>(tpEntityAlive)->cast_base_monster()))
 		relation = RELATION_REGISTRY().GetRelationType(static_cast<const CInventoryOwner*>(this), pOtherIO);
 
-	if (ALife::eRelationTypeDummy != relation)
+	if(ALife::eRelationTypeDummy != relation)
 		return relation;
 	else
 		return inherited::tfGetRelationType(tpEntityAlive);
@@ -384,10 +385,10 @@ DLL_Pure* CAI_Trader::_construct()
 
 bool CAI_Trader::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return (true);
 
-	if (item->object().CLS_ID == CLSID_DEVICE_PDA)
+	if(item->object().CLS_ID == CLSID_DEVICE_PDA)
 		return (false);
 
 	return (CInventoryOwner::AllowItemToTrade(item, place));

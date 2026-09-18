@@ -44,7 +44,7 @@ void CUILabel::SetHeight(float height)
 
 void CUILabel::SetLightAnim(LPCSTR lanim)
 {
-	if (lanim && xr_strlen(lanim))
+	if(lanim && xr_strlen(lanim))
 		m_lanim = LALib.FindItem(lanim);
 	else
 		m_lanim = NULL;
@@ -53,9 +53,9 @@ void CUILabel::SetLightAnim(LPCSTR lanim)
 void CUILabel::Update()
 {
 	CUIFrameLineWnd::Update();
-	if (m_lanim)
+	if(m_lanim)
 	{
-		if (m_lainm_start_time < 0.0f)
+		if(m_lainm_start_time < 0.0f)
 			m_lainm_start_time = Engine.TimeManager.GetGlobalTime();
 		int frame;
 		u32 clr = m_lanim->CalculateRGB(Engine.TimeManager.GetGlobalTime() - m_lainm_start_time, frame);

@@ -29,6 +29,6 @@ IC float CStalkerMovementRestrictor::weight(const CCoverPoint* cover) const
 
 IC void CStalkerMovementRestrictor::finalize(const CCoverPoint* cover) const
 {
-	if (m_notify_agent_manager)
+	if(m_notify_agent_manager)
 		m_agent_manager->location().make_suitable(m_object, cover);
 }

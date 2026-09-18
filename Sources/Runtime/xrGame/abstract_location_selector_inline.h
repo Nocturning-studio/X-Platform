@@ -61,11 +61,11 @@ IC void CSelectorTemplate::set_query_interval(const u32 query_interval)
 TEMPLATE_SPECIALIZATION
 IC bool CSelectorTemplate::actual(const _vertex_id_type start_vertex_id, bool path_completed)
 {
-	if (!used() || (((m_last_query_time + m_query_interval) > Engine.TimeManager.GetGlobalTimeMs()) && !path_completed))
+	if(!used() || (((m_last_query_time + m_query_interval) > Engine.TimeManager.GetGlobalTimeMs()) && !path_completed))
 		return (true);
 
 	perform_search(start_vertex_id);
-	if (!failed() && dest_vertex_id)
+	if(!failed() && dest_vertex_id)
 		*dest_vertex_id = m_selected_vertex_id;
 
 	return (failed());
@@ -86,10 +86,10 @@ IC bool CSelectorTemplate::used() const
 TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::select_location(const _vertex_id_type start_vertex_id, bool path_completed)
 {
-	if (used() && (((m_last_query_time + m_query_interval) <= Engine.TimeManager.GetGlobalTimeMs()) || path_completed))
+	if(used() && (((m_last_query_time + m_query_interval) <= Engine.TimeManager.GetGlobalTimeMs()) || path_completed))
 	{
 		perform_search(start_vertex_id);
-		if (!failed() && dest_vertex_id)
+		if(!failed() && dest_vertex_id)
 			*dest_vertex_id = m_selected_vertex_id;
 	}
 	else
@@ -99,7 +99,7 @@ IC void CSelectorTemplate::select_location(const _vertex_id_type start_vertex_id
 TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::perform_search(const _vertex_id_type vertex_id)
 {
-	//OPTICK_EVENT("CSelectorTemplate::perform_search");
+	// OPTICK_EVENT("CSelectorTemplate::perform_search");
 
 	START_PROFILE("Build Path/Selector Path");
 
@@ -115,7 +115,7 @@ IC void CSelectorTemplate::perform_search(const _vertex_id_type vertex_id)
 	m_failed = !m_graph->valid_vertex_id(m_evaluator->selected_vertex_id()) ||
 			   (m_evaluator->selected_vertex_id() == m_selected_vertex_id);
 
-	if (!failed())
+	if(!failed())
 		m_selected_vertex_id = m_evaluator->selected_vertex_id();
 
 	after_search();

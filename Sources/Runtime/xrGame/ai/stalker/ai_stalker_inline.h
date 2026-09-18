@@ -44,7 +44,7 @@ IC CStalkerMovementManager& CAI_Stalker::movement() const
 
 IC bool CAI_Stalker::frame_check(u32& frame)
 {
-	if (Engine.TimeManager.GetFrameCount() == frame)
+	if(Engine.TimeManager.GetFrameCount() == frame)
 		return (false);
 
 	frame = Engine.TimeManager.GetFrameCount();

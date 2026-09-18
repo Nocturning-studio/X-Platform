@@ -18,12 +18,12 @@ class CBlender_light_occq : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case 0: // occlusion testing
 			C.begin_Pass("accumulating_light_stage_occlusion_culling", "accumulating_light_stage_occlusion_culling",
 						 "main", "main", false,
-					 TRUE, FALSE, FALSE);
+						 TRUE, FALSE, FALSE);
 			C.end_Pass();
 			break;
 		}

@@ -60,7 +60,8 @@ struct SObjectParams
 #endif
 };
 
-template <typename T> struct CObjectParams : public SObjectParams
+template <typename T>
+struct CObjectParams : public SObjectParams
 {
 	IC SRotation orientation(const T* object) const;
 	IC void fill(const T* game_object);
@@ -124,7 +125,8 @@ struct SMemoryObject
 	}
 };
 
-template <typename T> struct CMemoryObject : public SMemoryObject
+template <typename T>
+struct CMemoryObject : public SMemoryObject
 {
 	const T* m_object;
 	CObjectParams<T> m_object_params;

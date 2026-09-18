@@ -71,11 +71,13 @@ class CProblemSolver
 	bool m_failed;
 
   private:
-	template <bool> IC bool is_goal_reached_impl(const _index_type& vertex_index) const
+	template <bool>
+	IC bool is_goal_reached_impl(const _index_type& vertex_index) const
 	{
 		return is_goal_reached_impl(vertex_index);
 	}
-	template <> IC bool is_goal_reached_impl<true>(const _index_type& vertex_index) const
+	template <>
+	IC bool is_goal_reached_impl<true>(const _index_type& vertex_index) const
 	{
 		return is_goal_reached_impl(vertex_index, true);
 	}
@@ -83,11 +85,13 @@ class CProblemSolver
 	IC bool is_goal_reached_impl(const _index_type& vertex_index) const;
 	IC bool is_goal_reached_impl(const _index_type& vertex_index, bool) const;
 
-	template <bool> IC _edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index) const
+	template <bool>
+	IC _edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index) const
 	{
 		return estimate_edge_weight_impl(vertex_index);
 	}
-	template <> IC _edge_value_type estimate_edge_weight_impl<true>(const _index_type& vertex_index) const
+	template <>
+	IC _edge_value_type estimate_edge_weight_impl<true>(const _index_type& vertex_index) const
 	{
 		return estimate_edge_weight_impl(vertex_index, true);
 	}

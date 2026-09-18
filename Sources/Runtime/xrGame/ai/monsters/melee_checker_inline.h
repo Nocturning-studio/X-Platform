@@ -12,7 +12,7 @@ IC void CMeleeChecker::load(LPCSTR section)
 IC void CMeleeChecker::init_attack()
 {
 	// инициализировать стек
-	for (u32 i = 0; i < HIT_STACK_SIZE; i++)
+	for(u32 i = 0; i < HIT_STACK_SIZE; i++)
 		m_hit_stack[i] = true;
 
 	m_current_min_distance = m_min_attack_distance;

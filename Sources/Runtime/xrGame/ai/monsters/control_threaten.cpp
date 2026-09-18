@@ -41,7 +41,7 @@ void CControlThreaten::activate()
 void CControlThreaten::update_schedule()
 {
 	// update direction (face to enemy here)
-	if (m_object->EnemyMan.get_enemy())
+	if(m_object->EnemyMan.get_enemy())
 	{
 		SControlDirectionData* ctrl_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir);
 		VERIFY(ctrl_dir);
@@ -58,16 +58,16 @@ void CControlThreaten::on_release()
 
 bool CControlThreaten::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
+	if(m_man->is_captured_pure())
 		return false;
 
 	const CEntityAlive* enemy = m_object->EnemyMan.get_enemy();
-	if (!enemy)
+	if(!enemy)
 		return false;
 	// check if faced enemy
-	if (!m_man->direction().is_face_target(enemy, PI_DIV_6))
+	if(!m_man->direction().is_face_target(enemy, PI_DIV_6))
 		return false;
 
 	return true;
@@ -75,14 +75,15 @@ bool CControlThreaten::check_start_conditions()
 
 void CControlThreaten::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
 {
-	switch (type)
+	switch(type)
 	{
 	case ControlCom::eventAnimationEnd:
 		m_man->notify(ControlCom::eventThreatenEnd, 0);
 		break;
-	case ControlCom::eventAnimationSignal: {
+	case ControlCom::eventAnimationSignal:
+	{
 		SAnimationSignalEventData* event_data = (SAnimationSignalEventData*)dat;
-		if (event_data->event_id == CControlAnimation::eAnimationCustom)
+		if(event_data->event_id == CControlAnimation::eAnimationCustom)
 			m_object->on_threaten_execute();
 		break;
 	}

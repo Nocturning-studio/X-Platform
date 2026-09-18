@@ -17,20 +17,20 @@ bool CUIMpTradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 #ifdef DEBUG
 	// for debug only
-	if (keyboard_action == WINDOW_KEY_PRESSED && dik == DIK_NUMPAD7)
+	if(keyboard_action == WINDOW_KEY_PRESSED && dik == DIK_NUMPAD7)
 	{
-		if (GetRank() > 0)
+		if(GetRank() > 0)
 			SetRank(clampr(u32(GetRank() - 1), u32(0), u32(4)));
 	}
-	if (keyboard_action == WINDOW_KEY_PRESSED && dik == DIK_NUMPAD8)
+	if(keyboard_action == WINDOW_KEY_PRESSED && dik == DIK_NUMPAD8)
 	{
 		SetRank(clampr(u32(GetRank() + 1), u32(0), u32(4)));
 	}
 #endif
 
-	if (!m_store_hierarchy->CurrentIsRoot())
+	if(!m_store_hierarchy->CurrentIsRoot())
 	{
-		if (m_shop_wnd->OnKeyboard(dik, keyboard_action))
+		if(m_shop_wnd->OnKeyboard(dik, keyboard_action))
 			return true;
 
 		m_root_tab_control->SetAcceleratorsMode(false);
@@ -51,7 +51,7 @@ void CUIMpTradeWnd::Update()
 
 void CUIMpTradeWnd::UpdateMoneyIndicator()
 {
-	if (m_bIgnoreMoneyAndRank)
+	if(m_bIgnoreMoneyAndRank)
 	{
 		m_static_player_money->SetText("---");
 	}
@@ -62,7 +62,7 @@ void CUIMpTradeWnd::UpdateMoneyIndicator()
 		sprintf_s(buff, "%d", m_money);
 		m_static_player_money->SetText(buff);
 		// update preset money
-		for (u32 i = _preset_idx_last; i <= _preset_idx_3; ++i)
+		for(u32 i = _preset_idx_last; i <= _preset_idx_3; ++i)
 		{
 			CUIStatic* st = m_static_preset_money[i];
 			_cost = GetPresetCost((ETradePreset)i);
@@ -76,7 +76,7 @@ void CUIMpTradeWnd::UpdateMoneyIndicator()
 		}
 	}
 
-	if (!(Engine.TimeManager.GetFrameCount() % 30))
+	if(!(Engine.TimeManager.GetFrameCount() % 30))
 	{
 		u32 _cost = 0;
 		string128 buff;
@@ -122,11 +122,11 @@ CInventoryItem* CUIMpTradeWnd::CurrentIItem()
 LPCSTR _team_names[] = {"green", "blue"};
 void CUIMpTradeWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if (m_pCurrentCellItem == itm)
+	if(m_pCurrentCellItem == itm)
 		return;
 	m_pCurrentCellItem = itm;
 	m_item_info->InitItem(CurrentIItem());
-	if (m_pCurrentCellItem)
+	if(m_pCurrentCellItem)
 	{
 		const shared_str& current_sect_name = CurrentIItem()->object().cNameSect();
 		string256 str;
@@ -138,7 +138,7 @@ void CUIMpTradeWnd::SetCurrentItem(CUICellItem* itm)
 		string64 tex_name;
 		string64 team;
 
-		if (m_store_hierarchy->FindItem(current_sect_name))
+		if(m_store_hierarchy->FindItem(current_sect_name))
 		{ // our team
 			strcpy(team, _team_names[m_store_hierarchy->TeamIdx()]);
 		}
@@ -168,7 +168,7 @@ void CUIMpTradeWnd::BindDragDropListEvents(CUIDragDropListEx* lst, bool bDrag)
 	lst->m_f_item_db_click = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIMpTradeWnd::OnItemDbClick);
 	lst->m_f_item_selected = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIMpTradeWnd::OnItemSelected);
 	lst->m_f_item_rbutton_click = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIMpTradeWnd::OnItemRButtonClick);
-	if (bDrag)
+	if(bDrag)
 		lst->m_f_item_start_drag = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIMpTradeWnd::OnItemStartDrag);
 }
 
@@ -179,20 +179,20 @@ bool CUIMpTradeWnd::OnItemDrop(CUICellItem* itm)
 
 	CUIDragDropListEx* _new_owner = CUIDragDropListEx::m_drag_item->BackList();
 
-	if (!_new_owner || _new_owner == _owner_list)
+	if(!_new_owner || _new_owner == _owner_list)
 		return true;
 
 	dd_list_type _new_owner_type = GetListType(_new_owner);
 
 	SBuyItemInfo* iinfo = FindItem(itm);
 
-	if (_owner_type == dd_shop)
+	if(_owner_type == dd_shop)
 	{
 		BuyItemAction(iinfo);
 		return true;
 	}
 
-	if (_new_owner_type == dd_shop)
+	if(_new_owner_type == dd_shop)
 	{
 		SBuyItemInfo* tmp_iinfo = NULL;
 		bool res = TryToSellItem(iinfo, true, tmp_iinfo);
@@ -200,7 +200,7 @@ bool CUIMpTradeWnd::OnItemDrop(CUICellItem* itm)
 		return true;
 	}
 
-	if (_new_owner_type == dd_own_bag)
+	if(_new_owner_type == dd_own_bag)
 	{
 		CUICellItem* citm = _owner_list->RemoveItem(itm, false);
 		_new_owner->SetItem(citm);
@@ -209,7 +209,7 @@ bool CUIMpTradeWnd::OnItemDrop(CUICellItem* itm)
 	else
 	{
 		VERIFY(_new_owner_type == dd_own_slot);
-		if (_new_owner == GetMatchedListForItem(iinfo->m_name_sect))
+		if(_new_owner == GetMatchedListForItem(iinfo->m_name_sect))
 		{
 			CUICellItem* citm = _owner_list->RemoveItem(itm, false);
 			_new_owner->SetItem(citm);
@@ -231,15 +231,17 @@ bool CUIMpTradeWnd::OnItemDbClick(CUICellItem* itm)
 
 	SBuyItemInfo* iinfo = FindItem(itm);
 
-	switch (_owner_type)
+	switch(_owner_type)
 	{
-	case dd_shop: {
+	case dd_shop:
+	{
 		BuyItemAction(iinfo);
 	}
 	break;
 
 	case dd_own_bag:
-	case dd_own_slot: {
+	case dd_own_slot:
+	{
 		SBuyItemInfo* tmp_iinfo = NULL;
 		TryToSellItem(iinfo, true, tmp_iinfo);
 	}
@@ -264,9 +266,9 @@ bool CUIMpTradeWnd::OnItemRButtonClick(CUICellItem* itm)
 
 CUIMpTradeWnd::dd_list_type CUIMpTradeWnd::GetListType(CUIDragDropListEx* l)
 {
-	if (l == m_list[e_shop])
+	if(l == m_list[e_shop])
 		return dd_shop;
-	if (l == m_list[e_player_bag])
+	if(l == m_list[e_player_bag])
 		return dd_own_bag;
 
 	return dd_own_slot;
@@ -280,21 +282,21 @@ CUIDragDropListEx* CUIMpTradeWnd::GetMatchedListForItem(const shared_str& sect_n
 	res = m_list[list_idx];
 
 	// special case
-	if (list_idx == e_pistol_ammo || list_idx == e_rifle_ammo)
+	if(list_idx == e_pistol_ammo || list_idx == e_rifle_ammo)
 	{
 		CUICellItem* ci = (m_list[list_idx - 1]->ItemsCount()) ? m_list[list_idx - 1]->GetItemIdx(0) : NULL;
-		if (!ci)
+		if(!ci)
 			return m_list[e_player_bag];
 
 		CInventoryItem* ii = (CInventoryItem*)ci->m_pData;
 
-		if (!ii->IsNecessaryItem(sect_name))
+		if(!ii->IsNecessaryItem(sect_name))
 			return m_list[e_player_bag];
 	}
 
-	if (list_idx == e_pistol || list_idx == e_rifle || list_idx == e_outfit || list_idx == e_outfit)
+	if(list_idx == e_pistol || list_idx == e_rifle || list_idx == e_outfit || list_idx == e_outfit)
 	{
-		if (m_list[list_idx]->ItemsCount())
+		if(m_list[list_idx]->ItemsCount())
 			return m_list[e_player_bag];
 	}
 	return res;
@@ -315,7 +317,7 @@ shared_str _fake;
 const shared_str& CUIMpTradeWnd::GetWeaponNameByIndex(u8 grpNum, u8 idx)
 {
 	//	return _fake;
-	if (idx >= m_item_mngr->GetItemsCount())
+	if(idx >= m_item_mngr->GetItemsCount())
 		return _fake;
 	return m_item_mngr->GetItemName(u32(idx));
 }
@@ -355,7 +357,7 @@ void CUIMpTradeWnd::IgnoreMoneyAndRank(bool ignore)
 {
 	m_bIgnoreMoneyAndRank = ignore;
 
-	if (m_bIgnoreMoneyAndRank)
+	if(m_bIgnoreMoneyAndRank)
 	{
 		SetMoneyAmount(1);
 		SetRank(0);
@@ -378,19 +380,19 @@ u32 CUIMpTradeWnd::GetPresetCost(ETradePreset idx)
 	preset_items::const_iterator it_e = v.end();
 
 	u32 result = 0;
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		const _preset_item& _one = *it;
 
 		u32 _item_cost = m_item_mngr->GetItemCost(_one.sect_name, GetRank());
 
-		if (_one.addon_names[0].c_str())
+		if(_one.addon_names[0].c_str())
 			_item_cost += m_item_mngr->GetItemCost(_one.addon_names[0], GetRank());
 
-		if (_one.addon_names[1].c_str())
+		if(_one.addon_names[1].c_str())
 			_item_cost += m_item_mngr->GetItemCost(_one.addon_names[1], GetRank());
 
-		if (_one.addon_names[2].c_str())
+		if(_one.addon_names[2].c_str())
 			_item_cost += m_item_mngr->GetItemCost(_one.addon_names[2], GetRank());
 
 		_item_cost *= _one.count;
@@ -406,7 +408,7 @@ void CUIMpTradeWnd::SetSkin(u8 SkinID)
 
 void CUIMpTradeWnd::SetRank(u32 rank)
 {
-	if (m_bIgnoreMoneyAndRank)
+	if(m_bIgnoreMoneyAndRank)
 		rank = _RANK_COUNT - 1;
 	g_mp_restrictions.SetRank(rank);
 
@@ -419,7 +421,7 @@ void CUIMpTradeWnd::SetRank(u32 rank)
 	m_static_player_rank->InitTexture(tex_name);
 	m_static_player_rank->TextureOn();
 
-	if (m_bIgnoreMoneyAndRank)
+	if(m_bIgnoreMoneyAndRank)
 		m_static_player_rank->TextureOff();
 }
 
@@ -432,7 +434,7 @@ void CUIMpTradeWnd::SetMoneyAmount(u32 money)
 {
 	VERIFY(money >= 0);
 	m_money = money;
-	if (m_bIgnoreMoneyAndRank)
+	if(m_bIgnoreMoneyAndRank)
 		m_money = u32(-1);
 }
 

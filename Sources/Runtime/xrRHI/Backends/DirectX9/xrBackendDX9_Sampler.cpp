@@ -6,7 +6,7 @@ RHI_BEGIN
 SamplerHandle CRenderBackendDX9::AllocSamplerHandle(DX9Sampler* sampler)
 {
 	u32 index;
-	if (!m_FreeSamplerIndices.empty())
+	if(!m_FreeSamplerIndices.empty())
 	{
 		index = m_FreeSamplerIndices.top();
 		m_FreeSamplerIndices.pop();
@@ -22,17 +22,17 @@ SamplerHandle CRenderBackendDX9::AllocSamplerHandle(DX9Sampler* sampler)
 
 DX9Sampler* CRenderBackendDX9::GetSampler(SamplerHandle handle)
 {
-	if (!handle.IsValid() || handle.id >= m_Samplers.size())
+	if(!handle.IsValid() || handle.id >= m_Samplers.size())
 		return nullptr;
 	return m_Samplers[handle.id];
 }
 
 void CRenderBackendDX9::FreeSamplerHandle(SamplerHandle handle)
 {
-	if (!handle.IsValid() || handle.id >= m_Samplers.size())
+	if(!handle.IsValid() || handle.id >= m_Samplers.size())
 		return;
 	DX9Sampler* samp = m_Samplers[handle.id];
-	if (!samp)
+	if(!samp)
 	{
 		Print("! [DX9] Double free of SamplerHandle(id=%u) detected, ignoring.", handle.id);
 		return;
@@ -52,7 +52,7 @@ SamplerHandle CRenderBackendDX9::CreateSampler(const SamplerDesc& desc)
 void CRenderBackendDX9::DestroySampler(SamplerHandle handle)
 {
 	DX9Sampler* samp = GetSampler(handle);
-	if (!samp)
+	if(!samp)
 	{
 		Print("! [DX9] DestroySampler: invalid or already destroyed handle (id=%u).", handle.id);
 		return;
@@ -62,7 +62,7 @@ void CRenderBackendDX9::DestroySampler(SamplerHandle handle)
 
 void CRenderBackendDX9::ApplySampler(u32 slot, const SamplerDesc& desc)
 {
-	if (!m_pDevice)
+	if(!m_pDevice)
 		return;
 
 	D3DTEXTUREFILTERTYPE minFilter = RHIFilterToD3D(desc.minFilter);
@@ -79,8 +79,8 @@ void CRenderBackendDX9::ApplySampler(u32 slot, const SamplerDesc& desc)
 	m_pDevice->SetSamplerState(slot, D3DSAMP_MAXANISOTROPY, desc.maxAnisotropy);
 	m_pDevice->SetSamplerState(slot, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)(&desc.mipLODBias)));
 
-	if (desc.addressU == RHI_TextureAddress::Border || desc.addressV == RHI_TextureAddress::Border ||
-		desc.addressW == RHI_TextureAddress::Border)
+	if(desc.addressU == RHI_TextureAddress::Border || desc.addressV == RHI_TextureAddress::Border ||
+	   desc.addressW == RHI_TextureAddress::Border)
 	{
 		D3DCOLOR borderColor =
 			D3DCOLOR_COLORVALUE(desc.borderColor.x, desc.borderColor.y, desc.borderColor.z, desc.borderColor.w);

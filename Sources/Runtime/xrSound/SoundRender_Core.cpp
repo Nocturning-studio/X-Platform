@@ -93,7 +93,7 @@ void CSoundRender_Core::_initialize(u64 window)
 	Msg("Initializing OpenAL...");
 	pDeviceList = xr_new<ALDeviceList>();
 
-	if (0 == pDeviceList->GetNumDevices())
+	if(0 == pDeviceList->GetNumDevices())
 	{
 		Log("* OpenAL: Can't create sound device.");
 		xr_delete(pDeviceList);
@@ -107,7 +107,7 @@ void CSoundRender_Core::_initialize(u64 window)
 
 	pDevice = alcOpenDevice(deviceDesc.name.c_str());
 
-	if (!pDevice)
+	if(!pDevice)
 	{
 		Log(" OpenAL: Failed to create device.");
 		bPresent = FALSE;
@@ -121,7 +121,7 @@ void CSoundRender_Core::_initialize(u64 window)
 
 	pContext = alcCreateContext(pDevice, NULL);
 
-	if (!pContext)
+	if(!pContext)
 	{
 		Log(" OpenAL: Failed to create context.");
 		bPresent = FALSE;
@@ -143,22 +143,22 @@ void CSoundRender_Core::_initialize(u64 window)
 
 	bEAX = true;
 	eaxSet = (EAXSet)alGetProcAddress((const ALchar*)"EAXSet");
-	if (eaxSet == NULL)
+	if(eaxSet == NULL)
 		bEAX = false;
 	eaxGet = (EAXGet)alGetProcAddress((const ALchar*)"EAXGet");
-	if (eaxGet == NULL)
+	if(eaxGet == NULL)
 		bEAX = false;
 
-	if (bEAX)
+	if(bEAX)
 	{
 		bDeferredEAX = EAXTestSupport(TRUE);
 		bEAX = EAXTestSupport(FALSE);
 
-		if (bEAX)
+		if(bEAX)
 			Msg("-  OpenAL: EAX Supported");
 		else
 			Msg("!  OpenAL: EAX Unsupported");
-		if (bDeferredEAX)
+		if(bDeferredEAX)
 			Msg("!  OpenAL: EAX Deffered");
 	}
 
@@ -174,10 +174,10 @@ void CSoundRender_Core::_initialize(u64 window)
 	bReady = TRUE;
 
 	CSoundRender_Target* T = nullptr;
-	for (u32 tit = 0; tit < u32(psSoundTargets); tit++)
+	for(u32 tit = 0; tit < u32(psSoundTargets); tit++)
 	{
 		T = xr_new<CSoundRender_Target>();
-		if (T->_initialize())
+		if(T->_initialize())
 		{
 			s_targets.push_back(T);
 		}
@@ -198,18 +198,18 @@ void CSoundRender_Core::_clear()
 	bReady = FALSE;
 	cache.destroy();
 
-	for (u32 sit = 0; sit < s_sources.size(); sit++)
+	for(u32 sit = 0; sit < s_sources.size(); sit++)
 		xr_delete(s_sources[sit]);
 	s_sources.clear();
 
-	for (u32 eit = 0; eit < s_emitters.size(); eit++)
+	for(u32 eit = 0; eit < s_emitters.size(); eit++)
 		xr_delete(s_emitters[eit]);
 	s_emitters.clear();
 
 	g_target_temp_data.clear();
 
 	CSoundRender_Target* T = 0;
-	for (u32 tit = 0; tit < s_targets.size(); tit++)
+	for(u32 tit = 0; tit < s_targets.size(); tit++)
 	{
 		T = s_targets[tit];
 		T->_destroy();
@@ -232,7 +232,7 @@ void CSoundRender_Core::_restart()
 
 void CSoundRender_Core::set_master_volume(float f)
 {
-	if (bPresent)
+	if(bPresent)
 	{
 		A_CHK(alListenerf(AL_GAIN, f));
 	}
@@ -240,7 +240,7 @@ void CSoundRender_Core::set_master_volume(float f)
 
 void CSoundRender_Core::update_listener(const fvec3& P, const fvec3& D, const fvec3& N, float dt)
 {
-	if (!Listener.position.similar(P))
+	if(!Listener.position.similar(P))
 	{
 		Listener.position.set(P);
 		bListenerMoved = TRUE;
@@ -260,7 +260,7 @@ void CSoundRender_Core::update_listener(const fvec3& P, const fvec3& D, const fv
 
 void CSoundRender_Core::stop_emitters()
 {
-	for (u32 eit = 0; eit < s_emitters.size(); eit++)
+	for(u32 eit = 0; eit < s_emitters.size(); eit++)
 		s_emitters[eit]->stop(FALSE);
 }
 
@@ -269,7 +269,7 @@ int CSoundRender_Core::pause_emitters(bool val)
 	m_iPauseCounter += val ? +1 : -1;
 	VERIFY(m_iPauseCounter >= 0);
 
-	for (u32 it = 0; it < s_emitters.size(); it++)
+	for(u32 it = 0; it < s_emitters.size(); it++)
 		((CSoundRender_Emitter*)s_emitters[it])->pause(val, val ? m_iPauseCounter : m_iPauseCounter + 1);
 
 	return m_iPauseCounter;
@@ -293,7 +293,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	xr_delete(geom_SOM);
 #endif
 
-	if (0 == I)
+	if(0 == I)
 		return;
 
 	// check version
@@ -318,24 +318,24 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	// Create AABB-tree
 #ifdef _EDITOR
 	CDB::Collector* CL = ETOOLS::create_collector();
-	while (!geom->eof())
+	while(!geom->eof())
 	{
 		SOM_poly P;
 		geom->r(&P, sizeof(P));
 		ETOOLS::collector_add_face_pd(CL, P.v1, P.v2, P.v3, *(u32*)&P.occ, 0.01f);
-		if (P.b2sided)
+		if(P.b2sided)
 			ETOOLS::collector_add_face_pd(CL, P.v3, P.v2, P.v1, *(u32*)&P.occ, 0.01f);
 	}
 	geom_SOM = ETOOLS::create_model_cl(CL);
 	ETOOLS::destroy_collector(CL);
 #else
 	CDB::Collector CL;
-	while (!geom->eof())
+	while(!geom->eof())
 	{
 		SOM_poly P;
 		geom->r(&P, sizeof(P));
 		CL.add_face_packed_D(P.v1, P.v2, P.v3, *(u32*)&P.occ, 0.01f);
-		if (P.b2sided)
+		if(P.b2sided)
 			CL.add_face_packed_D(P.v3, P.v2, P.v1, *(u32*)&P.occ, 0.01f);
 	}
 	geom_SOM = xr_new<CDB::MODEL>();
@@ -345,7 +345,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 
 void CSoundRender_Core::create(ref_sound& S, const char* fName, esound_type sound_type, int game_type)
 {
-	if (!bPresent)
+	if(!bPresent)
 		return;
 
 	S._p = xr_new<ref_sound_data>(fName, sound_type, game_type);
@@ -353,16 +353,16 @@ void CSoundRender_Core::create(ref_sound& S, const char* fName, esound_type soun
 
 void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 {
-	if (!bPresent)
+	if(!bPresent)
 		return;
 
 	string_path fn;
 	strcpy_s(fn, fName);
 
-	if (strext(fn))
+	if(strext(fn))
 		*strext(fn) = 0;
 
-	if (S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
+	if(S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
 	{
 #ifdef DEBUG
 		Msg("! 2 file already in queue [%s][%s]", S._p->fn_attached[0].c_str(), S._p->fn_attached[1].c_str());
@@ -378,7 +378,7 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 	S._p->dwBytesTotal += s->bytes_total();
 	S._p->fTimeTotal += s->length_sec();
 
-	if (S._feedback())
+	if(S._feedback())
 		((CSoundRender_Emitter*)S._feedback())->fTimeToStop += s->length_sec();
 
 	SoundRender->i_destroy_source(s);
@@ -386,7 +386,7 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 
 void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int game_type)
 {
-	if (!bPresent)
+	if(!bPresent)
 		return;
 
 	S._p = xr_new<ref_sound_data>();
@@ -401,27 +401,27 @@ void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
 
 void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 {
-	if (!bPresent || 0 == S._handle())
+	if(!bPresent || 0 == S._handle())
 		return;
 
 	S._p->g_object = O;
 
-	if (S._feedback())
+	if(S._feedback())
 		((CSoundRender_Emitter*)S._feedback())->rewind();
 	else
 		i_play(&S, flags & sm_Looped, delay);
 
-	if (flags & sm_NoPitch)
+	if(flags & sm_NoPitch)
 		S._feedback()->set_pitch_using(false);
 
-	if (flags & sm_2D || S._handle()->channels_num() == 2)
+	if(flags & sm_2D || S._handle()->channels_num() == 2)
 		S._feedback()->switch_to_2D();
 }
 
 void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, float delay, fvec3* pos, float* vol,
 										 float* freq, fvec2* range)
 {
-	if (!bPresent || 0 == S._handle())
+	if(!bPresent || 0 == S._handle())
 		return;
 
 	ref_sound_data_ptr orig = S._p;
@@ -436,22 +436,22 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 
 	i_play(&S, flags & sm_Looped, delay);
 
-	if (flags & sm_2D || S._handle()->channels_num() == 2)
+	if(flags & sm_2D || S._handle()->channels_num() == 2)
 		S._feedback()->switch_to_2D();
 
-	if (flags & sm_NoPitch)
+	if(flags & sm_NoPitch)
 		S._feedback()->set_pitch_using(false);
 
-	if (pos)
+	if(pos)
 		S._feedback()->set_position(*pos);
 
-	if (freq)
+	if(freq)
 		S._feedback()->set_frequency(*freq);
 
-	if (range)
+	if(range)
 		S._feedback()->set_range((*range)[0], (*range)[1]);
 
-	if (vol)
+	if(vol)
 		S._feedback()->set_volume(*vol);
 
 	S._p = orig;
@@ -459,28 +459,28 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 
 void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const fvec3& pos, u32 flags, float delay)
 {
-	if (!bPresent || 0 == S._handle())
+	if(!bPresent || 0 == S._handle())
 		return;
 
 	S._p->g_object = O;
 
-	if (S._feedback())
+	if(S._feedback())
 		((CSoundRender_Emitter*)S._feedback())->rewind();
 	else
 		i_play(&S, flags & sm_Looped, delay);
 
 	S._feedback()->set_position(pos);
 
-	if (flags & sm_NoPitch)
+	if(flags & sm_NoPitch)
 		S._feedback()->set_pitch_using(false);
 
-	if (flags & sm_2D || S._handle()->channels_num() == 2)
+	if(flags & sm_2D || S._handle()->channels_num() == 2)
 		S._feedback()->switch_to_2D();
 }
 
 void CSoundRender_Core::destroy(ref_sound& S)
 {
-	if (S._feedback())
+	if(S._feedback())
 	{
 		CSoundRender_Emitter* E = (CSoundRender_Emitter*)S._feedback();
 		E->stop(FALSE);
@@ -494,7 +494,7 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
 	string_path fn;
 	strcpy(fn, fName);
 
-	if (strext(fn))
+	if(strext(fn))
 		*strext(fn) = 0;
 
 	S.handle = (CSound_source*)SoundRender->i_create_source(fn);
@@ -509,7 +509,7 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
 
 void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 {
-	if (S.feedback)
+	if(S.feedback)
 	{
 		CSoundRender_Emitter* E = (CSoundRender_Emitter*)S.feedback;
 		E->stop(FALSE);
@@ -522,24 +522,24 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 
 void CSoundRender_Core::object_relcase(CObject* obj)
 {
-	if (!obj)
+	if(!obj)
 		return;
 
-	for (u32 eit = 0; eit < s_emitters.size(); eit++)
+	for(u32 eit = 0; eit < s_emitters.size(); eit++)
 	{
-		if (s_emitters[eit])
-			if (s_emitters[eit]->owner_data)
-				if (obj == s_emitters[eit]->owner_data->g_object)
+		if(s_emitters[eit])
+			if(s_emitters[eit]->owner_data)
+				if(obj == s_emitters[eit]->owner_data->g_object)
 					s_emitters[eit]->owner_data->g_object = 0;
 	}
 }
 
 void CSoundRender_Core::refresh_sources()
 {
-	for (u32 eit = 0; eit < s_emitters.size(); eit++)
+	for(u32 eit = 0; eit < s_emitters.size(); eit++)
 		s_emitters[eit]->stop(FALSE);
 
-	for (u32 sit = 0; sit < s_sources.size(); sit++)
+	for(u32 sit = 0; sit < s_sources.size(); sit++)
 	{
 		CSoundRender_Source* s = s_sources[sit];
 		s->unload();

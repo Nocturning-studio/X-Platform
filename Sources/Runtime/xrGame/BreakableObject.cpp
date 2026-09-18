@@ -45,7 +45,7 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeObjectBreakable* obj = smart_cast<CSE_ALifeObjectBreakable*>(e);
 	R_ASSERT(obj);
 	inherited::net_Spawn(DC);
-	if (collidable.model)
+	if(collidable.model)
 	{
 		Msg("Model has collidable model - %s", DC->name());
 		collidable.model = nullptr;
@@ -69,19 +69,19 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
 void CBreakableObject::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
-	if (m_pPhysicsShell && !bRemoved && Engine.TimeManager.GetGlobalTimeMs() - m_break_time > m_remove_time)
+	if(m_pPhysicsShell && !bRemoved && Engine.TimeManager.GetGlobalTimeMs() - m_break_time > m_remove_time)
 		SendDestroy();
 }
 void CBreakableObject::UpdateCL()
 {
 	inherited::UpdateCL();
 	//	fmat4x4	d;
-	if (m_pPhysicsShell && m_pPhysicsShell->isFullActive())
+	if(m_pPhysicsShell && m_pPhysicsShell->isFullActive())
 		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 }
 void CBreakableObject::enable_notificate()
 {
-	if (b_resived_damage)
+	if(b_resived_damage)
 		ProcessDamage();
 }
 
@@ -90,16 +90,16 @@ void CBreakableObject::enable_notificate()
 void CBreakableObject::Hit(SHit* pHDS)
 {
 	CheckHitBreak(pHDS->damage(), pHDS->hit_type);
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 	{
-		if (pHDS->hit_type == ALife::eHitTypeExplosion)
+		if(pHDS->hit_type == ALife::eHitTypeExplosion)
 		{
 			ApplyExplosion(pHDS->dir, pHDS->impulse);
 		}
 		else
 		{
 			//. hack: slipch ???
-			if ((pHDS->impulse > EPS) && (BI_NONE != pHDS->bone()))
+			if((pHDS->impulse > EPS) && (BI_NONE != pHDS->bone()))
 				m_pPhysicsShell->applyImpulseTrace(pHDS->p_in_bone_space, pHDS->dir, pHDS->impulse, pHDS->bone());
 		}
 	}
@@ -126,7 +126,7 @@ void CBreakableObject::CreateUnbroken()
 }
 void CBreakableObject::DestroyUnbroken()
 {
-	if (!m_pUnbrokenObject)
+	if(!m_pUnbrokenObject)
 		return;
 	m_pUnbrokenObject->Deactivate();
 	xr_delete(m_pUnbrokenObject);
@@ -192,7 +192,7 @@ void CBreakableObject::ActivateBroken()
 void CBreakableObject::net_Destroy()
 {
 	DestroyUnbroken();
-	if (m_Shell)
+	if(m_Shell)
 	{
 		m_Shell->Deactivate();
 		xr_delete(m_Shell);
@@ -221,13 +221,13 @@ void CBreakableObject::Split()
 
 void CBreakableObject::Break()
 {
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		return;
 	DestroyUnbroken();
 	CreateBroken();
 	ActivateBroken();
 	u16 el_num = m_pPhysicsShell->get_ElementsNumber();
-	for (u16 i = 0; i < el_num; i++)
+	for(u16 i = 0; i < el_num; i++)
 	{
 		fvec3 pos, dir;
 		pos.set(Random.randF(-0.3f, 0.3f), Random.randF(-0.3f, 0.3f), Random.randF(-0.3f, 0.3f));
@@ -241,7 +241,7 @@ void CBreakableObject::Break()
 
 void CBreakableObject::SendDestroy()
 {
-	if (Local())
+	if(Local())
 		DestroyObject();
 	//	NET_Packet		P;
 	//	u_EventGen		(P,GE_DESTROY,ID());
@@ -258,18 +258,18 @@ void CBreakableObject::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, d
 	CBreakableObject* this_object;
 	dBodyID body;
 	float norm_sign;
-	if (usr_data_1 && usr_data_1->ph_ref_object && usr_data_1->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE)
+	if(usr_data_1 && usr_data_1->ph_ref_object && usr_data_1->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE)
 	{
 		body = dGeomGetBody(c.geom.g2);
-		if (!body)
+		if(!body)
 			return;
 		this_object = static_cast<CBreakableObject*>(usr_data_1->ph_ref_object);
 		norm_sign = -1.f;
 	}
-	else if (usr_data_2 && usr_data_2->ph_ref_object && usr_data_2->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE)
+	else if(usr_data_2 && usr_data_2->ph_ref_object && usr_data_2->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE)
 	{
 		body = dGeomGetBody(c.geom.g1);
-		if (!body)
+		if(!body)
 			return;
 		this_object = static_cast<CBreakableObject*>(usr_data_2->ph_ref_object);
 		norm_sign = 1.f;
@@ -277,10 +277,10 @@ void CBreakableObject::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, d
 	else
 		return;
 
-	if (!this_object->m_pUnbrokenObject)
+	if(!this_object->m_pUnbrokenObject)
 		return;
 	float c_damage = E_NlS(body, c.geom.normal, norm_sign);
-	if (this_object->m_damage_threshold < c_damage && this_object->m_max_frame_damage < c_damage)
+	if(this_object->m_damage_threshold < c_damage && this_object->m_max_frame_damage < c_damage)
 	{
 		this_object->b_resived_damage = true;
 		this_object->m_max_frame_damage = c_damage;
@@ -312,30 +312,30 @@ void CBreakableObject::ProcessDamage()
 }
 void CBreakableObject::CheckHitBreak(float power, ALife::EHitType hit_type)
 {
-	if (hit_type != ALife::eHitTypeStrike)
+	if(hit_type != ALife::eHitTypeStrike)
 	{
 		float res_power = power * m_immunity_factor;
-		if (power > m_health_threshhold)
+		if(power > m_health_threshhold)
 			fHealth -= res_power;
 	}
-	if (fHealth <= 0.f)
+	if(fHealth <= 0.f)
 	{
 		Break();
 		return;
 	}
 
-	if (hit_type == ALife::eHitTypeStrike)
+	if(hit_type == ALife::eHitTypeStrike)
 		Break();
 }
 
 void CBreakableObject::ApplyExplosion(const fvec3& dir, float impulse)
 {
-	if (!m_pPhysicsShell)
+	if(!m_pPhysicsShell)
 		return;
 	fvec3 pos;
 	pos.set(0.f, 0.f, 0.f);
 	u16 el_num = m_pPhysicsShell->get_ElementsNumber();
-	for (u16 i = 0; i < el_num; i++)
+	for(u16 i = 0; i < el_num; i++)
 	{
 
 		fvec3 max_area_dir;

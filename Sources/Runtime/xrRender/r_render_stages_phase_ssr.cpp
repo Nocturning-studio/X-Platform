@@ -27,7 +27,7 @@ void CRender::create_backbuffer_mip_chain()
 	RenderBackend.RenderViewportSurface(MipChain->get_surface_level(0));
 
 	// Генерация уровней (Blur pass)
-	for (u32 i = 1; i < MipChain->get_levels_count(); i++)
+	for(u32 i = 1; i < MipChain->get_levels_count(); i++)
 	{
 		RenderBackend.set_Element(RenderTarget->s_reflections->E[SE_SSR_GENERATE_MIP_CHAIN_PASS], 1);
 
@@ -58,7 +58,7 @@ void CRender::render_screen_space_reflections()
 
 	clear_reflections();
 
-	if (ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
+	if(ps_r_postprocess_flags.test(RFLAG_REFLECTIONS))
 	{
 		ReflectionsTexIsCleared = false;
 		create_backbuffer_mip_chain();

@@ -114,7 +114,7 @@ void CPoltergeist::Load(LPCSTR section)
 
 	LPCSTR polter_type = pSettings->r_string(section, "type");
 
-	if (xr_strcmp(polter_type, "flamer") == 0)
+	if(xr_strcmp(polter_type, "flamer") == 0)
 	{
 		m_flame = xr_new<CPolterFlame>(this);
 		m_flame->load(section);
@@ -161,7 +161,7 @@ void CPoltergeist::reinit()
 
 void CPoltergeist::Hide()
 {
-	if (state_invisible)
+	if(state_invisible)
 		return;
 
 	state_invisible = true;
@@ -175,7 +175,7 @@ void CPoltergeist::Hide()
 
 void CPoltergeist::Show()
 {
-	if (!state_invisible)
+	if(!state_invisible)
 		return;
 
 	state_invisible = false;
@@ -201,7 +201,7 @@ void CPoltergeist::UpdateCL()
 
 void CPoltergeist::ForceFinalAnimation()
 {
-	if (state_invisible)
+	if(state_invisible)
 		anim().SetCurAnim(eAnimMiscAction_01);
 }
 
@@ -218,7 +218,7 @@ void CPoltergeist::shedule_Update(u32 dt)
 
 BOOL CPoltergeist::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	// спаунится нивидимым
@@ -238,13 +238,13 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
-	if (m_tele)
+	if(m_tele)
 	{
-		if (state_invisible)
+		if(state_invisible)
 		{
 			setVisible(true);
 
-			if (PPhysicsShell())
+			if(PPhysicsShell())
 			{
 				fmat4x4 M;
 				M.set(Transform());
@@ -270,12 +270,12 @@ void CPoltergeist::Hit(SHit* pHDS)
 
 void CPoltergeist::UpdateHeight()
 {
-	if (!state_invisible)
+	if(!state_invisible)
 		return;
 
 	u32 cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
-	if (time_height_updated < cur_time)
+	if(time_height_updated < cur_time)
 	{
 		time_height_updated = cur_time + Random.randI(HEIGHT_CHANGE_MIN_TIME, HEIGHT_CHANGE_MAX_TIME);
 		target_height = Random.randF(HEIGHT_MIN, HEIGHT_MAX);
@@ -284,7 +284,7 @@ void CPoltergeist::UpdateHeight()
 
 void CPoltergeist::on_activate()
 {
-	if (m_disable_hide)
+	if(m_disable_hide)
 		return;
 
 	Hide();
@@ -295,7 +295,7 @@ void CPoltergeist::on_activate()
 
 void CPoltergeist::on_deactivate()
 {
-	if (m_disable_hide)
+	if(m_disable_hide)
 		return;
 
 	Show();
@@ -322,7 +322,7 @@ void CPoltergeist::net_Relcase(CObject* O)
 CBaseMonster::SDebugInfo CPoltergeist::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
-	if (!info.active)
+	if(!info.active)
 		return CBaseMonster::SDebugInfo();
 
 	string128 text;

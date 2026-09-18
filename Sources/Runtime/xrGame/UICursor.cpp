@@ -31,7 +31,7 @@ void CUICursor::InitInternal()
 	m_static->SetOriginalRect(rect);
 	fvec2 sz;
 	sz.set(rect.rb);
-	if (UI()->is_16_9_mode())
+	if(UI()->is_16_9_mode())
 		sz.x /= 1.2f;
 
 	m_static->SetWndSize(sz);
@@ -42,15 +42,15 @@ void CUICursor::InitInternal()
 u32 last_render_frame = 0;
 void CUICursor::OnRender()
 {
-	//OPTICK_EVENT("CUICursor::OnRender");
+	// OPTICK_EVENT("CUICursor::OnRender");
 
-	if (!IsVisible())
+	if(!IsVisible())
 		return;
 #ifdef DEBUG
 	VERIFY(last_render_frame != Engine.TimeManager.GetFrameCount());
 	last_render_frame = Engine.TimeManager.GetFrameCount();
 
-	if (bDebug)
+	if(bDebug)
 	{
 		CGameFont* F = UI()->Font()->pFontDI;
 		F->SetAligment(CGameFont::alCenter);
@@ -123,7 +123,7 @@ void CUICursor::SetUICursorPosition(fvec2 pos)
 	SetCursorPos(cpt.x, cpt.y);
 
 	// 5) Жёсткая синхронизация внутренних координат (не ждать физдвижения)
-	if (0)//(m_b_use_win_cursor)
+	if(0) //(m_b_use_win_cursor)
 	{
 		POINT pt{};
 		GetCursorPos(&pt);		   // уже центр по экрану

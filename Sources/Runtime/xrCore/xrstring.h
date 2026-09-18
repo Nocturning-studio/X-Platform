@@ -57,10 +57,10 @@ class shared_str
 	// ref-counting
 	void _dec()
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return;
 		p_->dwReference--;
-		if (0 == p_->dwReference)
+		if(0 == p_->dwReference)
 			p_ = 0;
 	}
 
@@ -68,7 +68,7 @@ class shared_str
 	void _set(str_c rhs)
 	{
 		str_value* v = g_pStringContainer->dock(rhs);
-		if (0 != v)
+		if(0 != v)
 			v->dwReference++;
 		_dec();
 		p_ = v;
@@ -76,7 +76,7 @@ class shared_str
 	void _set(shared_str const& rhs)
 	{
 		str_value* v = rhs.p_;
-		if (0 != v)
+		if(0 != v)
 			v->dwReference++;
 		_dec();
 		p_ = v;
@@ -138,7 +138,7 @@ class shared_str
 	// misc func
 	u32 size() const
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return 0;
 		else
 			return p_->dwLength;
@@ -161,7 +161,7 @@ class shared_str
 		int vs_sz = _vsnprintf(buf, sizeof(buf) - 1, format, p);
 		buf[sizeof(buf) - 1] = 0;
 		va_end(p);
-		if (vs_sz)
+		if(vs_sz)
 			_set(buf);
 		return (shared_str&)*this;
 	}
@@ -211,19 +211,19 @@ IC int xr_strcmp(const char* a, const shared_str& b)
 }
 IC int xr_strcmp(const shared_str& a, const shared_str& b)
 {
-	if (a.equal(b))
+	if(a.equal(b))
 		return 0;
 	else
 		return xr_strcmp(*a, *b);
 }
 IC void xr_strlwr(xr_string& src)
 {
-	for (xr_string::iterator it = src.begin(); it != src.end(); it++)
+	for(xr_string::iterator it = src.begin(); it != src.end(); it++)
 		*it = xr_string::value_type(tolower(*it));
 }
 IC void xr_strlwr(shared_str& src)
 {
-	if (*src)
+	if(*src)
 	{
 		LPSTR lp = xr_strdup(*src);
 		xr_strlwr(lp);

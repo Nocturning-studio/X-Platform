@@ -36,7 +36,8 @@ class CSafeMapIterator
 	virtual ~CSafeMapIterator();
 	IC void add(const _key_type& id, _data_type* value, bool no_assert = false);
 	IC void remove(const _key_type& id, bool no_assert = false);
-	template <typename _update_predicate> IC u32 update(const _update_predicate& predicate);
+	template <typename _update_predicate>
+	IC u32 update(const _update_predicate& predicate);
 	IC void set_process_time(const float& process_time);
 	IC const _REGISTRY& objects() const;
 	IC void clear();

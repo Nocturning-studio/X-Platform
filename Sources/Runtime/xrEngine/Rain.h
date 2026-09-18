@@ -33,16 +33,16 @@ class ENGINE_API CEffect_Rain
 	// В ней нет логики, только данные для GPU.
 	struct RainDrawParam
 	{
-		fvec3 PosHead;  // Позиция головы капли
+		fvec3 PosHead;	// Позиция головы капли
 		fvec3 PosTrail; // Позиция хвоста капли
-		fvec2 UV[4]; // Готовые UV координаты (можно оптимизировать, передавая индекс, но для буфера так быстрее)
+		fvec2 UV[4];	// Готовые UV координаты (можно оптимизировать, передавая индекс, но для буфера так быстрее)
 	};
 
 	struct RainDrop
 	{
-		fvec3 P;	  // Position
+		fvec3 P;	// Position
 		fvec3 Phit; // Hit position (end of life)
-		fvec3 D;	  // Direction
+		fvec3 D;	// Direction
 		float fSpeed;
 		u32 dwTime_Life;
 		u32 dwTime_Hit;
@@ -153,7 +153,7 @@ class ENGINE_API CEffect_Rain
 	SplashParticle* m_particle_idle;
 
 	float m_worker_dt;
-	
+
 	// Буфер отрисовки, один для чтения (GPU), один для записи (CPU/Physics)
 	xr_vector<RainDrawParam> m_render_buffers[2];
 

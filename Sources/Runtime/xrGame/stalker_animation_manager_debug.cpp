@@ -28,10 +28,10 @@ struct animation_id_predicate
 {
 	IC bool operator()(const ANIMATION_ID& _1, const ANIMATION_ID& _2) const
 	{
-		if (_1.first._get() < _2.first._get())
+		if(_1.first._get() < _2.first._get())
 			return (true);
 
-		if (_2.first._get() < _1.first._get())
+		if(_2.first._get() < _1.first._get())
 			return (false);
 
 		return (_1.second._get() < _2.second._get());
@@ -71,12 +71,13 @@ struct blend_id_predicate
 		return (_1._get() < _2._get());
 	}
 
-	template <typename T> IC bool less(const std::pair<T, T>& _1, const std::pair<T, T>& _2) const
+	template <typename T>
+	IC bool less(const std::pair<T, T>& _1, const std::pair<T, T>& _2) const
 	{
-		if (less(_1.first, _2.first))
+		if(less(_1.first, _2.first))
 			return (true);
 
-		if (less(_2.first, _1.first))
+		if(less(_2.first, _1.first))
 			return (false);
 
 		return (less(_1.second, _2.second));
@@ -100,7 +101,7 @@ void show_animations()
 	const ANIMATION_STATS_PAIR** i = animations;
 	ANIMATION_STATS::const_iterator I = g_animation_stats.begin();
 	ANIMATION_STATS::const_iterator E = g_animation_stats.end();
-	for (; I != E; ++I, ++i)
+	for(; I != E; ++I, ++i)
 		*i = (const ANIMATION_STATS_PAIR*)&(*I).first;
 
 	struct predicate
@@ -115,7 +116,7 @@ void show_animations()
 	concurrency::parallel_sort(animations, e, &predicate::frame_count);
 
 	Msg("frames starts animation                        animation_set");
-	for (i = animations; i != e; ++i)
+	for(i = animations; i != e; ++i)
 		Msg("%6d %6d %-32s %s", (*i)->second.m_frame_count, (*i)->second.m_start_count, *(*i)->first.first,
 			*(*i)->first.second);
 }
@@ -127,7 +128,7 @@ void show_blends()
 	const BLEND_STATS_PAIR** i = blends;
 	BLEND_STATS::const_iterator I = g_blend_stats.begin();
 	BLEND_STATS::const_iterator E = g_blend_stats.end();
-	for (; I != E; ++I, ++i)
+	for(; I != E; ++I, ++i)
 		*i = (const BLEND_STATS_PAIR*)&(*I).first;
 
 	struct predicate
@@ -143,7 +144,7 @@ void show_blends()
 
 	Msg("       animation_set1                                  animation1    count     animation2                     "
 		"             animation_set2");
-	for (i = blends; i != e; ++i)
+	for(i = blends; i != e; ++i)
 		Msg("%-32s %32s ->[%6d]-> %-32s %32s", *(*i)->first.second.second, *(*i)->first.second.first, (*i)->second,
 			*(*i)->first.first.first, *(*i)->first.first.second);
 }
@@ -151,7 +152,7 @@ void show_blends()
 void show_animation_stats()
 {
 #ifdef DEBUG
-	if (g_animation_stats.empty())
+	if(g_animation_stats.empty())
 		return;
 
 	show_animations();
@@ -165,10 +166,10 @@ void add_animation(const shared_str& animation_id, const shared_str& animation_s
 {
 	ANIMATION_ID query(animation_id, animation_set_id);
 	ANIMATION_STATS::iterator I = g_animation_stats.find(query);
-	if (I != g_animation_stats.end())
+	if(I != g_animation_stats.end())
 	{
 		++((*I).second.m_frame_count);
-		if (just_started)
+		if(just_started)
 			++((*I).second.m_start_count);
 
 		return;
@@ -180,14 +181,14 @@ void add_animation(const shared_str& animation_id, const shared_str& animation_s
 void add_blend(const shared_str& animation_id, const shared_str& animation_set_id, const shared_str& visual_id,
 			   const std::pair<LPCSTR, LPCSTR>* blend_id)
 {
-	if (!blend_id)
+	if(!blend_id)
 		return;
 
 	BLEND_ID query = std::make_pair(std::make_pair(animation_id, animation_set_id),
 									std::make_pair(shared_str(blend_id->first), shared_str(blend_id->second)));
 
 	BLEND_STATS::iterator I = g_blend_stats.find(query);
-	if (I != g_blend_stats.end())
+	if(I != g_blend_stats.end())
 	{
 		++((*I).second);
 		return;
@@ -214,14 +215,14 @@ void CStalkerAnimationManager::add_animation_stats()
 {
 	std::pair<LPCSTR, LPCSTR> blend;
 
-	if (script().animation())
+	if(script().animation())
 	{
 		add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(script().animation()),
 							script().blend_id(m_skeleton_animated, blend), script().m_just_started);
 		return;
 	}
 
-	if (global().animation())
+	if(global().animation())
 	{
 		add_animation_stats(m_skeleton_animated->LL_MotionDefName_dbg(global().animation()),
 							global().blend_id(m_skeleton_animated, blend), global().m_just_started);

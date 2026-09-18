@@ -31,20 +31,20 @@ CStalkerActionDead::CStalkerActionDead(CAI_Stalker* object, LPCSTR action_name) 
 
 bool CStalkerActionDead::fire() const
 {
-	if (object().inventory().TotalWeight() <= 0)
+	if(object().inventory().TotalWeight() <= 0)
 		return (false);
 
 	CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
-	if (!weapon)
+	if(!weapon)
 		return (false);
 
-	if (!weapon->GetAmmoElapsed())
+	if(!weapon->GetAmmoElapsed())
 		return (false);
 
-	if (!object().hammer_is_clutched())
+	if(!object().hammer_is_clutched())
 		return (false);
 
-	if (Engine.TimeManager.GetGlobalTimeMs() - object().GetLevelDeathTime() > 500)
+	if(Engine.TimeManager.GetGlobalTimeMs() - object().GetLevelDeathTime() > 500)
 		return (false);
 
 	return (true);
@@ -54,7 +54,7 @@ void CStalkerActionDead::initialize()
 {
 	inherited::initialize();
 
-	if (!fire())
+	if(!fire())
 		return;
 
 	object().inventory().Action(kWPN_FIRE, CMD_START);
@@ -63,15 +63,15 @@ void CStalkerActionDead::initialize()
 
 	SLOTS::iterator I = object().inventory().m_slots.begin(), B = I;
 	SLOTS::iterator E = object().inventory().m_slots.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((I - B) == (int)object().inventory().GetActiveSlot())
+		if((I - B) == (int)object().inventory().GetActiveSlot())
 			continue;
 
-		if (!(*I).m_pIItem)
+		if(!(*I).m_pIItem)
 			continue;
 
-		if ((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
+		if((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
 			continue;
 
 		object().inventory().Ruck((*I).m_pIItem);
@@ -84,22 +84,22 @@ void CStalkerActionDead::execute()
 
 	object().movement().enable_movement(false);
 
-	if (fire())
+	if(fire())
 		return;
 
 	typedef xr_vector<CInventorySlot> SLOTS;
 
 	SLOTS::iterator I = object().inventory().m_slots.begin(), B = I;
 	SLOTS::iterator E = object().inventory().m_slots.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!(*I).m_pIItem)
+		if(!(*I).m_pIItem)
 			continue;
 
-		if ((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
+		if((*I).m_pIItem->object().CLS_ID == CLSID_IITEM_BOLT)
 			continue;
 
-		if ((I - B) == (int)object().inventory().GetActiveSlot())
+		if((I - B) == (int)object().inventory().GetActiveSlot())
 		{
 			(*I).m_pIItem->SetDropManual(TRUE);
 			continue;

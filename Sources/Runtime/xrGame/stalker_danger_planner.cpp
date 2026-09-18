@@ -48,10 +48,10 @@ void CStalkerDangerPlanner::finalize()
 {
 	inherited::finalize();
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
-	if (object().memory().enemy().selected())
+	if(object().memory().enemy().selected())
 		object().memory().danger().time_line(Engine.TimeManager.GetGlobalTimeMs());
 
 	//	object().sound().remove_active_sounds		(u32(-1));

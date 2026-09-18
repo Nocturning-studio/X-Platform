@@ -26,9 +26,9 @@ CDestroyablePhysicsObject::~CDestroyablePhysicsObject()
 }
 void CDestroyablePhysicsObject::OnChangeVisual()
 {
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 	{
-		if (m_pPhysicsShell)
+		if(m_pPhysicsShell)
 			m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 		VERIFY(0 == Visual());
@@ -53,18 +53,18 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
 	CInifile* ini = K->LL_UserData();
 	CPHDestroyable::Init();
-	if (ini && ini->section_exist("destroyed"))
+	if(ini && ini->section_exist("destroyed"))
 		CPHDestroyable::Load(ini, "destroyed");
 
 	CDamageManager::reload("damage_section", ini);
-	if (ini)
+	if(ini)
 	{
-		if (ini->section_exist("immunities"))
+		if(ini->section_exist("immunities"))
 			CHitImmunity::LoadImmunities("immunities", ini);
 		CPHCollisionDamageReceiver::Init();
-		if (ini->section_exist("sound"))
+		if(ini->section_exist("sound"))
 			m_destroy_sound.create(ini->r_string("sound", "break_sound"), st_Effect, sg_SourceType);
-		if (ini->section_exist("particles"))
+		if(ini->section_exist("particles"))
 			m_destroy_particles = ini->r_string("particles", "destroy_particles");
 	}
 	CParticlesPlayer::LoadParticles(K);
@@ -86,11 +86,11 @@ void CDestroyablePhysicsObject::Hit(SHit* pHDS)
 	//	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 	inherited::Hit(&HDS);
 	m_fHealth -= HDS.power;
-	if (m_fHealth <= 0.f)
+	if(m_fHealth <= 0.f)
 	{
 		//		CPHDestroyable::SetFatalHit(SHit(P,dir,who,element,p_in_object_space,impulse,hit_type));
 		CPHDestroyable::SetFatalHit(HDS);
-		if (CPHDestroyable::CanDestroy())
+		if(CPHDestroyable::CanDestroy())
 			Destroy();
 	}
 }
@@ -100,11 +100,11 @@ void CDestroyablePhysicsObject::Destroy()
 	const CGameObject* who_object = smart_cast<const CGameObject*>(FatalHit().initiator());
 	callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object : 0);
 	CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
-	if (m_destroy_sound._handle())
+	if(m_destroy_sound._handle())
 	{
 		m_destroy_sound.play_at_pos(this, Position());
 	}
-	if (*m_destroy_particles)
+	if(*m_destroy_particles)
 	{
 		// fvec3 dir;dir.set(0,1,0);
 		fmat4x4 m;
@@ -116,12 +116,12 @@ void CDestroyablePhysicsObject::Destroy()
 		fvec3 hdir;
 		hdir.set(CPHDestroyable::FatalHit().direction());
 
-		if (fsimilar(_abs(m.j.dotproduct(hdir)), 1.f, EPS_L))
+		if(fsimilar(_abs(m.j.dotproduct(hdir)), 1.f, EPS_L))
 		{
 			do
 			{
 				hdir.random_dir();
-			} while (fsimilar(_abs(m.j.dotproduct(hdir)), 1.f, EPS_L));
+			} while(fsimilar(_abs(m.j.dotproduct(hdir)), 1.f, EPS_L));
 		}
 		m.i.crossproduct(m.j, hdir);
 		m.i.normalize();
@@ -134,13 +134,13 @@ void CDestroyablePhysicsObject::InitServerObject(CSE_Abstract* D)
 {
 	CSE_PHSkeleton* ps = smart_cast<CSE_PHSkeleton*>(D);
 	R_ASSERT(ps);
-	if (ps->_flags.test(CSE_PHSkeleton::flSpawnCopy))
+	if(ps->_flags.test(CSE_PHSkeleton::flSpawnCopy))
 		inherited::InitServerObject(D);
 	else
 		CPHDestroyable::InitServerObject(D);
 
 	CSE_ALifeObjectPhysic* PO = smart_cast<CSE_ALifeObjectPhysic*>(D);
-	if (PO)
+	if(PO)
 		PO->type = epotSkeleton;
 }
 void CDestroyablePhysicsObject::shedule_Update(u32 dt)

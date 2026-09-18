@@ -29,15 +29,16 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	P.r_u16(destination);
 
 	CSE_Abstract* receiver = game->get_entity_from_eid(destination);
-	if (receiver)
+	if(receiver)
 	{
 		R_ASSERT(receiver->owner);
 		receiver->OnEvent(P, type, timestamp, sender);
 	};
 
-	switch (type)
+	switch(type)
 	{
-	case GE_GAME_EVENT: {
+	case GE_GAME_EVENT:
+	{
 		u16 game_event_type;
 		P.r_u16(game_event_type);
 		game->AddDelayedEvent(P, game_event_type, timestamp, sender);
@@ -54,21 +55,24 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_ITEM2SLOT:
 	case GEG_PLAYER_ITEM2BELT:
 	case GEG_PLAYER_ITEM2RUCK:
-	case GE_GRENADE_EXPLODE: {
+	case GE_GRENADE_EXPLODE:
+	{
 		SendBroadcast(BroadcastCID, P, MODE);
 	}
 	break;
-	case GE_INV_ACTION: {
+	case GE_INV_ACTION:
+	{
 		xrClientData* CL = ID_to_client(sender);
-		if (CL)
+		if(CL)
 			CL->net_Ready = TRUE;
-		if (SV_Client)
+		if(SV_Client)
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 	}
 	break;
-	case GE_RESPAWN: {
+	case GE_RESPAWN:
+	{
 		CSE_Abstract* E = receiver;
-		if (E)
+		if(E)
 		{
 			R_ASSERT(E->s_flags.is(M_SPAWN_OBJECT_PHANTOM));
 
@@ -80,36 +84,41 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	}
 	break;
 	case GE_TRADE_BUY:
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		Process_event_ownership(P, sender, timestamp, destination);
 		VERIFY(verify_entities());
 	}
 	break;
-	case GE_OWNERSHIP_TAKE_MP_FORCED: {
+	case GE_OWNERSHIP_TAKE_MP_FORCED:
+	{
 		Process_event_ownership(P, sender, timestamp, destination, TRUE);
 		VERIFY(verify_entities());
 	}
 	break;
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
-	case GE_LAUNCH_ROCKET: {
+	case GE_LAUNCH_ROCKET:
+	{
 		Process_event_reject(P, sender, timestamp, destination, P.r_u16());
 		VERIFY(verify_entities());
 	}
 	break;
-	case GE_DESTROY: {
+	case GE_DESTROY:
+	{
 		Process_event_destroy(P, sender, timestamp, destination, NULL);
 		VERIFY(verify_entities());
 	}
 	break;
-	case GE_TRANSFER_AMMO: {
+	case GE_TRANSFER_AMMO:
+	{
 		u16 id_entity;
 		P.r_u16(id_entity);
 		CSE_Abstract* e_parent = receiver;							   // кто забирает (для своих нужд)
 		CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity); // кто отдает
-		if (!e_entity)
+		if(!e_entity)
 			break;
-		if (0xffff != e_entity->ID_Parent)
+		if(0xffff != e_entity->ID_Parent)
 			break; // this item already taken
 		xrClientData* c_parent = e_parent->owner;
 		xrClientData* c_from = ID_to_client(sender);
@@ -124,9 +133,10 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	}
 	break;
 	case GE_HIT:
-	case GE_HIT_STATISTIC: {
+	case GE_HIT_STATISTIC:
+	{
 		P.r_pos -= 2;
-		if (type == GE_HIT_STATISTIC)
+		if(type == GE_HIT_STATISTIC)
 		{
 			P.B.count -= 4;
 			P.w_u32(sender.value());
@@ -134,25 +144,27 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		game->AddDelayedEvent(P, GAME_EVENT_ON_HIT, 0, ClientID());
 	}
 	break;
-	case GE_ASSIGN_KILLER: {
+	case GE_ASSIGN_KILLER:
+	{
 		u16 id_src;
 		P.r_u16(id_src);
 
 		CSE_Abstract* e_dest = receiver; // кто умер
 		// this is possible when hit event is sent before destroy event
-		if (!e_dest)
+		if(!e_dest)
 			break;
 
 		CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(e_dest);
-		if (creature)
+		if(creature)
 			creature->m_killer_id = id_src;
 
 		//		Msg							("[%d][%s] killed [%d][%s]",id_src,id_src==u16(-1) ? "UNKNOWN" :
-		//game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
+		// game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
 
 		break;
 	}
-	case GE_CHANGE_VISUAL: {
+	case GE_CHANGE_VISUAL:
+	{
 		CSE_Visual* visual = smart_cast<CSE_Visual*>(receiver);
 		VERIFY(visual);
 		string256 tmp;
@@ -160,44 +172,45 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		visual->set_visual(tmp);
 	}
 	break;
-	case GE_DIE: {
+	case GE_DIE:
+	{
 		// Parse message
 		u16 id_dest = destination, id_src;
 		P.r_u16(id_src);
 
 		xrClientData* l_pC = ID_to_client(sender);
 		VERIFY(game && l_pC);
-		if ((game->Type() != GAME_SINGLE) && l_pC && l_pC->owner)
+		if((game->Type() != GAME_SINGLE) && l_pC && l_pC->owner)
 		{
 			Msg("* [%2d] killed by [%2d] - sended by [%s:%2d]", id_dest, id_src, l_pC->name.c_str(), l_pC->owner->ID);
 		}
 
 		CSE_Abstract* e_dest = receiver; // кто умер
 		// this is possible when hit event is sent before destroy event
-		if (!e_dest)
+		if(!e_dest)
 			break;
 
-		if (game->Type() != GAME_SINGLE)
+		if(game->Type() != GAME_SINGLE)
 			Msg("* [%2d] is [%s:%s]", id_dest, *e_dest->s_name, e_dest->name_replace());
 
 		CSE_Abstract* e_src = game->get_entity_from_eid(id_src); // кто убил
-		if (!e_src)
+		if(!e_src)
 		{
 			xrClientData* C = (xrClientData*)game->get_client(id_src);
-			if (C)
+			if(C)
 				e_src = C->owner;
 		};
 		VERIFY(e_src);
 		//			R_ASSERT2			(e_dest && e_src, "Killer or/and being killed are offline or not exist at all
 		//:(");
-		if (game->Type() != GAME_SINGLE)
+		if(game->Type() != GAME_SINGLE)
 			Msg("* [%2d] is [%s:%s]", id_src, *e_src->s_name, e_src->name_replace());
 
 		game->on_death(e_dest, e_src);
 
 		xrClientData* c_src = e_src->owner; // клиент, чей юнит убил
 
-		if (c_src->owner->ID == id_src)
+		if(c_src->owner->ID == id_src)
 		{
 			// Main unit
 			P.w_begin(M_EVENT);
@@ -212,7 +225,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
 		//////////////////////////////////////////////////////////////////////////
 		//
-		if (game->Type() == GAME_SINGLE)
+		if(game->Type() == GAME_SINGLE)
 		{
 			P.w_begin(M_EVENT);
 			P.w_u32(timestamp);
@@ -228,11 +241,13 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	break;
 	case GE_ADDON_ATTACH:
 	case GE_ADDON_DETACH:
-	case GE_CHANGE_POS: {
+	case GE_CHANGE_POS:
+	{
 		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 	}
 	break;
-	case GEG_PLAYER_WEAPON_HIDE_STATE: {
+	case GEG_PLAYER_WEAPON_HIDE_STATE:
+	{
 		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 
 #ifdef SLOW_VERIFY_ENTITIES
@@ -241,34 +256,41 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	}
 	break;
 	case GEG_PLAYER_ACTIVATE_SLOT:
-	case GEG_PLAYER_ITEM_EAT: {
+	case GEG_PLAYER_ITEM_EAT:
+	{
 		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 #ifdef SLOW_VERIFY_ENTITIES
 		VERIFY(verify_entities());
 #endif
 	}
 	break;
-	case GEG_PLAYER_ITEM_SELL: {
+	case GEG_PLAYER_ITEM_SELL:
+	{
 		game->OnPlayer_Sell_Item(sender, P);
 	}
 	break;
-	case GE_TELEPORT_OBJECT: {
+	case GE_TELEPORT_OBJECT:
+	{
 		game->teleport_object(P, destination);
 	}
 	break;
-	case GE_ADD_RESTRICTION: {
+	case GE_ADD_RESTRICTION:
+	{
 		game->add_restriction(P, destination);
 	}
 	break;
-	case GE_REMOVE_RESTRICTION: {
+	case GE_REMOVE_RESTRICTION:
+	{
 		game->remove_restriction(P, destination);
 	}
 	break;
-	case GE_REMOVE_ALL_RESTRICTIONS: {
+	case GE_REMOVE_ALL_RESTRICTIONS:
+	{
 		game->remove_all_restrictions(P, destination);
 	}
 	break;
-	case GE_MONEY: {
+	case GE_MONEY:
+	{
 		CSE_Abstract* e_dest = receiver;
 		CSE_ALifeTraderAbstract* pTa = smart_cast<CSE_ALifeTraderAbstract*>(e_dest);
 		pTa->m_dwMoney = P.r_u32();

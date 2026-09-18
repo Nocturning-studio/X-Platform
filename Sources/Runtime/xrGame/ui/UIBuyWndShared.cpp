@@ -9,7 +9,7 @@ void CItemMgr::Load(const shared_str& sect_cost)
 	CInifile::Sect& sect = pSettings->r_section(sect_cost);
 
 	u32 idx = 0;
-	for (CInifile::SectCIt it = sect.Data.begin(); it != sect.Data.end(); ++it, ++idx)
+	for(CInifile::SectCIt it = sect.Data.begin(); it != sect.Data.end(); ++it, ++idx)
 	{
 		_i& val = m_items[it->first];
 		val.slot_idx = 0xff;
@@ -17,21 +17,21 @@ void CItemMgr::Load(const shared_str& sect_cost)
 					   &val.cost[4]);
 		VERIFY(c > 0);
 
-		while (c < _RANK_COUNT)
+		while(c < _RANK_COUNT)
 		{
 			val.cost[c] = val.cost[c - 1];
 			++c;
 		}
 	}
 
-	for (u8 i = CUIMpTradeWnd::e_first; i < CUIMpTradeWnd::e_total_lists; ++i)
+	for(u8 i = CUIMpTradeWnd::e_first; i < CUIMpTradeWnd::e_total_lists; ++i)
 	{
 		const shared_str& buff = pSettings->r_string("buy_menu_items_place", _list_names[i]);
 
 		u32 cnt = _GetItemCount(buff.c_str());
 		string1024 _one;
 
-		for (u32 c = 0; c < cnt; ++c)
+		for(u32 c = 0; c < cnt; ++c)
 		{
 			_GetItem(buff.c_str(), c, _one);
 			shared_str _one_str = _one;
@@ -62,7 +62,7 @@ const u32 CItemMgr::GetItemIdx(const shared_str& sect_name) const
 {
 	COST_MAP_CIT it = m_items.find(sect_name);
 
-	if (it == m_items.end())
+	if(it == m_items.end())
 	{
 #ifdef DEBUG
 		Msg("item not found in registry [%s]", sect_name.c_str());
@@ -79,7 +79,7 @@ void CItemMgr::Dump() const
 	COST_MAP_CIT it_e = m_items.end();
 
 	Msg("--CItemMgr::Dump");
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		const _i& val = it->second;
 		R_ASSERT3(it->second.slot_idx != 0xff, "item has no record in [buy_menu_items_place] section ",

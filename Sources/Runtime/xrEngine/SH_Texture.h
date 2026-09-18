@@ -24,7 +24,8 @@ class ENGINE_API CTexture : public xr_resource_named
 	float m_material;
 	shared_str m_bumpmap;
 
-	union {
+	union
+	{
 		u32 m_play_time; // sync theora time
 		u32 seqMSPF;	 // Sequence data milliseconds per frame
 	};
@@ -41,7 +42,7 @@ class ENGINE_API CTexture : public xr_resource_named
 	}
 	IC void desc_enshure()
 	{
-		if (!desc_valid())
+		if(!desc_valid())
 			desc_update();
 	}
 	void desc_update();

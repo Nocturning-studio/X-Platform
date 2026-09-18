@@ -10,7 +10,7 @@ enum
 };
 struct SBinocVisibleObj
 {
-	SBinocVisibleObj(){};
+	SBinocVisibleObj() {};
 	CObject* m_object;
 	CUIStatic m_lt;
 	CUIStatic m_lb;

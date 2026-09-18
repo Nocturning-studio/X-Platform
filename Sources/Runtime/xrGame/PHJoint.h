@@ -22,14 +22,14 @@ class CPHJoint : public CPhysicsJoint
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	struct SPHAxis
 	{
-		float high;		   // high limit
-		float low;		   // law limit
-		float zero;		   // zero angle position
-		float erp;		   // limit erp
-		float cfm;		   // limit cfm
-		eVs vs;			   // coordinate system
-		float force;	   // max force
-		float velocity;	   // velocity to achieve
+		float high;		 // high limit
+		float low;		 // law limit
+		float zero;		 // zero angle position
+		float erp;		 // limit erp
+		float cfm;		 // limit cfm
+		eVs vs;			 // coordinate system
+		float force;	 // max force
+		float velocity;	 // velocity to achieve
 		fvec3 direction; // axis direction
 		IC void set_limits(float h, float l)
 		{
@@ -182,16 +182,16 @@ class CPHJoint : public CPhysicsJoint
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 IC void own_axis(const fmat4x4& m, fvec3& axis)
 {
-	if (m._11 == 1.f)
+	if(m._11 == 1.f)
 	{
 		axis.set(1.f, 0.f, 0.f);
 		return;
 	}
 	float k = m._13 * m._21 - m._11 * m._23 + m._23;
 
-	if (k == 0.f)
+	if(k == 0.f)
 	{
-		if (m._13 == 0.f)
+		if(m._13 == 0.f)
 		{
 			axis.set(0.f, 0.f, 1.f);
 			return;
@@ -215,7 +215,7 @@ IC void own_axis_angle(const fmat4x4& m, fvec3& axis, float& angle)
 {
 	own_axis(m, axis);
 	fvec3 ort1, ort2;
-	if (!(axis.z == 0.f && axis.y == 0.f))
+	if(!(axis.z == 0.f && axis.y == 0.f))
 	{
 		ort1.set(0.f, -axis.z, axis.y);
 		ort2.crossproduct(axis, ort1);
@@ -234,7 +234,7 @@ IC void own_axis_angle(const fmat4x4& m, fvec3& axis, float& angle)
 	float cosinus = ort1.dotproduct(ort1_t);
 	float sinus = ort2.dotproduct(ort1_t);
 	angle = acosf(cosinus);
-	if (sinus < 0.f)
+	if(sinus < 0.f)
 		angle = -angle;
 }
 
@@ -242,7 +242,7 @@ IC void axis_angleB(const fmat4x4& m, const fvec3& axis, float& angle)
 {
 
 	fvec3 ort1, ort2;
-	if (!(fis_zero(axis.z) && fis_zero(axis.y)))
+	if(!(fis_zero(axis.z) && fis_zero(axis.y)))
 	{
 		ort1.set(0.f, -axis.z, axis.y);
 		ort2.crossproduct(axis, ort1);
@@ -260,7 +260,7 @@ IC void axis_angleB(const fmat4x4& m, const fvec3& axis, float& angle)
 	float pr1, pr2;
 	pr1 = ort1.dotproduct(ort1_t);
 	pr2 = ort2.dotproduct(ort1_t);
-	if (pr1 == 0.f && pr2 == 0.f)
+	if(pr1 == 0.f && pr2 == 0.f)
 	{
 		angle = 0.f;
 		return;
@@ -271,7 +271,7 @@ IC void axis_angleB(const fmat4x4& m, const fvec3& axis, float& angle)
 	float cosinus = ort1.dotproduct(ort_r);
 	float sinus = ort2.dotproduct(ort_r);
 	angle = acosf(cosinus);
-	if (sinus < 0.f)
+	if(sinus < 0.f)
 		angle = -angle;
 }
 
@@ -280,7 +280,7 @@ IC void axis_angleA(const fmat4x4& m, const fvec3& axis, float& angle)
 
 	fvec3 ort1, ort2, axis_t;
 	m.transform_dir(axis_t, axis);
-	if (!(fis_zero(axis_t.z) && fis_zero(axis_t.y)))
+	if(!(fis_zero(axis_t.z) && fis_zero(axis_t.y)))
 	{
 		ort1.set(0.f, -axis_t.z, axis_t.y);
 		ort2.crossproduct(axis_t, ort1);
@@ -298,7 +298,7 @@ IC void axis_angleA(const fmat4x4& m, const fvec3& axis, float& angle)
 	float pr1, pr2;
 	pr1 = ort1.dotproduct(ort1_t);
 	pr2 = ort2.dotproduct(ort1_t);
-	if (pr1 == 0.f && pr2 == 0.f)
+	if(pr1 == 0.f && pr2 == 0.f)
 	{
 		angle = 0.f;
 		return;
@@ -309,7 +309,7 @@ IC void axis_angleA(const fmat4x4& m, const fvec3& axis, float& angle)
 	float cosinus = ort1.dotproduct(ort_r);
 	float sinus = ort2.dotproduct(ort_r);
 	angle = acosf(cosinus);
-	if (sinus < 0.f)
+	if(sinus < 0.f)
 		angle = -angle;
 	// if(angle>PI) angle=angle-2.f*PI;
 	// if(angle<-PI) angle=angle+2.f*PI;

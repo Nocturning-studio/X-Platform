@@ -45,26 +45,26 @@
 #define SIZEOFOBJECT sizeof(*this) //!< Gives the size of current object. Avoid some mistakes (e.g. "sizeof(this)").
 // #define CLEAROBJECT		{ memset(this, 0, SIZEOFOBJECT);	}			//!< Clears current object. Laziness is my
 // business. HANDLE WITH CARE.
-#define SAFE_RELEASE(x)                                                                                                \
-	if (x)                                                                                                             \
-	{                                                                                                                  \
-		(x)->Release();                                                                                                \
-		(x) = null;                                                                                                    \
+#define SAFE_RELEASE(x) \
+	if(x)               \
+	{                   \
+		(x)->Release(); \
+		(x) = null;     \
 	} //!< Safe D3D-style release
-#define SAFE_DESTRUCT(x)                                                                                               \
-	if (x)                                                                                                             \
-	{                                                                                                                  \
-		(x)->SelfDestruct();                                                                                           \
-		(x) = null;                                                                                                    \
+#define SAFE_DESTRUCT(x)     \
+	if(x)                    \
+	{                        \
+		(x)->SelfDestruct(); \
+		(x) = null;          \
 	} //!< Safe ICE-style release
 
 #ifdef __ICEERROR_H__
-#define CHECKALLOC(x)                                                                                                  \
-	if (!x)                                                                                                            \
+#define CHECKALLOC(x) \
+	if(!x)            \
 		return SetIceError("Out of memory.", EC_OUTOFMEMORY); //!< Standard alloc checking. HANDLE WITH CARE.
 #else
-#define CHECKALLOC(x)                                                                                                  \
-	if (!x)                                                                                                            \
+#define CHECKALLOC(x) \
+	if(!x)            \
 		return false;
 #endif
 

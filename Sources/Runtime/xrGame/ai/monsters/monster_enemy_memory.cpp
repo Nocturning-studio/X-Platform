@@ -27,10 +27,10 @@ void CMonsterEnemyMemory::update()
 {
 	VERIFY(monster->g_Alive());
 	// Обновить врагов
-	for (xr_vector<const CEntityAlive*>::const_iterator I = monster->memory().enemy().objects().begin();
-		 I != monster->memory().enemy().objects().end(); ++I)
+	for(xr_vector<const CEntityAlive*>::const_iterator I = monster->memory().enemy().objects().begin();
+		I != monster->memory().enemy().objects().end(); ++I)
 	{
-		if (monster->memory().visual().visible_now(*I))
+		if(monster->memory().visual().visible_now(*I))
 			add_enemy(*I);
 	}
 
@@ -38,7 +38,7 @@ void CMonsterEnemyMemory::update()
 	remove_non_actual();
 
 	// обновить опасность
-	for (ENEMIES_MAP_IT it = m_objects.begin(); it != m_objects.end(); it++)
+	for(ENEMIES_MAP_IT it = m_objects.begin(); it != m_objects.end(); it++)
 	{
 		u8 relation_value = u8(monster->tfGetRelationType(it->first));
 		float dist = monster->Position().distance_to(it->second.position);
@@ -55,7 +55,7 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy)
 	enemy_info.danger = 0.f;
 
 	ENEMIES_MAP_IT it = m_objects.find(enemy);
-	if (it != m_objects.end())
+	if(it != m_objects.end())
 	{
 		// обновить данные о враге
 		it->second = enemy_info;
@@ -76,10 +76,10 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy, const fvec3& pos,
 	enemy_info.danger = 0.f;
 
 	ENEMIES_MAP_IT it = m_objects.find(enemy);
-	if (it != m_objects.end())
+	if(it != m_objects.end())
 	{
 		// обновить данные о враге
-		if (it->second.time < enemy_info.time)
+		if(it->second.time < enemy_info.time)
 			it->second = enemy_info;
 	}
 	else
@@ -94,13 +94,13 @@ void CMonsterEnemyMemory::remove_non_actual()
 	TTime cur_time = Engine.TimeManager.GetGlobalTimeMs();
 
 	// удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
-	for (ENEMIES_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
+	for(ENEMIES_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
 	{
 		nit = it;
 		++nit;
 		// проверить условия удаления
-		if (!it->first || !it->first->g_Alive() || it->first->getDestroy() ||
-			(it->second.time + time_memory < cur_time) || (it->first->g_Team() == monster->g_Team()))
+		if(!it->first || !it->first->g_Alive() || it->first->getDestroy() ||
+		   (it->second.time + time_memory < cur_time) || (it->first->g_Team() == monster->g_Team()))
 			m_objects.erase(it);
 	}
 }
@@ -108,7 +108,7 @@ void CMonsterEnemyMemory::remove_non_actual()
 const CEntityAlive* CMonsterEnemyMemory::get_enemy()
 {
 	ENEMIES_MAP_IT it = find_best_enemy();
-	if (it != m_objects.end())
+	if(it != m_objects.end())
 		return it->first;
 	return (0);
 }
@@ -119,7 +119,7 @@ SMonsterEnemy CMonsterEnemyMemory::get_enemy_info()
 	ret_val.time = 0;
 
 	ENEMIES_MAP_IT it = find_best_enemy();
-	if (it != m_objects.end())
+	if(it != m_objects.end())
 		ret_val = it->second;
 
 	return ret_val;
@@ -131,11 +131,11 @@ ENEMIES_MAP_IT CMonsterEnemyMemory::find_best_enemy()
 	float max_value = 0.f;
 
 	// find best at home first
-	for (ENEMIES_MAP_IT I = m_objects.begin(); I != m_objects.end(); I++)
+	for(ENEMIES_MAP_IT I = m_objects.begin(); I != m_objects.end(); I++)
 	{
-		if (!monster->Home->at_home(I->second.position))
+		if(!monster->Home->at_home(I->second.position))
 			continue;
-		if (I->second.danger > max_value)
+		if(I->second.danger > max_value)
 		{
 			max_value = I->second.danger;
 			it = I;
@@ -143,13 +143,13 @@ ENEMIES_MAP_IT CMonsterEnemyMemory::find_best_enemy()
 	}
 
 	// there is no best enemies at home
-	if (it == m_objects.end())
+	if(it == m_objects.end())
 	{
 		// find any
 		max_value = 0.f;
-		for (ENEMIES_MAP_IT I = m_objects.begin(); I != m_objects.end(); I++)
+		for(ENEMIES_MAP_IT I = m_objects.begin(); I != m_objects.end(); I++)
 		{
-			if (I->second.danger > max_value)
+			if(I->second.danger > max_value)
 			{
 				max_value = I->second.danger;
 				it = I;
@@ -162,9 +162,9 @@ ENEMIES_MAP_IT CMonsterEnemyMemory::find_best_enemy()
 
 void CMonsterEnemyMemory::remove_links(CObject* O)
 {
-	for (ENEMIES_MAP_IT I = m_objects.begin(); I != m_objects.end(); ++I)
+	for(ENEMIES_MAP_IT I = m_objects.begin(); I != m_objects.end(); ++I)
 	{
-		if ((*I).first == O)
+		if((*I).first == O)
 		{
 			m_objects.erase(I);
 			break;

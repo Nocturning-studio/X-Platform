@@ -1,5 +1,5 @@
- /*
-GameSpy GHTTP SDK 
+/*
+GameSpy GHTTP SDK
 Dan "Mr. Pants" Schoenblum
 dan@gamespy.com
 
@@ -15,22 +15,20 @@ devsupport@gamespy.com
 #include "ghttpCallbacks.h"
 #include "ghttpPost.h"
 
-void ghiCallCompletedCallback
-(
-	GHIConnection * connection
-)
+void ghiCallCompletedCallback(
+	GHIConnection* connection)
 {
 	GHTTPBool freeBuffer;
-	char * buffer;
+	char* buffer;
 	GHTTPByteCount bufferLen;
 
 	assert(connection);
-	
+
 #ifdef GSI_COMMON_DEBUG
 	if(connection->result != GHTTPSuccess)
 	{
 		gsDebugFormat(GSIDebugCat_HTTP, GSIDebugType_Network, GSIDebugLevel_WarmError,
-			"Socket Error: %d\n", connection->socketError);
+					  "Socket Error: %d\n", connection->socketError);
 	}
 #endif
 
@@ -66,13 +64,11 @@ void ghiCallCompletedCallback
 		connection->getFileBuffer.dontFree = GHTTPTrue;
 }
 
-void ghiCallProgressCallback
-(
-	GHIConnection * connection,
-	const char * buffer,
-	GHTTPByteCount bufferLen
-)
-{	
+void ghiCallProgressCallback(
+	GHIConnection* connection,
+	const char* buffer,
+	GHTTPByteCount bufferLen)
+{
 	assert(connection);
 
 	// Check for no callback.
@@ -89,14 +85,11 @@ void ghiCallProgressCallback
 		bufferLen,
 		connection->fileBytesReceived,
 		connection->totalSize,
-		connection->callbackParam
-		);
+		connection->callbackParam);
 }
 
-void ghiCallPostCallback
-(
-	GHIConnection * connection
-)
+void ghiCallPostCallback(
+	GHIConnection* connection)
 {
 	assert(connection);
 
@@ -113,6 +106,5 @@ void ghiCallPostCallback
 		connection->postingState.totalBytes,
 		connection->postingState.index,
 		ArrayLength(connection->postingState.states),
-		connection->callbackParam
-		);
+		connection->callbackParam);
 }

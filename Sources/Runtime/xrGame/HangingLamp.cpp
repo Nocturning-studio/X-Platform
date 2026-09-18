@@ -38,7 +38,7 @@ void CHangingLamp::Init()
 void CHangingLamp::RespawnInit()
 {
 	Init();
-	if (Visual())
+	if(Visual())
 	{
 		CKinematics* K = smart_cast<CKinematics*>(Visual());
 		K->LL_SetBonesVisible(u64(-1));
@@ -49,7 +49,7 @@ void CHangingLamp::RespawnInit()
 
 void CHangingLamp::Center(fvec3& C) const
 {
-	if (renderable.visual)
+	if(renderable.visual)
 	{
 		renderable.transform.transform_tiny(C, renderable.visual->vis.sphere.P);
 	}
@@ -75,7 +75,7 @@ void CHangingLamp::net_Destroy()
 	light_ambient.destroy();
 	glow_render.destroy();
 	RespawnInit();
-	if (Visual())
+	if(Visual())
 		CPHSkeleton::RespawnInit();
 	inherited::net_Destroy();
 }
@@ -92,7 +92,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	//	CInifile* pUserData		= K->LL_UserData();
 	//	R_ASSERT3				(pUserData,"Empty HangingLamp user data!",lamp->get_visual());
 	xr_delete(collidable.model);
-	if (Visual())
+	if(Visual())
 	{
 		CKinematics* K = smart_cast<CKinematics*>(Visual());
 		R_ASSERT(Visual() && smart_cast<CKinematics*>(Visual()));
@@ -116,7 +116,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	light_render->set_cone(lamp->spot_cone_angle);
 	light_render->set_texture(*lamp->light_texture);
 
-	if (lamp->glow_texture.size())
+	if(lamp->glow_texture.size())
 	{
 		glow_render = ::Render->glow_create();
 		glow_render->set_texture(*lamp->glow_texture);
@@ -124,7 +124,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 		glow_render->set_radius(lamp->glow_radius);
 	}
 
-	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPointAmbient))
+	if(lamp->flags.is(CSE_ALifeObjectHangingLamp::flPointAmbient))
 	{
 		ambient_power = lamp->m_ambient_power;
 		light_ambient = ::Render->light_create();
@@ -141,18 +141,18 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	lanim = LALib.FindItem(*lamp->color_animator);
 
 	CPHSkeleton::Spawn(e);
-	if (smart_cast<CKinematicsAnimated*>(Visual()))
+	if(smart_cast<CKinematicsAnimated*>(Visual()))
 		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle("idle");
-	if (smart_cast<CKinematics*>(Visual()))
+	if(smart_cast<CKinematics*>(Visual()))
 	{
 		smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate();
 		smart_cast<CKinematics*>(Visual())->CalculateBones();
 		//.intepolate_pos
 	}
-	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic) && !Visual())
+	if(lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic) && !Visual())
 		Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual", *cName());
 	//.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
-	if (Alive())
+	if(Alive())
 		TurnOn();
 	else
 	{
@@ -169,9 +169,9 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 void CHangingLamp::SpawnInitPhysics(CSE_Abstract* D)
 {
 	CSE_ALifeObjectHangingLamp* lamp = smart_cast<CSE_ALifeObjectHangingLamp*>(D);
-	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic))
+	if(lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic))
 		CreateBody(lamp);
-	if (smart_cast<CKinematics*>(Visual()))
+	if(smart_cast<CKinematics*>(Visual()))
 	{
 		smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate();
 		smart_cast<CKinematics*>(Visual())->CalculateBones();
@@ -183,7 +183,7 @@ void CHangingLamp::CopySpawnInit()
 {
 	CPHSkeleton::CopySpawnInit();
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	if (!K->LL_GetBoneVisible(light_bone))
+	if(!K->LL_GetBoneVisible(light_bone))
 		TurnOff();
 }
 void CHangingLamp::net_Save(NET_Packet& P)
@@ -206,21 +206,21 @@ void CHangingLamp::shedule_Update(u32 dt)
 
 void CHangingLamp::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 
-	if (Alive() && light_render->get_active())
+	if(Alive() && light_render->get_active())
 	{
-		if (Visual())
+		if(Visual())
 			PKinematics(Visual())->CalculateBones();
 
 		// update T&R from light (main) bone
 		fmat4x4 xf;
-		if (light_bone != BI_NONE)
+		if(light_bone != BI_NONE)
 		{
 			fmat4x4& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(light_bone);
 			xf.mul(Transform(), M);
@@ -232,15 +232,15 @@ void CHangingLamp::UpdateCL()
 		}
 		light_render->set_rotation(xf.k, xf.i);
 		light_render->set_position(xf.c);
-		if (glow_render)
+		if(glow_render)
 			glow_render->set_position(xf.c);
 
 		// update T&R from ambient bone
-		if (light_ambient)
+		if(light_ambient)
 		{
-			if (ambient_bone != light_bone)
+			if(ambient_bone != light_bone)
 			{
-				if (ambient_bone != BI_NONE)
+				if(ambient_bone != BI_NONE)
 				{
 					fmat4x4& M = smart_cast<CKinematics*>(Visual())->LL_GetTransform(ambient_bone);
 					xf.mul(Transform(), M);
@@ -255,7 +255,7 @@ void CHangingLamp::UpdateCL()
 			light_ambient->set_position(xf.c);
 		}
 
-		if (lanim)
+		if(lanim)
 		{
 			int frame;
 			u32 clr = lanim->CalculateBGR(Engine.TimeManager.GetGlobalTime(), frame); // возвращает в формате BGR
@@ -263,9 +263,9 @@ void CHangingLamp::UpdateCL()
 			fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
 			fclr.mul_rgb(fBrightness / 255.f);
 			light_render->set_color(fclr);
-			if (glow_render)
+			if(glow_render)
 				glow_render->set_color(fclr);
-			if (light_ambient)
+			if(light_ambient)
 			{
 				fclr.mul_rgb(ambient_power);
 				light_ambient->set_color(fclr);
@@ -277,11 +277,11 @@ void CHangingLamp::UpdateCL()
 void CHangingLamp::TurnOn()
 {
 	light_render->set_active(true);
-	if (glow_render)
+	if(glow_render)
 		glow_render->set_active(true);
-	if (light_ambient)
+	if(light_ambient)
 		light_ambient->set_active(true);
-	if (Visual())
+	if(Visual())
 	{
 		CKinematics* K = smart_cast<CKinematics*>(Visual());
 		K->LL_SetBoneVisible(light_bone, TRUE, TRUE);
@@ -294,13 +294,13 @@ void CHangingLamp::TurnOn()
 void CHangingLamp::TurnOff()
 {
 	light_render->set_active(false);
-	if (glow_render)
+	if(glow_render)
 		glow_render->set_active(false);
-	if (light_ambient)
+	if(light_ambient)
 		light_ambient->set_active(false);
-	if (Visual())
+	if(Visual())
 		smart_cast<CKinematics*>(Visual())->LL_SetBoneVisible(light_bone, FALSE, TRUE);
-	if (!PPhysicsShell()) // if we have physiccs_shell it will call processing deactivate when disable
+	if(!PPhysicsShell()) // if we have physiccs_shell it will call processing deactivate when disable
 		processing_deactivate();
 }
 
@@ -313,24 +313,24 @@ void CHangingLamp::Hit(SHit* pHDS)
 							   smart_cast<const CGameObject*>(HDS.who)->lua_game_object(), HDS.bone());
 	BOOL bWasAlive = Alive();
 
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		m_pPhysicsShell->applyHit(pHDS->p_in_bone_space, pHDS->dir, pHDS->impulse, pHDS->boneID, pHDS->hit_type);
 
-	if (pHDS->boneID == light_bone)
+	if(pHDS->boneID == light_bone)
 		fHealth = 0.f;
 	else
 		fHealth -= pHDS->damage() * 100.f;
 
-	if (bWasAlive && (!Alive()))
+	if(bWasAlive && (!Alive()))
 		TurnOff();
 }
 
 static BONE_P_MAP bone_map = BONE_P_MAP();
 void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
 {
-	if (!Visual())
+	if(!Visual())
 		return;
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		return;
 
 	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual());
@@ -339,10 +339,10 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
 
 	bone_map.clear();
 	LPCSTR fixed_bones = *lamp->fixed_bones;
-	if (fixed_bones)
+	if(fixed_bones)
 	{
 		int count = _GetItemCount(fixed_bones);
-		for (int i = 0; i < count; ++i)
+		for(int i = 0; i < count; ++i)
 		{
 			string64 fixed_bone;
 			_GetItem(fixed_bones, i, fixed_bone);
@@ -365,11 +365,11 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
 
 	/////////////////////////////////////////////////////////////////////////////
 	BONE_P_PAIR_IT i = bone_map.begin(), e = bone_map.end();
-	for (; i != e; i++)
+	for(; i != e; i++)
 	{
 		CPhysicsElement* fixed_element = i->second.element;
 		/// R_ASSERT2(fixed_element,"fixed bone has no physics");
-		if (fixed_element)
+		if(fixed_element)
 			fixed_element->Fix();
 	}
 

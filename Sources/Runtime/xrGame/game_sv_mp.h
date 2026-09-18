@@ -95,9 +95,9 @@ class game_sv_mp : public game_sv_GameState
 	{
 		return true;
 	}; // TRUE=allow ownership, FALSE=denied
-	virtual void OnDetach(u16 eid_who, u16 eid_target){};
+	virtual void OnDetach(u16 eid_who, u16 eid_target) {};
 	virtual void OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType,
-									SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA){};
+									SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) {};
 	virtual void OnPlayerKilled(NET_Packet P);
 	virtual bool CheckTeams()
 	{
@@ -133,9 +133,9 @@ class game_sv_mp : public game_sv_GameState
 	virtual void OnPlayerGameMenu(NET_Packet& P, ClientID sender);
 
 	virtual void OnPlayerSelectSpectator(NET_Packet& P, ClientID sender);
-	virtual void OnPlayerSelectTeam(NET_Packet& P, ClientID sender){};
-	virtual void OnPlayerSelectSkin(NET_Packet& P, ClientID sender){};
-	virtual void OnPlayerBuySpawn(ClientID sender){};
+	virtual void OnPlayerSelectTeam(NET_Packet& P, ClientID sender) {};
+	virtual void OnPlayerSelectSkin(NET_Packet& P, ClientID sender) {};
+	virtual void OnPlayerBuySpawn(ClientID sender) {};
 
 	virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
 	virtual void Update();

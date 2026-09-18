@@ -35,7 +35,7 @@ class ENGINE_API IRender_DetailModel
   public:
 	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
 	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
-	virtual ~IRender_DetailModel(){};
+	virtual ~IRender_DetailModel() {};
 };
 
 #endif

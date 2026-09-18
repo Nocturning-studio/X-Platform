@@ -8,12 +8,12 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _path_id_type, typename _index_type, u8 mask>                                                   \
-	template <template <typename _T> class _vertex, template <typename _T1, typename _T2> class _index_vertex,         \
+#define TEMPLATE_SPECIALIZATION                                                                                \
+	template <typename _path_id_type, typename _index_type, u8 mask>                                           \
+	template <template <typename _T> class _vertex, template <typename _T1, typename _T2> class _index_vertex, \
 			  typename _data_storage>
 
-#define CFixedVertexManager                                                                                            \
+#define CFixedVertexManager \
 	CVertexManagerFixed<_path_id_type, _index_type, mask>::CDataStorage<_vertex, _index_vertex, _data_storage>
 
 TEMPLATE_SPECIALIZATION
@@ -42,7 +42,7 @@ IC void CFixedVertexManager::init()
 {
 	inherited::init();
 	++m_current_path_id;
-	if (!m_current_path_id)
+	if(!m_current_path_id)
 	{
 		ZeroMemory(m_indexes, (m_max_node_count) * sizeof(CGraphIndexVertex));
 		++m_current_path_id;

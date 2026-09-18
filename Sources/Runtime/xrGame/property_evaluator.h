@@ -14,7 +14,8 @@
 
 class CScriptGameObject;
 
-template <typename _object_type> class CPropertyEvaluator
+template <typename _object_type>
+class CPropertyEvaluator
 {
   public:
 	typedef GraphEngineSpace::_solver_condition_type _condition_type;

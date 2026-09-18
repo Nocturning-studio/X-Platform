@@ -10,7 +10,7 @@ using namespace xrRHI;
 // Хелпер для определения Usage
 static bool IsDepthStencilFormat(RHI_Format fmt)
 {
-	switch (fmt)
+	switch(fmt)
 	{
 	case RHI_Format::D16_UNORM:
 	case RHI_Format::D15S1:
@@ -51,7 +51,8 @@ CRT::~CRT()
 
 void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
-	if (pSurface) return;
+	if(pSurface)
+		return;
 
 	R_ASSERT(RenderBackend.GetDevice() && Name && Name[0] && w && h);
 	_order = CPU::GetCLK();
@@ -63,28 +64,28 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	xrRHI::IRenderBackend* RHI = ::RHI();
 	const xrRHI::RHIDeviceCaps& caps = RHI->GetDeviceCaps();
 
-	if (!btwIsPow2(w) || !btwIsPow2(h))
+	if(!btwIsPow2(w) || !btwIsPow2(h))
 	{
-		if (!caps.SupportsNonPow2Textures)
+		if(!caps.SupportsNonPow2Textures)
 		{
 			Msg("!Resolution of RT(%s), %dx%d, %d is not power of 2 and GPU doesn't support it!", Name, w, h, levels);
 			return;
 		}
 	}
 
-	if (w > caps.MaxTextureWidth)
+	if(w > caps.MaxTextureWidth)
 	{
 		Msg("*!Resolution of RT(%s), width %d exceeds max %d!", Name, w, caps.MaxTextureWidth);
 		return;
 	}
-	if (h > caps.MaxTextureHeight)
+	if(h > caps.MaxTextureHeight)
 	{
 		Msg("*!Resolution of RT(%s), height %d exceeds max %d!", Name, h, caps.MaxTextureHeight);
 		return;
 	}
 
 	bool isDepth = IsDepthStencilFormat(f);
-	if (!RHI->CheckFormatSupport(f, !isDepth, isDepth))
+	if(!RHI->CheckFormatSupport(f, !isDepth, isDepth))
 	{
 		Msg("*!GPU doesn't support format for RT(%s), %dx%d, %d!", Name, w, h, levels);
 		return;
@@ -102,14 +103,14 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 
 	Engine.ResourceManager->Evict();
 	xrRHI::TextureHandle handle = RHI->CreateTexture(desc);
-	if (!handle.IsValid())
+	if(!handle.IsValid())
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d via RHI!", Name, w, h, levels);
 		return;
 	}
 
 	pSurface = (IDirect3DTexture9*)RHI->GetTextureNativeHandle(handle);
-	if (!pSurface)
+	if(!pSurface)
 	{
 		RHI->DestroyTexture(handle);
 		Msg("*!Can't get native texture for RT(%s)!", Name);
@@ -118,7 +119,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	pSurface->AddRef(); // чтобы не уничтожился вместе с хендлом, если хендл удалится
 
 	HRESULT hr = pSurface->GetSurfaceLevel(0, &pRT);
-	if (FAILED(hr))
+	if(FAILED(hr))
 	{
 		pSurface->Release();
 		pSurface = nullptr;
@@ -135,7 +136,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 
 void CRT::destroy()
 {
-	if (pTexture._get())
+	if(pTexture._get())
 	{
 		pTexture->surface_set(0);
 		pTexture = NULL;
@@ -165,7 +166,7 @@ void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 
 CRTC::CRTC()
 {
-	if (pSurface)
+	if(pSurface)
 		return;
 
 	pSurface = NULL;
@@ -183,7 +184,8 @@ CRTC::~CRTC()
 
 void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 {
-	if (pSurface) return;
+	if(pSurface)
+		return;
 
 	R_ASSERT(RenderBackend.GetDevice() && Name && Name[0] && size && btwIsPow2(size));
 	_order = CPU::GetCLK();
@@ -194,14 +196,14 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	xrRHI::IRenderBackend* RHI = ::RHI();
 	const xrRHI::RHIDeviceCaps& caps = RHI->GetDeviceCaps();
 
-	if (size > caps.MaxTextureWidth || size > caps.MaxTextureHeight)
+	if(size > caps.MaxTextureWidth || size > caps.MaxTextureHeight)
 	{
 		Msg("!Cubemap size %d exceeds max allowed for RTc(%s)", size, Name);
 		return;
 	}
 
 	bool isDepth = IsDepthStencilFormat(f);
-	if (!RHI->CheckFormatSupport(f, !isDepth, isDepth, true))
+	if(!RHI->CheckFormatSupport(f, !isDepth, isDepth, true))
 	{
 		Msg("!GPU doesn't support format for RTc(%s)", Name);
 		return;
@@ -219,14 +221,14 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 
 	Engine.ResourceManager->Evict();
 	xrRHI::TextureHandle handle = RHI->CreateTexture(desc);
-	if (!handle.IsValid())
+	if(!handle.IsValid())
 	{
 		Msg("!Failed to create RTc(%s) via RHI", Name);
 		return;
 	}
 
 	pSurface = static_cast<IDirect3DCubeTexture9*>(RHI->GetTextureNativeHandle(handle));
-	if (!pSurface)
+	if(!pSurface)
 	{
 		RHI->DestroyTexture(handle);
 		Msg("!Failed to get native cube texture for RTc(%s)", Name);
@@ -234,13 +236,17 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	}
 	pSurface->AddRef();
 
-	for (u32 face = 0; face < 6; face++)
+	for(u32 face = 0; face < 6; face++)
 	{
 		IDirect3DSurface9* surf = nullptr;
-		if (!RHI->GetCubeMapFaceNative(handle, face, 0, (void**)&surf) || !surf)
+		if(!RHI->GetCubeMapFaceNative(handle, face, 0, (void**)&surf) || !surf)
 		{
-			for (u32 j = 0; j < face; j++)
-				if (pRT[j]) { pRT[j]->Release(); pRT[j] = nullptr; }
+			for(u32 j = 0; j < face; j++)
+				if(pRT[j])
+				{
+					pRT[j]->Release();
+					pRT[j] = nullptr;
+				}
 			pSurface->Release();
 			pSurface = nullptr;
 			RHI->DestroyTexture(handle);
@@ -260,7 +266,7 @@ void CRTC::destroy()
 {
 	pTexture->surface_set(0);
 	pTexture = NULL;
-	for (u32 face = 0; face < 6; face++)
+	for(u32 face = 0; face < 6; face++)
 		_RELEASE(pRT[face]);
 	_RELEASE(pSurface);
 }

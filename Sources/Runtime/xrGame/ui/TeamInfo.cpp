@@ -13,7 +13,7 @@ Flags32 CTeamInfo::flags;
 
 u32 CTeamInfo::GetTeam1_color()
 {
-	if (flags.test(flTeam1_color))
+	if(flags.test(flTeam1_color))
 		return team1_color;
 
 	string256 _buff;
@@ -28,7 +28,7 @@ u32 CTeamInfo::GetTeam1_color()
 
 u32 CTeamInfo::GetTeam2_color()
 {
-	if (flags.test(flTeam2_color))
+	if(flags.test(flTeam2_color))
 		return team2_color;
 
 	string256 _buff;
@@ -43,7 +43,7 @@ u32 CTeamInfo::GetTeam2_color()
 
 shared_str CTeamInfo::GetTeam1_name()
 {
-	if (flags.test(flTeam1_name))
+	if(flags.test(flTeam1_name))
 		return team1_name;
 
 	CStringTable st;
@@ -56,7 +56,7 @@ shared_str CTeamInfo::GetTeam1_name()
 
 shared_str CTeamInfo::GetTeam2_name()
 {
-	if (flags.test(flTeam2_name))
+	if(flags.test(flTeam2_name))
 		return team2_name;
 
 	CStringTable st;
@@ -70,7 +70,7 @@ shared_str CTeamInfo::GetTeam2_name()
 LPCSTR CTeamInfo::GetTeam_name(int team)
 {
 	R_ASSERT(1 == team || 2 == team);
-	if (1 == team)
+	if(1 == team)
 		return *GetTeam1_name();
 	else
 		return *GetTeam2_name();
@@ -87,7 +87,7 @@ LPCSTR CTeamInfo::GetTeam_color_tag(int team)
 	//"%c[255,64,255,64]", "%c[255,64,64,255]"
 
 	LPCSTR tm_col;
-	if (1 == team)
+	if(1 == team)
 		tm_col = pSettings->r_string("team1", "color");
 	else
 		tm_col = pSettings->r_string("team2", "color");
@@ -103,7 +103,7 @@ LPCSTR CTeamInfo::GetTeam_color_tag(int team)
 	str += _GetItem(tm_col, 2, _buff);
 	str += "]";
 
-	if (1 == team)
+	if(1 == team)
 	{
 		flags.set(flTeam1_col_t, true);
 		team1_color_tag = str.c_str();

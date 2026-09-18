@@ -45,7 +45,7 @@ void mem_alloc_show_stats()
 	u32 accumulator = 0;
 	STATS::const_iterator I = stats.begin();
 	STATS::const_iterator E = stats.end();
-	for (; I != E; ++I, ++i)
+	for(; I != E; ++I, ++i)
 	{
 		*i = (*I).second;
 		accumulator += (*I).second.second;
@@ -62,7 +62,7 @@ void mem_alloc_show_stats()
 	concurrency::parallel_sort(strings, e, predicate::compare);
 
 	int j = 0;
-	for (i = strings; i != e; ++i, ++j)
+	for(i = strings; i != e; ++i, ++j)
 	{
 		Msg("%d(%d)-----------------%d[%d]:%5.2f%%------------------", j, size, (*i).second, accumulator,
 			((*i).second * 100) / float(accumulator));
@@ -74,7 +74,7 @@ void mem_alloc_clear_stats()
 {
 	STATS::iterator I = stats.begin();
 	STATS::iterator E = stats.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		free((*I).second.first);
 
 	stats.clear();

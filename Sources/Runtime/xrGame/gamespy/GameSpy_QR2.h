@@ -50,7 +50,7 @@ class CGameSpy_QR2
 	GAMESPY_FN_VAR_DECL(const char*, GetGameVersion, (const char*));
 
 	//	GAMESPY_FN_VAR_DECL(qr2_error_t, qr2_init, (void* *qrec, const char *ip, int baseport, const char *gamename,
-	//const char *secret_key,
+	// const char *secret_key,
 	GAMESPY_FN_VAR_DECL(qr2_error_t, qr2_init,
 						(void** qrec, const char* ip, int baseport, int ispublic, int natnegotiate,
 						 fnqr2_serverkeycallback_t server_key_callback,

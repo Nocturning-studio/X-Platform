@@ -36,7 +36,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 	SFeelParam* fp = (SFeelParam*)params;
 	float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
 	fp->vis *= vis;
-	if (NULL == result.O && fis_zero(vis))
+	if(NULL == result.O && fis_zero(vis))
 	{
 		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
 		fvec3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
@@ -61,8 +61,8 @@ void Vision::o_new(CObject* O)
 void Vision::o_delete(CObject* O)
 {
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), TE = feel_visible.end();
-	for (; I != TE; I++)
-		if (I->O == O)
+	for(; I != TE; I++)
+		if(I->O == O)
 		{
 			feel_visible.erase(I);
 			return;
@@ -81,17 +81,17 @@ void Vision::feel_vision_relcase(CObject* object)
 {
 	xr_vector<CObject*>::iterator Io;
 	Io = std::find(seen.begin(), seen.end(), object);
-	if (Io != seen.end())
+	if(Io != seen.end())
 		seen.erase(Io);
 	Io = std::find(query.begin(), query.end(), object);
-	if (Io != query.end())
+	if(Io != query.end())
 		query.erase(Io);
 	Io = std::find(diff.begin(), diff.end(), object);
-	if (Io != diff.end())
+	if(Io != diff.end())
 		diff.erase(Io);
 	xr_vector<feel_visible_Item>::iterator Ii = feel_visible.begin(), IiE = feel_visible.end();
-	for (; Ii != IiE; ++Ii)
-		if (Ii->O == object)
+	for(; Ii != IiE; ++Ii)
+		if(Ii->O == object)
 		{
 			feel_visible.erase(Ii);
 			break;
@@ -109,18 +109,18 @@ void Vision::feel_vision_query(fmat4x4& mFull, fvec3& P)
 
 	// Determine visibility for dynamic part of scene
 	seen.clear_and_reserve();
-	for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+	for(u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 	{
 		ISpatial* spatial = r_spatial[o_it];
 		CObject* object = spatial->dcast_CObject();
-		if (object && feel_vision_isRelevant(object))
+		if(object && feel_vision_isRelevant(object))
 			seen.push_back(object);
 	}
-	if (seen.size() > 1)
+	if(seen.size() > 1)
 	{
 		concurrency::parallel_sort(seen.begin(), seen.end());
 		xr_vector<CObject*>::iterator end = std::unique(seen.begin(), seen.end());
-		if (end != seen.end())
+		if(end != seen.end())
 			seen.erase(end, seen.end());
 	}
 }
@@ -128,7 +128,7 @@ void Vision::feel_vision_query(fmat4x4& mFull, fvec3& P)
 void Vision::feel_vision_update(CObject* parent, fvec3& P, float dt, float vis_threshold)
 {
 	// B-A = objects, that become visible
-	if (!seen.empty())
+	if(!seen.empty())
 	{
 		xr_vector<CObject*>::iterator CObjIt = std::remove(seen.begin(), seen.end(), parent);
 		seen.resize(CObjIt - seen.begin());
@@ -137,19 +137,19 @@ void Vision::feel_vision_update(CObject* parent, fvec3& P, float dt, float vis_t
 			diff.resize(_max(seen.size(), query.size()));
 			xr_vector<CObject*>::iterator E = std::set_difference(seen.begin(), seen.end(), query.begin(), query.end(), diff.begin());
 			diff.resize(E - diff.begin());
-			for (u32 i = 0; i < diff.size(); i++)
+			for(u32 i = 0; i < diff.size(); i++)
 				o_new(diff[i]);
 		}
 	}
 
 	// A-B = objects, that are invisible
-	if (!query.empty())
+	if(!query.empty())
 	{
 		diff.resize(_max(seen.size(), query.size()));
 		xr_vector<CObject*>::iterator E =
 			std::set_difference(query.begin(), query.end(), seen.begin(), seen.end(), diff.begin());
 		diff.resize(E - diff.begin());
-		for (u32 i = 0; i < diff.size(); i++)
+		for(u32 i = 0; i < diff.size(); i++)
 			o_delete(diff[i]);
 	}
 
@@ -161,17 +161,17 @@ void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 {
 	RQR.r_clear();
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-	for (; I != E; I++)
+	for(; I != E; I++)
 	{
-		if (0 == I->O->CFORM())
+		if(0 == I->O->CFORM())
 		{
 			I->fuzzy = -1;
 			continue;
 		}
 
 		// verify relation
-		if (positive(I->fuzzy) && I->O->Position().similar(I->cp_LR_dst, lr_granularity) &&
-			P.similar(I->cp_LR_src, lr_granularity))
+		if(positive(I->fuzzy) && I->O->Position().similar(I->cp_LR_dst, lr_granularity) &&
+		   P.similar(I->cp_LR_src, lr_granularity))
 			continue;
 
 		I->cp_LR_dst = I->O->Position();
@@ -199,14 +199,14 @@ void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 		fvec3 D;
 		D.sub(OP, P);
 		float f = D.magnitude();
-		if (f > fuzzy_guaranteed)
+		if(f > fuzzy_guaranteed)
 		{
 			D.div(f);
 			// setup ray defs & feel params
 			collide::ray_defs RD(P, D, f, CDB::OPT_CULL, collide::rq_target(collide::rqtStatic | collide::rqtObstacle));
 			SFeelParam feel_params(this, &*I, vis_threshold);
 			// check cache
-			if (I->Cache.result && I->Cache.similar(P, D, f))
+			if(I->Cache.result && I->Cache.similar(P, D, f))
 			{
 				// similar with previous query
 				feel_params.vis = I->Cache_vis;
@@ -215,7 +215,7 @@ void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 			else
 			{
 				float _u, _v, _range;
-				if (CDB::TestRayTri(P, D, I->Cache.verts, _u, _v, _range, false) && (_range > 0 && _range < f))
+				if(CDB::TestRayTri(P, D, I->Cache.verts, _u, _v, _range, false) && (_range > 0 && _range < f))
 				{
 					feel_params.vis = 0.f;
 					//						Log("cache 1");
@@ -224,7 +224,7 @@ void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 				{
 					// cache outdated. real query.
 					VERIFY(!fis_zero(RD.dir.square_magnitude()));
-					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))
+					if(g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))
 					{
 						I->Cache_vis = feel_params.vis;
 						I->Cache.set(P, D, f, TRUE);
@@ -237,7 +237,7 @@ void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 				}
 			}
 			//				Log("Vis",feel_params.vis);
-			if (feel_params.vis < feel_params.vis_threshold)
+			if(feel_params.vis < feel_params.vis_threshold)
 			{
 				// INVISIBLE, choose next point
 				I->fuzzy -= fuzzy_update_novis * dt;

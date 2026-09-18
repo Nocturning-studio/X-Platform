@@ -38,7 +38,7 @@ CUIDiaryWnd::~CUIDiaryWnd()
 void CUIDiaryWnd::Show(bool status)
 {
 	inherited::Show(status);
-	if (status)
+	if(status)
 		Reload((EDiaryFilter)m_FilterTab->GetActiveIndex());
 }
 
@@ -141,7 +141,7 @@ void CUIDiaryWnd::Reload(EDiaryFilter new_filter)
 {
 	//.	if(m_currFilter==new_filter) return;
 
-	switch (m_currFilter)
+	switch(m_currFilter)
 	{
 	case eJournal:
 		UnloadJournalTab();
@@ -156,7 +156,7 @@ void CUIDiaryWnd::Reload(EDiaryFilter new_filter)
 
 	m_currFilter = new_filter;
 
-	switch (m_currFilter)
+	switch(m_currFilter)
 	{
 	case eJournal:
 		LoadJournalTab(ARTICLE_DATA::eJournalArticle);
@@ -201,12 +201,12 @@ void CUIDiaryWnd::LoadJournalTab(ARTICLE_DATA::EArticleType _type)
 	m_UIRightWnd->AttachChild(m_DescrView);
 	m_DescrView->Show(true);
 
-	if (Actor()->encyclopedia_registry->registry().objects_ptr())
+	if(Actor()->encyclopedia_registry->registry().objects_ptr())
 	{
 		ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
-		for (; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
+		for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
 		{
-			if (_type == it->article_type)
+			if(_type == it->article_type)
 
 			{
 				m_ArticlesDB.resize(m_ArticlesDB.size() + 1);
@@ -255,7 +255,7 @@ void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow* w, void* p)
 {
 	CUITreeViewItem* pSelItem = (CUITreeViewItem*)p;
 	m_DescrView->Clear();
-	if (!pSelItem->IsRoot())
+	if(!pSelItem->IsRoot())
 	{
 		CUIEncyclopediaArticleWnd* article_info = xr_new<CUIEncyclopediaArticleWnd>();
 		article_info->Init("encyclopedia_item.xml", "encyclopedia_wnd:objective_item");
@@ -279,14 +279,14 @@ void CUIDiaryWnd::Draw()
 
 	pos = m_sign_places[eNews];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::news)
+	if(g_pda_info_state & pda_section::news)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);
 
 	pos = m_sign_places[eJournal];
 	pos.add(tab_pos);
-	if (g_pda_info_state & pda_section::journal)
+	if(g_pda_info_state & pda_section::journal)
 		draw_sign(m_updatedSectionImage, pos);
 	else
 		draw_sign(m_oldSectionImage, pos);

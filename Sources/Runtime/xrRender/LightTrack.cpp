@@ -6,15 +6,7 @@
 
 // Оптимизированные направления гемисферы из X-Ray 1.6
 constexpr float hdir[lt_aosamples][3] = {
-	{-0.26287f, 0.52573f, 0.80902f},  {0.27639f, 0.44721f, 0.85065f},	{-0.95106f, 0.00000f, 0.30902f},
-	{-0.95106f, 0.00000f, -0.30902f}, {0.58779f, 0.00000f, -0.80902f},	{0.58779f, 0.00000f, 0.80902f},
-	{-0.00000f, 0.00000f, 1.00000f},  {0.52573f, 0.85065f, 0.00000f},	{-0.26287f, 0.52573f, -0.80902f},
-	{-0.42533f, 0.85065f, 0.30902f},  {0.95106f, 0.00000f, 0.30902f},	{0.95106f, 0.00000f, -0.30902f},
-	{0.00000f, 1.00000f, 0.00000f},	  {-0.58779f, 0.00000f, 0.80902f},	{-0.72361f, 0.44721f, 0.52573f},
-	{-0.72361f, 0.44721f, -0.52573f}, {-0.58779f, 0.00000f, -0.80902f}, {0.16246f, 0.85065f, -0.50000f},
-	{0.89443f, 0.44721f, 0.00000f},	  {-0.85065f, 0.52573f, -0.00000f}, {0.16246f, 0.85065f, 0.50000f},
-	{0.68819f, 0.52573f, -0.50000f},  {0.27639f, 0.44721f, -0.85065f},	{0.00000f, 0.00000f, -1.00000f},
-	{-0.42533f, 0.85065f, -0.30902f}, {0.68819f, 0.52573f, 0.50000f}};
+	{-0.26287f, 0.52573f, 0.80902f}, {0.27639f, 0.44721f, 0.85065f}, {-0.95106f, 0.00000f, 0.30902f}, {-0.95106f, 0.00000f, -0.30902f}, {0.58779f, 0.00000f, -0.80902f}, {0.58779f, 0.00000f, 0.80902f}, {-0.00000f, 0.00000f, 1.00000f}, {0.52573f, 0.85065f, 0.00000f}, {-0.26287f, 0.52573f, -0.80902f}, {-0.42533f, 0.85065f, 0.30902f}, {0.95106f, 0.00000f, 0.30902f}, {0.95106f, 0.00000f, -0.30902f}, {0.00000f, 1.00000f, 0.00000f}, {-0.58779f, 0.00000f, 0.80902f}, {-0.72361f, 0.44721f, 0.52573f}, {-0.72361f, 0.44721f, -0.52573f}, {-0.58779f, 0.00000f, -0.80902f}, {0.16246f, 0.85065f, -0.50000f}, {0.89443f, 0.44721f, 0.00000f}, {-0.85065f, 0.52573f, -0.00000f}, {0.16246f, 0.85065f, 0.50000f}, {0.68819f, 0.52573f, -0.50000f}, {0.27639f, 0.44721f, -0.85065f}, {0.00000f, 0.00000f, -1.00000f}, {-0.42533f, 0.85065f, -0.30902f}, {0.68819f, 0.52573f, 0.50000f}};
 
 CROS_impl::CROS_impl()
 {
@@ -23,11 +15,11 @@ CROS_impl::CROS_impl()
 	ao_smooth = 0.5f;
 
 	// Инициализация массивов
-	for (int i = 0; i < lt_aosamples; i++)
+	for(int i = 0; i < lt_aosamples; i++)
 	{
 		result[i] = false;
 	}
-	for (size_t i = 0; i < NUM_FACES; i++)
+	for(size_t i = 0; i < NUM_FACES; i++)
 	{
 		ao_cube[i] = 0.0f;
 		ao_cube_smooth[i] = 0.0f;
@@ -48,17 +40,17 @@ CROS_impl::CROS_impl()
 
 inline void CROS_impl::accum_ao(float* ao_cube, fvec3& dir, float scale)
 {
-	if (dir.x > 0)
+	if(dir.x > 0)
 		ao_cube[CUBE_FACE_POS_X] += dir.x * scale;
 	else
 		ao_cube[CUBE_FACE_NEG_X] -= dir.x * scale;
 
-	if (dir.y > 0)
+	if(dir.y > 0)
 		ao_cube[CUBE_FACE_POS_Y] += dir.y * scale;
 	else
 		ao_cube[CUBE_FACE_NEG_Y] -= dir.y * scale;
 
-	if (dir.z > 0)
+	if(dir.z > 0)
 		ao_cube[CUBE_FACE_POS_Z] += dir.z * scale;
 	else
 		ao_cube[CUBE_FACE_NEG_Z] -= dir.z * scale;
@@ -68,9 +60,9 @@ void CROS_impl::smart_update(IRenderable* O)
 {
 	PROFILE_FUNCTION();
 
-	if (!O)
+	if(!O)
 		return;
-	if (0 == O->renderable.visual)
+	if(0 == O->renderable.visual)
 		return;
 
 	--ticks_to_update;
@@ -79,27 +71,27 @@ void CROS_impl::smart_update(IRenderable* O)
 	fvec3 position;
 	O->renderable.transform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
 
-	if (ticks_to_update <= 0)
+	if(ticks_to_update <= 0)
 	{
 		update(O);
 		last_position = position;
 
-		if (result_count < lt_aosamples)
+		if(result_count < lt_aosamples)
 			ticks_to_update = ::Random.randI(1, 2);
-		else if (sky_rays_uptodate < lt_aosamples)
+		else if(sky_rays_uptodate < lt_aosamples)
 			ticks_to_update = ::Random.randI(3, 7);
 		else
 			ticks_to_update = ::Random.randI(1000, 2001);
 	}
 	else
 	{
-		if (!last_position.similar(position, 0.15f))
+		if(!last_position.similar(position, 0.15f))
 		{
 			sky_rays_uptodate = 0;
 			update(O);
 			last_position = position;
 
-			if (result_count < lt_aosamples)
+			if(result_count < lt_aosamples)
 				ticks_to_update = ::Random.randI(1, 2);
 			else
 				ticks_to_update = ::Random.randI(3, 7);
@@ -113,10 +105,10 @@ void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 	sky_rays_uptodate += ps_r_dhemi_count;
 	sky_rays_uptodate = _min(sky_rays_uptodate, lt_aosamples);
 
-	for (u32 it = 0; it < (u32)ps_r_dhemi_count; it++)
+	for(u32 it = 0; it < (u32)ps_r_dhemi_count; it++)
 	{
 		u32 sample = 0;
-		if (result_count < lt_aosamples)
+		if(result_count < lt_aosamples)
 		{
 			sample = result_count;
 			result_count++;
@@ -135,17 +127,17 @@ void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 
 	// Расчет значения гемисферы
 	int _pass = 0;
-	for (int it = 0; it < result_count; it++)
-		if (result[it])
+	for(int it = 0; it < result_count; it++)
+		if(result[it])
 			_pass++;
 
 	ao_value = float(_pass) / float(result_count ? result_count : 1);
 	ao_value *= ps_r_dhemi_sky_scale;
 
 	// Накопление в кубические грани для каждого успешного сэмпла
-	for (int it = 0; it < result_count; it++)
+	for(int it = 0; it < result_count; it++)
 	{
-		if (result[it])
+		if(result[it])
 		{
 			fvec3 dir;
 			dir.set(hdir[it][0], hdir[it][1], hdir[it][2]);
@@ -157,12 +149,12 @@ void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 void CROS_impl::update(IRenderable* O)
 {
 	// clip & verify
-	if (dwFrame == Engine.TimeManager.GetFrameCount())
+	if(dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
 	dwFrame = Engine.TimeManager.GetFrameCount();
-	if (0 == O)
+	if(0 == O)
 		return;
-	if (0 == O->renderable.visual)
+	if(0 == O->renderable.visual)
 		return;
 
 	CObject* _object = dynamic_cast<CObject*>(O);
@@ -174,7 +166,7 @@ void CROS_impl::update(IRenderable* O)
 	position.y += .3f * radius;
 
 	// Инициализация кубических граней
-	for (size_t i = 0; i < NUM_FACES; ++i)
+	for(size_t i = 0; i < NUM_FACES; ++i)
 	{
 		ao_cube[i] = 0;
 	}
@@ -185,7 +177,7 @@ void CROS_impl::update(IRenderable* O)
 	calc_sky_ao_value(position, _object);
 
 	// Сглаживание HEMI при первом обновлении
-	if (bFirstTime)
+	if(bFirstTime)
 	{
 		ao_smooth = ao_value;
 		CopyMemory(ao_cube_smooth, ao_cube, NUM_FACES * sizeof(float));
@@ -198,7 +190,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 {
 	PROFILE_FUNCTION();
 
-	if (dwFrameSmooth == Engine.TimeManager.GetFrameCount())
+	if(dwFrameSmooth == Engine.TimeManager.GetFrameCount())
 		return;
 	dwFrameSmooth = Engine.TimeManager.GetFrameCount();
 
@@ -211,7 +203,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 	ao_smooth = ao_value * l_f + ao_smooth * l_i;
 
 	// Сглаживание кубических граней
-	for (size_t i = 0; i < NUM_FACES; ++i)
+	for(size_t i = 0; i < NUM_FACES; ++i)
 	{
 		ao_cube_smooth[i] = ao_cube[i] * l_f + ao_cube_smooth[i] * l_i;
 	}
@@ -219,14 +211,14 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 float CROS_impl::get_ao()
 {
-	if (dwFrameSmooth != Engine.TimeManager.GetFrameCount())
+	if(dwFrameSmooth != Engine.TimeManager.GetFrameCount())
 		update_smooth();
 	return ao_smooth;
 }
 
 const float* CROS_impl::get_ao_cube()
 {
-	if (dwFrameSmooth != Engine.TimeManager.GetFrameCount())
+	if(dwFrameSmooth != Engine.TimeManager.GetFrameCount())
 		update_smooth();
 	return ao_cube_smooth;
 }

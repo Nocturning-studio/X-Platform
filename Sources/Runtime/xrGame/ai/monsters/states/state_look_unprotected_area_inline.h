@@ -43,9 +43,9 @@ void CStateMonsterLookToUnprotectedAreaAbstract::execute()
 	object->anim().SetSpecParams(data.spec_params);
 	object->dir().face_target(target_point);
 
-	if (data.sound_type != u32(-1))
+	if(data.sound_type != u32(-1))
 	{
-		if (data.sound_delay != u32(-1))
+		if(data.sound_delay != u32(-1))
 			object->sound().play(data.sound_type, 0, 0, data.sound_delay);
 		else
 			object->sound().play(data.sound_type);
@@ -55,12 +55,12 @@ void CStateMonsterLookToUnprotectedAreaAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterLookToUnprotectedAreaAbstract::check_completion()
 {
-	if (data.time_out != 0)
+	if(data.time_out != 0)
 	{
-		if (time_state_started + data.time_out < Engine.TimeManager.GetGlobalTimeMs())
+		if(time_state_started + data.time_out < Engine.TimeManager.GetGlobalTimeMs())
 			return true;
 	}
-	else if (!object->control().direction().is_turning())
+	else if(!object->control().direction().is_turning())
 		return true;
 
 	return false;

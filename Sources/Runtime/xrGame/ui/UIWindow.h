@@ -8,7 +8,8 @@ struct _12b
 };
 extern poolSS<_12b, 128> ui_allocator;
 
-template <class T> class uialloc
+template <class T>
+class uialloc
 {
   public:
 	typedef size_t size_type;
@@ -20,7 +21,8 @@ template <class T> class uialloc
 	typedef T value_type;
 
   public:
-	template <class _Other> struct rebind
+	template <class _Other>
+	struct rebind
 	{
 		typedef uialloc<_Other> other;
 	};
@@ -40,10 +42,12 @@ template <class T> class uialloc
 	uialloc(const uialloc<T>&)
 	{
 	}
-	template <class _Other> uialloc(const uialloc<_Other>&)
+	template <class _Other>
+	uialloc(const uialloc<_Other>&)
 	{
 	}
-	template <class _Other> uialloc<T>& operator=(const uialloc<_Other>&)
+	template <class _Other>
+	uialloc<T>& operator=(const uialloc<_Other>&)
 	{
 		return (*this);
 	}
@@ -83,16 +87,19 @@ template <class T> class uialloc
 		return (0 < _Count ? _Count : 1);
 	}
 };
-template <class _Ty, class _Other> inline bool operator==(const uialloc<_Ty>&, const uialloc<_Other>&)
+template <class _Ty, class _Other>
+inline bool operator==(const uialloc<_Ty>&, const uialloc<_Other>&)
 {
 	return (true);
 }
-template <class _Ty, class _Other> inline bool operator!=(const uialloc<_Ty>&, const uialloc<_Other>&)
+template <class _Ty, class _Other>
+inline bool operator!=(const uialloc<_Ty>&, const uialloc<_Other>&)
 {
 	return (false);
 }
 
-template <typename T> class ui_list : public std::list<T, uialloc<T>>
+template <typename T>
+class ui_list : public std::list<T, uialloc<T>>
 {
   public:
 	u32 size() const
@@ -101,8 +108,8 @@ template <typename T> class ui_list : public std::list<T, uialloc<T>>
 	}
 };
 
-#define DEF_UILIST(N, T)                                                                                               \
-	typedef ui_list<T> N;                                                                                              \
+#define DEF_UILIST(N, T)  \
+	typedef ui_list<T> N; \
 	typedef N::iterator N##_it;
 
 //////////////////////////////////////////////////////////////////////////
@@ -145,7 +152,7 @@ class CUIWindow : public CUISimpleWindow
 	// получить окно самого верхнего уровня
 	CUIWindow* GetTop()
 	{
-		if (m_pParentWnd == NULL)
+		if(m_pParentWnd == NULL)
 			return this;
 		else
 			return m_pParentWnd->GetTop();
@@ -259,9 +266,9 @@ class CUIWindow : public CUISimpleWindow
 	}
 	CGameFont* GetFont()
 	{
-		if (m_pFont)
+		if(m_pFont)
 			return m_pFont;
-		if (m_pParentWnd == NULL)
+		if(m_pParentWnd == NULL)
 			return m_pFont;
 		else
 			return m_pParentWnd->GetFont();
@@ -306,7 +313,7 @@ class CUIWindow : public CUISimpleWindow
 	IC void SafeRemoveChild(CUIWindow* child)
 	{
 		WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), child);
-		if (it != m_ChildWndList.end())
+		if(it != m_ChildWndList.end())
 			m_ChildWndList.erase(it);
 	};
 

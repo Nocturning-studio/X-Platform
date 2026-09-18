@@ -11,7 +11,7 @@ constexpr T xr_narrow_cast(F from)
 	const T casted = static_cast<T>(from);
 	R_ASSERT(static_cast<F>(casted) == from);
 
-	if constexpr (std::is_arithmetic<T>::value && std::is_signed<T>::value != std::is_signed<F>::value)
+	if constexpr(std::is_arithmetic<T>::value && std::is_signed<T>::value != std::is_signed<F>::value)
 	{
 		R_ASSERT(casted < T{} == from < F{});
 	}

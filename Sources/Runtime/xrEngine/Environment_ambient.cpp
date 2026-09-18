@@ -18,10 +18,10 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
 	m_sound_period.z = config.r_s32(m_load_section, "period2");
 	m_sound_period.w = config.r_s32(m_load_section, "period3");
 
-	if (!(m_sound_period.x <= m_sound_period.y))
+	if(!(m_sound_period.x <= m_sound_period.y))
 		Msg("! Environment Ambient: Sound Channels - period0 should be less than period1, error in section with name %s", sect);
-		
-	if (!(m_sound_period.z <= m_sound_period.w))
+
+	if(!(m_sound_period.z <= m_sound_period.w))
 		Msg("! Environment Ambient: Sound Channels - period2 should be less than period3, error in section with name %s", sect);
 
 	if(!(m_sound_dist.y > m_sound_dist.x))
@@ -31,7 +31,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
 	u32 cnt = _GetItemCount(snds);
 	string_path tmp;
 
-	if (cnt == 0)
+	if(cnt == 0)
 	{
 		Msg("! Environment Ambient: Sound Channels - sounds array empty, error in section with name %s", sect);
 		snds = "$no_sound";
@@ -40,7 +40,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
 
 	m_sounds.resize(cnt);
 
-	for (u32 k = 0; k < cnt; ++k)
+	for(u32 k = 0; k < cnt; ++k)
 	{
 		_GetItem(snds, k, tmp);
 		m_sounds[k].create(tmp, st_Effect, sg_SourceType);
@@ -56,10 +56,10 @@ CEnvAmbient::SEffect* CEnvAmbient::create_effect(CInifile& config, LPCSTR id)
 	result->offset = config.r_fvector3(id, "offset");
 	result->wind_gust_factor = config.r_float(id, "wind_gust_factor");
 
-	if (config.line_exist(id, "sound"))
+	if(config.line_exist(id, "sound"))
 		result->sound.create(config.r_string(id, "sound"), st_Effect, sg_SourceType);
 
-	if (config.line_exist(id, "wind_blast_strength"))
+	if(config.line_exist(id, "wind_blast_strength"))
 	{
 		result->wind_blast_strength = config.r_float(id, "wind_blast_strength");
 		result->wind_blast_direction.setHP(deg2rad(config.r_float(id, "wind_blast_longitude")), 0.f);
@@ -106,7 +106,7 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
 	u32 cnt = _GetItemCount(channels);
 	m_sound_channels.resize(cnt);
 
-	for (u32 i = 0; i < cnt; ++i)
+	for(u32 i = 0; i < cnt; ++i)
 		m_sound_channels[i] = create_sound_channel(sound_channels_config, _GetItem(channels, i, tmp));
 
 	// effects
@@ -116,7 +116,7 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
 	cnt = _GetItemCount(effs);
 
 	m_effects.resize(cnt);
-	for (u32 k = 0; k < cnt; ++k)
+	for(u32 k = 0; k < cnt; ++k)
 		m_effects[k] = create_effect(effects_config, _GetItem(effs, k, tmp));
 
 	R_ASSERT(!m_sound_channels.empty() || !m_effects.empty());
@@ -124,8 +124,8 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
 
 CEnvAmbient* CEnvironment::AppendEnvAmb(const shared_str& sect)
 {
-	for (EnvAmbVecIt it = Ambients.begin(); it != Ambients.end(); it++)
-		if ((*it)->name().equal(sect))
+	for(EnvAmbVecIt it = Ambients.begin(); it != Ambients.end(); it++)
+		if((*it)->name().equal(sect))
 			return (*it);
 
 	Ambients.push_back(xr_new<CEnvAmbient>());

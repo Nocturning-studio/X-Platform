@@ -12,18 +12,18 @@
 
 void CUI_IB_Static::SetTextureOffset(float x, float y)
 {
-	if (m_stateCurrent)
+	if(m_stateCurrent)
 		m_stateCurrent->SetTextureOffset(x, y);
 
-	if (m_stateEnabled)
+	if(m_stateEnabled)
 		m_stateEnabled->SetTextureOffset(x, y);
 
-	if (m_stateDisabled)
+	if(m_stateDisabled)
 		m_stateDisabled->SetTextureOffset(x, y);
 
-	if (m_stateHighlighted)
+	if(m_stateHighlighted)
 		m_stateHighlighted->SetTextureOffset(x, y);
 
-	if (m_stateTouched)
+	if(m_stateTouched)
 		m_stateTouched->SetTextureOffset(x, y);
 }

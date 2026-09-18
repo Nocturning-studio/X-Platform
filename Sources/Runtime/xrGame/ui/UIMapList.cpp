@@ -83,29 +83,29 @@ void CUIMapList::Init(float x, float y, float width, float height)
 
 void CUIMapList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
-		if (m_pBtnLeft == pWnd)
+		if(m_pBtnLeft == pWnd)
 			OnBtnLeftClick();
-		else if (m_pBtnRight == pWnd)
+		else if(m_pBtnRight == pWnd)
 			OnBtnRightClick();
-		else if (m_pBtnUp == pWnd)
+		else if(m_pBtnUp == pWnd)
 			OnBtnUpClick();
-		else if (m_pBtnDown == pWnd)
+		else if(m_pBtnDown == pWnd)
 			OnBtnDownClick();
-		else if (m_pModeSelector == pWnd)
+		else if(m_pModeSelector == pWnd)
 			OnModeChange();
 	}
-	else if (WINDOW_LBUTTON_DB_CLICK == msg)
+	else if(WINDOW_LBUTTON_DB_CLICK == msg)
 	{
-		if (m_pList1 == pWnd)
+		if(m_pList1 == pWnd)
 			OnBtnRightClick();
-		else if (m_pList2 == pWnd)
+		else if(m_pList2 == pWnd)
 			OnBtnLeftClick();
 	}
-	else if (LIST_ITEM_CLICKED == msg)
+	else if(LIST_ITEM_CLICKED == msg)
 	{
-		if (pWnd == m_pList1)
+		if(pWnd == m_pList1)
 			OnListItemClicked();
 	}
 }
@@ -121,7 +121,7 @@ void CUIMapList::OnListItemClicked()
 	map_name += _map_name.c_str();
 	xr_string full_name = map_name + ".dds";
 
-	if (FS.exist("$game_textures$", full_name.c_str()))
+	if(FS.exist("$game_textures$", full_name.c_str()))
 		m_pMapPic->InitTexture(map_name.c_str());
 	else
 		m_pMapPic->InitTexture("ui\\ui_noise");
@@ -145,11 +145,11 @@ EGameTypes CUIMapList::GetCurGameType()
 {
 	LPCSTR text = m_pModeSelector->GetTokenText();
 
-	if (0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_DEATHMATCH)))
+	if(0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_DEATHMATCH)))
 		return GAME_DEATHMATCH;
-	else if (0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_TEAMDEATHMATCH)))
+	else if(0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_TEAMDEATHMATCH)))
 		return GAME_TEAMDEATHMATCH;
-	else if (0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_ARTEFACTHUNT)))
+	else if(0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_ARTEFACTHUNT)))
 		return GAME_ARTEFACTHUNT;
 	else
 		NODEFAULT;
@@ -164,7 +164,7 @@ const char* CUIMapList::GetCommandLine(LPCSTR player_name)
 	string16 buf;
 
 	CUIListBoxItem* itm = m_pList2->GetItemByIDX(0);
-	if (!itm)
+	if(!itm)
 		return NULL;
 
 	u32 _idx = (u32)(__int64)(itm->GetData());
@@ -187,7 +187,7 @@ const char* CUIMapList::GetCommandLine(LPCSTR player_name)
 	m_command += ")";
 
 	m_command += " client(localhost/name=";
-	if (player_name == NULL || 0 == xr_strlen(player_name))
+	if(player_name == NULL || 0 == xr_strlen(player_name))
 		m_command += Core.UserName;
 	else
 		m_command += player_name;
@@ -204,11 +204,11 @@ void CUIMapList::LoadMapList()
 	GAME_WEATHERS_CIT it_e = game_weathers.end();
 
 	u32 cnt = 0;
-	for (; it != it_e; ++it, ++cnt)
+	for(; it != it_e; ++it, ++cnt)
 	{
 		AddWeather((*it).m_weather_name, (*it).m_start_time, cnt);
 	}
-	if (game_weathers.size())
+	if(game_weathers.size())
 		m_pWeatherSelector->SetItem(0);
 }
 
@@ -217,21 +217,21 @@ void CUIMapList::SaveMapList()
 	string_path temp;
 	FS.update_path(temp, "$app_data_root$", MAP_ROTATION_LIST);
 
-	if (m_pList2->GetSize() <= 1)
+	if(m_pList2->GetSize() <= 1)
 	{
 		FS.file_delete(temp);
 		return;
 	}
 
 	IWriter* pW = FS.w_open(temp);
-	if (!pW)
+	if(!pW)
 	{
 		Msg("! Cant create map rotation file [%s]", temp);
 		return;
 	}
 
 	string_path map_name;
-	for (u32 idx = 0; idx < m_pList2->GetSize(); ++idx)
+	for(u32 idx = 0; idx < m_pList2->GetSize(); ++idx)
 	{
 		CUIListBoxItem* itm = m_pList2->GetItemByIDX(idx);
 		u32 _idx = (u32)(__int64)(itm->GetData());
@@ -310,7 +310,7 @@ void CUIMapList::UpdateMapList(EGameTypes GameType)
 
 	const SGameTypeMaps& M = gMapListHelper.GetMapListFor(GameType);
 	u32 cnt = M.m_map_names.size();
-	for (u32 i = 0; i < cnt; ++i)
+	for(u32 i = 0; i < cnt; ++i)
 	{
 		CUIListBoxItem* itm = m_pList1->AddItem(CStringTable().translate(M.m_map_names[i]).c_str());
 		itm->SetData((void*)(__int64)i);
@@ -331,7 +331,7 @@ void CUIMapList::Update()
 void CUIMapList::OnBtnRightClick()
 {
 	CUIListBoxItem* itm1 = m_pList1->GetSelectedItem();
-	if (!itm1)
+	if(!itm1)
 		return;
 	CUIListBoxItem* itm2 = m_pList2->AddItem(itm1->GetText());
 	itm2->SetData(itm1->GetData());

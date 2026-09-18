@@ -1,7 +1,8 @@
 #pragma once
 #include "../state.h"
 
-template <typename _Object> class CStateMonsterSmartTerrainTaskGraphWalk : public CStateMove<_Object>
+template <typename _Object>
+class CStateMonsterSmartTerrainTaskGraphWalk : public CStateMove<_Object>
 {
 	typedef CStateMove<_Object> inherited;
 

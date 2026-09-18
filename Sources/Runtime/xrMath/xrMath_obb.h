@@ -1,6 +1,7 @@
 #pragma once
 
-template <class T> struct template_obb
+template <class T>
+struct template_obb
 {
   public:
 	typedef template_obb<T> Self;
@@ -16,19 +17,19 @@ template <class T> struct template_obb
 		// plane.  Otherwise 'false' is returned in which case the line segment
 		// is entirely clipped.
 
-		if (fDenom > 0.0f)
+		if(fDenom > 0.0f)
 		{
-			if (fNumer > fDenom * rfT1)
+			if(fNumer > fDenom * rfT1)
 				return false;
-			if (fNumer > fDenom * rfT0)
+			if(fNumer > fDenom * rfT0)
 				rfT0 = fNumer / fDenom;
 			return true;
 		}
-		else if (fDenom < 0.0f)
+		else if(fDenom < 0.0f)
 		{
-			if (fNumer > fDenom * rfT0)
+			if(fNumer > fDenom * rfT0)
 				return false;
-			if (fNumer > fDenom * rfT1)
+			if(fNumer > fDenom * rfT1)
 				rfT1 = fNumer / fDenom;
 			return true;
 		}
@@ -111,17 +112,17 @@ template <class T> struct template_obb
 		kDirection.set(dir.dotproduct(m_rotate.i), dir.dotproduct(m_rotate.j), dir.dotproduct(m_rotate.k));
 
 		T fT0 = 0.0f, fT1 = type_max(T);
-		if (intersect(kOrigin, kDirection, m_halfsize, fT0, fT1))
+		if(intersect(kOrigin, kDirection, m_halfsize, fT0, fT1))
 		{
 			bool bPick = false;
-			if (fT0 > 0.0f)
+			if(fT0 > 0.0f)
 			{
-				if (fT0 < dist)
+				if(fT0 < dist)
 				{
 					dist = fT0;
 					bPick = true;
 				}
-				if (fT1 < dist)
+				if(fT1 < dist)
 				{
 					dist = fT1;
 					bPick = true;
@@ -129,7 +130,7 @@ template <class T> struct template_obb
 			}
 			else
 			{
-				if (fT1 < dist)
+				if(fT1 < dist)
 				{
 					dist = fT1;
 					bPick = true;
@@ -144,7 +145,8 @@ template <class T> struct template_obb
 typedef template_obb<float> Fobb;
 typedef template_obb<double> Dobb;
 
-template <class T> BOOL _valid(const template_obb<T>& m)
+template <class T>
+BOOL _valid(const template_obb<T>& m)
 {
 	return _valid(m.m_rotate) && _valid(m.m_translate) && _valid(m.m_halfsize);
 }

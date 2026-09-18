@@ -12,11 +12,11 @@
 
 void CBaseMonster::Think()
 {
-	//OPTICK_EVENT("CBaseMonster::Think");
+	// OPTICK_EVENT("CBaseMonster::Think");
 
 	START_PROFILE("Base Monster/Think");
 
-	if (!g_Alive() || getDestroy())
+	if(!g_Alive() || getDestroy())
 		return;
 
 	// Инициализировать
@@ -43,7 +43,7 @@ void CBaseMonster::Think()
 
 void CBaseMonster::update_fsm()
 {
-	//OPTICK_EVENT("CBaseMonster::update_fsm");
+	// OPTICK_EVENT("CBaseMonster::update_fsm");
 
 	StateMan->update();
 
@@ -62,7 +62,7 @@ void CBaseMonster::update_fsm()
 
 void CBaseMonster::post_fsm_update()
 {
-	if (!EnemyMan.get_enemy())
+	if(!EnemyMan.get_enemy())
 		return;
 
 	EMonsterState state = StateMan->get_state_type();
@@ -70,7 +70,7 @@ void CBaseMonster::post_fsm_update()
 	// Look at enemy while running
 	m_bRunTurnLeft = m_bRunTurnRight = false;
 
-	if (is_state(state, eStateAttack) && control().path_builder().is_moving_on_path())
+	if(is_state(state, eStateAttack) && control().path_builder().is_moving_on_path())
 	{
 
 		float dir_yaw = control().path_builder().detail().direction().getH();
@@ -78,9 +78,9 @@ void CBaseMonster::post_fsm_update()
 
 		float angle_diff = angle_difference(yaw_target, dir_yaw);
 
-		if ((angle_diff > PI_DIV_3) && (angle_diff < 5 * PI_DIV_6))
+		if((angle_diff > PI_DIV_3) && (angle_diff < 5 * PI_DIV_6))
 		{
-			if (from_right(dir_yaw, yaw_target))
+			if(from_right(dir_yaw, yaw_target))
 				m_bRunTurnRight = true;
 			else
 				m_bRunTurnLeft = true;
@@ -95,32 +95,32 @@ void CBaseMonster::squad_notify()
 
 	EMonsterState state = StateMan->get_state_type();
 
-	if (is_state(state, eStateAttack))
+	if(is_state(state, eStateAttack))
 	{
 
 		goal.type = MG_AttackEnemy;
 		goal.entity = const_cast<CEntityAlive*>(EnemyMan.get_enemy());
 	}
-	else if (is_state(state, eStateRest))
+	else if(is_state(state, eStateRest))
 	{
 		goal.entity = squad->GetLeader();
 
-		if (state == eStateRest_Idle)
+		if(state == eStateRest_Idle)
 			goal.type = MG_Rest;
-		else if (state == eStateRest_WalkGraphPoint)
+		else if(state == eStateRest_WalkGraphPoint)
 			goal.type = MG_WalkGraph;
-		else if (state == eStateRest_MoveToHomePoint)
+		else if(state == eStateRest_MoveToHomePoint)
 			goal.type = MG_WalkGraph;
-		else if (state == eStateCustomMoveToRestrictor)
+		else if(state == eStateCustomMoveToRestrictor)
 			goal.type = MG_WalkGraph;
-		else if (state == eStateRest_WalkToCover)
+		else if(state == eStateRest_WalkToCover)
 			goal.type = MG_WalkGraph;
-		else if (state == eStateRest_LookOpenPlace)
+		else if(state == eStateRest_LookOpenPlace)
 			goal.type = MG_Rest;
 		else
 			goal.entity = 0;
 	}
-	else if (is_state(state, eStateSquad))
+	else if(is_state(state, eStateSquad))
 	{
 		goal.type = MG_Rest;
 		goal.entity = squad->GetLeader();

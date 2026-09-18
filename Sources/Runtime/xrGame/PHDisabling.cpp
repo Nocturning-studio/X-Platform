@@ -69,7 +69,7 @@ CBaseDisableData::CBaseDisableData()
 void CBaseDisableData::Reinit()
 {
 	m_count = m_frames;
-	if (ph_world)
+	if(ph_world)
 		m_count = m_count + ph_world->disable_count;
 	m_stateL1.Reset();
 	m_stateL2.Reset();
@@ -84,7 +84,7 @@ void CBaseDisableData::Disabling()
 
 	CheckState(m_stateL1);
 
-	if (m_count == 0) // ph_world->disable_count==dis_frames//m_count==m_frames
+	if(m_count == 0) // ph_world->disable_count==dis_frames//m_count==m_frames
 	{
 		UpdateL2();
 		CheckState(m_stateL2);
@@ -92,17 +92,17 @@ void CBaseDisableData::Disabling()
 	}
 	const dReal* force = dBodyGetForce(body);
 	const dReal* torqu = dBodyGetTorque(body);
-	if (dDOT(force, force) > 0.f || dDOT(torqu, torqu) > 0.f)
+	if(dDOT(force, force) > 0.f || dDOT(torqu, torqu) > 0.f)
 		m_disabled = false;
-	if (dBodyIsEnabled(body))
+	if(dBodyIsEnabled(body))
 	{
 		ReEnable();
-		if (!m_disabled && (ph_world->disable_count != m_count % worldDisablingParams.objects_params.L2frames))
+		if(!m_disabled && (ph_world->disable_count != m_count % worldDisablingParams.objects_params.L2frames))
 		{
 			m_count = m_frames + ph_world->disable_count;
 		}
 	}
-	if (m_disabled)
+	if(m_disabled)
 		Disable(); // dBodyDisable(body);
 }
 
@@ -120,7 +120,7 @@ void CPHDisablingBase::Reinit()
 void CPHDisablingBase::UpdateValues(const fvec3& new_pos, const fvec3& new_vel)
 {
 
-	if (m_count < m_frames)
+	if(m_count < m_frames)
 	{
 		float velocity_param = m_mean_velocity.Update(new_pos);
 		float acceleration_param = m_mean_acceleration.Update(new_vel);

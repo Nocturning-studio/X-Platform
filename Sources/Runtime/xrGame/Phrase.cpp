@@ -26,7 +26,7 @@ LPCSTR CPhrase::GetText() const
 
 bool CPhrase::IsDummy() const
 {
-	if (xr_strlen(GetText()) == 0)
+	if(xr_strlen(GetText()) == 0)
 		return true;
 
 	return false;

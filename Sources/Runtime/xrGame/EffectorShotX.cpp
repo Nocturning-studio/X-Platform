@@ -43,26 +43,26 @@ void CCameraShotEffectorX::Clear()
 
 void CCameraShotEffectorX::UpdateActorCamera(float dPitch, float dYaw)
 {
-	if (!m_pActor)
+	if(!m_pActor)
 		return;
 
 	CCameraBase* pACam = m_pActor->cam_FirstEye();
-	if (!pACam)
+	if(!pACam)
 		return;
 
-	if (pACam->bClampPitch)
+	if(pACam->bClampPitch)
 	{
-		while (pACam->pitch < pACam->lim_pitch[0])
+		while(pACam->pitch < pACam->lim_pitch[0])
 			pACam->pitch += PI_MUL_2;
-		while (pACam->pitch > pACam->lim_pitch[1])
+		while(pACam->pitch > pACam->lim_pitch[1])
 			pACam->pitch -= PI_MUL_2;
 	};
 
 	pACam->pitch += dPitch;
 	pACam->yaw += dYaw;
 
-	if (pACam->bClampYaw)
+	if(pACam->bClampYaw)
 		clamp(pACam->yaw, pACam->lim_yaw[0], pACam->lim_yaw[1]);
-	if (pACam->bClampPitch)
+	if(pACam->bClampPitch)
 		clamp(pACam->pitch, pACam->lim_pitch[0], pACam->lim_pitch[1]);
 }

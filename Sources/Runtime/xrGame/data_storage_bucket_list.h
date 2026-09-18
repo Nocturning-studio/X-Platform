@@ -14,9 +14,11 @@ template <typename _path_id_type, typename _bucket_id_type, u32 bucket_count, bo
 struct CDataStorageBucketList
 {
 
-	template <template <typename _T> class T1> struct BucketList
+	template <template <typename _T> class T1>
+	struct BucketList
 	{
-		template <typename T2> struct _vertex : public T1<T2>
+		template <typename T2>
+		struct _vertex : public T1<T2>
 		{
 			_path_id_type m_path_id;
 			_bucket_id_type m_bucket_id;

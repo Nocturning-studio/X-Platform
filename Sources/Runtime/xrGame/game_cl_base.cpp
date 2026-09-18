@@ -33,7 +33,7 @@ game_cl_GameState::game_cl_GameState()
 game_cl_GameState::~game_cl_GameState()
 {
 	PLAYERS_MAP_IT I = players.begin();
-	for (; I != players.end(); ++I)
+	for(; I != players.end(); ++I)
 		xr_delete(I->second);
 	players.clear();
 
@@ -59,7 +59,7 @@ void game_cl_GameState::net_import_GameTime(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor(GameEnvironmentTime, EnvironmentTimeFactor);
-	if (OldTime != GameEnvironmentTime)
+	if(OldTime != GameEnvironmentTime)
 		GamePersistent().Environment().Invalidate();
 }
 
@@ -72,7 +72,7 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
 	u16 ph;
 	P.r_u16(ph);
 
-	if (Phase() != ph)
+	if(Phase() != ph)
 		switch_Phase(ph);
 
 	P.r_s32(m_round);
@@ -91,14 +91,14 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
 		players.clear	();
 	*/
 	PLAYERS_MAP_IT I;
-	for (u16 p_it = 0; p_it < p_count; ++p_it)
+	for(u16 p_it = 0; p_it < p_count; ++p_it)
 	{
 		ClientID ID;
 		P.r_clientID(ID);
 
 		game_PlayerState* IP;
 		I = players.find(ID);
-		if (I != players.end())
+		if(I != players.end())
 		{
 			IP = I->second;
 			//***********************************************
@@ -107,10 +107,10 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
 			//-----------------------------------------------
 			IP->net_Import(P);
 			//-----------------------------------------------
-			if (OldFlags != IP->flags__)
-				if (Type() != GAME_SINGLE)
+			if(OldFlags != IP->flags__)
+				if(Type() != GAME_SINGLE)
 					OnPlayerFlagsChanged(IP);
-			if (OldVote != IP->m_bCurrentVoteAgreed)
+			if(OldVote != IP->m_bCurrentVoteAgreed)
 				OnPlayerVoted(IP);
 			//***********************************************
 
@@ -122,17 +122,17 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
 			IP = createPlayerState();
 			IP->net_Import(P);
 
-			if (Type() != GAME_SINGLE)
+			if(Type() != GAME_SINGLE)
 				OnPlayerFlagsChanged(IP);
 
 			players_new.insert(mk_pair(ID, IP));
 		}
-		if (IP->testFlag(GAME_PLAYER_FLAG_LOCAL))
+		if(IP->testFlag(GAME_PLAYER_FLAG_LOCAL))
 			local_player = IP;
 	}
 
 	I = players.begin();
-	for (; I != players.end(); ++I)
+	for(; I != players.end(); ++I)
 		xr_delete(I->second);
 	players.clear();
 
@@ -149,7 +149,7 @@ void game_cl_GameState::net_import_update(NET_Packet& P)
 
 	// Update
 	PLAYERS_MAP_IT I = players.find(ID);
-	if (players.end() != I)
+	if(players.end() != I)
 	{
 		game_PlayerState* IP = I->second;
 		//		CopyMemory	(&IP,&PS,sizeof(PS));
@@ -159,10 +159,10 @@ void game_cl_GameState::net_import_update(NET_Packet& P)
 		//-----------------------------------------------
 		IP->net_Import(P);
 		//-----------------------------------------------
-		if (OldFlags != IP->flags__)
-			if (Type() != GAME_SINGLE)
+		if(OldFlags != IP->flags__)
+			if(Type() != GAME_SINGLE)
 				OnPlayerFlagsChanged(IP);
-		if (OldVote != IP->m_bCurrentVoteAgreed)
+		if(OldVote != IP->m_bCurrentVoteAgreed)
 			OnPlayerVoted(IP);
 		//***********************************************
 	}
@@ -170,7 +170,7 @@ void game_cl_GameState::net_import_update(NET_Packet& P)
 	{
 		game_PlayerState* PS = createPlayerState();
 		PS->net_Import(P);
-		if (Type() != GAME_SINGLE)
+		if(Type() != GAME_SINGLE)
 			OnPlayerFlagsChanged(PS);
 		xr_delete(PS);
 	};
@@ -191,12 +191,13 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet& P)
 	char Color_Main[] = "%c[255,192,192,192]";
 	LPSTR Color_Teams[3] = {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
 
-	switch (msg)
+	switch(msg)
 	{
-	case GAME_EVENT_PLAYER_CONNECTED: {
+	case GAME_EVENT_PLAYER_CONNECTED:
+	{
 
 #ifdef BATTLEYE
-		if (g_pGameLevel && Level().battleye_system.GetTestClient())
+		if(g_pGameLevel && Level().battleye_system.GetTestClient())
 		{
 			bool res_battleye = Level().battleye_system.LoadClient();
 			VERIFY(res_battleye);
@@ -212,7 +213,8 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet& P)
 		Msg("%s connected", PlayerName);
 	}
 	break;
-	case GAME_EVENT_PLAYER_DISCONNECTED: {
+	case GAME_EVENT_PLAYER_DISCONNECTED:
+	{
 		string64 PlayerName;
 		P.r_stringZ(PlayerName);
 
@@ -222,7 +224,8 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet& P)
 		Msg("%s disconnected", PlayerName);
 	}
 	break;
-	case GAME_EVENT_PLAYER_ENTERED_GAME: {
+	case GAME_EVENT_PLAYER_ENTERED_GAME:
+	{
 		string64 PlayerName;
 		P.r_stringZ(PlayerName);
 
@@ -230,7 +233,8 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet& P)
 		CommonMessageOut(Text);
 	}
 	break;
-	default: {
+	default:
+	{
 		Msg("Unknown Game Message");
 	}
 	break;
@@ -251,10 +255,10 @@ game_PlayerState* game_cl_GameState::GetPlayerByGameID(u32 GameID)
 	PLAYERS_MAP_IT I = players.begin();
 	PLAYERS_MAP_IT E = players.end();
 
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		game_PlayerState* P = I->second;
-		if (P->GameID == GameID)
+		if(P->GameID == GameID)
 			return P;
 	};
 	return NULL;
@@ -277,7 +281,7 @@ ClientID game_cl_GameState::GetClientIDByOrderID(u32 idx)
 
 void game_cl_GameState::CommonMessageOut(LPCSTR msg)
 {
-	if (!HUD().GetUI())
+	if(!HUD().GetUI())
 		return;
 	HUD().GetUI()->m_pMessagesWnd->AddLogMessage(msg);
 }
@@ -291,20 +295,22 @@ void game_cl_GameState::shedule_Update(u32 dt)
 {
 	ISheduled::shedule_Update(dt);
 
-	if (!m_game_ui_custom)
+	if(!m_game_ui_custom)
 	{
-		if (HUD().GetUI())
+		if(HUD().GetUI())
 			m_game_ui_custom = HUD().GetUI()->UIGame();
 	}
 	//---------------------------------------
-	switch (Phase())
+	switch(Phase())
 	{
-	case GAME_PHASE_INPROGRESS: {
-		if (!IsGameTypeSingle())
+	case GAME_PHASE_INPROGRESS:
+	{
+		if(!IsGameTypeSingle())
 			m_WeaponUsageStatistic->Update();
 	}
 	break;
-	default: {
+	default:
+	{
 	}
 	break;
 	};
@@ -330,7 +336,7 @@ void game_cl_GameState::sv_EventSend(NET_Packet& P)
 
 bool game_cl_GameState::IR_OnKeyboardPress(int dik)
 {
-	if (local_player && !local_player->IsSkip())
+	if(local_player && !local_player->IsSkip())
 		return OnKeyboardPress(get_binded_action(dik));
 	else
 		return false;
@@ -338,7 +344,7 @@ bool game_cl_GameState::IR_OnKeyboardPress(int dik)
 
 bool game_cl_GameState::IR_OnKeyboardRelease(int dik)
 {
-	if (local_player && !local_player->IsSkip())
+	if(local_player && !local_player->IsSkip())
 		return OnKeyboardRelease(get_binded_action(dik));
 	else
 		return false;
@@ -368,23 +374,27 @@ void game_cl_GameState::u_EventSend(NET_Packet& P)
 
 void game_cl_GameState::OnSwitchPhase(u32 old_phase, u32 new_phase)
 {
-	switch (old_phase)
+	switch(old_phase)
 	{
-	case GAME_PHASE_INPROGRESS: {
+	case GAME_PHASE_INPROGRESS:
+	{
 	}
 	break;
-	default: {
+	default:
+	{
 	}
 	break;
 	};
 
-	switch (new_phase)
+	switch(new_phase)
 	{
-	case GAME_PHASE_INPROGRESS: {
+	case GAME_PHASE_INPROGRESS:
+	{
 		m_WeaponUsageStatistic->Clear();
 	}
 	break;
-	default: {
+	default:
+	{
 	}
 	break;
 	}
@@ -401,7 +411,7 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
 void game_cl_GameState::set_type_name(LPCSTR s)
 {
 	m_game_type_name = s;
-	if (OnClient())
+	if(OnClient())
 	{
 		strcpy(g_pGamePersistent->m_game_params.m_game_type, *m_game_type_name);
 		g_pGamePersistent->OnGameStart();
@@ -409,16 +419,16 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 };
 void game_cl_GameState::reset_ui()
 {
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		return;
 
-	if (!m_game_ui_custom)
+	if(!m_game_ui_custom)
 		m_game_ui_custom = HUD().GetUI()->UIGame();
 
 	m_game_ui_custom->reset_ui();
 
 	HUD().GetUI()->UIMainIngameWnd->reset_ui();
 
-	if (HUD().GetUI()->MainInputReceiver())
+	if(HUD().GetUI()->MainInputReceiver())
 		HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
 }

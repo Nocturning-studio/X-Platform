@@ -31,16 +31,16 @@ xr_token wpn_zoom_button_mode[] = {{"st_opt_press", 1}, {"st_opt_hold", 2}, {0, 
 
 void IConsole_Command::add_to_LRU(shared_str const& arg)
 {
-	if (arg.size() == 0 || bEmptyArgsHandled)
+	if(arg.size() == 0 || bEmptyArgsHandled)
 	{
 		return;
 	}
 
 	bool dup = (std::find(m_LRU.begin(), m_LRU.end(), arg) != m_LRU.end());
-	if (!dup)
+	if(!dup)
 	{
 		m_LRU.push_back(arg);
-		if (m_LRU.size() > LRU_MAX_COUNT)
+		if(m_LRU.size() > LRU_MAX_COUNT)
 		{
 			m_LRU.erase(m_LRU.begin());
 		}
@@ -51,7 +51,7 @@ void IConsole_Command::add_LRU_to_tips(vecTips& tips)
 {
 	vecLRU::reverse_iterator it_rb = m_LRU.rbegin();
 	vecLRU::reverse_iterator it_re = m_LRU.rend();
-	for (; it_rb != it_re; ++it_rb)
+	for(; it_rb != it_re; ++it_rb)
 	{
 		tips.push_back((*it_rb));
 	}
@@ -85,7 +85,7 @@ class CCC_MemStat : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		string_path fn;
-		if (args && args[0])
+		if(args && args[0])
 			sprintf_s(fn, sizeof(fn), "%s.dump", args);
 		else
 			strcpy_s(fn, sizeof(fn), "x:\\$memory$.dump");
@@ -106,7 +106,7 @@ class CCC_DbgMemCheck : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		if (Memory.debug_mode)
+		if(Memory.debug_mode)
 		{
 			Memory.dbg_check();
 		}
@@ -150,7 +150,7 @@ class CCC_soundDevice : public CCC_Token
 	typedef CCC_Token inherited;
 
   public:
-	CCC_soundDevice(LPCSTR N) : inherited(N, &snd_device_id, NULL){};
+	CCC_soundDevice(LPCSTR N) : inherited(N, &snd_device_id, NULL) {};
 	virtual ~CCC_soundDevice()
 	{
 	}
@@ -158,7 +158,7 @@ class CCC_soundDevice : public CCC_Token
 	virtual void Execute(LPCSTR args)
 	{
 		GetToken();
-		if (!tokens)
+		if(!tokens)
 			return;
 		inherited::Execute(args);
 	}
@@ -166,7 +166,7 @@ class CCC_soundDevice : public CCC_Token
 	virtual void Status(TStatus& S)
 	{
 		GetToken();
-		if (!tokens)
+		if(!tokens)
 			return;
 		inherited::Status(S);
 	}
@@ -180,7 +180,7 @@ class CCC_soundDevice : public CCC_Token
 	virtual void Save(IWriter* F)
 	{
 		GetToken();
-		if (!tokens)
+		if(!tokens)
 			return;
 		inherited::Save(F);
 	}
@@ -228,7 +228,7 @@ class CCC_E_Dump : public IConsole_Command
 class CCC_E_Signal : public IConsole_Command
 {
   public:
-	CCC_E_Signal(LPCSTR N) : IConsole_Command(N){};
+	CCC_E_Signal(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args)
 	{
 		char Event[128], Param[128];
@@ -250,7 +250,7 @@ class CCC_Help : public IConsole_Command
 	{
 		Log("- --- Command listing: start ---");
 		CConsole::vecCMD_IT it;
-		for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
+		for(it = Console->Commands.begin(); it != Console->Commands.end(); it++)
 		{
 			IConsole_Command& C = *(it->second);
 			TStatus _S;
@@ -308,22 +308,22 @@ class CCC_SaveCFG : public IConsole_Command
 
 		bool b_abs_name = xr_strlen(cfg_full_name) > 2 && cfg_full_name[1] == ':';
 
-		if (!b_abs_name)
+		if(!b_abs_name)
 			FS.update_path(cfg_full_name, "$app_data_root$", cfg_full_name);
 
-		if (strext(cfg_full_name))
+		if(strext(cfg_full_name))
 			*strext(cfg_full_name) = 0;
 		strcat(cfg_full_name, ".ltx");
 
 		DWORD attrib = ::GetFileAttributes(cfg_full_name);
-		if (attrib != INVALID_FILE_ATTRIBUTES && (attrib & FILE_ATTRIBUTE_READONLY))
+		if(attrib != INVALID_FILE_ATTRIBUTES && (attrib & FILE_ATTRIBUTE_READONLY))
 			::SetFileAttributes(cfg_full_name, attrib & ~FILE_ATTRIBUTE_READONLY);
 
 		IWriter* F = FS.w_open(cfg_full_name);
-		if (F)
+		if(F)
 		{
 			CConsole::vecCMD_IT it;
-			for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
+			for(it = Console->Commands.begin(); it != Console->Commands.end(); it++)
 				it->second->Save(F);
 			FS.w_close(F);
 			Msg("Config-file [%s] saved successfully", cfg_full_name);
@@ -334,7 +334,7 @@ class CCC_SaveCFG : public IConsole_Command
 		}
 	}
 };
-CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N){};
+CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) {};
 
 void CCC_LoadCFG::Execute(LPCSTR args)
 {
@@ -342,14 +342,14 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 	string_path cfg_name;
 
 	strcpy_s(cfg_name, args);
-	if (strext(cfg_name))
+	if(strext(cfg_name))
 		*strext(cfg_name) = 0;
 	strcat(cfg_name, ".ltx");
 
 	bool b_abs_name = (cfg_name[0] && cfg_name[1] == ':'); // абсолютный путь (например, D:\...)
 
 	string_path cfg_full_name;
-	if (b_abs_name)
+	if(b_abs_name)
 	{
 		strcpy_s(cfg_full_name, cfg_name);
 	}
@@ -361,14 +361,14 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 	IReader* F = FS.r_open(cfg_full_name);
 
 	// Если файл не найден в кэше, но физически существует – пересканируем нужную папку
-	if (NULL == F && ::GetFileAttributes(cfg_full_name) != INVALID_FILE_ATTRIBUTES)
+	if(NULL == F && ::GetFileAttributes(cfg_full_name) != INVALID_FILE_ATTRIBUTES)
 	{
-		if (b_abs_name)
+		if(b_abs_name)
 		{
 			string_path folder;
 			strcpy_s(folder, cfg_full_name);
 			char* slash = strrchr(folder, '\\');
-			if (slash)
+			if(slash)
 			{
 				*(slash + 1) = 0; // обрезаем до папки, оставляя слеш
 				FS.rescan_path(folder, true);
@@ -382,13 +382,13 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 		F = FS.r_open(cfg_full_name);
 	}
 
-	if (F != NULL)
+	if(F != NULL)
 	{
 		string1024 str;
-		while (!F->eof())
+		while(!F->eof())
 		{
 			F->r_string(str, sizeof(str));
-			if (allow(str))
+			if(allow(str))
 				Console->Execute(str);
 		}
 		FS.r_close(F);
@@ -416,12 +416,12 @@ class CCC_Start : public IConsole_Command
 	void parse(LPSTR dest, LPCSTR args, LPCSTR name)
 	{
 		dest[0] = 0;
-		if (strstr(args, name))
+		if(strstr(args, name))
 			sscanf(strstr(args, name) + xr_strlen(name), "(%[^)])", dest);
 	}
 
   public:
-	CCC_Start(LPCSTR N) : IConsole_Command(N){};
+	CCC_Start(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args)
 	{
 		/*		if (g_pGameLevel)	{
@@ -436,10 +436,10 @@ class CCC_Start : public IConsole_Command
 		parse(op_server, args, "server"); // 1. server
 		parse(op_client, args, "client"); // 2. client
 
-		if (!op_client[0] && strstr(op_server, "single"))
+		if(!op_client[0] && strstr(op_server, "single"))
 			strcpy_s(op_client, "localhost");
 
-		if (0 == xr_strlen(op_client))
+		if(0 == xr_strlen(op_client))
 		{
 			Log("! Can't start game without client. Arguments: '%s'.", args);
 			return;
@@ -471,7 +471,7 @@ class CCC_VID_Reset : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		if (Device.b_is_Ready)
+		if(Device.b_is_Ready)
 		{
 			Device.Reset();
 		}
@@ -490,7 +490,7 @@ class CCC_VidMode : public CCC_Token
 	{
 		u32 _w, _h;
 		int cnt = sscanf(args, "%dx%d", &_w, &_h);
-		if (cnt == 2)
+		if(cnt == 2)
 		{
 			psCurrentVidMode[0] = _w;
 			psCurrentVidMode[1] = _h;
@@ -521,9 +521,9 @@ class CCC_VidMode : public CCC_Token
 
 		bool res = false;
 		xr_token* tok = GetToken();
-		while (tok->name && !res)
+		while(tok->name && !res)
 		{
-			if (!xr_strcmp(tok->name, cur))
+			if(!xr_strcmp(tok->name, cur))
 			{
 				sprintf_s(str, sizeof(str), "%s  (current)", tok->name);
 				tips.push_back(str);
@@ -531,12 +531,12 @@ class CCC_VidMode : public CCC_Token
 			}
 			tok++;
 		}
-		if (!res)
+		if(!res)
 		{
 			tips.push_back("---  (current)");
 		}
 		tok = GetToken();
-		while (tok->name)
+		while(tok->name)
 		{
 			tips.push_back(tok->name);
 			tok++;
@@ -594,14 +594,14 @@ class CCC_DR_TakePoint : public IConsole_Command
 	{
 		fvec3 CamPos = Engine.RenderView.Position;
 
-		if (g_DR_LM_Min.x > CamPos.x)
+		if(g_DR_LM_Min.x > CamPos.x)
 			g_DR_LM_Min.x = CamPos.x;
-		if (g_DR_LM_Min.z > CamPos.z)
+		if(g_DR_LM_Min.z > CamPos.z)
 			g_DR_LM_Min.z = CamPos.z;
 
-		if (g_DR_LM_Max.x < CamPos.x)
+		if(g_DR_LM_Max.x < CamPos.x)
 			g_DR_LM_Max.x = CamPos.x;
-		if (g_DR_LM_Max.z < CamPos.z)
+		if(g_DR_LM_Max.z < CamPos.z)
 			g_DR_LM_Max.z = CamPos.z;
 
 		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
@@ -611,8 +611,8 @@ class CCC_DR_TakePoint : public IConsole_Command
 class CCC_DR_UsePoints : public CCC_Integer
 {
   public:
-	CCC_DR_UsePoints(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max){};
-	virtual void Save(IWriter* F){};
+	CCC_DR_UsePoints(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+	virtual void Save(IWriter* F) {};
 };
 
 class CCC_Optick_Switch : public IConsole_Command
@@ -635,7 +635,7 @@ class CCC_Optick_Capture_Frames : public CCC_Integer
 {
   public:
 	CCC_Optick_Capture_Frames(LPCSTR N, int* frames_count, int _min = 0, int _max = 999)
-		: CCC_Integer(N, frames_count, _min, _max){};
+		: CCC_Integer(N, frames_count, _min, _max) {};
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -776,7 +776,7 @@ void CCC_Register()
 	CMD3(CCC_Token, "wpn_zoom_button_mode", &psWpnZoomButtonMode, wpn_zoom_button_mode);
 
 	// Camera
-	//CMD2(CCC_Float, "cam_inert", &psCamInert);
+	// CMD2(CCC_Float, "cam_inert", &psCamInert);
 	CMD2(CCC_Float, "cam_slide_inert", &psCamSlideInert);
 	CMD3(CCC_Mask, "view_bobbing_enable", &ps_effectors_ls_flags, VIEW_BOBBING_ENABLED);
 	CMD3(CCC_Mask, "dynamic_fov_enable", &ps_effectors_ls_flags, DYNAMIC_FOV_ENABLED);
@@ -812,8 +812,8 @@ void CCC_Register()
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 	// #endif
 
-	//extern int g_svTextConsoleUpdateRate;
-	//CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
+	// extern int g_svTextConsoleUpdateRate;
+	// CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 
 	extern int g_frametime;
 	CMD4(CCC_Integer, "rs_frametime", &g_frametime, 1, 10000);

@@ -65,17 +65,17 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 	r2.x = item2->GetGridWidth();
 	r2.y = item2->GetGridHeight();
 
-	if (r1.x > r2.x)
+	if(r1.x > r2.x)
 		return true;
 
-	if (r1.x == r2.x)
+	if(r1.x == r2.x)
 	{
-		if (r1.y > r2.y)
+		if(r1.y > r2.y)
 			return true;
 
-		if (r1.y == r2.y)
+		if(r1.y == r2.y)
 		{
-			if (item1->object().cNameSect() == item2->object().cNameSect())
+			if(item1->object().cNameSect() == item2->object().cNameSect())
 				return (item1->object().ID() > item2->object().ID());
 			else
 				return (item1->object().cNameSect() > item2->object().cNameSect());
@@ -95,8 +95,8 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
 	bool found_place;
 	bool can_place;
 
-	for (i = 0; i < height; ++i)
-		for (j = 0; j < width; ++j)
+	for(i = 0; i < height; ++i)
+		for(j = 0; j < width; ++j)
 			ruck_room[i * width + j] = false;
 
 	item_list.push_back(_item);
@@ -104,7 +104,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
 
 	found_place = true;
 
-	for (xr_vector<PIItem>::iterator it = item_list.begin(); (item_list.end() != it) && found_place; ++it)
+	for(xr_vector<PIItem>::iterator it = item_list.begin(); (item_list.end() != it) && found_place; ++it)
 	{
 		PIItem pItem = *it;
 		int iWidth = pItem->GetGridWidth();
@@ -113,22 +113,22 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
 		// проверяем последовательно каждую клеточку
 		found_place = false;
 
-		for (i = 0; (i < height - iHeight + 1) && !found_place; ++i)
+		for(i = 0; (i < height - iHeight + 1) && !found_place; ++i)
 		{
-			for (j = 0; (j < width - iWidth + 1) && !found_place; ++j)
+			for(j = 0; (j < width - iWidth + 1) && !found_place; ++j)
 			{
 				can_place = true;
 
-				for (k = 0; (k < iHeight) && can_place; ++k)
+				for(k = 0; (k < iHeight) && can_place; ++k)
 				{
-					for (m = 0; (m < iHeight) && can_place; ++m)
+					for(m = 0; (m < iHeight) && can_place; ++m)
 					{
-						if (ruck_room[(i + k) * width + (j + m)])
+						if(ruck_room[(i + k) * width + (j + m)])
 							can_place = false;
 					}
 				}
 
-				if (can_place)
+				if(can_place)
 				{
 					found_place = true;
 					place_row = i;
@@ -138,11 +138,11 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
 		}
 
 		// разместить элемент на найденном месте
-		if (found_place)
+		if(found_place)
 		{
-			for (k = 0; k < iHeight; ++k)
+			for(k = 0; k < iHeight; ++k)
 			{
-				for (m = 0; m < iWidth; ++m)
+				for(m = 0; m < iWidth; ++m)
 				{
 					ruck_room[(place_row + k) * width + place_col + m] = true;
 				}
@@ -154,7 +154,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
 	item_list.erase(std::remove(item_list.begin(), item_list.end(), _item), item_list.end());
 
 	// для какого-то элемента места не нашлось
-	if (!found_place)
+	if(!found_place)
 		return false;
 
 	return true;
@@ -162,7 +162,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
 
 ref_shader& InventoryUtilities::GetBuyMenuShader()
 {
-	if (!g_BuyMenuShader)
+	if(!g_BuyMenuShader)
 	{
 		g_BuyMenuShader.create("hud\\default", BUY_MENU_TEXTURE);
 	}
@@ -172,7 +172,7 @@ ref_shader& InventoryUtilities::GetBuyMenuShader()
 
 ref_shader& InventoryUtilities::GetEquipmentIconsShader()
 {
-	if (!g_EquipmentIconsShader)
+	if(!g_EquipmentIconsShader)
 	{
 		g_EquipmentIconsShader.create("hud\\default", EQUIPMENT_ICONS);
 	}
@@ -182,7 +182,7 @@ ref_shader& InventoryUtilities::GetEquipmentIconsShader()
 
 ref_shader& InventoryUtilities::GetMPCharIconsShader()
 {
-	if (!g_MPCharIconsShader)
+	if(!g_MPCharIconsShader)
 	{
 		g_MPCharIconsShader.create("hud\\default", MP_CHAR_ICONS);
 	}
@@ -217,7 +217,7 @@ const shared_str InventoryUtilities::GetTimeAsString(ALife::_TIME_ID time, ETime
 	split_time(time, year, month, day, hours, mins, secs, milisecs);
 
 	// Time
-	switch (timePrec)
+	switch(timePrec)
 	{
 	case etpTimeToHours:
 		sprintf_s(bufTime, "%02i", hours);
@@ -232,7 +232,8 @@ const shared_str InventoryUtilities::GetTimeAsString(ALife::_TIME_ID time, ETime
 		sprintf_s(bufTime, "%02i%c%02i%c%02i%c%02i", hours, timeSeparator, mins, timeSeparator, secs, timeSeparator,
 				  milisecs);
 		break;
-	case etpTimeToSecondsAndDay: {
+	case etpTimeToSecondsAndDay:
+	{
 		int total_day = (int)(time / (1000 * 60 * 60 * 24));
 		sprintf_s(bufTime, sizeof(bufTime), "%dd %02i%c%02i%c%02i", total_day, hours, timeSeparator, mins,
 				  timeSeparator, secs);
@@ -256,7 +257,7 @@ const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDate
 	split_time(date, year, month, day, hours, mins, secs, milisecs);
 
 	// Date
-	switch (datePrec)
+	switch(datePrec)
 	{
 	case edpDateToYear:
 		sprintf_s(bufDate, "%04i", year);
@@ -285,20 +286,20 @@ LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife
 	int cnt = 0;
 	_buff[0] = 0;
 
-	if (month1 != month2)
+	if(month1 != month2)
 		cnt =
 			sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s ", month2 - month1, *CStringTable().translate("ui_st_months"));
 
-	if (!cnt && day1 != day2)
+	if(!cnt && day1 != day2)
 		cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", day2 - day1, *CStringTable().translate("ui_st_days"));
 
-	if (!cnt && hours1 != hours2)
+	if(!cnt && hours1 != hours2)
 		cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", hours2 - hours1, *CStringTable().translate("ui_st_hours"));
 
-	if (!cnt && mins1 != mins2)
+	if(!cnt && mins1 != mins2)
 		cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", mins2 - mins1, *CStringTable().translate("ui_st_mins"));
 
-	if (!cnt && secs1 != secs2)
+	if(!cnt && secs1 != secs2)
 		cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", secs2 - secs1, *CStringTable().translate("ui_st_secs"));
 
 	return _buff;
@@ -319,7 +320,7 @@ void InventoryUtilities::UpdateWeight(CUIStatic& wnd, bool withPrefix)
 	string16 cl;
 	ZeroMemory(cl, sizeof(cl));
 
-	if (total > max)
+	if(total > max)
 	{
 		strcpy(cl, "%c[red]");
 	}
@@ -331,7 +332,7 @@ void InventoryUtilities::UpdateWeight(CUIStatic& wnd, bool withPrefix)
 	string32 prefix;
 	ZeroMemory(prefix, sizeof(prefix));
 
-	if (withPrefix)
+	if(withPrefix)
 	{
 		sprintf_s(prefix, "%%c[default]%s ", *CStringTable().translate("ui_inv_weight"));
 	}
@@ -359,13 +360,13 @@ void LoadStrings(CharInfoStrings* container, LPCSTR section, LPCSTR field)
 	int upBoundThreshold = 0;
 	CharInfoStringID id;
 
-	for (u32 k = 0; k < count; k += 2)
+	for(u32 k = 0; k < count; k += 2)
 	{
 		_GetItem(cfgRecord, k, singleThreshold);
 		id.second = singleThreshold;
 
 		_GetItem(cfgRecord, k + 1, singleThreshold);
-		if (k + 1 != count)
+		if(k + 1 != count)
 			sscanf(singleThreshold, "%i", &upBoundThreshold);
 		else
 			upBoundThreshold += 1;
@@ -380,10 +381,10 @@ void LoadStrings(CharInfoStrings* container, LPCSTR section, LPCSTR field)
 
 void InitCharacterInfoStrings()
 {
-	if (charInfoReputationStrings && charInfoRankStrings)
+	if(charInfoReputationStrings && charInfoRankStrings)
 		return;
 
-	if (!charInfoReputationStrings)
+	if(!charInfoReputationStrings)
 	{
 		// Create string->Id DB
 		charInfoReputationStrings = xr_new<CharInfoStrings>();
@@ -391,7 +392,7 @@ void InitCharacterInfoStrings()
 		LoadStrings(charInfoReputationStrings, relationsLtxSection, reputationgField);
 	}
 
-	if (!charInfoRankStrings)
+	if(!charInfoRankStrings)
 	{
 		// Create string->Id DB
 		charInfoRankStrings = xr_new<CharInfoStrings>();
@@ -399,7 +400,7 @@ void InitCharacterInfoStrings()
 		LoadStrings(charInfoRankStrings, relationsLtxSection, ratingField);
 	}
 
-	if (!charInfoGoodwillStrings)
+	if(!charInfoGoodwillStrings)
 	{
 		// Create string->Id DB
 		charInfoGoodwillStrings = xr_new<CharInfoStrings>();
@@ -423,7 +424,7 @@ LPCSTR InventoryUtilities::GetRankAsText(CHARACTER_RANK_VALUE rankID)
 {
 	InitCharacterInfoStrings();
 	CharInfoStrings::const_iterator cit = charInfoRankStrings->upper_bound(rankID);
-	if (charInfoRankStrings->end() == cit)
+	if(charInfoRankStrings->end() == cit)
 		return charInfoRankStrings->rbegin()->second.c_str();
 	return cit->second.c_str();
 }
@@ -435,7 +436,7 @@ LPCSTR InventoryUtilities::GetReputationAsText(CHARACTER_REPUTATION_VALUE rankID
 	InitCharacterInfoStrings();
 
 	CharInfoStrings::const_iterator cit = charInfoReputationStrings->upper_bound(rankID);
-	if (charInfoReputationStrings->end() == cit)
+	if(charInfoReputationStrings->end() == cit)
 		return charInfoReputationStrings->rbegin()->second.c_str();
 
 	return cit->second.c_str();
@@ -448,7 +449,7 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 	InitCharacterInfoStrings();
 
 	CharInfoStrings::const_iterator cit = charInfoGoodwillStrings->upper_bound(goodwill);
-	if (charInfoGoodwillStrings->end() == cit)
+	if(charInfoGoodwillStrings->end() == cit)
 		return charInfoGoodwillStrings->rbegin()->second.c_str();
 
 	return cit->second.c_str();
@@ -459,11 +460,11 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 // (для tutorial)
 void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 {
-	if (GameID() != GAME_SINGLE)
+	if(GameID() != GAME_SINGLE)
 		return;
 
 	CActor* actor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (actor)
+	if(actor)
 	{
 		actor->TransferInfo(info_id, true);
 	}
@@ -472,15 +473,15 @@ void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)
 {
 	u32 res = 0xffc0c0c0;
-	if (gw == NEUTRAL_GOODWILL)
+	if(gw == NEUTRAL_GOODWILL)
 	{
 		res = 0xffc0c0c0;
 	}
-	else if (gw > 1000)
+	else if(gw > 1000)
 	{
 		res = 0xff00ff00;
 	}
-	else if (gw < -1000)
+	else if(gw < -1000)
 	{
 		res = 0xffff0000;
 	}
@@ -490,15 +491,15 @@ u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)
 u32 InventoryUtilities::GetReputationColor(CHARACTER_REPUTATION_VALUE rv)
 {
 	u32 res = 0xffc0c0c0;
-	if (rv == NEUTAL_REPUTATION)
+	if(rv == NEUTAL_REPUTATION)
 	{
 		res = 0xffc0c0c0;
 	}
-	else if (rv > 50)
+	else if(rv > 50)
 	{
 		res = 0xff00ff00;
 	}
-	else if (rv < -50)
+	else if(rv < -50)
 	{
 		res = 0xffff0000;
 	}
@@ -507,7 +508,7 @@ u32 InventoryUtilities::GetReputationColor(CHARACTER_REPUTATION_VALUE rv)
 
 u32 InventoryUtilities::GetRelationColor(ALife::ERelationType relation)
 {
-	switch (relation)
+	switch(relation)
 	{
 	case ALife::eRelationTypeFriend:
 		return 0xff00ff00;

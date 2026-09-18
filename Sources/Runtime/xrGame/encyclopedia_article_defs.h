@@ -45,7 +45,7 @@ class FindArticleByIDPred
 	}
 	bool operator()(const ARTICLE_DATA& item)
 	{
-		if (item.article_id == object_id)
+		if(item.article_id == object_id)
 			return true;
 		else
 			return false;

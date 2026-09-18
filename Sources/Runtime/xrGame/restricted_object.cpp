@@ -31,13 +31,13 @@ IC void construct_string(LPSTR result, const xr_vector<ALife::_OBJECT_ID>& restr
 	u32 count = xr_strlen(result) ? _GetItemCount(result) : 0;
 	xr_vector<ALife::_OBJECT_ID>::const_iterator I = restrictions.begin();
 	xr_vector<ALife::_OBJECT_ID>::const_iterator E = restrictions.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CSE_ALifeDynamicObject* object = ai().alife().objects().object(*I);
-		if (ai().game_graph().vertex(object->m_tGraphID)->level_id() != ai().level_graph().level_id())
+		if(ai().game_graph().vertex(object->m_tGraphID)->level_id() != ai().level_graph().level_id())
 			continue;
 
-		if (count)
+		if(count)
 			strcat(result, ",");
 		strcat(result, object->name_replace());
 		++count;
@@ -76,7 +76,7 @@ BOOL CRestrictedObject::net_Spawn(CSE_Abstract* data)
 	strcpy(temp0, *monster->m_out_space_restrictors);
 	strcpy(temp1, *monster->m_in_space_restrictors);
 
-	if (ai().get_alife())
+	if(ai().get_alife())
 	{
 		construct_string(temp0, monster->m_dynamic_out_restrictions);
 		construct_string(temp1, monster->m_dynamic_in_restrictions);
@@ -112,7 +112,7 @@ void CRestrictedObject::net_Destroy()
 
 u32 CRestrictedObject::accessible_nearest(const fvec3& position, fvec3& result) const
 {
-	//OPTICK_EVENT("CRestrictedObject::accessible");
+	// OPTICK_EVENT("CRestrictedObject::accessible");
 	START_PROFILE("Restricted Object/Accessible Nearest");
 	VERIFY(!accessible(position));
 	return (Level().space_restriction_manager().accessible_nearest(object().ID(), position, result));
@@ -121,7 +121,7 @@ u32 CRestrictedObject::accessible_nearest(const fvec3& position, fvec3& result) 
 
 bool CRestrictedObject::accessible(const fvec3& position) const
 {
-	//OPTICK_EVENT("CRestrictedObject::accessible");
+	// OPTICK_EVENT("CRestrictedObject::accessible");
 	START_PROFILE("Restricted Object/Accessible");
 	return (accessible(position, EPS_L));
 	STOP_PROFILE;
@@ -129,7 +129,7 @@ bool CRestrictedObject::accessible(const fvec3& position) const
 
 bool CRestrictedObject::accessible(const fvec3& position, float radius) const
 {
-	//OPTICK_EVENT("CRestrictedObject::accessible");
+	// OPTICK_EVENT("CRestrictedObject::accessible");
 	START_PROFILE("Restricted Object/Accessible");
 	Fsphere sphere;
 	sphere.P = position;
@@ -140,7 +140,7 @@ bool CRestrictedObject::accessible(const fvec3& position, float radius) const
 
 bool CRestrictedObject::accessible(u32 level_vertex_id) const
 {
-	//OPTICK_EVENT("CRestrictedObject::accessible");
+	// OPTICK_EVENT("CRestrictedObject::accessible");
 	START_PROFILE("Restricted Object/Accessible");
 	VERIFY(ai().level_graph().valid_vertex_id(level_vertex_id));
 	return (accessible(level_vertex_id, EPS_L));
@@ -149,7 +149,7 @@ bool CRestrictedObject::accessible(u32 level_vertex_id) const
 
 bool CRestrictedObject::accessible(u32 level_vertex_id, float radius) const
 {
-	//OPTICK_EVENT("CRestrictedObject::accessible");
+	// OPTICK_EVENT("CRestrictedObject::accessible");
 	START_PROFILE("Restricted Object/Accessible");
 	VERIFY(ai().level_graph().valid_vertex_id(level_vertex_id));
 	return (Level().space_restriction_manager().accessible(object().ID(), level_vertex_id, radius));
@@ -158,14 +158,14 @@ bool CRestrictedObject::accessible(u32 level_vertex_id, float radius) const
 
 void CRestrictedObject::add_border(u32 start_vertex_id, float radius) const
 {
-	//OPTICK_EVENT("CRestrictedObject::add_border");
+	// OPTICK_EVENT("CRestrictedObject::add_border");
 	START_PROFILE("Restricted Object/Add Border");
 
 	VERIFY(ai().level_graph().valid_vertex_id(start_vertex_id));
 	VERIFY(!m_applied);
 	VERIFY(m_removed);
 	m_removed = false;
-	if (accessible(start_vertex_id))
+	if(accessible(start_vertex_id))
 	{
 		m_applied = true;
 		Level().space_restriction_manager().add_border(object().ID(), start_vertex_id, radius);
@@ -176,13 +176,13 @@ void CRestrictedObject::add_border(u32 start_vertex_id, float radius) const
 
 void CRestrictedObject::add_border(const fvec3& start_position, const fvec3& dest_position) const
 {
-	//OPTICK_EVENT("CRestrictedObject::add_border");
+	// OPTICK_EVENT("CRestrictedObject::add_border");
 	START_PROFILE("Restricted Object/Add Border");
 
 	VERIFY(!m_applied);
 	VERIFY(m_removed);
 	m_removed = false;
-	if (accessible(start_position))
+	if(accessible(start_position))
 	{
 		m_applied = true;
 		Level().space_restriction_manager().add_border(object().ID(), start_position, dest_position);
@@ -193,13 +193,13 @@ void CRestrictedObject::add_border(const fvec3& start_position, const fvec3& des
 
 void CRestrictedObject::add_border(u32 start_vertex_id, u32 dest_vertex_id) const
 {
-	//OPTICK_EVENT("CRestrictedObject::add_border");
+	// OPTICK_EVENT("CRestrictedObject::add_border");
 	START_PROFILE("Restricted Object/Add Border");
 	VERIFY(ai().level_graph().valid_vertex_id(start_vertex_id));
 	VERIFY(!m_applied);
 	VERIFY(m_removed);
 	m_removed = false;
-	if (accessible(start_vertex_id))
+	if(accessible(start_vertex_id))
 	{
 		m_applied = true;
 		Level().space_restriction_manager().add_border(object().ID(), start_vertex_id, dest_vertex_id);
@@ -209,12 +209,12 @@ void CRestrictedObject::add_border(u32 start_vertex_id, u32 dest_vertex_id) cons
 
 void CRestrictedObject::remove_border() const
 {
-	//OPTICK_EVENT("CRestrictedObject::remove_border");
+	// OPTICK_EVENT("CRestrictedObject::remove_border");
 	START_PROFILE("Restricted Object/Remove Border");
 
 	VERIFY(!m_removed);
 	m_removed = true;
-	if (m_applied)
+	if(m_applied)
 		Level().space_restriction_manager().remove_border(object().ID());
 	m_applied = false;
 
@@ -223,7 +223,7 @@ void CRestrictedObject::remove_border() const
 
 shared_str CRestrictedObject::in_restrictions() const
 {
-	//OPTICK_EVENT("CRestrictedObject::in_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::in_restrictions");
 	START_PROFILE("Restricted Object/in_restrictions")
 	return (Level().space_restriction_manager().in_restrictions(object().ID()));
 	STOP_PROFILE
@@ -231,7 +231,7 @@ shared_str CRestrictedObject::in_restrictions() const
 
 shared_str CRestrictedObject::out_restrictions() const
 {
-	//OPTICK_EVENT("CRestrictedObject::out_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::out_restrictions");
 	START_PROFILE("Restricted Object/out_restrictions")
 	return (Level().space_restriction_manager().out_restrictions(object().ID()));
 	STOP_PROFILE
@@ -239,7 +239,7 @@ shared_str CRestrictedObject::out_restrictions() const
 
 shared_str CRestrictedObject::base_in_restrictions() const
 {
-	//OPTICK_EVENT("CRestrictedObject::base_in_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::base_in_restrictions");
 	START_PROFILE("Restricted Object/base_in_restrictions")
 	return (Level().space_restriction_manager().base_in_restrictions(object().ID()));
 	STOP_PROFILE
@@ -247,7 +247,7 @@ shared_str CRestrictedObject::base_in_restrictions() const
 
 shared_str CRestrictedObject::base_out_restrictions() const
 {
-	//OPTICK_EVENT("CRestrictedObject::base_out_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::base_out_restrictions");
 	START_PROFILE("Restricted Object/out_restrictions")
 	return (Level().space_restriction_manager().base_out_restrictions(object().ID()));
 	STOP_PROFILE
@@ -282,15 +282,15 @@ IC void CRestrictedObject::construct_restriction_string(LPSTR temp_restrictions,
 	strcpy(temp_restrictions, "");
 	xr_vector<ALife::_OBJECT_ID>::const_iterator I = restrictions.begin();
 	xr_vector<ALife::_OBJECT_ID>::const_iterator E = restrictions.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CObject* object = Level().Objects.net_Find(*I);
-		if (!object || !!strstr(*current_restrictions, *object->cName()) == value)
+		if(!object || !!strstr(*current_restrictions, *object->cName()) == value)
 			continue;
 
 		p(this, object->ID());
 
-		if (count)
+		if(count)
 			strcat(temp_restrictions, ",");
 
 		strcat(temp_restrictions, *object->cName());
@@ -299,7 +299,8 @@ IC void CRestrictedObject::construct_restriction_string(LPSTR temp_restrictions,
 	}
 }
 
-template <bool add> struct CRestrictionPredicate
+template <bool add>
+struct CRestrictionPredicate
 {
 	RestrictionSpace::ERestrictorTypes m_restrictor_type;
 
@@ -310,7 +311,7 @@ template <bool add> struct CRestrictionPredicate
 
 	IC void operator()(CRestrictedObject* object, ALife::_OBJECT_ID id) const
 	{
-		if (add)
+		if(add)
 			object->add_object_restriction(id, m_restrictor_type);
 		else
 			object->remove_object_restriction(id, m_restrictor_type);
@@ -320,9 +321,9 @@ template <bool add> struct CRestrictionPredicate
 void CRestrictedObject::add_restrictions(const xr_vector<ALife::_OBJECT_ID>& out_restrictions,
 										 const xr_vector<ALife::_OBJECT_ID>& in_restrictions)
 {
-	//OPTICK_EVENT("CRestrictedObject::add_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::add_restrictions");
 
-	if (out_restrictions.empty() && in_restrictions.empty())
+	if(out_restrictions.empty() && in_restrictions.empty())
 		return;
 
 	START_PROFILE("Restricted Object/Add Restrictions");
@@ -347,9 +348,9 @@ void CRestrictedObject::add_restrictions(const xr_vector<ALife::_OBJECT_ID>& out
 void CRestrictedObject::remove_restrictions(const xr_vector<ALife::_OBJECT_ID>& out_restrictions,
 											const xr_vector<ALife::_OBJECT_ID>& in_restrictions)
 {
-	//OPTICK_EVENT("CRestrictedObject::remove_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::remove_restrictions");
 
-	if (out_restrictions.empty() && in_restrictions.empty())
+	if(out_restrictions.empty() && in_restrictions.empty())
 		return;
 
 	START_PROFILE("Restricted Object/Remove Restrictions");
@@ -373,9 +374,9 @@ void CRestrictedObject::remove_restrictions(const xr_vector<ALife::_OBJECT_ID>& 
 
 void CRestrictedObject::add_restrictions(const shared_str& out_restrictions, const shared_str& in_restrictions)
 {
-	//OPTICK_EVENT("CRestrictedObject::add_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::add_restrictions");
 
-	if (!out_restrictions.size() && !in_restrictions.size())
+	if(!out_restrictions.size() && !in_restrictions.size())
 		return;
 
 	START_PROFILE("Restricted Object/Add Restrictions");
@@ -389,9 +390,9 @@ void CRestrictedObject::add_restrictions(const shared_str& out_restrictions, con
 
 void CRestrictedObject::remove_restrictions(const shared_str& out_restrictions, const shared_str& in_restrictions)
 {
-	//OPTICK_EVENT("CRestrictedObject::remove_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::remove_restrictions");
 
-	if (!out_restrictions.size() && !in_restrictions.size())
+	if(!out_restrictions.size() && !in_restrictions.size())
 		return;
 
 	START_PROFILE("Restricted Object/Remove Restrictions");
@@ -413,15 +414,15 @@ void CRestrictedObject::remove_all_restrictions(const RestrictionSpace::ERestric
 
 void CRestrictedObject::remove_all_restrictions()
 {
-	//OPTICK_EVENT("CRestrictedObject::remove_all_restrictions");
+	// OPTICK_EVENT("CRestrictedObject::remove_all_restrictions");
 
 	START_PROFILE("Restricted Object/Remove Restrictions");
 
 	remove_all_restrictions(RestrictionSpace::eRestrictorTypeOut);
 	remove_all_restrictions(RestrictionSpace::eRestrictorTypeIn);
 
-	if (Level().space_restriction_manager().in_restrictions(object().ID()).size() ||
-		Level().space_restriction_manager().out_restrictions(object().ID()).size())
+	if(Level().space_restriction_manager().in_restrictions(object().ID()).size() ||
+	   Level().space_restriction_manager().out_restrictions(object().ID()).size())
 		actual(false);
 
 	Level().space_restriction_manager().restrict(object().ID(), "", "");
@@ -432,6 +433,6 @@ void CRestrictedObject::remove_all_restrictions()
 void CRestrictedObject::actual(bool value)
 {
 	m_actual = value;
-	if (!actual())
+	if(!actual())
 		m_object->on_restrictions_change();
 }

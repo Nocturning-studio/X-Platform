@@ -24,12 +24,12 @@ static float friction_factor_shape = 0.f;
 static float cfm_shape = 1.e-10f;
 static float erp_shape = 1.f;
 #ifdef DEBUG
-#define CHECK_POS(pos, msg, br)                                                                                        \
-	if (!valid_pos(pos, phBoundaries))                                                                                 \
-	{                                                                                                                  \
-		Msg("pos:%f,%f,%f", pos.x, pos.y, pos.z);                                                                      \
-		Msg(msg);                                                                                                      \
-		VERIFY(!br);                                                                                                   \
+#define CHECK_POS(pos, msg, br)                   \
+	if(!valid_pos(pos, phBoundaries))             \
+	{                                             \
+		Msg("pos:%f,%f,%f", pos.x, pos.y, pos.z); \
+		Msg(msg);                                 \
+		VERIFY(!br);                              \
 	}
 
 #else
@@ -38,7 +38,7 @@ static float erp_shape = 1.f;
 void ActivateTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
 
-	if (do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
+	if(do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
 	{
 		float& depth = c.geom.depth;
 		float test_depth = depth;
@@ -53,7 +53,7 @@ void StaticEnvironment(bool& do_colide, bool bo1, dContact& c, SGameMtl* materia
 {
 	dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c);
 
-	if (bo1)
+	if(bo1)
 	{
 		((CPHActivationShape*)(retrieveGeomUserData(c.geom.g1)->callback_data))
 			->DActiveIsland()
@@ -72,7 +72,7 @@ void StaticEnvironment(bool& do_colide, bool bo1, dContact& c, SGameMtl* materia
 void GetMaxDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
 
-	if (do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
+	if(do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
 	{
 		float& depth = c.geom.depth;
 		float test_depth = depth;
@@ -85,7 +85,7 @@ void GetMaxDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* mater
 void RestoreVelocityState(V_PH_WORLD_STATE& state)
 {
 	V_PH_WORLD_STATE::iterator i = state.begin(), e = state.end();
-	for (; e != i; ++i)
+	for(; e != i; ++i)
 	{
 		CPHSynchronize& sync = *i->first;
 		SPHNetState& old_s = i->second;
@@ -118,7 +118,7 @@ void CPHActivationShape::Create(const fvec3 start_pos, const fvec3 start_size, C
 	dMassSetSphere(&m, 1.f, 100000.f);
 	dMassAdjust(&m, 1.f);
 	dBodySetMass(m_body, &m);
-	switch (_type)
+	switch(_type)
 	{
 	case etBox:
 		m_geom = dCreateBox(0, start_size.x, start_size.y, start_size.z);
@@ -156,7 +156,7 @@ bool CPHActivationShape::Activate(const fvec3 need_size, u16 steps, float max_di
 {
 
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
+	if(ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
 	{
 		DBG_OpenCashedDraw();
 		fmat4x4 M;
@@ -183,18 +183,18 @@ bool CPHActivationShape::Activate(const fvec3 need_size, u16 steps, float max_di
 	float resolve_depth = 0.01f;
 	float max_vel = max_depth_shape / fnum_it * fnum_steps_r / fixed_step;
 	float limit_l_vel = _max(_max(need_size.x, need_size.y), need_size.z) / fnum_it * fnum_steps_r / fixed_step;
-	if (limit_l_vel > default_l_limit)
+	if(limit_l_vel > default_l_limit)
 		limit_l_vel = default_l_limit;
-	if (max_vel > limit_l_vel)
+	if(max_vel > limit_l_vel)
 		max_vel = limit_l_vel;
 
 	float max_a_vel = max_rotation / fnum_it * fnum_steps_r / fixed_step;
-	if (max_a_vel > default_w_limit)
+	if(max_a_vel > default_w_limit)
 		max_a_vel = default_w_limit;
 	// ph_world->CutVelocity(0.f,0.f);
 	dGeomUserDataSetCallbackData(m_geom, this);
 	dGeomUserDataSetObjectContactCallback(m_geom, ActivateTestDepthCallback);
-	if (m_flags.test(flStaticEnvironment))
+	if(m_flags.test(flStaticEnvironment))
 		dGeomUserDataAddObjectContactCallback(m_geom, StaticEnvironment);
 	max_depth_shape = 0.f;
 
@@ -207,7 +207,7 @@ bool CPHActivationShape::Activate(const fvec3 need_size, u16 steps, float max_di
 	bool ret = false;
 	V_PH_WORLD_STATE temp_state;
 	ph_world->GetState(temp_state);
-	for (int m = 0; steps > m; ++m)
+	for(int m = 0; steps > m; ++m)
 	{
 		// float param =fnum_steps_r*(1+m);
 		// InterpolateBox(id,param);
@@ -218,7 +218,7 @@ bool CPHActivationShape::Activate(const fvec3 need_size, u16 steps, float max_di
 		{
 
 			ret = false;
-			for (int i = 0; num_it > i; ++i)
+			for(int i = 0; num_it > i; ++i)
 			{
 				max_depth_shape = 0.f;
 				ph_world->Step();
@@ -226,24 +226,24 @@ bool CPHActivationShape::Activate(const fvec3 need_size, u16 steps, float max_di
 				ph_world->CutVelocity(max_vel, max_a_vel);
 				CHECK_POS(Position(), "pos after CutVelocity", true);
 				// if(m==0&&i==0)ph_world->GetState(temp_state);
-				if (max_depth_shape < resolve_depth)
+				if(max_depth_shape < resolve_depth)
 				{
 					ret = true;
 					break;
 				}
 			}
 			attempts--;
-		} while (!ret && attempts > 0);
+		} while(!ret && attempts > 0);
 #ifdef DEBUG
 		Msg("correction attempts %d", 10 - attempts);
 #endif
 	}
 	RestoreVelocityState(temp_state);
 	CHECK_POS(Position(), "pos after RestoreVelocityState(temp_state);", true);
-	if (!un_freeze_later)
+	if(!un_freeze_later)
 		ph_world->UnFreeze();
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
+	if(ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
 	{
 		DBG_OpenCashedDraw();
 		fmat4x4 M;
@@ -289,7 +289,7 @@ void CPHActivationShape::InitContact(dContact* c, bool& do_collide, u16, u16)
 void CPHActivationShape::CutVelocity(float l_limit, float /*a_limit*/)
 {
 	dVector3 limitedl, diffl;
-	if (dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl))
+	if(dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl))
 	{
 		dVectorSub(diffl, limitedl, dBodyGetLinearVel(m_body));
 		dBodySetLinearVel(m_body, diffl[0], diffl[1], diffl[2]);

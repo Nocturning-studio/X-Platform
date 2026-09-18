@@ -2,9 +2,11 @@
 
 #include "ResourceManager.h"
 
-template <typename T> struct ShaderTypeTraits;
+template <typename T>
+struct ShaderTypeTraits;
 
-template <> struct ShaderTypeTraits<SVS>
+template <>
+struct ShaderTypeTraits<SVS>
 {
 	typedef CResourceManager::map_VS Map_S;
 	typedef IDirect3DVertexShader9 ID3DShader;
@@ -34,7 +36,8 @@ template <> struct ShaderTypeTraits<SVS>
 	}
 };
 
-template <> struct ShaderTypeTraits<SPS>
+template <>
+struct ShaderTypeTraits<SPS>
 {
 	typedef CResourceManager::map_PS Map_S;
 	typedef IDirect3DPixelShader9 ID3DShader;
@@ -64,11 +67,13 @@ template <> struct ShaderTypeTraits<SPS>
 	}
 };
 
-template <> inline CResourceManager::map_VS& CResourceManager::GetShaderMap()
+template <>
+inline CResourceManager::map_VS& CResourceManager::GetShaderMap()
 {
 	return m_vs;
 }
-template <> inline CResourceManager::map_PS& CResourceManager::GetShaderMap()
+template <>
+inline CResourceManager::map_PS& CResourceManager::GetShaderMap()
 {
 	return m_ps;
 }

@@ -112,8 +112,10 @@ class CLevelGraph
 	IC void unpack_xz(const CLevelGraph::CPosition& vertex_position, u32& x, u32& z) const;
 	IC void unpack_xz(const CLevelGraph::CPosition& vertex_position, int& x, int& z) const;
 	IC void unpack_xz(const CLevelGraph::CPosition& vertex_position, float& x, float& z) const;
-	template <typename T> IC void unpack_xz(const CLevelGraph::CVertex& vertex, T& x, T& z) const;
-	template <typename T> IC void unpack_xz(const CLevelGraph::CVertex* vertex, T& x, T& z) const;
+	template <typename T>
+	IC void unpack_xz(const CLevelGraph::CVertex& vertex, T& x, T& z) const;
+	template <typename T>
+	IC void unpack_xz(const CLevelGraph::CVertex* vertex, T& x, T& z) const;
 	ICF CVertex* vertex(u32 vertex_id) const;
 	ICF u32 vertex(const CVertex* vertex_p) const;
 	ICF u32 vertex(const CVertex& vertex_r) const;
@@ -211,7 +213,8 @@ class CLevelGraph
 	IC bool create_straight_path(u32 start_vertex_id, const fvec2& start_point, const fvec2& finish_point,
 								 xr_vector<T>& tpaOutputPoints, const T& example, bool bAddFirstPoint,
 								 bool bClearPath = true) const;
-	template <typename T> IC void assign_y_values(xr_vector<T>& path);
+	template <typename T>
+	IC void assign_y_values(xr_vector<T>& path);
 	template <typename P>
 	IC void iterate_vertices(const fvec3& min_position, const fvec3& max_position, const P& predicate) const;
 	IC bool check_vertex_in_direction(u32 start_vertex_id, const fvec2& start_position, u32 finish_vertex_id) const;

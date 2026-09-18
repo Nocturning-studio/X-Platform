@@ -29,14 +29,16 @@ IC void CObjectActionBase<_item_type>::set_property(_condition_type condition_id
 	m_storage->set_property(condition_id, value);
 }
 
-template <typename _item_type> void CObjectActionBase<_item_type>::initialize()
+template <typename _item_type>
+void CObjectActionBase<_item_type>::initialize()
 {
 	inherited::initialize();
 	set_property(ObjectHandlerSpace::eWorldPropertyAimed1, false);
 	set_property(ObjectHandlerSpace::eWorldPropertyAimed2, false);
 }
 
-template <typename _item_type> IC CAI_Stalker& CObjectActionBase<_item_type>::object() const
+template <typename _item_type>
+IC CAI_Stalker& CObjectActionBase<_item_type>::object() const
 {
 	VERIFY(m_object);
 	return (*m_object);
@@ -54,9 +56,10 @@ IC CObjectActionMember<_item_type>::CObjectActionMember(_item_type* item, CAI_St
 {
 }
 
-template <typename _item_type> void CObjectActionMember<_item_type>::execute()
+template <typename _item_type>
+void CObjectActionMember<_item_type>::execute()
 {
 	inherited::execute();
-	if (completed())
+	if(completed())
 		set_property(m_condition_id, m_value);
 }

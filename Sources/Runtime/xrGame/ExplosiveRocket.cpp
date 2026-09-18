@@ -44,10 +44,10 @@ BOOL CExplosiveRocket::net_Spawn(CSE_Abstract* DC)
 
 void CExplosiveRocket::Contact(const fvec3& pos, const fvec3& normal)
 {
-	if (eCollide == m_eState)
+	if(eCollide == m_eState)
 		return;
 
-	if (m_bLaunched)
+	if(m_bLaunched)
 		CExplosive::GenExplodeEvent(pos, normal);
 
 	inherited::Contact(pos, normal);
@@ -73,7 +73,7 @@ void CExplosiveRocket::OnH_B_Independent(bool just_before_destroy)
 
 void CExplosiveRocket::UpdateCL()
 {
-	if (eCollide == m_eState)
+	if(eCollide == m_eState)
 	{
 		CExplosive::UpdateCL();
 		inherited::UpdateCL();

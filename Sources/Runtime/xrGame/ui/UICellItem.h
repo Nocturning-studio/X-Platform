@@ -10,7 +10,7 @@ class CUICellItem;
 class ICustomDrawCell
 {
   public:
-	virtual ~ICustomDrawCell(){};
+	virtual ~ICustomDrawCell() {};
 	virtual void OnDraw(CUICellItem* cell) = 0;
 };
 
@@ -41,7 +41,7 @@ class CUICellItem : public CUIStatic
 		m_b_already_drawn = false;
 	};
 
-	virtual void OnAfterChild(){};
+	virtual void OnAfterChild() {};
 
 	u32 ChildsCount();
 	void PushChild(CUICellItem*);

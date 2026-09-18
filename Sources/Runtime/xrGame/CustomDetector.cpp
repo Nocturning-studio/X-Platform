@@ -18,7 +18,7 @@ ZONE_INFO::ZONE_INFO()
 
 ZONE_INFO::~ZONE_INFO()
 {
-	if (pParticle)
+	if(pParticle)
 		CParticlesObject::Destroy(pParticle);
 }
 
@@ -30,7 +30,7 @@ CCustomDetector::CCustomDetector(void)
 CCustomDetector::~CCustomDetector(void)
 {
 	ZONE_TYPE_MAP_IT it;
-	for (it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
+	for(it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
 		HUD_SOUND::DestroySound(it->second.detect_snds);
 	//		it->second.detect_snd.destroy();
 
@@ -51,7 +51,7 @@ void CCustomDetector::Load(LPCSTR section)
 
 	m_fRadius = pSettings->r_float(section, "radius");
 
-	if (pSettings->line_exist(section, "night_vision_particle"))
+	if(pSettings->line_exist(section, "night_vision_particle"))
 		m_nightvision_particle = pSettings->r_string(section, "night_vision_particle");
 
 	u32 i = 1;
@@ -61,7 +61,7 @@ void CCustomDetector::Load(LPCSTR section)
 	do
 	{
 		sprintf_s(temp, "zone_class_%d", i);
-		if (pSettings->line_exist(section, temp))
+		if(pSettings->line_exist(section, temp))
 		{
 			LPCSTR z_Class = pSettings->r_string(section, temp);
 			CLASS_ID zone_cls = TEXT2CLSID(pSettings->r_string(z_Class, "class"));
@@ -79,14 +79,14 @@ void CCustomDetector::Load(LPCSTR section)
 
 			sprintf_s(temp, "zone_map_location_%d", i);
 
-			if (pSettings->line_exist(section, temp))
+			if(pSettings->line_exist(section, temp))
 				zone_type.zone_map_location = pSettings->r_string(section, temp);
 
 			++i;
 		}
 		else
 			break;
-	} while (true);
+	} while(true);
 
 	m_ef_detector_type = pSettings->r_u32(section, "ef_detector_type");
 }
@@ -95,14 +95,14 @@ void CCustomDetector::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (!IsWorking())
+	if(!IsWorking())
 		return;
-	if (!H_Parent())
+	if(!H_Parent())
 		return;
 
 	Position().set(H_Parent()->Position());
 
-	if (H_Parent() && H_Parent() == Level().CurrentViewEntity())
+	if(H_Parent() && H_Parent() == Level().CurrentViewEntity())
 	{
 		fvec3 P;
 		P.set(H_Parent()->Position());
@@ -114,7 +114,7 @@ void CCustomDetector::shedule_Update(u32 dt)
 void CCustomDetector::StopAllSounds()
 {
 	ZONE_TYPE_MAP_IT it;
-	for (it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
+	for(it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
 	{
 		ZONE_TYPE& zone_type = (*it).second;
 		HUD_SOUND::StopSound(zone_type.detect_snds);
@@ -126,28 +126,28 @@ void CCustomDetector::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if (!IsWorking())
+	if(!IsWorking())
 		return;
-	if (!H_Parent())
+	if(!H_Parent())
 		return;
 
-	if (!m_pCurrentActor)
+	if(!m_pCurrentActor)
 		return;
 
 	ZONE_INFO_MAP_IT it;
-	for (it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)
+	for(it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)
 	{
 		CCustomZone* pZone = it->first;
 		ZONE_INFO& zone_info = it->second;
 
 		// такой тип зон не обнаруживается
-		if (m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() || !pZone->VisibleByDetector())
+		if(m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() || !pZone->VisibleByDetector())
 			continue;
 
 		ZONE_TYPE& zone_type = m_ZoneTypeMap[pZone->CLS_ID];
 
 		float dist_to_zone = H_Parent()->Position().distance_to(pZone->Position()) - 0.8f * pZone->Radius();
-		if (dist_to_zone < 0)
+		if(dist_to_zone < 0)
 			dist_to_zone = 0;
 
 		float fRelPow = 1.f - dist_to_zone / m_fRadius;
@@ -159,7 +159,7 @@ void CCustomDetector::UpdateCL()
 
 		float current_snd_time = 1000.f * 1.f / zone_info.cur_freq;
 
-		if ((float)zone_info.snd_time > current_snd_time)
+		if((float)zone_info.snd_time > current_snd_time)
 		{
 			zone_info.snd_time = 0;
 			HUD_SOUND::PlaySound(zone_type.detect_snds, fvec3().set(0, 0, 0), this, true, false);
@@ -172,7 +172,7 @@ void CCustomDetector::UpdateCL()
 void CCustomDetector::feel_touch_new(CObject* O)
 {
 	CCustomZone* pZone = smart_cast<CCustomZone*>(O);
-	if (pZone && pZone->IsEnabled())
+	if(pZone && pZone->IsEnabled())
 	{
 		m_ZoneInfoMap[pZone].snd_time = 0;
 
@@ -183,7 +183,7 @@ void CCustomDetector::feel_touch_new(CObject* O)
 void CCustomDetector::feel_touch_delete(CObject* O)
 {
 	CCustomZone* pZone = smart_cast<CCustomZone*>(O);
-	if (pZone)
+	if(pZone)
 	{
 		m_ZoneInfoMap.erase(pZone);
 		AddRemoveMapSpot(pZone, false);
@@ -254,16 +254,16 @@ void CCustomDetector::TurnOff()
 
 void CCustomDetector::AddRemoveMapSpot(CCustomZone* pZone, bool bAdd)
 {
-	if (m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end())
+	if(m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end())
 		return;
 
-	if (bAdd && !pZone->VisibleByDetector())
+	if(bAdd && !pZone->VisibleByDetector())
 		return;
 
 	ZONE_TYPE& zone_type = m_ZoneTypeMap[pZone->CLS_ID];
-	if (xr_strlen(zone_type.zone_map_location))
+	if(xr_strlen(zone_type.zone_map_location))
 	{
-		if (bAdd)
+		if(bAdd)
 			Level().MapManager().AddMapLocation(*zone_type.zone_map_location, pZone->ID());
 		else
 			Level().MapManager().RemoveMapLocation(*zone_type.zone_map_location, pZone->ID());
@@ -273,7 +273,7 @@ void CCustomDetector::AddRemoveMapSpot(CCustomZone* pZone, bool bAdd)
 void CCustomDetector::UpdateMapLocations() // called on turn on/off only
 {
 	ZONE_INFO_MAP_IT it;
-	for (it = m_ZoneInfoMap.begin(); it != m_ZoneInfoMap.end(); ++it)
+	for(it = m_ZoneInfoMap.begin(); it != m_ZoneInfoMap.end(); ++it)
 		AddRemoveMapSpot(it->first, IsWorking());
 }
 
@@ -283,16 +283,16 @@ void CCustomDetector::UpdateNightVisionMode()
 {
 	//	CObject* tmp = Level().CurrentViewEntity();
 	bool bNightVision = false;
-	if (GameID() == GAME_SINGLE)
+	if(GameID() == GAME_SINGLE)
 	{
 		bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision)) != NULL;
 	}
 	else
 	{
-		if (Level().CurrentViewEntity() && Level().CurrentViewEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
+		if(Level().CurrentViewEntity() && Level().CurrentViewEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
 			CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-			if (pActor)
+			if(pActor)
 				bNightVision = pActor->Cameras().GetPPEffector(EEffectorPPType(effNightvision)) != NULL;
 		}
 	}
@@ -301,26 +301,26 @@ void CCustomDetector::UpdateNightVisionMode()
 			   m_nightvision_particle.size();
 
 	ZONE_INFO_MAP_IT it;
-	for (it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)
+	for(it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)
 	{
 		CCustomZone* pZone = it->first;
 		ZONE_INFO& zone_info = it->second;
 
-		if (bOn)
+		if(bOn)
 		{
 			fvec3 zero_vector;
 			zero_vector.set(0.f, 0.f, 0.f);
 
-			if (!zone_info.pParticle)
+			if(!zone_info.pParticle)
 				zone_info.pParticle = CParticlesObject::Create(*m_nightvision_particle, FALSE);
 
 			zone_info.pParticle->UpdateParent(pZone->Transform(), zero_vector);
-			if (!zone_info.pParticle->IsPlaying())
+			if(!zone_info.pParticle->IsPlaying())
 				zone_info.pParticle->Play();
 		}
 		else
 		{
-			if (zone_info.pParticle)
+			if(zone_info.pParticle)
 			{
 				zone_info.pParticle->Stop();
 				CParticlesObject::Destroy(zone_info.pParticle);

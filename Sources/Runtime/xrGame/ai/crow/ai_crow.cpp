@@ -16,14 +16,14 @@
 void CAI_Crow::SAnim::Load(CKinematicsAnimated* visual, LPCSTR prefix)
 {
 	const MotionID& M = visual->ID_Cycle_Safe(prefix);
-	if (M)
+	if(M)
 		m_Animations.push_back(M);
-	for (int i = 0; (i < MAX_ANIM_COUNT_CROW) && (m_Animations.size() < MAX_ANIM_COUNT_CROW); ++i)
+	for(int i = 0; (i < MAX_ANIM_COUNT_CROW) && (m_Animations.size() < MAX_ANIM_COUNT_CROW); ++i)
 	{
 		string128 sh_anim;
 		sprintf_s(sh_anim, "%s_%d", prefix, i);
 		const MotionID& M = visual->ID_Cycle_Safe(sh_anim);
-		if (M)
+		if(M)
 			m_Animations.push_back(M);
 	}
 	R_ASSERT(m_Animations.size());
@@ -32,16 +32,16 @@ void CAI_Crow::SAnim::Load(CKinematicsAnimated* visual, LPCSTR prefix)
 void CAI_Crow::SSound::Load(LPCSTR prefix)
 {
 	string_path fn;
-	if (FS.exist(fn, "$game_sounds$", prefix, ".ogg"))
+	if(FS.exist(fn, "$game_sounds$", prefix, ".ogg"))
 	{
 		m_Sounds.push_back(ref_sound());
 		::Sound->create(m_Sounds.back(), prefix, st_Effect, sg_SourceType);
 	}
-	for (int i = 0; (i < MAX_SND_COUNT) && (m_Sounds.size() < MAX_SND_COUNT); ++i)
+	for(int i = 0; (i < MAX_SND_COUNT) && (m_Sounds.size() < MAX_SND_COUNT); ++i)
 	{
 		string64 name;
 		sprintf_s(name, "%s_%d", prefix, i);
-		if (FS.exist(fn, "$game_sounds$", name, ".ogg"))
+		if(FS.exist(fn, "$game_sounds$", name, ".ogg"))
 		{
 			m_Sounds.push_back(ref_sound());
 			::Sound->create(m_Sounds.back(), name, st_Effect, sg_SourceType);
@@ -52,14 +52,14 @@ void CAI_Crow::SSound::Load(LPCSTR prefix)
 
 void CAI_Crow::SSound::SetPosition(const fvec3& pos)
 {
-	for (int i = 0; i < (int)m_Sounds.size(); ++i)
-		if (m_Sounds[i]._feedback())
+	for(int i = 0; i < (int)m_Sounds.size(); ++i)
+		if(m_Sounds[i]._feedback())
 			m_Sounds[i].set_position(pos);
 }
 
 void CAI_Crow::SSound::Unload()
 {
-	for (int i = 0; i < (int)m_Sounds.size(); ++i)
+	for(int i = 0; i < (int)m_Sounds.size(); ++i)
 		::Sound->destroy(m_Sounds[i]);
 }
 
@@ -109,7 +109,7 @@ void CAI_Crow::Load(LPCSTR section)
 	inherited::Load(section);
 	//////////////////////////////////////////////////////////////////////////
 	ISpatial* self = smart_cast<ISpatial*>(this);
-	if (self)
+	if(self)
 	{
 		self->spatial.type &= ~STYPE_VISIBLEFORAI;
 		self->spatial.type &= ~STYPE_REACTTOSOUND;
@@ -184,7 +184,7 @@ void CAI_Crow::switch2_DeathDead()
 {
 	// AI need to pickup this
 	ISpatial* self = smart_cast<ISpatial*>(this);
-	if (self)
+	if(self)
 		self->spatial.type |= STYPE_VISIBLEFORAI;
 	//
 	smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_dead.GetRandom());
@@ -208,16 +208,16 @@ void CAI_Crow::state_Flying(float fdt)
 	vOffset.sub(vGoalDir, Position());
 
 	// First, tweak the pitch
-	if (vOffset.y > 1.0)
+	if(vOffset.y > 1.0)
 	{ // We're too low
 		vHPB.y += fAT;
-		if (vHPB.y > 0.8f)
+		if(vHPB.y > 0.8f)
 			vHPB.y = 0.8f;
 	}
-	else if (vOffset.y < -1.0)
+	else if(vOffset.y < -1.0)
 	{ // We're too high
 		vHPB.y -= fAT;
-		if (vHPB.y < -0.8f)
+		if(vHPB.y < -0.8f)
 			vHPB.y = -0.8f;
 	}
 	else // Add damping
@@ -235,9 +235,9 @@ void CAI_Crow::state_Flying(float fdt)
 
 	vOffset.crossproduct(vOffset, vDirection);
 
-	if (vOffset.y > 0.01f)
+	if(vOffset.y > 0.01f)
 		fDHeading = (fDHeading * 9.0f + fDot) * 0.1f;
-	else if (vOffset.y < 0.01f)
+	else if(vOffset.y < 0.01f)
 		fDHeading = (fDHeading * 9.0f - fDot) * 0.1f;
 
 	vHPB.x += fDHeading;
@@ -254,14 +254,14 @@ void CAI_Crow::state_DeathFall()
 {
 	fvec3 tAcceleration;
 	tAcceleration.set(0, -10.f, 0);
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 	{
 		fvec3 velocity;
 		m_pPhysicsShell->get_LinearVel(velocity);
-		if (velocity.y > -0.001f)
+		if(velocity.y > -0.001f)
 			st_target = eDeathDead;
 	}
-	if (bPlayDeathIdle)
+	if(bPlayDeathIdle)
 	{
 		smart_cast<CKinematicsAnimated*>(Visual())->PlayCycle(m_Anims.m_death_idle.GetRandom());
 		bPlayDeathIdle = false;
@@ -278,10 +278,10 @@ void CAI_Crow::Die(CObject* who)
 };
 void CAI_Crow::UpdateWorkload(float fdt)
 {
-	if (o_workload_frame == Engine.TimeManager.GetFrameCount())
+	if(o_workload_frame == Engine.TimeManager.GetFrameCount())
 		return;
 	o_workload_frame = Engine.TimeManager.GetFrameCount();
-	switch (st_current)
+	switch(st_current)
 	{
 	case eFlyIdle:
 	case eFlyUp:
@@ -294,10 +294,10 @@ void CAI_Crow::UpdateWorkload(float fdt)
 }
 void CAI_Crow::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 	{
 		m_pPhysicsShell->Update();
 		Transform().set(m_pPhysicsShell->mTransform);
@@ -316,9 +316,9 @@ void CAI_Crow::shedule_Update(u32 DT)
 
 	inherited::shedule_Update(DT);
 
-	if (st_target != st_current)
+	if(st_target != st_current)
 	{
-		switch (st_target)
+		switch(st_target)
 		{
 		case eFlyUp:
 			switch2_FlyUp();
@@ -336,24 +336,24 @@ void CAI_Crow::shedule_Update(u32 DT)
 		st_current = st_target;
 	}
 
-	switch (st_current)
+	switch(st_current)
 	{
 	case eFlyIdle:
-		if (Position().y > vOldPosition.y)
+		if(Position().y > vOldPosition.y)
 			st_target = eFlyUp;
 		break;
 	case eFlyUp:
-		if (Position().y <= vOldPosition.y)
+		if(Position().y <= vOldPosition.y)
 			st_target = eFlyIdle;
 		break;
 	case eDeathFall:
 		state_DeathFall();
 		break;
 	}
-	if ((eDeathFall != st_current) && (eDeathDead != st_current))
+	if((eDeathFall != st_current) && (eDeathDead != st_current))
 	{
 		// At random times, change the direction (goal) of the plane
-		if (fGoalChangeTime <= 0)
+		if(fGoalChangeTime <= 0)
 		{
 			fGoalChangeTime += fGoalChangeDelta + fGoalChangeDelta * Random.randF(-0.5f, 0.5f);
 			fvec3 vP;
@@ -364,7 +364,7 @@ void CAI_Crow::shedule_Update(u32 DT)
 		}
 		fGoalChangeTime -= fDT;
 		// sounds
-		if (fIdleSoundTime <= 0)
+		if(fIdleSoundTime <= 0)
 		{
 			fIdleSoundTime = fIdleSoundDelta + fIdleSoundDelta * Random.randF(-0.5f, 0.5f);
 			// if (st_current==eFlyIdle)
@@ -375,7 +375,7 @@ void CAI_Crow::shedule_Update(u32 DT)
 	m_Sounds.m_idle.SetPosition(Position());
 
 	// work
-	if (o_workload_rframe == (Engine.TimeManager.GetFrameCount() - 1))
+	if(o_workload_rframe == (Engine.TimeManager.GetFrameCount() - 1))
 		;
 	else
 		UpdateWorkload(fDT);
@@ -448,7 +448,7 @@ void CAI_Crow::HitSignal(float /**HitAmount/**/, fvec3& /**local_dir/**/, CObjec
 	//	bool				first_time = !PPhysicsShell();
 	SetfHealth(0);
 	// set_death_time		()	;
-	if (eDeathDead != st_current)
+	if(eDeathDead != st_current)
 	{
 		//		if (first_time)	Die			(who);
 		st_target = eDeathFall;

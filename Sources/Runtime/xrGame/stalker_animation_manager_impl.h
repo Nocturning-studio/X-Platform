@@ -20,10 +20,10 @@ IC bool CStalkerAnimationManager::standing() const
 	CAI_Stalker& obj = object();
 	CStalkerMovementManager& movement = obj.movement();
 
-	if (movement.speed(obj.character_physics_support()->movement()) < EPS_L)
+	if(movement.speed(obj.character_physics_support()->movement()) < EPS_L)
 		return (true);
 
-	if (eMovementTypeStand == movement.movement_type())
+	if(eMovementTypeStand == movement.movement_type())
 		return (true);
 
 	return (false);
@@ -45,10 +45,10 @@ IC bool CStalkerAnimationManager::strapped() const
 
 IC u32 CStalkerAnimationManager::object_slot() const
 {
-	if (m_weapon)
+	if(m_weapon)
 		return (m_weapon->animation_slot());
 
-	if (m_missile)
+	if(m_missile)
 		return (m_missile->animation_slot());
 
 	return (0);

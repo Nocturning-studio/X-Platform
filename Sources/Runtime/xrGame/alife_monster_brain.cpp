@@ -99,7 +99,7 @@ void CALifeMonsterBrain::on_location_change()
 IC CSE_ALifeSmartZone& CALifeMonsterBrain::smart_terrain()
 {
 	VERIFY(object().m_smart_terrain_id != 0xffff);
-	if (m_smart_terrain && (object().m_smart_terrain_id == m_smart_terrain->ID))
+	if(m_smart_terrain && (object().m_smart_terrain_id == m_smart_terrain->ID))
 		return (*m_smart_terrain);
 
 	m_smart_terrain = ai().alife().smart_terrains().object(object().m_smart_terrain_id);
@@ -117,15 +117,15 @@ void CALifeMonsterBrain::process_task()
 
 void CALifeMonsterBrain::select_task()
 {
-	if (object().m_smart_terrain_id != 0xffff)
+	if(object().m_smart_terrain_id != 0xffff)
 		return;
 
-	if (!can_choose_alife_tasks())
+	if(!can_choose_alife_tasks())
 		return;
 
 	ALife::_TIME_ID current_time = ai().alife().time_manager().game_time();
 
-	if (m_last_search_time + m_time_interval > current_time)
+	if(m_last_search_time + m_time_interval > current_time)
 		return;
 
 	m_last_search_time = current_time;
@@ -133,20 +133,20 @@ void CALifeMonsterBrain::select_task()
 	float best_value = flt_min;
 	CALifeSmartTerrainRegistry::OBJECTS::const_iterator I = ai().alife().smart_terrains().objects().begin();
 	CALifeSmartTerrainRegistry::OBJECTS::const_iterator E = ai().alife().smart_terrains().objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!(*I).second->enabled(&object()))
+		if(!(*I).second->enabled(&object()))
 			continue;
 
 		float value = (*I).second->suitable(&object());
-		if (value > best_value)
+		if(value > best_value)
 		{
 			best_value = value;
 			object().m_smart_terrain_id = (*I).second->ID;
 		}
 	}
 
-	if (object().m_smart_terrain_id != 0xffff)
+	if(object().m_smart_terrain_id != 0xffff)
 	{
 		smart_terrain().register_npc(&object());
 		m_last_search_time = 0;
@@ -169,7 +169,7 @@ void CALifeMonsterBrain::update()
 
 	select_task();
 
-	if (object().m_smart_terrain_id != 0xffff)
+	if(object().m_smart_terrain_id != 0xffff)
 		process_task();
 	else
 		default_behaviour();

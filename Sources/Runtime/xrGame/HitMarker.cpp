@@ -24,7 +24,7 @@ void CHitMarker::InitShader(LPCSTR tex_name)
 //--------------------------------------------------------------------
 CHitMarker::~CHitMarker()
 {
-	while (m_HitMarks.size())
+	while(m_HitMarks.size())
 	{
 		xr_delete(m_HitMarks.front());
 		m_HitMarks.pop_front();
@@ -34,12 +34,12 @@ CHitMarker::~CHitMarker()
 const static float fShowTime = 0.5f;
 void CHitMarker::Render()
 {
-	//OPTICK_EVENT("CHitMarker::Render");
+	// OPTICK_EVENT("CHitMarker::Render");
 
 	float h1, p1;
 	Engine.RenderView.Direction.getHP(h1, p1);
 
-	while (m_HitMarks.size() && !m_HitMarks.front()->IsActive())
+	while(m_HitMarks.size() && !m_HitMarks.front()->IsActive())
 	{
 		xr_delete(m_HitMarks.front());
 		m_HitMarks.pop_front();
@@ -47,7 +47,7 @@ void CHitMarker::Render()
 
 	HITMARKS::iterator it = m_HitMarks.begin();
 	HITMARKS::iterator it_e = m_HitMarks.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 		(*it)->Draw(-h1);
 }
 //--------------------------------------------------------------------

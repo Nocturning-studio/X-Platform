@@ -10,21 +10,21 @@
 
 IC void CDebugRenderer::render()
 {
-	//OPTICK_EVENT("CDebugRenderer::Render");
+	// OPTICK_EVENT("CDebugRenderer::Render");
 
-	if (m_line_vertices.empty())
+	if(m_line_vertices.empty())
 		return;
 
 	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.dbg_Draw(D3DPT_LINELIST, &*m_line_vertices.begin(), m_line_vertices.size(), &*m_line_indices.begin(),
-					m_line_vertices.size() / 2);
+						   m_line_vertices.size() / 2);
 	m_line_vertices.resize(0);
 }
 
 IC void CDebugRenderer::draw_line(const fmat4x4& matrix, const fvec3& vertex0, const fvec3& vertex1,
 								  const u32& color)
 {
-	if ((m_line_vertices.size() + 2) >= line_vertex_limit)
+	if((m_line_vertices.size() + 2) >= line_vertex_limit)
 		render();
 
 	FVF::L temp;

@@ -41,7 +41,7 @@ CSoundEnvironment::CSoundEnvironment()
 	// Загрузка DLL
 	LPCSTR LibName = "PresenceAudioSDK.dll";
 	hPresenceAudioSDKLib = LoadLibrary(LibName);
-	if (!hPresenceAudioSDKLib)
+	if(!hPresenceAudioSDKLib)
 	{
 		Msg("! [Presence Audio] Error: Can't load %s", LibName);
 		return;
@@ -57,21 +57,21 @@ CSoundEnvironment::CSoundEnvironment()
 
 CSoundEnvironment::~CSoundEnvironment()
 {
-	if (m_bLoaded)
+	if(m_bLoaded)
 		OnLevelUnload();
 
-	if (m_pAudioSystem)
+	if(m_pAudioSystem)
 	{
 		m_pAudioSystem->Shutdown();
 		delete m_pAudioSystem;
 		m_pAudioSystem = nullptr;
 	}
-	if (m_pGeometryAdapter)
+	if(m_pGeometryAdapter)
 	{
 		delete m_pGeometryAdapter;
 		m_pGeometryAdapter = nullptr;
 	}
-	if (hPresenceAudioSDKLib)
+	if(hPresenceAudioSDKLib)
 	{
 		FreeLibrary(hPresenceAudioSDKLib);
 		hPresenceAudioSDKLib = 0;
@@ -84,7 +84,7 @@ CSoundEnvironment::~CSoundEnvironment()
 
 void CSoundEnvironment::OnLevelLoad()
 {
-	if (!m_pAudioSystem || !m_pGeometryAdapter)
+	if(!m_pAudioSystem || !m_pGeometryAdapter)
 		return;
 
 	Msg("[Presence Audio] Starting simulation...");
@@ -107,7 +107,7 @@ void CSoundEnvironment::OnLevelLoad()
 	m_bEnabled = true;
 
 	// Внедрение в движок звука
-	if (::Sound)
+	if(::Sound)
 	{
 		CSoundRender_Core* pCore = (CSoundRender_Core*)::Sound;
 		pCore->SetOcclusion(this);
@@ -117,13 +117,13 @@ void CSoundEnvironment::OnLevelLoad()
 
 void CSoundEnvironment::OnLevelUnload()
 {
-	if (::Sound)
+	if(::Sound)
 	{
 		CSoundRender_Core* pCore = (CSoundRender_Core*)::Sound;
 		pCore->SetOcclusion(nullptr); // Важно! Убираем хук
 	}
 
-	if (m_pAudioSystem)
+	if(m_pAudioSystem)
 	{
 		m_pAudioSystem->Shutdown();
 	}
@@ -134,7 +134,7 @@ void CSoundEnvironment::OnLevelUnload()
 
 void CSoundEnvironment::ReloadMaterials()
 {
-	if (!m_bLoaded || !m_pAudioSystem || !m_pGeometryAdapter)
+	if(!m_bLoaded || !m_pAudioSystem || !m_pGeometryAdapter)
 		return;
 
 	Msg("[Presence Audio] Hot-reloading materials...");
@@ -150,7 +150,7 @@ void CSoundEnvironment::ReloadMaterials()
 float CSoundEnvironment::CalculateOcclusion(const Presence::float3& listenerPos, const Presence::float3& sourcePos)
 {
 	// Быстрая проверка
-	if (!m_bLoaded || !m_pAudioSystem || m_bPaused)
+	if(!m_bLoaded || !m_pAudioSystem || m_bPaused)
 		return 1.0f;
 
 	return m_pAudioSystem->CalculateOcclusion(listenerPos, sourcePos);
@@ -165,9 +165,9 @@ void CSoundEnvironment::Update()
 	PROFILE_FUNCTION();
 
 	// 1. Проверка состояния
-	if (!psSoundFlags.test(ss_EAX) || !m_bLoaded || !m_pAudioSystem || m_bPaused)
+	if(!psSoundFlags.test(ss_EAX) || !m_bLoaded || !m_pAudioSystem || m_bPaused)
 	{
-		if (m_bEnabled)
+		if(m_bEnabled)
 		{
 			// Если выключили на лету - сбрасываем эффекты в ноль
 			Presence::EAXResult emptyRes;
@@ -177,9 +177,9 @@ void CSoundEnvironment::Update()
 		return;
 	}
 
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return;
-	if (!m_bEnabled)
+	if(!m_bEnabled)
 		m_bEnabled = true;
 
 	// 2. Сбор данных окружения
@@ -193,7 +193,7 @@ void CSoundEnvironment::Update()
 
 	// Получаем погоду (туман влияет на поглощение ВЧ)
 	float fog_density = 0.0f;
-	if (g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv)
+	if(g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv)
 		fog_density = g_pGamePersistent->Environment().CurrentEnv->fog_density;
 
 	// 3. Отправка в SDK
@@ -201,7 +201,7 @@ void CSoundEnvironment::Update()
 
 	// 4. Получение и применение EAX
 	Presence::EAXResult res = m_pAudioSystem->GetEAXResult();
-	if (res.isValid)
+	if(res.isValid)
 	{
 		ApplyToSoundDriver(res);
 	}
@@ -223,6 +223,6 @@ void CSoundEnvironment::ApplyToSoundDriver(const Presence::EAXResult& res)
 	m_CurrentData.flAirAbsorptionHF = res.flAirAbsorptionHF;
 	m_CurrentData.dwFlags = 0x3F; // EAX_ALL
 
-	if (::Sound)
+	if(::Sound)
 		::Sound->commit_eax(&m_CurrentData);
 }

@@ -22,7 +22,7 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 {
 	strcpy_s(ApplicationName, _ApplicationName);
 	strcpy_s(ApplicationNameLog, _ApplicationNameLog);
-	if (0 == init_counter)
+	if(0 == init_counter)
 	{
 #ifdef XRCORE_STATIC
 		_clear87();
@@ -46,7 +46,7 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 		strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
 
 		// working path
-		if (strstr(Params, "-wf"))
+		if(strstr(Params, "-wf"))
 		{
 			string_path c_name;
 			sscanf(strstr(Core.Params, "-wf ") + 4, "%[^ ] ", c_name);
@@ -73,15 +73,15 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 
 		xr_EFS = xr_new<EFS_Utils>();
 	}
-	if (init_fs)
+	if(init_fs)
 	{
 		u32 flags = 0;
-		if (0 != strstr(Params, "-build"))
+		if(0 != strstr(Params, "-build"))
 			flags |= CLocatorAPI::flBuildCopy;
-		if (0 != strstr(Params, "-ebuild"))
+		if(0 != strstr(Params, "-ebuild"))
 			flags |= CLocatorAPI::flBuildCopy | CLocatorAPI::flEBuildCopy;
 #ifdef DEBUG
-		if (strstr(Params, "-cache"))
+		if(strstr(Params, "-cache"))
 			flags |= CLocatorAPI::flCacheFiles;
 		else
 			flags &= ~CLocatorAPI::flCacheFiles;
@@ -93,7 +93,7 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 
 #ifndef _EDITOR
 #ifndef ELocatorAPIH
-		if (0 != strstr(Params, "-file_activity"))
+		if(0 != strstr(Params, "-file_activity"))
 			flags |= CLocatorAPI::flDumpFileActivity;
 #endif
 #endif
@@ -118,7 +118,7 @@ extern compression::ppmd::stream* trained_model;
 void xrCore::Destroy()
 {
 	--init_counter;
-	if (0 == init_counter)
+	if(0 == init_counter)
 	{
 		FS._destroy();
 		EFS._destroy();
@@ -126,7 +126,7 @@ void xrCore::Destroy()
 		xr_delete(xr_EFS);
 
 #ifndef _EDITOR
-		if (trained_model)
+		if(trained_model)
 		{
 			void* buffer = trained_model->buffer();
 			xr_free(buffer);
@@ -168,18 +168,19 @@ BOOL WINAPI DllEntryPoint(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID l
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 #endif
 {
-	switch (ul_reason_for_call)
+	switch(ul_reason_for_call)
 	{
-	case DLL_PROCESS_ATTACH: {
+	case DLL_PROCESS_ATTACH:
+	{
 		_clear87();
 		_control87(_PC_53, MCW_PC);
 		_control87(_RC_CHOP, MCW_RC);
 		_control87(_RC_NEAR, MCW_RC);
 		_control87(_MCW_EM, MCW_EM);
 	}
-		//if (strstr(GetCommandLine(), "-external_console_log"))
+		// if (strstr(GetCommandLine(), "-external_console_log"))
 		{
-			if (AllocConsole())
+			if(AllocConsole())
 			{
 				(void)freopen("CONIN$", "r", stdin);
 				(void)freopen("CONOUT$", "w", stderr);

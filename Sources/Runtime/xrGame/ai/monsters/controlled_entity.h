@@ -38,7 +38,8 @@ class CControlledEntityBase
 	virtual void on_destroy() = 0;
 };
 
-template <typename _Object> class CControlledEntity : public CControlledEntityBase
+template <typename _Object>
+class CControlledEntity : public CControlledEntityBase
 {
 
 	SControlledInfo m_data;

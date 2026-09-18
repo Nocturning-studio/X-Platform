@@ -20,7 +20,7 @@ void smapvis::invalidate()
 void smapvis::begin()
 {
 	RenderImplementation.SceneGraph.clear_Counters();
-	switch (state)
+	switch(state)
 	{
 	case state_counting:
 		// do nothing -> we just prepare for testing process
@@ -47,11 +47,11 @@ void smapvis::end()
 	RenderImplementation.stats.ic_total += ts;
 	RenderImplementation.SceneGraph.set_Feedback(0, 0);
 
-	switch (state)
+	switch(state)
 	{
 	case state_counting:
 		// switch to 'working'
-		if (sleep())
+		if(sleep())
 		{
 			test_count = ts;
 			test_current = 0;
@@ -61,7 +61,7 @@ void smapvis::end()
 	case state_working:
 		// feedback should be called at this time -> clear feedback
 		// issue query
-		if (testQ_V)
+		if(testQ_V)
 		{
 			RenderImplementation.occq_begin(testQ_id);
 			++RenderImplementation.SceneGraph.m_traversal_marker;
@@ -85,15 +85,15 @@ void smapvis::flushoccq()
 {
 	PROFILE_FUNCTION();
 
-	if (testQ_frame != Engine.TimeManager.GetFrameCount())
+	if(testQ_frame != Engine.TimeManager.GetFrameCount())
 		return;
 
-	if (testQ_id == 0)   // нет активного запроса
+	if(testQ_id == 0) // нет активного запроса
 		return;
 
 	// Проверка валидности query
-	if (testQ_id >= RenderImplementation.HWOCC.GetQuerySize() || testQ_id == 0xffffffff ||
-		RenderImplementation.HWOCC.GetUsedQueryByID(testQ_id) == nullptr)
+	if(testQ_id >= RenderImplementation.HWOCC.GetQuerySize() || testQ_id == 0xffffffff ||
+	   RenderImplementation.HWOCC.GetUsedQueryByID(testQ_id) == nullptr)
 	{
 		Msg("! smapvis::flushoccq: Invalid query ID [%u]", testQ_id);
 		testQ_V = nullptr;
@@ -103,11 +103,11 @@ void smapvis::flushoccq()
 	try
 	{
 		u32 fragments = RenderImplementation.occq_get(testQ_id);
-		if (0 == fragments)
+		if(0 == fragments)
 		{
-			if (testQ_V && std::find(invisible.begin(), invisible.end(), testQ_V) == invisible.end())
+			if(testQ_V && std::find(invisible.begin(), invisible.end(), testQ_V) == invisible.end())
 				invisible.push_back(testQ_V);
-			if (test_count > 0)
+			if(test_count > 0)
 				test_count--;
 		}
 		else
@@ -115,14 +115,14 @@ void smapvis::flushoccq()
 			test_current++;
 		}
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("! smapvis::flushoccq: Exception during occq_get");
 	}
 
 	testQ_V = nullptr;
 
-	if (test_current >= test_count && state == state_working)
+	if(test_current >= test_count && state == state_working)
 	{
 		state = state_usingTC;
 	}
@@ -130,7 +130,7 @@ void smapvis::flushoccq()
 
 void smapvis::resetoccq()
 {
-	if (testQ_frame == (Engine.TimeManager.GetFrameCount() + 1))
+	if(testQ_frame == (Engine.TimeManager.GetFrameCount() + 1))
 		testQ_frame--;
 	flushoccq();
 }
@@ -139,7 +139,7 @@ void smapvis::mark()
 {
 	RenderImplementation.stats.ic_culled += invisible.size();
 	u32 m_traversal_marker = ++RenderImplementation.SceneGraph.m_traversal_marker; // we are called befor m_traversal_marker increment
-	for (u32 it = 0; it < invisible.size(); it++)
+	for(u32 it = 0; it < invisible.size(); it++)
 		invisible[it]->vis.m_traversal_marker = m_traversal_marker; // this effectively disables processing
 }
 

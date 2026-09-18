@@ -28,7 +28,7 @@ class CBlender_effectors : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_PASS_COMBINE:
 			C.begin_Pass("null", "postprocess_stage_pass_combine_effectors");

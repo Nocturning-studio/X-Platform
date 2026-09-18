@@ -197,7 +197,7 @@ void CController::load_friend_community_overrides(LPCSTR section)
 	// parse src
 	int item_count = _GetItemCount(src);
 	m_friend_community_overrides.resize(item_count);
-	for (int i = 0; i < item_count; i++)
+	for(int i = 0; i < item_count; i++)
 	{
 		string128 st;
 		_GetItem(src, i, st);
@@ -208,9 +208,9 @@ void CController::load_friend_community_overrides(LPCSTR section)
 bool CController::is_community_friend_overrides(const CEntityAlive* entity_alive) const
 {
 	const CInventoryOwner* IO = smart_cast<const CInventoryOwner*>(entity_alive);
-	if (!IO)
+	if(!IO)
 		return false;
-	if (const_cast<CEntityAlive*>(entity_alive)->cast_base_monster())
+	if(const_cast<CEntityAlive*>(entity_alive)->cast_base_monster())
 		return false;
 
 	return (std::find(m_friend_community_overrides.begin(), m_friend_community_overrides.end(),
@@ -219,7 +219,7 @@ bool CController::is_community_friend_overrides(const CEntityAlive* entity_alive
 
 BOOL CController::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	return (TRUE);
@@ -228,13 +228,13 @@ BOOL CController::net_Spawn(CSE_Abstract* DC)
 void CController::UpdateControlled()
 {
 	// если есть враг, проверить может ли быть враг взят под контроль
-	if (EnemyMan.get_enemy())
+	if(EnemyMan.get_enemy())
 	{
 		CControlledEntityBase* entity =
 			smart_cast<CControlledEntityBase*>(const_cast<CEntityAlive*>(EnemyMan.get_enemy()));
-		if (entity)
+		if(entity)
 		{
-			if (!entity->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number))
+			if(!entity->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number))
 			{
 				// взять под контроль
 				entity->set_under_control(this);
@@ -247,13 +247,13 @@ void CController::UpdateControlled()
 
 void CController::set_controlled_task(u32 task)
 {
-	if (!HasUnderControl())
+	if(!HasUnderControl())
 		return;
 
 	const CEntity* object =
 		((((ETask)task) == eTaskNone) ? 0 : ((((ETask)task) == eTaskFollow) ? this : EnemyMan.get_enemy()));
 
-	for (u32 i = 0; i < m_controlled_objects.size(); i++)
+	for(u32 i = 0; i < m_controlled_objects.size(); i++)
 	{
 		CControlledEntityBase* entity = smart_cast<CControlledEntityBase*>(m_controlled_objects[i]);
 		entity->get_data().m_object = object;
@@ -263,7 +263,7 @@ void CController::set_controlled_task(u32 task)
 
 void CController::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
+	if((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
 	}
@@ -271,12 +271,12 @@ void CController::CheckSpecParams(u32 spec_params)
 
 void CController::InitThink()
 {
-	for (u32 i = 0; i < m_controlled_objects.size(); i++)
+	for(u32 i = 0; i < m_controlled_objects.size(); i++)
 	{
 		CBaseMonster* base = smart_cast<CBaseMonster*>(m_controlled_objects[i]);
-		if (!base)
+		if(!base)
 			continue;
-		if (base->EnemyMan.get_enemy())
+		if(base->EnemyMan.get_enemy())
 			EnemyMemory.add_enemy(base->EnemyMan.get_enemy(), base->EnemyMan.get_enemy_position(),
 								  base->EnemyMan.get_enemy_vertex(), base->EnemyMan.get_enemy_time_last_seen());
 	}
@@ -287,7 +287,7 @@ void CController::play_control_sound_start()
 	fvec3 pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
 
-	if (control_start_sound._feedback())
+	if(control_start_sound._feedback())
 		control_start_sound.stop();
 	control_start_sound.play_at_pos(const_cast<CEntityAlive*>(EnemyMan.get_enemy()), pos);
 }
@@ -297,7 +297,7 @@ void CController::play_control_sound_hit()
 	fvec3 pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
 
-	if (control_hit_sound._feedback())
+	if(control_hit_sound._feedback())
 		control_hit_sound.stop();
 	control_hit_sound.play_at_pos(const_cast<CEntityAlive*>(EnemyMan.get_enemy()), pos);
 }
@@ -342,7 +342,7 @@ void CController::control_hit()
 
 	// start postprocess
 	CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(EnemyMan.get_enemy()));
-	if (!pA)
+	if(!pA)
 		return;
 
 	Actor()->Cameras().AddCamEffector(
@@ -365,20 +365,20 @@ void CController::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if (m_sndShockEffector)
+	if(m_sndShockEffector)
 	{
 		m_sndShockEffector->Update();
-		if (!m_sndShockEffector->InWork())
+		if(!m_sndShockEffector->InWork())
 			xr_delete(m_sndShockEffector);
 	}
 
-	if (active_control_fx)
+	if(active_control_fx)
 	{
 		u32 time_to_show = 150;
 		float percent = float((Engine.TimeManager.GetGlobalTimeMs() - time_control_hit_started)) / float(time_to_show);
 		float percent2 = 1 - (percent - TEXTURE_SIZE_PERCENT) / 2;
 
-		if (percent < TEXTURE_SIZE_PERCENT)
+		if(percent < TEXTURE_SIZE_PERCENT)
 		{
 			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx2");
 			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx", true);
@@ -390,7 +390,7 @@ void CController::UpdateCL()
 
 			s->wnd()->SetWndRect(x1, y1, x2 - x1, y2 - y1);
 		}
-		else if (percent2 > 0)
+		else if(percent2 > 0)
 		{
 			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx");
 			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx2", true);
@@ -417,10 +417,10 @@ void CController::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (g_Alive())
+	if(g_Alive())
 	{
 		UpdateControlled();
-		if (can_tube_fire())
+		if(can_tube_fire())
 			tube_fire();
 	}
 
@@ -454,15 +454,15 @@ void CController::net_Relcase(CObject* O)
 
 void CController::FreeFromControl()
 {
-	for (u32 i = 0; i < m_controlled_objects.size(); i++)
+	for(u32 i = 0; i < m_controlled_objects.size(); i++)
 		smart_cast<CControlledEntityBase*>(m_controlled_objects[i])->free_from_control();
 	m_controlled_objects.clear();
 }
 
 void CController::OnFreedFromControl(const CEntity* entity)
 {
-	for (u32 i = 0; i < m_controlled_objects.size(); i++)
-		if (m_controlled_objects[i] == entity)
+	for(u32 i = 0; i < m_controlled_objects.size(); i++)
+		if(m_controlled_objects[i] == entity)
 		{
 			m_controlled_objects[i] = m_controlled_objects.back();
 			m_controlled_objects.pop_back();
@@ -474,10 +474,10 @@ void CController::OnFreedFromControl(const CEntity* entity)
 
 void CController::draw_fire_particles()
 {
-	if (!EnemyMan.get_enemy())
+	if(!EnemyMan.get_enemy())
 		return;
 	CEntityAlive* enemy = const_cast<CEntityAlive*>(EnemyMan.get_enemy());
-	if (!EnemyMan.see_enemy_now())
+	if(!EnemyMan.see_enemy_now())
 		return;
 
 	// вычислить позицию и направленность партикла
@@ -511,7 +511,7 @@ void CController::draw_fire_particles()
 
 void CController::psy_fire()
 {
-	if (!EnemyMan.get_enemy())
+	if(!EnemyMan.get_enemy())
 		return;
 
 	draw_fire_particles();
@@ -523,17 +523,17 @@ void CController::psy_fire()
 
 bool CController::can_psy_fire()
 {
-	if (m_psy_fire_start_time + m_psy_fire_delay > time())
+	if(m_psy_fire_start_time + m_psy_fire_delay > time())
 		return false;
-	if (!EnemyMan.get_enemy())
+	if(!EnemyMan.get_enemy())
 		return false;
-	if (!EnemyMan.see_enemy_now())
+	if(!EnemyMan.see_enemy_now())
 		return false;
 
 	float cur_yaw = custom_dir().get_head_orientation().current.yaw;
 	float dir_yaw = fvec3().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
 	dir_yaw = angle_normalize(-dir_yaw);
-	if (angle_difference(cur_yaw, dir_yaw) > _pmt_psy_attack_min_angle)
+	if(angle_difference(cur_yaw, dir_yaw) > _pmt_psy_attack_min_angle)
 		return false;
 
 	m_psy_fire_start_time = time();
@@ -562,7 +562,7 @@ void CController::tube_fire()
 	m_time_last_tube = time();
 
 	// missed
-	if (!m_tube_at_once && (Random.randI(100) > TUBE_PROBABILITY))
+	if(!m_tube_at_once && (Random.randI(100) > TUBE_PROBABILITY))
 		return;
 
 	control().activate(ControlCom::eComCustom1);
@@ -570,23 +570,23 @@ void CController::tube_fire()
 
 bool CController::can_tube_fire()
 {
-	if (m_tube_at_once)
+	if(m_tube_at_once)
 	{
-		if (EnemyMan.get_enemy() && EnemyMan.see_enemy_now() && m_psy_hit->check_start_conditions())
+		if(EnemyMan.get_enemy() && EnemyMan.see_enemy_now() && m_psy_hit->check_start_conditions())
 			return true;
 
 		return false;
 	}
 
-	if (!EnemyMan.get_enemy())
+	if(!EnemyMan.get_enemy())
 		return false;
-	if (m_time_last_tube + TUBE_MIN_DELAY > time())
+	if(m_time_last_tube + TUBE_MIN_DELAY > time())
 		return false;
-	if (EnemyMan.see_enemy_duration() < TUBE_SEE_ENEMY_DURATION)
+	if(EnemyMan.see_enemy_duration() < TUBE_SEE_ENEMY_DURATION)
 		return false;
-	if (!m_psy_hit->check_start_conditions())
+	if(!m_psy_hit->check_start_conditions())
 		return false;
-	if (EnemyMan.get_enemy()->Position().distance_to(Position()) < 10.f)
+	if(EnemyMan.get_enemy()->Position().distance_to(Position()) < 10.f)
 		return false;
 
 	return true;
@@ -626,7 +626,7 @@ void CController::TranslateActionToPathParams()
 	// }
 	// custom_anim().set_path_params();
 
-	if ((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD))
+	if((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD))
 	{
 		inherited::TranslateActionToPathParams();
 		return;
@@ -636,7 +636,7 @@ void CController::TranslateActionToPathParams()
 	u32 des_mask =
 		(m_bDamaged ? MonsterMovement::eVelocityParameterWalkDamaged : MonsterMovement::eVelocityParameterWalkNormal);
 
-	if (m_force_real_speed)
+	if(m_force_real_speed)
 		vel_mask = des_mask;
 
 	path().set_velocity_mask(vel_mask);
@@ -647,9 +647,9 @@ void CController::TranslateActionToPathParams()
 bool CController::is_relation_enemy(const CEntityAlive* tpEntityAlive) const
 {
 	//	MONSTER_COMMUNITY_ID
-	if (xr_strcmp(*(tpEntityAlive->cNameSect()), "stalker_zombied") == 0)
+	if(xr_strcmp(*(tpEntityAlive->cNameSect()), "stalker_zombied") == 0)
 		return false;
-	if (is_community_friend_overrides(tpEntityAlive))
+	if(is_community_friend_overrides(tpEntityAlive))
 		return false;
 
 	return inherited::is_relation_enemy(tpEntityAlive);
@@ -657,7 +657,7 @@ bool CController::is_relation_enemy(const CEntityAlive* tpEntityAlive) const
 
 void CController::set_mental_state(EMentalState state)
 {
-	if (m_mental_state == state)
+	if(m_mental_state == state)
 		return;
 
 	m_mental_state = state;
@@ -669,7 +669,7 @@ void CController::set_mental_state(EMentalState state)
 CBaseMonster::SDebugInfo CController::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
-	if (!info.active)
+	if(!info.active)
 		return CBaseMonster::SDebugInfo();
 
 	// Draw Controlled Lines
@@ -678,7 +678,7 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 	fvec3 my_pos = Position();
 	my_pos.y += 1.5f;
 
-	for (u32 i = 0; i < m_controlled_objects.size(); i++)
+	for(u32 i = 0; i < m_controlled_objects.size(); i++)
 	{
 		fvec3 enemy_pos = m_controlled_objects[i]->Position();
 
@@ -702,13 +702,13 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 #ifdef _DEBUG
 void CController::debug_on_key(int key)
 {
-	switch (key)
+	switch(key)
 	{
 	case DIK_MINUS:
 		// m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), fvec3().set(-1.f, 0.f, 1.f), sm_2D);
 		// m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), fvec3().set(1.f, 0.f, 1.f), sm_2D);
 
-		if (m_psy_hit->check_start_conditions())
+		if(m_psy_hit->check_start_conditions())
 		{
 			control().activate(ControlCom::eComCustom1);
 		}
@@ -732,10 +732,10 @@ void CController::debug_on_key(int key)
 		DBG().level_info(this).remove_item(1);
 		DBG().level_info(this).add_item(P2, 0.5f, COLOR_GREEN, 1);
 
-		if (!fsimilar(P1.square_magnitude(), 0.f) && !fsimilar(P2.square_magnitude(), 0.f))
+		if(!fsimilar(P1.square_magnitude(), 0.f) && !fsimilar(P2.square_magnitude(), 0.f))
 		{
 			const CCoverPoint* cover = CoverMan->find_cover(P1, P2, 10.f, 40.f);
-			if (cover)
+			if(cover)
 			{
 				DBG().level_info(this).remove_item(3);
 				DBG().level_info(this).add_item(cover->position(), 0.8f, COLOR_RED, 3);

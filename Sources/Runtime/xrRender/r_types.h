@@ -91,9 +91,9 @@ const u32 BLOOM_size_Y = 256;
 const u32 LUMINANCE_size = 16;
 
 // deffer
-#define SE_NORMAL_HQ 0 // high quality/detail
-#define SE_NORMAL_LQ 1 // low quality
-#define SE_SHADOW_DEPTH 2	  // shadow generation
+#define SE_NORMAL_HQ 0	  // high quality/detail
+#define SE_NORMAL_LQ 1	  // low quality
+#define SE_SHADOW_DEPTH 2 // shadow generation
 #define SE_DEPTH_PREPASS 3
 
 #define SE_DETAIL_NORMAL_ANIMATED 0

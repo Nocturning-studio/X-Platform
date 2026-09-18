@@ -22,9 +22,9 @@ void CStateControllerHideAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateControllerHideAbstract::execute()
 {
-	if (m_state_fast_run)
+	if(m_state_fast_run)
 	{
-		if (target.position.distance_to(object->Position()) < 5.f)
+		if(target.position.distance_to(object->Position()) < 5.f)
 		{
 			m_state_fast_run = false;
 			object->set_mental_state(CController::eStateDanger);
@@ -43,7 +43,7 @@ void CStateControllerHideAbstract::execute()
 
 	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, object->db().m_dwAttackSndDelay);
 
-	if (object->HitMemory.get_last_hit_time() > object->EnemyMan.get_enemy_time_last_seen())
+	if(object->HitMemory.get_last_hit_time() > object->EnemyMan.get_enemy_time_last_seen())
 	{
 		fvec3 pos;
 		pos.mad(object->Position(), object->HitMemory.get_last_hit_dir(), 5.f);
@@ -91,7 +91,7 @@ void CStateControllerHideAbstract::select_target_point()
 #endif
 
 	const CCoverPoint* point = object->CoverMan->find_cover(object->EnemyMan.get_enemy_position(), 10.f, 30.f);
-	if (point)
+	if(point)
 	{
 		target.node = point->level_vertex_id();
 		target.position = point->position();
@@ -103,7 +103,7 @@ void CStateControllerHideAbstract::select_target_point()
 	}
 
 	m_state_fast_run = (target.position.distance_to(object->Position()) > 20.f);
-	if (m_state_fast_run && (Random.randI(100) < 50))
+	if(m_state_fast_run && (Random.randI(100) < 50))
 		object->set_mental_state(CController::eStateIdle);
 }
 

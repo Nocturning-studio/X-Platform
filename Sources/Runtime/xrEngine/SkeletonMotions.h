@@ -62,7 +62,7 @@ class ENGINE_API CMotion
 	}
 	void set_flag(u8 mask, u8 val)
 	{
-		if (val)
+		if(val)
 			_flags |= mask;
 		else
 			_flags &= ~mask;
@@ -90,9 +90,9 @@ class ENGINE_API CMotion
 	u32 mem_usage()
 	{
 		u32 sz = sizeof(*this);
-		if (_keysR.size())
+		if(_keysR.size())
 			sz += _keysR.size() * sizeof(CKeyQR) / _keysR.ref_count();
-		if (_keysT.size())
+		if(_keysT.size())
 			sz += _keysT.size() * sizeof(CKeyQT) / _keysT.ref_count();
 		return sz;
 	}
@@ -191,7 +191,7 @@ class ENGINE_API CPartDef
   public:
 	shared_str Name;
 	xr_vector<u32> bones;
-	CPartDef() : Name(0){};
+	CPartDef() : Name(0) {};
 
 	u32 mem_usage()
 	{
@@ -236,10 +236,10 @@ struct ENGINE_API motions_value
 	u32 mem_usage()
 	{
 		u32 sz = sizeof(*this) + m_motion_map.size() * 6 + m_partition.mem_usage();
-		for (MotionDefVecIt it = m_mdefs.begin(); it != m_mdefs.end(); it++)
+		for(MotionDefVecIt it = m_mdefs.begin(); it != m_mdefs.end(); it++)
 			sz += it->mem_usage();
-		for (BoneMotionMapIt bm_it = m_motions.begin(); bm_it != m_motions.end(); bm_it++)
-			for (MotionVecIt m_it = bm_it->second.begin(); m_it != bm_it->second.end(); m_it++)
+		for(BoneMotionMapIt bm_it = m_motions.begin(); bm_it != m_motions.end(); bm_it++)
+			for(MotionVecIt m_it = bm_it->second.begin(); m_it != bm_it->second.end(); m_it++)
 				sz += m_it->mem_usage();
 		return sz;
 	}
@@ -270,10 +270,10 @@ class ENGINE_API shared_motions
 	// ref-counting
 	void destroy()
 	{
-		if (0 == p_)
+		if(0 == p_)
 			return;
 		p_->m_dwReference--;
-		if (0 == p_->m_dwReference)
+		if(0 == p_->m_dwReference)
 			p_ = 0;
 	}
 
@@ -281,7 +281,7 @@ class ENGINE_API shared_motions
 	void create(shared_str key, IReader* data, vecBones* bones)
 	{
 		motions_value* v = g_pMotionsContainer->dock(key, data, bones);
-		if (0 != v)
+		if(0 != v)
 			v->m_dwReference++;
 		destroy();
 		p_ = v;
@@ -289,7 +289,7 @@ class ENGINE_API shared_motions
 	void create(shared_motions const& rhs)
 	{
 		motions_value* v = rhs.p_;
-		if (0 != v)
+		if(0 != v)
 			v->m_dwReference++;
 		destroy();
 		p_ = v;

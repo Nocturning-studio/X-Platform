@@ -57,21 +57,21 @@ bool CEnemyManager::is_useful(const CEntityAlive* entity_alive) const
 
 bool CEnemyManager::useful(const CEntityAlive* entity_alive) const
 {
-	if (!entity_alive->g_Alive())
+	if(!entity_alive->g_Alive())
 		return (false);
 
-	if ((entity_alive->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
+	if((entity_alive->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
 		return (false);
 
-	if ((m_object->ID() == entity_alive->ID()) || !m_object->is_relation_enemy(entity_alive))
+	if((m_object->ID() == entity_alive->ID()) || !m_object->is_relation_enemy(entity_alive))
 		return (false);
 
-	if (!ai().get_level_graph() || !ai().level_graph().valid_vertex_id(entity_alive->ai_location().level_vertex_id()))
+	if(!ai().get_level_graph() || !ai().level_graph().valid_vertex_id(entity_alive->ai_location().level_vertex_id()))
 		return (false);
 
-	if (m_object->human_being() && !entity_alive->human_being() && !expedient(entity_alive) &&
-		(evaluate(entity_alive) >= m_ignore_monster_threshold) &&
-		(m_object->Position().distance_to(entity_alive->Position()) >= m_max_ignore_distance))
+	if(m_object->human_being() && !entity_alive->human_being() && !expedient(entity_alive) &&
+	   (evaluate(entity_alive) >= m_ignore_monster_threshold) &&
+	   (m_object->Position().distance_to(entity_alive->Position()) >= m_max_ignore_distance))
 		return (false);
 
 	return (m_useful_callback ? m_useful_callback(m_object->lua_game_object(), entity_alive->lua_game_object()) : true);
@@ -88,14 +88,14 @@ float CEnemyManager::evaluate(const CEntityAlive* object) const
 	//%s",Engine.TimeManager.GetGlobalTimeMs(),*m_object->cName(),*object->cName());
 
 	bool actor = (object->CLS_ID == CLSID_OBJECT_ACTOR);
-	if (actor)
+	if(actor)
 		m_ready_to_save = false;
 
 	const CAI_Stalker* stalker = smart_cast<const CAI_Stalker*>(object);
 	bool wounded = stalker ? stalker->wounded(&m_object->movement().restrictions()) : false;
-	if (wounded)
+	if(wounded)
 	{
-		if (m_stalker && m_stalker->agent_manager().enemy().assigned_wounded(object, m_stalker))
+		if(m_stalker && m_stalker->agent_manager().enemy().assigned_wounded(object, m_stalker))
 			return (0.f);
 
 		float distance = m_object->Position().distance_to_sqr(object->Position());
@@ -105,29 +105,29 @@ float CEnemyManager::evaluate(const CEntityAlive* object) const
 	float penalty = 10000.f;
 
 	// if we are hit
-	if (object->ID() == m_object->memory().hit().last_hit_object_id())
+	if(object->ID() == m_object->memory().hit().last_hit_object_id())
 	{
-		if (actor)
+		if(actor)
 			penalty -= 1500.f;
 		else
 			penalty -= 500.f;
 	}
 
 	// if we see object
-	if (m_object->memory().visual().visible_now(object))
+	if(m_object->memory().visual().visible_now(object))
 		penalty -= 1000.f;
 
-		// if object is actor and he/she sees us
-		//	if (actor) {
-		//		if (smart_cast<const CActor*>(object)->memory().visual().visible_now(m_object))
-		//			penalty			-= 900.f;
-		//	}
-		//	else {
-		//		// if object is npc and it sees us
-		//		const CCustomMonster	*monster = smart_cast<const CCustomMonster*>(object);
-		//		if (monster && monster->memory().visual().visible_now(m_object))
-		//			penalty			-= 300.f;
-		//	}
+	// if object is actor and he/she sees us
+	//	if (actor) {
+	//		if (smart_cast<const CActor*>(object)->memory().visual().visible_now(m_object))
+	//			penalty			-= 900.f;
+	//	}
+	//	else {
+	//		// if object is npc and it sees us
+	//		const CCustomMonster	*monster = smart_cast<const CCustomMonster*>(object);
+	//		if (monster && monster->memory().visual().visible_now(m_object))
+	//			penalty			-= 300.f;
+	//	}
 
 #ifdef USE_EVALUATOR
 	ai().ef_storage().non_alife().member_item() = 0;
@@ -149,10 +149,10 @@ bool CEnemyManager::expedient(const CEntityAlive* object) const
 	VERIFY(ai().ef_storage().non_alife().member());
 	ai().ef_storage().non_alife().enemy() = object;
 
-	if (ai().ef_storage().m_pfExpediency->dwfGetDiscreteValue())
+	if(ai().ef_storage().m_pfExpediency->dwfGetDiscreteValue())
 		return (true);
 
-	if (m_object->memory().hit().hit(ai().ef_storage().non_alife().enemy()))
+	if(m_object->memory().hit().hit(ai().ef_storage().non_alife().enemy()))
 		return (true);
 	return (false);
 }
@@ -170,7 +170,7 @@ void CEnemyManager::reload(LPCSTR section)
 
 void CEnemyManager::set_ready_to_save()
 {
-	if (m_ready_to_save)
+	if(m_ready_to_save)
 		return;
 
 	//	Msg							("%6d %s DEcreased enemy counter for player (%d ->
@@ -184,13 +184,13 @@ void CEnemyManager::remove_links(CObject* object)
 	// since we use no members in CEntityAlive during search,
 	// we just use the pinter itself, we can just statically cast object
 	OBJECTS::iterator I = std::find(m_objects.begin(), m_objects.end(), (CEntityAlive*)object);
-	if (I != m_objects.end())
+	if(I != m_objects.end())
 		m_objects.erase(I);
 
-	if (m_last_enemy == object)
+	if(m_last_enemy == object)
 		m_last_enemy = 0;
 
-	if (m_selected == object)
+	if(m_selected == object)
 		m_selected = 0;
 }
 
@@ -228,17 +228,17 @@ float CEnemyManager::max_ignore_monster_distance() const
 bool CEnemyManager::change_from_wounded(const CEntityAlive* current, const CEntityAlive* previous) const
 {
 	const CAI_Stalker* current_stalker = smart_cast<const CAI_Stalker*>(current);
-	if (!current_stalker)
+	if(!current_stalker)
 		return (false);
 
-	if (current_stalker->wounded())
+	if(current_stalker->wounded())
 		return (false);
 
 	const CAI_Stalker* previous_stalker = smart_cast<const CAI_Stalker*>(previous);
-	if (!previous_stalker)
+	if(!previous_stalker)
 		return (false);
 
-	if (!previous_stalker->wounded())
+	if(!previous_stalker->wounded())
 		return (false);
 
 	return (true);
@@ -246,10 +246,10 @@ bool CEnemyManager::change_from_wounded(const CEntityAlive* current, const CEnti
 
 IC bool CEnemyManager::enemy_inertia(const CEntityAlive* previous_enemy) const
 {
-	if (m_selected->CLS_ID == CLSID_OBJECT_ACTOR)
+	if(m_selected->CLS_ID == CLSID_OBJECT_ACTOR)
 		return (Engine.TimeManager.GetGlobalTimeMs() <= (m_last_enemy_change + ENEMY_INERTIA_TIME_TO_ACTOR));
 
-	if (previous_enemy && previous_enemy->CLS_ID == CLSID_OBJECT_ACTOR)
+	if(previous_enemy && previous_enemy->CLS_ID == CLSID_OBJECT_ACTOR)
 		return (Engine.TimeManager.GetGlobalTimeMs() <= (m_last_enemy_change + ENEMY_INERTIA_TIME_FROM_ACTOR));
 
 	return (Engine.TimeManager.GetGlobalTimeMs() <= (m_last_enemy_change + ENEMY_INERTIA_TIME_TO_SOMEBODY));
@@ -260,25 +260,25 @@ void CEnemyManager::on_enemy_change(const CEntityAlive* previous_enemy)
 	VERIFY(previous_enemy);
 	VERIFY(selected());
 
-	if (!previous_enemy->g_Alive())
+	if(!previous_enemy->g_Alive())
 	{
 		m_last_enemy_change = Engine.TimeManager.GetGlobalTimeMs();
 		return;
 	}
 
-	if (change_from_wounded(selected(), previous_enemy))
+	if(change_from_wounded(selected(), previous_enemy))
 	{
 		m_last_enemy_change = Engine.TimeManager.GetGlobalTimeMs();
 		return;
 	}
 
-	if (enemy_inertia(previous_enemy))
+	if(enemy_inertia(previous_enemy))
 	{
 		m_selected = previous_enemy;
 		return;
 	}
 
-	if (!m_object->memory().visual().visible_now(previous_enemy) && m_object->memory().visual().visible_now(selected()))
+	if(!m_object->memory().visual().visible_now(previous_enemy) && m_object->memory().visual().visible_now(selected()))
 	{
 		m_last_enemy_change = Engine.TimeManager.GetGlobalTimeMs();
 		return;
@@ -294,10 +294,10 @@ void CEnemyManager::remove_wounded()
 		IC static bool predicate(const CEntityAlive* enemy)
 		{
 			const CAI_Stalker* stalker = smart_cast<const CAI_Stalker*>(enemy);
-			if (!stalker)
+			if(!stalker)
 				return (false);
 
-			if (!stalker->wounded())
+			if(!stalker->wounded())
 				return (false);
 
 			return (true);
@@ -312,17 +312,17 @@ void CEnemyManager::process_wounded(bool& only_wounded)
 	only_wounded = true;
 	ENEMIES::const_iterator I = m_objects.begin();
 	ENEMIES::const_iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		const CAI_Stalker* stalker = smart_cast<const CAI_Stalker*>(*I);
-		if (stalker && stalker->wounded())
+		if(stalker && stalker->wounded())
 			continue;
 
 		only_wounded = false;
 		break;
 	}
 
-	if (only_wounded)
+	if(only_wounded)
 	{
 #if 0  // def _DEBUG
 		if (g_enemy_manager_second_update)
@@ -336,20 +336,20 @@ void CEnemyManager::process_wounded(bool& only_wounded)
 
 bool CEnemyManager::need_update(const bool& only_wounded) const
 {
-	if (!selected())
+	if(!selected())
 		return (true);
 
-	if (!selected()->g_Alive())
+	if(!selected()->g_Alive())
 		return (true);
 
-	if (enable_enemy_change() && !m_object->memory().visual().visible_now(selected()))
+	if(enable_enemy_change() && !m_object->memory().visual().visible_now(selected()))
 		return (true);
 
-	if (only_wounded)
+	if(only_wounded)
 		return (false);
 
 	const CAI_Stalker* stalker = smart_cast<const CAI_Stalker*>(selected());
-	if (stalker && stalker->wounded())
+	if(stalker && stalker->wounded())
 		return (true);
 
 	return (false);
@@ -361,30 +361,30 @@ void CEnemyManager::try_change_enemy()
 
 	bool only_wounded;
 	process_wounded(only_wounded);
-	if (!need_update(only_wounded))
+	if(!need_update(only_wounded))
 		return;
 
 	inherited::update();
 
-	if (selected() != previous_selected)
+	if(selected() != previous_selected)
 	{
-		if (selected() && previous_selected)
+		if(selected() && previous_selected)
 			on_enemy_change(previous_selected);
 		else
 			m_last_enemy_change = Engine.TimeManager.GetGlobalTimeMs();
 	}
 
-	if (selected() != previous_selected)
+	if(selected() != previous_selected)
 		m_object->on_enemy_change(previous_selected);
 }
 
 void CEnemyManager::update()
 {
-	//OPTICK_EVENT("CEnemyManager::update");
+	// OPTICK_EVENT("CEnemyManager::update");
 
 	START_PROFILE("Memory Manager/enemies::update")
 
-	if (!m_ready_to_save)
+	if(!m_ready_to_save)
 	{
 		//		Msg						("%6d %s DEcreased enemy counter for player (%d ->
 		//%d)",Engine.TimeManager.GetGlobalTimeMs(),*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
@@ -395,13 +395,13 @@ void CEnemyManager::update()
 
 	try_change_enemy();
 
-	if (selected())
+	if(selected())
 	{
 		m_last_enemy_time = Engine.TimeManager.GetGlobalTimeMs();
 		m_last_enemy = selected();
 	}
 
-	if (!m_ready_to_save)
+	if(!m_ready_to_save)
 	{
 		//		Msg						("%6d %s INcreased enemy counter for player (%d ->
 		//%d)",Engine.TimeManager.GetGlobalTimeMs(),*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()+1);

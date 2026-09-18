@@ -47,7 +47,7 @@ IC bool CSGraphEdge::operator==(const _vertex_id_type& vertex_id) const
 TEMPLATE_SPECIALIZATION
 IC bool CSGraphEdge::operator==(const CEdge& obj) const
 {
-	if (weight() != obj.weight())
+	if(weight() != obj.weight())
 		return (false);
 
 	return (vertex()->vertex_id() == obj.vertex()->vertex_id());

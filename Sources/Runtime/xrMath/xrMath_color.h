@@ -54,7 +54,8 @@ ICF u32 rgb2bgr(u32 rgb)
 	return bgr2rgb(rgb);
 }
 
-template <class T> struct template_color
+template <class T>
+struct template_color
 {
   public:
 	typedef template_color Self;
@@ -268,7 +269,7 @@ template <class T> struct template_color
 	}
 	IC SelfRef lerp(SelfCRef c1, SelfCRef c2, SelfCRef c3, T t)
 	{
-		if (t > .5f)
+		if(t > .5f)
 		{
 			return lerp(c2, c3, t * 2.f - 1.f);
 		}
@@ -290,7 +291,8 @@ template <class T> struct template_color
 typedef template_color<float> Fcolor;
 typedef template_color<double> Dcolor;
 
-template <class T> BOOL _valid(const template_color<T>& c)
+template <class T>
+BOOL _valid(const template_color<T>& c)
 {
 	return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a);
 }

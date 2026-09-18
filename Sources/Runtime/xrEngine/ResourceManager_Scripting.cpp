@@ -28,19 +28,19 @@ class adopt_sampler
   public:
 	adopt_sampler(CBlender_Compile* _C, u32 _stage) : C(_C), stage(_stage)
 	{
-		if (u32(-1) == stage)
+		if(u32(-1) == stage)
 			C = 0;
 	}
 
 	adopt_sampler(const adopt_sampler& _C) : C(_C.C), stage(_C.stage)
 	{
-		if (u32(-1) == stage)
+		if(u32(-1) == stage)
 			C = 0;
 	}
 
 	adopt_sampler& _texture(LPCSTR texture)
 	{
-		if (C)
+		if(C)
 			C->i_Texture(stage, texture);
 		return *this;
 	}
@@ -52,133 +52,133 @@ class adopt_sampler
 
 	adopt_sampler& _clamp()
 	{
-		if (C)
+		if(C)
 			C->i_Address(stage, D3DTADDRESS_CLAMP);
 		return *this;
 	}
 
 	adopt_sampler& _wrap()
 	{
-		if (C)
+		if(C)
 			C->i_Address(stage, D3DTADDRESS_WRAP);
 		return *this;
 	}
 
 	adopt_sampler& _mirror()
 	{
-		if (C)
+		if(C)
 			C->i_Address(stage, D3DTADDRESS_MIRROR);
 		return *this;
 	}
 
 	adopt_sampler& _f_anisotropic()
 	{
-		if (C)
+		if(C)
 			C->i_Filter(stage, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 		return *this;
 	}
 
 	adopt_sampler& _f_trilinear()
 	{
-		if (C)
+		if(C)
 			C->i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
 		return *this;
 	}
 
 	adopt_sampler& _f_bilinear()
 	{
-		if (C)
+		if(C)
 			C->i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_POINT, D3DTEXF_LINEAR);
 		return *this;
 	}
 
 	adopt_sampler& _f_linear()
 	{
-		if (C)
+		if(C)
 			C->i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
 		return *this;
 	}
 
 	adopt_sampler& _f_none()
 	{
-		if (C)
+		if(C)
 			C->i_Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
 		return *this;
 	}
 
 	adopt_sampler& _fmin_none()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Min(stage, D3DTEXF_NONE);
 		return *this;
 	}
 
 	adopt_sampler& _fmin_point()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Min(stage, D3DTEXF_POINT);
 		return *this;
 	}
 
 	adopt_sampler& _fmin_linear()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Min(stage, D3DTEXF_LINEAR);
 		return *this;
 	}
 
 	adopt_sampler& _fmin_aniso()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Min(stage, D3DTEXF_ANISOTROPIC);
 		return *this;
 	}
 
 	adopt_sampler& _fmip_none()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Mip(stage, D3DTEXF_NONE);
 		return *this;
 	}
 
 	adopt_sampler& _fmip_point()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Mip(stage, D3DTEXF_POINT);
 		return *this;
 	}
 
 	adopt_sampler& _fmip_linear()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Mip(stage, D3DTEXF_LINEAR);
 		return *this;
 	}
 
 	adopt_sampler& _fmag_none()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Mag(stage, D3DTEXF_NONE);
 		return *this;
 	}
 
 	adopt_sampler& _fmag_point()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Mag(stage, D3DTEXF_POINT);
 		return *this;
 	}
 
 	adopt_sampler& _fmag_linear()
 	{
-		if (C)
+		if(C)
 			C->i_Filter_Mag(stage, D3DTEXF_LINEAR);
 		return *this;
 	}
 
 	adopt_sampler& _srgb()
 	{
-		//if (C)
+		// if (C)
 		//	C->i_sRGB(stage, true);
 		return *this;
 	}
@@ -261,7 +261,7 @@ class adopt_compiler
 	// Обертка для дефайна без значения (например, #define USE_WATER)
 	adopt_compiler& _define(LPCSTR name)
 	{
-		if (C)
+		if(C)
 		{
 			string32 n;
 			strcpy_s(n, name);
@@ -273,7 +273,7 @@ class adopt_compiler
 	// Обертка для int
 	adopt_compiler& _define_int(LPCSTR name, int v)
 	{
-		if (C)
+		if(C)
 		{
 			string32 n;
 			strcpy_s(n, name);
@@ -285,7 +285,7 @@ class adopt_compiler
 	// Обертка для float
 	adopt_compiler& _define_float(LPCSTR name, float v)
 	{
-		if (C)
+		if(C)
 		{
 			string32 n;
 			strcpy_s(n, name);
@@ -297,7 +297,7 @@ class adopt_compiler
 	// Обертка для bool
 	adopt_compiler& _define_bool(LPCSTR name, bool v)
 	{
-		if (C)
+		if(C)
 		{
 			string32 n;
 			strcpy_s(n, name);
@@ -309,7 +309,7 @@ class adopt_compiler
 	// Обертка для строки (#define MACRO "VALUE")
 	adopt_compiler& _define_string(LPCSTR name, LPCSTR v)
 	{
-		if (C)
+		if(C)
 		{
 			string32 n;
 			strcpy_s(n, name);
@@ -371,7 +371,7 @@ static void* lua_alloc_xr(void* ud, void* ptr, size_t osize, size_t nsize)
 {
 	(void)ud;
 	(void)osize;
-	if (nsize == 0)
+	if(nsize == 0)
 	{
 		xr_free(ptr);
 		return NULL;
@@ -390,7 +390,7 @@ static void* lua_alloc_dl(void* ud, void* ptr, size_t osize, size_t nsize)
 {
 	(void)ud;
 	(void)osize;
-	if (nsize == 0)
+	if(nsize == 0)
 	{
 		dlfree(ptr);
 		return NULL;
@@ -413,7 +413,7 @@ void CResourceManager::LS_Load()
 #else  // USE_XR_ALLOCAOR
 	LSVM = lua_newstate(lua_alloc_dl, NULL);
 #endif // USE_XR_ALLOCAOR
-	if (!LSVM)
+	if(!LSVM)
 	{
 		Msg("! ERROR : Cannot initialize LUA VM!");
 		return;
@@ -431,7 +431,7 @@ void CResourceManager::LS_Load()
 	luabind::open(LSVM);
 
 #ifndef XRAY_EXCEPTIONS
-	if (0 == luabind::get_error_callback())
+	if(0 == luabind::get_error_callback())
 		luabind::set_error_callback(LuaError);
 #endif
 
@@ -495,17 +495,17 @@ void CResourceManager::LS_Load()
 	xr_vector<char*>* folder = FS.file_list_open("$engine_shaders$", ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
 	VERIFY(folder);
 
-	for (u32 it = 0; it < folder->size(); it++)
+	for(u32 it = 0; it < folder->size(); it++)
 	{
 		string_path namesp, fn;
 		strcpy_s(namesp, (*folder)[it]);
 
-		if (0 == strext(namesp) || 0 != xr_strcmp(strext(namesp), ".xrblender"))
+		if(0 == strext(namesp) || 0 != xr_strcmp(strext(namesp), ".xrblender"))
 			continue;
 
 		*strext(namesp) = 0;
 
-		if (0 == namesp[0])
+		if(0 == namesp[0])
 			strcpy_s(namesp, "_G");
 
 		strconcat(sizeof(fn), fn, ::Render->getShaderPath(), (*folder)[it]);
@@ -516,7 +516,7 @@ void CResourceManager::LS_Load()
 		{
 			Script::bfLoadFileIntoNamespace(LSVM, fn, namesp, true);
 		}
-		catch (...)
+		catch(...)
 		{
 			Log(lua_tostring(LSVM, -1));
 		}
@@ -538,7 +538,7 @@ void CResourceManager::LS_Unload()
 BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 {
 	string256 undercorated;
-	for (int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
+	for(int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
 		undercorated[i] = ('\\' == s_shader[i]) ? '_' : s_shader[i];
 
 	return Script::bfIsObjectPresent(LSVM, undercorated, "normal", LUA_TFUNCTION) ||
@@ -552,7 +552,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 
 	// undecorate
 	string256 undercorated;
-	for (int i = 0, l = xr_strlen(d_shader) + 1; i < l; i++)
+	for(int i = 0, l = xr_strlen(d_shader) + 1; i < l; i++)
 		undercorated[i] = ('\\' == d_shader[i]) ? '_' : d_shader[i];
 	LPCSTR s_shader = undercorated;
 
@@ -569,20 +569,20 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	Msg("Debug Shader Compile: %s", s_shader);
 
 	// Compile element	(LOD0 - HQ)
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_hq", LUA_TFUNCTION))
+	if(Script::bfIsObjectPresent(LSVM, s_shader, "normal_hq", LUA_TFUNCTION))
 	{
 		// Analyze possibility to detail this shader
 		C.iElement = 0;
 		C.bDetail = Engine.ResourceManager->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 
-		if (C.bDetail)
+		if(C.bDetail)
 			S.E[0] = C._lua_Compile(s_shader, "normal_hq");
 		else
 			S.E[0] = C._lua_Compile(s_shader, "normal");
 	}
 	else
 	{
-		if (Script::bfIsObjectPresent(LSVM, s_shader, "normal", LUA_TFUNCTION))
+		if(Script::bfIsObjectPresent(LSVM, s_shader, "normal", LUA_TFUNCTION))
 		{
 			C.iElement = 0;
 			C.bDetail = Engine.ResourceManager->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
@@ -591,7 +591,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element	(LOD1)
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal", LUA_TFUNCTION))
+	if(Script::bfIsObjectPresent(LSVM, s_shader, "normal", LUA_TFUNCTION))
 	{
 		C.iElement = 1;
 		C.bDetail = Engine.ResourceManager->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
@@ -599,7 +599,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_point", LUA_TFUNCTION))
+	if(Script::bfIsObjectPresent(LSVM, s_shader, "l_point", LUA_TFUNCTION))
 	{
 		Msg("- Found l_point!");
 
@@ -609,9 +609,9 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_spot", LUA_TFUNCTION))
+	if(Script::bfIsObjectPresent(LSVM, s_shader, "l_spot", LUA_TFUNCTION))
 	{
-			Msg("- Found l_spot!");
+		Msg("- Found l_spot!");
 
 		C.iElement = 3;
 		C.bDetail = FALSE;
@@ -619,14 +619,14 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_special", LUA_TFUNCTION))
+	if(Script::bfIsObjectPresent(LSVM, s_shader, "l_special", LUA_TFUNCTION))
 	{
 		C.iElement = 4;
 		C.bDetail = FALSE;
 		S.E[4] = C._lua_Compile(s_shader, "l_special");
 	}
 
-	if (Script::bfIsObjectPresent(LSVM, s_shader, "l_sun", LUA_TFUNCTION))
+	if(Script::bfIsObjectPresent(LSVM, s_shader, "l_sun", LUA_TFUNCTION))
 	{
 		C.iElement = 5;
 		C.bDetail = FALSE;
@@ -634,8 +634,8 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Search equal in shaders array
-	for (u32 it = 0; it < v_shaders.size(); it++)
-		if (S.equal(v_shaders[it]))
+	for(u32 it = 0; it < v_shaders.size(); it++)
+		if(S.equal(v_shaders[it]))
 			return v_shaders[it];
 
 	// Create _new_ entry

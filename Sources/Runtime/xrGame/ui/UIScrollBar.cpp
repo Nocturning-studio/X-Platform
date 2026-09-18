@@ -39,7 +39,7 @@ void CUIScrollBar::Init(float x, float y, float length, bool bIsHorizontal, LPCS
 	float height = xml_doc.ReadAttribFlt(profile, 0, "height", 16);
 
 	m_bIsHorizontal = bIsHorizontal;
-	if (m_bIsHorizontal)
+	if(m_bIsHorizontal)
 	{
 		CUIWindow::Init(x, y, length, height);
 
@@ -93,14 +93,14 @@ void CUIScrollBar::Init(float x, float y, float length, bool bIsHorizontal, LPCS
 // корректировка размеров скроллера
 void CUIScrollBar::SetWidth(float width)
 {
-	if (width <= 0.0f)
+	if(width <= 0.0f)
 		width = 1.0f;
 	inherited::SetWidth(width);
 }
 
 void CUIScrollBar::SetHeight(float height)
 {
-	if (height <= 0.0f)
+	if(height <= 0.0f)
 		height = 1.0f;
 	inherited::SetHeight(height);
 	UpdateScrollBar();
@@ -117,33 +117,33 @@ void CUIScrollBar::SetRange(int iMin, int iMax)
 	m_iMinPos = iMin;
 	m_iMaxPos = iMax;
 	VERIFY(iMax >= iMin);
-	if (iMax < iMin)
+	if(iMax < iMin)
 		iMax = iMin;
 	UpdateScrollBar();
 }
 void CUIScrollBar::Show(bool b)
 {
-	if (!m_b_enabled)
+	if(!m_b_enabled)
 		return;
 	inherited::Show(b);
 }
 
 void CUIScrollBar::Enable(bool b)
 {
-	if (!m_b_enabled)
+	if(!m_b_enabled)
 		return;
 	inherited::Enable(b);
 }
 
 void CUIScrollBar::UpdateScrollBar()
 {
-	if (IsShown())
+	if(IsShown())
 	{
 		// уcтановить размер и положение каретки
-		if (m_iMaxPos == m_iMinPos)
+		if(m_iMaxPos == m_iMinPos)
 			m_iMaxPos++;
 		float box_sz = float(m_ScrollWorkArea) * float(m_iPageSize ? m_iPageSize : 1) / float(m_iMaxPos - m_iMinPos);
-		if (m_bIsHorizontal)
+		if(m_bIsHorizontal)
 		{
 			// set width
 			clamp(box_sz, _min(GetHeight(), GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()),
@@ -177,7 +177,7 @@ u32 last_hold_time = 0;
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
 {
-	if (dik == MOUSE_1 && (last_hold_time + 100) < Engine.TimeManager.GetContinualTimeMs())
+	if(dik == MOUSE_1 && (last_hold_time + 100) < Engine.TimeManager.GetContinualTimeMs())
 	{
 		fvec2 cursor_pos = GetUICursor()->GetCursorPosition();
 		Frect dec_rect;
@@ -185,13 +185,13 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
 
 		m_DecButton->GetAbsoluteRect(dec_rect);
 		m_IncButton->GetAbsoluteRect(inc_rect);
-		if (dec_rect.in(cursor_pos))
+		if(dec_rect.in(cursor_pos))
 		{
 			TryScrollDec();
 			last_hold_time = Engine.TimeManager.GetContinualTimeMs();
 			return true;
 		}
-		else if (inc_rect.in(cursor_pos))
+		else if(inc_rect.in(cursor_pos))
 		{
 			TryScrollInc();
 			last_hold_time = Engine.TimeManager.GetContinualTimeMs();
@@ -203,7 +203,7 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
 
 bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	switch (mouse_action)
+	switch(mouse_action)
 	{
 	case WINDOW_MOUSE_WHEEL_DOWN:
 		TryScrollInc();
@@ -219,21 +219,21 @@ bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
 
 void CUIScrollBar::ClampByViewRect()
 {
-	if (m_bIsHorizontal)
+	if(m_bIsHorizontal)
 	{
-		if (m_ScrollBox->GetWndRect().left <= m_DecButton->GetWidth())
+		if(m_ScrollBox->GetWndRect().left <= m_DecButton->GetWidth())
 			m_ScrollBox->SetWndPos(m_DecButton->GetWidth(), m_ScrollBox->GetWndRect().top);
-		else if (m_ScrollBox->GetWndRect().right >= m_IncButton->GetWndPos().x)
+		else if(m_ScrollBox->GetWndRect().right >= m_IncButton->GetWndPos().x)
 			m_ScrollBox->SetWndPos(m_IncButton->GetWndRect().left - m_ScrollBox->GetWidth(),
 								   m_ScrollBox->GetWndRect().top);
 	}
 	else
 	{
 		// limit vertical position (TOP) by position of button
-		if (m_ScrollBox->GetWndRect().top <= m_DecButton->GetHeight())
+		if(m_ScrollBox->GetWndRect().top <= m_DecButton->GetHeight())
 			m_ScrollBox->SetWndPos(m_ScrollBox->GetWndRect().left, m_DecButton->GetHeight());
 		// limit vertical position (BOTTOM) by position of button
-		else if (m_ScrollBox->GetWndRect().bottom >= m_IncButton->GetWndPos().y)
+		else if(m_ScrollBox->GetWndRect().bottom >= m_IncButton->GetWndPos().y)
 			m_ScrollBox->SetWndPos(m_ScrollBox->GetWndRect().left,
 								   m_IncButton->GetWndPos().y - m_ScrollBox->GetHeight());
 	}
@@ -256,36 +256,36 @@ int CUIScrollBar::PosViewFromScroll(int view_size, int view_offs)
 
 void CUIScrollBar::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == m_DecButton)
+	if(pWnd == m_DecButton)
 	{
-		if (msg == BUTTON_CLICKED || msg == BUTTON_DOWN)
+		if(msg == BUTTON_CLICKED || msg == BUTTON_DOWN)
 		{
 			TryScrollDec();
 		}
 	}
-	else if (pWnd == m_IncButton)
+	else if(pWnd == m_IncButton)
 	{
-		if (msg == BUTTON_CLICKED || msg == BUTTON_DOWN)
+		if(msg == BUTTON_CLICKED || msg == BUTTON_DOWN)
 		{
 			TryScrollInc();
 		}
 	}
-	else if (pWnd == m_ScrollBox)
+	else if(pWnd == m_ScrollBox)
 	{
-		if (msg == SCROLLBOX_MOVE)
+		if(msg == SCROLLBOX_MOVE)
 		{
 			// вычислить новое положение прокрутки
 			ClampByViewRect();
-			if (m_bIsHorizontal)
+			if(m_bIsHorizontal)
 			{
 				SetPosScrollFromView(m_ScrollBox->GetWndPos().x, m_ScrollBox->GetWidth(), GetHeight());
-				if (GetMessageTarget())
+				if(GetMessageTarget())
 					GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
 			}
 			else
 			{
 				SetPosScrollFromView(m_ScrollBox->GetWndPos().y, m_ScrollBox->GetHeight(), GetWidth());
-				if (GetMessageTarget())
+				if(GetMessageTarget())
 					GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
 			}
 		}
@@ -295,8 +295,8 @@ void CUIScrollBar::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIScrollBar::TryScrollInc()
 {
-	if (ScrollInc())
-		if (m_bIsHorizontal)
+	if(ScrollInc())
+		if(m_bIsHorizontal)
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
 		else
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
@@ -304,8 +304,8 @@ void CUIScrollBar::TryScrollInc()
 
 void CUIScrollBar::TryScrollDec()
 {
-	if (ScrollDec())
-		if (m_bIsHorizontal)
+	if(ScrollDec())
+		if(m_bIsHorizontal)
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
 		else
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
@@ -313,9 +313,9 @@ void CUIScrollBar::TryScrollDec()
 
 bool CUIScrollBar::ScrollDec()
 {
-	if (m_iScrollPos > m_iMinPos)
+	if(m_iScrollPos > m_iMinPos)
 	{
-		if (m_iScrollPos > m_iStepSize)
+		if(m_iScrollPos > m_iStepSize)
 			SetScrollPos(m_iScrollPos - m_iStepSize);
 		else
 			SetScrollPos(0);
@@ -328,7 +328,7 @@ bool CUIScrollBar::ScrollDec()
 
 bool CUIScrollBar::ScrollInc()
 {
-	if (m_iScrollPos <= (m_iMaxPos - m_iPageSize))
+	if(m_iScrollPos <= (m_iMaxPos - m_iPageSize))
 	{
 		SetScrollPos(m_iScrollPos + m_iStepSize);
 		return true;
@@ -348,9 +348,9 @@ void CUIScrollBar::Draw()
 	// нарисовать фоновую подложку
 	Frect rect;
 	GetAbsoluteRect(rect);
-	if (m_bIsHorizontal)
+	if(m_bIsHorizontal)
 	{
-		if (m_StaticBackground->GetOriginalRect().width())
+		if(m_StaticBackground->GetOriginalRect().width())
 		{
 			float size = GetWidth() - m_DecButton->GetWidth() - m_IncButton->GetWidth();
 			float w = m_StaticBackground->GetOriginalRect().width();
@@ -364,7 +364,7 @@ void CUIScrollBar::Draw()
 	}
 	else
 	{
-		if (m_StaticBackground->GetOriginalRect().height())
+		if(m_StaticBackground->GetOriginalRect().height())
 		{
 			float size = GetHeight() - m_IncButton->GetHeight() - m_DecButton->GetHeight();
 			float h = m_StaticBackground->GetOriginalRect().height();

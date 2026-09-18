@@ -47,10 +47,10 @@ void CAbstractObjectManager::update()
 	m_selected = 0;
 	OBJECTS::const_iterator I = m_objects.begin();
 	OBJECTS::const_iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		float value = do_evaluate(*I);
-		if (result > value)
+		if(result > value)
 		{
 			result = value;
 			m_selected = *I;
@@ -68,10 +68,10 @@ TEMPLATE_SPECIALIZATION
 bool CAbstractObjectManager::is_useful(T* object) const
 {
 	const ISpatial* self = (const ISpatial*)(object);
-	if (!self)
+	if(!self)
 		return (false);
 
-	if ((object->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
+	if((object->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
 		return (false);
 
 	return (true);
@@ -80,11 +80,11 @@ bool CAbstractObjectManager::is_useful(T* object) const
 TEMPLATE_SPECIALIZATION
 bool CAbstractObjectManager::add(T* object)
 {
-	if (!is_useful(object))
+	if(!is_useful(object))
 		return (false);
 
 	OBJECTS::const_iterator I = std::find(m_objects.begin(), m_objects.end(), object);
-	if (m_objects.end() == I)
+	if(m_objects.end() == I)
 	{
 		m_objects.push_back(object);
 		return (true);

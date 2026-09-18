@@ -77,17 +77,17 @@ CEF_Storage::CEF_Storage()
 
 CEF_Storage::~CEF_Storage()
 {
-	for (int i = 0; i < AI_MAX_EVALUATION_FUNCTION_COUNT; ++i)
+	for(int i = 0; i < AI_MAX_EVALUATION_FUNCTION_COUNT; ++i)
 		xr_delete(m_fpaBaseFunctions[i]);
 }
 
 CBaseFunction* CEF_Storage::function(LPCSTR function) const
 {
-	for (int i = 0; i < AI_MAX_EVALUATION_FUNCTION_COUNT; ++i)
+	for(int i = 0; i < AI_MAX_EVALUATION_FUNCTION_COUNT; ++i)
 	{
-		if (!m_fpaBaseFunctions[i])
+		if(!m_fpaBaseFunctions[i])
 			continue;
-		if (!xr_strcmp(function, m_fpaBaseFunctions[i]->Name()))
+		if(!xr_strcmp(function, m_fpaBaseFunctions[i]->Name()))
 			return (m_fpaBaseFunctions[i]);
 	}
 	return (0);

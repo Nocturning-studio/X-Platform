@@ -43,13 +43,13 @@ void IBlender::CreatePalette(xr_vector<IBlender*>& palette)
 	palette.push_back(Create(B_PARTICLE));
 
 	// Remove duplicated classes (some of them are really the same in different renderers)
-	for (u32 i = 0; i < palette.size(); i++)
+	for(u32 i = 0; i < palette.size(); i++)
 	{
 		IBlender* A = palette[i];
-		for (u32 j = i + 1; j < palette.size(); j++)
+		for(u32 j = i + 1; j < palette.size(); j++)
 		{
 			IBlender* B = palette[j];
-			if (TYPES_EQUAL(*A, *B))
+			if(TYPES_EQUAL(*A, *B))
 			{
 				xr_delete(palette[j]);
 				j--;

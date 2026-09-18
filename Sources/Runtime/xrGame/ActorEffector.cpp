@@ -10,7 +10,7 @@
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name)
 {
-	if (pSettings->line_exist(sect_name, "pp_eff_name"))
+	if(pSettings->line_exist(sect_name, "pp_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "pp_eff_cyclic");
 		CPostprocessAnimator* pp_anm = xr_new<CPostprocessAnimator>();
@@ -21,7 +21,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name)
 		pp_anm->Load(fn);
 		A->Cameras().AddPPEffector(pp_anm);
 	}
-	if (pSettings->line_exist(sect_name, "cam_eff_name"))
+	if(pSettings->line_exist(sect_name, "cam_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "cam_eff_cyclic");
 		CAnimatorCamEffector* cam_anm = xr_new<CAnimatorCamEffector>();
@@ -35,7 +35,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name)
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name, CEffectorController* ec)
 {
-	if (pSettings->line_exist(sect_name, "pp_eff_name"))
+	if(pSettings->line_exist(sect_name, "pp_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "pp_eff_cyclic");
 		CPostprocessAnimatorControlled* pp_anm = xr_new<CPostprocessAnimatorControlled>(ec);
@@ -45,7 +45,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, CEffectorCont
 		pp_anm->Load(fn);
 		A->Cameras().AddPPEffector(pp_anm);
 	}
-	if (pSettings->line_exist(sect_name, "cam_eff_name"))
+	if(pSettings->line_exist(sect_name, "cam_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "cam_eff_cyclic");
 		CCameraEffectorControlled* cam_anm = xr_new<CCameraEffectorControlled>(ec);
@@ -59,7 +59,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, CEffectorCont
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_FUNC k_func)
 {
-	if (pSettings->line_exist(sect_name, "pp_eff_name"))
+	if(pSettings->line_exist(sect_name, "pp_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "pp_eff_cyclic");
 		CPostprocessAnimatorLerp* pp_anm = xr_new<CPostprocessAnimatorLerp>();
@@ -70,7 +70,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_FUN
 		pp_anm->Load(fn);
 		A->Cameras().AddPPEffector(pp_anm);
 	}
-	if (pSettings->line_exist(sect_name, "cam_eff_name"))
+	if(pSettings->line_exist(sect_name, "cam_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "cam_eff_cyclic");
 		CAnimatorCamLerpEffector* cam_anm = xr_new<CAnimatorCamLerpEffector>();
@@ -86,7 +86,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_FUN
 void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor)
 {
 	clamp(factor, 0.001f, 1.5f);
-	if (pSettings->line_exist(sect_name, "pp_eff_name"))
+	if(pSettings->line_exist(sect_name, "pp_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "pp_eff_cyclic");
 		CPostprocessAnimatorLerpConst* pp_anm = xr_new<CPostprocessAnimatorLerpConst>();
@@ -97,7 +97,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor)
 		pp_anm->Load(fn);
 		A->Cameras().AddPPEffector(pp_anm);
 	}
-	if (pSettings->line_exist(sect_name, "cam_eff_name"))
+	if(pSettings->line_exist(sect_name, "cam_eff_name"))
 	{
 		bool bCyclic = !!pSettings->r_bool(sect_name, "cam_eff_cyclic");
 		CAnimatorCamLerpEffectorConst* cam_anm = xr_new<CAnimatorCamLerpEffectorConst>();
@@ -142,20 +142,20 @@ void CAnimatorCamEffector::Start(LPCSTR fn)
 
 BOOL CAnimatorCamEffector::Valid()
 {
-	if (Cyclic())
+	if(Cyclic())
 		return TRUE;
 	return inherited::Valid();
 }
 
 BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	if (!inherited::ProcessCam(info))
+	if(!inherited::ProcessCam(info))
 		return FALSE;
 
 	const fmat4x4& m = m_objectAnimator->Transform();
 	m_objectAnimator->Update(Engine.TimeManager.GetDeltaTime());
 
-	if (!m_bAbsolutePositioning)
+	if(!m_bAbsolutePositioning)
 	{
 		fmat4x4 Mdef;
 		Mdef.identity();
@@ -181,7 +181,7 @@ BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 
 BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	if (!inherited::inherited::ProcessCam(info))
+	if(!inherited::inherited::ProcessCam(info))
 		return FALSE;
 
 	const fmat4x4& m = m_objectAnimator->Transform();
@@ -252,7 +252,7 @@ SndShockEffector::SndShockEffector()
 SndShockEffector::~SndShockEffector()
 {
 	psSoundVFactor = m_stored_volume;
-	if (m_actor && (m_ce || m_pe))
+	if(m_actor && (m_ce || m_pe))
 		RemoveEffector(m_actor, effHit);
 
 	R_ASSERT(!m_ce && !m_pe);
@@ -282,7 +282,7 @@ void SndShockEffector::Start(CActor* A, float snd_length, float power)
 	m_actor = A;
 	m_snd_length = snd_length;
 
-	if (m_stored_volume < 0.0f)
+	if(m_stored_volume < 0.0f)
 		m_stored_volume = psSoundVFactor;
 
 	m_cur_length = 0;
@@ -301,7 +301,7 @@ void SndShockEffector::Update()
 	m_cur_length += Engine.TimeManager.GetDeltaTimeMs();
 	float x = float(m_cur_length) / m_snd_length;
 	float y = 2.f * x - 1;
-	if (y > 0.f)
+	if(y > 0.f)
 	{
 		psSoundVFactor =
 			y * (m_stored_volume - m_stored_volume * SND_MIN_VOLUME_FACTOR) + m_stored_volume * SND_MIN_VOLUME_FACTOR;
@@ -321,7 +321,7 @@ DeathEffector::DeathEffector()
 DeathEffector::~DeathEffector()
 {
 	psSoundVFactor = m_stored_volume;
-	if (m_actor && (m_ce || m_pe))
+	if(m_actor && (m_ce || m_pe))
 		RemoveEffector(m_actor, effHit);
 
 	R_ASSERT(!m_ce && !m_pe);
@@ -350,7 +350,7 @@ void DeathEffector::Start(CActor* A)
 	m_actor = A;
 	m_snd_length = 100000.0f;
 
-	if (m_stored_volume < 0.0f)
+	if(m_stored_volume < 0.0f)
 		m_stored_volume = psSoundVFactor;
 
 	m_cur_length = 0;
@@ -362,11 +362,11 @@ void DeathEffector::Start(CActor* A)
 void DeathEffector::Update()
 {
 	bool bMenu = g_pGamePersistent->OnRenderPPUI_query();
-	if (!bMenu)
+	if(!bMenu)
 	{
 		float FadeOutTime = 5.0f;
 		float Delta = Engine.TimeManager.GetDeltaTimeMs() / FadeOutTime;
-		if (psSoundVFactor > Delta)
+		if(psSoundVFactor > Delta)
 			psSoundVFactor -= Delta;
 		else
 			psSoundVFactor = 0.0f;
@@ -414,24 +414,24 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 
 	//////////////////////////////////////////////////////////////////////////
 
-	if (angle_lerp(m_dangle_current.x, m_dangle_target.x, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+	if(angle_lerp(m_dangle_current.x, m_dangle_target.x, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		m_dangle_target.x = angle_normalize(Random.randFs(ACTOR_EFF_DELTA_ANGLE_X));
 	}
 
-	if (angle_lerp(m_dangle_current.y, m_dangle_target.y, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+	if(angle_lerp(m_dangle_current.y, m_dangle_target.y, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		m_dangle_target.y = angle_normalize(Random.randFs(ACTOR_EFF_DELTA_ANGLE_Y));
 	}
 
-	if (angle_lerp(m_dangle_current.z, m_dangle_target.z, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
+	if(angle_lerp(m_dangle_current.z, m_dangle_target.z, ACTOR_EFF_ANGLE_SPEED, Engine.TimeManager.GetDeltaTime()))
 	{
 		m_dangle_target.z = angle_normalize(Random.randFs(ACTOR_EFF_DELTA_ANGLE_Z));
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 
-	if (m_time_current > m_time_total)
+	if(m_time_current > m_time_total)
 		m_time_current = m_time_total;
 
 	float perc_past = m_time_current / m_time_total;
@@ -446,7 +446,7 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 
 	// Óñòàíîâèòü óãëû ñìåùåíèÿ
 	fmat4x4 R;
-	if (m_time_current > m_time_total)
+	if(m_time_current > m_time_total)
 		R.identity();
 	else
 		R.setHPB(m_dangle_current.x, m_dangle_current.y, m_dangle_current.z);
@@ -497,9 +497,9 @@ bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 	SCamEffectorInfo prev = m_cam_info;
 
 	bool res = inherited::ProcessCameraEffector(eff);
-	if (res)
+	if(res)
 	{
-		if (eff->GetHudAffect())
+		if(eff->GetHudAffect())
 		{
 			SCamEffectorInfo affected = m_cam_info;
 			SCamEffectorInfo diff;

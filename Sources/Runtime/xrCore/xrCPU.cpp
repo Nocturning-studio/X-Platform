@@ -39,21 +39,21 @@ void Detect()
 {
 	// 1. Частота QPC
 	LARGE_INTEGER liFreq;
-	if (QueryPerformanceFrequency(&liFreq))
+	if(QueryPerformanceFrequency(&liFreq))
 		qpc_freq = static_cast<u64>(liFreq.QuadPart);
 	else
 		qpc_freq = 1000;
 
 	// 2. Оверхед QPC
 	u64 start = QPC();
-	for (int i = 0; i < 256; i++)
+	for(int i = 0; i < 256; i++)
 		QPC();
 	u64 end = QPC();
 	qpc_overhead = (end - start) / 256;
 
 	// 3. Оверхед RDTSC
 	start = GetCLK();
-	for (int i = 0; i < 256; i++)
+	for(int i = 0; i < 256; i++)
 		GetCLK();
 	end = GetCLK();
 	clk_overhead = (end - start) / 256;
@@ -66,7 +66,7 @@ void Detect()
 
 	u64 qpc_wait = qpc_freq / 10; // Ждем 100мс
 
-	while ((QPC() - qpc_start) < qpc_wait)
+	while((QPC() - qpc_start) < qpc_wait)
 	{
 		_mm_pause();
 	}
@@ -79,7 +79,7 @@ void Detect()
 	u64 qpc_elapsed = qpc_end - qpc_start;
 	u64 tsc_elapsed = tsc_end - tsc_start;
 
-	if (qpc_elapsed > 0)
+	if(qpc_elapsed > 0)
 		clk_per_second = (tsc_elapsed * qpc_freq) / qpc_elapsed;
 	else
 		clk_per_second = 2500000000ULL; // Фолбэк
@@ -94,7 +94,7 @@ void Detect()
 
 void Initialize()
 {
-	if (!query_processor_info(&CPU::ID))
+	if(!query_processor_info(&CPU::ID))
 		FATAL("! Can't detect CPU info");
 
 	CPU::Impl::Detect();
@@ -105,17 +105,17 @@ void Initialize()
 
 	string256 features;
 	strcpy_s(features, "RDTSC");
-	if (CPU::ID.hasFeature(CpuFeature::Sse))
+	if(CPU::ID.hasFeature(CpuFeature::Sse))
 		strcat_s(features, ", SSE");
-	if (CPU::ID.hasFeature(CpuFeature::Sse2))
+	if(CPU::ID.hasFeature(CpuFeature::Sse2))
 		strcat_s(features, ", SSE2");
-	if (CPU::ID.hasFeature(CpuFeature::Sse3))
+	if(CPU::ID.hasFeature(CpuFeature::Sse3))
 		strcat_s(features, ", SSE3");
-	if (CPU::ID.hasFeature(CpuFeature::Sse41))
+	if(CPU::ID.hasFeature(CpuFeature::Sse41))
 		strcat_s(features, ", SSE4.1");
-	if (CPU::ID.hasFeature(CpuFeature::Sse42))
+	if(CPU::ID.hasFeature(CpuFeature::Sse42))
 		strcat_s(features, ", SSE4.2");
-	if (CPU::ID.hasFeature(CpuFeature::HT))
+	if(CPU::ID.hasFeature(CpuFeature::HT))
 		strcat_s(features, ", HTT");
 
 	Msg("* CPU features: %s", features);

@@ -24,7 +24,7 @@ IC void CTradeParameters::clear()
 
 IC CTradeParameters& CTradeParameters::instance()
 {
-	if (m_instance)
+	if(m_instance)
 		return (*m_instance);
 
 	m_instance = xr_new<CTradeParameters>();
@@ -71,12 +71,13 @@ IC CTradeBoolParameters& CTradeParameters::action(action_show)
 	return (m_show);
 }
 
-template <typename _action_type> IC bool CTradeParameters::enabled(_action_type type, const shared_str& section) const
+template <typename _action_type>
+IC bool CTradeParameters::enabled(_action_type type, const shared_str& section) const
 {
-	if (action(type).disabled(section))
+	if(action(type).disabled(section))
 		return (false);
 
-	if (default_trade_parameters().action(type).disabled(section))
+	if(default_trade_parameters().action(type).disabled(section))
 		return (false);
 
 	return (true);
@@ -87,10 +88,10 @@ IC const CTradeFactors& CTradeParameters::factors(_action_type type, const share
 {
 	VERIFY(enabled(type, section));
 
-	if (action(type).enabled(section))
+	if(action(type).enabled(section))
 		return (action(type).factors(section));
 
-	if (default_trade_parameters().action(type).enabled(section))
+	if(default_trade_parameters().action(type).enabled(section))
 		return (default_trade_parameters().action(type).factors(section));
 
 	return (action(type).default_factors());
@@ -107,9 +108,9 @@ IC void CTradeParameters::process(_action_type type, CInifile& ini_file, const s
 	CInifile::Sect& S = ini_file.r_section(section);
 	CInifile::SectCIt I = S.Data.begin();
 	CInifile::SectCIt E = S.Data.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!(*I).second.size())
+		if(!(*I).second.size())
 		{
 			_action.disable((*I).first);
 			continue;

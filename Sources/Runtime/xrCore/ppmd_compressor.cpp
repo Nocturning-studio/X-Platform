@@ -18,7 +18,7 @@ static LONG PPMd_Locked = 0;
 
 static inline void PPMd_Lock()
 {
-	while (::InterlockedExchange(&PPMd_Locked, 1))
+	while(::InterlockedExchange(&PPMd_Locked, 1))
 		::Sleep(0);
 }
 
@@ -29,17 +29,17 @@ static inline void PPMd_Unlock()
 
 void ppmd_initialize()
 {
-	if (trained_model)
+	if(trained_model)
 		trained_model->rewind();
 
 	static bool initialized = false;
-	if (initialized)
+	if(initialized)
 		return;
 
 	string_path file_name;
 
 	FS.update_path(file_name, "$game_config$", "mp\\!PPMd.mdl");
-	if (FS.exist(file_name))
+	if(FS.exist(file_name))
 	{
 		IReader* reader = FS.r_open(file_name);
 		R_ASSERT(reader);
@@ -51,7 +51,7 @@ void ppmd_initialize()
 	}
 
 	initialized = true;
-	if (StartSubAllocator(suballocator_size))
+	if(StartSubAllocator(suballocator_size))
 		return;
 
 	exit(-1);

@@ -8,8 +8,9 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <bool sorted> template <typename _data_storage, template <typename _T> class _vertex>
+#define TEMPLATE_SPECIALIZATION \
+	template <bool sorted>      \
+	template <typename _data_storage, template <typename _T> class _vertex>
 
 #define CSingleLinkedList CDataStorageSingleLinkedList<sorted>::CDataStorage<_data_storage, _vertex>
 
@@ -45,15 +46,15 @@ TEMPLATE_SPECIALIZATION
 IC void CSingleLinkedList::add_opened(CGraphVertex& vertex)
 {
 	inherited::add_opened(vertex);
-	if (!sorted)
+	if(!sorted)
 	{
 		vertex.next() = m_list_head->next();
 		m_list_head->next() = &vertex;
 	}
 	else
 	{
-		for (CGraphVertex* i = m_list_head;; i = i->next())
-			if (i->next()->f() >= vertex.f())
+		for(CGraphVertex* i = m_list_head;; i = i->next())
+			if(i->next()->f() >= vertex.f())
 			{
 				vertex.next() = i->next();
 				i->next() = &vertex;
@@ -67,26 +68,26 @@ IC void CSingleLinkedList::decrease_opened(CGraphVertex& vertex, const _dist_typ
 {
 	VERIFY(!is_opened_empty());
 
-	if (!sorted)
+	if(!sorted)
 		return;
 
-	for (CGraphVertex* i = m_list_head;; i = i->next())
-		if (&vertex == i->next())
+	for(CGraphVertex* i = m_list_head;; i = i->next())
+		if(&vertex == i->next())
 		{
-			if (i->f() <= vertex.f())
+			if(i->f() <= vertex.f())
 				return;
 			i->next() = i->next()->next();
 			break;
 		}
 
-	if (vertex.f() <= m_list_head->next()->f())
+	if(vertex.f() <= m_list_head->next()->f())
 	{
 		vertex.next() = m_list_head->next();
 		m_list_head->next() = &vertex;
 	}
 	else
-		for (i = m_list_head;; i = i->next())
-			if (i->next()->f() >= vertex.f())
+		for(i = m_list_head;; i = i->next())
+			if(i->next()->f() >= vertex.f())
 			{
 				vertex.next() = i->next();
 				i->next() = &vertex;
@@ -113,19 +114,19 @@ IC typename CSingleLinkedList::CGraphVertex& CSingleLinkedList::get_best() const
 {
 	VERIFY(!is_opened_empty());
 
-	if (sorted)
+	if(sorted)
 		return (*m_list_head->next());
 
 	_dist_type fmin = m_max_distance;
-	for (CGraphVertex *i = m_list_head, *best_prev = 0; i->next() != m_list_tail; i = i->next())
-		if (i->next()->f() < fmin)
+	for(CGraphVertex *i = m_list_head, *best_prev = 0; i->next() != m_list_tail; i = i->next())
+		if(i->next()->f() < fmin)
 		{
 			fmin = i->next()->f();
 			best_prev = i;
 		}
 
 	VERIFY(best_prev);
-	if (best_prev != m_list_head)
+	if(best_prev != m_list_head)
 	{
 		CGraphVertex* best = best_prev->next();
 		best_prev->next() = best->next();

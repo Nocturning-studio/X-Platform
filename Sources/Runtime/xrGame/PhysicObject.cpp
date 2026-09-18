@@ -32,7 +32,7 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	m_collision_hit_callback = NULL;
 	inherited::net_Spawn(DC);
 	xr_delete(collidable.model);
-	switch (m_type)
+	switch(m_type)
 	{
 	case epotBox:
 	case epotFixedChain:
@@ -49,11 +49,11 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	setVisible(TRUE);
 	setEnabled(TRUE);
 
-	if (!PPhysicsShell()->isBreakable() && !CScriptBinder::object() && !CPHSkeleton::IsRemoving())
+	if(!PPhysicsShell()->isBreakable() && !CScriptBinder::object() && !CPHSkeleton::IsRemoving())
 		SheduleUnregister();
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	if (PPhysicsShell()->Animated())
+	if(PPhysicsShell()->Animated())
 	{
 		processing_activate();
 	}
@@ -69,13 +69,13 @@ void CPhysicObject::SpawnInitPhysics(CSE_Abstract* D)
 }
 void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
 {
-	if (Visual() && smart_cast<CKinematics*>(Visual()))
+	if(Visual() && smart_cast<CKinematics*>(Visual()))
 	{
 		//		CSE_PHSkeleton	*po	= smart_cast<CSE_PHSkeleton*>(D);
 		CKinematicsAnimated* PKinematicsAnimated = NULL;
 		R_ASSERT(Visual() && smart_cast<CKinematics*>(Visual()));
 		PKinematicsAnimated = smart_cast<CKinematicsAnimated*>(Visual());
-		if (PKinematicsAnimated)
+		if(PKinematicsAnimated)
 		{
 			CSE_Visual* visual = smart_cast<CSE_Visual*>(D);
 			R_ASSERT(visual);
@@ -89,7 +89,7 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
 void CPhysicObject::net_Destroy()
 {
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	if (PPhysicsShell()->Animated())
+	if(PPhysicsShell()->Animated())
 	{
 		processing_deactivate();
 	}
@@ -112,9 +112,9 @@ void CPhysicObject::CreatePhysicsShell(CSE_Abstract* e)
 
 void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
 {
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		return;
-	if (!Visual())
+	if(!Visual())
 		return;
 	LPCSTR fixed_bones = *po->fixed_bones;
 	m_pPhysicsShell = P_build_Shell(this, !po->_flags.test(CSE_PHSkeleton::flActive), fixed_bones);
@@ -131,7 +131,7 @@ void CPhysicObject::Load(LPCSTR section)
 
 void CPhysicObject::shedule_Update(u32 dt)
 {
-	//OPTICK_EVENT("CPhysicObject::shedule_Update");
+	// OPTICK_EVENT("CPhysicObject::shedule_Update");
 
 	inherited::shedule_Update(dt);
 	CPHSkeleton::Update(dt);
@@ -143,7 +143,7 @@ void CPhysicObject::UpdateCL()
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	// Если наш физический объект анимированный, то
 	// двигаем объект за анимацией
-	if (m_pPhysicsShell->PPhysicsShellAnimator())
+	if(m_pPhysicsShell->PPhysicsShellAnimator())
 	{
 		m_pPhysicsShell->PPhysicsShellAnimator()->OnFrame();
 	}
@@ -154,10 +154,10 @@ void CPhysicObject::UpdateCL()
 void CPhysicObject::PHObjectPositionUpdate()
 {
 
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 	{
 
-		if (m_type == epotBox)
+		if(m_type == epotBox)
 		{
 			m_pPhysicsShell->Update();
 			Transform().set(m_pPhysicsShell->mTransform);
@@ -176,7 +176,7 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 	E->mTransform.set(K->LL_GetTransform(u16(id)));
 	Fobb bb = K->LL_GetBox(u16(id));
 
-	if (bb.m_halfsize.magnitude() < 0.05f)
+	if(bb.m_halfsize.magnitude() < 0.05f)
 	{
 		bb.m_halfsize.add(0.05f);
 	}
@@ -185,7 +185,7 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 	E->set_ParentElement(root_e);
 	B.set_callback(bctPhysics, m_pPhysicsShell->GetBonesCallback(), E);
 	m_pPhysicsShell->add_Element(E);
-	if (!(m_type == epotFreeChain && root_e == 0))
+	if(!(m_type == epotFreeChain && root_e == 0))
 	{
 		CPhysicsJoint* J = P_create_Joint(CPhysicsJoint::full_control, root_e, E);
 		J->SetAnchorVsSecondElement(0, 0, 0);
@@ -198,7 +198,7 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 	}
 
 	CBoneData& BD = K->LL_GetData(u16(id));
-	for (vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
+	for(vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
 	{
 		AddElement(E, (*it)->GetSelfID());
 	}
@@ -207,17 +207,19 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po)
 {
 
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		return;
 	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual());
-	switch (m_type)
+	switch(m_type)
 	{
-	case epotBox: {
+	case epotBox:
+	{
 		m_pPhysicsShell = P_build_SimpleShell(this, m_mass, !po->_flags.test(CSE_ALifeObjectPhysic::flActive));
 	}
 	break;
 	case epotFixedChain:
-	case epotFreeChain: {
+	case epotFreeChain:
+	{
 		m_pPhysicsShell = P_create_Shell();
 		m_pPhysicsShell->set_Kinematics(pKinematics);
 		AddElement(0, pKinematics->LL_GetBoneRoot());
@@ -225,20 +227,22 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po)
 	}
 	break;
 
-	case epotSkeleton: {
+	case epotSkeleton:
+	{
 		// pKinematics->LL_SetBoneRoot(0);
 		CreateSkeleton(po);
 	}
 	break;
 
-	default: {
+	default:
+	{
 	}
 	break;
 	}
 
 	m_pPhysicsShell->mTransform.set(Transform());
 	m_pPhysicsShell->SetAirResistance(0.001f, 0.02f);
-	if (pKinematics)
+	if(pKinematics)
 	{
 
 		SAllDDOParams disable_params;
@@ -262,7 +266,7 @@ void CPhysicObject::InitServerObject(CSE_Abstract* D)
 {
 	CPHSkeleton::InitServerObject(D);
 	CSE_ALifeObjectPhysic* l_tpALifePhysicObject = smart_cast<CSE_ALifeObjectPhysic*>(D);
-	if (!l_tpALifePhysicObject)
+	if(!l_tpALifePhysicObject)
 		return;
 	l_tpALifePhysicObject->type = u32(m_type);
 }
@@ -272,12 +276,12 @@ SCollisionHitCallback* CPhysicObject::get_collision_hit_callback()
 }
 bool CPhysicObject::set_collision_hit_callback(SCollisionHitCallback* cc)
 {
-	if (!cc)
+	if(!cc)
 	{
 		m_collision_hit_callback = NULL;
 		return true;
 	}
-	if (PPhysicsShell())
+	if(PPhysicsShell())
 	{
 		VERIFY2(cc->m_collision_hit_callback != 0, "No callback function");
 		m_collision_hit_callback = cc;

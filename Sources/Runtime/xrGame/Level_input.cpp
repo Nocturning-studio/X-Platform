@@ -42,23 +42,23 @@ extern float g_fTimeFactor;
 
 void CLevel::IR_OnMouseWheel(int direction)
 {
-	if (g_bDisableAllInput)
+	if(g_bDisableAllInput)
 		return;
 
-	if (HUD().GetUI()->IR_OnMouseWheel(direction))
+	if(HUD().GetUI()->IR_OnMouseWheel(direction))
 		return;
-	if (Device.Paused())
-		return;
-
-	if (game && Game().IR_OnMouseWheel(direction))
+	if(Device.Paused())
 		return;
 
-	if (HUD().GetUI()->MainInputReceiver())
+	if(game && Game().IR_OnMouseWheel(direction))
 		return;
-	if (CURRENT_ENTITY())
+
+	if(HUD().GetUI()->MainInputReceiver())
+		return;
+	if(CURRENT_ENTITY())
 	{
 		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)
+		if(IR)
 			IR->IR_OnMouseWheel(direction);
 	}
 }
@@ -88,16 +88,16 @@ void CLevel::IR_OnMouseHold(int btn)
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
 {
-	if (g_bDisableAllInput)
+	if(g_bDisableAllInput)
 		return;
-	if (pHUD->GetUI()->IR_OnMouseMove(dx, dy))
+	if(pHUD->GetUI()->IR_OnMouseMove(dx, dy))
 		return;
-	if (Device.Paused())
+	if(Device.Paused())
 		return;
-	if (CURRENT_ENTITY())
+	if(CURRENT_ENTITY())
 	{
 		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)
+		if(IR)
 			IR->IR_OnMouseMove(dx, dy);
 	}
 }
@@ -113,7 +113,7 @@ class vtune_
 	}
 	void enable()
 	{
-		if (!enabled_)
+		if(!enabled_)
 		{
 			Engine.tune_resume();
 			enabled_ = TRUE;
@@ -122,7 +122,7 @@ class vtune_
 	}
 	void disable()
 	{
-		if (enabled_)
+		if(enabled_)
 		{
 			Engine.tune_pause();
 			enabled_ = FALSE;
@@ -143,10 +143,10 @@ void CLevel::IR_OnKeyboardPress(int key)
 
 	EGameActions _curr = get_binded_action(key);
 
-	//Msg("Keyboard pressed");
+	// Msg("Keyboard pressed");
 	Engine.DebugUI.IR_OnKeyboardPress(key);
 
-	switch (_curr)
+	switch(_curr)
 	{
 
 	case kCONSOLE:
@@ -159,10 +159,11 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 		break;
 
-	case kQUIT: {
-		if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
+	case kQUIT:
+	{
+		if(b_ui_exist && HUD().GetUI()->MainInputReceiver())
 		{
-			if (HUD().GetUI()->MainInputReceiver()->IR_OnKeyboardPress(key))
+			if(HUD().GetUI()->MainInputReceiver()->IR_OnKeyboardPress(key))
 				return; // special case for mp and main_menu
 			HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
 		}
@@ -173,9 +174,9 @@ void CLevel::IR_OnKeyboardPress(int key)
 	break;
 
 	case kPAUSE:
-		if (!g_block_pause)
+		if(!g_block_pause)
 		{
-			if (IsGameTypeSingle())
+			if(IsGameTypeSingle())
 			{
 				Device.Pause(!Device.Paused(), TRUE, TRUE, "li_pause_key");
 			}
@@ -184,26 +185,26 @@ void CLevel::IR_OnKeyboardPress(int key)
 		break;
 	};
 
-	if (g_bDisableAllInput)
+	if(g_bDisableAllInput)
 		return;
-	if (!b_ui_exist)
-		return;
-
-	if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardPress(key))
+	if(!b_ui_exist)
 		return;
 
-	if (Device.Paused())
+	if(b_ui_exist && pHUD->GetUI()->IR_OnKeyboardPress(key))
 		return;
 
-	if (game && Game().IR_OnKeyboardPress(key))
+	if(Device.Paused())
 		return;
 
-	if (_curr == kQUICK_SAVE && IsGameTypeSingle())
+	if(game && Game().IR_OnKeyboardPress(key))
+		return;
+
+	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
 	{
 		Console->Execute("save");
 		return;
 	}
-	if (_curr == kQUICK_LOAD && IsGameTypeSingle())
+	if(_curr == kQUICK_LOAD && IsGameTypeSingle())
 	{
 #ifdef DEBUG
 		FS.get_path("$game_config$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
@@ -215,18 +216,18 @@ void CLevel::IR_OnKeyboardPress(int key)
 	}
 
 #ifndef MASTER_GOLD
-	switch (key)
+	switch(key)
 	{
-	case DIK_NUMPAD5: 
+	case DIK_NUMPAD5:
 	{
 		Console->Hide();
 		Console->Execute("demo_record 1");
 	}
 	break;
 	case DIK_DIVIDE:
-		if (OnServer())
+		if(OnServer())
 		{
-			if (GameID() == GAME_SINGLE)
+			if(GameID() == GAME_SINGLE)
 			{
 				Server->game->SetGameTimeFactor(g_fTimeFactor);
 			}
@@ -238,10 +239,10 @@ void CLevel::IR_OnKeyboardPress(int key)
 		}
 		break;
 	case DIK_MULTIPLY:
-		if (OnServer())
+		if(OnServer())
 		{
 			float NewTimeFactor = 1000.f;
-			if (GameID() == GAME_SINGLE)
+			if(GameID() == GAME_SINGLE)
 			{
 				Server->game->SetGameTimeFactor(NewTimeFactor);
 			}
@@ -258,60 +259,61 @@ void CLevel::IR_OnKeyboardPress(int key)
 		return;
 
 	case DIK_BACK:
-		//if (GameID() == GAME_SINGLE)
-			//HW.GetCaps().SceneMode = (HW.GetCaps().SceneMode + 1) % 3;
+		// if (GameID() == GAME_SINGLE)
+		// HW.GetCaps().SceneMode = (HW.GetCaps().SceneMode + 1) % 3;
 		return;
 
-	case DIK_F4: {
-		if (pInput->iGetAsyncKeyState(DIK_LALT))
+	case DIK_F4:
+	{
+		if(pInput->iGetAsyncKeyState(DIK_LALT))
 			break;
 
-		if (pInput->iGetAsyncKeyState(DIK_RALT))
+		if(pInput->iGetAsyncKeyState(DIK_RALT))
 			break;
 
 		bool bOk = false;
 		u32 i = 0, j, n = Objects.o_count();
-		if (pCurrentEntity)
-			for (; i < n; ++i)
-				if (Objects.o_get_by_iterator(i) == pCurrentEntity)
+		if(pCurrentEntity)
+			for(; i < n; ++i)
+				if(Objects.o_get_by_iterator(i) == pCurrentEntity)
 					break;
-		if (i < n)
+		if(i < n)
 		{
 			j = i;
 			bOk = false;
-			for (++i; i < n; ++i)
+			for(++i; i < n; ++i)
 			{
 				CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
-				if (tpEntityAlive)
+				if(tpEntityAlive)
 				{
 					bOk = true;
 					break;
 				}
 			}
-			if (!bOk)
-				for (i = 0; i < j; ++i)
+			if(!bOk)
+				for(i = 0; i < j; ++i)
 				{
 					CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
-					if (tpEntityAlive)
+					if(tpEntityAlive)
 					{
 						bOk = true;
 						break;
 					}
 				}
-			if (bOk)
+			if(bOk)
 			{
 				CObject* tpObject = CurrentEntity();
 				CObject* __I = Objects.o_get_by_iterator(i);
 				CObject** I = &__I;
 
 				SetEntity(*I);
-				if (tpObject != *I)
+				if(tpObject != *I)
 				{
 					CActor* pActor = smart_cast<CActor*>(tpObject);
-					if (pActor)
+					if(pActor)
 						pActor->inventory().Items_SetCurrentEntityHud(false);
 				}
-				if (tpObject)
+				if(tpObject)
 				{
 					Engine.Sheduler->Unregister(tpObject);
 					Engine.Sheduler->Register(tpObject, TRUE);
@@ -320,12 +322,12 @@ void CLevel::IR_OnKeyboardPress(int key)
 				Engine.Sheduler->Register(*I, TRUE);
 
 				CActor* pActor = smart_cast<CActor*>(*I);
-				if (pActor)
+				if(pActor)
 				{
 					pActor->inventory().Items_SetCurrentEntityHud(true);
 
 					CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
-					if (pHudItem)
+					if(pHudItem)
 					{
 						pHudItem->OnStateSwitch(pHudItem->GetState());
 					}
@@ -334,12 +336,13 @@ void CLevel::IR_OnKeyboardPress(int key)
 		}
 		return;
 	}
-	case MOUSE_1: {
-		if (GameID() != GAME_SINGLE)
+	case MOUSE_1:
+	{
+		if(GameID() != GAME_SINGLE)
 			break;
-		if (pInput->iGetAsyncKeyState(DIK_LALT))
+		if(pInput->iGetAsyncKeyState(DIK_LALT))
 		{
-			if (CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
+			if(CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
 				try_change_current_entity();
 			else
 				restore_actor();
@@ -347,14 +350,15 @@ void CLevel::IR_OnKeyboardPress(int key)
 		}
 		break;
 	}
-		/**/
+	/**/
 #endif
 #ifdef DEBUG
-	case DIK_F9: {
+	case DIK_F9:
+	{
 		//		if (!ai().get_alife())
 		//			break;
 		//		const_cast<CALifeSimulatorHeader&>(ai().alife().header()).set_state(ALife::eZoneStateSurge);
-		if (GameID() != GAME_SINGLE)
+		if(GameID() != GAME_SINGLE)
 		{
 			extern INT g_sv_SendUpdate;
 			g_sv_SendUpdate = 1;
@@ -393,24 +397,24 @@ void CLevel::IR_OnKeyboardPress(int key)
 	}
 #endif // MASTER_GOLD
 
-	if (bindConsoleCmds.execute(key))
+	if(bindConsoleCmds.execute(key))
 		return;
 
-	if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
+	if(b_ui_exist && HUD().GetUI()->MainInputReceiver())
 		return;
-	if (CURRENT_ENTITY())
+	if(CURRENT_ENTITY())
 	{
 		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)
+		if(IR)
 			IR->IR_OnKeyboardPress(get_binded_action(key));
 	}
 
 #ifdef _DEBUG
 	CObject* obj = Level().Objects.FindObjectByName("monster");
-	if (obj)
+	if(obj)
 	{
 		CBaseMonster* monster = smart_cast<CBaseMonster*>(obj);
-		if (monster)
+		if(monster)
 			monster->debug_on_key(key);
 	}
 #endif
@@ -422,21 +426,21 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 	Engine.DebugUI.IR_OnKeyboardRelease(key);
 
-	if (g_bDisableAllInput)
+	if(g_bDisableAllInput)
 		return;
-	if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardRelease(key))
+	if(b_ui_exist && pHUD->GetUI()->IR_OnKeyboardRelease(key))
 		return;
-	if (Device.Paused())
+	if(Device.Paused())
 		return;
-	if (game && Game().OnKeyboardRelease(get_binded_action(key)))
+	if(game && Game().OnKeyboardRelease(get_binded_action(key)))
 		return;
 
-	if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
+	if(b_ui_exist && HUD().GetUI()->MainInputReceiver())
 		return;
-	if (CURRENT_ENTITY())
+	if(CURRENT_ENTITY())
 	{
 		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)
+		if(IR)
 			IR->IR_OnKeyboardRelease(get_binded_action(key));
 	}
 }
@@ -445,21 +449,21 @@ void CLevel::IR_OnKeyboardHold(int key)
 {
 	Engine.DebugUI.IR_OnKeyboardHold(key);
 
-	if (g_bDisableAllInput)
+	if(g_bDisableAllInput)
 		return;
 
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 
-	if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardHold(key))
+	if(b_ui_exist && pHUD->GetUI()->IR_OnKeyboardHold(key))
 		return;
-	if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
+	if(b_ui_exist && HUD().GetUI()->MainInputReceiver())
 		return;
-	if (Device.Paused())
+	if(Device.Paused())
 		return;
-	if (CURRENT_ENTITY())
+	if(CURRENT_ENTITY())
 	{
 		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)
+		if(IR)
 			IR->IR_OnKeyboardHold(get_binded_action(key));
 	}
 }
@@ -470,16 +474,16 @@ void CLevel::IR_OnMouseStop(int /**axis/**/, int /**value/**/)
 
 void CLevel::IR_OnActivate()
 {
-	if (!pInput)
+	if(!pInput)
 		return;
 	int i;
-	for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+	for(i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
 	{
-		if (IR_GetKeyState(i))
+		if(IR_GetKeyState(i))
 		{
 
 			EGameActions action = get_binded_action(i);
-			switch (action)
+			switch(action)
 			{
 			case kFWD:
 			case kBACK:
@@ -493,7 +497,8 @@ void CLevel::IR_OnActivate()
 			case kACCEL:
 			case kL_LOOKOUT:
 			case kR_LOOKOUT:
-			case kWPN_FIRE: {
+			case kWPN_FIRE:
+			{
 				IR_OnKeyboardPress(i);
 			}
 			break;

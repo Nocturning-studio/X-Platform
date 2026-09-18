@@ -137,7 +137,8 @@
 #define AA_QZERO_TOLERANCE 0.0001f
 #define QEPSILON 0.00001f
 
-template <class T> struct /*XRMATH_API*/ template_quaternion
+template <class T>
+struct /*XRMATH_API*/ template_quaternion
 {
   public:
 	typedef T TYPE;
@@ -241,13 +242,13 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	// validates numerical stability
 	IC const BOOL isValid(void) const
 	{
-		if ((w * w) < 0.0f)
+		if((w * w) < 0.0f)
 			return false;
-		if ((x * x) < 0.0f)
+		if((x * x) < 0.0f)
 			return false;
-		if ((y * y) < 0.0f)
+		if((y * y) < 0.0f)
 			return false;
-		if ((z * z) < 0.0f)
+		if((z * z) < 0.0f)
 			return false;
 		return true;
 	}
@@ -257,7 +258,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	{
 		T m = magnitude();
 
-		if ((m < 1.0 + UNIT_TOLERANCE) && (m > 1.0 - UNIT_TOLERANCE))
+		if((m < 1.0 + UNIT_TOLERANCE) && (m > 1.0 - UNIT_TOLERANCE))
 			return true;
 		return false;
 	}
@@ -269,7 +270,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 
 		m = std::sqrt(magnitude());
 
-		if ((m < QZERO_TOLERANCE) && (m > -QZERO_TOLERANCE))
+		if((m < QZERO_TOLERANCE) && (m > -QZERO_TOLERANCE))
 			return *this;
 
 		one_over_magnitude = 1.0f / m;
@@ -355,7 +356,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 		T OneOverSinTheta;
 
 		T HalfTheta = acosf(w);
-		if (HalfTheta > QZERO_TOLERANCE)
+		if(HalfTheta > QZERO_TOLERANCE)
 		{
 			OneOverSinTheta = 1.0f / std::sin(HalfTheta);
 			axis.x = OneOverSinTheta * x;
@@ -382,13 +383,13 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 		T Scale0, Scale1, sign;
 
 #ifdef DEBUG0
-		if (!((T(0) <= tm) && (tm <= T(1))))
+		if(!((T(0) <= tm) && (tm <= T(1))))
 			Debug.fatal(DEBUG_INFO, "Quaternion::slerp - invalid 'tm' arrived: %f", tm);
 #endif
 
 		T cosom = (Q0.w * Q1.w) + (Q0.x * Q1.x) + (Q0.y * Q1.y) + (Q0.z * Q1.z);
 
-		if (cosom < 0)
+		if(cosom < 0)
 		{
 			cosom = -cosom;
 			sign = -1.f;
@@ -398,7 +399,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 			sign = 1.f;
 		}
 
-		if ((1.0f - cosom) > EPS)
+		if((1.0f - cosom) > EPS)
 		{
 			T omega = _acos_(cosom);
 			T i_sinom = 1.f / std::sin(omega);
@@ -425,7 +426,7 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 	// return TRUE if quaternions differ elementwise by less than Tolerance.
 	IC BOOL cmp(SelfCRef Q, T Tolerance = 0.0001f)
 	{
-		if ( // they are the same but with opposite signs
+		if( // they are the same but with opposite signs
 			((_abs(x + Q.x) <= Tolerance) && (_abs(y + Q.y) <= Tolerance) && (_abs(z + Q.z) <= Tolerance) &&
 			 (_abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
 			((_abs(x - Q.x) <= Tolerance) && (_abs(y - Q.y) <= Tolerance) && (_abs(z - Q.z) <= Tolerance) &&
@@ -460,7 +461,8 @@ template <class T> struct /*XRMATH_API*/ template_quaternion
 
 typedef template_quaternion<float> Fquaternion;
 
-template <class T> BOOL _valid(const template_quaternion<T>& s)
+template <class T>
+BOOL _valid(const template_quaternion<T>& s)
 {
 	return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);
 }

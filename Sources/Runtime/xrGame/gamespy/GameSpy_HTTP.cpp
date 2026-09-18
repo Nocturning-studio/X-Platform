@@ -11,7 +11,7 @@ CGameSpy_HTTP::CGameSpy_HTTP()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 
@@ -34,7 +34,7 @@ CGameSpy_HTTP::~CGameSpy_HTTP()
 {
 	CleanUp();
 
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -71,7 +71,7 @@ void CGameSpy_HTTP::Think()
 void __cdecl ProgressCallback(GHTTPRequest request, GHTTPState state, const char* buffer, GHTTPByteCount bufferLen,
 							  GHTTPByteCount bytesReceived, GHTTPByteCount totalSize, void* param)
 {
-	if (state == GHTTPReceivingFile && totalSize != 0)
+	if(state == GHTTPReceivingFile && totalSize != 0)
 		MainMenu()->OnDownloadPatchProgress(bytesReceived, totalSize);
 }
 
@@ -100,7 +100,7 @@ string128 GHTTPResultStr[] = {
 GHTTPBool __cdecl CompletedCallBack(GHTTPRequest request, GHTTPResult result, char* buffer, GHTTPByteCount bufferLen,
 									void* param)
 {
-	switch (result)
+	switch(result)
 	{
 	case GHTTPSuccess:
 		MainMenu()->OnDownloadPatchSuccess();
@@ -125,7 +125,7 @@ void CGameSpy_HTTP::DownloadFile(LPCSTR URL, LPCSTR FileName)
 	m_LastRequest =
 		xrGS_ghttpSaveEx(URL, FileName, "", NULL, GHTTPFalse, GHTTPFalse, ProgressCallback, CompletedCallBack, this);
 	Msg("Code: %d", m_LastRequest);
-	if (m_LastRequest < 0)
+	if(m_LastRequest < 0)
 	{
 		MainMenu()->OnDownloadPatchError();
 	}
@@ -133,7 +133,7 @@ void CGameSpy_HTTP::DownloadFile(LPCSTR URL, LPCSTR FileName)
 
 void CGameSpy_HTTP::StopDownload()
 {
-	if (m_LastRequest != -1)
+	if(m_LastRequest != -1)
 		xrGS_ghttpCancelRequest(m_LastRequest);
 	m_LastRequest = -1;
 }

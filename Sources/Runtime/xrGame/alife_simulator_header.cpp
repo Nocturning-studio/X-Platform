@@ -30,7 +30,7 @@ void CALifeSimulatorHeader::load(IReader& file_stream)
 
 bool CALifeSimulatorHeader::valid(IReader& file_stream) const
 {
-	if (!file_stream.find_chunk(ALIFE_CHUNK_DATA))
+	if(!file_stream.find_chunk(ALIFE_CHUNK_DATA))
 		return (false);
 
 	u32 version;

@@ -123,7 +123,7 @@ class CDetailManager
 	struct SlotPart
 	{
 		u32 id;
-		SlotItemVec items;			   // Исходные айтемы (для логики)
+		SlotItemVec items; // Исходные айтемы (для логики)
 	};
 
 	enum SlotType
@@ -176,7 +176,7 @@ class CDetailManager
 	u32 m_vis_calc_id;	 // Индекс буфера, который сейчас считаем
 
 	// Сохраненная позиция камеры для расчета в потоке (чтобы не было гонок данных с Device)
-	fvec3 m_vCameraPos_calc; 
+	fvec3 m_vCameraPos_calc;
 	fmat4x4 m_mFullTransform_calc;
 	typedef svector<CDetail*, dm_max_objects> DetailVec;
 	typedef DetailVec::iterator DetailIt;

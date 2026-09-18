@@ -65,9 +65,9 @@ virtual bool bfPerformAttack()
 {
 	return (true);
 };
-virtual void vfUpdateWeaponAmmo(){};
-virtual void vfProcessItems(){};
-virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll){};
+virtual void vfUpdateWeaponAmmo() {};
+virtual void vfProcessItems() {};
+virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll) {};
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex,
 											   bool bMutualDetection) = 0;
 virtual bool bfActive() = 0;
@@ -193,9 +193,9 @@ add_to_type_list(CSE_ALifeGroupAbstract)
 	CSE_ALifeGroupTemplate(LPCSTR caSection)
 		: __A(pSettings->line_exist(caSection, "monster_section") ? pSettings->r_string(caSection, "monster_section")
 																  : caSection),
-		  CSE_ALifeGroupAbstract(caSection){};
+		  CSE_ALifeGroupAbstract(caSection) {};
 
-	virtual ~CSE_ALifeGroupTemplate(){};
+	virtual ~CSE_ALifeGroupTemplate() {};
 
 	virtual void STATE_Read(NET_Packet& tNetPacket, u16 size)
 	{
@@ -407,8 +407,8 @@ virtual float suitable(CSE_ALifeMonsterAbstract* object) const
 {
 	return 0.f;
 };
-virtual void register_npc(CSE_ALifeMonsterAbstract* object){};
-virtual void unregister_npc(CSE_ALifeMonsterAbstract* object){};
+virtual void register_npc(CSE_ALifeMonsterAbstract* object) {};
+virtual void unregister_npc(CSE_ALifeMonsterAbstract* object) {};
 virtual CALifeSmartTerrainTask* task(CSE_ALifeMonsterAbstract* object)
 {
 	return 0;
@@ -598,8 +598,8 @@ add_to_type_list(CSE_ALifeTeamBaseZone)
 	class CSE_InventoryBox : public CSE_ALifeDynamicObjectVisual
 {
   public:
-	CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection){};
-	virtual ~CSE_InventoryBox(){};
+	CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection) {};
+	virtual ~CSE_InventoryBox() {};
 #ifdef XRGAME_EXPORTS
 	virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 	virtual void add_online(const bool& update_registries);

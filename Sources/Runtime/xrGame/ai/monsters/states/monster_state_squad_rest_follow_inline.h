@@ -37,7 +37,7 @@ TEMPLATE_SPECIALIZATION
 void CStateMonsterSquadRestFollowAbstract::reselect_state()
 {
 	SSquadCommand& command = monster_squad().get_squad(object)->GetCommand(object);
-	if (command.position.distance_to(object->Position()) < Random.randF(STOP_DISTANCE, STAY_DISTANCE))
+	if(command.position.distance_to(object->Position()) < Random.randF(STOP_DISTANCE, STAY_DISTANCE))
 	{
 		select_state(eStateSquad_RestFollow_Idle);
 	}
@@ -57,7 +57,7 @@ void CStateMonsterSquadRestFollowAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateSquad_RestFollow_Idle)
+	if(current_substate == eStateSquad_RestFollow_Idle)
 	{
 		SStateDataAction data;
 		data.action = ACT_REST;
@@ -70,12 +70,12 @@ void CStateMonsterSquadRestFollowAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateSquad_RestFollow_WalkToPoint)
+	if(current_substate == eStateSquad_RestFollow_WalkToPoint)
 	{
 		SStateDataMoveToPointEx data;
 
 		fvec3 dest_pos = monster_squad().get_squad(object)->GetCommand(object).position;
-		if (!object->control().path_builder().restrictions().accessible(dest_pos))
+		if(!object->control().path_builder().restrictions().accessible(dest_pos))
 		{
 			data.vertex = object->control().path_builder().restrictions().accessible_nearest(dest_pos, data.point);
 		}

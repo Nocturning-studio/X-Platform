@@ -92,7 +92,7 @@ void CUIStalkersRankingWnd::Init()
 void CUIStalkersRankingWnd::Show(bool status)
 {
 	inherited::Show(status);
-	if (status)
+	if(status)
 		FillList();
 }
 
@@ -112,7 +112,7 @@ int get_actor_ranking()
 	d.trader = pActorAbstract;
 
 	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
-	if (it != g_all_statistic_humans.end())
+	if(it != g_all_statistic_humans.end())
 		return (int)std::distance(g_all_statistic_humans.begin(), it);
 	else
 		return 1;
@@ -128,16 +128,16 @@ void CUIStalkersRankingWnd::FillList()
 
 	uiXml.SetLocalRoot(uiXml.NavigateToNode("stalkers_list", 0));
 
-	if (g_all_statistic_humans.size())
+	if(g_all_statistic_humans.size())
 	{
 		CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
 		int actor_place = get_actor_ranking();
 
 		int sz = _min(g_all_statistic_humans.size(), 20);
-		for (int i = 0; i < sz; ++i)
+		for(int i = 0; i < sz; ++i)
 		{
 			CSE_ALifeTraderAbstract* pT = (g_all_statistic_humans[i]).trader;
-			if (pT == pActorAbstract || (i == 19 && actor_place > 19))
+			if(pT == pActorAbstract || (i == 19 && actor_place > 19))
 			{
 				AddActorItem(&uiXml, actor_place + 1, pActorAbstract);
 			}
@@ -184,7 +184,7 @@ void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAb
 {
 	string64 buff;
 	CUIStalkerRankingInfoItem* itm;
-	if (num > 19)
+	if(num > 19)
 	{
 		itm = xr_new<CUIStalkerRankingElipsisItem>(this);
 		itm->Init(xml, "item_ellipsis", 0);
@@ -221,7 +221,7 @@ void add_human_to_top_list(u16 id)
 
 	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
 
-	if (it != g_all_statistic_humans.end())
+	if(it != g_all_statistic_humans.end())
 		g_all_statistic_humans.erase(it);
 
 	g_all_statistic_humans.push_back(d);
@@ -236,7 +236,7 @@ void remove_human_from_top_list(u16 id)
 	d.id = id;
 	d.trader = t;
 	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
-	if (it != g_all_statistic_humans.end())
+	if(it != g_all_statistic_humans.end())
 		g_all_statistic_humans.erase(it);
 }
 
@@ -281,7 +281,7 @@ void CUIStalkerRankingInfoItem::SetSelected(bool b)
 	m_text1->SetTextColor(subst_alpha(m_text1->GetTextColor(), b ? 255 : m_stored_alpha));
 	m_text2->SetTextColor(subst_alpha(m_text2->GetTextColor(), b ? 255 : m_stored_alpha));
 	m_text3->SetTextColor(subst_alpha(m_text3->GetTextColor(), b ? 255 : m_stored_alpha));
-	if (b)
+	if(b)
 	{
 		m_StalkersRankingWnd->ShowHumanInfo(m_humanID);
 	}
@@ -289,7 +289,7 @@ void CUIStalkerRankingInfoItem::SetSelected(bool b)
 
 bool CUIStalkerRankingInfoItem::OnMouseDown(int mouse_btn)
 {
-	if (mouse_btn == MOUSE_1)
+	if(mouse_btn == MOUSE_1)
 	{
 		m_StalkersRankingWnd->GetTopList().SetSelected(this);
 		return true;

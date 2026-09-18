@@ -26,16 +26,20 @@ struct RELATION_REGISTRY
 	virtual ~RELATION_REGISTRY();
 
   public:
-	template <typename T> ALife::ERelationType GetRelationBetween(T char1, T char2) const;
+	template <typename T>
+	ALife::ERelationType GetRelationBetween(T char1, T char2) const;
 
-	template <typename T> ALife::ERelationType GetRelationType(T from, T to) const;
-	template <typename T> void SetRelationType(T from, T to, ALife::ERelationType new_relation);
+	template <typename T>
+	ALife::ERelationType GetRelationType(T from, T to) const;
+	template <typename T>
+	void SetRelationType(T from, T to, ALife::ERelationType new_relation);
 
 	// общее отношение  одного персонажа к другому, вычисленное по формуле
 	// с учетом всех факторов - величина от
 	//-100< (крайне враждебное) до >100 (очень дрюжелюбное)
 
-	template <typename T> CHARACTER_GOODWILL GetAttitude(T from, T to) const;
+	template <typename T>
+	CHARACTER_GOODWILL GetAttitude(T from, T to) const;
 
 	// личное отношение (благосклонность) одного персонажа к другому -
 	// величина от -100< (крайне враждебное) до >100 (очень дрюжелюбное)
@@ -92,7 +96,7 @@ struct RELATION_REGISTRY
 		shared_str spot_names[ALife::eRelationTypeLast + 1];
 		const shared_str& GetSpotName(ALife::ERelationType& type)
 		{
-			if (type < ALife::eRelationTypeLast)
+			if(type < ALife::eRelationTypeLast)
 				return spot_names[type];
 			else
 				return spot_names[ALife::eRelationTypeLast];

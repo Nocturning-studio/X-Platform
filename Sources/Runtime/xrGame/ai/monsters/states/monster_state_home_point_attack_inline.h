@@ -34,7 +34,7 @@ void CStateMonsterAttackMoveToHomePointAbstract::initialize()
 	m_target_node = object->Home->get_place_in_cover();
 	m_skip_camp = false;
 
-	if (m_target_node == u32(-1))
+	if(m_target_node == u32(-1))
 	{
 		m_target_node = object->Home->get_place();
 		m_skip_camp = true;
@@ -74,11 +74,11 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
 {
-	if (object->HitMemory.get_last_hit_time() > time_state_started)
+	if(object->HitMemory.get_last_hit_time() > time_state_started)
 		return true;
-	if (object->EnemyMan.see_enemy_now() && object->Home->at_home(object->EnemyMan.get_enemy()->Position()))
+	if(object->EnemyMan.see_enemy_now() && object->Home->at_home(object->EnemyMan.get_enemy()->Position()))
 		return true;
-	if (m_skip_camp && (prev_substate != u32(-1)) && (prev_substate != eStateAttack_HomePoint_Hide))
+	if(m_skip_camp && (prev_substate != u32(-1)) && (prev_substate != eStateAttack_HomePoint_Hide))
 		return true;
 
 	return false;
@@ -91,13 +91,13 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterAttackMoveToHomePointAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
 		select_state(eStateAttack_HomePoint_Hide);
 		return;
 	}
 
-	if (prev_substate == eStateAttack_HomePoint_Hide)
+	if(prev_substate == eStateAttack_HomePoint_Hide)
 	{
 		select_state(eStateAttack_HomePoint_LookOpenPlace);
 		return;
@@ -115,7 +115,7 @@ void CStateMonsterAttackMoveToHomePointAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateAttack_HomePoint_Hide)
+	if(current_substate == eStateAttack_HomePoint_Hide)
 	{
 		SStateDataMoveToPointEx data;
 
@@ -135,7 +135,7 @@ void CStateMonsterAttackMoveToHomePointAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateAttack_HomePoint_LookOpenPlace)
+	if(current_substate == eStateAttack_HomePoint_LookOpenPlace)
 	{
 
 		SStateDataLookToPoint data;
@@ -154,7 +154,7 @@ void CStateMonsterAttackMoveToHomePointAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateAttack_HomePoint_Camp)
+	if(current_substate == eStateAttack_HomePoint_Camp)
 	{
 		SStateDataAction data;
 

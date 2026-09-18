@@ -40,10 +40,10 @@ void CStateManagerChimera::execute()
 
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-	if (enemy)
+	if(enemy)
 	{
 		// if (check_state(eStateThreaten)) state_id = eStateThreaten;
-		switch (object->EnemyMan.get_danger_type())
+		switch(object->EnemyMan.get_danger_type())
 		{
 		case eStrong:
 			state_id = eStatePanic;
@@ -53,21 +53,21 @@ void CStateManagerChimera::execute()
 			break;
 		}
 	}
-	else if (object->HitMemory.is_hit())
+	else if(object->HitMemory.is_hit())
 	{
 		state_id = eStateHitted;
 	}
-	else if (object->hear_dangerous_sound)
+	else if(object->hear_dangerous_sound)
 	{
 		state_id = eStateHearDangerousSound;
 	}
-	else if (object->hear_interesting_sound)
+	else if(object->hear_interesting_sound)
 	{
 		state_id = eStateHearInterestingSound;
 	}
 	else
 	{
-		if (can_eat())
+		if(can_eat())
 			state_id = eStateEat;
 		else
 			state_id = eStateRest;

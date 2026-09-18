@@ -64,22 +64,22 @@ void CEffectorBobbing::SetState(u32 mstate, bool limping, bool ZoomMode)
 BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 {
 	fTime += Engine.TimeManager.GetDeltaTime();
-	if (dwMState & ACTOR_DEFS::mcAnyMove)
+	if(dwMState & ACTOR_DEFS::mcAnyMove)
 	{
-		if (fReminderFactor < 1.f)
+		if(fReminderFactor < 1.f)
 			fReminderFactor += SPEED_REMINDER * Engine.TimeManager.GetDeltaTime();
 		else
 			fReminderFactor = 1.f;
 	}
 	else
 	{
-		if (fReminderFactor > 0.f)
+		if(fReminderFactor > 0.f)
 			fReminderFactor -= SPEED_REMINDER * Engine.TimeManager.GetDeltaTime();
 		else
 			fReminderFactor = 0.f;
 	}
 
-	if (!fsimilar(fReminderFactor, 0))
+	if(!fsimilar(fReminderFactor, 0))
 	{
 		fmat4x4 M;
 		M.identity();
@@ -91,34 +91,34 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 		// apply footstep bobbing effect
 		float k = GLOBAL_VIEW_BOBBING_FACTOR;
 
-		if (dwMState & ACTOR_DEFS::mcCrouch)
+		if(dwMState & ACTOR_DEFS::mcCrouch)
 			k *= CROUCH_FACTOR;
-		if ((dwMState & ACTOR_DEFS::mcLStrafe) || (dwMState & ACTOR_DEFS::mcRStrafe))
+		if((dwMState & ACTOR_DEFS::mcLStrafe) || (dwMState & ACTOR_DEFS::mcRStrafe))
 			k *= STRAFE_FACTOR;
-		if (dwMState & ACTOR_DEFS::mcSprint)
+		if(dwMState & ACTOR_DEFS::mcSprint)
 			k *= SPRINT_FACTOR;
-		if (m_bZoomMode)
+		if(m_bZoomMode)
 			k *= ZOOM_FACTOR;
 
 		float Intencity = GLOBAL_VIEW_BOBBING_INTENCITY_FACTOR;
 
-		if (dwMState & ACTOR_DEFS::mcCrouch)
+		if(dwMState & ACTOR_DEFS::mcCrouch)
 			Intencity *= CROUCH_BOBBING_INTENCITY_FACTOR;
-		if ((dwMState & ACTOR_DEFS::mcLStrafe) || (dwMState & ACTOR_DEFS::mcRStrafe))
+		if((dwMState & ACTOR_DEFS::mcLStrafe) || (dwMState & ACTOR_DEFS::mcRStrafe))
 			Intencity *= STRAFE_BOBBING_INTENCITY_FACTOR;
-		if (dwMState & ACTOR_DEFS::mcSprint)
+		if(dwMState & ACTOR_DEFS::mcSprint)
 			Intencity *= SPRINT_BOBBING_INTENCITY_FACTOR;
-		if (m_bZoomMode)
+		if(m_bZoomMode)
 			Intencity *= ZOOM_BOBBING_INTENCITY_FACTOR;
 
 		float A, ST;
 
-		if (isActorAccelerated(dwMState, m_bZoomMode))
+		if(isActorAccelerated(dwMState, m_bZoomMode))
 		{
 			A = m_fAmplitudeRun * k;
 			ST = m_fSpeedRun * fTime * k;
 		}
-		else if (is_limping)
+		else if(is_limping)
 		{
 			A = m_fAmplitudeLimp * k;
 			ST = m_fSpeedLimp * fTime * k;
@@ -129,17 +129,17 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 			ST = m_fSpeedWalk * fTime * k;
 		}
 
-		if (ps_effectors_ls_flags.test(DYNAMIC_FOV_ENABLED))
+		if(ps_effectors_ls_flags.test(DYNAMIC_FOV_ENABLED))
 		{
 			float fov_modifier = 1.0f;
 
-			if (dwMState & ACTOR_DEFS::mcSprint)
+			if(dwMState & ACTOR_DEFS::mcSprint)
 				fov_modifier = SPRINT_FOV_MODIFIER_FACTOR;
-			if (dwMState & ACTOR_DEFS::mcFwd)
+			if(dwMState & ACTOR_DEFS::mcFwd)
 				fov_modifier = WALK_FOV_MODIFIER_FACTOR;
-			if (dwMState & ACTOR_DEFS::mcBack)
+			if(dwMState & ACTOR_DEFS::mcBack)
 				fov_modifier = BACKWARD_WALK_FOV_MODIFIER_FACTOR;
-			if (dwMState & ACTOR_DEFS::mcCrouch)
+			if(dwMState & ACTOR_DEFS::mcCrouch)
 				fov_modifier = CROUCH_WALK_FOV_MODIFIER_FACTOR;
 
 			info.fFov *= fov_modifier + Engine.TimeManager.GetDeltaTime();

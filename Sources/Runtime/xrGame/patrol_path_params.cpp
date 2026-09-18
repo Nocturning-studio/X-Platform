@@ -39,7 +39,7 @@ const fvec3& CPatrolPathParams::point(u32 index) const
 {
 	VERIFY(m_path);
 	VERIFY(!m_path->vertices().empty());
-	if (!m_path->vertex(index))
+	if(!m_path->vertex(index))
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError,
 										"Can't get information about patrol point number %d in the patrol way %s",
@@ -64,7 +64,7 @@ GameGraph::_GRAPH_ID CPatrolPathParams::game_vertex_id(u32 index) const
 
 u32 CPatrolPathParams::point(LPCSTR name) const
 {
-	if (m_path->point(name))
+	if(m_path->point(name))
 		return (m_path->point(name)->vertex_id());
 	return (u32(-1));
 }

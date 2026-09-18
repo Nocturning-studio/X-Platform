@@ -38,35 +38,35 @@ using namespace Opcode;
 
 //! OBB-triangle test
 #ifdef OPC_USE_CALLBACKS
-#define OBB_PRIM(primindex)                                                                                            \
-	/* Request vertices from the app */                                                                                \
-	VertexPointers VP;                                                                                                 \
-	(mObjCallback)(primindex, VP, mUserData);                                                                          \
-	/* Transform them in a common space */                                                                             \
-	TransformPoint(mLeafVerts[0], *VP.Vertex[0], mRModelToBox, mTModelToBox);                                          \
-	TransformPoint(mLeafVerts[1], *VP.Vertex[1], mRModelToBox, mTModelToBox);                                          \
-	TransformPoint(mLeafVerts[2], *VP.Vertex[2], mRModelToBox, mTModelToBox);                                          \
-	/* Perform triangle-box overlap test */                                                                            \
-	if (TriBoxOverlap())                                                                                               \
-	{                                                                                                                  \
-		/* Set contact status */                                                                                       \
-		mFlags |= OPC_CONTACT;                                                                                         \
-		mTouchedPrimitives->Add(primindex);                                                                            \
+#define OBB_PRIM(primindex)                                                   \
+	/* Request vertices from the app */                                       \
+	VertexPointers VP;                                                        \
+	(mObjCallback)(primindex, VP, mUserData);                                 \
+	/* Transform them in a common space */                                    \
+	TransformPoint(mLeafVerts[0], *VP.Vertex[0], mRModelToBox, mTModelToBox); \
+	TransformPoint(mLeafVerts[1], *VP.Vertex[1], mRModelToBox, mTModelToBox); \
+	TransformPoint(mLeafVerts[2], *VP.Vertex[2], mRModelToBox, mTModelToBox); \
+	/* Perform triangle-box overlap test */                                   \
+	if(TriBoxOverlap())                                                       \
+	{                                                                         \
+		/* Set contact status */                                              \
+		mFlags |= OPC_CONTACT;                                                \
+		mTouchedPrimitives->Add(primindex);                                   \
 	}
 #else
-#define OBB_PRIM(primindex)                                                                                            \
-	/* Direct access to vertices */                                                                                    \
-	const IndexedTriangle* T = &mFaces[primindex];                                                                     \
-	/* Transform them in a common space */                                                                             \
-	TransformPoint(mLeafVerts[0], mVerts[T->mVRef[0]], mRModelToBox, mTModelToBox);                                    \
-	TransformPoint(mLeafVerts[1], mVerts[T->mVRef[1]], mRModelToBox, mTModelToBox);                                    \
-	TransformPoint(mLeafVerts[2], mVerts[T->mVRef[2]], mRModelToBox, mTModelToBox);                                    \
-	/* Perform triangle-box overlap test */                                                                            \
-	if (TriBoxOverlap())                                                                                               \
-	{                                                                                                                  \
-		/* Set contact status */                                                                                       \
-		mFlags |= OPC_CONTACT;                                                                                         \
-		mTouchedPrimitives->Add(primindex);                                                                            \
+#define OBB_PRIM(primindex)                                                         \
+	/* Direct access to vertices */                                                 \
+	const IndexedTriangle* T = &mFaces[primindex];                                  \
+	/* Transform them in a common space */                                          \
+	TransformPoint(mLeafVerts[0], mVerts[T->mVRef[0]], mRModelToBox, mTModelToBox); \
+	TransformPoint(mLeafVerts[1], mVerts[T->mVRef[1]], mRModelToBox, mTModelToBox); \
+	TransformPoint(mLeafVerts[2], mVerts[T->mVRef[2]], mRModelToBox, mTModelToBox); \
+	/* Perform triangle-box overlap test */                                         \
+	if(TriBoxOverlap())                                                             \
+	{                                                                               \
+		/* Set contact status */                                                    \
+		mFlags |= OPC_CONTACT;                                                      \
+		mTouchedPrimitives->Add(primindex);                                         \
 	}
 #endif
 
@@ -96,7 +96,7 @@ OBBCollider::~OBBCollider()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char* OBBCollider::ValidateSettings()
 {
-	if (TemporalCoherenceEnabled() && !FirstContactEnabled())
+	if(TemporalCoherenceEnabled() && !FirstContactEnabled())
 		return "Temporal coherence only works with "
 			   "First contact"
 			   " mode!";
@@ -124,20 +124,20 @@ bool OBBCollider::Collide(OBBCache& cache, const OBB& box, OPCODE_Model* model, 
 						  const Matrix4x4* worldm)
 {
 	// Checkings
-	if (!model)
+	if(!model)
 		return false;
 
 	// Simple double-dispatch
-	if (!model->HasLeafNodes())
+	if(!model->HasLeafNodes())
 	{
-		if (model->IsQuantized())
+		if(model->IsQuantized())
 			return Collide(cache, box, (const AABBQuantizedNoLeafTree*)model->GetTree(), worldb, worldm);
 		else
 			return Collide(cache, box, (const AABBNoLeafTree*)model->GetTree(), worldb, worldm);
 	}
 	else
 	{
-		if (model->IsQuantized())
+		if(model->IsQuantized())
 			return Collide(cache, box, (const AABBQuantizedTree*)model->GetTree(), worldb, worldm);
 		else
 			return Collide(cache, box, (const AABBCollisionTree*)model->GetTree(), worldb, worldm);
@@ -169,7 +169,7 @@ BOOL OBBCollider::InitQuery(OBBCache& cache, const OBB& box, const Matrix4x4* wo
 
 	Matrix4x4 WorldB;
 
-	if (worldb)
+	if(worldb)
 	{
 		WorldB = Matrix4x4(box.mRot2 * Matrix3x3(*worldb));
 		WorldB.SetTrans(box.mCenter * *worldb);
@@ -184,7 +184,7 @@ BOOL OBBCollider::InitQuery(OBBCache& cache, const OBB& box, const Matrix4x4* wo
 	Matrix4x4 InvWorldB;
 	InvertPRMatrix(InvWorldB, WorldB);
 
-	if (worldm)
+	if(worldm)
 	{
 		Matrix4x4 InvWorldM;
 		InvertPRMatrix(InvWorldM, *worldm);
@@ -206,9 +206,9 @@ BOOL OBBCollider::InitQuery(OBBCache& cache, const OBB& box, const Matrix4x4* wo
 	}
 
 	// Precompute absolute box-to-model rotation matrix
-	for (udword i = 0; i < 3; i++)
+	for(udword i = 0; i < 3; i++)
 	{
-		for (udword j = 0; j < 3; j++)
+		for(udword j = 0; j < 3; j++)
 		{
 			// Epsilon value prevents floating-point inaccuracies (strategy borrowed from RAPID)
 			mAR.m[i][j] = 1e-6f + _abs(mRBoxToModel.m[i][j]);
@@ -239,14 +239,14 @@ BOOL OBBCollider::InitQuery(OBBCache& cache, const OBB& box, const Matrix4x4* wo
 	mTouchedPrimitives = &cache.TouchedPrimitives;
 
 	// 4) Check temporal coherence:
-	if (TemporalCoherenceEnabled())
+	if(TemporalCoherenceEnabled())
 	{
 		// Here we use temporal coherence
 		// => check results from previous frame before performing the collision query
-		if (FirstContactEnabled())
+		if(FirstContactEnabled())
 		{
 			// We're only interested in the first contact found => test the unique previously touched face
-			if (mTouchedPrimitives->GetNbEntries())
+			if(mTouchedPrimitives->GetNbEntries())
 			{
 				// Get index of previously touched face = the first entry in the array
 				udword PreviouslyTouchedFace = mTouchedPrimitives->GetEntry(0);
@@ -290,18 +290,18 @@ bool OBBCollider::Collide(OBBCache& cache, const OBB& box, const AABBCollisionTr
 						  const Matrix4x4* worldm)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 #ifdef OPC_USE_CALLBACKS
-	if (!mObjCallback)
+	if(!mObjCallback)
 		return false;
 #else
-	if (!mFaces || !mVerts)
+	if(!mFaces || !mVerts)
 		return false;
 #endif
 
 	// Init collision query
-	if (InitQuery(cache, box, worldb, worldm))
+	if(InitQuery(cache, box, worldb, worldm))
 		return true;
 
 	// Perform collision query
@@ -326,18 +326,18 @@ bool OBBCollider::Collide(OBBCache& cache, const OBB& box, const AABBNoLeafTree*
 						  const Matrix4x4* worldm)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 #ifdef OPC_USE_CALLBACKS
-	if (!mObjCallback)
+	if(!mObjCallback)
 		return false;
 #else
-	if (!mFaces || !mVerts)
+	if(!mFaces || !mVerts)
 		return false;
 #endif
 
 	// Init collision query
-	if (InitQuery(cache, box, worldb, worldm))
+	if(InitQuery(cache, box, worldb, worldm))
 		return true;
 
 	// Perform collision query
@@ -362,18 +362,18 @@ bool OBBCollider::Collide(OBBCache& cache, const OBB& box, const AABBQuantizedTr
 						  const Matrix4x4* worldm)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 #ifdef OPC_USE_CALLBACKS
-	if (!mObjCallback)
+	if(!mObjCallback)
 		return false;
 #else
-	if (!mFaces || !mVerts)
+	if(!mFaces || !mVerts)
 		return false;
 #endif
 
 	// Init collision query
-	if (InitQuery(cache, box, worldb, worldm))
+	if(InitQuery(cache, box, worldb, worldm))
 		return true;
 
 	// Setup dequantization coeffs
@@ -402,18 +402,18 @@ bool OBBCollider::Collide(OBBCache& cache, const OBB& box, const AABBQuantizedNo
 						  const Matrix4x4* worldm)
 {
 	// Checkings
-	if (!tree)
+	if(!tree)
 		return false;
 #ifdef OPC_USE_CALLBACKS
-	if (!mObjCallback)
+	if(!mObjCallback)
 		return false;
 #else
-	if (!mFaces || !mVerts)
+	if(!mFaces || !mVerts)
 		return false;
 #endif
 
 	// Init collision query
-	if (InitQuery(cache, box, worldb, worldm))
+	if(InitQuery(cache, box, worldb, worldm))
 		return true;
 
 	// Setup dequantization coeffs
@@ -469,39 +469,39 @@ inline_ BOOL OBBCollider::OBBContainsBox(const Point& bc, const Point& be)
 	float NEx =
 		_abs(mRModelToBox.m[0][0] * be.x) + _abs(mRModelToBox.m[1][0] * be.y) + _abs(mRModelToBox.m[2][0] * be.z);
 
-	if (mB0.x < NCx + NEx)
+	if(mB0.x < NCx + NEx)
 		return FALSE;
-	if (mB1.x > NCx - NEx)
+	if(mB1.x > NCx - NEx)
 		return FALSE;
 
 	float NCy = bc.x * mRModelToBox.m[0][1] + bc.y * mRModelToBox.m[1][1] + bc.z * mRModelToBox.m[2][1];
 	float NEy =
 		_abs(mRModelToBox.m[0][1] * be.x) + _abs(mRModelToBox.m[1][1] * be.y) + _abs(mRModelToBox.m[2][1] * be.z);
 
-	if (mB0.y < NCy + NEy)
+	if(mB0.y < NCy + NEy)
 		return FALSE;
-	if (mB1.y > NCy - NEy)
+	if(mB1.y > NCy - NEy)
 		return FALSE;
 
 	float NCz = bc.x * mRModelToBox.m[0][2] + bc.y * mRModelToBox.m[1][2] + bc.z * mRModelToBox.m[2][2];
 	float NEz =
 		_abs(mRModelToBox.m[0][2] * be.x) + _abs(mRModelToBox.m[1][2] * be.y) + _abs(mRModelToBox.m[2][2] * be.z);
 
-	if (mB0.z < NCz + NEz)
+	if(mB0.z < NCz + NEz)
 		return FALSE;
-	if (mB1.z > NCz - NEz)
+	if(mB1.z > NCz - NEz)
 		return FALSE;
 
 	return TRUE;
 }
 
-#define TEST_OBB_IN_BOX(center, extents)                                                                               \
-	if (OBBContainsBox(center, extents))                                                                               \
-	{                                                                                                                  \
-		/* Set contact status */                                                                                       \
-		mFlags |= OPC_CONTACT;                                                                                         \
-		_Dump(node);                                                                                                   \
-		return;                                                                                                        \
+#define TEST_OBB_IN_BOX(center, extents) \
+	if(OBBContainsBox(center, extents))  \
+	{                                    \
+		/* Set contact status */         \
+		mFlags |= OPC_CONTACT;           \
+		_Dump(node);                     \
+		return;                          \
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -513,12 +513,12 @@ inline_ BOOL OBBCollider::OBBContainsBox(const Point& bc, const Point& be)
 void OBBCollider::_Collide(const AABBCollisionNode* node)
 {
 	// Perform OBB-AABB overlap test
-	if (!BoxBoxOverlap(node->mAABB.mExtents, node->mAABB.mCenter))
+	if(!BoxBoxOverlap(node->mAABB.mExtents, node->mAABB.mCenter))
 		return;
 
 	TEST_OBB_IN_BOX(node->mAABB.mCenter, node->mAABB.mExtents)
 
-	if (node->IsLeaf())
+	if(node->IsLeaf())
 	{
 		OBB_PRIM(node->GetPrimitive())
 	}
@@ -526,7 +526,7 @@ void OBBCollider::_Collide(const AABBCollisionNode* node)
 	{
 		_Collide(node->GetPos());
 
-		if (ContactFound())
+		if(ContactFound())
 			return;
 
 		_Collide(node->GetNeg());
@@ -549,12 +549,12 @@ void OBBCollider::_Collide(const AABBQuantizedNode* node)
 						float(Box->mExtents[2]) * mExtentsCoeff.z);
 
 	// Perform OBB-AABB overlap test
-	if (!BoxBoxOverlap(Extents, Center))
+	if(!BoxBoxOverlap(Extents, Center))
 		return;
 
 	TEST_OBB_IN_BOX(Center, Extents)
 
-	if (node->IsLeaf())
+	if(node->IsLeaf())
 	{
 		OBB_PRIM(node->GetPrimitive())
 	}
@@ -562,7 +562,7 @@ void OBBCollider::_Collide(const AABBQuantizedNode* node)
 	{
 		_Collide(node->GetPos());
 
-		if (ContactFound())
+		if(ContactFound())
 			return;
 
 		_Collide(node->GetNeg());
@@ -578,22 +578,22 @@ void OBBCollider::_Collide(const AABBQuantizedNode* node)
 void OBBCollider::_Collide(const AABBNoLeafNode* node)
 {
 	// Perform OBB-AABB overlap test
-	if (!BoxBoxOverlap(node->mAABB.mExtents, node->mAABB.mCenter))
+	if(!BoxBoxOverlap(node->mAABB.mExtents, node->mAABB.mCenter))
 		return;
 
 	TEST_OBB_IN_BOX(node->mAABB.mCenter, node->mAABB.mExtents)
 
-	if (node->HasLeaf())
+	if(node->HasLeaf())
 	{
 		OBB_PRIM(node->GetPrimitive())
 	}
 	else
 		_Collide(node->GetPos());
 
-	if (ContactFound())
+	if(ContactFound())
 		return;
 
-	if (node->HasLeaf2())
+	if(node->HasLeaf2())
 	{
 		OBB_PRIM(node->GetPrimitive2())
 	}
@@ -617,22 +617,22 @@ void OBBCollider::_Collide(const AABBQuantizedNoLeafNode* node)
 						float(Box->mExtents[2]) * mExtentsCoeff.z);
 
 	// Perform OBB-AABB overlap test
-	if (!BoxBoxOverlap(Extents, Center))
+	if(!BoxBoxOverlap(Extents, Center))
 		return;
 
 	TEST_OBB_IN_BOX(Center, Extents)
 
-	if (node->HasLeaf())
+	if(node->HasLeaf())
 	{
 		OBB_PRIM(node->GetPrimitive())
 	}
 	else
 		_Collide(node->GetPos());
 
-	if (ContactFound())
+	if(ContactFound())
 		return;
 
-	if (node->HasLeaf2())
+	if(node->HasLeaf2())
 	{
 		OBB_PRIM(node->GetPrimitive2())
 	}

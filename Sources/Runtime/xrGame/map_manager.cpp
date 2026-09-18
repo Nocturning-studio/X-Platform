@@ -92,22 +92,22 @@ void CMapLocationRegistry::save(IWriter& stream)
 	stream.w_u32((u32)objects().size());
 	iterator I = m_objects.begin();
 	iterator E = m_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		u32 size = 0;
 		Locations::iterator i = (*I).second.begin();
 		Locations::iterator e = (*I).second.end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 		{
 			VERIFY((*i).location);
-			if ((*i).location->Serializable())
+			if((*i).location->Serializable())
 				++size;
 		}
 		stream.w(&(*I).first, sizeof((*I).first));
 		stream.w_u32(size);
 		i = (*I).second.begin();
-		for (; i != e; ++i)
-			if ((*i).location->Serializable())
+		for(; i != e; ++i)
+			if((*i).location->Serializable())
 				(*i).save(stream);
 	}
 }
@@ -132,12 +132,12 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 {
 	FindLocationBySpotID key(spot_type, id);
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
-	if (it == Locations().end())
+	if(it == Locations().end())
 	{
 		CMapLocation* l = xr_new<CMapLocation>(*key.spot_id, key.object_id);
 		Locations().push_back(SLocationKey(key.spot_id, key.object_id));
 		Locations().back().location = l;
-		if (IsGameTypeSingle() && g_actor)
+		if(IsGameTypeSingle() && g_actor)
 			Actor()->callback(GameObject::eMapLocationAdded)(*spot_type, id);
 		return l;
 	}
@@ -149,7 +149,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 
 CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 {
-	if (!Level().CurrentViewEntity())
+	if(!Level().CurrentViewEntity())
 		return NULL;
 
 	ALife::ERelationType relation = ALife::eRelationTypeFriend;
@@ -158,12 +158,12 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 	shared_str sname = RELATION_REGISTRY().GetSpotName(relation);
 
 	CEntityAlive* pEntAlive = smart_cast<CEntityAlive*>(pInvOwner);
-	if (!pEntAlive->g_Alive())
+	if(!pEntAlive->g_Alive())
 		sname = "deadbody_location";
 
 	FindLocationBySpotID key(sname, pInvOwner->object_id());
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
-	if (it == Locations().end())
+	if(it == Locations().end())
 	{
 		CMapLocation* l =
 			xr_new<CRelationMapLocation>(*key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
@@ -192,10 +192,10 @@ void CMapManager::RemoveMapLocation(const shared_str& spot_type, u16 id)
 {
 	FindLocationBySpotID key(spot_type, id);
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
-	if (it != Locations().end())
+	if(it != Locations().end())
 	{
 
-		if (1 == (*it).location->RefCount())
+		if(1 == (*it).location->RefCount())
 		{
 			//.			CheckUserLocation		((*it).location);
 			delete_data(*it);
@@ -210,7 +210,7 @@ void CMapManager::RemoveMapLocationByObjectID(u16 id) // call on destroy object
 {
 	FindLocationByID key(id);
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
-	while (it != Locations().end())
+	while(it != Locations().end())
 	{
 
 		//.			CheckUserLocation		((*it).location);
@@ -227,7 +227,7 @@ void CMapManager::RemoveMapLocation(CMapLocation* ml)
 	FindLocation key(ml);
 
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
-	if (it != Locations().end())
+	if(it != Locations().end())
 	{
 		//.		CheckUserLocation		((*it).location);
 		delete_data(*it);
@@ -246,7 +246,7 @@ CMapLocation* CMapManager::GetMapLocation(const shared_str& spot_type, u16 id)
 {
 	FindLocationBySpotID key(spot_type, id);
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
-	if (it != Locations().end())
+	if(it != Locations().end())
 		return (*it).location;
 
 	return 0;
@@ -257,13 +257,13 @@ void CMapManager::Update()
 	PROFILE_FUNCTION();
 
 	Locations_it it = Locations().begin();
-	for (; it != Locations().end(); ++it)
+	for(; it != Locations().end(); ++it)
 	{
 		(*it).actual = (*it).location->Update();
 	}
 	concurrency::parallel_sort(Locations().begin(), Locations().end());
 
-	while ((!Locations().empty()) && (!Locations().back().actual))
+	while((!Locations().empty()) && (!Locations().back().actual))
 	{
 		delete_data(Locations().back().location);
 		Locations().pop_back();
@@ -273,7 +273,7 @@ void CMapManager::Update()
 void CMapManager::DisableAllPointers()
 {
 	Locations_it it = Locations().begin();
-	for (; it != Locations().end(); ++it)
+	for(; it != Locations().end(); ++it)
 		(*it).location->DisablePointer();
 }
 
@@ -295,7 +295,7 @@ void CMapManager::Dump()
 {
 	Msg("begin of map_locations dump");
 	Locations_it it = Locations().begin();
-	for (; it != Locations().end(); ++it)
+	for(; it != Locations().end(); ++it)
 	{
 		Msg("spot_type=[%s] object_id=[%d]", *((*it).spot_type), (*it).object_id);
 		(*it).location->Dump();

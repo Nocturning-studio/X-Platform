@@ -14,10 +14,10 @@ void CMonsterSquad::ProcessIdle()
 	VERIFY(leader && !leader->getDestroy());
 
 	// ¬ыделить элементы с общими врагами и сост€нием атаки
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++)
+	for(MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++)
 	{
 		SMemberGoal goal = it_goal->second;
-		if ((goal.type == MG_Rest) || (goal.type == MG_WalkGraph))
+		if((goal.type == MG_Rest) || (goal.type == MG_WalkGraph))
 		{
 			m_temp_entities.push_back(it_goal->first);
 		}
@@ -50,7 +50,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 	// получить цель лидера
 	SMemberGoal& goal = GetGoal(leader);
 
-	if (goal.type == MG_WalkGraph)
+	if(goal.type == MG_WalkGraph)
 	{
 
 		front.clear();
@@ -58,9 +58,9 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 		left.clear();
 		right.clear();
 
-		for (ENTITY_VEC_IT IT = members.begin(); IT != members.end(); IT++)
+		for(ENTITY_VEC_IT IT = members.begin(); IT != members.end(); IT++)
 		{
-			if ((*IT) == leader)
+			if((*IT) == leader)
 				continue;
 
 			front.push_back(*IT);
@@ -96,7 +96,7 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 		command.direction = leader->Direction();
 
 		u8 cur_type = 0;
-		while (!front.empty())
+		while(!front.empty())
 		{
 			float random_r;
 			fvec3 random_dir;
@@ -105,27 +105,27 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 			random_r = Random.randF(CIRCLE_RADIUS_MIN, CIRCLE_RADIUS_MAX);
 
 			CEntity* entity = 0;
-			switch (cur_type)
+			switch(cur_type)
 			{
 			case 0: // front
 				entity = front.back();
 				front.pop_back();
-				for (u32 i = 0; i < back.size(); i++)
-					if (back[i] == entity)
+				for(u32 i = 0; i < back.size(); i++)
+					if(back[i] == entity)
 					{
 						back[i] = back.back();
 						back.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < right.size(); i++)
-					if (right[i] == entity)
+				for(u32 i = 0; i < right.size(); i++)
+					if(right[i] == entity)
 					{
 						right[i] = right.back();
 						right.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < left.size(); i++)
-					if (left[i] == entity)
+				for(u32 i = 0; i < left.size(); i++)
+					if(left[i] == entity)
 					{
 						left[i] = left.back();
 						left.pop_back();
@@ -136,22 +136,22 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 			case 1: // back
 				entity = back.back();
 				back.pop_back();
-				for (u32 i = 0; i < front.size(); i++)
-					if (front[i] == entity)
+				for(u32 i = 0; i < front.size(); i++)
+					if(front[i] == entity)
 					{
 						front[i] = front.back();
 						front.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < right.size(); i++)
-					if (right[i] == entity)
+				for(u32 i = 0; i < right.size(); i++)
+					if(right[i] == entity)
 					{
 						right[i] = right.back();
 						right.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < left.size(); i++)
-					if (left[i] == entity)
+				for(u32 i = 0; i < left.size(); i++)
+					if(left[i] == entity)
 					{
 						left[i] = left.back();
 						left.pop_back();
@@ -162,22 +162,22 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 			case 2: // left
 				entity = left.back();
 				left.pop_back();
-				for (u32 i = 0; i < front.size(); i++)
-					if (front[i] == entity)
+				for(u32 i = 0; i < front.size(); i++)
+					if(front[i] == entity)
 					{
 						front[i] = front.back();
 						front.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < right.size(); i++)
-					if (right[i] == entity)
+				for(u32 i = 0; i < right.size(); i++)
+					if(right[i] == entity)
 					{
 						right[i] = right.back();
 						right.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < back.size(); i++)
-					if (back[i] == entity)
+				for(u32 i = 0; i < back.size(); i++)
+					if(back[i] == entity)
 					{
 						back[i] = back.back();
 						back.pop_back();
@@ -188,22 +188,22 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 			case 3: // right
 				entity = right.back();
 				right.pop_back();
-				for (u32 i = 0; i < front.size(); i++)
-					if (front[i] == entity)
+				for(u32 i = 0; i < front.size(); i++)
+					if(front[i] == entity)
 					{
 						front[i] = front.back();
 						front.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < left.size(); i++)
-					if (left[i] == entity)
+				for(u32 i = 0; i < left.size(); i++)
+					if(left[i] == entity)
 					{
 						left[i] = left.back();
 						left.pop_back();
 						break;
 					}
-				for (u32 i = 0; i < back.size(); i++)
-					if (back[i] == entity)
+				for(u32 i = 0; i < back.size(); i++)
+					if(back[i] == entity)
 					{
 						back[i] = back.back();
 						back.pop_back();
@@ -216,18 +216,18 @@ void CMonsterSquad::Idle_AssignAction(ENTITY_VEC& members)
 			}
 
 			cur_type++;
-			if (cur_type > 3)
+			if(cur_type > 3)
 				cur_type = 0;
 
 			UpdateCommand(entity, command);
 		}
 	}
-	else if (goal.type == MG_Rest)
+	else if(goal.type == MG_Rest)
 	{
 		// пересчитать положение в команде в соответствие с целью лидера
-		for (ENTITY_VEC_IT it = members.begin(); it != members.end(); it++)
+		for(ENTITY_VEC_IT it = members.begin(); it != members.end(); it++)
 		{
-			if ((*it) == leader)
+			if((*it) == leader)
 				continue;
 
 			SSquadCommand command;

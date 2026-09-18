@@ -88,11 +88,11 @@ class CPEDef
 	// compiled actions
 	CMemoryWriter m_Actions;
 	// def
-	float m_fTimeLimit;			 // time limit
-	int m_MaxParticles;			 // max particle count
-	fvec3 m_VelocityScale;	 // velocity scale
+	float m_fTimeLimit;		   // time limit
+	int m_MaxParticles;		   // max particle count
+	fvec3 m_VelocityScale;	   // velocity scale
 	fvec3 m_APDefaultRotation; // align to path
-								 // collision
+							   // collision
 	float m_fCollideOneMinusFriction;
 	float m_fCollideResilience;
 	float m_fCollideSqrCutoff;

@@ -27,7 +27,7 @@ void CUIProgressShape::SetPos(float pos)
 void CUIProgressShape::SetPos(int pos, int max)
 {
 	m_stage = float(pos) / float(max);
-	if (m_bText)
+	if(m_bText)
 	{
 		string256 _buff;
 		m_pTexture->SetText(_itoa(pos, _buff, 10));
@@ -55,11 +55,11 @@ float calc_color(u32 idx, u32 total, float stage, float max_stage)
 
 void CUIProgressShape::Draw()
 {
-	if (m_pBackground)
+	if(m_pBackground)
 		m_pBackground->Draw();
 	R_ASSERT(m_pTexture);
 
-	if (m_bText)
+	if(m_bText)
 		m_pTexture->DrawText();
 
 	ref_shader sh = m_pTexture->GetShader();
@@ -105,7 +105,7 @@ void CUIProgressShape::Draw()
 	start_tex_pt.set(0.0f, -radius_tex);
 	prev_tex_pt = start_tex_pt;
 
-	for (u32 i = 0; i < m_sectorCount; ++i)
+	for(u32 i = 0; i < m_sectorCount; ++i)
 	{
 		float ffff = calc_color(i + 1, m_sectorCount, m_stage, 1.0f);
 		u32 color = color_argb_f(ffff, 1.0f, 1.0f, 1.0f);
@@ -124,7 +124,7 @@ void CUIProgressShape::Draw()
 		pv->set(tp.x, tp.y, color, tx.x, tx.y);
 		++pv;
 
-		if (m_bClockwise)
+		if(m_bClockwise)
 			curr_angle -= PI_MUL_2 / float(m_sectorCount);
 		else
 			curr_angle += PI_MUL_2 / float(m_sectorCount);
@@ -144,7 +144,7 @@ void CUIProgressShape::Draw()
 		pv->set(tp.x, tp.y, color, tx.x, tx.y);
 		++pv;
 
-		if (!m_bClockwise)
+		if(!m_bClockwise)
 			std::swap(*(pv - 1), *(pv - 2));
 	}
 

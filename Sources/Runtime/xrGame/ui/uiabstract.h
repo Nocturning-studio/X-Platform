@@ -11,7 +11,7 @@ typedef CGameFont::EAligment ETextAlignment;
 class IUIFontControl
 {
   public:
-	virtual ~IUIFontControl(){};
+	virtual ~IUIFontControl() {};
 	virtual void SetTextColor(u32 color) = 0;
 	virtual u32 GetTextColor() = 0;
 	virtual void SetFont(CGameFont* pFont) = 0;
@@ -30,7 +30,7 @@ typedef enum
 class IUITextControl : public IUIFontControl
 {
   public:
-	virtual ~IUITextControl(){};
+	virtual ~IUITextControl() {};
 	virtual void SetText(const char* text) = 0;
 	virtual const char* GetText() = 0;
 };
@@ -126,8 +126,8 @@ enum EWindowAlignment
 class IUISimpleWindow : public boost::noncopyable
 {
   public:
-	IUISimpleWindow(){};
-	virtual ~IUISimpleWindow(){};
+	IUISimpleWindow() {};
+	virtual ~IUISimpleWindow() {};
 
 	virtual void Init(float x, float y, float width, float height) = 0;
 	virtual void Draw() = 0;
@@ -225,12 +225,13 @@ class CUISimpleWindow : public IUISimpleWindow
 	}
 	IC void GetWndRect(Frect& res) const
 	{
-		switch (m_alignment)
+		switch(m_alignment)
 		{
 		case waNone:
 			res.set(m_wndPos.x, m_wndPos.y, m_wndPos.x + m_wndSize.x, m_wndPos.y + m_wndSize.y);
 			break;
-		case waCenter: {
+		case waCenter:
+		{
 			float half_w = m_wndSize.x / 2.0f;
 			float half_h = m_wndSize.y / 2.0f;
 			res.set(m_wndPos.x - half_w, m_wndPos.y - half_h, m_wndPos.x + half_w, m_wndPos.y + half_h);

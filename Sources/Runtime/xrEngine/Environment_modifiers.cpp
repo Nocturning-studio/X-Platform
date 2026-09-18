@@ -25,38 +25,38 @@ bool CEnvModifier::load(IReader* fs)
 float CEnvModifier::sum(CEnvModifier& M, fvec3& view)
 {
 	float _dist_sq = view.distance_to_sqr(M.position);
-	if (_dist_sq >= (M.radius * M.radius))
+	if(_dist_sq >= (M.radius * M.radius))
 		return 0;
 
 	float _att = 1 - std::sqrt(_dist_sq) / M.radius; //[0..1];
 	float _power = M.power * _att;
 
-	if (M.use_flags.test(eViewDist))
+	if(M.use_flags.test(eViewDist))
 	{
 		far_plane += M.far_plane * _power;
 		use_flags.set(eViewDist, TRUE);
 	}
-	if (M.use_flags.test(eFogColor))
+	if(M.use_flags.test(eFogColor))
 	{
 		fog_color.mad(M.fog_color, _power);
 		use_flags.set(eFogColor, TRUE);
 	}
-	if (M.use_flags.test(eFogDensity))
+	if(M.use_flags.test(eFogDensity))
 	{
 		fog_density += M.fog_density * _power;
 		use_flags.set(eFogDensity, TRUE);
 	}
-	if (M.use_flags.test(eAmbientColor))
+	if(M.use_flags.test(eAmbientColor))
 	{
 		ambient.mad(M.ambient, _power);
 		use_flags.set(eAmbientColor, TRUE);
 	}
-	if (M.use_flags.test(eSkyColor))
+	if(M.use_flags.test(eSkyColor))
 	{
 		sky_color.mad(M.sky_color, _power);
 		use_flags.set(eSkyColor, TRUE);
 	}
-	if (M.use_flags.test(eHemiColor))
+	if(M.use_flags.test(eHemiColor))
 	{
 		hemi_color.mad(M.hemi_color, _power);
 		use_flags.set(eHemiColor, TRUE);

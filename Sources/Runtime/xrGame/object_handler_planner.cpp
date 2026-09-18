@@ -24,7 +24,7 @@ using namespace ObjectHandlerSpace;
 IC ObjectHandlerSpace::EWorldProperties CObjectHandlerPlanner::object_property(
 	MonsterSpace::EObjectAction object_action) const
 {
-	switch (object_action)
+	switch(object_action)
 	{
 	case MonsterSpace::eObjectActionSwitch1:
 		return (ObjectHandlerSpace::eWorldPropertySwitch1);
@@ -73,10 +73,10 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 	EWorldProperties goal = object_property(object_action);
 	u32 condition_id = goal;
 
-	if (game_object && (eWorldPropertyNoItemsIdle != goal))
+	if(game_object && (eWorldPropertyNoItemsIdle != goal))
 	{
 		CWeapon* weapon = smart_cast<CWeapon*>(game_object);
-		if (weapon && (goal == eWorldPropertyIdleStrap) && !weapon->can_be_strapped())
+		if(weapon && (goal == eWorldPropertyIdleStrap) && !weapon->can_be_strapped())
 			goal = eWorldPropertyIdle;
 		condition_id = uid(game_object->ID(), goal);
 	}
@@ -84,7 +84,7 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 		condition_id = u32(eWorldPropertyNoItemsIdle);
 
 #ifdef DEBUG
-	if (m_use_log)
+	if(m_use_log)
 	{
 		Msg("%6d : Active item %s", Engine.TimeManager.GetGlobalTimeMs(),
 			object().inventory().ActiveItem() ? *object().inventory().ActiveItem()->object().cName()
@@ -96,28 +96,28 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 	condition.add_condition(CWorldProperty(condition_id, true));
 	set_target_state(condition);
 
-	if (!game_object || (min_queue_size < 0))
+	if(!game_object || (min_queue_size < 0))
 		return;
 
 	CWeaponMagazined* weapon = smart_cast<CWeaponMagazined*>(game_object);
-	if (!weapon)
+	if(!weapon)
 		return;
 
-	if ((m_min_queue_size != min_queue_size) || (m_max_queue_size != max_queue_size) ||
-		(m_min_queue_interval != min_queue_interval) || (m_max_queue_interval != max_queue_interval) ||
-		(m_next_time_change <= Engine.TimeManager.GetGlobalTimeMs()))
+	if((m_min_queue_size != min_queue_size) || (m_max_queue_size != max_queue_size) ||
+	   (m_min_queue_interval != min_queue_interval) || (m_max_queue_interval != max_queue_interval) ||
+	   (m_next_time_change <= Engine.TimeManager.GetGlobalTimeMs()))
 	{
 		m_min_queue_size = min_queue_size;
 		m_max_queue_size = max_queue_size;
 		m_min_queue_interval = min_queue_interval;
 		m_max_queue_interval = max_queue_interval;
 
-		if (m_max_queue_size == m_min_queue_size)
+		if(m_max_queue_size == m_min_queue_size)
 			m_queue_size = _max(1, m_min_queue_size);
 		else
 			m_queue_size = std::max(1, ::Random.randI(m_min_queue_size, m_max_queue_size));
 
-		if (m_max_queue_interval == m_min_queue_interval)
+		if(m_max_queue_interval == m_min_queue_interval)
 			m_queue_interval = m_min_queue_interval;
 		else
 			m_queue_interval = ::Random.randI(m_min_queue_interval, m_max_queue_interval);
@@ -136,7 +136,7 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
 // Helper для безопасной конкатенации
 IC void safe_cat(LPSTR dest, LPCSTR src, size_t dest_size)
 {
-	if (xr_strlen(dest) + xr_strlen(src) < dest_size)
+	if(xr_strlen(dest) + xr_strlen(src) < dest_size)
 		strcat(dest, src);
 }
 
@@ -146,10 +146,10 @@ LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type& id)
 	S[0] = 0; // Clear string
 
 	u16 obj_id = action_object_id(id);
-	if (obj_id != 0xffff)
+	if(obj_id != 0xffff)
 	{
 		CObject* obj = Level().Objects.net_Find(obj_id);
-		if (obj)
+		if(obj)
 			strcpy_s(S, sizeof(m_temp_string), *obj->cName());
 		else
 			strcpy_s(S, sizeof(m_temp_string), "no_items");
@@ -161,7 +161,7 @@ LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type& id)
 
 	safe_cat(S, ":", sizeof(m_temp_string));
 
-	switch (action_state_id(id))
+	switch(action_state_id(id))
 	{
 	case ObjectHandlerSpace::eWorldOperatorShow:
 		safe_cat(S, "Show", sizeof(m_temp_string));
@@ -274,10 +274,10 @@ LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
 	S[0] = 0;
 
 	u16 obj_id = action_object_id(id);
-	if (obj_id != 0xffff)
+	if(obj_id != 0xffff)
 	{
 		CObject* obj = Level().Objects.net_Find(obj_id);
-		if (obj)
+		if(obj)
 			strcpy_s(S, sizeof(m_temp_string), *obj->cName());
 		else
 			strcpy_s(S, sizeof(m_temp_string), "no_items");
@@ -289,7 +289,7 @@ LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
 
 	safe_cat(S, ":", sizeof(m_temp_string));
 
-	switch (action_state_id(id))
+	switch(action_state_id(id))
 	{
 	case ObjectHandlerSpace::eWorldPropertyHidden:
 		safe_cat(S, "Hidden", sizeof(m_temp_string));
@@ -396,8 +396,9 @@ LPCSTR CObjectHandlerPlanner::property2string(const _condition_type& id)
 	case ObjectHandlerSpace::eWorldPropertyUseEnough:
 		safe_cat(S, "UseEnough", sizeof(m_temp_string));
 		break;
-	case ObjectHandlerSpace::eWorldPropertyItemID: {
-		if (xr_strlen(S) > 0)
+	case ObjectHandlerSpace::eWorldPropertyItemID:
+	{
+		if(xr_strlen(S) > 0)
 			S[xr_strlen(S) - 1] = 0;
 		break;
 	}
@@ -421,7 +422,7 @@ void CObjectHandlerPlanner::remove_evaluators(CObject* object)
 	EVALUATORS::iterator E = m_evaluators.lower_bound(uid(id + 1, 0));
 
 	// Сначала очищаем память эвалуаторов
-	for (auto it = I; it != E; ++it)
+	for(auto it = I; it != E; ++it)
 	{
 		xr_delete(it->second);
 	}
@@ -440,9 +441,9 @@ void CObjectHandlerPlanner::remove_operators(CObject* object)
 
 	// Ищем конец диапазона (пока ID совпадает)
 	OPERATOR_VECTOR::iterator E = I;
-	for (; E != m_operators.end(); ++E)
+	for(; E != m_operators.end(); ++E)
 	{
-		if (action_object_id((*E).m_operator_id) != id)
+		if(action_object_id((*E).m_operator_id) != id)
 			break;
 
 		// ВАЖНО: Предполагается, что remove_operator делал xr_delete(op).
@@ -453,7 +454,7 @@ void CObjectHandlerPlanner::remove_operators(CObject* object)
 	}
 
 	// Удаляем весь блок из вектора за раз
-	if (I != E)
+	if(I != E)
 	{
 		m_operators.erase(I, E);
 	}
@@ -500,7 +501,7 @@ void CObjectHandlerPlanner::setup(CAI_Stalker* object)
 void CObjectHandlerPlanner::add_item(CInventoryItem* inventory_item)
 {
 	CWeapon* weapon = smart_cast<CWeapon*>(inventory_item);
-	if (weapon)
+	if(weapon)
 	{
 		add_evaluators(weapon);
 		add_operators(weapon);
@@ -508,7 +509,7 @@ void CObjectHandlerPlanner::add_item(CInventoryItem* inventory_item)
 	}
 
 	CMissile* missile = smart_cast<CMissile*>(inventory_item);
-	if (missile)
+	if(missile)
 	{
 		add_evaluators(missile);
 		add_operators(missile);
@@ -519,7 +520,7 @@ void CObjectHandlerPlanner::add_item(CInventoryItem* inventory_item)
 void CObjectHandlerPlanner::remove_item(CInventoryItem* inventory_item)
 {
 	VERIFY(target_state().conditions().size() == 1);
-	if (action_object_id(target_state().conditions().back().condition()) == inventory_item->object().ID())
+	if(action_object_id(target_state().conditions().back().condition()) == inventory_item->object().ID())
 	{
 		init_storage();
 		set_goal(MonsterSpace::eObjectActionIdle, 0, 0, 0, 0, 0);
@@ -531,10 +532,10 @@ void CObjectHandlerPlanner::remove_item(CInventoryItem* inventory_item)
 
 void CObjectHandlerPlanner::update()
 {
-	//OPTICK_EVENT("CObjectHandlerPlanner::update");
+	// OPTICK_EVENT("CObjectHandlerPlanner::update");
 
 #ifdef LOG_ACTION
-	if ((psAI_Flags.test(aiGOAPObject) && !m_use_log) || (!psAI_Flags.test(aiGOAPObject) && m_use_log))
+	if((psAI_Flags.test(aiGOAPObject) && !m_use_log) || (!psAI_Flags.test(aiGOAPObject) && m_use_log))
 		set_use_log(!!psAI_Flags.test(aiGOAPObject));
 #endif
 	inherited::update();

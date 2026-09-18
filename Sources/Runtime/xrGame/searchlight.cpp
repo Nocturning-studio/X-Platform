@@ -46,7 +46,7 @@ void CProjector::BoneCallbackY(CBoneInstance* B)
 	CProjector* P = static_cast<CProjector*>(B->Callback_Param);
 
 	float delta_yaw = angle_difference(P->_start.yaw, P->_current.yaw);
-	if (angle_normalize_signed(P->_start.yaw - P->_current.yaw) > 0)
+	if(angle_normalize_signed(P->_start.yaw - P->_current.yaw) > 0)
 		delta_yaw = -delta_yaw;
 
 	fmat4x4 M;
@@ -60,7 +60,7 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeObjectProjector* slight = smart_cast<CSE_ALifeObjectProjector*>(e);
 	R_ASSERT(slight);
 
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	R_ASSERT(Visual() && smart_cast<CKinematics*>(Visual()));
@@ -113,7 +113,7 @@ void CProjector::shedule_Update(u32 dt)
 
 void CProjector::TurnOn()
 {
-	if (light_render->get_active())
+	if(light_render->get_active())
 		return;
 
 	light_render->set_active(true);
@@ -128,7 +128,7 @@ void CProjector::TurnOn()
 
 void CProjector::TurnOff()
 {
-	if (!light_render->get_active())
+	if(!light_render->get_active())
 		return;
 
 	light_render->set_active(false);
@@ -142,10 +142,10 @@ void CProjector::UpdateCL()
 	inherited::UpdateCL();
 
 	// update light source
-	if (light_render->get_active())
+	if(light_render->get_active())
 	{
 		// calc color animator
-		if (lanim)
+		if(lanim)
 		{
 			int frame;
 			// возвращает в формате BGR
@@ -186,7 +186,7 @@ BOOL CProjector::UsedAI_Locations()
 
 bool CProjector::bfAssignWatch(CScriptEntityAction* tpEntityAction)
 {
-	if (!inherited::bfAssignWatch(tpEntityAction))
+	if(!inherited::bfAssignWatch(tpEntityAction))
 		return (false);
 
 	CScriptWatchAction& l_tWatchAction = tpEntityAction->m_tWatchAction;
@@ -206,14 +206,14 @@ bool CProjector::bfAssignWatch(CScriptEntityAction* tpEntityAction)
 
 bool CProjector::bfAssignObject(CScriptEntityAction* tpEntityAction)
 {
-	if (!inherited::bfAssignObject(tpEntityAction))
+	if(!inherited::bfAssignObject(tpEntityAction))
 		return (false);
 
 	CScriptObjectAction& l_tObjectAction = tpEntityAction->m_tObjectAction;
 
-	if (l_tObjectAction.m_tGoalType == MonsterSpace::eObjectActionTurnOn)
+	if(l_tObjectAction.m_tGoalType == MonsterSpace::eObjectActionTurnOn)
 		TurnOn();
-	else if (l_tObjectAction.m_tGoalType == MonsterSpace::eObjectActionTurnOff)
+	else if(l_tObjectAction.m_tGoalType == MonsterSpace::eObjectActionTurnOff)
 		TurnOff();
 
 	return (true);
@@ -227,7 +227,7 @@ void CProjector::SetTarget(const fvec3& target_pos)
 	float delta_h;
 	delta_h = angle_difference(th, _start.yaw);
 
-	if (angle_normalize_signed(th - _start.yaw) > 0)
+	if(angle_normalize_signed(th - _start.yaw) > 0)
 		delta_h = -delta_h;
 	clamp(delta_h, -PI_DIV_2, PI_DIV_2);
 

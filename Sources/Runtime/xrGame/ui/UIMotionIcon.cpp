@@ -75,10 +75,10 @@ void CUIMotionIcon::Init()
 
 void CUIMotionIcon::ShowState(EState state)
 {
-	if (m_curren_state == state)
+	if(m_curren_state == state)
 		return;
 
-	if (m_curren_state != stLast)
+	if(m_curren_state != stLast)
 	{
 
 		m_states[m_curren_state].Show(false);
@@ -110,7 +110,7 @@ void CUIMotionIcon::SetLuminosity(float Pos)
 
 void CUIMotionIcon::Draw()
 {
-	if (!psHUD_Flags.is(HUD_DRAW_MOTION_BAR))
+	if(!psHUD_Flags.is(HUD_DRAW_MOTION_BAR))
 		return;
 
 	inherited::Draw();
@@ -119,10 +119,10 @@ void CUIMotionIcon::Draw()
 
 void CUIMotionIcon::Update()
 {
-	if (m_bchanged)
+	if(m_bchanged)
 	{
 		m_bchanged = false;
-		if (m_npc_visibility.size())
+		if(m_npc_visibility.size())
 		{
 			concurrency::parallel_sort(m_npc_visibility.begin(), m_npc_visibility.end());
 			SetLuminosity(m_npc_visibility.back().value);
@@ -136,10 +136,10 @@ void CUIMotionIcon::Update()
 	{
 		float len = m_noise_progress.GetRange_max() - m_noise_progress.GetRange_min();
 		float cur_pos = m_luminosity_progress.GetProgressPos();
-		if (cur_pos != m_luminosity)
+		if(cur_pos != m_luminosity)
 		{
 			float _diff = _abs(m_luminosity - cur_pos);
-			if (m_luminosity > cur_pos)
+			if(m_luminosity > cur_pos)
 			{
 				cur_pos += _min(len * Engine.TimeManager.GetDeltaTime(), _diff);
 			}
@@ -161,16 +161,16 @@ void CUIMotionIcon::SetActorVisibility(u16 who_id, float value)
 
 	xr_vector<_npc_visibility>::iterator it = std::find(m_npc_visibility.begin(), m_npc_visibility.end(), who_id);
 
-	if (it == m_npc_visibility.end() && value != 0)
+	if(it == m_npc_visibility.end() && value != 0)
 	{
 		m_npc_visibility.resize(m_npc_visibility.size() + 1);
 		_npc_visibility& v = m_npc_visibility.back();
 		v.id = who_id;
 		v.value = value;
 	}
-	else if (fis_zero(value))
+	else if(fis_zero(value))
 	{
-		if (it != m_npc_visibility.end())
+		if(it != m_npc_visibility.end())
 			m_npc_visibility.erase(it);
 	}
 	else

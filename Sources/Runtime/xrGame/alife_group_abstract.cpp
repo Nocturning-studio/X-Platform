@@ -28,15 +28,15 @@ void CSE_ALifeGroupAbstract::switch_online()
 	ALife::OBJECT_IT I = m_tpMembers.begin(), B = I;
 	ALife::OBJECT_IT E = m_tpMembers.end();
 	u32 N = (u32)(E - I);
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CSE_ALifeDynamicObject* J = ai().alife().objects().object(*I);
-		if (m_bCreateSpawnPositions)
+		if(m_bCreateSpawnPositions)
 		{
 			J->o_Position = object->o_Position;
 			J->m_tNodeID = object->m_tNodeID;
 			CSE_ALifeMonsterAbstract* l_tpALifeMonsterAbstract = smart_cast<CSE_ALifeMonsterAbstract*>(J);
-			if (l_tpALifeMonsterAbstract)
+			if(l_tpALifeMonsterAbstract)
 				l_tpALifeMonsterAbstract->o_torso.yaw = angle_normalize_signed((I - B) / N * PI_MUL_2);
 		}
 		object->alife().add_online(J, false);
@@ -56,12 +56,12 @@ void CSE_ALifeGroupAbstract::switch_offline()
 
 	ALife::OBJECT_IT I = m_tpMembers.begin();
 	ALife::OBJECT_IT E = m_tpMembers.end();
-	if (I != E)
+	if(I != E)
 	{
 		CSE_ALifeMonsterAbstract* tpGroupMember =
 			smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(*I));
 		CSE_ALifeMonsterAbstract* tpGroup = smart_cast<CSE_ALifeMonsterAbstract*>(this);
-		if (tpGroupMember && tpGroup)
+		if(tpGroupMember && tpGroup)
 		{
 			tpGroup->m_fCurSpeed = tpGroup->m_fCurrentLevelGoingSpeed;
 			tpGroup->o_Position = tpGroupMember->o_Position;
@@ -77,7 +77,7 @@ void CSE_ALifeGroupAbstract::switch_offline()
 		object->alife().remove_online(tpGroupMember, false);
 		++I;
 	}
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		object->alife().remove_online(ai().alife().objects().object(*I), false);
 	object->alife().scheduled().add(object);
 	object->alife().graph().add(object, object->m_tGraphID, false);
@@ -85,7 +85,7 @@ void CSE_ALifeGroupAbstract::switch_offline()
 
 bool CSE_ALifeGroupAbstract::synchronize_location()
 {
-	if (m_tpMembers.empty())
+	if(m_tpMembers.empty())
 		return (true);
 
 	CSE_ALifeDynamicObject* object = smart_cast<CSE_ALifeDynamicObject*>(base());
@@ -93,16 +93,16 @@ bool CSE_ALifeGroupAbstract::synchronize_location()
 
 	ALife::OBJECT_VECTOR::iterator I = m_tpMembers.begin();
 	ALife::OBJECT_VECTOR::iterator E = m_tpMembers.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		ai().alife().objects().object(*I)->synchronize_location();
 
 	CSE_ALifeDynamicObject& member = *ai().alife().objects().object(*I);
 	object->o_Position = member.o_Position;
 	object->m_tNodeID = member.m_tNodeID;
 
-	if (object->m_tGraphID != member.m_tGraphID)
+	if(object->m_tGraphID != member.m_tGraphID)
 	{
-		if (!object->m_bOnline)
+		if(!object->m_bOnline)
 			object->alife().graph().change(object, object->m_tGraphID, member.m_tGraphID);
 		else
 			object->m_tGraphID = member.m_tGraphID;
@@ -118,7 +118,7 @@ void CSE_ALifeGroupAbstract::try_switch_online()
 	VERIFY(I);
 
 	// checking if the object is not an empty group of objects
-	if (m_tpMembers.empty())
+	if(m_tpMembers.empty())
 		return;
 
 	I->try_switch_online();
@@ -127,7 +127,7 @@ void CSE_ALifeGroupAbstract::try_switch_online()
 void CSE_ALifeGroupAbstract::try_switch_offline()
 {
 	// checking if group is not empty
-	if (m_tpMembers.empty())
+	if(m_tpMembers.empty())
 		return;
 
 	// so, we have a group of objects
@@ -138,30 +138,30 @@ void CSE_ALifeGroupAbstract::try_switch_offline()
 
 	// iterating on group members
 	u32 i = 0, N = (u32)m_tpMembers.size();
-	for (; i < N; ++i)
+	for(; i < N; ++i)
 	{
 		// casting group member to the abstract monster to get access to the Health property
 		CSE_ALifeMonsterAbstract* tpGroupMember =
 			smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(m_tpMembers[i]));
-		if (!tpGroupMember)
+		if(!tpGroupMember)
 			continue;
 
 		// check if monster is not dead
-		if (tpGroupMember->g_Alive())
+		if(tpGroupMember->g_Alive())
 		{
 			// so, monster is not dead
 			// checking if the object is _not_ ready to switch offline
-			if (!tpGroupMember->can_switch_offline())
+			if(!tpGroupMember->can_switch_offline())
 				continue;
 
-			if (!tpGroupMember->can_switch_online())
+			if(!tpGroupMember->can_switch_online())
 				// so, it is not ready, breaking a cycle, because we can't
 				// switch group offline since not all the group members are ready
 				// to switch offline
 				break;
 
-			if (I->alife().graph().actor()->o_Position.distance_to(tpGroupMember->o_Position) <=
-				I->alife().offline_distance())
+			if(I->alife().graph().actor()->o_Position.distance_to(tpGroupMember->o_Position) <=
+			   I->alife().offline_distance())
 				// so, it is not ready, breaking a cycle, because we can't
 				// switch group offline since not all the group members are ready
 				// to switch offline
@@ -176,10 +176,10 @@ void CSE_ALifeGroupAbstract::try_switch_offline()
 		m_tpMembers.erase(m_tpMembers.begin() + i);
 		tpGroupMember->m_bOnline = false;
 		CSE_ALifeInventoryItem* item = smart_cast<CSE_ALifeInventoryItem*>(tpGroupMember);
-		if (item && item->attached())
+		if(item && item->attached())
 		{
 			CSE_ALifeDynamicObject* object = ai().alife().objects().object(tpGroupMember->ID_Parent, true);
-			if (object)
+			if(object)
 				object->detach(item);
 		}
 		// store the __new separate object into the registries
@@ -187,7 +187,7 @@ void CSE_ALifeGroupAbstract::try_switch_offline()
 
 		// and remove it from the graph point but do not remove it from the current level map
 		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(tpGroupMember);
-		if (!l_tpALifeInventoryItem || !l_tpALifeInventoryItem->attached())
+		if(!l_tpALifeInventoryItem || !l_tpALifeInventoryItem->attached())
 			I->alife().graph().remove(tpGroupMember, tpGroupMember->m_tGraphID, false);
 
 		tpGroupMember->m_bOnline = true;
@@ -197,13 +197,13 @@ void CSE_ALifeGroupAbstract::try_switch_offline()
 	}
 
 	// checking if group is not empty
-	if (m_tpMembers.empty())
+	if(m_tpMembers.empty())
 		return;
 
-	if (!I->can_switch_offline())
+	if(!I->can_switch_offline())
 		return;
 
-	if (I->can_switch_online() || (i == N))
+	if(I->can_switch_online() || (i == N))
 		I->alife().switch_offline(I);
 }
 

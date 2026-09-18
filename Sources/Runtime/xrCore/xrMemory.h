@@ -100,13 +100,15 @@ extern XRCORE_API xrMemory Memory;
 
 // generic "C"-like allocations/deallocations
 #ifdef DEBUG_MEMORY_NAME
-template <class T> IC T* xr_alloc(u32 count)
+template <class T>
+IC T* xr_alloc(u32 count)
 {
 	return (T*)Memory.mem_alloc(count * sizeof(T), typeid(T).name());
 }
-template <class T> IC void xr_free(T*& P)
+template <class T>
+IC void xr_free(T*& P)
 {
-	if (P)
+	if(P)
 	{
 		Memory.mem_free((void*)P);
 		P = NULL;
@@ -121,13 +123,15 @@ IC void* xr_realloc(void* P, size_t size)
 	return Memory.mem_realloc(P, size, "xr_realloc");
 }
 #else
-template <class T> IC T* xr_alloc(u32 count)
+template <class T>
+IC T* xr_alloc(u32 count)
 {
 	return (T*)Memory.mem_alloc(count * sizeof(T));
 }
-template <class T> IC void xr_free(T*& P)
+template <class T>
+IC void xr_free(T*& P)
 {
-	if (P)
+	if(P)
 	{
 		Memory.mem_free((void*)P);
 		P = NULL;

@@ -32,7 +32,7 @@ void CCameraLook::Update(fvec3& point, fvec3& /**noise_dangle/**/)
 	vDirection.set(mR.k);
 	vNormal.set(mR.j);
 
-	if (m_Flags.is(flRelativeLink))
+	if(m_Flags.is(flRelativeLink))
 	{
 		parent->Transform().transform_dir(vDirection);
 		parent->Transform().transform_dir(vNormal);
@@ -53,7 +53,7 @@ void CCameraLook::Update(fvec3& point, fvec3& /**noise_dangle/**/)
 
 void CCameraLook::Move(int cmd, float val, float factor)
 {
-	switch (cmd)
+	switch(cmd)
 	{
 	case kCAM_ZOOM_IN:
 		dist -= val ? val : (rot_speed.z * Engine.TimeManager.GetDeltaTime());
@@ -74,23 +74,23 @@ void CCameraLook::Move(int cmd, float val, float factor)
 		yaw += val ? val : (rot_speed.y * Engine.TimeManager.GetDeltaTime() / factor);
 		break;
 	}
-	if (bClampYaw)
+	if(bClampYaw)
 		clamp(yaw, lim_yaw[0], lim_yaw[1]);
-	if (bClampPitch)
+	if(bClampPitch)
 		clamp(pitch, lim_pitch[0], lim_pitch[1]);
 	clamp(dist, lim_zoom[0], lim_zoom[1]);
 }
 
 void CCameraLook::OnActivate(CCameraBase* old_cam)
 {
-	if (old_cam && (m_Flags.is(flRelativeLink) == old_cam->m_Flags.is(flRelativeLink)))
+	if(old_cam && (m_Flags.is(flRelativeLink) == old_cam->m_Flags.is(flRelativeLink)))
 	{
 		yaw = old_cam->yaw;
 		vPosition.set(old_cam->vPosition);
 	}
-	if (yaw > PI_MUL_2)
+	if(yaw > PI_MUL_2)
 		yaw -= PI_MUL_2;
-	if (yaw < -PI_MUL_2)
+	if(yaw < -PI_MUL_2)
 		yaw += PI_MUL_2;
 }
 
@@ -105,9 +105,9 @@ fvec3 CCameraLook2::m_cam_offset;
 void CCameraLook2::OnActivate(CCameraBase* old_cam)
 {
 	CCameraLook::OnActivate(old_cam);
-	for (int i = 0; i < 2048; ++i)
+	for(int i = 0; i < 2048; ++i)
 	{
-		if (is_binded(kEXT_1, i))
+		if(is_binded(kEXT_1, i))
 		{
 			cam_dik = i;
 			break;
@@ -117,28 +117,28 @@ void CCameraLook2::OnActivate(CCameraBase* old_cam)
 
 void CCameraLook2::Update(fvec3& point, fvec3&)
 {
-	if (!m_locked_enemy)
+	if(!m_locked_enemy)
 	{ // autoaim
-		if (pInput->iGetAsyncKeyState(cam_dik))
+		if(pInput->iGetAsyncKeyState(cam_dik))
 		{
 			const CVisualMemoryManager::VISIBLES& vVisibles = Actor()->memory().visual().objects();
 			CVisualMemoryManager::VISIBLES::const_iterator v_it = vVisibles.begin();
 			float _nearest_dst = flt_max;
 
-			for (; v_it != vVisibles.end(); ++v_it)
+			for(; v_it != vVisibles.end(); ++v_it)
 			{
 				const CObject* _object_ = (*v_it).m_object;
-				if (!Actor()->memory().visual().visible_now(smart_cast<const CGameObject*>(_object_)))
+				if(!Actor()->memory().visual().visible_now(smart_cast<const CGameObject*>(_object_)))
 					continue;
 
 				CObject* object_ = const_cast<CObject*>(_object_);
 
 				CEntityAlive* EA = smart_cast<CEntityAlive*>(object_);
-				if (!EA || !EA->g_Alive())
+				if(!EA || !EA->g_Alive())
 					continue;
 
 				float d = object_->Position().distance_to_xz(Actor()->Position());
-				if (!m_locked_enemy || d < _nearest_dst)
+				if(!m_locked_enemy || d < _nearest_dst)
 				{
 					m_locked_enemy = object_;
 					_nearest_dst = d;
@@ -149,14 +149,14 @@ void CCameraLook2::Update(fvec3& point, fvec3&)
 	}
 	else
 	{
-		if (!pInput->iGetAsyncKeyState(cam_dik))
+		if(!pInput->iGetAsyncKeyState(cam_dik))
 		{
 			m_locked_enemy = NULL;
 			//.			Msg				("enemy is NILL");
 		}
 	}
 
-	if (m_locked_enemy)
+	if(m_locked_enemy)
 		UpdateAutoAim();
 
 	fmat4x4 mR;

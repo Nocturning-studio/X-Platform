@@ -14,7 +14,7 @@ void CDelayedActionFuse::SetTimer(float current_condition)
 	m_dafflags.set(flActive, TRUE);
 	ChangeCondition(m_fSpeedChangeCondition - current_condition);
 	VERIFY(!fis_zero(m_fTime) || m_dafflags.test(flNoConditionChange));
-	if (!m_dafflags.test(flNoConditionChange))
+	if(!m_dafflags.test(flNoConditionChange))
 		m_fSpeedChangeCondition /= m_fTime;
 	// Msg("to_expl moment %f",m_fTime);
 	m_fTime += Engine.TimeManager.GetGlobalTime(); //+current_condition/m_fSpeedChangeCondition;
@@ -24,18 +24,18 @@ void CDelayedActionFuse::SetTimer(float current_condition)
 float CDelayedActionFuse::Time()
 {
 	VERIFY(isInitialized());
-	if (!isActive())
+	if(!isActive())
 		return m_fTime;
 	else
 		return m_fTime - Engine.TimeManager.GetGlobalTime();
 }
 void CDelayedActionFuse::Initialize(float time, float critical_condition)
 {
-	if (isActive())
+	if(isActive())
 		return;
 
 	VERIFY(time >= 0.f && critical_condition >= 0.f);
-	if (!fis_zero(time))
+	if(!fis_zero(time))
 	{
 		m_fSpeedChangeCondition = critical_condition; // time;
 		m_fTime = time;
@@ -45,7 +45,7 @@ void CDelayedActionFuse::Initialize(float time, float critical_condition)
 		m_fSpeedChangeCondition = 0.f;
 		m_fTime = 0.f;
 	}
-	if (fis_zero(m_fSpeedChangeCondition))
+	if(fis_zero(m_fSpeedChangeCondition))
 		m_dafflags.set(flNoConditionChange, TRUE);
 	m_dafflags.set(flInitialized, TRUE);
 }
@@ -56,13 +56,13 @@ bool CDelayedActionFuse::Update(float current_condition)
 	bool ret = false;
 	float l_time_to_explosion = m_fTime - Engine.TimeManager.GetGlobalTime();
 
-	if (!m_dafflags.test(flNoConditionChange))
+	if(!m_dafflags.test(flNoConditionChange))
 	{
 		float delta_condition = m_fSpeedChangeCondition * l_time_to_explosion - current_condition;
 		// float t=current_condition/m_fSpeedChangeCondition;
 		// if(t<l_time_to_explosion) m_fTime;
 		// VERIFY(delta_condition<=0.f);
-		if (delta_condition > 0.f)
+		if(delta_condition > 0.f)
 			delta_condition = 0.f; //.
 		ChangeCondition(delta_condition);
 		ret = current_condition + delta_condition <= 0.f;
@@ -72,7 +72,7 @@ bool CDelayedActionFuse::Update(float current_condition)
 		ret = l_time_to_explosion <= 0.f;
 	}
 
-	if (ret)
+	if(ret)
 	{
 		m_dafflags.set(flActive, FALSE);
 		m_dafflags.set(flInitialized, FALSE);

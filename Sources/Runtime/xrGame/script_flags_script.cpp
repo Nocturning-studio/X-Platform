@@ -11,37 +11,44 @@
 
 using namespace luabind;
 
-template <typename T> T& set(T* self, const typename T::TYPE mask, bool value)
+template <typename T>
+T& set(T* self, const typename T::TYPE mask, bool value)
 {
 	return (self->set(mask, value));
 }
 
-template <typename T> bool is(T* self, const typename T::TYPE mask)
+template <typename T>
+bool is(T* self, const typename T::TYPE mask)
 {
 	return (!!self->is(mask));
 }
 
-template <typename T> bool is_any(T* self, const typename T::TYPE mask)
+template <typename T>
+bool is_any(T* self, const typename T::TYPE mask)
 {
 	return (!!self->is_any(mask));
 }
 
-template <typename T> bool test(T* self, const typename T::TYPE mask)
+template <typename T>
+bool test(T* self, const typename T::TYPE mask)
 {
 	return (!!self->test(mask));
 }
 
-template <typename T> bool equal(T* self, const T& f)
+template <typename T>
+bool equal(T* self, const T& f)
 {
 	return (!!self->equal(f));
 }
 
-template <typename T> bool equal(T* self, const T& f, const typename T::TYPE mask)
+template <typename T>
+bool equal(T* self, const T& f, const typename T::TYPE mask)
 {
 	return (!!self->equal(f, mask));
 }
 
-template <typename T> void one(T* self)
+template <typename T>
+void one(T* self)
 {
 	self->assign(typename T::TYPE(-1));
 }

@@ -35,7 +35,7 @@ class CSoundRender_Target
 
 	OggVorbis_File* get_data()
 	{
-		if (!wave)
+		if(!wave)
 			attach();
 		return &ovf;
 	}

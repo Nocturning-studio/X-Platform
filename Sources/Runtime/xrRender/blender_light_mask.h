@@ -18,7 +18,7 @@ class CBlender_accum_direct_mask : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_MASK_SPOT: // spot or omni-part
 			C.begin_Pass("accumulating_light_stage_mask", "dumb", "main", "main", false, TRUE, FALSE);

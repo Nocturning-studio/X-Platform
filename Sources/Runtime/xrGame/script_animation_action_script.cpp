@@ -37,5 +37,5 @@ void CScriptAnimationAction::script_register(lua_State* L)
 
 			   .def("anim", &CScriptAnimationAction::SetAnimation)
 			   .def("type", &CScriptAnimationAction::SetMentalState)
-			   .def("completed", (bool(CScriptAnimationAction::*)())(&CScriptAnimationAction::completed))];
+			   .def("completed", (bool (CScriptAnimationAction::*)())(&CScriptAnimationAction::completed))];
 }

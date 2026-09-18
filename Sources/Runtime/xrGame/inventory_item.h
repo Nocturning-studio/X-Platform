@@ -79,7 +79,7 @@ class CInventoryItem : public CAttachableItem,
 	{
 		return m_Description;
 	}
-	virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count){};
+	virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {};
 
 	virtual void OnEvent(NET_Packet& P, u16 type);
 
@@ -180,9 +180,9 @@ class CInventoryItem : public CAttachableItem,
 
 	EItemPlace m_eItemPlace;
 
-	virtual void OnMoveToSlot(){};
-	virtual void OnMoveToBelt(){};
-	virtual void OnMoveToRuck(EItemPlace prev){};
+	virtual void OnMoveToSlot() {};
+	virtual void OnMoveToBelt() {};
+	virtual void OnMoveToRuck(EItemPlace prev) {};
 
 	int GetGridWidth() const;
 	int GetGridHeight() const;

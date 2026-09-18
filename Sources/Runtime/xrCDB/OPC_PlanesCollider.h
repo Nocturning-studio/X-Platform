@@ -70,7 +70,7 @@ class OPCODE_API PlanesCollider : public VolumeCollider
 	{
 		Plane PL[6];
 
-		if (worldb)
+		if(worldb)
 		{
 			// Create a _new_ OBB in world space
 			OBB WorldBox;

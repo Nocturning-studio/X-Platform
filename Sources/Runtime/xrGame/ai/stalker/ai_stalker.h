@@ -15,9 +15,11 @@
 #include "xrGame/script_export_space.h"
 
 #ifdef DEBUG
-template <typename _object_type> class CActionBase;
+template <typename _object_type>
+class CActionBase;
 
-template <typename _object_type> class CPropertyEvaluator;
+template <typename _object_type>
+class CPropertyEvaluator;
 
 template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator,
 		  typename _world_operator_ptr, typename _condition_evaluator_ptr>
@@ -240,14 +242,14 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 
 	// PDA && Dialogs
 	//	virtual void						ReceivePdaMessage					(u16 who, EPdaMsg msg, shared_str
-	//info_id);
+	// info_id);
 	virtual void UpdateAvailableDialogs(CPhraseDialogManager* partner);
 
 	// scripts
 	virtual CWeapon* GetCurrentWeapon() const;
 	virtual u32 GetWeaponAmmo() const;
 	//	virtual CInventoryItem				*GetCurrentEquipment	() const; <- moved to
-	//InventoryOwner::GetCurrentOutfit
+	// InventoryOwner::GetCurrentOutfit
 	virtual CInventoryItem* GetMedikit() const;
 	virtual CInventoryItem* GetFood() const;
 	virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
@@ -598,13 +600,13 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
   private:
 	bool m_can_select_items;
 
-	u32 m_dwLastHitTime;   // Время последнего получения урона
-	u32 m_rage_end_time;   // Время окончания режима "Ярости"
-	u32 m_body_block_time; // Сколько времени мы блокируем линию огня
-	float m_previous_yaw;  // Куда смотрел корпус в прошлом кадре (для штрафа)
-	u32 m_suppression_end_time; // До какого времени сталкер "прижат" и боится высовываться
+	u32 m_dwLastHitTime;		 // Время последнего получения урона
+	u32 m_rage_end_time;		 // Время окончания режима "Ярости"
+	u32 m_body_block_time;		 // Сколько времени мы блокируем линию огня
+	float m_previous_yaw;		 // Куда смотрел корпус в прошлом кадре (для штрафа)
+	u32 m_suppression_end_time;	 // До какого времени сталкер "прижат" и боится высовываться
 	bool m_is_counter_attacking; // Флаг режима контратаки
-	u32 m_counter_attack_end_time; 
+	u32 m_counter_attack_end_time;
 
   public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

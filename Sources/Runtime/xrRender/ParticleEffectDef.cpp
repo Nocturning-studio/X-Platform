@@ -34,13 +34,13 @@ CPEDef::CPEDef()
 CPEDef::~CPEDef()
 {
 #ifdef _EDITOR
-	for (EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
+	for(EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
 		xr_delete(*it);
 #endif
 }
 void CPEDef::CreateShader()
 {
-	if (*m_ShaderName && *m_TextureName)
+	if(*m_ShaderName && *m_TextureName)
 		m_CachedShader.create(*m_ShaderName, *m_TextureName);
 }
 void CPEDef::DestroyShader()
@@ -100,13 +100,13 @@ void CPEDef::pTimeLimit(float time_limit)
 void CPEDef::ExecuteAnimate(Particle* particles, u32 p_cnt, float dt)
 {
 	float speedFac = m_Frame.m_fSpeed * dt;
-	for (u32 i = 0; i < p_cnt; i++)
+	for(u32 i = 0; i < p_cnt; i++)
 	{
 		Particle& m = particles[i];
 		float f = (float(m.frame) / 255.f + ((m.flags.is(Particle::ANIMATE_CCW)) ? -1.f : 1.f) * speedFac);
-		if (f > m_Frame.m_iFrameCount)
+		if(f > m_Frame.m_iFrameCount)
 			f -= m_Frame.m_iFrameCount;
-		if (f < 0.f)
+		if(f < 0.f)
 			f += m_Frame.m_iFrameCount;
 		m.frame = (u16)iFloor(f * 255.f);
 	}
@@ -117,7 +117,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 {
 	pVector pt, n;
 	// Must traverse list in reverse order so Remove will work
-	for (int i = p_cnt - 1; i >= 0; i--)
+	for(int i = p_cnt - 1; i >= 0; i--)
 	{
 		Particle& m = particles[i];
 
@@ -129,19 +129,19 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 			fvec3 dir;
 			dir.sub(m.pos, m.posB);
 			float dist = dir.magnitude();
-			if (dist >= EPS)
+			if(dist >= EPS)
 			{
 				dir.div(dist);
 #ifdef _EDITOR
-				if (Tools->RayPick(m.posB, dir, dist, &pt, &n))
+				if(Tools->RayPick(m.posB, dir, dist, &pt, &n))
 				{
 #else
 				collide::rq_result RQ;
 				collide::rq_target RT = m_Flags.is(dfCollisionDyn) ? collide::rqtBoth : collide::rqtStatic;
-				if (g_pGameLevel->ObjectSpace.RayPick(m.posB, dir, dist, RT, RQ, NULL))
+				if(g_pGameLevel->ObjectSpace.RayPick(m.posB, dir, dist, RT, RQ, NULL))
 				{
 					pt.mad(m.posB, dir, RQ.range);
-					if (RQ.O)
+					if(RQ.O)
 					{
 						n.set(0.f, 1.f, 0.f);
 					}
@@ -153,10 +153,10 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 					}
 #endif
 					pick_cnt++;
-					if (cb && (pick_cnt == 1))
-						if (!cb(owner, m, pt, n))
+					if(cb && (pick_cnt == 1))
+						if(!cb(owner, m, pt, n))
 							break;
-					if (m_Flags.is(dfCollisionDel))
+					if(m_Flags.is(dfCollisionDel))
 					{
 						ParticleManager()->RemoveParticle(owner->m_HandleEffect, i);
 					}
@@ -169,7 +169,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 
 						// Compute _new velocity heading out:
 						// Don't apply friction if tangential velocity < cutoff
-						if (vt.length2() <= m_fCollideSqrCutoff)
+						if(vt.length2() <= m_fCollideSqrCutoff)
 						{
 							m.vel = vt - vn * m_fCollideResilience;
 						}
@@ -186,7 +186,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 			{
 				m.pos = m.posB;
 			}
-		} while (pick_needed && (pick_cnt < 2));
+		} while(pick_needed && (pick_cnt < 2));
 	}
 }
 
@@ -198,7 +198,7 @@ BOOL CPEDef::Load(IReader& F)
 	R_ASSERT(F.find_chunk(PED_CHUNK_VERSION));
 	u16 version = F.r_u16();
 
-	if (version != PED_VERSION)
+	if(version != PED_VERSION)
 		return FALSE;
 
 	R_ASSERT(F.find_chunk(PED_CHUNK_NAME));
@@ -213,26 +213,26 @@ BOOL CPEDef::Load(IReader& F)
 
 	F.r_chunk(PED_CHUNK_FLAGS, &m_Flags);
 
-	if (m_Flags.is(dfSprite))
+	if(m_Flags.is(dfSprite))
 	{
 		R_ASSERT(F.find_chunk(PED_CHUNK_SPRITE));
 		F.r_stringZ(m_ShaderName);
 		F.r_stringZ(m_TextureName);
 	}
 
-	if (m_Flags.is(dfFramed))
+	if(m_Flags.is(dfFramed))
 	{
 		R_ASSERT(F.find_chunk(PED_CHUNK_FRAME));
 		F.r(&m_Frame, sizeof(SFrame));
 	}
 
-	if (m_Flags.is(dfTimeLimit))
+	if(m_Flags.is(dfTimeLimit))
 	{
 		R_ASSERT(F.find_chunk(PED_CHUNK_TIMELIMIT));
 		m_fTimeLimit = F.r_float();
 	}
 
-	if (m_Flags.is(dfCollision))
+	if(m_Flags.is(dfCollision))
 	{
 		R_ASSERT(F.find_chunk(PED_CHUNK_COLLISION));
 		m_fCollideOneMinusFriction = F.r_float();
@@ -240,22 +240,22 @@ BOOL CPEDef::Load(IReader& F)
 		m_fCollideSqrCutoff = F.r_float();
 	}
 
-	if (m_Flags.is(dfVelocityScale))
+	if(m_Flags.is(dfVelocityScale))
 	{
 		R_ASSERT(F.find_chunk(PED_CHUNK_VEL_SCALE));
 		F.r_fvector3(m_VelocityScale);
 	}
 
-	if (m_Flags.is(dfAlignToPath))
+	if(m_Flags.is(dfAlignToPath))
 	{
-		if (F.find_chunk(PED_CHUNK_ALIGN_TO_PATH))
+		if(F.find_chunk(PED_CHUNK_ALIGN_TO_PATH))
 		{
 			F.r_fvector3(m_APDefaultRotation);
 		}
 	}
 
 #ifdef _EDITOR
-	if (F.find_chunk(PED_CHUNK_OWNER))
+	if(F.find_chunk(PED_CHUNK_OWNER))
 	{
 		AnsiString tmp;
 		F.r_stringZ(m_OwnerName);
@@ -263,10 +263,10 @@ BOOL CPEDef::Load(IReader& F)
 		F.r(&m_CreateTime, sizeof(m_CreateTime));
 		F.r(&m_ModifTime, sizeof(m_ModifTime));
 	}
-	if (pCreateEAction && F.find_chunk(PED_CHUNK_EDATA))
+	if(pCreateEAction && F.find_chunk(PED_CHUNK_EDATA))
 	{
 		m_EActionList.resize(F.r_u32());
-		for (EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
+		for(EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
 		{
 			PAPI::PActionEnum type = (PAPI::PActionEnum)F.r_u32();
 			(*it) = pCreateEAction(type);
@@ -298,7 +298,7 @@ void CPEDef::Save(IWriter& F)
 
 	F.w_chunk(PED_CHUNK_FLAGS, &m_Flags, sizeof(m_Flags));
 
-	if (m_Flags.is(dfSprite))
+	if(m_Flags.is(dfSprite))
 	{
 		F.open_chunk(PED_CHUNK_SPRITE);
 		F.w_stringZ(m_ShaderName);
@@ -306,21 +306,21 @@ void CPEDef::Save(IWriter& F)
 		F.close_chunk();
 	}
 
-	if (m_Flags.is(dfFramed))
+	if(m_Flags.is(dfFramed))
 	{
 		F.open_chunk(PED_CHUNK_FRAME);
 		F.w(&m_Frame, sizeof(SFrame));
 		F.close_chunk();
 	}
 
-	if (m_Flags.is(dfTimeLimit))
+	if(m_Flags.is(dfTimeLimit))
 	{
 		F.open_chunk(PED_CHUNK_TIMELIMIT);
 		F.w_float(m_fTimeLimit);
 		F.close_chunk();
 	}
 
-	if (m_Flags.is(dfCollision))
+	if(m_Flags.is(dfCollision))
 	{
 		F.open_chunk(PED_CHUNK_COLLISION);
 		F.w_float(m_fCollideOneMinusFriction);
@@ -329,14 +329,14 @@ void CPEDef::Save(IWriter& F)
 		F.close_chunk();
 	}
 
-	if (m_Flags.is(dfVelocityScale))
+	if(m_Flags.is(dfVelocityScale))
 	{
 		F.open_chunk(PED_CHUNK_VEL_SCALE);
 		F.w_fvector3(m_VelocityScale);
 		F.close_chunk();
 	}
 
-	if (m_Flags.is(dfAlignToPath))
+	if(m_Flags.is(dfAlignToPath))
 	{
 		F.open_chunk(PED_CHUNK_ALIGN_TO_PATH);
 		F.w_fvector3(m_APDefaultRotation);
@@ -352,7 +352,7 @@ void CPEDef::Save(IWriter& F)
 
 	F.open_chunk(PED_CHUNK_EDATA);
 	F.w_u32(m_EActionList.size());
-	for (EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
+	for(EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
 	{
 		F.w_u32((*it)->type);
 		(*it)->Save(F);

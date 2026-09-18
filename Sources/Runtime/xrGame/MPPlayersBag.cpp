@@ -7,17 +7,18 @@
 
 #define BAG_REMOVE_TIME 60000
 
-CMPPlayersBag::CMPPlayersBag(){};
+CMPPlayersBag::CMPPlayersBag() {};
 
-CMPPlayersBag::~CMPPlayersBag(){};
+CMPPlayersBag::~CMPPlayersBag() {};
 
 void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type)
 {
 	CInventoryItemObject::OnEvent(P, type);
 	u16 id;
-	switch (type)
+	switch(type)
 	{
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
 		CInventoryItem* pIItem = smart_cast<CInventoryItem*>(O);
@@ -26,7 +27,8 @@ void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type)
 		O->Position().set(Position());
 	}
 	break;
-	case GE_OWNERSHIP_REJECT: {
+	case GE_OWNERSHIP_REJECT:
+	{
 		P.r_u16(id);
 		CObject* O = Level().Objects.net_Find(id);
 		O->H_SetParent(0, !P.r_eof() && P.r_u8());
@@ -38,11 +40,11 @@ void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type)
 extern INT g_iWeaponRemove;
 bool CMPPlayersBag::NeedToDestroyObject() const
 {
-	if (H_Parent())
+	if(H_Parent())
 		return false;
-	if (g_iWeaponRemove == -1)
+	if(g_iWeaponRemove == -1)
 		return false;
-	if (g_iWeaponRemove == 0)
+	if(g_iWeaponRemove == 0)
 		return true;
 	return (TimePassedAfterIndependant() > BAG_REMOVE_TIME);
 }

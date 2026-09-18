@@ -81,7 +81,7 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 	}
 	virtual void render()
 	{
-		if (solid)
+		if(solid)
 		{
 			RenderBackend.dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
 			RenderBackend.dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
@@ -100,7 +100,7 @@ static void clear_vector(PHABS_DBG_V& v)
 	PHABS_DBG_I i, e;
 	i = v.begin();
 	e = v.end();
-	for (; e != i; ++i)
+	for(; e != i; ++i)
 	{
 		xr_delete(*i);
 	}
@@ -147,18 +147,22 @@ void DBG_DrawMatrix(const fmat4x4& m, float size, u8 a /* = 255*/)
 	DBG_DrawPHAbstruct(xr_new<SPHDBGDrawLine>(m.c, to, D3DCOLOR_XRGB(0, 0, a)));
 }
 
-template <int> IC void rotate(fmat4x4& m, float ang);
+template <int>
+IC void rotate(fmat4x4& m, float ang);
 
-template <> IC void rotate<0>(fmat4x4& m, float ang)
+template <>
+IC void rotate<0>(fmat4x4& m, float ang)
 {
 	m.rotateX(ang);
 }
-template <> IC void rotate<1>(fmat4x4& m, float ang)
+template <>
+IC void rotate<1>(fmat4x4& m, float ang)
 {
 	m.rotateY(ang);
 }
 
-template <> IC void rotate<2>(fmat4x4& m, float ang)
+template <>
+IC void rotate<2>(fmat4x4& m, float ang)
 {
 	m.rotateZ(ang);
 }
@@ -179,7 +183,7 @@ void DBG_DrawRotation(float ang0, float ang1, const fmat4x4& m, const fvec3& l, 
 	mm.mulA_43(m);
 	fmat4x4 r;
 	rotate<ax>(r, (ang1 - ang0) / ftess);
-	for (u32 i = 0; tessel > i; ++i)
+	for(u32 i = 0; tessel > i; ++i)
 	{
 		fvec3 tmp;
 		mm.transform_dir(tmp, ln);
@@ -312,22 +316,22 @@ void DBG_ClosedCashedDraw(u32 remove_time)
 
 IC void push(PHABS_DBG_V& v, SPHDBGDrawAbsract* a)
 {
-	if (v.size() < 500)
+	if(v.size() < 500)
 		v.push_back(a);
 }
 void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a)
 {
-	if (dbg_ph_draw_mode != dmCashed)
+	if(dbg_ph_draw_mode != dmCashed)
 	{
-		if (ph_world->Processing())
+		if(ph_world->Processing())
 			dbg_ph_draw_mode = dmSecondaryThread;
 		else
 			dbg_ph_draw_mode = dmSimple;
 	}
-	switch (dbg_ph_draw_mode)
+	switch(dbg_ph_draw_mode)
 	{
 	case dmSecondaryThread:
-		if (draw_frame)
+		if(draw_frame)
 		{
 			push(dbg_draw_abstruct0, a);
 		}
@@ -348,7 +352,7 @@ void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a)
 void DBG_PHAbstruactStartFrame(bool dr_frame)
 {
 	PHABS_DBG_I i, e;
-	if (dr_frame)
+	if(dr_frame)
 	{
 		i = dbg_draw_abstruct0.begin();
 		e = dbg_draw_abstruct0.end();
@@ -358,11 +362,11 @@ void DBG_PHAbstruactStartFrame(bool dr_frame)
 		i = dbg_draw_abstruct1.begin();
 		e = dbg_draw_abstruct1.end();
 	}
-	for (; e != i; ++i)
+	for(; e != i; ++i)
 	{
 		xr_delete(*i);
 	}
-	if (dr_frame)
+	if(dr_frame)
 	{
 		dbg_draw_abstruct0.clear();
 	}
@@ -375,7 +379,7 @@ void capped_cylinder_ray_collision_test();
 void DBG_PHAbstructRender()
 {
 	PHABS_DBG_I i, e;
-	if (!draw_frame)
+	if(!draw_frame)
 	{
 		i = dbg_draw_abstruct0.begin();
 		e = dbg_draw_abstruct0.end();
@@ -386,20 +390,20 @@ void DBG_PHAbstructRender()
 		e = dbg_draw_abstruct1.end();
 	}
 
-	for (; e != i; ++i)
+	for(; e != i; ++i)
 	{
 		(*i)->render();
 	}
-	if (dbg_ph_draw_mode != dmCashed)
+	if(dbg_ph_draw_mode != dmCashed)
 	{
 		PHABS_DBG_I i, e;
 		i = dbg_draw_cashed.begin();
 		e = dbg_draw_cashed.end();
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 		{
 			(*i)->render();
 		}
-		if (cash_draw_remove_time < Engine.TimeManager.GetGlobalTimeMs())
+		if(cash_draw_remove_time < Engine.TimeManager.GetGlobalTimeMs())
 		{
 			clear_vector(dbg_draw_cashed);
 		}
@@ -408,7 +412,7 @@ void DBG_PHAbstructRender()
 		PHABS_DBG_I i, e;
 		i = dbg_draw_simple.begin();
 		e = dbg_draw_simple.end();
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 		{
 			(*i)->render();
 		}
@@ -427,12 +431,12 @@ void DBG_PHAbstructClear()
 
 void DBG_DrawPHObject(CPHObject* obj)
 {
-	if (ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
+	if(ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
 	{
 		SPHObjDBGDraw obj_draw;
 		obj_draw.AABB.set(obj->AABB);
 		obj_draw.AABB_center.set(obj->spatial.sphere.P);
-		if (draw_frame)
+		if(draw_frame)
 		{
 			dbg_draw_objects0.push_back(obj_draw);
 		}
@@ -447,7 +451,7 @@ void DBG_DrawContact(dContact& c)
 #ifdef DRAW_CONTACTS
 
 	SPHContactDBGDraw dbc;
-	if (dGeomGetBody(c.geom.g1))
+	if(dGeomGetBody(c.geom.g1))
 	{
 		dbc.geomClass = dGeomGetClass(retrieveGeom(c.geom.g1));
 	}
@@ -458,9 +462,9 @@ void DBG_DrawContact(dContact& c)
 	dbc.norm.set(cast_fv(c.geom.normal));
 	dbc.pos.set(cast_fv(c.geom.pos));
 	dbc.depth = c.geom.depth;
-	if (ph_dbg_draw_mask.test(phDbgDrawContacts))
+	if(ph_dbg_draw_mask.test(phDbgDrawContacts))
 	{
-		if (draw_frame)
+		if(draw_frame)
 			Contacts0.push_back(dbc);
 		else
 			Contacts1.push_back(dbc);
@@ -470,7 +474,7 @@ void DBG_DrawContact(dContact& c)
 void DBG_DrawFrameStart()
 {
 
-	if (draw_frame)
+	if(draw_frame)
 	{
 #ifdef DRAW_CONTACTS
 		Contacts0.clear();
@@ -505,14 +509,14 @@ void PH_DBG_Clear()
 
 void PH_DBG_Render()
 {
-	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
+	if(ph_dbg_draw_mask.test(phDbgDrawZDisable))
 		RenderBackend.SetRenderState(D3DRS_ZENABLE, 0);
 	HUD().Font().pFontStat->OutSet(550, 250);
 
-	if (ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
+	if(ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
 	{
 		PHOBJ_DBG_I i, e;
-		if (!draw_frame)
+		if(!draw_frame)
 		{
 			i = dbg_draw_objects0.begin();
 			e = dbg_draw_objects0.end();
@@ -522,7 +526,7 @@ void PH_DBG_Render()
 			i = dbg_draw_objects1.begin();
 			e = dbg_draw_objects1.end();
 		}
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 		{
 			SPHObjDBGDraw& ds = *i;
 			Level().debug_renderer().draw_aabb(ds.AABB_center, ds.AABB.x, ds.AABB.y, ds.AABB.z,
@@ -534,11 +538,11 @@ void PH_DBG_Render()
 
 #ifdef DRAW_CONTACTS
 
-	if (ph_dbg_draw_mask.test(phDbgDrawContacts))
+	if(ph_dbg_draw_mask.test(phDbgDrawContacts))
 	{
 
 		CONTACT_I i, e;
-		if (!draw_frame)
+		if(!draw_frame)
 		{
 			i = Contacts0.begin();
 			e = Contacts0.end();
@@ -549,7 +553,7 @@ void PH_DBG_Render()
 			e = Contacts1.end();
 		}
 
-		for (; i != e; i++)
+		for(; i != e; i++)
 		{
 			SPHContactDBGDraw& c = *i;
 			bool is_cyl = c.geomClass == dCylinderClassUser;
@@ -564,13 +568,13 @@ void PH_DBG_Render()
 //	HUD().Font().pFontStat->OutNext("---------------------");
 #endif
 
-	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
+	if(ph_dbg_draw_mask.test(phDbgDrawZDisable))
 		RenderBackend.SetRenderState(D3DRS_ZENABLE, 1);
 }
 
 void DBG_DrawStatBeforeFrameStep()
 {
-	if (ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
+	if(ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
 	{
 		static float obj_count = 0.f;
 		static float update_obj_count = 0.f;
@@ -583,7 +587,7 @@ void DBG_DrawStatBeforeFrameStep()
 
 void DBG_DrawStatAfterFrameStep()
 {
-	if (ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
+	if(ph_dbg_draw_mask.test(phDbgDrawObjectStatistics))
 	{
 		DBG_OutText("------------------------------");
 		static float fdbg_bodies_num = 0.f;
@@ -603,7 +607,7 @@ void DBG_DrawStatAfterFrameStep()
 		DBG_OutText("Ph Number of tries %5.0f", fdbg_tries_num);
 		DBG_OutText("------------------------------");
 	}
-	if (ph_dbg_draw_mask.test(phDbgDrawCashedTriesStat))
+	if(ph_dbg_draw_mask.test(phDbgDrawCashedTriesStat))
 	{
 		DBG_OutText("------------------------------");
 		static float fdbg_saved_tries_for_active_objects = 0;
@@ -651,7 +655,7 @@ void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, i
 	m_stat_graph->SetRect(l, t, w, h, bk_color, bk_color);
 	float min = dInfinity;
 	float max = -dInfinity;
-	for (float x = x_min; x < x_max; x += s)
+	for(float x = x_min; x < x_max; x += s)
 	{
 		float val = m_function(x);
 
@@ -662,7 +666,7 @@ void CFunctionGraph::Init(type_function fun, float x0, float x1, int l, int t, i
 	R_ASSERT(min < dInfinity && max > -dInfinity && min <= max);
 	m_stat_graph->SetMinMax(min, max, points_num);
 
-	for (float x = x_min; x < x_max; x += s)
+	for(float x = x_min; x < x_max; x += s)
 	{
 		float val = m_function(x);
 		m_stat_graph->AppendItem(val, color);
@@ -691,7 +695,7 @@ void CFunctionGraph::ScaleMarkerPos(u32 ID, float& p)
 void CFunctionGraph::ScaleMarkerPos(CStatGraph::EStyle Style, float& p)
 {
 	VERIFY(IsActive());
-	if (Style == CStatGraph::stVert)
+	if(Style == CStatGraph::stVert)
 		p = ScaleX(p);
 }
 void CFunctionGraph::Clear()

@@ -18,7 +18,7 @@
 
 IC const CObjectFactory& object_factory()
 {
-	if (!g_object_factory)
+	if(!g_object_factory)
 	{
 		g_object_factory = xr_new<CObjectFactory>();
 		g_object_factory->init();
@@ -74,7 +74,7 @@ IC const CObjectItemAbstract* CObjectFactory::item(const CLASS_ID& clsid, bool n
 {
 	actualize();
 	const_iterator I = std::lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
-	if ((I == clsids().end()) || ((*I)->clsid() != clsid))
+	if((I == clsids().end()) || ((*I)->clsid() != clsid))
 	{
 		R_ASSERT(no_assert);
 		return (0);
@@ -127,7 +127,7 @@ IC CObjectFactory::SERVER_BASE_CLASS* CObjectFactory::server_object(const CLASS_
 
 IC void CObjectFactory::actualize() const
 {
-	if (m_actual)
+	if(m_actual)
 		return;
 
 	m_actual = true;

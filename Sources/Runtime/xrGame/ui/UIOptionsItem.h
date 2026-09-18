@@ -18,7 +18,7 @@ class CUIOptionsItem
 	virtual void SaveValue();
 
 	virtual bool IsChanged() = 0;
-	virtual void SeveBackUpValue(){};
+	virtual void SeveBackUpValue() {};
 	virtual void Undo()
 	{
 		SetCurrentValue();

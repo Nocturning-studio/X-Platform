@@ -15,29 +15,31 @@
 #include "ai_object_location.h"
 #include "level_graph.h"
 
-template <typename T> IC SRotation CObjectParams<T>::orientation(const T* object) const
+template <typename T>
+IC SRotation CObjectParams<T>::orientation(const T* object) const
 {
 	fvec3 t;
 	object->Transform().getHPB(t.x, t.y, t.z);
 	return (SRotation(t.x, t.y, 0.f));
 }
 
-template <typename T> IC void CObjectParams<T>::fill(const T* game_object)
+template <typename T>
+IC void CObjectParams<T>::fill(const T* game_object)
 {
 #ifdef USE_ORIENTATION
 	m_orientation = game_object ? orientation(game_object) : SRotation(0.f, 0.f, 0.f);
 #endif
 
 	m_level_vertex_id = game_object ? game_object->ai_location().level_vertex_id() : u32(-1);
-	if (game_object && ai().get_level_graph() && ai().level_graph().valid_vertex_id(m_level_vertex_id) &&
-		!ai().level_graph().inside(m_level_vertex_id, game_object->Position()))
+	if(game_object && ai().get_level_graph() && ai().level_graph().valid_vertex_id(m_level_vertex_id) &&
+	   !ai().level_graph().inside(m_level_vertex_id, game_object->Position()))
 	{
 		m_position = ai().level_graph().vertex_position(m_level_vertex_id);
 		m_position.y = game_object->Position().y;
 		return;
 	}
 
-	if (game_object)
+	if(game_object)
 	{
 		game_object->Center(m_position);
 		m_position.set(game_object->Position().x, m_position.y, game_object->Position().z);
@@ -46,18 +48,21 @@ template <typename T> IC void CObjectParams<T>::fill(const T* game_object)
 		m_position = fvec3().set(0.f, 0.f, 0.f);
 }
 
-template <typename T> IC CMemoryObject<T>::CMemoryObject()
+template <typename T>
+IC CMemoryObject<T>::CMemoryObject()
 {
 	m_squad_mask.one();
 	m_object = 0;
 }
 
-template <typename T> IC bool CMemoryObject<T>::operator==(u16 id) const
+template <typename T>
+IC bool CMemoryObject<T>::operator==(u16 id) const
 {
 	return (object_id(m_object) == id);
 }
 
-template <typename T> IC void CMemoryObject<T>::fill(const T* game_object, const T* self, const squad_mask_type& mask)
+template <typename T>
+IC void CMemoryObject<T>::fill(const T* game_object, const T* self, const squad_mask_type& mask)
 {
 #ifdef USE_UPDATE_COUNT
 	++m_update_count;
@@ -81,7 +86,8 @@ template <typename T> IC void CMemoryObject<T>::fill(const T* game_object, const
 	SMemoryObject::fill();
 }
 
-template <typename T> IC u16 object_id(const T* object)
+template <typename T>
+IC u16 object_id(const T* object)
 {
 	return (object ? u16(object->ID()) : u16(0xffff));
 }

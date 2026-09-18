@@ -27,13 +27,13 @@ struct ENGINE_API STextureList : public xr_resource_flagged, public xr_vector<st
 
 	IC BOOL equal(const STextureList& base) const
 	{
-		if (size() != base.size())
+		if(size() != base.size())
 			return FALSE;
-		for (u32 cmp = 0; cmp < size(); cmp++)
+		for(u32 cmp = 0; cmp < size(); cmp++)
 		{
-			if ((*this)[cmp].first != base[cmp].first)
+			if((*this)[cmp].first != base[cmp].first)
 				return FALSE;
-			if ((*this)[cmp].second != base[cmp].second)
+			if((*this)[cmp].second != base[cmp].second)
 				return FALSE;
 		}
 		return TRUE;
@@ -69,10 +69,10 @@ typedef resptr_core<SGeometry, resptrcode_geom> ref_geom;
 //////////////////////////////////////////////////////////////////////////
 struct ENGINE_API SPass : public xr_resource_flagged
 {
-	ref_state state; // Generic state, like Z-Buffering, samplers, etc
-	ref_ps ps;		 // may be NULL = FFP, in that case "state" must contain TSS setup
-	ref_vs vs; // may be NULL = FFP, in that case "state" must contain RS setup, *and* FVF-compatible declaration must
-			   // be used
+	ref_state state;	  // Generic state, like Z-Buffering, samplers, etc
+	ref_ps ps;			  // may be NULL = FFP, in that case "state" must contain TSS setup
+	ref_vs vs;			  // may be NULL = FFP, in that case "state" must contain RS setup, *and* FVF-compatible declaration must
+						  // be used
 	ref_ctable constants; // may be NULL
 
 	ref_texture_list T;

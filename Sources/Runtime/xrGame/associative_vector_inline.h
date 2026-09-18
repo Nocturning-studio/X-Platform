@@ -133,7 +133,7 @@ TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::mapped_type& _associative_vector::operator[](const key_type& key)
 {
 	iterator I = find(key);
-	if (I != end())
+	if(I != end())
 		return ((*I).second);
 
 	return (insert(value_type(key, mapped_type())).first->second);
@@ -179,7 +179,7 @@ TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::size_type _associative_vector::erase(const key_type& key)
 {
 	iterator I = find(key);
-	if (I == end())
+	if(I == end())
 		return (0);
 
 	erase(I);
@@ -229,7 +229,7 @@ IC typename _associative_vector::insert_result _associative_vector::insert(const
 	actualize();
 	bool found = true;
 	iterator I = lower_bound(value.first);
-	if (I == end() || operator()(value.first, (*I).first))
+	if(I == end() || operator()(value.first, (*I).first))
 	{
 		I = inherited::insert(I, value);
 		found = false;
@@ -242,19 +242,20 @@ IC typename _associative_vector::insert_result _associative_vector::insert(const
 TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::iterator _associative_vector::insert(iterator where, const value_type& value)
 {
-	if ((where != end()) && (operator()(*where, value)) && ((where - begin()) == size()) &&
-		(!operator()(value, *(where + 1))) && (operator()(*(where + 1), value)))
+	if((where != end()) && (operator()(*where, value)) && ((where - begin()) == size()) &&
+	   (!operator()(value, *(where + 1))) && (operator()(*(where + 1), value)))
 		return (inherited::insert(where, value));
 
 	return (insert(val).first);
 }
 
 TEMPLATE_SPECIALIZATION
-template <class _iterator_type> IC void _associative_vector::insert(_iterator_type first, _iterator_type last)
+template <class _iterator_type>
+IC void _associative_vector::insert(_iterator_type first, _iterator_type last)
 {
-	if ((last - first) < log2(size() + (last - first)))
+	if((last - first) < log2(size() + (last - first)))
 	{
-		for (; first != last; ++first)
+		for(; first != last; ++first)
 			insert(*first);
 
 		return;
@@ -269,10 +270,10 @@ IC typename _associative_vector::iterator _associative_vector::find(const key_ty
 {
 	actualize();
 	iterator I = lower_bound(key);
-	if (I == end())
+	if(I == end())
 		return (end());
 
-	if (operator()(key, (*I).first))
+	if(operator()(key, (*I).first))
 		return (end());
 
 	return (I);
@@ -283,10 +284,10 @@ IC typename _associative_vector::const_iterator _associative_vector::find(const 
 {
 	actualize();
 	const_iterator I = lower_bound(key);
-	if (I == end())
+	if(I == end())
 		return (end());
 
-	if (operator()(key, (*I).first))
+	if(operator()(key, (*I).first))
 		return (end());
 
 	return (I);
@@ -304,10 +305,10 @@ IC typename _associative_vector::equal_range_result _associative_vector::equal_r
 {
 	actualize();
 	iterator I = lower_bound(key);
-	if (I == end())
+	if(I == end())
 		return (equal_range_result(end(), end()));
 
-	if (operator()(key, (*I).first))
+	if(operator()(key, (*I).first))
 		return (equal_range_result(I, I));
 
 	VERIFY(!operator()(key, (*I).first));
@@ -319,10 +320,10 @@ IC typename _associative_vector::const_equal_range_result _associative_vector::e
 {
 	actualize();
 	const_iterator I = lower_bound(key);
-	if (I == end())
+	if(I == end())
 		return (const_equal_range_result(end(), end()));
 
-	if (operator()(key, (*I).first))
+	if(operator()(key, (*I).first))
 		return (const_equal_range_result(I, I));
 
 	VERIFY(!operator()(key, (*I).first));

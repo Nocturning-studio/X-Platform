@@ -54,13 +54,13 @@ void CAutosaveManager::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
-	if (last_autosave_time() + autosave_interval() >= Engine.TimeManager.GetGlobalTimeMs())
+	if(last_autosave_time() + autosave_interval() >= Engine.TimeManager.GetGlobalTimeMs())
 		return;
 
-	if (!g_actor || !ready_for_autosave() || !Actor()->g_Alive())
+	if(!g_actor || !ready_for_autosave() || !Actor()->g_Alive())
 	{
 		delay_autosave();
 		return;

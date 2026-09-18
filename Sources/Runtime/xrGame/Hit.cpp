@@ -13,7 +13,7 @@ SHit::SHit(float aPower, fvec3& adir, CObject* awho, u16 aelement, fvec3 ap_in_b
 	power = aPower;
 	dir.set(adir);
 	who = awho;
-	if (awho)
+	if(awho)
 		whoID = awho->ID();
 	else
 		whoID = 0;
@@ -88,17 +88,17 @@ void SHit::Read_Packet_Cont(NET_Packet Packet)
 	Packet.r_u16(boneID);
 	Packet.r_vec3(p_in_bone_space);
 	Packet.r_float(impulse);
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 		aim_bullet = Packet.r_u16() != 0;
 	else
 		aim_bullet = false;
 	hit_type = (ALife::EHitType)Packet.r_u16(); // hit type
 
-	if (hit_type == ALife::eHitTypeFireWound)
+	if(hit_type == ALife::eHitTypeFireWound)
 	{
 		Packet.r_float(ap);
 	}
-	if (PACKET_TYPE == GE_HIT_STATISTIC)
+	if(PACKET_TYPE == GE_HIT_STATISTIC)
 	{
 		Packet.r_u32(BulletID);
 		Packet.r_u32(SenderID);
@@ -114,14 +114,14 @@ void SHit::Write_Packet_Cont(NET_Packet& Packet)
 	Packet.w_u16(boneID);
 	Packet.w_vec3(p_in_bone_space);
 	Packet.w_float(impulse);
-	if (IsGameTypeSingle())
+	if(IsGameTypeSingle())
 		Packet.w_u16(aim_bullet != 0);
 	Packet.w_u16(u16(hit_type & 0xffff));
-	if (hit_type == ALife::eHitTypeFireWound)
+	if(hit_type == ALife::eHitTypeFireWound)
 	{
 		Packet.w_float(ap);
 	}
-	if (PACKET_TYPE == GE_HIT_STATISTIC)
+	if(PACKET_TYPE == GE_HIT_STATISTIC)
 	{
 		Packet.w_u32(BulletID);
 		Packet.w_u32(SenderID);

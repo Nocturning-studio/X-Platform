@@ -13,16 +13,16 @@
 #pragma todo("Kosya to kosya:this code shold treat all hit types")
 void CPHShell::applyHit(const fvec3& pos, const fvec3& dir, float val, const u16 id, ALife::EHitType hit_type)
 {
-	if (id == u16(-1))
+	if(id == u16(-1))
 		return;
 
-	if (!m_pKinematics)
+	if(!m_pKinematics)
 	{
 		applyImpulseTrace(pos, dir, val);
 		return;
 	}
 
-	switch (hit_type)
+	switch(hit_type)
 	{
 	case ALife::eHitTypeExplosion:
 		ExplosionHit(pos, dir, val, id);
@@ -35,13 +35,13 @@ void CPHShell::applyHit(const fvec3& pos, const fvec3& dir, float val, const u16
 
 void CPHShell::ExplosionHit(const fvec3& pos, const fvec3& dir, float val, const u16 id)
 {
-	if (!isActive())
+	if(!isActive())
 		return;
 	EnableObject(0);
 	// fvec3 local_pos;local_pos.set(0.f,0.f,0.f);
 	ELEMENT_I i = elements.begin(), e = elements.end();
 	float impulse = val / std::sqrt(std::sqrt((float)elements.size()));
-	for (; i != e; i++)
+	for(; i != e; i++)
 	{
 		// fvec3 max_area_dir;
 		CPHElement* element = (*i);
@@ -50,7 +50,7 @@ void CPHShell::ExplosionHit(const fvec3& pos, const fvec3& dir, float val, const
 		// max_area_dir.mul(sign);
 		u16 gn = element->CPHGeometryOwner::numberOfGeoms();
 		float g_impulse = impulse / gn;
-		for (u16 j = 0; j < gn; ++j)
+		for(u16 j = 0; j < gn; ++j)
 		{
 
 			fvec3 r_dir, r_pos, r_box;
@@ -58,7 +58,7 @@ void CPHShell::ExplosionHit(const fvec3& pos, const fvec3& dir, float val, const
 			r_box.set(rad, rad, rad);
 			r_pos.random_point(r_box);
 			r_dir.random_dir();
-			if (!fis_zero(pos.magnitude(), EPS_L))
+			if(!fis_zero(pos.magnitude(), EPS_L))
 			{
 				r_dir.mul(0.5f);
 				r_dir.add(dir);

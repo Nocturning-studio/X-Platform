@@ -23,9 +23,9 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 	hside[2] /= 2.f;
 	// find number of contacts requested
 	int maxc = flags & NUMC_MASK;
-	if (maxc < 1)
+	if(maxc < 1)
 		maxc = 1;
-	if (maxc > 3)
+	if(maxc > 3)
 		maxc = 3; // no more than 3 contacts per box allowed
 
 	int code = 0;
@@ -40,7 +40,7 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 	signum = -1; // dist<0.f ? -1 : 1;
 	code = 0;
 
-	if (depth < 0.f)
+	if(depth < 0.f)
 		return 0;
 
 	unsigned int i;
@@ -48,7 +48,7 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 	dVector3 norm, pos;
 	unsigned int ret = 1;
 
-	if (code == 0)
+	if(code == 0)
 	{
 		norm[0] = triAx[0] * signum;
 		norm[1] = triAx[1] * signum;
@@ -69,18 +69,18 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 		pos[1] = p[1];
 		pos[2] = p[2];
 
-#define FOO(i, op)                                                                                                     \
-	pos[0] op hside[i] * R[0 + i];                                                                                     \
-	pos[1] op hside[i] * R[4 + i];                                                                                     \
+#define FOO(i, op)                 \
+	pos[0] op hside[i] * R[0 + i]; \
+	pos[1] op hside[i] * R[4 + i]; \
 	pos[2] op hside[i] * R[8 + i];
-#define BAR(i, iinc)                                                                                                   \
-	if (A##iinc > 0)                                                                                                   \
-	{                                                                                                                  \
-		FOO(i, -=)                                                                                                     \
-	}                                                                                                                  \
-	else                                                                                                               \
-	{                                                                                                                  \
-		FOO(i, +=)                                                                                                     \
+#define BAR(i, iinc) \
+	if(A##iinc > 0)  \
+	{                \
+		FOO(i, -=)   \
+	}                \
+	else             \
+	{                \
+		FOO(i, +=)   \
 	}
 		BAR(0, 1);
 		BAR(1, 2);
@@ -90,54 +90,54 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 
 		///////////////////////////////////////////////////////////
 
-		if (maxc == 1)
+		if(maxc == 1)
 			goto done;
 
-			// get the second and third contact points by starting from `p' and going
-			// along the two sides with the smallest projected length.
+		// get the second and third contact points by starting from `p' and going
+		// along the two sides with the smallest projected length.
 
-			//(@slipch) it is not perfectly right for triangle collision
-			// because it need to check if additional points are in the triangle but it seems cause no problem
+		//(@slipch) it is not perfectly right for triangle collision
+		// because it need to check if additional points are in the triangle but it seems cause no problem
 
-#define FOO(i, j, op)                                                                                                  \
-	CONTACT(contact, i* skip)->pos[0] = pos[0] op 2.f * hside[j] * R[0 + j];                                           \
-	CONTACT(contact, i* skip)->pos[1] = pos[1] op 2.f * hside[j] * R[4 + j];                                           \
+#define FOO(i, j, op)                                                        \
+	CONTACT(contact, i* skip)->pos[0] = pos[0] op 2.f * hside[j] * R[0 + j]; \
+	CONTACT(contact, i* skip)->pos[1] = pos[1] op 2.f * hside[j] * R[4 + j]; \
 	CONTACT(contact, i* skip)->pos[2] = pos[2] op 2.f * hside[j] * R[8 + j];
-#define BAR(ctact, side, sideinc)                                                                                      \
-	depth -= B##sideinc;                                                                                               \
-	if (depth < 0)                                                                                                     \
-		goto done;                                                                                                     \
-	if (A##sideinc > 0)                                                                                                \
-	{                                                                                                                  \
-		FOO(ctact, side, +)                                                                                            \
-	}                                                                                                                  \
-	else                                                                                                               \
-	{                                                                                                                  \
-		FOO(ctact, side, -)                                                                                            \
-	}                                                                                                                  \
-	CONTACT(contact, ctact* skip)->depth = depth;                                                                      \
+#define BAR(ctact, side, sideinc)                 \
+	depth -= B##sideinc;                          \
+	if(depth < 0)                                 \
+		goto done;                                \
+	if(A##sideinc > 0)                            \
+	{                                             \
+		FOO(ctact, side, +)                       \
+	}                                             \
+	else                                          \
+	{                                             \
+		FOO(ctact, side, -)                       \
+	}                                             \
+	CONTACT(contact, ctact* skip)->depth = depth; \
 	++ret;
 
 		CONTACT(contact, skip)->normal[0] = triAx[0] * signum;
 		CONTACT(contact, skip)->normal[1] = triAx[1] * signum;
 		CONTACT(contact, skip)->normal[2] = triAx[2] * signum;
-		if (maxc == 3)
+		if(maxc == 3)
 		{
 			CONTACT(contact, 2 * skip)->normal[0] = triAx[0] * signum;
 			CONTACT(contact, 2 * skip)->normal[1] = triAx[1] * signum;
 			CONTACT(contact, 2 * skip)->normal[2] = triAx[2] * signum;
 		}
 
-		if (B1 < B2)
+		if(B1 < B2)
 		{
-			if (B3 < B1)
+			if(B3 < B1)
 				goto use_side_3;
 			else
 			{
 				BAR(1, 0, 1); // use side 1
-				if (maxc == 2)
+				if(maxc == 2)
 					goto done;
-				if (B2 < B3)
+				if(B2 < B3)
 					goto contact2_2;
 				else
 					goto contact2_3;
@@ -145,13 +145,13 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 		}
 		else
 		{
-			if (B3 < B2)
+			if(B3 < B2)
 			{
 			use_side_3: // use side 3
 				BAR(1, 2, 3);
-				if (maxc == 2)
+				if(maxc == 2)
 					goto done;
-				if (B1 < B2)
+				if(B1 < B2)
 					goto contact2_1;
 				else
 					goto contact2_2;
@@ -159,9 +159,9 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 			else
 			{
 				BAR(1, 1, 2); // use side 2
-				if (maxc == 2)
+				if(maxc == 2)
 					goto done;
-				if (B1 < B3)
+				if(B1 < B3)
 					goto contact2_1;
 				else
 					goto contact2_3;
@@ -191,7 +191,7 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 
 	contact->depth = outDepth;
 
-	for (i = 0; i < ret; ++i)
+	for(i = 0; i < ret; ++i)
 	{
 		CONTACT(contact, i * skip)->g1 = const_cast<dxGeom*>(o2);
 		CONTACT(contact, i * skip)->g2 = const_cast<dxGeom*>(o1);
@@ -200,7 +200,7 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 		CONTACT(contact, i * skip)->normal[2] = norm[2];
 		SURFACE(contact, i * skip)->mode = T->material;
 	}
-	if (ret && dGeomGetUserData(o1)->callback)
+	if(ret && dGeomGetUserData(o1)->callback)
 		dGeomGetUserData(o1)->callback(T, contact);
 	return ret;
 }
@@ -222,9 +222,9 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 
 	// find number of contacts requested
 	int maxc = flags & NUMC_MASK;
-	if (maxc < 1)
+	if(maxc < 1)
 		maxc = 1;
-	if (maxc > 3)
+	if(maxc > 3)
 		maxc = 3; // no more than 3 contacts per box allowed
 
 	// dVector3 triAx;
@@ -248,7 +248,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 	outDepth = depth;
 	signum = dist < 0.f ? -1.f : 1.f;
 	code = 0;
-	if (depth < 0.f)
+	if(depth < 0.f)
 		return 0;
 
 	bool isPdist0, isPdist1, isPdist2;
@@ -260,84 +260,84 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 	dReal depth0, depth1, depth2;
 	dReal dist0, dist1, dist2;
 
-#define CMP(sd, c)                                                                                                     \
-	if (depth0 > depth1)                                                                                               \
-		if (depth0 > depth2)                                                                                           \
-			if (test0##sd)                                                                                             \
-			{                                                                                                          \
-				if (test0)                                                                                             \
-					if (depth0 < outDepth)                                                                             \
-					{                                                                                                  \
-						outDepth = depth0;                                                                             \
-						signum = dist0 < 0.f ? -1.f : 1.f;                                                             \
-						code = c;                                                                                      \
-					}                                                                                                  \
-			}                                                                                                          \
-			else                                                                                                       \
-				return 0;                                                                                              \
-		else if (test2##sd)                                                                                            \
-		{                                                                                                              \
-			if (test2)                                                                                                 \
-				if (depth2 < outDepth)                                                                                 \
-				{                                                                                                      \
-					outDepth = depth2;                                                                                 \
-					signum = dist2 < 0.f ? -1.f : 1.f;                                                                 \
-					code = c + 2;                                                                                      \
-				}                                                                                                      \
-		}                                                                                                              \
-		else                                                                                                           \
-			return 0;                                                                                                  \
-	else if (depth1 > depth2)                                                                                          \
-		if (test1##sd)                                                                                                 \
-		{                                                                                                              \
-			if (test1)                                                                                                 \
-				if (depth1 < outDepth)                                                                                 \
-				{                                                                                                      \
-					outDepth = depth1;                                                                                 \
-					signum = dist1 < 0.f ? -1.f : 1.f;                                                                 \
-					code = c + 1;                                                                                      \
-				}                                                                                                      \
-		}                                                                                                              \
-		else                                                                                                           \
-			return 0;                                                                                                  \
-                                                                                                                       \
-	else if (test2##sd)                                                                                                \
-	{                                                                                                                  \
-		if (test2)                                                                                                     \
-			if (depth2 < outDepth)                                                                                     \
-			{                                                                                                          \
-				outDepth = depth2;                                                                                     \
-				signum = dist2 < 0.f ? -1.f : 1.f;                                                                     \
-				code = c + 2;                                                                                          \
-			}                                                                                                          \
-	}                                                                                                                  \
-	else                                                                                                               \
+#define CMP(sd, c)                                         \
+	if(depth0 > depth1)                                    \
+		if(depth0 > depth2)                                \
+			if(test0##sd)                                  \
+			{                                              \
+				if(test0)                                  \
+					if(depth0 < outDepth)                  \
+					{                                      \
+						outDepth = depth0;                 \
+						signum = dist0 < 0.f ? -1.f : 1.f; \
+						code = c;                          \
+					}                                      \
+			}                                              \
+			else                                           \
+				return 0;                                  \
+		else if(test2##sd)                                 \
+		{                                                  \
+			if(test2)                                      \
+				if(depth2 < outDepth)                      \
+				{                                          \
+					outDepth = depth2;                     \
+					signum = dist2 < 0.f ? -1.f : 1.f;     \
+					code = c + 2;                          \
+				}                                          \
+		}                                                  \
+		else                                               \
+			return 0;                                      \
+	else if(depth1 > depth2)                               \
+		if(test1##sd)                                      \
+		{                                                  \
+			if(test1)                                      \
+				if(depth1 < outDepth)                      \
+				{                                          \
+					outDepth = depth1;                     \
+					signum = dist1 < 0.f ? -1.f : 1.f;     \
+					code = c + 1;                          \
+				}                                          \
+		}                                                  \
+		else                                               \
+			return 0;                                      \
+                                                           \
+	else if(test2##sd)                                     \
+	{                                                      \
+		if(test2)                                          \
+			if(depth2 < outDepth)                          \
+			{                                              \
+				outDepth = depth2;                         \
+				signum = dist2 < 0.f ? -1.f : 1.f;         \
+				code = c + 2;                              \
+			}                                              \
+	}                                                      \
+	else                                                   \
 		return 0;
 
-#define TEST(sd, c)                                                                                                    \
-                                                                                                                       \
-	dist0 = dDOT14(v0, R + sd) - dDOT14(p, R + sd);                                                                    \
-	dist1 = dDOT14(v1, R + sd) - dDOT14(p, R + sd);                                                                    \
-	dist2 = dDOT14(v2, R + sd) - dDOT14(p, R + sd);                                                                    \
-                                                                                                                       \
-	isPdist0 = dist0 > 0.f;                                                                                            \
-	isPdist1 = dist1 > 0.f;                                                                                            \
-	isPdist2 = dist2 > 0.f;                                                                                            \
-                                                                                                                       \
-	depth0 = hside[sd] - dFabs(dist0);                                                                                 \
-	depth1 = hside[sd] - dFabs(dist1);                                                                                 \
-	depth2 = hside[sd] - dFabs(dist2);                                                                                 \
-	test0##sd = depth0 > 0.f;                                                                                          \
-	test1##sd = depth1 > 0.f;                                                                                          \
-	test2##sd = depth2 > 0.f;                                                                                          \
-                                                                                                                       \
-	test0 = test0 && test0##sd;                                                                                        \
-	test1 = test1 && test1##sd;                                                                                        \
-	test2 = test2 && test2##sd;                                                                                        \
-                                                                                                                       \
-	if (isPdist0 == isPdist1 && isPdist1 == isPdist2)                                                                  \
-	{                                                                                                                  \
-		CMP(sd, c)                                                                                                     \
+#define TEST(sd, c)                                  \
+                                                     \
+	dist0 = dDOT14(v0, R + sd) - dDOT14(p, R + sd);  \
+	dist1 = dDOT14(v1, R + sd) - dDOT14(p, R + sd);  \
+	dist2 = dDOT14(v2, R + sd) - dDOT14(p, R + sd);  \
+                                                     \
+	isPdist0 = dist0 > 0.f;                          \
+	isPdist1 = dist1 > 0.f;                          \
+	isPdist2 = dist2 > 0.f;                          \
+                                                     \
+	depth0 = hside[sd] - dFabs(dist0);               \
+	depth1 = hside[sd] - dFabs(dist1);               \
+	depth2 = hside[sd] - dFabs(dist2);               \
+	test0##sd = depth0 > 0.f;                        \
+	test1##sd = depth1 > 0.f;                        \
+	test2##sd = depth2 > 0.f;                        \
+                                                     \
+	test0 = test0 && test0##sd;                      \
+	test1 = test1 && test1##sd;                      \
+	test2 = test2 && test2##sd;                      \
+                                                     \
+	if(isPdist0 == isPdist1 && isPdist1 == isPdist2) \
+	{                                                \
+		CMP(sd, c)                                   \
 	}
 
 	TEST(0, 1)
@@ -387,7 +387,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 	dVector3 pos;
 
 #define TEST(ax, ox, c)                                                                                                \
-	for (i = 0; i < 3; ++i)                                                                                            \
+	for(i = 0; i < 3; ++i)                                                                                             \
 	{                                                                                                                  \
 		dCROSS114(axis, =, triSideAx##ax, R + i);                                                                      \
 		accurate_normalize(axis);                                                                                      \
@@ -400,23 +400,23 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
                                                                                                                        \
 		isPdist##ax = dist##ax > 0.f;                                                                                  \
 		isPdist##ox = dist##ox > 0.f;                                                                                  \
-		if (isPdist##ax != isPdist##ox)                                                                                \
+		if(isPdist##ax != isPdist##ox)                                                                                 \
 			continue;                                                                                                  \
                                                                                                                        \
 		depth##ax = sidePr - dFabs(dist##ax);                                                                          \
 		depth##ox = sidePr - dFabs(dist##ox);                                                                          \
-		if (depth##ax > depth##ox)                                                                                     \
+		if(depth##ax > depth##ox)                                                                                      \
 		{                                                                                                              \
-			if (depth##ax > 0.f)                                                                                       \
+			if(depth##ax > 0.f)                                                                                        \
 			{                                                                                                          \
-				if (depth##ax * 1.05f < outDepth)                                                                      \
+				if(depth##ax * 1.05f < outDepth)                                                                       \
 				{                                                                                                      \
 					dReal sgn = dist##ax < 0.f ? -1.f : 1.f;                                                           \
 					dReal sgn1 = sgn * dDOT14(axis, R + ix1) < 0.f ? -1.f : 1.f;                                       \
 					dReal sgn2 = sgn * dDOT14(axis, R + ix2) < 0.f ? -1.f : 1.f;                                       \
-					for (int ii = 0; ii < 3; ++ii)                                                                     \
+					for(int ii = 0; ii < 3; ++ii)                                                                      \
 						crpos[ii] = p[ii] + R[ii * 4 + ix1] * hside[ix1] * sgn1 + R[ii * 4 + ix2] * hside[ix2] * sgn2; \
-					if (CrossProjLine14(v##ax, triSideAx##ax, crpos, R + i, hside[i], pos))                            \
+					if(CrossProjLine14(v##ax, triSideAx##ax, crpos, R + i, hside[i], pos))                             \
 					{                                                                                                  \
 						outDepth = depth##ax;                                                                          \
 						signum = sgn;                                                                                  \
@@ -444,7 +444,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 	dVector3 norm;
 	unsigned int ret = 1;
 
-	if (code == 0)
+	if(code == 0)
 	{
 		norm[0] = triAx[0] * signum;
 		norm[1] = triAx[1] * signum;
@@ -465,18 +465,18 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 		pos[1] = p[1];
 		pos[2] = p[2];
 
-#define FOO(i, op)                                                                                                     \
-	pos[0] op hside[i] * R[0 + i];                                                                                     \
-	pos[1] op hside[i] * R[4 + i];                                                                                     \
+#define FOO(i, op)                 \
+	pos[0] op hside[i] * R[0 + i]; \
+	pos[1] op hside[i] * R[4 + i]; \
 	pos[2] op hside[i] * R[8 + i];
-#define BAR(i, iinc)                                                                                                   \
-	if (A##iinc > 0)                                                                                                   \
-	{                                                                                                                  \
-		FOO(i, -=)                                                                                                     \
-	}                                                                                                                  \
-	else                                                                                                               \
-	{                                                                                                                  \
-		FOO(i, +=)                                                                                                     \
+#define BAR(i, iinc) \
+	if(A##iinc > 0)  \
+	{                \
+		FOO(i, -=)   \
+	}                \
+	else             \
+	{                \
+		FOO(i, +=)   \
 	}
 		BAR(0, 1);
 		BAR(1, 2);
@@ -486,22 +486,22 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 
 		///////////////////////////////////////////////////////////
 
-#define TRI_CONTAIN_POINT(pos)                                                                                         \
-	{                                                                                                                  \
-		dVector3 cross0, cross1, cross2;                                                                               \
-		dReal ds0, ds1, ds2;                                                                                           \
-                                                                                                                       \
-		dCROSS(cross0, =, triAx, triSideAx0);                                                                          \
-		ds0 = dDOT(cross0, v0);                                                                                        \
-                                                                                                                       \
-		dCROSS(cross1, =, triAx, triSideAx1);                                                                          \
-		ds1 = dDOT(cross1, v1);                                                                                        \
-                                                                                                                       \
-		dCROSS(cross2, =, triAx, triSideAx2);                                                                          \
-		ds2 = dDOT(cross2, v2);                                                                                        \
-                                                                                                                       \
-		if (dDOT(cross0, pos) - ds0 > 0.f && dDOT(cross1, pos) - ds1 > 0.f && dDOT(cross2, pos) - ds2 > 0.f)           \
-			++ret;                                                                                                     \
+#define TRI_CONTAIN_POINT(pos)                                                                              \
+	{                                                                                                       \
+		dVector3 cross0, cross1, cross2;                                                                    \
+		dReal ds0, ds1, ds2;                                                                                \
+                                                                                                            \
+		dCROSS(cross0, =, triAx, triSideAx0);                                                               \
+		ds0 = dDOT(cross0, v0);                                                                             \
+                                                                                                            \
+		dCROSS(cross1, =, triAx, triSideAx1);                                                               \
+		ds1 = dDOT(cross1, v1);                                                                             \
+                                                                                                            \
+		dCROSS(cross2, =, triAx, triSideAx2);                                                               \
+		ds2 = dDOT(cross2, v2);                                                                             \
+                                                                                                            \
+		if(dDOT(cross0, pos) - ds0 > 0.f && dDOT(cross1, pos) - ds1 > 0.f && dDOT(cross2, pos) - ds2 > 0.f) \
+			++ret;                                                                                          \
 	}
 		///////////////////////////////////////////////////////////
 
@@ -511,35 +511,35 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 		dReal* pdepth;
 		dContactGeom *prc, *c = CONTACT(contact, ret * skip);
 		prc = c;
-#define FOO(j, op, spoint)                                                                                             \
-	c->pos[0] = spoint##[0] op 2.f * hside[j] * R[0 + j];                                                              \
-	c->pos[1] = spoint##[1] op 2.f * hside[j] * R[4 + j];                                                              \
+#define FOO(j, op, spoint)                                \
+	c->pos[0] = spoint##[0] op 2.f * hside[j] * R[0 + j]; \
+	c->pos[1] = spoint##[1] op 2.f * hside[j] * R[4 + j]; \
 	c->pos[2] = spoint##[2] op 2.f * hside[j] * R[8 + j];
-#define BAR(side, sideinc, spos, sdepth)                                                                               \
-	{                                                                                                                  \
-		pdepth = &(c->depth);                                                                                          \
-		*pdepth = sdepth - B##sideinc;                                                                                 \
-		if (A##sideinc > 0)                                                                                            \
-		{                                                                                                              \
-			FOO(side, +, spos)                                                                                         \
-		}                                                                                                              \
-		else                                                                                                           \
-		{                                                                                                              \
-			FOO(side, -, spos)                                                                                         \
-		}                                                                                                              \
-		prc = c;                                                                                                       \
-		if (!(*pdepth < 0))                                                                                            \
-		{                                                                                                              \
-			++ret;                                                                                                     \
-			c = CONTACT(contact, ret * skip);                                                                          \
-		}                                                                                                              \
+#define BAR(side, sideinc, spos, sdepth)      \
+	{                                         \
+		pdepth = &(c->depth);                 \
+		*pdepth = sdepth - B##sideinc;        \
+		if(A##sideinc > 0)                    \
+		{                                     \
+			FOO(side, +, spos)                \
+		}                                     \
+		else                                  \
+		{                                     \
+			FOO(side, -, spos)                \
+		}                                     \
+		prc = c;                              \
+		if(!(*pdepth < 0))                    \
+		{                                     \
+			++ret;                            \
+			c = CONTACT(contact, ret * skip); \
+		}                                     \
 	}
 		// TRI_CONTAIN_POINT(CONTACT(contact,ret*skip)->pos)
 
-		if (B1 < B2)
+		if(B1 < B2)
 		{
 			BAR(0, 1, pos, depth);
-			if (B2 < B3)
+			if(B2 < B3)
 			{
 				BAR(1, 2, pos, depth);
 				BAR(0, 1, prc->pos, prc->depth);
@@ -553,7 +553,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 		else
 		{
 			BAR(1, 2, pos, depth);
-			if (B1 < B3)
+			if(B1 < B3)
 			{
 				BAR(0, 1, pos, depth);
 				BAR(1, 2, prc->pos, prc->depth);
@@ -599,9 +599,9 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 
 		////////////////////////////////////////////////////////////// end (from geom.cpp dCollideBP)
 	}
-	else if (code <= 9)
+	else if(code <= 9)
 	{
-		switch ((code - 1) % 3)
+		switch((code - 1) % 3)
 		{
 		case 0:
 			pos[0] = v0[0];
@@ -619,22 +619,25 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 			pos[2] = v2[2];
 			break;
 		}
-		switch ((code - 1) / 3)
+		switch((code - 1) / 3)
 		{
-		case 0: {
+		case 0:
+		{
 			norm[0] = R[0] * signum;
 			norm[1] = R[4] * signum;
 			norm[2] = R[8] * signum;
 		}
 		break;
 
-		case 1: {
+		case 1:
+		{
 			norm[0] = R[1] * signum;
 			norm[1] = R[5] * signum;
 			norm[2] = R[9] * signum;
 		}
 		break;
-		case 2: {
+		case 2:
+		{
 			norm[0] = R[2] * signum;
 			norm[1] = R[6] * signum;
 			norm[2] = R[10] * signum;
@@ -709,7 +712,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 		*/
 	}
 
-	if (dDOT(norm, triAx) > 0.f)
+	if(dDOT(norm, triAx) > 0.f)
 		return 0;
 
 	// if(0!=code){
@@ -724,7 +727,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 	contact->depth = outDepth;
 
 	//}
-	for (u32 i = 0; i < ret; ++i)
+	for(u32 i = 0; i < ret; ++i)
 	{
 		CONTACT(contact, i * skip)->g1 = const_cast<dxGeom*>(o2);
 		CONTACT(contact, i * skip)->g2 = const_cast<dxGeom*>(o1);
@@ -733,7 +736,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 		CONTACT(contact, i * skip)->normal[2] = norm[2];
 		SURFACE(contact, i * skip)->mode = T->T->material;
 	}
-	if (ret && dGeomGetUserData(o1)->callback)
+	if(ret && dGeomGetUserData(o1)->callback)
 		dGeomGetUserData(o1)->callback(T->T, contact);
 	return ret;
 }

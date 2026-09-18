@@ -16,7 +16,7 @@
 
 void CSE_ALifeHumanAbstract::update()
 {
-	if (!bfActive())
+	if(!bfActive())
 		return;
 
 	brain().update();
@@ -74,7 +74,7 @@ void CSE_ALifeHumanAbstract::on_register()
 void CSE_ALifeHumanAbstract::on_unregister()
 {
 	brain().on_unregister();
-	if (m_group_id != 0xffff)
+	if(m_group_id != 0xffff)
 		ai().alife().groups().object(m_group_id).unregister_member(ID);
 }
 

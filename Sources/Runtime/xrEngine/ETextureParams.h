@@ -136,7 +136,7 @@ struct STextureParams
 	}
 	IC BOOL HasAlphaChannel() // игровая текстура содержит альфа канал
 	{
-		switch (fmt)
+		switch(fmt)
 		{
 		case tfADXT1:
 		case tfDXT3:

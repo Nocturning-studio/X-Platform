@@ -36,7 +36,7 @@ BOOL CScriptZone::net_Spawn(CSE_Abstract* DC)
 {
 	feel_touch.clear();
 
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	return (TRUE);
@@ -60,7 +60,7 @@ void CScriptZone::shedule_Update(u32 dt)
 void CScriptZone::feel_touch_new(CObject* tpObject)
 {
 	CGameObject* l_tpGameObject = smart_cast<CGameObject*>(tpObject);
-	if (!l_tpGameObject)
+	if(!l_tpGameObject)
 		return;
 
 	callback(GameObject::eZoneEnter)(lua_game_object(), l_tpGameObject->lua_game_object());
@@ -70,7 +70,7 @@ void CScriptZone::feel_touch_delete(CObject* tpObject)
 {
 	CGameObject* l_tpGameObject = smart_cast<CGameObject*>(tpObject);
 
-	if (!l_tpGameObject || l_tpGameObject->getDestroy())
+	if(!l_tpGameObject || l_tpGameObject->getDestroy())
 		return;
 
 	callback(GameObject::eZoneExit)(lua_game_object(), l_tpGameObject->lua_game_object());
@@ -79,11 +79,11 @@ void CScriptZone::feel_touch_delete(CObject* tpObject)
 void CScriptZone::net_Relcase(CObject* O)
 {
 	CGameObject* l_tpGameObject = smart_cast<CGameObject*>(O);
-	if (!l_tpGameObject)
+	if(!l_tpGameObject)
 		return;
 
 	xr_vector<CObject*>::iterator I = std::find(feel_touch.begin(), feel_touch.end(), O);
-	if (I != feel_touch.end())
+	if(I != feel_touch.end())
 	{
 		callback(GameObject::eZoneExit)(lua_game_object(), l_tpGameObject->lua_game_object());
 	}
@@ -97,9 +97,9 @@ BOOL CScriptZone::feel_touch_contact(CObject* O)
 #ifdef DEBUG
 void CScriptZone::OnRender()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
-	if (!bDebug)
+	if(!bDebug)
 		return;
 	RenderBackend.OnFrameEnd();
 	fvec3 l_half;
@@ -108,11 +108,12 @@ void CScriptZone::OnRender()
 	xr_vector<CCF_Shape::shape_def>& l_shapes = ((CCF_Shape*)CFORM())->Shapes();
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 
-	for (l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
+	for(l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
 	{
-		switch (l_pShape->type)
+		switch(l_pShape->type)
 		{
-		case 0: {
+		case 0:
+		{
 			Fsphere& l_sphere = l_pShape->data.sphere;
 			l_ball.scale(l_sphere.R, l_sphere.R, l_sphere.R);
 			fvec3 l_p;
@@ -121,7 +122,8 @@ void CScriptZone::OnRender()
 			Level().debug_renderer().draw_ellipse(l_ball, D3DCOLOR_XRGB(0, 255, 255));
 		}
 		break;
-		case 1: {
+		case 1:
+		{
 			l_box.mul(Transform(), l_pShape->data.box);
 			Level().debug_renderer().draw_obb(l_box, l_half, D3DCOLOR_XRGB(0, 255, 255));
 		}
@@ -135,8 +137,8 @@ bool CScriptZone::active_contact(u16 id) const
 {
 	xr_vector<CObject*>::const_iterator I = feel_touch.begin();
 	xr_vector<CObject*>::const_iterator E = feel_touch.end();
-	for (; I != E; ++I)
-		if ((*I)->ID() == id)
+	for(; I != E; ++I)
+		if((*I)->ID() == id)
 			return (true);
 	return (false);
 }

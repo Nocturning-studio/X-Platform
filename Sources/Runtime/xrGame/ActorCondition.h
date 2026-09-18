@@ -6,7 +6,8 @@
 #include "EntityCondition.h"
 #include "actor_defs.h"
 
-template <typename _return_type> class CScriptCallbackEx;
+template <typename _return_type>
+class CScriptCallbackEx;
 
 class CActor;
 // class CUIActorSleepVideoPlayer;

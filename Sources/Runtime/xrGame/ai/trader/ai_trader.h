@@ -83,8 +83,8 @@ class CAI_Trader : public CEntityAlive, public CInventoryOwner, public CScriptEn
 
 	virtual void Die(CObject* who);
 	virtual void Think();
-	virtual void HitSignal(float /**P/**/, fvec3& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/){};
-	virtual void HitImpulse(float /**P/**/, fvec3& /**vWorldDir/**/, fvec3& /**vLocalDir/**/){};
+	virtual void HitSignal(float /**P/**/, fvec3& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/) {};
+	virtual void HitImpulse(float /**P/**/, fvec3& /**vWorldDir/**/, fvec3& /**vLocalDir/**/) {};
 	virtual void Hit(SHit* pHDS)
 	{
 		inherited::Hit(pHDS);

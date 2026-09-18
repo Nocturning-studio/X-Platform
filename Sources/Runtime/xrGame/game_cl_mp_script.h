@@ -21,7 +21,7 @@ class game_cl_mp_script : public game_cl_mp
 	{
 		return false;
 	};
-	virtual void GetMapEntities(xr_vector<SZoneMapEntityData>& dst){};
+	virtual void GetMapEntities(xr_vector<SZoneMapEntityData>& dst) {};
 	virtual void shedule_Update(u32 dt);
 	virtual game_PlayerState* createPlayerState()
 	{

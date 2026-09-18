@@ -28,7 +28,7 @@ void CZoneEffector::Load(LPCSTR section)
 	r_min_perc = pSettings->r_float(section, "radius_min");
 	r_max_perc = pSettings->r_float(section, "radius_max");
 
-	if (pSettings->line_exist(section, "radiation_intensity"))
+	if(pSettings->line_exist(section, "radiation_intensity"))
 		m_radiation_intensity = pSettings->r_float(section, "radiation_intensity");
 	else
 		m_radiation_intensity = 0.0f;
@@ -39,7 +39,7 @@ void CZoneEffector::Load(LPCSTR section)
 void CZoneEffector::Activate()
 {
 	m_pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!m_pActor)
+	if(!m_pActor)
 		return;
 	m_pp_effector = xr_new<CPostprocessAnimatorLerp>();
 	m_pp_effector->SetType(EEffectorPPType(u32(u64(this) & u32(-1))));
@@ -52,7 +52,7 @@ void CZoneEffector::Activate()
 
 void CZoneEffector::Stop()
 {
-	if (!m_pp_effector)
+	if(!m_pp_effector)
 		return;
 
 	m_pActor->Cameras().RemovePPEffector(EEffectorPPType(u32(u64(this) & u32(-1))));
@@ -67,18 +67,18 @@ void CZoneEffector::Update(float dist)
 
 	bool camera_on_actor = (Level().CurrentEntity() && (Level().CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR));
 
-	if (m_pp_effector)
+	if(m_pp_effector)
 	{
-		if ((dist > max_r) || !camera_on_actor || (m_pActor && !m_pActor->g_Alive()))
+		if((dist > max_r) || !camera_on_actor || (m_pActor && !m_pActor->g_Alive()))
 			Stop();
 	}
 	else
 	{
-		if ((dist < max_r) && camera_on_actor)
+		if((dist < max_r) && camera_on_actor)
 			Activate();
 	}
 
-	if (m_pp_effector)
+	if(m_pp_effector)
 	{
 		m_factor = (max_r - dist) / (max_r - min_r);
 		clamp(m_factor, 0.01f, 1.0f);

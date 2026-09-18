@@ -23,7 +23,8 @@ enum UIState
 	S_Touched
 };
 
-template <class T> class CUIInteractiveBackground : public CUIWindow
+template <class T>
+class CUIInteractiveBackground : public CUIWindow
 {
   public:
 	CUIInteractiveBackground();
@@ -57,7 +58,8 @@ template <class T> class CUIInteractiveBackground : public CUIWindow
 	T* m_stateTouched;
 };
 
-template <class T> CUIInteractiveBackground<T>::CUIInteractiveBackground()
+template <class T>
+CUIInteractiveBackground<T>::CUIInteractiveBackground()
 {
 	m_stateCurrent = NULL;
 	m_stateEnabled = NULL;
@@ -66,16 +68,19 @@ template <class T> CUIInteractiveBackground<T>::CUIInteractiveBackground()
 	m_stateTouched = NULL;
 }
 
-template <class T> CUIInteractiveBackground<T>::~CUIInteractiveBackground()
+template <class T>
+CUIInteractiveBackground<T>::~CUIInteractiveBackground()
 {
 }
 
-template <class T> void CUIInteractiveBackground<T>::Init(float x, float y, float width, float height)
+template <class T>
+void CUIInteractiveBackground<T>::Init(float x, float y, float width, float height)
 {
 	CUIWindow::Init(x, y, width, height);
 }
 
-template <class T> void CUIInteractiveBackground<T>::Init(LPCSTR texture_e, float x, float y, float width, float height)
+template <class T>
+void CUIInteractiveBackground<T>::Init(LPCSTR texture_e, float x, float y, float width, float height)
 {
 	CUIWindow::Init(x, y, width, height);
 
@@ -85,10 +90,11 @@ template <class T> void CUIInteractiveBackground<T>::Init(LPCSTR texture_e, floa
 	m_stateCurrent = this->m_stateEnabled;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::CreateE()
+template <class T>
+T* CUIInteractiveBackground<T>::CreateE()
 {
 	Frect r = GetWndRect();
-	if (!m_stateEnabled)
+	if(!m_stateEnabled)
 	{
 		m_stateEnabled = xr_new<T>();
 		m_stateEnabled->SetAutoDelete(true);
@@ -99,10 +105,11 @@ template <class T> T* CUIInteractiveBackground<T>::CreateE()
 	return m_stateEnabled;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::CreateD()
+template <class T>
+T* CUIInteractiveBackground<T>::CreateD()
 {
 	Frect r = GetWndRect();
-	if (!m_stateDisabled)
+	if(!m_stateDisabled)
 	{
 		m_stateDisabled = xr_new<T>();
 		m_stateDisabled->SetAutoDelete(true);
@@ -112,10 +119,11 @@ template <class T> T* CUIInteractiveBackground<T>::CreateD()
 	return m_stateDisabled;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::CreateT()
+template <class T>
+T* CUIInteractiveBackground<T>::CreateT()
 {
 	Frect r = GetWndRect();
-	if (!m_stateTouched)
+	if(!m_stateTouched)
 	{
 		m_stateTouched = xr_new<T>();
 		m_stateTouched->SetAutoDelete(true);
@@ -125,10 +133,11 @@ template <class T> T* CUIInteractiveBackground<T>::CreateT()
 	return m_stateTouched;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::CreateH()
+template <class T>
+T* CUIInteractiveBackground<T>::CreateH()
 {
 	Frect r = GetWndRect();
-	if (!m_stateHighlighted)
+	if(!m_stateHighlighted)
 	{
 		m_stateHighlighted = xr_new<T>();
 		m_stateHighlighted->SetAutoDelete(true);
@@ -138,31 +147,36 @@ template <class T> T* CUIInteractiveBackground<T>::CreateH()
 	return m_stateHighlighted;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::GetE()
+template <class T>
+T* CUIInteractiveBackground<T>::GetE()
 {
 	return m_stateEnabled;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::GetD()
+template <class T>
+T* CUIInteractiveBackground<T>::GetD()
 {
 	return m_stateDisabled;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::GetT()
+template <class T>
+T* CUIInteractiveBackground<T>::GetT()
 {
 	return m_stateTouched;
 }
 
-template <class T> T* CUIInteractiveBackground<T>::GetH()
+template <class T>
+T* CUIInteractiveBackground<T>::GetH()
 {
 	return m_stateHighlighted;
 }
 
-template <class T> void CUIInteractiveBackground<T>::InitEnabledState(LPCSTR texture_e)
+template <class T>
+void CUIInteractiveBackground<T>::InitEnabledState(LPCSTR texture_e)
 {
 	Frect r = GetWndRect();
 
-	if (!m_stateEnabled)
+	if(!m_stateEnabled)
 	{
 		m_stateEnabled = xr_new<T>();
 		m_stateEnabled->SetAutoDelete(true);
@@ -174,11 +188,12 @@ template <class T> void CUIInteractiveBackground<T>::InitEnabledState(LPCSTR tex
 	SetState(S_Enabled);
 }
 
-template <class T> void CUIInteractiveBackground<T>::InitDisabledState(LPCSTR texture_d)
+template <class T>
+void CUIInteractiveBackground<T>::InitDisabledState(LPCSTR texture_d)
 {
 	Frect r = GetWndRect();
 
-	if (!m_stateDisabled)
+	if(!m_stateDisabled)
 	{
 		m_stateDisabled = xr_new<T>();
 		m_stateDisabled->SetAutoDelete(true);
@@ -188,11 +203,12 @@ template <class T> void CUIInteractiveBackground<T>::InitDisabledState(LPCSTR te
 	this->m_stateDisabled->Init(texture_d, 0.0f, 0.0f, r.right - r.left, r.bottom - r.top);
 }
 
-template <class T> void CUIInteractiveBackground<T>::InitHighlightedState(LPCSTR texture_h)
+template <class T>
+void CUIInteractiveBackground<T>::InitHighlightedState(LPCSTR texture_h)
 {
 	Frect r = GetWndRect();
 
-	if (!m_stateHighlighted)
+	if(!m_stateHighlighted)
 	{
 		m_stateHighlighted = xr_new<T>();
 		m_stateHighlighted->SetAutoDelete(true);
@@ -202,11 +218,12 @@ template <class T> void CUIInteractiveBackground<T>::InitHighlightedState(LPCSTR
 	this->m_stateHighlighted->Init(texture_h, 0.0f, 0.0f, r.right - r.left, r.bottom - r.top);
 }
 
-template <class T> void CUIInteractiveBackground<T>::InitTouchedState(LPCSTR texture_d)
+template <class T>
+void CUIInteractiveBackground<T>::InitTouchedState(LPCSTR texture_d)
 {
 	Frect r = GetWndRect();
 
-	if (!m_stateTouched)
+	if(!m_stateTouched)
 	{
 		m_stateTouched = xr_new<T>();
 		m_stateTouched->SetAutoDelete(true);
@@ -216,9 +233,10 @@ template <class T> void CUIInteractiveBackground<T>::InitTouchedState(LPCSTR tex
 	this->m_stateTouched->Init(texture_d, 0.0f, 0.0f, r.right - r.left, r.bottom - r.top);
 }
 
-template <class T> void CUIInteractiveBackground<T>::SetState(UIState state)
+template <class T>
+void CUIInteractiveBackground<T>::SetState(UIState state)
 {
-	switch (state)
+	switch(state)
 	{
 	case S_Enabled:
 		this->m_stateCurrent = this->m_stateEnabled;
@@ -234,33 +252,36 @@ template <class T> void CUIInteractiveBackground<T>::SetState(UIState state)
 	}
 }
 
-template <class T> void CUIInteractiveBackground<T>::Draw()
+template <class T>
+void CUIInteractiveBackground<T>::Draw()
 {
-	if (m_stateCurrent)
+	if(m_stateCurrent)
 		m_stateCurrent->Draw();
 }
 
-template <class T> void CUIInteractiveBackground<T>::SetWidth(float width)
+template <class T>
+void CUIInteractiveBackground<T>::SetWidth(float width)
 {
-	if (m_stateEnabled)
+	if(m_stateEnabled)
 		m_stateEnabled->SetWidth(width);
-	if (m_stateDisabled)
+	if(m_stateDisabled)
 		m_stateDisabled->SetWidth(width);
-	if (m_stateHighlighted)
+	if(m_stateHighlighted)
 		m_stateHighlighted->SetWidth(width);
-	if (m_stateTouched)
+	if(m_stateTouched)
 		m_stateTouched->SetWidth(width);
 }
 
-template <class T> void CUIInteractiveBackground<T>::SetHeight(float heigth)
+template <class T>
+void CUIInteractiveBackground<T>::SetHeight(float heigth)
 {
-	if (m_stateEnabled)
+	if(m_stateEnabled)
 		m_stateEnabled->SetHeight(heigth);
-	if (m_stateDisabled)
+	if(m_stateDisabled)
 		m_stateDisabled->SetHeight(heigth);
-	if (m_stateHighlighted)
+	if(m_stateHighlighted)
 		m_stateHighlighted->SetHeight(heigth);
-	if (m_stateTouched)
+	if(m_stateTouched)
 		m_stateTouched->SetHeight(heigth);
 }
 

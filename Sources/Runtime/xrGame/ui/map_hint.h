@@ -12,7 +12,7 @@ class CUIMapHint : public CUIWindow
 	CUIWindow* m_owner;
 
   public:
-	CUIMapHint() : m_owner(NULL){};
+	CUIMapHint() : m_owner(NULL) {};
 	virtual ~CUIMapHint();
 	void Init();
 	void SetText(LPCSTR text);

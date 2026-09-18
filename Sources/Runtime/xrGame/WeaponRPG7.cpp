@@ -36,12 +36,12 @@ void CWeaponRPG7::UpdateMissileVisibility()
 
 	CKinematics* pHudVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
-	if (H_Parent() != Level().CurrentEntity())
+	if(H_Parent() != Level().CurrentEntity())
 		pHudVisual = NULL;
 	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual());
 	VERIFY(pWeaponVisual);
 
-	if (pHudVisual)
+	if(pHudVisual)
 		pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(*m_sHudGrenadeBoneName), vis_hud, TRUE);
 	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(*m_sGrenadeBoneName), vis_weap, TRUE);
 	pWeaponVisual->CalculateBones_Invalidate();
@@ -53,7 +53,7 @@ BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 	BOOL l_res = inherited::net_Spawn(DC);
 
 	UpdateMissileVisibility();
-	if (iAmmoElapsed && !getCurrentRocket())
+	if(iAmmoElapsed && !getCurrentRocket())
 	{
 		CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
 	}
@@ -77,7 +77,7 @@ void CWeaponRPG7::ReloadMagazine()
 {
 	inherited::ReloadMagazine();
 
-	if (iAmmoElapsed && !getRocketCount())
+	if(iAmmoElapsed && !getRocketCount())
 	{
 		CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
 	}
@@ -100,17 +100,17 @@ void CWeaponRPG7::switch2_Fire()
 	m_bFireSingleShot = true;
 	bWorking = false;
 
-	if (GetState() == eFire && getRocketCount())
+	if(GetState() == eFire && getRocketCount())
 	{
 		fvec3 p1, d;
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
 
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
-		if (E)
+		if(E)
 		{
 			CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
-			if (NULL == io->inventory().ActiveItem())
+			if(NULL == io->inventory().ActiveItem())
 			{
 				Log("current_state", GetState());
 				Log("next_state", GetNextState());
@@ -136,7 +136,7 @@ void CWeaponRPG7::switch2_Fire()
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 
-		if (OnServer())
+		if(OnServer())
 		{
 			NET_Packet P;
 			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
@@ -150,15 +150,17 @@ void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 	u16 id;
-	switch (type)
+	switch(type)
 	{
-	case GE_OWNERSHIP_TAKE: {
+	case GE_OWNERSHIP_TAKE:
+	{
 		P.r_u16(id);
 		CRocketLauncher::AttachRocket(id, this);
 	}
 	break;
 	case GE_OWNERSHIP_REJECT:
-	case GE_LAUNCH_ROCKET: {
+	case GE_LAUNCH_ROCKET:
+	{
 		bool bLaunch = (type == GE_LAUNCH_ROCKET);
 		P.r_u16(id);
 		CRocketLauncher::DetachRocket(id, bLaunch);

@@ -20,50 +20,59 @@ void CSightAction::initialize()
 {
 	m_start_time = Engine.TimeManager.GetGlobalTimeMs();
 
-	if (SightManager::eSightTypeCoverLookOver == m_sight_type)
+	if(SightManager::eSightTypeCoverLookOver == m_sight_type)
 		initialize_cover_look_over();
 
-	if (SightManager::eSightTypeFireObject == m_sight_type)
+	if(SightManager::eSightTypeFireObject == m_sight_type)
 		initialize_fire_object();
 }
 
 void CSightAction::execute()
 {
-	switch (m_sight_type)
+	switch(m_sight_type)
 	{
-	case SightManager::eSightTypeCurrentDirection: {
+	case SightManager::eSightTypeCurrentDirection:
+	{
 		execute_current_direction();
 		break;
 	}
-	case SightManager::eSightTypePathDirection: {
+	case SightManager::eSightTypePathDirection:
+	{
 		execute_path_direction();
 		break;
 	}
-	case SightManager::eSightTypeDirection: {
+	case SightManager::eSightTypeDirection:
+	{
 		execute_direction();
 		break;
 	}
-	case SightManager::eSightTypePosition: {
+	case SightManager::eSightTypePosition:
+	{
 		execute_position();
 		break;
 	}
-	case SightManager::eSightTypeObject: {
+	case SightManager::eSightTypeObject:
+	{
 		execute_object();
 		break;
 	}
-	case SightManager::eSightTypeCover: {
+	case SightManager::eSightTypeCover:
+	{
 		execute_cover();
 		break;
 	}
-	case SightManager::eSightTypeSearch: {
+	case SightManager::eSightTypeSearch:
+	{
 		execute_search();
 		break;
 	}
-	case SightManager::eSightTypeCoverLookOver: {
+	case SightManager::eSightTypeCoverLookOver:
+	{
 		execute_cover_look_over();
 		break;
 	}
-	case SightManager::eSightTypeFireObject: {
+	case SightManager::eSightTypeFireObject:
+	{
 		execute_fire_object();
 		break;
 	}
@@ -74,10 +83,10 @@ void CSightAction::execute()
 
 void CSightAction::remove_links(CObject* object)
 {
-	if (!m_object_to_look)
+	if(!m_object_to_look)
 		return;
 
-	if (m_object_to_look->ID() != object->ID())
+	if(m_object_to_look->ID() != object->ID())
 		return;
 
 	//	execute				();
@@ -121,7 +130,7 @@ void CSightAction::execute_direction()
 
 void CSightAction::execute_position()
 {
-	if (m_torso_look)
+	if(m_torso_look)
 		object().sight().SetFirePointLookAngles(m_vector3d, object().movement().m_head.target.yaw,
 												object().movement().m_head.target.pitch);
 	else
@@ -138,13 +147,13 @@ void CSightAction::execute_object()
 	m_object_to_look->Center(look_pos);
 
 	const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(m_object_to_look);
-	if (!entity_alive || entity_alive->g_Alive())
+	if(!entity_alive || entity_alive->g_Alive())
 	{
 		look_pos.x = m_object_to_look->Position().x;
 		look_pos.z = m_object_to_look->Position().z;
 	}
 
-	if (m_torso_look)
+	if(m_torso_look)
 		object().sight().SetFirePointLookAngles(look_pos, object().movement().m_head.target.yaw,
 												object().movement().m_head.target.pitch, m_object_to_look);
 	else
@@ -154,7 +163,7 @@ void CSightAction::execute_object()
 	//	Msg
 	//("execute_object(%f)(%s)my_position[%f][%f][%f],object_position[%f][%f][%f]",object().movement().m_head.target.yaw,*m_object_to_look->cName(),VPUSH(m_object->eye_matrix.c),VPUSH(m_object_to_look->Position()));
 
-	if (m_no_pitch)
+	if(m_no_pitch)
 		object().movement().m_head.target.pitch = 0.f;
 
 #ifdef SIGHT_TEST
@@ -164,7 +173,7 @@ void CSightAction::execute_object()
 
 void CSightAction::execute_cover()
 {
-	if (m_torso_look)
+	if(m_torso_look)
 		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), PI, m_path);
 	else
 		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
@@ -177,7 +186,7 @@ void CSightAction::execute_cover()
 void CSightAction::execute_search()
 {
 	m_torso_look = false;
-	if (m_torso_look)
+	if(m_torso_look)
 		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), PI, m_path);
 	else
 		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
@@ -198,11 +207,12 @@ void CSightAction::initialize_cover_look_over()
 
 void CSightAction::execute_cover_look_over()
 {
-	switch (m_internal_state)
+	switch(m_internal_state)
 	{
 	case 0:
-	case 2: {
-		if ((m_start_state_time + m_stop_state_time < Engine.TimeManager.GetGlobalTimeMs()) && target_reached())
+	case 2:
+	{
+		if((m_start_state_time + m_stop_state_time < Engine.TimeManager.GetGlobalTimeMs()) && target_reached())
 		{
 			m_start_state_time = Engine.TimeManager.GetGlobalTimeMs();
 			m_stop_state_time = 3500;
@@ -211,8 +221,9 @@ void CSightAction::execute_cover_look_over()
 		}
 		break;
 	}
-	case 1: {
-		if ((m_start_state_time + m_stop_state_time < Engine.TimeManager.GetGlobalTimeMs()) && target_reached())
+	case 1:
+	{
+		if((m_start_state_time + m_stop_state_time < Engine.TimeManager.GetGlobalTimeMs()) && target_reached())
 		{
 			execute_cover();
 			m_internal_state = 0;
@@ -255,33 +266,35 @@ void CSightAction::initialize_fire_object()
 
 void CSightAction::execute_fire_object()
 {
-	switch (m_state_fire_object)
+	switch(m_state_fire_object)
 	{
-	case 0: {
+	case 0:
+	{
 		execute_object();
 
-		if (target_reached() && object().inventory().ActiveItem())
+		if(target_reached() && object().inventory().ActiveItem())
 		{
-			if (!m_object->can_kill_enemy() || m_object->can_kill_member())
+			if(!m_object->can_kill_enemy() || m_object->can_kill_member())
 				m_state_fire_object = 1;
 		}
 		break;
 	}
-	case 1: {
-		if (!m_holder_start_position.similar(m_object->Position(), .5f))
+	case 1:
+	{
+		if(!m_holder_start_position.similar(m_object->Position(), .5f))
 		{
 			m_state_fire_object = 0;
 			break;
 		}
 
-		if (!m_object_start_position.similar(m_object_to_look->Position(), .5f))
+		if(!m_object_start_position.similar(m_object_to_look->Position(), .5f))
 		{
 			m_state_fire_object = 0;
 			break;
 		}
 
 		m_object->feel_vision_get(objects);
-		if (std::find(objects.begin(), objects.end(), m_object_to_look) != objects.end())
+		if(std::find(objects.begin(), objects.end(), m_object_to_look) != objects.end())
 		{
 			m_vector3d = m_object->feel_vision_get_vispoint(const_cast<CGameObject*>(m_object_to_look));
 			execute_position();

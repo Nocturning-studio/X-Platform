@@ -34,7 +34,8 @@ class CPPEffectorCustom : public CEffectorPP
 
 //////////////////////////////////////////////////////////////////////////
 
-template <class _Effector> class CPPEffectorCustomController
+template <class _Effector>
+class CPPEffectorCustomController
 {
   public:
 	CPPEffectorCustomController();
@@ -49,12 +50,14 @@ template <class _Effector> class CPPEffectorCustomController
 	SPPInfo m_state;
 };
 
-template <class _Effector> CPPEffectorCustomController<_Effector>::CPPEffectorCustomController()
+template <class _Effector>
+CPPEffectorCustomController<_Effector>::CPPEffectorCustomController()
 {
 	m_effector = 0;
 }
 
-template <class _Effector> void CPPEffectorCustomController<_Effector>::load(LPCSTR section)
+template <class _Effector>
+void CPPEffectorCustomController<_Effector>::load(LPCSTR section)
 {
 	m_state.duality.h = pSettings->r_float(section, "duality_h");
 	m_state.duality.v = pSettings->r_float(section, "duality_v");
@@ -72,7 +75,7 @@ template <class _Effector> void CPPEffectorCustomController<_Effector>::load(LPC
 	sscanf(pSettings->r_string(section, "color_add"), "%f,%f,%f", &m_state.color_add.r, &m_state.color_add.g,
 		   &m_state.color_add.b);
 
-	if (pSettings->line_exist(section, "radiation_intensity"))
+	if(pSettings->line_exist(section, "radiation_intensity"))
 		m_state.radiation_intensity = pSettings->r_float(section, "radiation_intensity");
 	else
 		m_state.radiation_intensity = 0.0f;

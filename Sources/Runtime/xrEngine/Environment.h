@@ -21,7 +21,7 @@ ENGINE_API extern Flags32 psEnvFlags;
 #include "Environment_modifiers.h"
 #include "Environment_descriptor.h"
 #include "Environment_descriptor_mixer.h"
-#include "Environment_wind.h"							
+#include "Environment_wind.h"
 
 class ENGINE_API CEnvironment
 {

@@ -90,7 +90,7 @@ IC void CSoundMemoryManager::update_sound_threshold()
 	// t = max(t*f^((tc - tl)/tq),min_threshold)
 	m_sound_threshold = _max<float>(m_self_sound_factor * m_sound_threshold *
 										expf(float(Engine.TimeManager.GetGlobalTimeMs() - m_last_sound_time) /
-											float(m_sound_decrease_quant) * logf(m_decrease_factor)),
+											 float(m_sound_decrease_quant) * logf(m_decrease_factor)),
 									m_min_sound_threshold);
 	VERIFY(_valid(m_sound_threshold));
 }
@@ -100,8 +100,8 @@ IC u32 CSoundMemoryManager::priority(const MemorySpace::CSoundObject& sound) con
 	u32 priority = u32(-1);
 	xr_map<ESoundTypes, u32>::const_iterator I = m_priorities.begin();
 	xr_map<ESoundTypes, u32>::const_iterator E = m_priorities.end();
-	for (; I != E; ++I)
-		if (((*I).second < priority) && ((*I).first & sound.m_sound_type) == (*I).first)
+	for(; I != E; ++I)
+		if(((*I).second < priority) && ((*I).first & sound.m_sound_type) == (*I).first)
 			priority = (*I).second;
 	return (priority);
 }
@@ -109,7 +109,7 @@ IC u32 CSoundMemoryManager::priority(const MemorySpace::CSoundObject& sound) con
 void CSoundMemoryManager::enable(const CObject* object, bool enable)
 {
 	xr_vector<CSoundObject>::iterator J = std::find(m_sounds->begin(), m_sounds->end(), object_id(object));
-	if (J == m_sounds->end())
+	if(J == m_sounds->end())
 		return;
 	(*J).m_enabled = enable;
 }
@@ -123,15 +123,15 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 										 const fvec3& position, float sound_power)
 {
 #ifndef MASTER_GOLD
-	if (object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
+	if(object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
 		return;
 #endif // MASTER_GOLD
 
 	VERIFY(_valid(sound_power));
-	if (!m_sounds)
+	if(!m_sounds)
 		return;
 
-	if (user_data)
+	if(user_data)
 		user_data->accept(m_visitor);
 
 	CObject* self = m_object;
@@ -149,50 +149,50 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 	update_sound_threshold();
 
 	CEntityAlive* entity_alive = m_object;
-	if (!entity_alive->g_Alive())
+	if(!entity_alive->g_Alive())
 		return;
 
 	VERIFY(_valid(sound_power));
-	if (is_sound_type(sound_type, SOUND_TYPE_WEAPON))
+	if(is_sound_type(sound_type, SOUND_TYPE_WEAPON))
 		sound_power *= m_weapon_factor;
 
 	VERIFY(_valid(sound_power));
-	if (is_sound_type(sound_type, SOUND_TYPE_ITEM))
+	if(is_sound_type(sound_type, SOUND_TYPE_ITEM))
 		sound_power *= m_item_factor;
 
 	VERIFY(_valid(sound_power));
-	if (is_sound_type(sound_type, SOUND_TYPE_MONSTER))
+	if(is_sound_type(sound_type, SOUND_TYPE_MONSTER))
 		sound_power *= m_npc_factor;
 
 	VERIFY(_valid(sound_power));
-	if (is_sound_type(sound_type, SOUND_TYPE_ANOMALY))
+	if(is_sound_type(sound_type, SOUND_TYPE_ANOMALY))
 		sound_power *= m_anomaly_factor;
 
 	VERIFY(_valid(sound_power));
-	if (is_sound_type(sound_type, SOUND_TYPE_WORLD))
+	if(is_sound_type(sound_type, SOUND_TYPE_WORLD))
 		sound_power *= m_world_factor;
 
 	VERIFY(_valid(sound_power));
-	if (sound_power >= m_sound_threshold)
+	if(sound_power >= m_sound_threshold)
 	{
-		if (is_sound_type(sound_type, SOUND_TYPE_WEAPON_SHOOTING))
+		if(is_sound_type(sound_type, SOUND_TYPE_WEAPON_SHOOTING))
 		{
 			// this is fake!
 			CEntityAlive* _entity_alive = smart_cast<CEntityAlive*>(object);
-			if (_entity_alive && (self->ID() != _entity_alive->ID()) &&
-				(_entity_alive->g_Team() != entity_alive->g_Team()))
+			if(_entity_alive && (self->ID() != _entity_alive->ID()) &&
+			   (_entity_alive->g_Team() != entity_alive->g_Team()))
 				m_object->memory().hit().add(_entity_alive);
 		}
-		if (!m_stalker || !m_stalker->memory().enemy().selected())
+		if(!m_stalker || !m_stalker->memory().enemy().selected())
 			add(object, sound_type, position, sound_power);
 		else
 		{
-			if (object)
+			if(object)
 			{
 				//				bool		is_shooting = is_sound_type(sound_type,SOUND_TYPE_WEAPON_SHOOTING);
 				//				bool		is_colliding = is_sound_type(sound_type,SOUND_TYPE_WORLD_OBJECT_COLLIDING);
 				//				bool		very_close = m_stalker->Position().distance_to_sqr(object->Position()) <=
-				//COMBAT_SOUND_PERCEIVE_RADIUS_SQR; 				if (is_shooting || is_colliding || very_close)
+				// COMBAT_SOUND_PERCEIVE_RADIUS_SQR; 				if (is_shooting || is_colliding || very_close)
 				add(object, sound_type, position, sound_power);
 			}
 		}
@@ -206,14 +206,14 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 
 void CSoundMemoryManager::add(const CSoundObject& sound_object, bool check_for_existance)
 {
-	if (check_for_existance)
+	if(check_for_existance)
 	{
-		if (m_sounds->end() != std::find(m_sounds->begin(), m_sounds->end(), object_id(sound_object.m_object)))
+		if(m_sounds->end() != std::find(m_sounds->begin(), m_sounds->end(), object_id(sound_object.m_object)))
 			return;
 	}
 
 	VERIFY(m_max_sound_count);
-	if (m_max_sound_count <= m_sounds->size())
+	if(m_max_sound_count <= m_sounds->size())
 	{
 		xr_vector<CSoundObject>::iterator I =
 			std::min_element(m_sounds->begin(), m_sounds->end(), SLevelTimePredicate<CGameObject>());
@@ -228,34 +228,34 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const fvec3
 {
 #ifndef SAVE_OWN_SOUNDS
 	// we do not want to save our own sounds
-	if (object && (m_object->ID() == object->ID()))
+	if(object && (m_object->ID() == object->ID()))
 		return;
 #endif
 
 #ifndef SAVE_OWN_ITEM_SOUNDS
 	// we do not want to save the sounds which was from the items we own
-	if (object && object->H_Parent() && (object->H_Parent()->ID() == m_object->ID()))
+	if(object && object->H_Parent() && (object->H_Parent()->ID() == m_object->ID()))
 		return;
 #endif
 
 #ifndef SAVE_NON_ALIVE_OBJECT_SOUNDS
 	// we do not want to save sounds from the non-alive objects (?!)
-	if (object && !m_object->memory().enemy().selected() && !smart_cast<const CEntityAlive*>(object))
+	if(object && !m_object->memory().enemy().selected() && !smart_cast<const CEntityAlive*>(object))
 		return;
 #endif
 
 #ifndef SAVE_FRIEND_ITEM_SOUNDS
 	// we do not want to save sounds from the teammates items
 	CEntityAlive* me = m_object;
-	if (object && object->H_Parent() &&
-		(me->tfGetRelationType(smart_cast<const CEntityAlive*>(object->H_Parent())) == ALife::eRelationTypeFriend))
+	if(object && object->H_Parent() &&
+	   (me->tfGetRelationType(smart_cast<const CEntityAlive*>(object->H_Parent())) == ALife::eRelationTypeFriend))
 		return;
 #endif
 
 #ifndef SAVE_FRIEND_SOUNDS
 	const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(object);
 	// we do not want to save sounds from the teammates
-	if (entity_alive && me && (me->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
+	if(entity_alive && me && (me->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
 		return;
 #endif
 
@@ -264,24 +264,24 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const fvec3
 	const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(object);
 #endif
 	// we do not save sounds from the objects we see (?!)
-	if (m_object->memory().visual().visible_now(entity_alive))
+	if(m_object->memory().visual().visible_now(entity_alive))
 		return;
 #endif
 
 	const CGameObject* game_object = smart_cast<const CGameObject*>(object);
-	if (!game_object && object)
+	if(!game_object && object)
 		return;
 
 	const CGameObject* self = m_object;
 
 	xr_vector<CSoundObject>::iterator J = std::find(m_sounds->begin(), m_sounds->end(), object_id(object));
-	if (m_sounds->end() == J)
+	if(m_sounds->end() == J)
 	{
 		CSoundObject sound_object;
 
 		sound_object.fill(game_object, self, ESoundTypes(sound_type), sound_power,
 						  !m_stalker ? squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker));
-		if (!game_object)
+		if(!game_object)
 			sound_object.m_object_params.m_position = position;
 #ifdef USE_FIRST_GAME_TIME
 		sound_object.m_first_game_time = Level().GetGameTime();
@@ -296,7 +296,7 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const fvec3
 		(*J).fill(game_object, self, ESoundTypes(sound_type), sound_power,
 				  (!m_stalker ? (*J).m_squad_mask.get()
 							  : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
-		if (!game_object)
+		if(!game_object)
 			(*J).m_object_params.m_position = position;
 	}
 }
@@ -305,7 +305,7 @@ struct CRemoveOfflinePredicate
 {
 	bool operator()(const CSoundObject& object) const
 	{
-		if (!object.m_object)
+		if(!object.m_object)
 			return (false);
 
 		return (!!object.m_object->H_Parent());
@@ -314,7 +314,7 @@ struct CRemoveOfflinePredicate
 
 void CSoundMemoryManager::update()
 {
-	//OPTICK_EVENT("CSoundMemoryManager::Update");
+	// OPTICK_EVENT("CSoundMemoryManager::Update");
 
 	START_PROFILE("Memory Manager/sounds::update")
 
@@ -328,10 +328,10 @@ void CSoundMemoryManager::update()
 	u32 priority = u32(-1);
 	xr_vector<CSoundObject>::const_iterator I = m_sounds->begin();
 	xr_vector<CSoundObject>::const_iterator E = m_sounds->end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		u32 cur_priority = this->priority(*I);
-		if (cur_priority < priority)
+		if(cur_priority < priority)
 		{
 			m_selected_sound = xr_new<CSoundObject>(*I);
 			priority = cur_priority;
@@ -352,10 +352,10 @@ struct CSoundObjectPredicate
 
 	bool operator()(const MemorySpace::CSoundObject& sound_object) const
 	{
-		if (!m_object)
+		if(!m_object)
 			return (!sound_object.m_object);
 
-		if (!sound_object.m_object)
+		if(!sound_object.m_object)
 			return (false);
 
 		return (m_object->ID() == sound_object.m_object->ID());
@@ -366,17 +366,17 @@ void CSoundMemoryManager::remove_links(CObject* object)
 {
 	VERIFY(m_sounds);
 	SOUNDS::iterator I = std::find_if(m_sounds->begin(), m_sounds->end(), CSoundObjectPredicate(object));
-	if (I != m_sounds->end())
+	if(I != m_sounds->end())
 		m_sounds->erase(I);
 
 #ifdef USE_SELECTED_SOUND
-	if (!m_selected_sound)
+	if(!m_selected_sound)
 		return;
 
-	if (!m_selected_sound->m_object)
+	if(!m_selected_sound->m_object)
 		return;
 
-	if (m_selected_sound->m_object->ID() != object->ID())
+	if(m_selected_sound->m_object->ID() != object->ID())
 		return;
 
 	xr_delete(m_selected_sound);
@@ -385,14 +385,14 @@ void CSoundMemoryManager::remove_links(CObject* object)
 
 void CSoundMemoryManager::save(NET_Packet& packet) const
 {
-	if (!m_object->g_Alive())
+	if(!m_object->g_Alive())
 		return;
 
 	packet.w_u8((u8)objects().size());
 
 	SOUNDS::const_iterator I = objects().begin();
 	SOUNDS::const_iterator E = objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		VERIFY((*I).m_object);
 		packet.w_u16((*I).m_object->ID());
@@ -428,7 +428,7 @@ void CSoundMemoryManager::save(NET_Packet& packet) const
 
 void CSoundMemoryManager::load(IReader& packet)
 {
-	if (!m_object->g_Alive())
+	if(!m_object->g_Alive())
 		return;
 
 	typedef CClientSpawnManager::CALLBACK_TYPE CALLBACK_TYPE;
@@ -436,7 +436,7 @@ void CSoundMemoryManager::load(IReader& packet)
 	callback.bind(&m_object->memory(), &CMemoryManager::on_requested_spawn);
 
 	int count = packet.r_u8();
-	for (int i = 0; i < count; ++i)
+	for(int i = 0; i < count; ++i)
 	{
 		CDelayedSoundObject delayed_object;
 		delayed_object.m_object_id = packet.r_u16();
@@ -477,7 +477,7 @@ void CSoundMemoryManager::load(IReader& packet)
 		object.m_sound_type = (ESoundTypes)packet.r_u32();
 		object.m_power = packet.r_float();
 
-		if (object.m_object)
+		if(object.m_object)
 		{
 			add(object, true);
 			continue;
@@ -487,13 +487,13 @@ void CSoundMemoryManager::load(IReader& packet)
 
 		const CClientSpawnManager::CSpawnCallback* spawn_callback =
 			Level().client_spawn_manager().callback(delayed_object.m_object_id, m_object->ID());
-		if (!spawn_callback || !spawn_callback->m_object_callback)
-			if (!g_dedicated_server)
+		if(!spawn_callback || !spawn_callback->m_object_callback)
+			if(!g_dedicated_server)
 				Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
 #ifdef DEBUG
 			else
 			{
-				if (spawn_callback && spawn_callback->m_object_callback)
+				if(spawn_callback && spawn_callback->m_object_callback)
 				{
 					VERIFY(spawn_callback->m_object_callback == callback);
 				}
@@ -504,14 +504,14 @@ void CSoundMemoryManager::load(IReader& packet)
 
 void CSoundMemoryManager::clear_delayed_objects()
 {
-	if (m_delayed_objects.empty())
+	if(m_delayed_objects.empty())
 		return;
 
 	CClientSpawnManager& manager = Level().client_spawn_manager();
 	DELAYED_SOUND_OBJECTS::const_iterator I = m_delayed_objects.begin();
 	DELAYED_SOUND_OBJECTS::const_iterator E = m_delayed_objects.end();
-	for (; I != E; ++I)
-		if (manager.callback((*I).m_object_id, m_object->ID()))
+	for(; I != E; ++I)
+		if(manager.callback((*I).m_object_id, m_object->ID()))
 			manager.remove((*I).m_object_id, m_object->ID());
 
 	m_delayed_objects.clear();
@@ -521,12 +521,12 @@ void CSoundMemoryManager::on_requested_spawn(CObject* object)
 {
 	DELAYED_SOUND_OBJECTS::iterator I = m_delayed_objects.begin();
 	DELAYED_SOUND_OBJECTS::iterator E = m_delayed_objects.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((*I).m_object_id != object->ID())
+		if((*I).m_object_id != object->ID())
 			continue;
 
-		if (m_object->g_Alive())
+		if(m_object->g_Alive())
 		{
 			(*I).m_sound_object.m_object = smart_cast<CGameObject*>(object);
 			VERIFY((*I).m_sound_object.m_object);

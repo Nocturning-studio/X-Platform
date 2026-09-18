@@ -90,7 +90,7 @@ IC bool CAbstractGraph::empty() const
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::clear()
 {
-	while (!vertices().empty())
+	while(!vertices().empty())
 		remove_vertex(vertices().begin()->first);
 	VERIFY(!m_edge_count);
 }
@@ -99,7 +99,7 @@ TEMPLATE_SPECIALIZATION
 IC const typename CAbstractGraph::CVertex* CAbstractGraph::vertex(const _vertex_id_type& vertex_id) const
 {
 	const_vertex_iterator I = vertices().find(vertex_id);
-	if (vertices().end() == I)
+	if(vertices().end() == I)
 		return (0);
 	return ((*I).second);
 }
@@ -108,7 +108,7 @@ TEMPLATE_SPECIALIZATION
 IC typename CAbstractGraph::CVertex* CAbstractGraph::vertex(const _vertex_id_type& vertex_id)
 {
 	vertex_iterator I = m_vertices.find(vertex_id);
-	if (m_vertices.end() == I)
+	if(m_vertices.end() == I)
 		return (0);
 	return ((*I).second);
 }
@@ -118,7 +118,7 @@ IC const typename CAbstractGraph::CEdge* CAbstractGraph::edge(const _vertex_id_t
 															  const _vertex_id_type& vertex_id1) const
 {
 	const CVertex* _vertex = vertex(vertex_id0);
-	if (!_vertex)
+	if(!_vertex)
 		return (0);
 	return (_vertex->edge(vertex_id1));
 }
@@ -128,7 +128,7 @@ IC typename CAbstractGraph::CEdge* CAbstractGraph::edge(const _vertex_id_type& v
 														const _vertex_id_type& vertex_id1)
 {
 	CVertex* _vertex = vertex(vertex_id0);
-	if (!_vertex)
+	if(!_vertex)
 		return (0);
 	return (_vertex->edge(vertex_id1));
 }
@@ -154,10 +154,10 @@ IC const CAbstractGraph& CAbstractGraph::header() const
 TEMPLATE_SPECIALIZATION
 IC bool CAbstractGraph::operator==(const CGraphAbstract& obj) const
 {
-	if (vertex_count() != obj.vertex_count())
+	if(vertex_count() != obj.vertex_count())
 		return (false);
 
-	if (edge_count() != obj.edge_count())
+	if(edge_count() != obj.edge_count())
 		return (false);
 
 	return (equal(vertices(), obj.vertices()));
@@ -209,7 +209,7 @@ IC void CAbstractGraph::save(IWriter& stream)
 	stream.open_chunk(1);
 	const_vertex_iterator I = vertices().begin();
 	const_vertex_iterator E = vertices().end();
-	for (int i = 0; I != E; ++I, ++i)
+	for(int i = 0; I != E; ++I, ++i)
 	{
 		stream.open_chunk(i);
 		{
@@ -229,9 +229,9 @@ IC void CAbstractGraph::save(IWriter& stream)
 	{
 		const_vertex_iterator I = vertices().begin();
 		const_vertex_iterator E = vertices().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			if ((*I).second->edges().empty())
+			if((*I).second->edges().empty())
 				continue;
 
 			save_data((*I).second->vertex_id(), stream);
@@ -239,7 +239,7 @@ IC void CAbstractGraph::save(IWriter& stream)
 			stream.w_u32((u32)(*I).second->edges().size());
 			const_iterator i = (*I).second->edges().begin();
 			const_iterator e = (*I).second->edges().end();
-			for (; i != e; ++i)
+			for(; i != e; ++i)
 			{
 				save_data((*i).vertex_id(), stream);
 				save_data((*i).weight(), stream);
@@ -265,7 +265,7 @@ IC void CAbstractGraph::load(IReader& stream)
 
 	chunk0 = stream.open_chunk(1);
 
-	for (chunk1 = chunk0->open_chunk_iterator(id); chunk1; chunk1 = chunk0->open_chunk_iterator(id, chunk1))
+	for(chunk1 = chunk0->open_chunk_iterator(id); chunk1; chunk1 = chunk0->open_chunk_iterator(id, chunk1))
 	{
 		chunk2 = chunk1->open_chunk(0);
 		load_data(vertex_id, *chunk2);
@@ -280,17 +280,17 @@ IC void CAbstractGraph::load(IReader& stream)
 	chunk0->close();
 
 	chunk0 = stream.open_chunk(2);
-	if (!chunk0)
+	if(!chunk0)
 		return;
 
-	while (!chunk0->eof())
+	while(!chunk0->eof())
 	{
 		_vertex_id_type vertex_id0;
 		load_data(vertex_id0, *chunk0);
 
 		u32 n = chunk0->r_u32();
 		VERIFY(n);
-		for (u32 i = 0; i < n; ++i)
+		for(u32 i = 0; i < n; ++i)
 		{
 			_vertex_id_type vertex_id1;
 			load_data(vertex_id1, *chunk0);

@@ -30,7 +30,7 @@ CGameSpy_Browser::CGameSpy_Browser()
 	LPCSTR g_name = "xrGameSpy.dll";
 	Log("Loading DLL:", g_name);
 	m_hGameSpyDLL = LoadLibrary(g_name);
-	if (0 == m_hGameSpyDLL)
+	if(0 == m_hGameSpyDLL)
 		R_CHK(GetLastError());
 	R_ASSERT2(m_hGameSpyDLL, "GameSpy DLL raised exception during loading or there is no game DLL at all");
 	//-------------------------
@@ -66,7 +66,7 @@ void CGameSpy_Browser::InitInternalData(HMODULE hGameSpyDLL)
 	m_bShowCMSErr = false;
 
 	m_pGSBrowser = xrGS_ServerBrowserNew(SBFalse, SBCallback, this);
-	if (!m_pGSBrowser)
+	if(!m_pGSBrowser)
 	{
 		Msg("! Unable to init Server Browser!");
 	}
@@ -79,13 +79,13 @@ CGameSpy_Browser::~CGameSpy_Browser()
 	Clear();
 
 	delete_data(m_pQR2);
-	if (m_pGSBrowser)
+	if(m_pGSBrowser)
 	{
 		xrGS_ServerBrowserFree(m_pGSBrowser);
 		m_pGSBrowser = NULL;
 	}
 
-	if (m_hGameSpyDLL)
+	if(m_hGameSpyDLL)
 	{
 		FreeLibrary(m_hGameSpyDLL);
 		m_hGameSpyDLL = NULL;
@@ -176,11 +176,11 @@ struct RefreshData
 
 void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 {
-	if (!m_pGSBrowser)
+	if(!m_pGSBrowser)
 		return;
 
 	SBState state = xrGS_ServerBrowserState(m_pGSBrowser);
-	if ((state != sb_connected) && (state != sb_disconnected))
+	if((state != sb_connected) && (state != sb_disconnected))
 	{
 		xrGS_ServerBrowserHalt(m_pGSBrowser);
 		Msg("xrGSB Refresh Stopped\n");
@@ -191,12 +191,12 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 	// do an update
 	SBError error = sbe_noerror;
 
-	if (!Local)
+	if(!Local)
 	{
 		m_refresh_lock.Enter();
 		m_refresh_lock.Leave();
 
-		if (m_bAbleToConnectToMasterServer)
+		if(m_bAbleToConnectToMasterServer)
 		{
 			// Создаем данные для задачи
 			RefreshData* pRData = xr_new<RefreshData>();
@@ -204,11 +204,12 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 			pRData->pGSBrowser = this;
 
 			m_bTryingToConnectToMasterServer = true;
-			if (MainMenu())
+			if(MainMenu())
 				MainMenu()->Show_CTMS_Dialog();
 
 			// Запускаем асинхронную задачу с помощью PPL
-			concurrency::create_task([pRData]() {
+			concurrency::create_task([pRData]()
+									 {
 				// Устанавливаем имя потока для профилировщика
 				OPTICK_THREAD("GameSpy Internet Refresh thread");
 				OPTICK_FRAME("GameSpy Internet Refresh thread");
@@ -217,11 +218,10 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 				pRData->pGSBrowser->RefreshListInternet(pRData->FilterStr);
 
 				// Освобождаем память
-				xr_delete(pRData);
-			});
+				xr_delete(pRData); });
 		}
 
-		if (error != sbe_noerror || !m_bAbleToConnectToMasterServer)
+		if(error != sbe_noerror || !m_bAbleToConnectToMasterServer)
 		{
 			MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
 		}
@@ -231,7 +231,7 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 		error = xrGS_ServerBrowserLANUpdate(m_pGSBrowser, m_pServerList ? SBTrue : SBFalse);
 	}
 
-	if (error != sbe_noerror)
+	if(error != sbe_noerror)
 	{
 		Msg("! xrGSB Error - %s", xrGS_ServerBrowserErrorDesc(m_pGSBrowser, error));
 	}
@@ -240,9 +240,9 @@ void CGameSpy_Browser::RefreshList_Full(bool Local, const char* FilterStr)
 void __cdecl SBCallback(void* sb, SBCallbackReason reason, void* server, void* instance)
 {
 	CGameSpy_Browser* pGSBrowser = (CGameSpy_Browser*)instance;
-	if (!pGSBrowser)
+	if(!pGSBrowser)
 		return;
-	switch (reason)
+	switch(reason)
 	{
 	case sbc_serveradded: // a server was added to the list, may just have an IP & port at this point
 	{
@@ -299,13 +299,15 @@ void __cdecl SBCallback(void* sb, SBCallbackReason reason, void* server, void* i
 #endif
 	}
 	break;
-	case sbc_serverchallengereceived: {
+	case sbc_serverchallengereceived:
+	{
 #ifdef _DEBUG
 //.			Msg("sbc_serverchallengereceived");
 #endif
 	}
 	break;
-	default: {
+	default:
+	{
 		R_ASSERT2(0, "Unknown Callback Reason");
 	}
 	break;
@@ -317,7 +319,7 @@ void CGameSpy_Browser::CallBack_OnUpdateCompleted()
 	int NumServers = xrGS_ServerBrowserCount(m_pGSBrowser);
 
 	ServerInfo NewServerInfo;
-	for (int i = 0; i < NumServers; i++)
+	for(int i = 0; i < NumServers; i++)
 	{
 		void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, i);
 		ReadServerInfo(&NewServerInfo, pServer);
@@ -336,68 +338,68 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo* pServerInfo, int idx)
 	pServerInfo->Index = idx;
 }
 
-#define ADD_BOOL_INFO(i, s, t, k)                                                                                      \
-	i->m_aInfos.push_back(                                                                                             \
-		GameInfo(t, ((xrGS_SBServerGetBoolValue(s, m_pQR2->xrGS_RegisteredKey(k), SBFalse)) == SBTrue)                 \
-						? *st.translate("mp_si_yes")                                                                   \
+#define ADD_BOOL_INFO(i, s, t, k)                                                                      \
+	i->m_aInfos.push_back(                                                                             \
+		GameInfo(t, ((xrGS_SBServerGetBoolValue(s, m_pQR2->xrGS_RegisteredKey(k), SBFalse)) == SBTrue) \
+						? *st.translate("mp_si_yes")                                                   \
 						: *st.translate("mp_si_no")))
-#define ADD_INT_INFO(i, s, t, k)                                                                                       \
-	{                                                                                                                  \
-		string256 tmp;                                                                                                 \
-		sprintf_s(tmp, "%d", xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0));                           \
-		i->m_aInfos.push_back(GameInfo(t, tmp));                                                                       \
+#define ADD_INT_INFO(i, s, t, k)                                                             \
+	{                                                                                        \
+		string256 tmp;                                                                       \
+		sprintf_s(tmp, "%d", xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0)); \
+		i->m_aInfos.push_back(GameInfo(t, tmp));                                             \
 	}
 
-#define ADD_INT_INFO_N(i, s, m, t1, t2, k)                                                                             \
-	{                                                                                                                  \
-		if (xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                                             \
-		{                                                                                                              \
-			string256 tmp;                                                                                             \
-			sprintf_s(tmp, "%d" t2, xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0) * m);                \
-			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                                  \
-		}                                                                                                              \
-		else                                                                                                           \
-		{                                                                                                              \
-			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                                            \
-		}                                                                                                              \
+#define ADD_INT_INFO_N(i, s, m, t1, t2, k)                                                              \
+	{                                                                                                   \
+		if(xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                               \
+		{                                                                                               \
+			string256 tmp;                                                                              \
+			sprintf_s(tmp, "%d" t2, xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0) * m); \
+			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                   \
+		}                                                                                               \
+		else                                                                                            \
+		{                                                                                               \
+			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                             \
+		}                                                                                               \
 	}
 
-#define ADD_FLOAT_INFO_N(i, s, m, t1, t2, k)                                                                                                                                            \
-	{                                                                                                                                                                                   \
-		/* Получаем значение один раз, чтобы не вызывать функцию дважды (оптимизация и читаемость) */          \
-		float val = xrGS_SBServerGetFloatValue(s, m_pQR2->xrGS_RegisteredKey(k), 0);                                                                                                    \
-		if (val != 0) /* Или другая проверка на валидность, если 0 - это валидное значение, то проверка неверна */ \
-		{                                                                                                                                                                               \
-			string256 tmp;                                                                                                                                                              \
-			/* Убрали жесткий %f, теперь t2 полностью управляет форматом */                                                                \
-			sprintf_s(tmp, t2, val* m);                                                                                                                                                 \
-			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                                                                                                   \
-		}                                                                                                                                                                               \
-		else                                                                                                                                                                            \
-		{                                                                                                                                                                               \
-			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                                                                                                             \
-		}                                                                                                                                                                               \
+#define ADD_FLOAT_INFO_N(i, s, m, t1, t2, k)                                                                      \
+	{                                                                                                             \
+		/* Получаем значение один раз, чтобы не вызывать функцию дважды (оптимизация и читаемость) */             \
+		float val = xrGS_SBServerGetFloatValue(s, m_pQR2->xrGS_RegisteredKey(k), 0);                              \
+		if(val != 0) /* Или другая проверка на валидность, если 0 - это валидное значение, то проверка неверна */ \
+		{                                                                                                         \
+			string256 tmp;                                                                                        \
+			/* Убрали жесткий %f, теперь t2 полностью управляет форматом */                                       \
+			sprintf_s(tmp, t2, val * m);                                                                          \
+			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                             \
+		}                                                                                                         \
+		else                                                                                                      \
+		{                                                                                                         \
+			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                                       \
+		}                                                                                                         \
 	}
 
-#define ADD_TIME_INFO(i, s, m, t1, t2, t3, k)                                                                          \
-	{                                                                                                                  \
-		if (xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                                             \
-		{                                                                                                              \
-			string256 tmp;                                                                                             \
-			sprintf_s(tmp, t2, xrGS_SBServerGetFloatValue(s, m_pQR2->xrGS_RegisteredKey(k), 0) * m, t3);               \
-			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                                  \
-		}                                                                                                              \
-		else                                                                                                           \
-		{                                                                                                              \
-			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                                            \
-		}                                                                                                              \
+#define ADD_TIME_INFO(i, s, m, t1, t2, t3, k)                                                            \
+	{                                                                                                    \
+		if(xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                                \
+		{                                                                                                \
+			string256 tmp;                                                                               \
+			sprintf_s(tmp, t2, xrGS_SBServerGetFloatValue(s, m_pQR2->xrGS_RegisteredKey(k), 0) * m, t3); \
+			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                    \
+		}                                                                                                \
+		else                                                                                             \
+		{                                                                                                \
+			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                              \
+		}                                                                                                \
 	}
 
 void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 {
 	CStringTable st;
 
-	if (!pServer || !pServerInfo)
+	if(!pServer || !pServerInfo)
 		return;
 	sprintf_s(pServerInfo->m_Address, "%s:%d", xrGS_SBServerGetPublicAddress(pServer),
 			  xrGS_SBServerGetPublicQueryPort(pServer));
@@ -430,13 +432,13 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 	pServerInfo->m_bDedicated =
 		(xrGS_SBServerGetBoolValue(pServer, m_pQR2->xrGS_RegisteredKey(DEDICATED_KEY), SBFalse)) == SBTrue;
 	pServerInfo->m_GameType = (u8)xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMETYPE_NAME_KEY), 0);
-	if (pServerInfo->m_GameType == 0)
+	if(pServerInfo->m_GameType == 0)
 	{
-		if (!xr_strcmp(pServerInfo->m_ServerGameType, "deathmatch"))
+		if(!xr_strcmp(pServerInfo->m_ServerGameType, "deathmatch"))
 			pServerInfo->m_GameType = GAME_DEATHMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "teamdeathmatch"))
+		else if(!xr_strcmp(pServerInfo->m_ServerGameType, "teamdeathmatch"))
 			pServerInfo->m_GameType = GAME_TEAMDEATHMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "artefacthunt"))
+		else if(!xr_strcmp(pServerInfo->m_ServerGameType, "artefacthunt"))
 			pServerInfo->m_GameType = GAME_ARTEFACTHUNT;
 	}
 	sprintf_s(pServerInfo->m_ServerVersion, "%s",
@@ -447,7 +449,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 	pServerInfo->m_aPlayers.clear();
 	pServerInfo->m_aTeams.clear();
 	//-------------------------------------------------------//
-	if (xrGS_SBServerHasFullKeys(pServer) == SBFalse)
+	if(xrGS_SBServerHasFullKeys(pServer) == SBFalse)
 		return;
 
 	//	pServerInfo->m_aInfos.push_back(GameInfo("Version:", pServerInfo->m_ServerVersion));
@@ -486,14 +488,14 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 		GameInfo(*st.translate("mp_si_free_look"), ((SpectrModes & (1 << CSpectator::eacFreeLook)) != 0)
 													   ? *st.translate("mp_si_yes")
 													   : *st.translate("mp_si_no")));
-	if (pServerInfo->m_GameType != GAME_DEATHMATCH)
+	if(pServerInfo->m_GameType != GAME_DEATHMATCH)
 		pServerInfo->m_aInfos.push_back(
 			GameInfo(*st.translate("mp_si_team_only"), ((SpectrModes & (1 << CSpectator::eacMaxCam)) != 0)
 														   ? *st.translate("mp_si_yes")
 														   : *st.translate("mp_si_no")));
 	//-----------------------------------------------------------------------
 
-	if (pServerInfo->m_GameType == GAME_DEATHMATCH || pServerInfo->m_GameType == GAME_TEAMDEATHMATCH)
+	if(pServerInfo->m_GameType == GAME_DEATHMATCH || pServerInfo->m_GameType == GAME_TEAMDEATHMATCH)
 	{
 		ADD_INT_INFO_N(pServerInfo, pServer, 1, *st.translate("mp_si_fraglimit"), "", G_FRAG_LIMIT_KEY);
 	}
@@ -501,7 +503,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_time_limit"), "%.0f %s", *st.translate("mp_si_min"),
 				  G_TIME_LIMIT_KEY);
 
-	if (xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(G_DAMAGE_BLOCK_TIME_KEY), 0) != 0)
+	if(xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(G_DAMAGE_BLOCK_TIME_KEY), 0) != 0)
 	{
 		pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_invinsibility"), ""));
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_invinsibility_indicators"),
@@ -511,9 +513,9 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 	}
 
 	ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_anomalies"), G_ANOMALIES_ENABLED_KEY);
-	if ((xrGS_SBServerGetBoolValue(pServer, m_pQR2->xrGS_RegisteredKey(G_ANOMALIES_ENABLED_KEY), SBFalse)) == SBTrue)
+	if((xrGS_SBServerGetBoolValue(pServer, m_pQR2->xrGS_RegisteredKey(G_ANOMALIES_ENABLED_KEY), SBFalse)) == SBTrue)
 	{
-		if (xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(G_ANOMALIES_TIME_KEY), 0) != 0)
+		if(xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(G_ANOMALIES_TIME_KEY), 0) != 0)
 		{
 			ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_anomalies_period"), "%.1f %s",
 						  *st.translate("mp_si_min"), G_ANOMALIES_TIME_KEY);
@@ -528,7 +530,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 	ADD_TIME_INFO(pServerInfo, pServer, 1.0f, *st.translate("mp_si_warmuptime"), "%.0f %s", *st.translate("mp_si_sec"),
 				  G_WARM_UP_TIME_KEY);
 
-	if (pServerInfo->m_GameType == GAME_TEAMDEATHMATCH || pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
+	if(pServerInfo->m_GameType == GAME_TEAMDEATHMATCH || pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
 	{
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_autoteam_balance"), G_AUTO_TEAM_BALANCE_KEY);
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_autoteam_swap"), G_AUTO_TEAM_SWAP_KEY);
@@ -538,7 +540,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 		ADD_FLOAT_INFO_N(pServerInfo, pServer, 1.0f / 100.0f, *st.translate("mp_si_friendly_fire"), " %f", (int)G_FRIENDLY_FIRE_KEY);
 	};
 
-	if (pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
+	if(pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
 	{
 		pServerInfo->m_aInfos.push_back(GameInfo(*st.translate("mp_si_artefacts"), ""));
 		ADD_INT_INFO(pServerInfo, pServer, *st.translate("mp_si_afcount"), G_ARTEFACTS_COUNT_KEY);
@@ -550,7 +552,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 
 		int Reinforcement =
 			atoi(xrGS_SBServerGetStringValue(pServer, m_pQR2->xrGS_RegisteredKey(G_REINFORCEMENT_KEY), "0"));
-		switch (Reinforcement)
+		switch(Reinforcement)
 		{
 		case -1:
 			pServerInfo->m_aInfos.push_back(
@@ -572,7 +574,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 	}
 
 	//--------- Read Players Info -------------------------//
-	for (int i = 0; i < pServerInfo->m_ServerNumPlayers; i++)
+	for(int i = 0; i < pServerInfo->m_ServerNumPlayers; i++)
 	{
 		PlayerInfo PInfo;
 		sprintf_s(PInfo.Name, "%s", xrGS_SBServerGetPlayerStringValue(pServer, i, "player", "Unknown"));
@@ -586,9 +588,9 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 		pServerInfo->m_aPlayers.push_back(PInfo);
 	};
 	//----------- Read Team Info ---------------------------//
-	if (pServerInfo->m_GameType == GAME_TEAMDEATHMATCH || pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
+	if(pServerInfo->m_GameType == GAME_TEAMDEATHMATCH || pServerInfo->m_GameType == GAME_ARTEFACTHUNT)
 	{
-		for (int i = 0; i < pServerInfo->m_ServerNumTeams; i++)
+		for(int i = 0; i < pServerInfo->m_ServerNumTeams; i++)
 		{
 			TeamInfo TI;
 			TI.Score = u8(xrGS_SBServerGetTeamIntValue(pServer, i, "t_score", 0));
@@ -600,7 +602,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo* pServerInfo, void* pServer)
 void CGameSpy_Browser::RefreshQuick(int Index)
 {
 	void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, Index);
-	if (!pServer)
+	if(!pServer)
 		return;
 	ServerInfo xServerInfo;
 	ReadServerInfo(&xServerInfo, pServer);
@@ -610,7 +612,7 @@ void CGameSpy_Browser::RefreshQuick(int Index)
 bool CGameSpy_Browser::CheckDirectConnection(int Index)
 {
 	void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, Index);
-	if (!pServer)
+	if(!pServer)
 		return false;
 	SBBool res = xrGS_SBServerDirectConnect(pServer);
 	return res == SBTrue;
@@ -624,12 +626,12 @@ void CGameSpy_Browser::OnUpdateFailed(void* server)
 void CGameSpy_Browser::Update()
 {
 	xrGS_ServerBrowserThink(m_pGSBrowser);
-	if (!m_bTryingToConnectToMasterServer)
-		if (MainMenu())
+	if(!m_bTryingToConnectToMasterServer)
+		if(MainMenu())
 			MainMenu()->Hide_CTMS_Dialog();
-	if (m_bShowCMSErr)
+	if(m_bShowCMSErr)
 	{
-		if (MainMenu())
+		if(MainMenu())
 			MainMenu()->SetErrorDialog(CMainMenu::ErrMasterServerConnectFailed);
 		m_bShowCMSErr = false;
 	}
@@ -638,7 +640,7 @@ void CGameSpy_Browser::Update()
 void CGameSpy_Browser::UpdateServerList()
 {
 	//	SortBrowserByPing();
-	if (m_pServerList)
+	if(m_pServerList)
 	{
 		//		m_pServerList->SetSortFunc("", false);
 		//		m_pServerList->SetSortFunc("ping", false);
@@ -654,7 +656,7 @@ void CGameSpy_Browser::SortBrowserByPing()
 bool CGameSpy_Browser::HasAllKeys(int Index)
 {
 	void* pServer = xrGS_ServerBrowserGetServer(m_pGSBrowser, Index);
-	if (!pServer)
+	if(!pServer)
 		return true;
 	ServerInfo xServerInfo;
 	ReadServerInfo(&xServerInfo, pServer);

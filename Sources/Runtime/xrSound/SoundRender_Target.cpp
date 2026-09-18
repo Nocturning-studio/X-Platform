@@ -27,7 +27,7 @@ CSoundRender_Target::CSoundRender_Target(void)
 	buf_block = 0;
 
 	// Initialize buffers array
-	for (u32 i = 0; i < sdef_target_count; i++)
+	for(u32 i = 0; i < sdef_target_count; i++)
 		pBuffers[i] = 0;
 }
 
@@ -43,7 +43,7 @@ BOOL CSoundRender_Target::_initialize()
 	alGenSources(1, &pSource);
 	ALenum al_error = alGetError();
 
-	if (AL_NO_ERROR == al_error)
+	if(AL_NO_ERROR == al_error)
 	{
 		A_CHK(alSourcei(pSource, AL_LOOPING, AL_FALSE));
 		A_CHK(alSourcef(pSource, AL_MIN_GAIN, 0.f));
@@ -62,7 +62,7 @@ BOOL CSoundRender_Target::_initialize()
 void CSoundRender_Target::_destroy()
 {
 	// Clean up OpenAL resources
-	if (alIsSource(pSource))
+	if(alIsSource(pSource))
 		alDeleteSources(1, &pSource);
 	A_CHK(alDeleteBuffers(sdef_target_count, pBuffers));
 }
@@ -89,7 +89,7 @@ void CSoundRender_Target::start(CSoundRender_Emitter* E)
 void CSoundRender_Target::render()
 {
 	// Fill and queue all buffers
-	for (u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
+	for(u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
 		fill_block(pBuffers[buf_idx]);
 
 	A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
@@ -100,7 +100,7 @@ void CSoundRender_Target::render()
 
 void CSoundRender_Target::stop()
 {
-	if (rendering)
+	if(rendering)
 	{
 		A_CHK(alSourceStop(pSource));
 		A_CHK(alSourcei(pSource, AL_BUFFER, NULL));
@@ -119,7 +119,7 @@ void CSoundRender_Target::rewind()
 	A_CHK(alSourceStop(pSource));
 	A_CHK(alSourcei(pSource, AL_BUFFER, NULL));
 
-	for (u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
+	for(u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
 		fill_block(pBuffers[buf_idx]);
 
 	A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
@@ -136,14 +136,14 @@ void CSoundRender_Target::update()
 	A_CHK(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
 	A_CHK(alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed));
 
-	if (alGetError() != AL_NO_ERROR)
+	if(alGetError() != AL_NO_ERROR)
 	{
 		Msg("!![%s] Source state error", __FUNCTION__);
 		return;
 	}
 
 	// Process processed buffers
-	while (processed)
+	while(processed)
 	{
 		ALuint BufferID;
 		A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
@@ -151,7 +151,7 @@ void CSoundRender_Target::update()
 		A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
 		processed--;
 
-		if (alGetError() != AL_NO_ERROR)
+		if(alGetError() != AL_NO_ERROR)
 		{
 			Msg("!![%s] Buffer queue error", __FUNCTION__);
 			return;
@@ -159,15 +159,15 @@ void CSoundRender_Target::update()
 	}
 
 	// Check for underruns and restart if needed
-	if (state != AL_PLAYING && state != AL_PAUSED)
+	if(state != AL_PLAYING && state != AL_PAUSED)
 	{
 		ALint queued;
 		alGetSourcei(pSource, AL_BUFFERS_QUEUED, &queued);
 
-		if (queued)
+		if(queued)
 		{
 			alSourcePlay(pSource);
-			if (alGetError() != AL_NO_ERROR)
+			if(alGetError() != AL_NO_ERROR)
 			{
 				Msg("!![%s] Playback restart error", __FUNCTION__);
 				return;
@@ -201,7 +201,7 @@ void CSoundRender_Target::fill_parameters()
 	VERIFY2(pEmitter, SE->source()->file_name());
 	float _gain = pEmitter->smooth_volume;
 	clamp(_gain, EPS_S, 1.f);
-	if (!fsimilar(_gain, cache_gain))
+	if(!fsimilar(_gain, cache_gain))
 	{
 		cache_gain = _gain;
 		A_CHK(alSourcef(pSource, AL_GAIN, _gain));
@@ -211,11 +211,11 @@ void CSoundRender_Target::fill_parameters()
 	VERIFY2(pEmitter, SE->source()->file_name());
 	float _pitch = pEmitter->p_source.freq;
 
-	if (pEmitter->p_source.use_pitch)
+	if(pEmitter->p_source.use_pitch)
 		_pitch *= psTimeFactor;
 
 	clamp(_pitch, EPS_L, 2.f);
-	if (!fsimilar(_pitch, cache_pitch))
+	if(!fsimilar(_pitch, cache_pitch))
 	{
 		cache_pitch = _pitch;
 		A_CHK(alSourcef(pSource, AL_PITCH, _pitch));
@@ -245,7 +245,7 @@ void CSoundRender_Target::attach()
 
 void CSoundRender_Target::dettach()
 {
-	if (wave)
+	if(wave)
 	{
 		ov_clear(&ovf);
 		FS.r_close(wave);

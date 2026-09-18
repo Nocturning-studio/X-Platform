@@ -1,7 +1,8 @@
 #pragma once
 #include "../state.h"
 
-template <typename _Object> class CStateMonsterRestMoveToHomePoint : public CStateMove<_Object>
+template <typename _Object>
+class CStateMonsterRestMoveToHomePoint : public CStateMove<_Object>
 {
   protected:
 	typedef CStateMove<_Object> inherited;

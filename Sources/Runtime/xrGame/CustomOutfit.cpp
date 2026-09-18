@@ -16,7 +16,7 @@ CCustomOutfit::CCustomOutfit()
 	m_flags.set(FUsingCondition, TRUE);
 
 	m_HitTypeProtection.resize(ALife::eHitTypeMax);
-	for (int i = 0; i < ALife::eHitTypeMax; i++)
+	for(int i = 0; i < ALife::eHitTypeMax; i++)
 		m_HitTypeProtection[i] = 1.0f;
 
 	m_boneProtection = xr_new<SBoneProtections>();
@@ -55,13 +55,13 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_HitTypeProtection[ALife::eHitTypePhysicStrike] =
 		READ_IF_EXISTS(pSettings, r_float, section, "physic_strike_protection", 0.0f);
 
-	if (pSettings->line_exist(section, "actor_visual"))
+	if(pSettings->line_exist(section, "actor_visual"))
 		m_ActorVisual = pSettings->r_string(section, "actor_visual");
 	else
 		m_ActorVisual = NULL;
 
 	m_ef_equipment_type = pSettings->r_u32(section, "ef_equipment_type");
-	if (pSettings->line_exist(section, "power_loss"))
+	if(pSettings->line_exist(section, "power_loss"))
 		m_fPowerLoss = pSettings->r_float(section, "power_loss");
 	else
 		m_fPowerLoss = 1.0f;
@@ -69,7 +69,7 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_additional_weight = pSettings->r_float(section, "additional_inventory_weight");
 	m_additional_weight2 = pSettings->r_float(section, "additional_inventory_weight2");
 
-	if (pSettings->line_exist(section, "nightvision_sect"))
+	if(pSettings->line_exist(section, "nightvision_sect"))
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	else
 		m_NightVisionSect = NULL;
@@ -99,7 +99,7 @@ float CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
 {
 	float BoneArmour = m_boneProtection->getBoneArmour(element) * GetCondition() * (1 - AP);
 	float NewHitPower = hit_power - BoneArmour;
-	if (NewHitPower < hit_power * m_boneProtection->m_fHitFrac)
+	if(NewHitPower < hit_power * m_boneProtection->m_fHitFrac)
 		return hit_power * m_boneProtection->m_fHitFrac;
 	return NewHitPower;
 };
@@ -112,18 +112,18 @@ BOOL CCustomOutfit::BonePassBullet(int boneID)
 #include "torch.h"
 void CCustomOutfit::OnMoveToSlot()
 {
-	if (m_pCurrentInventory)
+	if(m_pCurrentInventory)
 	{
 		CActor* pActor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner());
-		if (pActor)
+		if(pActor)
 		{
-			if (m_ActorVisual.size())
+			if(m_ActorVisual.size())
 			{
 				shared_str NewVisual = NULL;
 				char* TeamSection = Game().getTeamSection(pActor->g_Team());
-				if (TeamSection)
+				if(TeamSection)
 				{
-					if (pSettings->line_exist(TeamSection, *cNameSect()))
+					if(pSettings->line_exist(TeamSection, *cNameSect()))
 					{
 						NewVisual = pSettings->r_string(TeamSection, *cNameSect());
 						string256 SkinName;
@@ -134,12 +134,12 @@ void CCustomOutfit::OnMoveToSlot()
 					}
 				}
 
-				if (!NewVisual.size())
+				if(!NewVisual.size())
 					NewVisual = m_ActorVisual;
 
 				pActor->ChangeVisual(NewVisual);
 			}
-			if (pSettings->line_exist(cNameSect(), "bones_koeff_protection"))
+			if(pSettings->line_exist(cNameSect(), "bones_koeff_protection"))
 			{
 				m_boneProtection->reload(pSettings->r_string(cNameSect(), "bones_koeff_protection"),
 										 smart_cast<CKinematics*>(pActor->Visual()));
@@ -150,20 +150,20 @@ void CCustomOutfit::OnMoveToSlot()
 
 void CCustomOutfit::OnMoveToRuck(EItemPlace prev)
 {
-	if (m_pCurrentInventory && prev == eItemPlaceSlot)
+	if(m_pCurrentInventory && prev == eItemPlaceSlot)
 	{
 		CActor* pActor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner());
-		if (pActor)
+		if(pActor)
 		{
 			CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
-			if (pTorch)
+			if(pTorch)
 			{
 				pTorch->SwitchNightVision(false);
 			}
-			if (m_ActorVisual.size())
+			if(m_ActorVisual.size())
 			{
 				shared_str DefVisual = pActor->GetDefaultVisualOutfit();
-				if (DefVisual.size())
+				if(DefVisual.size())
 				{
 					pActor->ChangeVisual(DefVisual);
 				};
@@ -179,7 +179,7 @@ u32 CCustomOutfit::ef_equipment_type() const
 
 float CCustomOutfit::GetPowerLoss()
 {
-	if (m_fPowerLoss < 1 && GetCondition() <= 0)
+	if(m_fPowerLoss < 1 && GetCondition() <= 0)
 	{
 		return 1.0f;
 	};

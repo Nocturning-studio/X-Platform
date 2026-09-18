@@ -24,7 +24,7 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 	CPHSkeleton::Spawn(e);
 	setVisible(TRUE);
 	setEnabled(TRUE);
-	if (!PPhysicsShell()->isBreakable())
+	if(!PPhysicsShell()->isBreakable())
 		SheduleUnregister();
 	return TRUE;
 }
@@ -33,7 +33,7 @@ void CPhysicsSkeletonObject::SpawnInitPhysics(CSE_Abstract* D)
 {
 	CreatePhysicsShell(D);
 	CKinematics* K = smart_cast<CKinematics*>(Visual());
-	if (K)
+	if(K)
 	{
 		K->CalculateBones_Invalidate();
 		K->CalculateBones();
@@ -56,16 +56,16 @@ void CPhysicsSkeletonObject::Load(LPCSTR section)
 void CPhysicsSkeletonObject::CreatePhysicsShell(CSE_Abstract* e)
 {
 	CSE_PHSkeleton* po = smart_cast<CSE_PHSkeleton*>(e);
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 		return;
-	if (!Visual())
+	if(!Visual())
 		return;
 	m_pPhysicsShell = P_build_Shell(this, !po->_flags.test(CSE_PHSkeleton::flActive));
 }
 
 void CPhysicsSkeletonObject::shedule_Update(u32 dt)
 {
-	//OPTICK_EVENT("CPhysicsSkeletonObject::shedule_Update");
+	// OPTICK_EVENT("CPhysicsSkeletonObject::shedule_Update");
 
 	inherited::shedule_Update(dt);
 
@@ -96,7 +96,7 @@ void CPhysicsSkeletonObject::UpdateCL()
 
 void CPhysicsSkeletonObject::PHObjectPositionUpdate()
 {
-	if (m_pPhysicsShell)
+	if(m_pPhysicsShell)
 	{
 		m_pPhysicsShell->InterpolateGlobalTransform(&Transform());
 	}

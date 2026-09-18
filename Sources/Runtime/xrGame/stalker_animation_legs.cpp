@@ -45,16 +45,16 @@ void CStalkerAnimationManager::legs_play_callback(CBlend* blend)
 
 IC float CStalkerAnimationManager::legs_switch_factor() const
 {
-	if ((m_target_direction == eMovementDirectionForward) && (m_current_direction == eMovementDirectionBackward))
+	if((m_target_direction == eMovementDirectionForward) && (m_current_direction == eMovementDirectionBackward))
 		return (0.f);
 
-	if ((m_target_direction == eMovementDirectionBackward) && (m_current_direction == eMovementDirectionForward))
+	if((m_target_direction == eMovementDirectionBackward) && (m_current_direction == eMovementDirectionForward))
 		return (0.f);
 
-	if ((m_target_direction == eMovementDirectionLeft) && (m_current_direction == eMovementDirectionRight))
+	if((m_target_direction == eMovementDirectionLeft) && (m_current_direction == eMovementDirectionRight))
 		return (0.f);
 
-	if ((m_target_direction == eMovementDirectionRight) && (m_current_direction == eMovementDirectionLeft))
+	if((m_target_direction == eMovementDirectionRight) && (m_current_direction == eMovementDirectionLeft))
 		return (0.f);
 
 	return (1.f);
@@ -62,13 +62,13 @@ IC float CStalkerAnimationManager::legs_switch_factor() const
 
 bool CStalkerAnimationManager::need_look_back() const
 {
-	if (m_looking_back)
+	if(m_looking_back)
 		return (true);
 
-	if (m_previous_speed_direction != eMovementDirectionBackward)
+	if(m_previous_speed_direction != eMovementDirectionBackward)
 		return (false);
 
-	if ((m_change_direction_time + need_look_back_time_delay) > Engine.TimeManager.GetGlobalTimeMs())
+	if((m_change_direction_time + need_look_back_time_delay) > Engine.TimeManager.GetGlobalTimeMs())
 		return (false);
 
 	m_looking_back = ::Random.randI(2) + 1;
@@ -77,13 +77,13 @@ bool CStalkerAnimationManager::need_look_back() const
 
 void CStalkerAnimationManager::legs_assign_direction(float switch_factor, const EMovementDirection& direction)
 {
-	if (m_current_direction == direction)
+	if(m_current_direction == direction)
 	{
 		m_direction_start = Engine.TimeManager.GetGlobalTimeMs();
 		return;
 	}
 
-	if (m_target_direction != direction)
+	if(m_target_direction != direction)
 	{
 		m_direction_start = Engine.TimeManager.GetGlobalTimeMs();
 		m_target_direction = direction;
@@ -91,7 +91,7 @@ void CStalkerAnimationManager::legs_assign_direction(float switch_factor, const 
 	}
 
 	VERIFY(m_direction_start <= Engine.TimeManager.GetGlobalTimeMs());
-	if ((Engine.TimeManager.GetGlobalTimeMs() - m_direction_start) <= (u32)iFloor(switch_factor * direction_switch_interval))
+	if((Engine.TimeManager.GetGlobalTimeMs() - m_direction_start) <= (u32)iFloor(switch_factor * direction_switch_interval))
 		return;
 
 	m_direction_start = Engine.TimeManager.GetGlobalTimeMs();
@@ -106,7 +106,7 @@ void CStalkerAnimationManager::legs_process_direction(float yaw)
 	float left = left_angle(yaw, head_current);
 	float test_angle_forward = right_forward_angle;
 	float test_angle_backward = left_forward_angle;
-	if (left)
+	if(left)
 	{
 		test_angle_forward = left_forward_angle;
 		test_angle_backward = right_forward_angle;
@@ -115,13 +115,13 @@ void CStalkerAnimationManager::legs_process_direction(float yaw)
 
 	float difference = angle_difference(yaw, head_current);
 
-	if (difference <= test_angle_forward)
+	if(difference <= test_angle_forward)
 		legs_assign_direction(switch_factor, eMovementDirectionForward);
 	else
 	{
-		if (difference > test_angle_backward)
+		if(difference > test_angle_backward)
 			legs_assign_direction(switch_factor, eMovementDirectionBackward);
-		else if (left)
+		else if(left)
 			legs_assign_direction(switch_factor, eMovementDirectionLeft);
 		else
 			legs_assign_direction(switch_factor, eMovementDirectionRight);
@@ -138,7 +138,7 @@ MotionID CStalkerAnimationManager::legs_move_animation()
 
 	VERIFY((movement.body_state() == eBodyStateStand) || (movement.mental_state() != eMentalStateFree));
 
-	if (eMentalStateDanger != movement.mental_state())
+	if(eMentalStateDanger != movement.mental_state())
 	{
 		m_current_speed = movement.speed(eMovementDirectionForward);
 
@@ -159,7 +159,7 @@ MotionID CStalkerAnimationManager::legs_move_animation()
 	bool left = left_angle(yaw, body_current);
 	float test_angle_forward = right_forward_angle;
 	float test_angle_backward = left_forward_angle;
-	if (left)
+	if(left)
 	{
 		test_angle_forward = left_forward_angle;
 		test_angle_backward = right_forward_angle;
@@ -169,27 +169,27 @@ MotionID CStalkerAnimationManager::legs_move_animation()
 	EMovementDirection speed_direction;
 	float difference = angle_difference(yaw, body_current);
 
-	if (difference <= test_angle_forward)
+	if(difference <= test_angle_forward)
 		speed_direction = eMovementDirectionForward;
 	else
 	{
-		if (difference > test_angle_backward)
+		if(difference > test_angle_backward)
 			speed_direction = eMovementDirectionBackward;
 		else
 		{
-			if (left)
+			if(left)
 				speed_direction = eMovementDirectionLeft;
 			else
 				speed_direction = eMovementDirectionRight;
 		}
 	}
 
-	if (m_previous_speed_direction != speed_direction)
+	if(m_previous_speed_direction != speed_direction)
 	{
-		if (m_change_direction_time < Engine.TimeManager.GetGlobalTimeMs())
+		if(m_change_direction_time < Engine.TimeManager.GetGlobalTimeMs())
 			m_change_direction_time = Engine.TimeManager.GetGlobalTimeMs();
 
-		if (!legs_switch_factor())
+		if(!legs_switch_factor())
 		{
 			m_previous_speed = 0.f;
 			m_current_speed = 0.f;
@@ -211,10 +211,10 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 	m_previous_speed = 0.f;
 	m_current_speed = 0.f;
 
-	if (!m_no_move_actual)
+	if(!m_no_move_actual)
 	{
 		m_no_move_actual = true;
-		if (m_crouch_state_config == -1)
+		if(m_crouch_state_config == -1)
 			m_crouch_state = ::Random.randI(2);
 		else
 			m_crouch_state = m_crouch_state_config;
@@ -230,17 +230,17 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 	const SBoneRotation& body_orientation = movement.body_orientation();
 	float current = body_orientation.current.yaw;
 	float target = body_orientation.target.yaw;
-	if (angle_difference(target, current) < EPS_L)
+	if(angle_difference(target, current) < EPS_L)
 	{
 
 		float head_current = movement.head_orientation().current.yaw;
-		if ((movement.mental_state() != eMentalStateFree) ||
-			(!object().sight().turning_in_place() && (angle_difference(current, head_current) <= standing_turn_angle)))
+		if((movement.mental_state() != eMentalStateFree) ||
+		   (!object().sight().turning_in_place() && (angle_difference(current, head_current) <= standing_turn_angle)))
 		{
-			if (movement.mental_state() == eMentalStateFree)
+			if(movement.mental_state() == eMentalStateFree)
 				return (animation[1]);
 
-			if (body_state == eBodyStateCrouch)
+			if(body_state == eBodyStateCrouch)
 				return (animation[m_crouch_state]);
 
 			return (animation[0]);
@@ -250,15 +250,15 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 		target = movement.m_body.target.yaw;
 	}
 
-	if (left_angle(current, target))
+	if(left_angle(current, target))
 	{
-		if (movement.mental_state() == eMentalStateFree)
+		if(movement.mental_state() == eMentalStateFree)
 			return (animation[4]);
 
 		return (animation[2]);
 	}
 
-	if (movement.mental_state() == eMentalStateFree)
+	if(movement.mental_state() == eMentalStateFree)
 		return (animation[5]);
 
 	return (animation[3]);
@@ -266,7 +266,7 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 
 MotionID CStalkerAnimationManager::assign_legs_animation()
 {
-	if (standing())
+	if(standing())
 		return (legs_no_move_animation());
 
 	return (legs_move_animation());

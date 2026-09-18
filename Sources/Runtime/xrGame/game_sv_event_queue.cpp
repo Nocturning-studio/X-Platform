@@ -8,16 +8,16 @@ GameEventQueue::GameEventQueue()
 #endif // PROFILE_CRITICAL_SECTIONS
 {
 	unused.reserve(128);
-	for (int i = 0; i < 16; i++)
+	for(int i = 0; i < 16; i++)
 		unused.push_back(xr_new<GameEvent>());
 }
 GameEventQueue::~GameEventQueue()
 {
 	cs.Enter();
 	u32 it;
-	for (it = 0; it < unused.size(); it++)
+	for(it = 0; it < unused.size(); it++)
 		xr_delete(unused[it]);
-	for (it = 0; it < ready.size(); it++)
+	for(it = 0; it < ready.size(); it++)
 		xr_delete(ready[it]);
 	cs.Leave();
 }
@@ -27,7 +27,7 @@ GameEvent* GameEventQueue::Create()
 {
 	GameEvent* ge = 0;
 	cs.Enter();
-	if (unused.empty())
+	if(unused.empty())
 	{
 		ready.push_back(xr_new<GameEvent>());
 		ge = ready.back();
@@ -51,7 +51,7 @@ GameEvent* GameEventQueue::Create(NET_Packet& P, u16 type, u32 time, ClientID cl
 {
 	GameEvent* ge = 0;
 	cs.Enter();
-	if (unused.empty())
+	if(unused.empty())
 	{
 		ready.push_back(xr_new<GameEvent>());
 		ge = ready.back();
@@ -80,14 +80,14 @@ GameEvent* GameEventQueue::Retreive()
 {
 	GameEvent* ge = 0;
 	cs.Enter();
-	if (!ready.empty())
+	if(!ready.empty())
 		ge = ready.front();
 	//---------------------------------------------
 	else
 	{
 		u32 tmp_time = GetTickCount() - 60000;
 		u32 size = unused.size();
-		if ((LastTimeCreate < tmp_time) && (size > 32))
+		if((LastTimeCreate < tmp_time) && (size > 32))
 		{
 			xr_delete(unused.back());
 			unused.pop_back();
@@ -108,7 +108,7 @@ void GameEventQueue::Release()
 	//---------------------------------------------
 	u32 tmp_time = GetTickCount() - 60000;
 	u32 size = unused.size();
-	if ((LastTimeCreate < tmp_time) && (size > 32))
+	if((LastTimeCreate < tmp_time) && (size > 32))
 	{
 		xr_delete(ready.front());
 #ifdef _DEBUG

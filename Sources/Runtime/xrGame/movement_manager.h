@@ -22,16 +22,20 @@ namespace DetailPathManager
 enum EDetailPathType;
 };
 
-template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type> class CBaseLocationSelector;
+template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>
+class CBaseLocationSelector;
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 class CBasePathManager;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SVertexType;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SVertexType;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SBaseParameters;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SBaseParameters;
 
-template <typename _dist_type, typename _index_type, typename _iteration_type> struct SGameVertex;
+template <typename _dist_type, typename _index_type, typename _iteration_type>
+struct SGameVertex;
 
 class CEnemyLocationPredictor;
 class CPatrolPathManager;
@@ -180,7 +184,8 @@ class CMovementManager
 	{
 	}
 
-	template <typename T> IC bool accessible(T position_or_vertex_id, float radius = EPS_L) const;
+	template <typename T>
+	IC bool accessible(T position_or_vertex_id, float radius = EPS_L) const;
 
 	IC void extrapolate_path(bool value);
 	IC bool extrapolate_path() const;

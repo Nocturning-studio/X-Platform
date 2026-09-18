@@ -104,7 +104,7 @@ void CZombie::reload(LPCSTR section)
 
 void CZombie::BoneCallback(CBoneInstance* B)
 {
-	//OPTICK_EVENT("CZombie::BoneCallback");
+	// OPTICK_EVENT("CZombie::BoneCallback");
 
 	CZombie* this_class = static_cast<CZombie*>(B->Callback_Param);
 
@@ -137,7 +137,7 @@ void CZombie::vfAssignBones()
 
 BOOL CZombie::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC))
+	if(!inherited::net_Spawn(DC))
 		return (FALSE);
 
 	vfAssignBones();
@@ -155,23 +155,23 @@ void CZombie::Hit(SHit* pHDS)
 	//	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 	inherited::Hit(pHDS);
 
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
 
-	if ((pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != last_hit_frame))
+	if((pHDS->hit_type == ALife::eHitTypeFireWound) && (Engine.TimeManager.GetFrameCount() != last_hit_frame))
 	{
-		if (!com_man().ta_is_active() && (time_resurrect + TIME_RESURRECT_RESTORE < Engine.TimeManager.GetGlobalTimeMs()) &&
-			(conditions().GetHealth() < health_death_threshold))
+		if(!com_man().ta_is_active() && (time_resurrect + TIME_RESURRECT_RESTORE < Engine.TimeManager.GetGlobalTimeMs()) &&
+		   (conditions().GetHealth() < health_death_threshold))
 		{
-			if (conditions().GetHealth() < (health_death_threshold - float(fake_death_count - fake_death_left) *
-																		 health_death_threshold / fake_death_count))
+			if(conditions().GetHealth() < (health_death_threshold - float(fake_death_count - fake_death_left) *
+																		health_death_threshold / fake_death_count))
 			{
 				active_triple_idx = u8(Random.randI(FAKE_DEATH_TYPES_COUNT));
 				com_man().ta_activate(anim_triple_death[active_triple_idx]);
 				move().stop();
 				time_dead_start = Engine.TimeManager.GetGlobalTimeMs();
 
-				if (fake_death_left == 0)
+				if(fake_death_left == 0)
 					fake_death_left = 1;
 				fake_death_left--;
 			}
@@ -185,9 +185,9 @@ void CZombie::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (time_dead_start != 0)
+	if(time_dead_start != 0)
 	{
-		if (time_dead_start + TIME_FAKE_DEATH < Engine.TimeManager.GetGlobalTimeMs())
+		if(time_dead_start + TIME_FAKE_DEATH < Engine.TimeManager.GetGlobalTimeMs())
 		{
 			time_dead_start = 0;
 
@@ -200,7 +200,7 @@ void CZombie::shedule_Update(u32 dt)
 
 bool CZombie::fake_death_fall_down()
 {
-	if (com_man().ta_is_active())
+	if(com_man().ta_is_active())
 		return false;
 
 	com_man().ta_activate(anim_triple_death[u8(Random.randI(FAKE_DEATH_TYPES_COUNT))]);
@@ -213,15 +213,15 @@ void CZombie::fake_death_stand_up()
 {
 	// check if state active
 	bool active = false;
-	for (u32 i = 0; i < FAKE_DEATH_TYPES_COUNT; i++)
+	for(u32 i = 0; i < FAKE_DEATH_TYPES_COUNT; i++)
 	{
-		if (com_man().ta_is_active(anim_triple_death[i]))
+		if(com_man().ta_is_active(anim_triple_death[i]))
 		{
 			active = true;
 			break;
 		}
 	}
-	if (!active)
+	if(!active)
 		return;
 
 	com_man().ta_pointbreak();
@@ -230,13 +230,15 @@ void CZombie::fake_death_stand_up()
 #ifdef _DEBUG
 void CZombie::debug_on_key(int key)
 {
-	switch (key)
+	switch(key)
 	{
-	case DIK_MINUS: {
+	case DIK_MINUS:
+	{
 		fake_death_fall_down();
 	}
 	break;
-	case DIK_EQUALS: {
+	case DIK_EQUALS:
+	{
 		fake_death_stand_up();
 	}
 	break;

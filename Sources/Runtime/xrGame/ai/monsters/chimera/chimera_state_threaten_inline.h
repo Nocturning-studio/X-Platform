@@ -36,15 +36,15 @@ void CStateChimeraThreatenAbstract::reinit()
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraThreatenAbstract::check_start_conditions()
 {
-	if (object->tfGetRelationType(object->EnemyMan.get_enemy()) == ALife::eRelationTypeWorstEnemy)
+	if(object->tfGetRelationType(object->EnemyMan.get_enemy()) == ALife::eRelationTypeWorstEnemy)
 		return false;
-	if (object->Position().distance_to(object->EnemyMan.get_enemy_position()) < MIN_DIST_TO_ENEMY)
+	if(object->Position().distance_to(object->EnemyMan.get_enemy_position()) < MIN_DIST_TO_ENEMY)
 		return false;
-	if (object->HitMemory.is_hit())
+	if(object->HitMemory.is_hit())
 		return false;
-	if (object->hear_dangerous_sound)
+	if(object->hear_dangerous_sound)
 		return false;
-	if (m_last_time_threaten + THREATEN_DELAY > Engine.TimeManager.GetGlobalTimeMs())
+	if(m_last_time_threaten + THREATEN_DELAY > Engine.TimeManager.GetGlobalTimeMs())
 		return false;
 
 	return true;
@@ -53,11 +53,11 @@ bool CStateChimeraThreatenAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraThreatenAbstract::check_completion()
 {
-	if (object->Position().distance_to(object->EnemyMan.get_enemy_position()) < MIN_DIST_TO_ENEMY)
+	if(object->Position().distance_to(object->EnemyMan.get_enemy_position()) < MIN_DIST_TO_ENEMY)
 		return true;
-	if (object->HitMemory.is_hit())
+	if(object->HitMemory.is_hit())
 		return true;
-	if (object->tfGetRelationType(object->EnemyMan.get_enemy()) == ALife::eRelationTypeWorstEnemy)
+	if(object->tfGetRelationType(object->EnemyMan.get_enemy()) == ALife::eRelationTypeWorstEnemy)
 		return true;
 
 	return false;
@@ -73,26 +73,26 @@ void CStateChimeraThreatenAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateChimeraThreatenAbstract::reselect_state()
 {
-	if (prev_substate == u32(-1))
+	if(prev_substate == u32(-1))
 	{
 		select_state(eStateThreaten);
 		return;
 	}
 
-	if (prev_substate == eStateSteal)
+	if(prev_substate == eStateSteal)
 	{
 		select_state(eStateThreaten);
 		return;
 	}
 
-	if (prev_substate == eStateThreaten)
+	if(prev_substate == eStateThreaten)
 	{
-		if (get_state(eStateSteal)->check_start_conditions())
+		if(get_state(eStateSteal)->check_start_conditions())
 		{
 			select_state(eStateSteal);
 			return;
 		}
-		else if (get_state(eStateWalk)->check_start_conditions())
+		else if(get_state(eStateWalk)->check_start_conditions())
 		{
 			select_state(eStateWalk);
 			return;

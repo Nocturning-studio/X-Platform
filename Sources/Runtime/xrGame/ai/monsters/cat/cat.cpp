@@ -103,18 +103,18 @@ void CCat::reinit()
 void CCat::try_to_jump()
 {
 	CObject* target = const_cast<CEntityAlive*>(EnemyMan.get_enemy());
-	if (!target || !EnemyMan.see_enemy_now())
+	if(!target || !EnemyMan.see_enemy_now())
 		return;
 }
 
 void CCat::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
+	if((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
 	}
 
-	if ((spec_params & ASP_ROTATION_JUMP) == ASP_ROTATION_JUMP)
+	if((spec_params & ASP_ROTATION_JUMP) == ASP_ROTATION_JUMP)
 	{
 		// float yaw, pitch;
 		// fvec3().sub(EnemyMan.get_enemy()->Position(), Position()).getHP(yaw,pitch);
@@ -147,7 +147,7 @@ void CCat::CheckSpecParams(u32 spec_params)
 
 void CCat::UpdateCL()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::UpdateCL();
 }

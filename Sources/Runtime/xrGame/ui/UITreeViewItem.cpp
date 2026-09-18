@@ -49,16 +49,16 @@ CUITreeViewItem::~CUITreeViewItem()
 void CUITreeViewItem::OnRootChanged()
 {
 	xr_string str;
-	if (isRoot)
+	if(isRoot)
 	{
 		// Вставляем после последнего пробела перед текстом знак + или -
 		str = GetText();
 
 		xr_string::size_type pos = str.find_first_not_of(" ");
-		if (xr_string::npos == pos)
+		if(xr_string::npos == pos)
 			pos = 0;
 
-		if (pos == 0)
+		if(pos == 0)
 		{
 			++iTextShift;
 			str.insert(0, " ");
@@ -66,7 +66,7 @@ void CUITreeViewItem::OnRootChanged()
 		else
 			--pos;
 
-		if (isOpened)
+		if(isOpened)
 			// Add minus sign
 			str.replace(pos, 1, "-");
 		else
@@ -81,9 +81,9 @@ void CUITreeViewItem::OnRootChanged()
 		// Remove "+/-" sign
 		xr_string::size_type pos = str.find_first_of("+-");
 
-		if (pos == 0)
+		if(pos == 0)
 		{
-			for (int i = 0; i < iTextShift; ++i)
+			for(int i = 0; i < iTextShift; ++i)
 				str.insert(pos, " ");
 		}
 		else
@@ -98,7 +98,7 @@ void CUITreeViewItem::OnRootChanged()
 void CUITreeViewItem::OnOpenClose()
 {
 	// Если мы не являемся узлом дерева, значит ничего не делаем
-	if (!isRoot)
+	if(!isRoot)
 		return;
 
 	xr_string str;
@@ -106,9 +106,9 @@ void CUITreeViewItem::OnOpenClose()
 	str = GetText();
 	xr_string::size_type pos = str.find_first_of("+-");
 
-	if (xr_string::npos != pos)
+	if(xr_string::npos != pos)
 	{
-		if (isOpened)
+		if(isOpened)
 			// Change minus sign to plus
 			str.replace(pos, 1, "-");
 		else
@@ -124,7 +124,7 @@ void CUITreeViewItem::OnOpenClose()
 void CUITreeViewItem::Open()
 {
 	// Если не рут или уже открыты, то ничего не делаем
-	if (!isRoot || isOpened)
+	if(!isRoot || isOpened)
 		return;
 	isOpened = true;
 
@@ -135,12 +135,12 @@ void CUITreeViewItem::Open()
 	CUIListWnd* pList = smart_cast<CUIListWnd*>(GetParent());
 
 	R_ASSERT(pList);
-	if (!pList)
+	if(!pList)
 		return;
 
 	int pos = pList->GetItemPos(this);
 
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		pList->AddItem(*it, ++pos);
 	}
@@ -151,7 +151,7 @@ void CUITreeViewItem::Open()
 void CUITreeViewItem::Close()
 {
 	// Если не рут или уже открыты, то ничего не делаем
-	if (!isRoot || !isOpened)
+	if(!isRoot || !isOpened)
 		return;
 	isOpened = false;
 
@@ -162,19 +162,19 @@ void CUITreeViewItem::Close()
 	CUIListWnd* pList = smart_cast<CUIListWnd*>(GetParent());
 
 	R_ASSERT(pList);
-	if (!pList)
+	if(!pList)
 		return;
 
 	int pos;
 
 	// Сначала все закрыть
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		(*it)->Close();
 	}
 
 	// Затем все датачим
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		pos = pList->GetItemPos(*it);
 		pList->RemoveItem(pos);
@@ -186,7 +186,7 @@ void CUITreeViewItem::Close()
 void CUITreeViewItem::AddItem(CUITreeViewItem* pItem)
 {
 	R_ASSERT(pItem);
-	if (!pItem)
+	if(!pItem)
 		return;
 
 	pItem->SetTextShift(subShift + iTextShift);
@@ -202,11 +202,11 @@ void CUITreeViewItem::AddItem(CUITreeViewItem* pItem)
 
 void CUITreeViewItem::DeleteAllSubItems()
 {
-	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		CUIWindow* pWindow = (*it)->GetParent();
 
-		if (pWindow)
+		if(pWindow)
 			pWindow->DetachChild(*it);
 
 		xr_delete(*it);
@@ -219,7 +219,7 @@ void CUITreeViewItem::DeleteAllSubItems()
 
 void CUITreeViewItem::SetRoot(bool set)
 {
-	if (isRoot)
+	if(isRoot)
 		return;
 
 	isRoot = set;
@@ -233,12 +233,12 @@ void CUITreeViewItem::SetText(LPCSTR str)
 	xr_string s = str;
 	xr_string::size_type pos = s.find_first_not_of(" +-");
 
-	if (pos < static_cast<xr_string::size_type>(iTextShift))
+	if(pos < static_cast<xr_string::size_type>(iTextShift))
 	{
-		for (u32 i = 0; i < iTextShift - pos; ++i)
+		for(u32 i = 0; i < iTextShift - pos; ++i)
 			s.insert(0, " ");
 	}
-	else if (pos > static_cast<xr_string::size_type>(iTextShift))
+	else if(pos > static_cast<xr_string::size_type>(iTextShift))
 	{
 		s.erase(0, pos - iTextShift);
 	}
@@ -252,9 +252,9 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	static CUITreeViewItem* pPrevFocusedItem = NULL;
 
-	if (pWnd == this && BUTTON_CLICKED == msg)
+	if(pWnd == this && BUTTON_CLICKED == msg)
 	{
-		if (IsRoot())
+		if(IsRoot())
 		{
 			IsOpened() ? Close() : Open();
 		}
@@ -263,17 +263,17 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 			MarkArticleAsRead(true);
 		}
 	}
-	else if (pWnd == this && STATIC_FOCUS_RECEIVED == msg)
+	else if(pWnd == this && STATIC_FOCUS_RECEIVED == msg)
 	{
 		UIBkg.TextureOn();
 
-		if (pPrevFocusedItem)
+		if(pPrevFocusedItem)
 		{
 			pPrevFocusedItem->UIBkg.TextureOff();
 		}
 		pPrevFocusedItem = this;
 	}
-	else if (pWnd == this && STATIC_FOCUS_LOST == msg)
+	else if(pWnd == this && STATIC_FOCUS_LOST == msg)
 	{
 		UIBkg.TextureOff();
 		pPrevFocusedItem = NULL;
@@ -291,22 +291,22 @@ CUITreeViewItem* CUITreeViewItem::Find(LPCSTR text) const
 	CUITreeViewItem* pResult = NULL;
 	xr_string caption;
 
-	for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		caption = (*it)->GetText();
 		xr_string::size_type pos = caption.find_first_not_of(" +-");
-		if (pos != xr_string::npos)
+		if(pos != xr_string::npos)
 		{
 			caption.erase(0, pos);
 		}
 
-		if (xr_strcmp(caption.c_str(), text) == 0)
+		if(xr_strcmp(caption.c_str(), text) == 0)
 			pResult = *it;
 
-		if ((*it)->IsRoot() && !pResult)
+		if((*it)->IsRoot() && !pResult)
 			pResult = (*it)->Find(text);
 
-		if (pResult)
+		if(pResult)
 			break;
 	}
 
@@ -319,15 +319,15 @@ CUITreeViewItem* CUITreeViewItem::Find(int value) const
 {
 	CUITreeViewItem* pResult = NULL;
 
-	for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
-		if ((*it)->GetValue() == value)
+		if((*it)->GetValue() == value)
 			pResult = *it;
 
-		if ((*it)->IsRoot() && !pResult)
+		if((*it)->IsRoot() && !pResult)
 			pResult = (*it)->Find(value);
 
-		if (pResult)
+		if(pResult)
 			break;
 	}
 
@@ -340,14 +340,14 @@ CUITreeViewItem* CUITreeViewItem::Find(CUITreeViewItem* pItem) const
 {
 	CUITreeViewItem* pResult = NULL;
 
-	for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
+	for(SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
-		if ((*it)->IsRoot() && !pResult)
+		if((*it)->IsRoot() && !pResult)
 			pResult = (*it)->Find(pItem);
-		else if (pItem == *it)
+		else if(pItem == *it)
 			pResult = *it;
 
-		if (pResult)
+		if(pResult)
 			break;
 	}
 
@@ -360,7 +360,7 @@ xr_string CUITreeViewItem::GetHierarchyAsText()
 {
 	xr_string name;
 
-	if (GetOwner())
+	if(GetOwner())
 	{
 		name = GetOwner()->GetHierarchyAsText();
 	}
@@ -370,7 +370,7 @@ xr_string CUITreeViewItem::GetHierarchyAsText()
 
 	// Удаляем мусор: [ +-]
 	xr_string::size_type pos = name.find_first_not_of("/ +-", prevPos);
-	if (xr_string::npos != pos)
+	if(xr_string::npos != pos)
 	{
 		name.erase(prevPos, pos - prevPos);
 	}
@@ -383,17 +383,17 @@ xr_string CUITreeViewItem::GetHierarchyAsText()
 void CUITreeViewItem::MarkArticleAsRead(bool value)
 {
 	// Если элемент рутовый, то мы его маркаем его, и все чилды
-	if (IsRoot())
+	if(IsRoot())
 	{
 		m_bArticleRead = value;
-		if (!m_bManualSetColor)
+		if(!m_bManualSetColor)
 			SetItemColor();
 
-		for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+		for(SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 		{
 			(*it)->m_bArticleRead = value;
 			(*it)->SetItemColor();
-			if ((*it)->IsRoot())
+			if((*it)->IsRoot())
 				(*it)->MarkArticleAsRead(value);
 		}
 	}
@@ -401,7 +401,7 @@ void CUITreeViewItem::MarkArticleAsRead(bool value)
 	{
 		// Если же нет, то маркаем себя и говорим проверить свой парентовый элемент
 		m_bArticleRead = value;
-		if (!m_bManualSetColor)
+		if(!m_bManualSetColor)
 			SetItemColor();
 		CheckParentMark(GetOwner());
 	}
@@ -414,11 +414,11 @@ void CUITreeViewItem::CheckParentMark(CUITreeViewItem* pOwner)
 	// Берем рута, смотрим на его чилдов, и если среди них есть хоть 1
 	// непрочитанный, то маркаем себя как непрочитанный, и  говорим провериться выше.
 	bool f = false;
-	if (pOwner && pOwner->IsRoot())
+	if(pOwner && pOwner->IsRoot())
 	{
-		for (SubItems_it it = pOwner->vSubItems.begin(); it != pOwner->vSubItems.end(); ++it)
+		for(SubItems_it it = pOwner->vSubItems.begin(); it != pOwner->vSubItems.end(); ++it)
 		{
-			if (!(*it)->IsArticleReaded())
+			if(!(*it)->IsArticleReaded())
 			{
 				pOwner->m_bArticleRead = false;
 				pOwner->SetItemColor();
@@ -426,7 +426,7 @@ void CUITreeViewItem::CheckParentMark(CUITreeViewItem* pOwner)
 			}
 		}
 
-		if (!f)
+		if(!f)
 		{
 			// Если мы тут, то все артиклы прочитанны, и можно маркнуть себя как прочитанная ветвь
 			pOwner->m_bArticleRead = true;
@@ -461,7 +461,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
 			// Вставляем иерархию разделов в энциклопедию
 			CUITreeViewItem* pNewItem = NULL;
 
-			for (GroupTree_it it2 = it; it2 != cont.end(); ++it2)
+			for(GroupTree_it it2 = it; it2 != cont.end(); ++it2)
 			{
 				pNewItem = xr_new<CUITreeViewItem>();
 				pItemToIns->AddItem(pNewItem);
@@ -493,10 +493,10 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
 	xr_string::size_type pos;
 	xr_string oneLevel;
 
-	while (true)
+	while(true)
 	{
 		pos = group.find('/');
-		if (pos != xr_string::npos)
+		if(pos != xr_string::npos)
 		{
 			oneLevel.assign(group, 0, pos);
 			shared_str str(oneLevel.c_str());
@@ -515,7 +515,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
 	bool status = false;
 
 	// Для всех рутовых элементов
-	for (int i = 0; i < pListToAdd->GetItemsCount(); ++i)
+	for(int i = 0; i < pListToAdd->GetItemsCount(); ++i)
 	{
 		pTVItem = smart_cast<CUITreeViewItem*>(pListToAdd->GetItem(i));
 		R_ASSERT(pTVItem);
@@ -527,15 +527,15 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
 		caption.erase(0, 1);
 
 		// Ищем не содержит ли он данной иерархии и добавляем новые элементы если не найдено
-		if (0 == xr_strcmp(caption.c_str(), *groupTree.front()))
+		if(0 == xr_strcmp(caption.c_str(), *groupTree.front()))
 		{
 			// Уже содержит. Надо искать глубже
 			pTVItemChilds = pTVItem;
-			for (GroupTree_it it = groupTree.begin() + 1; it != groupTree.end(); ++it)
+			for(GroupTree_it it = groupTree.begin() + 1; it != groupTree.end(); ++it)
 			{
 				pTVItem = pTVItemChilds->Find(*(*it));
 				// Не нашли, надо вставлять хвост списка вложенности
-				if (!pTVItem)
+				if(!pTVItem)
 				{
 					pTVItemChilds = AddTreeTail(it, groupTree, pTVItemChilds);
 					status = true;
@@ -545,12 +545,12 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
 			}
 		}
 
-		if (status)
+		if(status)
 			break;
 	}
 
 	// Прошли все существующее дерево, и не нашли? Тогда добавляем новую иерархию
-	if (!pTVItemChilds)
+	if(!pTVItemChilds)
 	{
 		pTVItemChilds = xr_new<CUITreeViewItem>();
 		pTVItemChilds->SetFont(pRootFont);
@@ -560,7 +560,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
 		pListToAdd->AddItem<CUITreeViewItem>(pTVItemChilds);
 
 		// Если в списке вложенности 1 элемент, то хвоста нет, и соответственно ничего не добавляем
-		if (groupTree.size() > 1)
+		if(groupTree.size() > 1)
 			pTVItemChilds = AddTreeTail(groupTree.begin() + 1, groupTree, pTVItemChilds);
 	}
 

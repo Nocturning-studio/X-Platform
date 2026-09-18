@@ -74,7 +74,7 @@ class CUICustomMap : public CUIStatic, public CUIWndCallback
 	};
 
   protected:
-	virtual void UpdateSpots(){};
+	virtual void UpdateSpots() {};
 };
 
 class CUIGlobalMap : public CUICustomMap
@@ -131,7 +131,7 @@ class CUILevelMap : public CUICustomMap
 	typedef CUICustomMap inherited;
 	CUIMapWnd* m_mapWnd;
 	Frect m_GlobalRect; // virtual map size (meters)
-	//	CUIStatic*					m_anomalies_map;
+						//	CUIStatic*					m_anomalies_map;
   private:
 	CUILevelMap(const CUILevelMap& obj)
 	{

@@ -150,20 +150,20 @@ const xr_vector<DetailPathManager::STravelPathPoint>& CMovementManager::path() c
 
 void CMovementManager::update_path()
 {
-	//OPTICK_EVENT("CMovementManager::update_path");
+	// OPTICK_EVENT("CMovementManager::update_path");
 	START_PROFILE("Build Path::update")
 
-	if (!enabled() || wait_for_distributed_computation())
+	if(!enabled() || wait_for_distributed_computation())
 		return;
 
-	if (!game_path().evaluator())
+	if(!game_path().evaluator())
 		game_path().set_evaluator(base_game_params());
 
-	if (!level_path().evaluator())
+	if(!level_path().evaluator())
 		level_path().set_evaluator(base_level_params());
 
 	// ОПТИМИЗАЦИЯ
-	if (!restrictions().actual())
+	if(!restrictions().actual())
 	{
 		// 1. Сначала применяем новые ограничения, чтобы методы accessible() работали с актуальными данными
 		restrictions().actual(true);
@@ -172,14 +172,14 @@ void CMovementManager::update_path()
 		bool bPathStillValid = true;
 
 		// Если у нас вообще есть путь
-		if (!detail().path().empty())
+		if(!detail().path().empty())
 		{
 			// Пробегаем только по ОСТАВШИМСЯ точкам пути (от текущей до конца)
 			// detail().curr_travel_point_index() указывает на точку, к которой мы идем сейчас
-			for (u32 i = detail().curr_travel_point_index(); i < detail().path().size(); ++i)
+			for(u32 i = detail().curr_travel_point_index(); i < detail().path().size(); ++i)
 			{
 				// Проверяем, доступна ли точка с учетом НОВЫХ ограничений
-				if (!restrictions().accessible(detail().path()[i].position))
+				if(!restrictions().accessible(detail().path()[i].position))
 				{
 					bPathStillValid = false;
 					break; // Путь перекрыт, дальше проверять нет смысла
@@ -193,27 +193,29 @@ void CMovementManager::update_path()
 		}
 
 		// 3. Сбрасываем актуальность только если путь реально стал непроходимым
-		if (!bPathStillValid)
+		if(!bPathStillValid)
 		{
 			m_path_actuality = false;
 		}
 	}
 
-	if (!actual())
+	if(!actual())
 	{
 
 		game_path().make_inactual();
 		level_path().make_inactual();
 		patrol().make_inactual();
-		switch (m_path_type)
+		switch(m_path_type)
 		{
-		case ePathTypeGamePath: {
+		case ePathTypeGamePath:
+		{
 			m_path_state = ePathStateSelectGameVertex;
 			break;
 		}
-		case ePathTypeLevelPath: {
+		case ePathTypeLevelPath:
+		{
 			m_path_state = ePathStateBuildLevelPath;
-			if (!restrictions().accessible(level_path().dest_vertex_id()))
+			if(!restrictions().accessible(level_path().dest_vertex_id()))
 			{
 				fvec3 temp;
 				level_path().set_dest_vertex(restrictions().accessible_nearest(
@@ -222,18 +224,20 @@ void CMovementManager::update_path()
 			}
 			else
 			{
-				if (!restrictions().accessible(detail().dest_position()))
+				if(!restrictions().accessible(detail().dest_position()))
 				{
 					detail().set_dest_position(ai().level_graph().vertex_position(level_path().dest_vertex_id()));
 				}
 			}
 			break;
 		}
-		case ePathTypePatrolPath: {
+		case ePathTypePatrolPath:
+		{
 			m_path_state = ePathStateSelectPatrolPoint;
 			break;
 		}
-		case ePathTypeNoPath: {
+		case ePathTypeNoPath:
+		{
 			m_path_state = ePathStateDummy;
 			break;
 		}
@@ -243,21 +247,25 @@ void CMovementManager::update_path()
 		m_path_actuality = true;
 	}
 
-	switch (m_path_type)
+	switch(m_path_type)
 	{
-	case ePathTypeGamePath: {
+	case ePathTypeGamePath:
+	{
 		process_game_path();
 		break;
 	}
-	case ePathTypeLevelPath: {
+	case ePathTypeLevelPath:
+	{
 		process_level_path();
 		break;
 	}
-	case ePathTypePatrolPath: {
+	case ePathTypePatrolPath:
+	{
 		process_patrol_path();
 		break;
 	}
-	case ePathTypeNoPath: {
+	case ePathTypeNoPath:
+	{
 		break;
 	}
 	default:
@@ -265,7 +273,7 @@ void CMovementManager::update_path()
 	}
 
 #ifdef USE_FREE_IN_RESTRICTIONS
-	if (restrictions().accessible(object().Position()))
+	if(restrictions().accessible(object().Position()))
 		verify_detail_path();
 #endif // USE_FREE_IN_RESTRICTIONS
 
@@ -276,9 +284,9 @@ void CMovementManager::update_path()
 
 bool CMovementManager::actual_all() const
 {
-	if (!m_path_actuality)
+	if(!m_path_actuality)
 		return (false);
-	switch (m_path_type)
+	switch(m_path_type)
 	{
 	case ePathTypeGamePath:
 		return (game_path().actual() && level_path().actual() && detail().actual());
@@ -317,17 +325,17 @@ void CMovementManager::clear_path()
 
 bool CMovementManager::distance_to_destination_greater(const float& distance_to_check) const
 {
-	if (path().size() < 2)
+	if(path().size() < 2)
 		return (true);
 
-	if (path_completed())
+	if(path_completed())
 		return (true);
 
 	float accumulator = 0.f;
-	for (u32 i = detail().curr_travel_point_index(), n = detail().path().size() - 1; i < n; ++i)
+	for(u32 i = detail().curr_travel_point_index(), n = detail().path().size() - 1; i < n; ++i)
 	{
 		accumulator += detail().path()[i].position.distance_to(detail().path()[i + 1].position);
-		if (accumulator >= distance_to_check)
+		if(accumulator >= distance_to_check)
 			return (true);
 	}
 
@@ -337,23 +345,23 @@ bool CMovementManager::distance_to_destination_greater(const float& distance_to_
 #ifdef USE_FREE_IN_RESTRICTIONS
 void CMovementManager::verify_detail_path()
 {
-	if (detail().path().empty() || !detail().actual() || detail().completed(detail().dest_position()))
+	if(detail().path().empty() || !detail().actual() || detail().completed(detail().dest_position()))
 		return;
 
-	if (restrictions().out_restrictions().size())
+	if(restrictions().out_restrictions().size())
 		return;
 
 	float distance = 0.f;
-	for (u32 i = detail().curr_travel_point_index() + 1, n = detail().path().size(); i < n; ++i)
+	for(u32 i = detail().curr_travel_point_index() + 1, n = detail().path().size(); i < n; ++i)
 	{
-		if (!restrictions().accessible(detail().path()[i].position, EPS_L))
+		if(!restrictions().accessible(detail().path()[i].position, EPS_L))
 		{
 			m_path_actuality = false;
 			return;
 		}
 
 		distance += detail().path()[i].position.distance_to(detail().path()[i - 1].position);
-		if (distance >= verify_distance)
+		if(distance >= verify_distance)
 			break;
 	}
 }
@@ -375,9 +383,9 @@ bool CMovementManager::can_use_distributed_compuations(u32 option) const
 
 void CMovementManager::on_frame(CPHMovementControl* movement_control, fvec3& dest_position)
 {
-	//OPTICK_EVENT("CMovementManager::on_frame");
+	// OPTICK_EVENT("CMovementManager::on_frame");
 
-	if (enabled() && (m_path_state != ePathStatePathVerification) && (m_path_state != ePathStatePathCompleted))
+	if(enabled() && (m_path_state != ePathStatePathVerification) && (m_path_state != ePathStatePathCompleted))
 		update_path();
 
 	move_along_path(movement_control, dest_position, object().client_update_fdelta());
@@ -391,11 +399,11 @@ void CMovementManager::on_travel_point_change(const u32& previous_travel_point_i
 void CMovementManager::enable_movement(bool enabled)
 {
 	//	m_path_actuality					= m_path_actuality && (m_enabled == enabled);
-	if (!enabled && m_enabled)
+	if(!enabled && m_enabled)
 		m_on_disable_object_position = object().Position();
 	else
 	{
-		if (enabled && !m_enabled && !object().Position().similar(m_on_disable_object_position))
+		if(enabled && !m_enabled && !object().Position().similar(m_on_disable_object_position))
 			m_path_actuality = false;
 	}
 

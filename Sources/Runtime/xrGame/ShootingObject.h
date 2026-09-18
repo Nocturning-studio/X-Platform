@@ -25,7 +25,7 @@ class CShootingObject
 	virtual ~CShootingObject(void);
 
 	void reinit();
-	void reload(LPCSTR section){};
+	void reload(LPCSTR section) {};
 	void Load(LPCSTR section);
 
 	fvec3 m_vCurrentShootDir;
@@ -122,7 +122,7 @@ class CShootingObject
 	// функции родительского объекта
 	virtual const fvec3& get_CurrentFirePoint() = 0;
 	virtual const fmat4x4& get_ParticlesTransform() = 0;
-	virtual void ForceUpdateFireParticles(){};
+	virtual void ForceUpdateFireParticles() {};
 
 	////////////////////////////////////////////////
 	// общие функции для работы с партиклами оружия

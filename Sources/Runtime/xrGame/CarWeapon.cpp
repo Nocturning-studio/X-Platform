@@ -85,7 +85,7 @@ void CCarWeapon::Load(LPCSTR section)
 
 void CCarWeapon::UpdateCL()
 {
-	if (!m_bActive)
+	if(!m_bActive)
 		return;
 	UpdateBarrelDir();
 	CKinematics* K = smart_cast<CKinematics*>(m_object->Visual());
@@ -101,9 +101,9 @@ void CCarWeapon::UpdateFire()
 	inheritedShooting::UpdateFlameParticles();
 	inheritedShooting::UpdateLight();
 
-	if (m_bAutoFire)
+	if(m_bAutoFire)
 	{
-		if (m_allow_fire)
+		if(m_allow_fire)
 		{
 			FireStart();
 		}
@@ -111,14 +111,14 @@ void CCarWeapon::UpdateFire()
 			FireEnd();
 	};
 
-	if (!IsWorking())
+	if(!IsWorking())
 	{
-		if (fTime < 0)
+		if(fTime < 0)
 			fTime = 0.f;
 		return;
 	}
 
-	if (fTime <= 0)
+	if(fTime <= 0)
 	{
 		OnShot();
 		fTime += fTimeToFire;
@@ -184,11 +184,11 @@ void CCarWeapon::UpdateBarrelDir()
 	m_cur_x_rot = angle_inertion_var(m_cur_x_rot, m_tgt_x_rot, m_min_gun_speed, m_max_gun_speed, PI, Engine.TimeManager.GetDeltaTime());
 	m_cur_y_rot = angle_inertion_var(m_cur_y_rot, m_tgt_y_rot, m_min_gun_speed, m_max_gun_speed, PI, Engine.TimeManager.GetDeltaTime());
 	static float dir_eps = deg2rad(5.0f);
-	if (!fsimilar(m_cur_x_rot, m_tgt_x_rot, dir_eps) || !fsimilar(m_cur_y_rot, m_tgt_y_rot, dir_eps))
+	if(!fsimilar(m_cur_x_rot, m_tgt_x_rot, dir_eps) || !fsimilar(m_cur_y_rot, m_tgt_y_rot, dir_eps))
 		m_allow_fire = FALSE;
 
 #if (0)
-	if (Engine.TimeManager.GetFrameCount() % 200 == 0)
+	if(Engine.TimeManager.GetFrameCount() % 200 == 0)
 	{
 		Msg("m_cur_x_rot=[%f]", m_cur_x_rot);
 		Msg("m_cur_y_rot=[%f]", m_cur_y_rot);
@@ -236,7 +236,7 @@ void CCarWeapon::OnShot()
 
 	StartShotParticles();
 
-	if (m_bLightShotEnabled)
+	if(m_bLightShotEnabled)
 		Light_Start();
 
 	StartFlameParticles();
@@ -248,17 +248,19 @@ void CCarWeapon::OnShot()
 
 void CCarWeapon::Action(int id, u32 flags)
 {
-	switch (id)
+	switch(id)
 	{
-	case eWpnFire: {
-		if (flags == 1)
+	case eWpnFire:
+	{
+		if(flags == 1)
 			FireStart();
 		else
 			FireEnd();
 	}
 	break;
-	case eWpnActivate: {
-		if (flags == 1)
+	case eWpnActivate:
+	{
+		if(flags == 1)
 			m_bActive = true;
 		else
 		{
@@ -268,14 +270,16 @@ void CCarWeapon::Action(int id, u32 flags)
 	}
 	break;
 
-	case eWpnAutoFire: {
-		if (flags == 1)
+	case eWpnAutoFire:
+	{
+		if(flags == 1)
 			m_bAutoFire = true;
 		else
 			m_bAutoFire = false;
 	}
 	break;
-	case eWpnToDefaultDir: {
+	case eWpnToDefaultDir:
+	{
 		SetParam(eWpnDesiredDir, fvec2().set(m_bind_y_rot, m_bind_x_rot));
 	}
 	break;
@@ -284,7 +288,7 @@ void CCarWeapon::Action(int id, u32 flags)
 
 void CCarWeapon::SetParam(int id, fvec2 val)
 {
-	switch (id)
+	switch(id)
 	{
 	case eWpnDesiredDir:
 		m_destEnemyDir.setHP(val.x, val.y);
@@ -294,7 +298,7 @@ void CCarWeapon::SetParam(int id, fvec2 val)
 
 void CCarWeapon::SetParam(int id, fvec3 val)
 {
-	switch (id)
+	switch(id)
 	{
 	case eWpnDesiredPos:
 		m_destEnemyDir.sub(val, m_fire_pos).normalize_safe();

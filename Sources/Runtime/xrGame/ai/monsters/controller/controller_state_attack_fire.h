@@ -1,6 +1,7 @@
 #pragma once
 
-template <typename _Object> class CStateControlFire : public CState<_Object>
+template <typename _Object>
+class CStateControlFire : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 

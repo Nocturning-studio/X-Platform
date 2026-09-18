@@ -54,27 +54,27 @@ game_sv_mp::~game_sv_mp()
 
 void game_sv_mp::Update()
 {
-	//OPTICK_EVENT("game_sv_mp::update");
+	// OPTICK_EVENT("game_sv_mp::update");
 
 	inherited::Update();
 
 	// remove corpses if their number exceed limit
-	for (u32 i = 0; i < m_CorpseList.size();)
+	for(u32 i = 0; i < m_CorpseList.size();)
 	{
-		if (m_CorpseList.size() <= g_dwMaxCorpses)
+		if(m_CorpseList.size() <= g_dwMaxCorpses)
 			break;
 
 		u16 CorpseID = m_CorpseList[i];
 
 		CSE_Abstract* pCorpseObj = get_entity_from_eid(CorpseID);
 
-		if (!pCorpseObj)
+		if(!pCorpseObj)
 		{
 			m_CorpseList.erase(m_CorpseList.begin() + i);
 			Msg("corpse [%d] not found [%d]", CorpseID, Engine.TimeManager.GetFrameCount());
 			continue;
 		}
-		if (!pCorpseObj->children.empty())
+		if(!pCorpseObj->children.empty())
 		{
 			Msg("corpse [%d] childern not empty [%d]", CorpseID, Engine.TimeManager.GetFrameCount());
 			i++;
@@ -89,17 +89,17 @@ void game_sv_mp::Update()
 		Msg("corpse [%d] send destroy [%d]", CorpseID, Engine.TimeManager.GetFrameCount());
 	}
 
-	if (IsVotingEnabled() && IsVotingActive())
+	if(IsVotingEnabled() && IsVotingActive())
 		UpdateVote();
 	//-------------------------------------------------------
 	UpdatePlayersMoney();
 
-	if (g_sv_mp_iDumpStatsPeriod)
+	if(g_sv_mp_iDumpStatsPeriod)
 	{
 		int curr_minutes = iFloor(Engine.TimeManager.GetGlobalTime() / 60.0f);
-		if (g_sv_mp_iDumpStats_last + g_sv_mp_iDumpStatsPeriod <= curr_minutes)
+		if(g_sv_mp_iDumpStats_last + g_sv_mp_iDumpStatsPeriod <= curr_minutes)
 		{
-			if (Phase() == GAME_PHASE_INPROGRESS)
+			if(Phase() == GAME_PHASE_INPROGRESS)
 			{
 				DumpOnlineStatistic();
 				g_sv_mp_iDumpStats_last = curr_minutes;
@@ -112,7 +112,7 @@ void game_sv_mp::OnRoundStart()
 {
 	inherited::OnRoundStart();
 
-	if (g_pGameLevel && Level().game)
+	if(g_pGameLevel && Level().game)
 	{
 		Game().m_WeaponUsageStatistic->Clear();
 	}
@@ -126,7 +126,7 @@ void game_sv_mp::OnRoundStart()
 
 	// clear "ready" flag
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		game_PlayerState* ps = get_it(it);
 		ps->resetFlag(GAME_PLAYER_FLAG_READY + GAME_PLAYER_FLAG_VERY_VERY_DEAD);
@@ -172,14 +172,14 @@ void game_sv_mp::OnRoundEnd()
 void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 {
 	CObject* pObject = Level().Objects.net_Find(GameID);
-	if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
+	if(!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
 		return;
 	// Remove everything
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 
-	if (xrCData && xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+	if(xrCData && xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		return;
-	if (xrCData)
+	if(xrCData)
 	{
 		//-------------------------------------------------------
 		OnPlayerKillPlayer(xrCData->ps, xrCData->ps, KT_HIT, SKT_NONE, NULL);
@@ -187,9 +187,9 @@ void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 	};
 	//-------------------------------------------------------
 	CActor* pActor = smart_cast<CActor*>(pObject);
-	if (pActor)
+	if(pActor)
 	{
-		if (!pActor->g_Alive())
+		if(!pActor->g_Alive())
 		{
 			return;
 		}
@@ -210,7 +210,7 @@ void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 
 	u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
 
-	if (xrCData)
+	if(xrCData)
 		SetPlayersDefItems(xrCData->ps);
 	signal_Syncronize();
 	//-------------------------------------------------------
@@ -218,61 +218,69 @@ void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 
 void game_sv_mp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 {
-	switch (type)
+	switch(type)
 	{
 	case GAME_EVENT_PLAYER_KILLED: // playerKillPlayer
 	{
 		OnPlayerKilled(P);
 	}
 	break;
-	case GAME_EVENT_PLAYER_HITTED: {
+	case GAME_EVENT_PLAYER_HITTED:
+	{
 		OnPlayerHitted(P);
 	}
 	break;
 	case GAME_EVENT_PLAYER_READY: // cs & dm
 	{
 		xrClientData* l_pC = m_server->ID_to_client(sender);
-		if (!l_pC)
+		if(!l_pC)
 			break;
 		OnPlayerReady(l_pC->ID);
 	}
 	break;
-	case GAME_EVENT_PLAYER_BUY_SPAWN: {
+	case GAME_EVENT_PLAYER_BUY_SPAWN:
+	{
 		xrClientData* l_pC = m_server->ID_to_client(sender);
-		if (!l_pC)
+		if(!l_pC)
 			break;
 		OnPlayerBuySpawn(l_pC->ID);
 	}
 	break;
-	case GAME_EVENT_VOTE_START: {
-		if (!IsVotingEnabled())
+	case GAME_EVENT_VOTE_START:
+	{
+		if(!IsVotingEnabled())
 			break;
 		string1024 VoteCommand;
 		P.r_stringZ(VoteCommand);
 		OnVoteStart(VoteCommand, sender);
 	}
 	break;
-	case GAME_EVENT_VOTE_YES: {
-		if (!IsVotingEnabled())
+	case GAME_EVENT_VOTE_YES:
+	{
+		if(!IsVotingEnabled())
 			break;
 		OnVoteYes(sender);
 	}
 	break;
-	case GAME_EVENT_VOTE_NO: {
-		if (!IsVotingEnabled())
+	case GAME_EVENT_VOTE_NO:
+	{
+		if(!IsVotingEnabled())
 			break;
 		OnVoteNo(sender);
 	}
 	break;
-	case GAME_EVENT_PLAYER_NAME: {
+	case GAME_EVENT_PLAYER_NAME:
+	{
 		OnPlayerChangeName(P, sender);
 	}
 	break;
-	case GAME_EVENT_SPEECH_MESSAGE: {
+	case GAME_EVENT_SPEECH_MESSAGE:
+	{
 		OnPlayerSpeechMessage(P, sender);
 	}
 	break;
-	case GAME_EVENT_PLAYER_GAME_MENU: {
+	case GAME_EVENT_PLAYER_GAME_MENU:
+	{
 		OnPlayerGameMenu(P, sender);
 		//			OnPlayerSelectSpectator(P, sender);
 	}
@@ -289,7 +297,7 @@ void game_sv_mp::Create(shared_str& options)
 	SetVotingActive(false);
 	inherited::Create(options);
 	//-------------------------------------------------------------------
-	if (!g_bConsoleCommandsCreated)
+	if(!g_bConsoleCommandsCreated)
 	{
 		g_bConsoleCommandsCreated = true;
 	}
@@ -334,14 +342,14 @@ void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 {
 	//------------------------------------------------------------
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
-	if (!xrCData || !xrCData->owner)
+	if(!xrCData || !xrCData->owner)
 		return;
 	//	game_PlayerState*	ps	=	&(xrCData->ps);
 	CSE_Abstract* pOwner = xrCData->owner;
 	CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(pOwner);
 	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 
-	if (pA)
+	if(pA)
 	{
 		//------------------------------------------------------------
 		AllowDeadBodyRemove(id_who, xrCData->ps->GameID);
@@ -350,7 +358,7 @@ void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 		//------------------------------------------------------------
 	};
 
-	if (pA && !NoSpectator)
+	if(pA && !NoSpectator)
 	{
 		//------------------------------------------------------------
 		SpawnPlayer(id_who, "spectator");
@@ -359,13 +367,13 @@ void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	else
 	{
 		//------------------------------------------------------------
-		if (pOwner->owner != m_server->GetServerClient())
+		if(pOwner->owner != m_server->GetServerClient())
 		{
 			pOwner->owner = (xrClientData*)m_server->GetServerClient();
 		};
 		//------------------------------------------------------------
 		// remove spectator entity
-		if (pS)
+		if(pS)
 		{
 			NET_Packet P;
 			u_EventGen(P, GE_DESTROY, pS->ID);
@@ -400,24 +408,24 @@ void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
 
 	R_ASSERT2(pA || pS, "Respawned Client is not Actor nor Spectator");
 
-	if (pA)
+	if(pA)
 	{
 		pA->s_team = u8(ps_who->team);
 		assign_RP(pA, ps_who);
 		SetSkin(E, pA->s_team, ps_who->skin);
 		ps_who->resetFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 
-		if (!ps_who->RespawnTime)
+		if(!ps_who->RespawnTime)
 			OnPlayerEnteredGame(id);
 
 		ps_who->RespawnTime = Engine.TimeManager.GetGlobalTimeMs();
 
 		Game().m_WeaponUsageStatistic->OnPlayerSpawned(ps_who);
 	}
-	else if (pS)
+	else if(pS)
 	{
 		fvec3 Pos, Angle;
-		if (!GetPosAngleFromActor(id, Pos, Angle))
+		if(!GetPosAngleFromActor(id, Pos, Angle))
 			assign_RP(E, ps_who);
 		else
 		{
@@ -438,15 +446,15 @@ void game_sv_mp::AllowDeadBodyRemove(ClientID id, u16 GameID)
 {
 	CSE_Abstract* pSObject = get_entity_from_eid(GameID);
 
-	if (pSObject)
+	if(pSObject)
 		pSObject->owner = (xrClientData*)m_server->GetServerClient();
 
 	CObject* pObject = Level().Objects.net_Find(GameID);
 
-	if (pObject && pObject->CLS_ID == CLSID_OBJECT_ACTOR)
+	if(pObject && pObject->CLS_ID == CLSID_OBJECT_ACTOR)
 	{
 		CActor* pActor = smart_cast<CActor*>(pObject);
-		if (pActor)
+		if(pActor)
 		{
 			pActor->set_death_time();
 			pActor->m_bAllowDeathRemove = true;
@@ -478,21 +486,21 @@ void game_sv_mp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 
 void game_sv_mp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 {
-	if (!E)
+	if(!E)
 		return;
 	//-------------------------------------------
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
-	if (!pV)
+	if(!pV)
 		return;
 	//-------------------------------------------
 	string256 SkinName;
 	std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
 	// загружены ли скины для этой комманды
 
-	if (!TeamList.empty() && TeamList.size() > Team && !TeamList[Team].aSkins.empty())
+	if(!TeamList.empty() && TeamList.size() > Team && !TeamList[Team].aSkins.empty())
 	{
 		// загружено ли достаточно скинов для этой комманды
-		if (TeamList[Team].aSkins.size() > ID)
+		if(TeamList[Team].aSkins.size() > ID)
 		{
 			std::strcat(SkinName, TeamList[Team].aSkins[ID].c_str());
 		}
@@ -502,7 +510,7 @@ void game_sv_mp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	else
 	{
 		// скины для такой комманды не загружены
-		switch (Team)
+		switch(Team)
 		{
 		case 0:
 			std::strcat(SkinName, "stalker_hood_multiplayer");
@@ -531,17 +539,17 @@ void game_sv_mp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 bool game_sv_mp::GetPosAngleFromActor(ClientID id, fvec3& Pos, fvec3& Angle)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id);
-	if (!xrCData || !xrCData->owner)
+	if(!xrCData || !xrCData->owner)
 		return false;
 
 	CObject* pObject = Level().Objects.net_Find(xrCData->owner->ID);
 	///	R_ASSERT2	((pObject && pObject->CLS_ID == CLSID_OBJECT_ACTOR),"Dead Player is not Actor");
 
-	if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
+	if(!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
 		return false;
 
 	CActor* pActor = smart_cast<CActor*>(pObject);
-	if (!pActor)
+	if(!pActor)
 		return false;
 
 	Angle.set(-pActor->cam_Active()->pitch, -pActor->cam_Active()->yaw, 0);
@@ -552,11 +560,11 @@ bool game_sv_mp::GetPosAngleFromActor(ClientID id, fvec3& Pos, fvec3& Angle)
 TeamStruct* game_sv_mp::GetTeamData(u32 Team)
 {
 	VERIFY(TeamList.size());
-	if (TeamList.empty())
+	if(TeamList.empty())
 		return NULL;
 
 	VERIFY(TeamList.size() > Team);
-	if (TeamList.size() <= Team)
+	if(TeamList.size() <= Team)
 		return NULL;
 
 	return &(TeamList[Team]);
@@ -565,13 +573,13 @@ TeamStruct* game_sv_mp::GetTeamData(u32 Team)
 void game_sv_mp::SpawnWeaponForActor(u16 actorId, LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer)
 {
 	u8 addon_flags = 0;
-	if (isScope)
+	if(isScope)
 		addon_flags |= CSE_ALifeItemWeapon::eWeaponAddonScope;
 
-	if (isGrenadeLauncher)
+	if(isGrenadeLauncher)
 		addon_flags |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
-	if (isSilencer)
+	if(isSilencer)
 		addon_flags |= CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
 	SpawnWeapon4Actor(actorId, N, addon_flags);
@@ -579,7 +587,7 @@ void game_sv_mp::SpawnWeaponForActor(u16 actorId, LPCSTR N, bool isScope, bool i
 
 void game_sv_mp::SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons)
 {
-	if (!N)
+	if(!N)
 		return;
 
 	CSE_Abstract* E = spawn_begin(N);
@@ -589,7 +597,7 @@ void game_sv_mp::SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons)
 	/////////////////////////////////////////////////////////////////////////////////
 	// если это оружие - спавним его с полным магазином
 	CSE_ALifeItemWeapon* pWeapon = smart_cast<CSE_ALifeItemWeapon*>(E);
-	if (pWeapon)
+	if(pWeapon)
 	{
 		pWeapon->a_elapsed = pWeapon->get_ammo_magsize();
 
@@ -603,7 +611,7 @@ void game_sv_mp::SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons)
 void game_sv_mp::OnDestroyObject(u16 eid_who)
 {
 	CORPSE_LIST_it it = std::find(m_CorpseList.begin(), m_CorpseList.end(), eid_who);
-	if (it != m_CorpseList.end())
+	if(it != m_CorpseList.end())
 	{
 		m_CorpseList.erase(it);
 	};
@@ -611,12 +619,12 @@ void game_sv_mp::OnDestroyObject(u16 eid_who)
 
 bool game_sv_mp::OnNextMap()
 {
-	if (!m_bMapRotation)
+	if(!m_bMapRotation)
 		return false;
 	Msg("m_bMapSwitched - %s", m_bMapSwitched ? "true" : "false");
-	if (m_bMapSwitched)
+	if(m_bMapSwitched)
 		return false;
-	if (!m_pMapRotation_List.size())
+	if(!m_pMapRotation_List.size())
 		return false;
 
 	xr_string MapName = m_pMapRotation_List.front();
@@ -642,12 +650,12 @@ bool game_sv_mp::OnNextMap()
 
 void game_sv_mp::OnPrevMap()
 {
-	if (!m_bMapRotation)
+	if(!m_bMapRotation)
 		return;
 	Msg("m_bMapSwitched - %s", m_bMapSwitched ? "true" : "false");
-	if (m_bMapSwitched)
+	if(m_bMapSwitched)
 		return;
-	if (!m_pMapRotation_List.size())
+	if(!m_pMapRotation_List.size())
 		return;
 
 	xr_string MapName = m_pMapRotation_List.back();
@@ -681,7 +689,7 @@ _votecommands votecommands[] = {{"restart", "g_restart", flVoteRestart},
 
 void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 {
-	if (!IsVotingEnabled())
+	if(!IsVotingEnabled())
 		return;
 	char CommandName[256];
 	CommandName[0] = 0;
@@ -689,28 +697,28 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 	CommandParams[0] = 0;
 	string1024 resVoteCommand = "";
 	sscanf(VoteCommand, "%s ", CommandName);
-	if (xr_strlen(CommandName) + 1 < xr_strlen(VoteCommand))
+	if(xr_strlen(CommandName) + 1 < xr_strlen(VoteCommand))
 	{
 		strcpy(CommandParams, VoteCommand + xr_strlen(CommandName) + 1);
 	}
 
-	if (CommandName[0] == '$' && !IsVotingEnabled(flVoteText))
+	if(CommandName[0] == '$' && !IsVotingEnabled(flVoteText))
 		return;
 
 	int i = 0;
 	m_bVotingReal = false;
-	while (votecommands[i].command)
+	while(votecommands[i].command)
 	{
-		if (!xr_stricmp(votecommands[i].name, CommandName))
+		if(!xr_stricmp(votecommands[i].name, CommandName))
 		{
 			m_bVotingReal = true;
-			if (!IsVotingEnabled(votecommands[i].flag))
+			if(!IsVotingEnabled(votecommands[i].flag))
 				return;
 			break;
 		};
 		i++;
 	};
-	if (!m_bVotingReal && CommandName[0] != '$')
+	if(!m_bVotingReal && CommandName[0] != '$')
 	{
 		Msg("Unknown Vote Command - %s", CommandName);
 		return;
@@ -720,9 +728,9 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 	SetVotingActive(true);
 	u32 CurTime = Level().timeServer();
 	m_uVoteStartTime = CurTime;
-	if (m_bVotingReal)
+	if(m_bVotingReal)
 	{
-		if (!xr_stricmp(votecommands[i].name, "changeweather"))
+		if(!xr_stricmp(votecommands[i].name, "changeweather"))
 		{
 			string256 WeatherTime = "", WeatherName = "";
 			sscanf(CommandParams, "%s %s", WeatherName, WeatherTime);
@@ -743,12 +751,12 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 
 	xrClientData* pStartedPlayer = NULL;
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; it++)
+	for(u32 it = 0; it < cnt; it++)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
-		if (!l_pC)
+		if(!l_pC)
 			continue;
-		if (l_pC->ID == sender)
+		if(l_pC->ID == sender)
 		{
 			l_pC->ps->m_bCurrentVoteAgreed = 1;
 			pStartedPlayer = l_pC;
@@ -762,7 +770,7 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_VOTE_START);
-	if (m_bVotingReal)
+	if(m_bVotingReal)
 		P.w_stringZ(resVoteCommand);
 	else
 		P.w_stringZ(VoteCommand + 1);
@@ -774,22 +782,22 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 
 void game_sv_mp::UpdateVote()
 {
-	if (!IsVotingEnabled() || !IsVotingActive())
+	if(!IsVotingEnabled() || !IsVotingActive())
 		return;
 
 	u32 NumAgreed = 0;
 	u32 NumParticipated = 0;
 	u32 NumToCount = 0;
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; it++)
+	for(u32 it = 0; it < cnt; it++)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
-		if (!l_pC || !l_pC->net_Ready || !ps || ps->IsSkip())
+		if(!l_pC || !l_pC->net_Ready || !ps || ps->IsSkip())
 			continue;
-		if (ps->m_bCurrentVoteAgreed != 2)
+		if(ps->m_bCurrentVoteAgreed != 2)
 			NumParticipated++;
-		if (ps->m_bCurrentVoteAgreed == 1)
+		if(ps->m_bCurrentVoteAgreed == 1)
 			NumAgreed++;
 		NumToCount++;
 	};
@@ -797,18 +805,18 @@ void game_sv_mp::UpdateVote()
 	bool VoteSucceed = false;
 	u32 CurTime = Level().timeServer();
 
-	if (m_uVoteStartTime + u32(g_sv_mp_fVoteTime * 60000) > CurTime)
+	if(m_uVoteStartTime + u32(g_sv_mp_fVoteTime * 60000) > CurTime)
 	{
-		if (NumToCount == NumAgreed)
+		if(NumToCount == NumAgreed)
 			VoteSucceed = true;
 		else
 			VoteSucceed = (float(NumAgreed) / float(NumToCount)) >= g_sv_mp_fVoteQuota;
-		if (!VoteSucceed)
+		if(!VoteSucceed)
 			return;
 	}
 	else
 	{
-		if (g_sv_mp_bCountParticipants)
+		if(g_sv_mp_bCountParticipants)
 			VoteSucceed = (float(NumAgreed) / float(NumParticipated)) >= g_sv_mp_fVoteQuota;
 		else
 			VoteSucceed = (float(NumAgreed) / float(NumToCount)) >= g_sv_mp_fVoteQuota;
@@ -816,7 +824,7 @@ void game_sv_mp::UpdateVote()
 
 	SetVotingActive(false);
 
-	if (!VoteSucceed)
+	if(!VoteSucceed)
 	{
 		NET_Packet P;
 		GenerateGameMessage(P);
@@ -832,14 +840,14 @@ void game_sv_mp::UpdateVote()
 	P.w_stringZ("st_mp_voting_succeed");
 	u_EventSend(P);
 
-	if (m_bVotingReal)
+	if(m_bVotingReal)
 		Console->Execute(m_pVoteCommand.c_str());
 };
 
 void game_sv_mp::OnVoteYes(ClientID sender)
 {
 	game_PlayerState* ps = get_id(sender);
-	if (!ps)
+	if(!ps)
 		return;
 	ps->m_bCurrentVoteAgreed = 1;
 	signal_Syncronize();
@@ -848,7 +856,7 @@ void game_sv_mp::OnVoteYes(ClientID sender)
 void game_sv_mp::OnVoteNo(ClientID sender)
 {
 	game_PlayerState* ps = get_id(sender);
-	if (!ps)
+	if(!ps)
 		return;
 	ps->m_bCurrentVoteAgreed = 0;
 	signal_Syncronize();
@@ -856,7 +864,7 @@ void game_sv_mp::OnVoteNo(ClientID sender)
 
 void game_sv_mp::OnVoteStop()
 {
-	if (!IsVotingActive())
+	if(!IsVotingActive())
 		return;
 	SetVotingActive(false);
 	//-----------------------------------------------------------------
@@ -871,7 +879,7 @@ void game_sv_mp::OnVoteStop()
 void game_sv_mp::OnPlayerEnteredGame(ClientID id_who)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
-	if (!xrCData)
+	if(!xrCData)
 		return;
 
 	NET_Packet P;
@@ -891,15 +899,15 @@ void game_sv_mp::ClearPlayerItems(game_PlayerState* ps)
 void game_sv_mp::SetPlayersDefItems(game_PlayerState* ps)
 {
 	ClearPlayerItems(ps);
-	if (ps->team < 0)
+	if(ps->team < 0)
 		return;
 	//-------------------------------------------
 	// fill player with default items
-	if (ps->team < s16(TeamList.size()))
+	if(ps->team < s16(TeamList.size()))
 	{
 		DEF_ITEMS_LIST aDefItems = TeamList[ps->team].aDefaultItems;
 
-		for (u16 i = 0; i < aDefItems.size(); i++)
+		for(u16 i = 0; i < aDefItems.size(); i++)
 		{
 			ps->pItemList.push_back(aDefItems[i]);
 		}
@@ -909,27 +917,27 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState* ps)
 	string256 ItemStr;
 	string256 NewItemStr;
 	char tmp[5];
-	for (int i = 1; i <= ps->rank; i++)
+	for(int i = 1; i <= ps->rank; i++)
 	{
 		strconcat(sizeof(RankStr), RankStr, "rank_", _itoa(i, tmp, 10));
-		if (!pSettings->section_exist(RankStr))
+		if(!pSettings->section_exist(RankStr))
 			continue;
-		for (u32 it = 0; it < ps->pItemList.size(); it++)
+		for(u32 it = 0; it < ps->pItemList.size(); it++)
 		{
 			u16* pItemID = &(ps->pItemList[it]);
 			//			WeaponDataStruct* pWpnS = NULL;
 			//			if (!GetTeamItem_ByID(&pWpnS, &(TeamList[ps->team].aWeapons), *pItemID)) continue;
-			if (m_strWeaponsData->GetItemsCount() <= *pItemID)
+			if(m_strWeaponsData->GetItemsCount() <= *pItemID)
 				continue;
 			shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
 			//			strconcat(ItemStr, "def_item_repl_", pWpnS->WeaponName.c_str());
 			strconcat(sizeof(ItemStr), ItemStr, "def_item_repl_", *WeaponName);
-			if (!pSettings->line_exist(RankStr, ItemStr))
+			if(!pSettings->line_exist(RankStr, ItemStr))
 				continue;
 
 			strcpy_s(NewItemStr, sizeof(NewItemStr), pSettings->r_string(RankStr, ItemStr));
 			//			if (!GetTeamItem_ByName(&pWpnS, &(TeamList[ps->team].aWeapons), NewItemStr)) continue;
-			if (m_strWeaponsData->GetItemIdx(NewItemStr) == u32(-1))
+			if(m_strWeaponsData->GetItemIdx(NewItemStr) == u32(-1))
 				continue;
 
 			//			*pItemID = pWpnS->SlotItem_ID;
@@ -937,19 +945,19 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState* ps)
 		}
 	}
 	//---------------------------------------------------
-	for (u32 it = 0; it < ps->pItemList.size(); it++)
+	for(u32 it = 0; it < ps->pItemList.size(); it++)
 	{
 		u16* pItemID = &(ps->pItemList[it]);
 		//		WeaponDataStruct* pWpnS = NULL;
 		//		if (!GetTeamItem_ByID(&pWpnS, &(TeamList[ps->team].aWeapons), *pItemID)) continue;
-		if (m_strWeaponsData->GetItemsCount() <= *pItemID)
+		if(m_strWeaponsData->GetItemsCount() <= *pItemID)
 			continue;
 
 		shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
-		if (!xr_strcmp(*WeaponName, "mp_wpn_knife"))
+		if(!xr_strcmp(*WeaponName, "mp_wpn_knife"))
 			continue;
 		u16 AmmoID = u16(-1);
-		if (pSettings->line_exist(WeaponName, "ammo_class"))
+		if(pSettings->line_exist(WeaponName, "ammo_class"))
 		{
 			string1024 wpnAmmos, BaseAmmoName;
 			std::strcpy(wpnAmmos, pSettings->r_string(WeaponName, "ammo_class"));
@@ -959,12 +967,12 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState* ps)
 		//		if (!pWpnS->WeaponBaseAmmo.size()) continue;
 		//		WeaponDataStruct* pWpnAmmo = NULL;
 		//		if (!GetTeamItem_ByName(&pWpnAmmo, &(TeamList[ps->team].aWeapons), *(pWpnS->WeaponBaseAmmo))) continue;
-		if (AmmoID == u16(-1))
+		if(AmmoID == u16(-1))
 			continue;
 
 		//		ps->pItemList.push_back(pWpnAmmo->SlotItem_ID);
 		//		ps->pItemList.push_back(pWpnAmmo->SlotItem_ID);
-		if (Type() == GAME_ARTEFACTHUNT)
+		if(Type() == GAME_ARTEFACTHUNT)
 		{
 			ps->pItemList.push_back(AmmoID);
 			ps->pItemList.push_back(AmmoID);
@@ -974,7 +982,7 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState* ps)
 
 void game_sv_mp::ClearPlayerState(game_PlayerState* ps)
 {
-	if (!ps)
+	if(!ps)
 		return;
 
 	ps->m_iRivalKills = 0;
@@ -1004,7 +1012,7 @@ void game_sv_mp::OnPlayerKilled(NET_Packet P)
 
 	// in case of team kill and kick, we can't erase this message from queue.
 	// the simplest solve is to return
-	if (!ps_killed)
+	if(!ps_killed)
 	{
 #ifdef DEBUG
 		Msg("! ERROR: killed player [%d] state is NULL", KilledID);
@@ -1025,14 +1033,14 @@ void game_sv_mp::OnPlayerHitted(NET_Packet P)
 	u16 id_hitter = P.r_u16();
 	float dHealth = P.r_float() * 100;
 	game_PlayerState* PSHitter = get_eid(id_hitter);
-	if (!PSHitter)
+	if(!PSHitter)
 		return;
 	game_PlayerState* PSHitted = get_eid(id_hitted);
-	if (!PSHitted)
+	if(!PSHitted)
 		return;
-	if (PSHitted == PSHitter)
+	if(PSHitted == PSHitter)
 		return;
-	if (!CheckTeams() || (PSHitted->team != PSHitter->team))
+	if(!CheckTeams() || (PSHitted->team != PSHitter->team))
 	{
 		Rank_Struct* pCurRank = &(m_aRanks[PSHitter->rank]);
 		Player_AddExperience(PSHitter, dHealth * pCurRank->m_aRankDiff_ExpBonus[PSHitted->rank]);
@@ -1053,11 +1061,11 @@ void game_sv_mp::SendPlayerKilledMessage(u16 KilledID, KILL_TYPE KillType, u16 K
 	P.w_u8(u8(SpecialKill));
 
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; it++)
+	for(u32 it = 0; it < cnt; it++)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
-		if (!l_pC || !l_pC->net_Ready || !ps)
+		if(!l_pC || !l_pC->net_Ready || !ps)
 			continue;
 		m_server->SendTo(l_pC->ID, P);
 	};
@@ -1069,13 +1077,13 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet& P, ClientID sender)
 	P.r_stringZ(NewName);
 	xrClientData* pClient = (xrClientData*)m_server->ID_to_client(sender);
 
-	if (!pClient || !pClient->net_Ready)
+	if(!pClient || !pClient->net_Ready)
 		return;
 	game_PlayerState* ps = pClient->ps;
-	if (!ps)
+	if(!ps)
 		return;
 
-	if (((xrGameSpyServer*)m_server)->HasProtected())
+	if(((xrGameSpyServer*)m_server)->HasProtected())
 	{
 		Msg("Player \"%s\" try to change name on \"%s\" at protected server.", ps->getName(), NewName);
 
@@ -1087,12 +1095,12 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet& P, ClientID sender)
 		return;
 	}
 
-	if (NewPlayerName_Exists(pClient, NewName))
+	if(NewPlayerName_Exists(pClient, NewName))
 	{
 		NewPlayerName_Generate(pClient, NewName);
 	};
 
-	if (pClient->owner)
+	if(pClient->owner)
 	{
 		NET_Packet P;
 		GenerateGameMessage(P);
@@ -1103,11 +1111,11 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet& P, ClientID sender)
 		P.w_stringZ(NewName);
 		//---------------------------------------------------
 		u32 cnt = get_players_count();
-		for (u32 it = 0; it < cnt; it++)
+		for(u32 it = 0; it < cnt; it++)
 		{
 			xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 			game_PlayerState* ps = l_pC->ps;
-			if (!l_pC || !l_pC->net_Ready || !ps)
+			if(!l_pC || !l_pC->net_Ready || !ps)
 				continue;
 			m_server->SendTo(l_pC->ID, P);
 		};
@@ -1126,13 +1134,13 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet& P, ClientID sender)
 {
 	xrClientData* pClient = (xrClientData*)m_server->ID_to_client(sender);
 
-	if (!pClient || !pClient->net_Ready)
+	if(!pClient || !pClient->net_Ready)
 		return;
 	game_PlayerState* ps = pClient->ps;
-	if (!ps)
+	if(!ps)
 		return;
 
-	if (pClient->owner)
+	if(pClient->owner)
 	{
 		NET_Packet NP;
 		GenerateGameMessage(NP);
@@ -1143,11 +1151,11 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet& P, ClientID sender)
 		NP.w_u8(P.r_u8());
 		//---------------------------------------------------
 		u32 cnt = get_players_count();
-		for (u32 it = 0; it < cnt; it++)
+		for(u32 it = 0; it < cnt; it++)
 		{
 			xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 			game_PlayerState* ps = l_pC->ps;
-			if (!l_pC || !l_pC->net_Ready || !ps)
+			if(!l_pC || !l_pC->net_Ready || !ps)
 				continue;
 			m_server->SendTo(l_pC->ID, NP, net_flags(TRUE, TRUE, TRUE));
 		};
@@ -1157,17 +1165,20 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet& P, ClientID sender)
 void game_sv_mp::OnPlayerGameMenu(NET_Packet& P, ClientID sender)
 {
 	u8 SubEvent = P.r_u8();
-	switch (SubEvent)
+	switch(SubEvent)
 	{
-	case PLAYER_SELECT_SPECTATOR: {
+	case PLAYER_SELECT_SPECTATOR:
+	{
 		OnPlayerSelectSpectator(P, sender);
 	}
 	break;
-	case PLAYER_CHANGE_TEAM: {
+	case PLAYER_CHANGE_TEAM:
+	{
 		OnPlayerSelectTeam(P, sender);
 	}
 	break;
-	case PLAYER_CHANGE_SKIN: {
+	case PLAYER_CHANGE_SKIN:
+	{
 		OnPlayerSelectSkin(P, sender);
 	}
 	break;
@@ -1177,19 +1188,19 @@ void game_sv_mp::OnPlayerSelectSpectator(NET_Packet& P, ClientID sender)
 {
 	xrClientData* pClient = (xrClientData*)m_server->ID_to_client(sender);
 
-	if (!pClient || !pClient->net_Ready)
+	if(!pClient || !pClient->net_Ready)
 		return;
 	game_PlayerState* ps = pClient->ps;
-	if (!ps)
+	if(!ps)
 		return;
 
 	KillPlayer(sender, ps->GameID);
 	ps->setFlag(GAME_PLAYER_FLAG_SPECTATOR);
 	//-------------------------------------------
-	if (pClient->owner)
+	if(pClient->owner)
 	{
 		CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(pClient->owner);
-		if (pA)
+		if(pA)
 		{
 			SpawnPlayer(sender, "spectator");
 		};
@@ -1200,20 +1211,20 @@ void game_sv_mp::LoadRanks()
 {
 	m_aRanks.clear();
 	int NumRanks = 0;
-	while (1)
+	while(1)
 	{
 		string256 RankSect;
 		sprintf_s(RankSect, "rank_%d", NumRanks);
-		if (!pSettings->section_exist(RankSect))
+		if(!pSettings->section_exist(RankSect))
 			break;
 		NumRanks++;
 	};
 
-	for (int i = 0;; i++)
+	for(int i = 0;; i++)
 	{
 		string256 RankSect;
 		sprintf_s(RankSect, "rank_%d", i);
-		if (!pSettings->section_exist(RankSect))
+		if(!pSettings->section_exist(RankSect))
 			break;
 		Rank_Struct NewRank;
 
@@ -1221,11 +1232,11 @@ void game_sv_mp::LoadRanks()
 		NewRank.m_iBonusMoney = READ_IF_EXISTS(pSettings, r_s32, RankSect, "rank_aquire_money", 0);
 		shared_str RDEB_str = pSettings->r_string(RankSect, "rank_diff_exp_bonus");
 		int RDEB_Count = _GetItemCount(RDEB_str.c_str());
-		for (int r = 0; r < RDEB_Count; r++)
+		for(int r = 0; r < RDEB_Count; r++)
 		{
 			string16 temp;
 			float f = 1.0f;
-			if (r <= NumRanks)
+			if(r <= NumRanks)
 				f = float(atof(_GetItem(RDEB_str.c_str(), r, temp)));
 			NewRank.m_aRankDiff_ExpBonus.push_back(f);
 		};
@@ -1234,7 +1245,7 @@ void game_sv_mp::LoadRanks()
 		int TermsCount = _GetItemCount(sTerms.c_str());
 		R_ASSERT2((TermsCount != 0 && TermsCount <= MAX_TERMS), "Error Number of Terms for Rank");
 
-		for (int t = 0; t < TermsCount; t++)
+		for(int t = 0; t < TermsCount; t++)
 		{
 			string16 temp;
 			NewRank.m_iTerms[t] = atoi(_GetItem(sTerms.c_str(), t, temp));
@@ -1245,21 +1256,21 @@ void game_sv_mp::LoadRanks()
 
 void game_sv_mp::Player_AddExperience(game_PlayerState* ps, float Exp)
 {
-	if (!ps)
+	if(!ps)
 		return;
 
 	ps->experience_New += Exp;
 
-	if (Player_Check_Rank(ps) && Player_RankUp_Allowed())
+	if(Player_Check_Rank(ps) && Player_RankUp_Allowed())
 		Player_Rank_Up(ps);
 
-	if (ps->rank == m_aRanks.size() - 1)
+	if(ps->rank == m_aRanks.size() - 1)
 		ps->experience_D = 1.0f;
 	else
 	{
 		int CurExp = m_aRanks[ps->rank].m_iTerms[0];
 		int NextExp = m_aRanks[ps->rank + 1].m_iTerms[0];
-		if ((ps->experience_Real + ps->experience_New) > NextExp)
+		if((ps->experience_Real + ps->experience_New) > NextExp)
 			ps->experience_D = 1.0f;
 		else
 			ps->experience_D = 1.0f - (NextExp - ps->experience_Real - ps->experience_New) / (NextExp - CurExp);
@@ -1269,22 +1280,22 @@ void game_sv_mp::Player_AddExperience(game_PlayerState* ps, float Exp)
 
 bool game_sv_mp::Player_Check_Rank(game_PlayerState* ps)
 {
-	if (!ps)
+	if(!ps)
 		return false;
-	if (ps->rank == m_aRanks.size() - 1)
+	if(ps->rank == m_aRanks.size() - 1)
 		return false;
 	int NextExp = m_aRanks[ps->rank + 1].m_iTerms[0];
-	if ((ps->experience_Real + ps->experience_New) < NextExp)
+	if((ps->experience_Real + ps->experience_New) < NextExp)
 		return false;
 	return true;
 }
 
 void game_sv_mp::Player_Rank_Up(game_PlayerState* ps)
 {
-	if (!ps)
+	if(!ps)
 		return;
 
-	if (ps->rank == m_aRanks.size() - 1)
+	if(ps->rank == m_aRanks.size() - 1)
 		return;
 
 	ps->rank++;
@@ -1294,7 +1305,7 @@ void game_sv_mp::Player_Rank_Up(game_PlayerState* ps)
 
 void game_sv_mp::Player_ExperienceFin(game_PlayerState* ps)
 {
-	if (!ps)
+	if(!ps)
 		return;
 	ps->experience_Real += ps->experience_New;
 	ps->experience_New = 0;
@@ -1303,13 +1314,13 @@ void game_sv_mp::Player_ExperienceFin(game_PlayerState* ps)
 void game_sv_mp::UpdatePlayersMoney()
 {
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; it++)
+	for(u32 it = 0; it < cnt; it++)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
-		if (!l_pC || !l_pC->net_Ready || !ps)
+		if(!l_pC || !l_pC->net_Ready || !ps)
 			continue;
-		if (!ps->money_added && ps->m_aBonusMoney.empty())
+		if(!ps->money_added && ps->m_aBonusMoney.empty())
 			continue;
 		//-----------------------------------------------------------
 		NET_Packet P;
@@ -1321,14 +1332,14 @@ void game_sv_mp::UpdatePlayersMoney()
 		P.w_s32(ps->money_added);
 		ps->money_added = 0;
 		P.w_u8(u8(ps->m_aBonusMoney.size() & 0xff));
-		if (!ps->m_aBonusMoney.empty())
+		if(!ps->m_aBonusMoney.empty())
 		{
-			for (u32 i = 0; i < ps->m_aBonusMoney.size(); i++)
+			for(u32 i = 0; i < ps->m_aBonusMoney.size(); i++)
 			{
 				Bonus_Money_Struct* pBMS = &(ps->m_aBonusMoney[i]);
 				P.w_s32(pBMS->Money);
 				P.w_u8(u8(pBMS->Reason & 0xff));
-				if (pBMS->Reason == SKT_KIR)
+				if(pBMS->Reason == SKT_KIR)
 					P.w_u8(pBMS->Kills);
 			};
 			ps->m_aBonusMoney.clear();
@@ -1358,10 +1369,10 @@ bool	game_sv_mp::GetTeamItem_ByName		(WeaponDataStruct** pRes,TEAM_WPN_LIST* pWp
 */
 void game_sv_mp::Player_AddBonusMoney(game_PlayerState* ps, s32 MoneyAmount, SPECIAL_KILL_TYPE Reason, u8 Kill)
 {
-	if (!ps)
+	if(!ps)
 		return;
 	//-----------------------------
-	if (MoneyAmount)
+	if(MoneyAmount)
 		ps->m_aBonusMoney.push_back(Bonus_Money_Struct(MoneyAmount, u8(Reason & 0xff), Kill));
 	//-----------------------------
 	Player_AddMoney(ps, MoneyAmount);
@@ -1370,7 +1381,7 @@ void game_sv_mp::Player_AddBonusMoney(game_PlayerState* ps, s32 MoneyAmount, SPE
 }
 void game_sv_mp::Player_AddMoney(game_PlayerState* ps, s32 MoneyAmount)
 {
-	if (!ps)
+	if(!ps)
 		return;
 	TeamStruct* pTeam = GetTeamData(u8(ps->team));
 
@@ -1379,9 +1390,9 @@ void game_sv_mp::Player_AddMoney(game_PlayerState* ps, s32 MoneyAmount)
 	TotalMoney += MoneyAmount;
 	ps->money_added += MoneyAmount;
 
-	if (TotalMoney < pTeam->m_iM_Min)
+	if(TotalMoney < pTeam->m_iM_Min)
 		TotalMoney = pTeam->m_iM_Min;
-	if (TotalMoney > 1000000)
+	if(TotalMoney > 1000000)
 		TotalMoney = 1000000;
 
 	ps->money_for_round = s32(TotalMoney);
@@ -1415,9 +1426,9 @@ void game_sv_mp::ReadOptions(shared_str& options)
 };
 
 static bool g_bConsoleCommandsCreated_MP = false;
-void game_sv_mp::ConsoleCommands_Create(){};
+void game_sv_mp::ConsoleCommands_Create() {};
 
-void game_sv_mp::ConsoleCommands_Clear(){};
+void game_sv_mp::ConsoleCommands_Clear() {};
 #include "string_table.h"
 void game_sv_mp::DumpOnlineStatistic()
 {
@@ -1447,7 +1458,7 @@ void game_sv_mp::DumpOnlineStatistic()
 
 	MAP_ROTATION_LIST_it it = m_pMapRotation_List.begin();
 	MAP_ROTATION_LIST_it it_e = m_pMapRotation_List.end();
-	for (u32 idx = 0; it != it_e; ++it, ++idx)
+	for(u32 idx = 0; it != it_e; ++it, ++idx)
 	{
 		string16 num_buf;
 		sprintf_s(num_buf, "%d", idx);
@@ -1455,14 +1466,14 @@ void game_sv_mp::DumpOnlineStatistic()
 		ini.w_string("map_rotation", num_buf, str_buff);
 	}
 
-	for (u32 idx = 0; idx < m_server->client_Count(); ++idx)
+	for(u32 idx = 0; idx < m_server->client_Count(); ++idx)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(idx);
 
-		if (m_server->GetServerClient() == l_pC && g_dedicated_server)
+		if(m_server->GetServerClient() == l_pC && g_dedicated_server)
 			continue;
 
-		if (!l_pC->net_Ready)
+		if(!l_pC->net_Ready)
 			continue;
 
 		string16 num_buf;
@@ -1491,7 +1502,7 @@ void game_sv_mp::WritePlayerStats(CInifile& ini, LPCSTR sect, xrClientData* pCl)
 	ini.w_u32(sect, "money", pCl->ps->money_for_round);
 	ini.w_u32(sect, "online_time_sec", (Level().timeServer() - pCl->ps->m_online_time) / 1000);
 
-	if (Game().m_WeaponUsageStatistic->CollectData())
+	if(Game().m_WeaponUsageStatistic->CollectData())
 	{
 		Player_Statistic& plstats = *(Game().m_WeaponUsageStatistic->FindPlayer(pCl->ps->getName()));
 		u32 hs = plstats.m_dwSpecialKills[0];
@@ -1506,13 +1517,13 @@ void game_sv_mp::WritePlayerStats(CInifile& ini, LPCSTR sect, xrClientData* pCl)
 
 void game_sv_mp::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult)
 {
-	if (!bRoundResult)
+	if(!bRoundResult)
 		ini.w_u32(sect, "online_time_sec", Engine.TimeManager.GetGlobalTimeMs() / 1000);
 }
 
 void game_sv_mp::DumpRoundStatistics()
 {
-	if (!g_sv_mp_iDumpStatsPeriod)
+	if(!g_sv_mp_iDumpStatsPeriod)
 		return;
 
 	string_path fn;
@@ -1541,10 +1552,10 @@ void game_sv_mp::DumpRoundStatistics()
 	sprintf_s(str_buff, "\"%s\"", Level().name().c_str());
 	ini.w_string(current_section.c_str(), "current_map_name_internal", str_buff);
 
-	for (u32 idx = 0; idx < m_server->client_Count(); ++idx)
+	for(u32 idx = 0; idx < m_server->client_Count(); ++idx)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(idx);
-		if (m_server->GetServerClient() == l_pC && g_dedicated_server)
+		if(m_server->GetServerClient() == l_pC && g_dedicated_server)
 			continue;
 
 		string16 num_buf;

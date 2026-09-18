@@ -20,7 +20,7 @@ void CRender::create_hi_z_mip_chain()
 	RenderBackend.RenderViewportSurface(MipChain->get_surface_level(0));
 
 	// Шаг 2: Генерируем остальные мипы
-	for (u32 i = 1; i < MipChain->get_levels_count(); i++)
+	for(u32 i = 1; i < MipChain->get_levels_count(); i++)
 	{
 		// Используем индекс 1 для генерации (Downsample pass)
 		RenderBackend.set_Element(RenderTarget->s_hi_z->E[SE_HI_Z_GENERATE_MIP_CHAIN_PASS], 1);

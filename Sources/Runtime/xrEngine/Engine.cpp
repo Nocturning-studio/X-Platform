@@ -37,7 +37,7 @@ extern CRenderDevice Device;
 ENGINE_API CInifile* pGameIni = NULL;
 ENGINE_API bool g_dedicated_server = false;
 //////////////////////////////////////////////////////////////////////////
-void __cdecl dummy(void){};
+void __cdecl dummy(void) {};
 extern void msCreate(LPCSTR name);
 extern void __cdecl xrBind_PSGP(xrDispatchTable* T, DWORD dwFeatures);
 //////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ static void LogCallbackSDL3(void* userdata, int category, SDL_LogPriority priori
 	(void)userdata;
 
 	pcstr category_str = "unknown";
-	switch (category)
+	switch(category)
 	{
 	case SDL_LOG_CATEGORY_APPLICATION:
 		category_str = "app";
@@ -98,7 +98,7 @@ static void LogCallbackSDL3(void* userdata, int category, SDL_LogPriority priori
 
 	char console_mark = '?';
 	pcstr priority_str = "unknown";
-	switch (priority)
+	switch(priority)
 	{
 	case SDL_LOG_PRIORITY_TRACE:
 		priority_str = "trace";
@@ -228,7 +228,7 @@ bool CEngine::Initialize()
 
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");
-		if (g_dedicated_server)
+		if(g_dedicated_server)
 			bCaptureInput = FALSE;
 
 		pInput = xr_new<CInput>(bCaptureInput);
@@ -260,7 +260,7 @@ bool CEngine::Initialize()
 			Msg("Loading DLL: %s", g_name);
 			hGame = LoadLibrary(g_name);
 
-			if (0 == hGame)
+			if(0 == hGame)
 				R_CHK(GetLastError());
 
 			R_ASSERT2(hGame, "Game DLL raised exception during loading or there is no game DLL at all");
@@ -274,12 +274,12 @@ bool CEngine::Initialize()
 
 #ifndef MASTER_GOLD
 		tune_enabled = FALSE;
-		if (strstr(Core.Params, "-tune"))
+		if(strstr(Core.Params, "-tune"))
 		{
 			LPCSTR g_name = "vTuneAPI.dll";
 			Log("Loading DLL:", g_name);
 			hTuner = LoadLibrary(g_name);
-			if (0 == hTuner)
+			if(0 == hTuner)
 			{
 				R_CHK(GetLastError());
 				Msg("Intel vTune is not installed");
@@ -296,7 +296,7 @@ bool CEngine::Initialize()
 			LPCSTR g_name = "OptickCore.dll";
 			Log("Loading DLL:", g_name);
 			hOptick = LoadLibrary(g_name);
-			if (0 == hOptick)
+			if(0 == hOptick)
 			{
 				R_CHK(GetLastError());
 				Msg("Optick is not installed");
@@ -353,19 +353,19 @@ bool CEngine::Initialize()
 		// ...command line for auto start
 		{
 			LPCSTR pStartup = strstr(Core.Params, "-start ");
-			if (pStartup)
+			if(pStartup)
 				Console->Execute(pStartup + 1);
 		}
 		{
 			LPCSTR pStartup = strstr(Core.Params, "-load ");
-			if (pStartup)
+			if(pStartup)
 				Console->Execute(pStartup + 1);
 		}
-		if (strstr(Core.Params, "-load_last_save"))
+		if(strstr(Core.Params, "-load_last_save"))
 		{
 			Console->Execute("load_last_save");
 		}
-		if (strstr(Core.Params, "-load_last_quick_save"))
+		if(strstr(Core.Params, "-load_last_quick_save"))
 		{
 			Console->Execute("load_last_quick_save");
 		}
@@ -391,7 +391,7 @@ void CEngine::UpdateGameLogic()
 	Statistic->EngineTOTAL.Begin();
 
 	Events.Frame.Process(rp_Frame);
-	if (!IsLoaded())
+	if(!IsLoaded())
 		SetLoaded();
 
 	Statistic->EngineTOTAL.End();
@@ -399,11 +399,11 @@ void CEngine::UpdateGameLogic()
 
 bool CEngine::CheckLoadingEvents()
 {
-	if (m_loading_events.empty())
+	if(m_loading_events.empty())
 		return false;
 
 	// Выполняем одно событие загрузки (например, загрузка текстуры)
-	if (m_loading_events.front()())
+	if(m_loading_events.front()())
 		m_loading_events.pop_front();
 
 	// Рисуем экран загрузки
@@ -418,7 +418,7 @@ void CEngine::ProcessFrame()
 	PROFILE_FUNCTION();
 
 	// Проверка готовности устройства
-	if (!Device.b_is_Ready)
+	if(!Device.b_is_Ready)
 	{
 		OPTICK_EVENT("Waiting for Device.b_is_Ready");
 		Sleep(100);
@@ -430,13 +430,13 @@ void CEngine::ProcessFrame()
 	TimeManager.OnFrameStart(); // Засекаем время для лимитера
 
 	// Сбор статистики
-	if (psDeviceFlags.test(rsStatistic))
+	if(psDeviceFlags.test(rsStatistic))
 		g_bEnableStatGather = TRUE;
 	else
 		g_bEnableStatGather = FALSE;
 
 	// Блокирующие события загрузки (прерывают кадр)
-	if (CheckLoadingEvents())
+	if(CheckLoadingEvents())
 		return;
 
 	// Обновление игровой логики (Input, AI, Game)
@@ -463,7 +463,7 @@ void CEngine::ProcessFrame()
 	TimeManager.DoFrameLimit();
 
 	// Экономия энергии при свернутом окне
-	if (!Device.b_is_Active)
+	if(!Device.b_is_Active)
 		Sleep(1);
 }
 
@@ -473,9 +473,9 @@ void CEngine::ProcessEventLoop()
 	Events.AppStart.Process(rp_AppStart);
 	Engine.SetUnloaded();
 
-	while (!g_QuitRequested)
+	while(!g_QuitRequested)
 	{
-		if (!WindowManager.ProcessMessages())
+		if(!WindowManager.ProcessMessages())
 			break;
 
 		ProcessFrame();
@@ -537,21 +537,21 @@ void CEngine::Destroy()
 
 #ifdef DEBUG_MEMORY_MANAGER
 	extern void dbg_dump_leaks_prepare();
-	if (Memory.debug_mode)
+	if(Memory.debug_mode)
 		dbg_dump_leaks_prepare();
 #endif // DEBUG_MEMORY_MANAGER
 
-	if (hGame)
+	if(hGame)
 	{
 		FreeLibrary(hGame);
 		hGame = 0;
 	}
-	if (hRender)
+	if(hRender)
 	{
 		FreeLibrary(hRender);
 		hRender = 0;
 	}
-	if (hOptick)
+	if(hOptick)
 	{
 		FreeLibrary(hOptick);
 		hOptick = 0;

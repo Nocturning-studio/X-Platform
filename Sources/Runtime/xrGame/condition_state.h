@@ -10,7 +10,8 @@
 
 #include "operator_condition.h"
 
-template <typename _world_property> class CConditionState
+template <typename _world_property>
+class CConditionState
 {
   public:
 	typedef _world_property COperatorCondition;

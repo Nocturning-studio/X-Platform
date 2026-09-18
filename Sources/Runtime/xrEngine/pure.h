@@ -11,17 +11,17 @@
 #define REG_PRIORITY_INVALID 0xfffffffful
 
 typedef void __fastcall RP_FUNC(void* obj);
-#define DECLARE_MESSAGE(name)                                                                                          \
-	extern ENGINE_API RP_FUNC rp_##name;                                                                               \
-	class ENGINE_API pure##name                                                                                        \
-	{                                                                                                                  \
-	  public:                                                                                                          \
-		virtual void On##name(void) = 0;                                                                               \
+#define DECLARE_MESSAGE(name)            \
+	extern ENGINE_API RP_FUNC rp_##name; \
+	class ENGINE_API pure##name          \
+	{                                    \
+	  public:                            \
+		virtual void On##name(void) = 0; \
 	}
-#define DECLARE_RP(name)                                                                                               \
-	void __fastcall rp_##name(void* p)                                                                                 \
-	{                                                                                                                  \
-		((pure##name*)p)->On##name();                                                                                  \
+#define DECLARE_RP(name)               \
+	void __fastcall rp_##name(void* p) \
+	{                                  \
+		((pure##name*)p)->On##name();  \
 	}
 
 DECLARE_MESSAGE(Frame);
@@ -40,7 +40,8 @@ struct _REG_INFO
 	u32 Flags;
 };
 
-template <class T> class CRegistrator // the registrator itself
+template <class T>
+class CRegistrator // the registrator itself
 {
   public:
 	xr_vector<_REG_INFO> R;
@@ -62,7 +63,7 @@ template <class T> class CRegistrator // the registrator itself
 #ifdef DEBUG
 		VERIFY(priority != REG_PRIORITY_INVALID);
 		VERIFY(obj);
-		for (u32 i = 0; i < R.size(); i++)
+		for(u32 i = 0; i < R.size(); i++)
 			VERIFY(!((R[i].Prio != REG_PRIORITY_INVALID) && (R[i].Object == (void*)obj)));
 #endif
 		_REG_INFO I;
@@ -71,19 +72,19 @@ template <class T> class CRegistrator // the registrator itself
 		I.Flags = flags;
 		R.push_back(I);
 
-		if (in_process)
+		if(in_process)
 			changed = true;
 		else
 			Resort();
 	};
 	void Remove(T* obj)
 	{
-		for (u32 i = 0; i < R.size(); i++)
+		for(u32 i = 0; i < R.size(); i++)
 		{
-			if (R[i].Object == obj)
+			if(R[i].Object == obj)
 				R[i].Prio = REG_PRIORITY_INVALID;
 		}
-		if (in_process)
+		if(in_process)
 			changed = true;
 		else
 			Resort();
@@ -91,25 +92,26 @@ template <class T> class CRegistrator // the registrator itself
 	void Process(RP_FUNC* f)
 	{
 		in_process = true;
-		if (R.empty())
+		if(R.empty())
 			return;
-		if (R[0].Prio == REG_PRIORITY_CAPTURE)
+		if(R[0].Prio == REG_PRIORITY_CAPTURE)
 			f(R[0].Object);
 		else
 		{
-			for (u32 i = 0; i < R.size(); i++)
-				if (R[i].Prio != REG_PRIORITY_INVALID)
+			for(u32 i = 0; i < R.size(); i++)
+				if(R[i].Prio != REG_PRIORITY_INVALID)
 					f(R[i].Object);
 		}
-		if (changed)
+		if(changed)
 			Resort();
 		in_process = false;
 	};
 	void Resort(void)
 	{
-		std::sort(R.begin(), R.end(), [](const _REG_INFO& a, const _REG_INFO& b) { return a.Prio > b.Prio; });
+		std::sort(R.begin(), R.end(), [](const _REG_INFO& a, const _REG_INFO& b)
+				  { return a.Prio > b.Prio; });
 
-		while ((R.size()) && (R[R.size() - 1].Prio == REG_PRIORITY_INVALID))
+		while((R.size()) && (R[R.size() - 1].Prio == REG_PRIORITY_INVALID))
 			R.pop_back();
 
 		changed = false;
@@ -134,7 +136,7 @@ class ENGINE_API DLL_Pure
 	{
 		return this;
 	}
-	virtual ~DLL_Pure(){};
+	virtual ~DLL_Pure() {};
 };
 
 #endif

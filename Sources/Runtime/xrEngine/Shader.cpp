@@ -55,16 +55,16 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb
 //////////////////////////////////////////////////////////////////////
 BOOL SPass::equal(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T)
 {
-	if (state != _state)
+	if(state != _state)
 		return FALSE;
-	if (ps != _ps)
+	if(ps != _ps)
 		return FALSE;
-	if (vs != _vs)
+	if(vs != _vs)
 		return FALSE;
-	if (constants != _ctable)
+	if(constants != _ctable)
 		return FALSE; // is this nessesary??? (ps+vs already combines)
 
-	if (T != _T)
+	if(T != _T)
 		return FALSE;
 
 	return TRUE;
@@ -82,29 +82,29 @@ ShaderElement::ShaderElement()
 
 BOOL ShaderElement::equal(ShaderElement& S)
 {
-	if (flags.iPriority != S.flags.iPriority)
+	if(flags.iPriority != S.flags.iPriority)
 		return FALSE;
-	if (flags.bStrictB2F != S.flags.bStrictB2F)
+	if(flags.bStrictB2F != S.flags.bStrictB2F)
 		return FALSE;
-	if (flags.bEmissive != S.flags.bEmissive)
+	if(flags.bEmissive != S.flags.bEmissive)
 		return FALSE;
-	if (flags.bWmark != S.flags.bWmark)
+	if(flags.bWmark != S.flags.bWmark)
 		return FALSE;
-	if (flags.bDistort != S.flags.bDistort)
+	if(flags.bDistort != S.flags.bDistort)
 		return FALSE;
-	if (passes.size() != S.passes.size())
+	if(passes.size() != S.passes.size())
 		return FALSE;
-	for (u32 p = 0; p < passes.size(); p++)
-		if (passes[p] != S.passes[p])
+	for(u32 p = 0; p < passes.size(); p++)
+		if(passes[p] != S.passes[p])
 			return FALSE;
 	return TRUE;
 }
 
 BOOL ShaderElement::equal(ShaderElement* S)
 {
-	if (0 == S && 0 == this)
+	if(0 == S && 0 == this)
 		return TRUE;
-	if (0 == S || 0 == this)
+	if(0 == S || 0 == this)
 		return FALSE;
 	return equal(*S);
 }
@@ -124,7 +124,7 @@ void STextureList::clear()
 {
 	iterator it = begin();
 	iterator it_e = end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 		(*it).second.destroy();
 
 	erase(begin(), end());
@@ -134,7 +134,7 @@ void STextureList::clear_not_free()
 {
 	iterator it = begin();
 	iterator it_e = end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 		(*it).second.destroy();
 
 	erase(begin(), end());

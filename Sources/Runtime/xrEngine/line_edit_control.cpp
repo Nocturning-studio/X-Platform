@@ -26,7 +26,7 @@ namespace text_editor
 
 static bool terminate_char(char c, bool check_space = false)
 {
-	switch (c)
+	switch(c)
 	{
 	case ' ':
 		return check_space;
@@ -79,7 +79,7 @@ line_edit_control::line_edit_control(u32 str_buffer_size)
 	m_buf2 = NULL;
 	m_buf3 = NULL;
 
-	for (u32 i = 0; i < DIK_COUNT; ++i)
+	for(u32 i = 0; i < DIK_COUNT; ++i)
 	{
 		m_actions[i] = NULL;
 	}
@@ -130,7 +130,7 @@ static inline bool get_caps_lock_state()
 
 void line_edit_control::update_key_states()
 {
-	if (!pInput)
+	if(!pInput)
 		return;
 
 	m_key_state.zero();
@@ -201,13 +201,13 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 
 	clear_states();
 
-	for (u32 i = 0; i < DIK_COUNT; ++i)
+	for(u32 i = 0; i < DIK_COUNT; ++i)
 	{
 		xr_delete(m_actions[i]);
 		m_actions[i] = NULL;
 	}
 
-	if (mode == im_read_only)
+	if(mode == im_read_only)
 	{
 		assign_callback(DIK_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
 		assign_callback(DIK_C, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
@@ -274,7 +274,7 @@ void line_edit_control::assign_char_pairs(init_mode mode)
 	create_char_pair(DIK_NUMPAD8, '8', '8');
 	create_char_pair(DIK_NUMPAD9, '9', '9');
 
-	if (mode == im_number_only)
+	if(mode == im_number_only)
 	{
 		create_char_pair(DIK_0, '0', '0');
 		create_char_pair(DIK_1, '1', '1');
@@ -293,7 +293,7 @@ void line_edit_control::assign_char_pairs(init_mode mode)
 		return;
 	}
 
-	if (mode != im_file_name_mode)
+	if(mode != im_file_name_mode)
 	{
 		create_char_pair(DIK_0, '0', ')', true);
 		create_char_pair(DIK_1, '1', '!', true);
@@ -381,7 +381,7 @@ void line_edit_control::create_key_state(u32 const dik, key_state state)
 
 void line_edit_control::create_char_pair(u32 const dik, char c, char c_shift, bool translate)
 {
-	if (m_actions[dik])
+	if(m_actions[dik])
 	{
 		xr_delete(m_actions[dik]);
 	}
@@ -429,11 +429,11 @@ void line_edit_control::set_edit(LPCSTR str)
 
 void line_edit_control::on_key_press(int dik)
 {
-	if (DIK_COUNT <= dik)
+	if(DIK_COUNT <= dik)
 	{
 		return;
 	}
-	if (!m_hold_mode)
+	if(!m_hold_mode)
 	{
 		m_last_key_time = 0.0f;
 		m_accel = 1.0f;
@@ -444,12 +444,12 @@ void line_edit_control::on_key_press(int dik)
 	clear_inserted();
 	compute_positions();
 
-	if (m_actions[dik])
+	if(m_actions[dik])
 	{
 		m_actions[dik]->on_key_press(this);
 	}
 	// ===========
-	if (dik == DIK_LCONTROL || dik == DIK_RCONTROL)
+	if(dik == DIK_LCONTROL || dik == DIK_RCONTROL)
 	{
 		m_mark = false;
 	}
@@ -458,7 +458,7 @@ void line_edit_control::on_key_press(int dik)
 	clamp_cur_pos();
 
 	add_inserted_text();
-	if (m_mark && (!get_key_state(ks_Shift) || !empty_inserted()))
+	if(m_mark && (!get_key_state(ks_Shift) || !empty_inserted()))
 	{
 		m_select_start = m_cur_pos;
 	}
@@ -477,7 +477,7 @@ void line_edit_control::on_key_hold(int dik)
 {
 	update_key_states();
 	update_bufs();
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_TAB:
 	case DIK_LSHIFT:
@@ -490,7 +490,7 @@ void line_edit_control::on_key_hold(int dik)
 		break;
 	}
 
-	if (m_repeat_mode && m_last_key_time > 5.0f * g_console_sensitive)
+	if(m_repeat_mode && m_last_key_time > 5.0f * g_console_sensitive)
 	{
 		float buf_time = m_rep_time;
 		m_hold_mode = true;
@@ -518,7 +518,7 @@ void line_edit_control::on_frame()
 
 	u32 fr_time = Engine.TimeManager.GetContinualTimeMs();
 	float dt = (fr_time - m_last_frame_time) * 0.001f;
-	if (dt > 0.06666f)
+	if(dt > 0.06666f)
 	{
 		dt = 0.06666f;
 	}
@@ -526,17 +526,17 @@ void line_edit_control::on_frame()
 	m_cur_time += dt;
 
 	m_cursor_view = true;
-	if (m_cur_time > 0.3f)
+	if(m_cur_time > 0.3f)
 	{
 		m_cursor_view = false;
 	}
-	if (m_cur_time > 0.4f)
+	if(m_cur_time > 0.4f)
 	{
 		m_cur_time = 0.0f;
 	}
 
 	m_rep_time += dt * m_accel;
-	if (m_rep_time > g_console_sensitive) // 0.2
+	if(m_rep_time > g_console_sensitive) // 0.2
 	{
 		m_rep_time = 0.0f;
 		m_repeat_mode = true;
@@ -544,7 +544,7 @@ void line_edit_control::on_frame()
 	}
 	m_last_key_time += dt;
 
-	if (m_last_changed_frame + 1 < Engine.TimeManager.GetFrameCount())
+	if(m_last_changed_frame + 1 < Engine.TimeManager.GetFrameCount())
 	{
 		m_need_update = false;
 	}
@@ -578,15 +578,15 @@ void line_edit_control::update_bufs()
 
 void line_edit_control::add_inserted_text()
 {
-	if (empty_inserted())
+	if(empty_inserted())
 	{
 		return;
 	}
 
 	int old_edit_size = (int)xr_strlen(m_edit_str);
-	for (int i = 0; i < old_edit_size; ++i)
+	for(int i = 0; i < old_edit_size; ++i)
 	{
-		if ((m_edit_str[i] == '\n') || (m_edit_str[i] == '\t'))
+		if((m_edit_str[i] == '\n') || (m_edit_str[i] == '\t'))
 		{
 			m_edit_str[i] = ' ';
 		}
@@ -598,7 +598,7 @@ void line_edit_control::add_inserted_text()
 	strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1);
 
 	int new_size = (int)xr_strlen(m_inserted);
-	if (m_buffer_size - 1 < m_p1 + new_size)
+	if(m_buffer_size - 1 < m_p1 + new_size)
 	{
 		m_inserted[m_buffer_size - 1 - m_p1] = 0;
 		new_size = xr_strlen(m_inserted);
@@ -611,7 +611,7 @@ void line_edit_control::add_inserted_text()
 	buf[m_buffer_size] = 0;
 
 	int szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
-	if (szn < m_buffer_size)
+	if(szn < m_buffer_size)
 	{
 		strncpy_s(m_edit_str, m_buffer_size, buf, szn); // part 1+2+3
 		m_edit_str[m_buffer_size - 1] = 0;
@@ -624,7 +624,7 @@ void line_edit_control::add_inserted_text()
 
 void line_edit_control::copy_to_clipboard()
 {
-	if (m_p1 >= m_p2)
+	if(m_p1 >= m_p2)
 	{
 		return;
 	}
@@ -681,9 +681,9 @@ void line_edit_control::delete_selected(bool back)
 {
 	clamp_cur_pos();
 	int edit_len = (int)xr_strlen(m_edit_str);
-	if (edit_len > 0)
+	if(edit_len > 0)
 	{
-		if (back)
+		if(back)
 		{
 			u8 dp = ((m_p1 == m_p2) && m_p1 > 0) ? 1 : 0;
 			strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1 - dp, m_p2 - m_p1 + dp);
@@ -748,13 +748,13 @@ void line_edit_control::move_pos_right()
 void line_edit_control::move_pos_left_word()
 {
 	int i = m_cur_pos - 1;
-	while (i >= 0 && m_edit_str[i] == ' ')
+	while(i >= 0 && m_edit_str[i] == ' ')
 	{
 		--i;
 	}
-	if (!terminate_char(m_edit_str[i]))
+	if(!terminate_char(m_edit_str[i]))
 	{
-		while (i >= 0 && !terminate_char(m_edit_str[i], true))
+		while(i >= 0 && !terminate_char(m_edit_str[i], true))
 		{
 			--i;
 		}
@@ -767,12 +767,12 @@ void line_edit_control::move_pos_right_word()
 {
 	int edit_len = (int)xr_strlen(m_edit_str);
 	int i = m_cur_pos + 1;
-	while (i < edit_len && !terminate_char(m_edit_str[i], true))
+	while(i < edit_len && !terminate_char(m_edit_str[i], true))
 	{
 		++i;
 	}
 	// while( i < edit_len && terminate_char( m_edit_str[i] ) )		{ ++i; }
-	while (i < edit_len && m_edit_str[i] == ' ')
+	while(i < edit_len && m_edit_str[i] == ' ')
 	{
 		++i;
 	}
@@ -783,16 +783,16 @@ void line_edit_control::compute_positions()
 {
 	m_p1 = m_cur_pos;
 	m_p2 = m_cur_pos;
-	if (m_unselected_mode)
+	if(m_unselected_mode)
 	{
 		return;
 	}
 
-	if (m_cur_pos > m_select_start)
+	if(m_cur_pos > m_select_start)
 	{
 		m_p1 = m_select_start;
 	}
-	else if (m_cur_pos < m_select_start)
+	else if(m_cur_pos < m_select_start)
 	{
 		m_p2 = m_select_start;
 	}
@@ -813,7 +813,7 @@ void line_edit_control::SwitchKL()
 void remove_spaces(PSTR str) // in & out
 {
 	u32 str_size = xr_strlen(str);
-	if (str_size < 1)
+	if(str_size < 1)
 	{
 		return;
 	}
@@ -821,21 +821,21 @@ void remove_spaces(PSTR str) // in & out
 	new_str[0] = 0;
 
 	u32 a = 0, b = 0, i = 0;
-	while (b < str_size)
+	while(b < str_size)
 	{
 		a = b;
-		while (a < str_size && str[a] == ' ')
+		while(a < str_size && str[a] == ' ')
 		{
 			++a;
 		}
 		b = a;
-		while (b < str_size && str[b] != ' ')
+		while(b < str_size && str[b] != ' ')
 		{
 			++b;
 		}
 		strncpy_s(new_str + i, str_size + 1 - i, str + a, b - a);
 		i += (b - a);
-		if (i < str_size)
+		if(i < str_size)
 		{
 			new_str[i] = ' ';
 		}
@@ -843,7 +843,7 @@ void remove_spaces(PSTR str) // in & out
 		++i;
 	}
 	--i;
-	if (i < str_size)
+	if(i < str_size)
 	{
 		strncpy_s(str, str_size, new_str, i);
 	}
@@ -854,19 +854,19 @@ void split_cmd(PSTR first, PSTR second, LPCSTR str)
 	first[0] = 0;
 	second[0] = 0;
 	u32 str_size = xr_strlen(str);
-	if (str_size < 1)
+	if(str_size < 1)
 	{
 		return;
 	}
 
 	// split into =>>(cmd) (params)
 	u32 a = 0;
-	while (a < str_size && str[a] != ' ')
+	while(a < str_size && str[a] != ' ')
 	{
 		++a;
 	}
 	strncpy_s(first, str_size + 1, str, a);
-	if (a < str_size)
+	if(a < str_size)
 	{
 		first[a] = 0;
 	}
@@ -875,7 +875,7 @@ void split_cmd(PSTR first, PSTR second, LPCSTR str)
 		first[str_size] = 0;
 	}
 	++a;
-	if (a < str_size)
+	if(a < str_size)
 	{
 		strncpy_s(second, str_size + 1, str + a, str_size - a);
 		second[str_size - a] = 0;

@@ -101,7 +101,7 @@ void CStalkerCombatPlanner::initialize()
 {
 	inherited::initialize();
 
-	if (!m_loaded)
+	if(!m_loaded)
 	{
 
 		CScriptActionPlanner::m_storage.set_property(eWorldPropertyInCover, false);
@@ -126,7 +126,7 @@ void CStalkerCombatPlanner::initialize()
 	m_last_level_time = 0;
 	m_last_wounded = false;
 
-	if (!m_loaded && object().memory().enemy().selected())
+	if(!m_loaded && object().memory().enemy().selected())
 	{
 		CVisualMemoryManager* visual_memory_manager = object().memory().enemy().selected()->visual_memory();
 		VERIFY(visual_memory_manager);
@@ -136,18 +136,18 @@ void CStalkerCombatPlanner::initialize()
 
 	m_loaded = false;
 
-	if (!object().agent_manager().member().combat_members().empty())
+	if(!object().agent_manager().member().combat_members().empty())
 		CScriptActionPlanner::m_storage.set_property(eWorldPropertyUseSuddenness, false);
 
 	//  this is possible when i enter combat when it is wait after combat stage
 	//	VERIFY					(object().memory().enemy().selected());
 
-	if (m_object->memory().visual().visible_now(m_object->memory().enemy().selected()))
+	if(m_object->memory().visual().visible_now(m_object->memory().enemy().selected()))
 	{
-		if (m_object->memory().enemy().selected()->human_being())
-			if (object().agent_manager().member().can_cry_noninfo_phrase())
-				if (object().agent_manager().member().members().size() > 1)
-					if (!CScriptActionPlanner::m_storage.property(eWorldPropertyUseSuddenness))
+		if(m_object->memory().enemy().selected()->human_being())
+			if(object().agent_manager().member().can_cry_noninfo_phrase())
+				if(object().agent_manager().member().members().size() > 1)
+					if(!CScriptActionPlanner::m_storage.property(eWorldPropertyUseSuddenness))
 						object().sound().play(eStalkerSoundAlarm);
 	}
 
@@ -158,11 +158,11 @@ void CStalkerCombatPlanner::finalize()
 {
 	inherited::finalize();
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().memory().danger().time_line(Engine.TimeManager.GetGlobalTimeMs() + 3000);
-	if (object().agent_manager().member().registered_in_combat(m_object))
+	if(object().agent_manager().member().registered_in_combat(m_object))
 		object().agent_manager().member().unregister_in_combat(m_object);
 
 	object().m_clutched_hammer_enabled = false;

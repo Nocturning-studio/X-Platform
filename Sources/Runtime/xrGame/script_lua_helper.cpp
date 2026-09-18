@@ -44,7 +44,7 @@ void CDbgLuaHelper::PrepareLuaBind()
 
 int CDbgLuaHelper::OutputTop(lua_State* L)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return 0;
 	m_pThis->debugger()->Write(luaL_checkstring(L, -1));
 	m_pThis->debugger()->Write("\n");
@@ -56,7 +56,7 @@ int CDbgLuaHelper::OutputTop(lua_State* L)
 
 void CDbgLuaHelper::errormessageLuaBind(lua_State* l)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return;
 	L = l;
 
@@ -70,30 +70,30 @@ void CDbgLuaHelper::errormessageLuaBind(lua_State* l)
 
 int CDbgLuaHelper::errormessageLua(lua_State* l)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return 0;
 	L = l;
 	int level = 1; /* skip level 0 (it's this function) */
 
 	int firstpart = 1; /* still before eventual `...' */
 	lua_Debug ar;
-	if (!lua_isstring(L, 1))
+	if(!lua_isstring(L, 1))
 		return lua_gettop(L);
 	lua_settop(L, 1);
 	lua_pushliteral(L, "\n");
 	lua_pushliteral(L, "stack traceback:\n");
-	while (lua_getstack(L, level++, &ar))
+	while(lua_getstack(L, level++, &ar))
 	{
 		char buff[10];
-		if (level > LEVELS1 && firstpart)
+		if(level > LEVELS1 && firstpart)
 		{
 			/* no more than `LEVELS2' more levels? */
-			if (!lua_getstack(L, level + LEVELS2, &ar))
+			if(!lua_getstack(L, level + LEVELS2, &ar))
 				level--; /* keep going */
 			else
 			{
-				lua_pushliteral(L, "       ...\n");			  /* too many levels */
-				while (lua_getstack(L, level + LEVELS2, &ar)) /* find last levels */
+				lua_pushliteral(L, "       ...\n");			 /* too many levels */
+				while(lua_getstack(L, level + LEVELS2, &ar)) /* find last levels */
 					level++;
 			}
 			firstpart = 0;
@@ -104,9 +104,9 @@ int CDbgLuaHelper::errormessageLua(lua_State* l)
 		lua_pushstring(L, buff);
 		lua_getinfo(L, "Snl", &ar);
 		lua_pushfstring(L, "%s:", ar.short_src);
-		if (ar.currentline > 0)
+		if(ar.currentline > 0)
 			lua_pushfstring(L, "%d:", ar.currentline);
-		switch (*ar.namewhat)
+		switch(*ar.namewhat)
 		{
 		case 'g': /* global */
 		case 'l': /* local */
@@ -114,10 +114,11 @@ int CDbgLuaHelper::errormessageLua(lua_State* l)
 		case 'm': /* method */
 			lua_pushfstring(L, " in function `%s'", ar.name);
 			break;
-		default: {
-			if (*ar.what == 'm') /* main? */
+		default:
+		{
+			if(*ar.what == 'm') /* main? */
 				lua_pushfstring(L, " in main chunk");
-			else if (*ar.what == 'C') /* C function? */
+			else if(*ar.what == 'C') /* C function? */
 				lua_pushfstring(L, "%s", ar.short_src);
 			else
 				lua_pushfstring(L, " in function <%s:%d>", ar.short_src, ar.linedefined);
@@ -132,7 +133,7 @@ int CDbgLuaHelper::errormessageLua(lua_State* l)
 
 	OutputTop(L);
 	const char* szSource = NULL;
-	if (ar.source[0] == '@')
+	if(ar.source[0] == '@')
 		szSource = ar.source + 1;
 	m_pThis->debugger()->ErrorBreak(szSource, ar.currentline);
 	FATAL("LUA error");
@@ -142,19 +143,19 @@ int CDbgLuaHelper::errormessageLua(lua_State* l)
 
 void CDbgLuaHelper::set_lua(lua_State* l)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return;
 	m_pThis->L = l;
 }
 
 void CDbgLuaHelper::line_hook(lua_State* l, lua_Debug* ar)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return;
 	lua_getinfo(L, "lnuS", ar);
 	m_pThis->m_pAr = ar;
 
-	if (ar->source[0] == '@')
+	if(ar->source[0] == '@')
 	{
 		m_pThis->debugger()->LineHook(ar->source + 1, ar->currentline);
 	}
@@ -162,13 +163,13 @@ void CDbgLuaHelper::line_hook(lua_State* l, lua_Debug* ar)
 
 void CDbgLuaHelper::func_hook(lua_State* l, lua_Debug* ar)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return;
 	lua_getinfo(L, "lnuS", ar);
 	m_pThis->m_pAr = ar;
 
 	const char* szSource = NULL;
-	if (ar->source[0] == '@')
+	if(ar->source[0] == '@')
 	{
 		szSource = ar->source + 1;
 	};
@@ -178,13 +179,13 @@ void CDbgLuaHelper::func_hook(lua_State* l, lua_Debug* ar)
 void print_stack(lua_State* L)
 {
 	Msg(" ");
-	for (int i = 0; lua_type(L, -i - 1); i++)
+	for(int i = 0; lua_type(L, -i - 1); i++)
 		Msg("%2d : %s", -i - 1, lua_typename(L, lua_type(L, -i - 1)));
 }
 
 int CDbgLuaHelper::hookLuaBind(lua_State* l)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return 0;
 	L = l;
 	int top1 = lua_gettop(L);
@@ -192,7 +193,7 @@ int CDbgLuaHelper::hookLuaBind(lua_State* l)
 	Msg("hookLuaBind start");
 	print_stack(L);
 
-	if (lua_isstring(L, -1))
+	if(lua_isstring(L, -1))
 		errormessageLuaBind(L);
 	//		Msg("Tope string %s",lua_tostring(L,-1));
 
@@ -204,7 +205,7 @@ int CDbgLuaHelper::hookLuaBind(lua_State* l)
 	Msg("hookLuaBind end");
 	print_stack(L);
 
-	if (lua_isstring(L, -1))
+	if(lua_isstring(L, -1))
 		Msg("Tope string %s", lua_tostring(L, -1));
 
 	int top2 = lua_gettop(L);
@@ -214,7 +215,7 @@ int CDbgLuaHelper::hookLuaBind(lua_State* l)
 
 void CDbgLuaHelper::hookLua(lua_State* l, lua_Debug* ar)
 {
-	if (!m_pThis)
+	if(!m_pThis)
 		return;
 	L = l;
 	int top1 = lua_gettop(L);
@@ -222,7 +223,7 @@ void CDbgLuaHelper::hookLua(lua_State* l, lua_Debug* ar)
 	//	Msg	("hookLua start");
 	//	print_stack(L);
 
-	switch (ar->event)
+	switch(ar->event)
 	{
 	case LUA_HOOKTAILRET:
 	case LUA_HOOKRET:
@@ -253,10 +254,10 @@ void CDbgLuaHelper::DrawStackTrace()
 	int nLevel = 0;
 	lua_Debug ar;
 	char szDesc[256];
-	while (lua_getstack(L, nLevel, &ar))
+	while(lua_getstack(L, nLevel, &ar))
 	{
 		lua_getinfo(L, "lnuS", &ar);
-		if (ar.source[0] == '@')
+		if(ar.source[0] == '@')
 		{
 			szDesc[0] = '\0';
 			/*			if ( ar.name )
@@ -269,7 +270,7 @@ void CDbgLuaHelper::DrawStackTrace()
 							strcat(szDesc, ar.what);
 						strcat(szDesc, ",");
 			*/
-			if (ar.name)
+			if(ar.name)
 			{
 				strcat(szDesc, ar.name);
 				strcat(szDesc, " ");
@@ -280,7 +281,7 @@ void CDbgLuaHelper::DrawStackTrace()
 			strcat(szDesc, _itoa(ar.currentline, szTmp, 10));
 			strcat(szDesc, " ");
 
-			if (ar.short_src)
+			if(ar.short_src)
 				strcat(szDesc, ar.short_src);
 
 			debugger()->AddStackTrace(szDesc, ar.source + 1, ar.currentline);
@@ -296,11 +297,11 @@ void CDbgLuaHelper::DrawLocalVariables()
 
 	int nLevel = debugger()->GetStackTraceLevel();
 	lua_Debug ar;
-	if (lua_getstack(L, nLevel, &ar))
+	if(lua_getstack(L, nLevel, &ar))
 	{
 		int i = 1;
 		const char* name;
-		while ((name = lua_getlocal(L, &ar, i++)) != NULL)
+		while((name = lua_getlocal(L, &ar, i++)) != NULL)
 		{
 			DrawVariable(L, name, true);
 
@@ -318,7 +319,7 @@ void CDbgLuaHelper::DrawGlobalVariables()
 	lua_pushnil(L); /* first key */
 	string1024 var;
 	var[0] = 0;
-	while (lua_next(L, -2))
+	while(lua_next(L, -2))
 	{
 		//!!!!	TRACE2("%s - %s\n",	lua_typename(L, lua_type(L, -2)), lua_typename(L, lua_type(L, -1)));
 		//		sprintf_s(var, "%s-%s",	lua_typename(L, lua_type(L, -2)), lua_typename(L, lua_type(L, -1)) );
@@ -332,13 +333,13 @@ bool CDbgLuaHelper::GetCalltip(const char* szWord, char* szCalltip, int sz_callt
 {
 	int nLevel = debugger()->GetStackTraceLevel();
 	lua_Debug ar;
-	if (lua_getstack(L, nLevel, &ar))
+	if(lua_getstack(L, nLevel, &ar))
 	{
 		int i = 1;
 		const char* name;
-		while ((name = lua_getlocal(L, &ar, i++)) != NULL)
+		while((name = lua_getlocal(L, &ar, i++)) != NULL)
 		{
-			if (xr_strcmp(name, szWord) == 0)
+			if(xr_strcmp(name, szWord) == 0)
 			{
 				char szRet[64];
 				Describe(szRet, -1, sizeof(szRet));
@@ -354,10 +355,10 @@ bool CDbgLuaHelper::GetCalltip(const char* szWord, char* szCalltip, int sz_callt
 	lua_pushvalue(L, LUA_GLOBALSINDEX);
 
 	lua_pushnil(L); /* first key */
-	while (lua_next(L, -2))
+	while(lua_next(L, -2))
 	{
 		const char* name = lua_tostring(L, -2);
-		if (xr_strcmp(name, szWord) == 0)
+		if(xr_strcmp(name, szWord) == 0)
 		{
 			char szRet[64];
 			Describe(szRet, -1, sizeof(szRet));
@@ -381,12 +382,12 @@ bool CDbgLuaHelper::Eval(const char* szCode, char* szRet, int szret_size)
 
 	int top = lua_gettop(L);
 	int status = luaL_loadbuffer(L, szCode, xr_strlen(szCode), szCode);
-	if (status)
+	if(status)
 		sprintf_s(szRet, szret_size, "%s", luaL_checkstring(L, -1));
 	else
 	{
 		status = lua_pcall(L, 0, LUA_MULTRET, 0); /* call main */
-		if (status)
+		if(status)
 		{
 			const char* szErr = luaL_checkstring(L, -1);
 			const char* szErr2 = strstr(szErr, ": ");
@@ -409,7 +410,7 @@ void CDbgLuaHelper::Describe(char* szRet, int nIndex, int szRet_size)
 	const char* type = lua_typename(L, ntype);
 	char value[64];
 
-	switch (ntype)
+	switch(ntype)
 	{
 	case LUA_TNUMBER:
 		sprintf_s(value, "%f", lua_tonumber(L, nIndex));
@@ -433,11 +434,11 @@ void CDbgLuaHelper::CoverGlobals()
 
 	int nLevel = debugger()->GetStackTraceLevel();
 	lua_Debug ar;
-	if (lua_getstack(L, nLevel, &ar))
+	if(lua_getstack(L, nLevel, &ar))
 	{
 		int i = 1;
 		const char* name;
-		while ((name = lua_getlocal(L, &ar, i++)) != NULL)
+		while((name = lua_getlocal(L, &ar, i++)) != NULL)
 		{									 /* SAVE lvalue */
 			lua_pushstring(L, name);		 /* SAVE lvalue name */
 			lua_pushvalue(L, -1);			 /* SAVE lvalue name name */
@@ -459,7 +460,7 @@ void CDbgLuaHelper::RestoreGlobals()
 
 	lua_pushnil(L); /* first key */
 	/* SAVE nil */
-	while (lua_next(L, -2)) /* SAVE key value */
+	while(lua_next(L, -2)) /* SAVE key value */
 	{
 		lua_pushvalue(L, -2); /* SAVE key value key */
 		lua_insert(L, -2);	  /* SAVE key key value */
@@ -483,7 +484,7 @@ void CDbgLuaHelper::DrawVariable(lua_State* l, const char* name, bool bOpenTable
 
 	char value[64];
 
-	switch (ntype)
+	switch(ntype)
 	{
 	case LUA_TNUMBER:
 		sprintf_s(value, "%f", lua_tonumber(l, -1));
@@ -503,7 +504,7 @@ void CDbgLuaHelper::DrawVariable(lua_State* l, const char* name, bool bOpenTable
 	case LUA_TTABLE:
 		var.szValue[0] = 0;
 		debugger()->AddLocalVariable(var);
-		if (bOpenTable)
+		if(bOpenTable)
 			DrawTable(l, name, false);
 		return;
 		break;
@@ -529,11 +530,11 @@ void CDbgLuaHelper::DrawTable(lua_State* l, LPCSTR S, bool bRecursive)
 {
 	//	char		str[1024];
 
-	if (!lua_istable(l, -1))
+	if(!lua_istable(l, -1))
 		return;
 
 	lua_pushnil(l); /* first key */
-	while (lua_next(l, -2) != 0)
+	while(lua_next(l, -2) != 0)
 	{
 
 		char stype[256];

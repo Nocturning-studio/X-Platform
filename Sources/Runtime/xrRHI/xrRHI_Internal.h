@@ -1,7 +1,7 @@
 #pragma once
 
-#define RHI_BEGIN                                                                                                      \
-	namespace xrRHI                                                                                                    \
+#define RHI_BEGIN   \
+	namespace xrRHI \
 	{
 
 #define RHI_END }

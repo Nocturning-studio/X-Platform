@@ -29,9 +29,9 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 	// If determinant is near zero, ray lies in plane of triangle
 	float det = edge1 | pvec;
 
-	if (mCulling)
+	if(mCulling)
 	{
-		if (det < LOCAL_EPSILON)
+		if(det < LOCAL_EPSILON)
 			return FALSE;
 		// From here, det is > 0. So we can use integer cmp.
 
@@ -41,7 +41,7 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 		// Calculate U parameter and test bounds
 		mStabbedFace.mU = tvec | pvec;
 		//		if(IR(u)&0x80000000 || u>det)					return FALSE;
-		if (IR(mStabbedFace.mU) & 0x80000000 || IR(mStabbedFace.mU) > IR(det))
+		if(IR(mStabbedFace.mU) & 0x80000000 || IR(mStabbedFace.mU) > IR(det))
 			return FALSE;
 
 		// Prepare to test V parameter
@@ -49,7 +49,7 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 
 		// Calculate V parameter and test bounds
 		mStabbedFace.mV = mDir | qvec;
-		if (IR(mStabbedFace.mV) & 0x80000000 || mStabbedFace.mU + mStabbedFace.mV > det)
+		if(IR(mStabbedFace.mV) & 0x80000000 || mStabbedFace.mU + mStabbedFace.mV > det)
 			return FALSE;
 
 		// Calculate t, scale parameters, ray intersects triangle
@@ -62,7 +62,7 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 	else
 	{
 		// the non-culling branch
-		if (det > -LOCAL_EPSILON && det < LOCAL_EPSILON)
+		if(det > -LOCAL_EPSILON && det < LOCAL_EPSILON)
 			return FALSE;
 		float inv_det = 1.0f / det;
 
@@ -72,7 +72,7 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 		// Calculate U parameter and test bounds
 		mStabbedFace.mU = (tvec | pvec) * inv_det;
 		//		if(IR(u)&0x80000000 || u>1.0f)					return FALSE;
-		if (IR(mStabbedFace.mU) & 0x80000000 || IR(mStabbedFace.mU) > IEEE_1_0)
+		if(IR(mStabbedFace.mU) & 0x80000000 || IR(mStabbedFace.mU) > IEEE_1_0)
 			return FALSE;
 
 		// prepare to test V parameter
@@ -80,7 +80,7 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 
 		// Calculate V parameter and test bounds
 		mStabbedFace.mV = (mDir | qvec) * inv_det;
-		if (IR(mStabbedFace.mV) & 0x80000000 || mStabbedFace.mU + mStabbedFace.mV > 1.0f)
+		if(IR(mStabbedFace.mV) & 0x80000000 || mStabbedFace.mU + mStabbedFace.mV > 1.0f)
 			return FALSE;
 
 		// Calculate t, ray intersects triangle

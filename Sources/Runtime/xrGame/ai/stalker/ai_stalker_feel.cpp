@@ -22,11 +22,11 @@ extern Flags32 psAI_Flags;
 
 BOOL CAI_Stalker::feel_vision_isRelevant(CObject* O)
 {
-	if (!g_Alive())
+	if(!g_Alive())
 		return FALSE;
 	CEntityAlive* E = smart_cast<CEntityAlive*>(O);
 	CInventoryItem* I = smart_cast<CInventoryItem*>(O);
-	if (!E && !I)
+	if(!E && !I)
 		return (FALSE);
 	//	if (E && (E->g_Team() == g_Team()))			return FALSE;
 	return (TRUE);
@@ -36,13 +36,13 @@ void CAI_Stalker::renderable_Render()
 {
 	inherited::renderable_Render();
 
-	if (!already_dead())
+	if(!already_dead())
 		CInventoryOwner::renderable_Render();
 
 #ifdef DEBUG
-	if (g_Alive())
+	if(g_Alive())
 	{
-		if (psAI_Flags.test(aiAnimationStats))
+		if(psAI_Flags.test(aiAnimationStats))
 			animation().add_animation_stats();
 	}
 #endif // DEBUG
@@ -50,7 +50,7 @@ void CAI_Stalker::renderable_Render()
 
 void CAI_Stalker::Exec_Look(float dt)
 {
-	if (animation_movement_controlled())
+	if(animation_movement_controlled())
 		return;
 
 	sight().Exec_Look(dt);
@@ -63,11 +63,11 @@ bool CAI_Stalker::bfCheckForNodeVisibility(u32 dwNodeID, bool bIfRayPick)
 
 BOOL CAI_Stalker::feel_touch_contact(CObject* O)
 {
-	if (!inherited::feel_touch_contact(O))
+	if(!inherited::feel_touch_contact(O))
 		return (FALSE);
 
 	CGameObject* game_object = smart_cast<CGameObject*>(O);
-	if (!game_object)
+	if(!game_object)
 		return (FALSE);
 
 	return (game_object->feel_touch_on_contact(this));
@@ -75,7 +75,7 @@ BOOL CAI_Stalker::feel_touch_contact(CObject* O)
 
 BOOL CAI_Stalker::feel_touch_on_contact(CObject* O)
 {
-	if ((O->spatial.type | STYPE_VISIBLEFORAI) != O->spatial.type)
+	if((O->spatial.type | STYPE_VISIBLEFORAI) != O->spatial.type)
 		return (FALSE);
 
 	return (inherited::feel_touch_on_contact(O));

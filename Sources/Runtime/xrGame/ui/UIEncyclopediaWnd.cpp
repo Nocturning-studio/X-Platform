@@ -101,12 +101,12 @@ void CUIEncyclopediaWnd::Init()
 #include "../string_table.h"
 void CUIEncyclopediaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (UIIdxList == pWnd && LIST_ITEM_CLICKED == msg)
+	if(UIIdxList == pWnd && LIST_ITEM_CLICKED == msg)
 	{
 		CUITreeViewItem* pTVItem = static_cast<CUITreeViewItem*>(pData);
 		R_ASSERT(pTVItem);
 
-		if (pTVItem->vSubItems.size())
+		if(pTVItem->vSubItems.size())
 		{
 			CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->vSubItems[0]->GetValue()];
 
@@ -139,16 +139,16 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUIEncyclopediaWnd::Draw()
 {
 
-	if (m_flags.test(eNeedReload))
+	if(m_flags.test(eNeedReload))
 	{
-		if (Actor()->encyclopedia_registry->registry().objects_ptr() &&
-			Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
+		if(Actor()->encyclopedia_registry->registry().objects_ptr() &&
+		   Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
 		{
 			ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
 			std::advance(it, prevArticlesCount);
-			for (; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
+			for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
 			{
-				if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type)
+				if(ARTICLE_DATA::eEncyclopediaArticle == it->article_type)
 				{
 					AddArticle(it->article_id, it->readed);
 				}
@@ -169,7 +169,7 @@ void CUIEncyclopediaWnd::ReloadArticles()
 
 void CUIEncyclopediaWnd::Show(bool status)
 {
-	if (status)
+	if(status)
 		ReloadArticles();
 
 	inherited::Show(status);
@@ -178,9 +178,9 @@ void CUIEncyclopediaWnd::Show(bool status)
 bool CUIEncyclopediaWnd::HasArticle(shared_str id)
 {
 	ReloadArticles();
-	for (std::size_t i = 0; i < m_ArticlesDB.size(); ++i)
+	for(std::size_t i = 0; i < m_ArticlesDB.size(); ++i)
 	{
-		if (m_ArticlesDB[i]->Id() == id)
+		if(m_ArticlesDB[i]->Id() == id)
 			return true;
 	}
 	return false;
@@ -197,11 +197,11 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem* pTVItem)
 	UIInfoList->ScrollToBegin();
 	UIInfoList->Clear();
 
-	if (!pTVItem)
+	if(!pTVItem)
 		return;
 
 	// дл€ начала проверим, что нажатый элемент не рутовый
-	if (!pTVItem->IsRoot())
+	if(!pTVItem->IsRoot())
 	{
 
 		CUIEncyclopediaArticleWnd* article_info = xr_new<CUIEncyclopediaArticleWnd>();
@@ -210,15 +210,15 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem* pTVItem)
 		UIInfoList->AddWindow(article_info, true);
 
 		// ѕометим как прочитанную
-		if (!pTVItem->IsArticleReaded())
+		if(!pTVItem->IsArticleReaded())
 		{
-			if (Actor()->encyclopedia_registry->registry().objects_ptr())
+			if(Actor()->encyclopedia_registry->registry().objects_ptr())
 			{
-				for (ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin();
-					 it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
+				for(ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin();
+					it != Actor()->encyclopedia_registry->registry().objects().end(); it++)
 				{
-					if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type &&
-						m_ArticlesDB[pTVItem->GetValue()]->Id() == it->article_id)
+					if(ARTICLE_DATA::eEncyclopediaArticle == it->article_type &&
+					   m_ArticlesDB[pTVItem->GetValue()]->Id() == it->article_id)
 					{
 						it->readed = true;
 						break;
@@ -231,9 +231,9 @@ void CUIEncyclopediaWnd::SetCurrentArtice(CUITreeViewItem* pTVItem)
 
 void CUIEncyclopediaWnd::AddArticle(shared_str article_id, bool bReaded)
 {
-	for (std::size_t i = 0; i < m_ArticlesDB.size(); i++)
+	for(std::size_t i = 0; i < m_ArticlesDB.size(); i++)
 	{
-		if (m_ArticlesDB[i]->Id() == article_id)
+		if(m_ArticlesDB[i]->Id() == article_id)
 			return;
 	}
 

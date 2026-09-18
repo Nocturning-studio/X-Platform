@@ -17,7 +17,7 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 #endif
 #endif
 
-	while (!object->children.empty())
+	while(!object->children.empty())
 	{
 		CSE_Abstract* child = game->get_entity_from_eid(object->children.back());
 		R_ASSERT2(child, make_string("child registered but not found [%d]", object->children.back()));
@@ -61,14 +61,14 @@ void xrServer::SLS_Clear()
 #endif
 
 	u32 mode = net_flags(TRUE, TRUE);
-	while (!entities.empty())
+	while(!entities.empty())
 	{
 		bool found = false;
 		xrS_entities::const_iterator I = entities.begin();
 		xrS_entities::const_iterator E = entities.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			if ((*I).second->ID_Parent != 0xffff)
+			if((*I).second->ID_Parent != 0xffff)
 				continue;
 			found = true;
 			Perform_destroy((*I).second, mode);

@@ -1,7 +1,8 @@
 #pragma once
 #include "../state.h"
 
-template <typename _Object> class CStateChimeraThreatenWalk : public CStateMonsterMoveToPointEx<_Object>
+template <typename _Object>
+class CStateChimeraThreatenWalk : public CStateMonsterMoveToPointEx<_Object>
 {
 	typedef CStateMonsterMoveToPointEx<_Object> inherited;
 

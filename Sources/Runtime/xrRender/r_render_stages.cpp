@@ -24,10 +24,10 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	m_TraversalContext.is_hud_pass = FALSE;
 
 	// Если текущий сектор не определен, рисуем только HUD и выходим.
-	if (!pLastSector)
+	if(!pLastSector)
 	{
 		set_Object(nullptr);
-		if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+		if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 			g_pGameLevel->pHUD->Render_Last();
 		return;
 	}
@@ -71,28 +71,28 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	// Light Tracking
 	// -------------------------------------------------------------------------
 	set_Object(nullptr);
-	if (active_phase() == PHASE_NORMAL)
+	if(active_phase() == PHASE_NORMAL)
 	{
 		uLastLTRACK++;
 		// Используем результаты из dest
 		size_t renderable_count = dest.m_spatial_query_results.size();
 		size_t light_track_id = 0xffffffff;
 
-		if (renderable_count)
+		if(renderable_count)
 			light_track_id = uLastLTRACK % renderable_count;
 
-		if (CObject* current_entity = g_pGameLevel->CurrentViewEntity())
+		if(CObject* current_entity = g_pGameLevel->CurrentViewEntity())
 		{
-			if (CROS_impl* ros = (CROS_impl*)current_entity->ROS())
+			if(CROS_impl* ros = (CROS_impl*)current_entity->ROS())
 				ros->update(current_entity);
 		}
 
-		if (renderable_count)
+		if(renderable_count)
 		{
 			// Используем результаты из dest
-			if (IRenderable* renderable = dest.m_spatial_query_results[light_track_id]->dcast_Renderable())
+			if(IRenderable* renderable = dest.m_spatial_query_results[light_track_id]->dcast_Renderable())
 			{
-				if (CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
+				if(CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
 					ros->update(renderable);
 			}
 		}
@@ -110,17 +110,17 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
 
 	dest.visible_sectors_map.clear();
-	for (const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
+	for(const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
 	{
 		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
 	}
 
-	for (const auto& sec_vis : visible_sectors)
+	for(const auto& sec_vis : visible_sectors)
 	{
 		CSector* sector = sec_vis.sector;
 		IRender_Visual* root_visual = sector->GetRootVisual();
 
-		for (const auto& frustum : sec_vis.frustums)
+		for(const auto& frustum : sec_vis.frustums)
 		{
 			set_Frustum((CFrustum*)&frustum);
 			add_Geometry(root_visual);
@@ -130,56 +130,57 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 	// -------------------------------------------------------------------------
 	// Dynamic Geometry & Lights
 	// -------------------------------------------------------------------------
-	for (ISpatial* spatial : dest.m_spatial_query_results)
+	for(ISpatial* spatial : dest.m_spatial_query_results)
 	{
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
 
 		// --- Источники света ---
-		if (spatial->spatial.type & STYPE_LIGHTSOURCE)
+		if(spatial->spatial.type & STYPE_LIGHTSOURCE)
 		{
 			light* pLight = (light*)(spatial->dcast_Light());
 			VERIFY(pLight);
 
-			if (pLight->get_LOD() > EPS_L)
+			if(pLight->get_LOD() > EPS_L)
 			{
-				if (HOM.visible(pLight->get_homdata()))
+				if(HOM.visible(pLight->get_homdata()))
 					dest.m_culled_lights.push_back(pLight);
 			}
 			continue;
 		}
 
 		// --- Динамика ---
-		if (!(spatial->spatial.type & STYPE_RENDERABLE))
+		if(!(spatial->spatial.type & STYPE_RENDERABLE))
 			continue;
 
 		IRenderable* renderable = spatial->dcast_Renderable();
-		if (!renderable)
+		if(!renderable)
 			continue;
 
 		auto it = dest.visible_sectors_map.find(sector);
-		if (it == dest.visible_sectors_map.end())
+		if(it == dest.visible_sectors_map.end())
 			continue;
 
 		const CPortalTraverser::SectorVisibility* active_vis_data = it->second;
 
 		// Проверяем попадание объекта в подфрустумы сектора
 		bool bInFrustum = false;
-		for (const auto& frustum : active_vis_data->frustums)
+		for(const auto& frustum : active_vis_data->frustums)
 		{
-			if (frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+			if(frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 			{
 				bInFrustum = true;
 				break;
 			}
 		}
-		if (!bInFrustum) continue;
+		if(!bInFrustum)
+			continue;
 
 		// ФИЛЬТР HUD
-		if (!sector)
+		if(!sector)
 		{
 			float dist_sq = spatial->spatial.sphere.P.distance_to_sqr(m_TraversalContext.RenderView.Position);
-			if (dist_sq < 2.25f)
+			if(dist_sq < 2.25f)
 				continue;
 		}
 
@@ -197,7 +198,7 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 		vis_orig.hom_frame = vis_temp.hom_frame;
 		vis_orig.hom_tested = vis_temp.hom_tested;
 
-		if (bVisible)
+		if(bVisible)
 			dest.m_culled_dynamics.push_back(renderable);
 	}
 
@@ -207,8 +208,9 @@ void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest
 
 void CRender::MergeCulledLights(SceneGraphPacket& packet)
 {
-	if (packet.m_culled_lights.empty()) return;
-	for (light* L : packet.m_culled_lights)
+	if(packet.m_culled_lights.empty())
+		return;
+	for(light* L : packet.m_culled_lights)
 		Lights.add_light(L);
 	packet.m_culled_lights.clear();
 }
@@ -220,7 +222,7 @@ void CRender::calculate_scene_culling()
 	// Очищаем пакет перед новым сбором
 	m_scene_data.Clear();
 
-	if (!pLastSector)
+	if(!pLastSector)
 	{
 		// Если сектор не определён, собираем только HUD
 		m_scene_data.view = Engine.RenderView.View;
@@ -233,7 +235,7 @@ void CRender::calculate_scene_culling()
 			set_active_phase(PHASE_NORMAL);
 
 			CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
-			if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+			if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 				g_pGameLevel->pHUD->Render_Last();
 		}
 
@@ -268,7 +270,7 @@ void CRender::calculate_scene_culling()
 	// HUD тоже попадает в этот пакет
 	{
 		CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
-		if (g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+		if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 			g_pGameLevel->pHUD->Render_Last();
 	}
 }
@@ -281,7 +283,7 @@ IC float u_diffuse2s(float x, float y, float z)
 
 bool CRender::need_render_sun()
 {
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return false;
 
 	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->get_color();
@@ -299,15 +301,15 @@ void CRender::render_gbuffer_primary()
 
 	set_gbuffer();
 
-	if (psDeviceFlags.test(rsWireframe))
+	if(psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
 
-	if (Details)
+	if(Details)
 		Details->Render(DetailsRenderMode::Default);
 
-	if (psDeviceFlags.test(rsWireframe))
+	if(psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
@@ -323,7 +325,7 @@ void CRender::render_gbuffer_secondary()
 	RenderBackend.enable_anisotropy_filtering();
 	set_gbuffer();
 
-	if (psDeviceFlags.test(rsWireframe))
+	if(psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	RenderBackend.set_ZWriteEnable(FALSE);
@@ -334,7 +336,7 @@ void CRender::render_gbuffer_secondary()
 	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
 	set_active_phase(PHASE_NORMAL);
 
-	if (psDeviceFlags.test(rsWireframe))
+	if(psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
@@ -393,10 +395,10 @@ void CRender::render_stage_forward()
 	// ============================================
 	// PASS 4: Debug
 	// ============================================
-	if (ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
+	if(ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
 		m_SunOccluder->Render();
 
-	if (ps_r_debug_flags.test(RFLAG_DRAW_HOM_OCCLUDERS))
+	if(ps_r_debug_flags.test(RFLAG_DRAW_HOM_OCCLUDERS))
 		CPUOCC.DrawDebug();
 }
 
@@ -413,7 +415,7 @@ void CRender::render_scene_to_gbuffer()
 	render_gbuffer_secondary();
 
 	// Wall marks
-	if (Wallmarks)
+	if(Wallmarks)
 	{
 		render_wallmarks();
 		Wallmarks->Render(); // wallmarks has priority as normal geometry
@@ -424,7 +426,7 @@ void CRender::render_sun()
 {
 	PROFILE_FUNCTION();
 
-	if (!m_need_render_sun)
+	if(!m_need_render_sun)
 		return;
 
 	Engine.Statistic->RenderCALC_SUN.Begin();
@@ -469,7 +471,7 @@ void CRender::render_postprocess()
 	dummy_exposure();
 
 	// Generic1 -> Generic0 -> Generic1
-	if (ps_r_postprocess_flags.test(RFLAG_AUTOEXPOSURE))
+	if(ps_r_postprocess_flags.test(RFLAG_AUTOEXPOSURE))
 		render_autoexposure();
 
 	create_distortion_mask();
@@ -479,43 +481,43 @@ void CRender::render_postprocess()
 	render_bloom();
 
 	// Generic1 -> Generic0 -> Generic1
-	if (ps_r_postprocess_flags.test(RFLAG_DOF))
+	if(ps_r_postprocess_flags.test(RFLAG_DOF))
 		render_depth_of_field();
 
-	if (ps_render_flags.test(RFLAG_LENS_FLARES))
+	if(ps_render_flags.test(RFLAG_LENS_FLARES))
 		g_pGamePersistent->Environment().RenderFlares();
 
 	// Generic1 -> Generic0
 	combine_additional_postprocess();
 
-	//Radiation
+	// Radiation
 	render_effectors_pass_generate_radiation_noise();
 
 	//"Postprocess" params and colormapping (Generic_0 -> Generic_1)
 	render_effectors_pass_combine();
 
 	// Ceneric1 -> Generic1
-	if (ps_r_postprocess_flags.test(RFLAG_MBLUR))
+	if(ps_r_postprocess_flags.test(RFLAG_MBLUR))
 		render_motion_blur();
 
-	//Generic_1 -> Generic_0
+	// Generic_1 -> Generic_0
 	render_effectors_pass_resolve_gamma();
 
 	// Generic0 -> Generic1 -> Generic0
-	if (ps_r_postprocess_flags.test(RFLAG_ANTI_ALIASING))
+	if(ps_r_postprocess_flags.test(RFLAG_ANTI_ALIASING))
 		render_antialiasing();
 
-	//Generic_0 -> Generic_1
+	// Generic_0 -> Generic_1
 	render_effectors_pass_lut();
 
 	// Ceneric1 -> Generic1
-	if (ps_r_color_blind_mode)
+	if(ps_r_color_blind_mode)
 		render_effectors_pass_color_blind_filter();
 
 	// Generic1 -> Generic0
 	render_screen_overlays();
 
-	if (g_pGamePersistent)
+	if(g_pGamePersistent)
 		g_pGamePersistent->OnRenderPPUI_PP();
 
 	Engine.Statistic->RenderCALC_POSTPROCESS.End();

@@ -22,11 +22,11 @@ CPPEffectorCustom::CPPEffectorCustom(const SPPInfo& ppi, bool one_instance, bool
 
 BOOL CPPEffectorCustom::Process(SPPInfo& pp)
 {
-	if (!inherited::Process(pp))
+	if(!inherited::Process(pp))
 		return FALSE;
 
 	// update factor
-	if (!update())
+	if(!update())
 		return FALSE;
 
 	pp.lerp(pp_identity, m_state, m_factor);
@@ -54,7 +54,7 @@ CPPEffectorController::CPPEffectorController()
 
 CPPEffectorController::~CPPEffectorController()
 {
-	if (m_effector)
+	if(m_effector)
 	{
 		Actor()->Cameras().RemovePPEffector(m_effector->get_type());
 	}
@@ -78,11 +78,11 @@ void CPPEffectorController::deactivate()
 
 void CPPEffectorController::frame_update()
 {
-	if (m_effector)
+	if(m_effector)
 	{
-		if (check_completion())
+		if(check_completion())
 			deactivate();
 	}
-	else if (check_start_conditions())
+	else if(check_start_conditions())
 		activate();
 }

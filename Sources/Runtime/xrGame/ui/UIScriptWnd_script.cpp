@@ -34,12 +34,11 @@ export_class& script_register_ui_window1(export_class& instance)
 	instance
 		.def(constructor<>())
 
-		.def("AddCallback", (void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&)) & BaseType::AddCallback)
-		.def("AddCallback", (void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&)) &
-								BaseType::AddCallback)
+		.def("AddCallback", (void (BaseType::*)(LPCSTR, s16, const luabind::functor<void>&))&BaseType::AddCallback)
+		.def("AddCallback", (void (BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
 
-		.def("Register", (void(BaseType::*)(CUIWindow*)) & BaseType::Register)
-		.def("Register", (void(BaseType::*)(CUIWindow*, LPCSTR)) & BaseType::Register)
+		.def("Register", (void (BaseType::*)(CUIWindow*))&BaseType::Register)
+		.def("Register", (void (BaseType::*)(CUIWindow*, LPCSTR))&BaseType::Register)
 
 		.def("GetButton", (CUIButton * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUIButton>)
 		.def("GetMessageBox", (CUIMessageBox * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUIMessageBox>)

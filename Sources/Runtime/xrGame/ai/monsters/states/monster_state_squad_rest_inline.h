@@ -40,7 +40,7 @@ void CStateMonsterSquadRestAbstract::setup_substates()
 {
 	state_ptr state = get_state_current();
 
-	if (current_substate == eStateSquad_Rest_Idle)
+	if(current_substate == eStateSquad_Rest_Idle)
 	{
 		SStateDataAction data;
 		data.action = ACT_REST;
@@ -53,13 +53,13 @@ void CStateMonsterSquadRestAbstract::setup_substates()
 		return;
 	}
 
-	if (current_substate == eStateSquad_Rest_WalkAroundLeader)
+	if(current_substate == eStateSquad_Rest_WalkAroundLeader)
 	{
 		SStateDataMoveToPoint data;
 		CMonsterSquad* squad = monster_squad().get_squad(object);
 
-		if (object->control().path_builder().get_node_in_radius(squad->GetLeader()->ai_location().level_vertex_id(),
-																8.f, LEADER_RADIUS, FIND_POINT_ATTEMPTS, data.vertex))
+		if(object->control().path_builder().get_node_in_radius(squad->GetLeader()->ai_location().level_vertex_id(),
+															   8.f, LEADER_RADIUS, FIND_POINT_ATTEMPTS, data.vertex))
 		{
 			data.point = ai().level_graph().vertex_position(data.vertex);
 		}
@@ -67,7 +67,7 @@ void CStateMonsterSquadRestAbstract::setup_substates()
 		{
 
 			fvec3 dest_pos = random_position(squad->GetLeader()->Position(), LEADER_RADIUS);
-			if (!object->control().path_builder().restrictions().accessible(dest_pos))
+			if(!object->control().path_builder().restrictions().accessible(dest_pos))
 			{
 				data.vertex = object->control().path_builder().restrictions().accessible_nearest(dest_pos, data.point);
 			}

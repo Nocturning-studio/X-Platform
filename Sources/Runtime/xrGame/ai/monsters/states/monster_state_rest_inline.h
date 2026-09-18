@@ -71,67 +71,67 @@ void CStateMonsterRestAbstract::execute()
 	// check alife control
 	bool captured_by_smart_terrain = false;
 
-	if (prev_substate == eStateSmartTerrainTask)
+	if(prev_substate == eStateSmartTerrainTask)
 	{
-		if (!get_state(eStateSmartTerrainTask)->check_completion())
+		if(!get_state(eStateSmartTerrainTask)->check_completion())
 			captured_by_smart_terrain = true;
 	}
-	else if (get_state(eStateSmartTerrainTask)->check_start_conditions())
+	else if(get_state(eStateSmartTerrainTask)->check_start_conditions())
 		captured_by_smart_terrain = true;
 
-	if (captured_by_smart_terrain)
+	if(captured_by_smart_terrain)
 		select_state(eStateSmartTerrainTask);
 	else
 	{
 		// check restrictions
 		bool move_to_restrictor = false;
 
-		if (prev_substate == eStateCustomMoveToRestrictor)
+		if(prev_substate == eStateCustomMoveToRestrictor)
 		{
-			if (!get_state(eStateCustomMoveToRestrictor)->check_completion())
+			if(!get_state(eStateCustomMoveToRestrictor)->check_completion())
 				move_to_restrictor = true;
 		}
-		else if (get_state(eStateCustomMoveToRestrictor)->check_start_conditions())
+		else if(get_state(eStateCustomMoveToRestrictor)->check_start_conditions())
 			move_to_restrictor = true;
 
-		if (move_to_restrictor)
+		if(move_to_restrictor)
 			select_state(eStateCustomMoveToRestrictor);
 		else
 		{
 			// check home point
 			bool move_to_home_point = false;
 
-			if (prev_substate == eStateRest_MoveToHomePoint)
+			if(prev_substate == eStateRest_MoveToHomePoint)
 			{
-				if (!get_state(eStateRest_MoveToHomePoint)->check_completion())
+				if(!get_state(eStateRest_MoveToHomePoint)->check_completion())
 					move_to_home_point = true;
 			}
-			else if (get_state(eStateRest_MoveToHomePoint)->check_start_conditions())
+			else if(get_state(eStateRest_MoveToHomePoint)->check_start_conditions())
 				move_to_home_point = true;
 
-			if (move_to_home_point)
+			if(move_to_home_point)
 				select_state(eStateRest_MoveToHomePoint);
 			else
 			{
 				// check squad behaviour
 				bool use_squad = false;
 
-				if (monster_squad().get_squad(object)->GetCommand(object).type == SC_REST)
+				if(monster_squad().get_squad(object)->GetCommand(object).type == SC_REST)
 				{
 					select_state(eStateSquad_Rest);
 					use_squad = true;
 				}
-				else if (monster_squad().get_squad(object)->GetCommand(object).type == SC_FOLLOW)
+				else if(monster_squad().get_squad(object)->GetCommand(object).type == SC_FOLLOW)
 				{
 					select_state(eStateSquad_RestFollow);
 					use_squad = true;
 				}
 
-				if (!use_squad)
+				if(!use_squad)
 				{
-					if (time_idle_selected + TIME_IDLE > time())
+					if(time_idle_selected + TIME_IDLE > time())
 						select_state(eStateRest_Idle);
-					else if (time_idle_selected + TIME_IDLE + TIME_IDLE / 2 > time())
+					else if(time_idle_selected + TIME_IDLE + TIME_IDLE / 2 > time())
 						select_state(eStateRest_WalkGraphPoint);
 					else
 					{

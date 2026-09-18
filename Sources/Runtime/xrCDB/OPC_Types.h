@@ -75,13 +75,15 @@ typedef int BOOL; //!<	Another boolean type.
 #endif
 
 //! Union of a float and a sdword
-typedef union {
+typedef union
+{
 	float f;  //!<	The float
 	sdword d; //!<	The integer
 } scell;
 
 //! Union of a float and a udword
-typedef union {
+typedef union
+{
 	float f;  //!<	The float
 	udword d; //!<	The integer
 } ucell;
@@ -115,22 +117,26 @@ struct Pair
 
 #define ONE_OVER_RAND_MAX (1.0f / float(RAND_MAX)) //!<	Inverse of the max possible value returned by rand()
 
-template <class T> inline_ const T& TMin(const T& a, const T& b)
+template <class T>
+inline_ const T& TMin(const T& a, const T& b)
 {
 	return b < a ? b : a;
 }
-template <class T> inline_ const T& TMax(const T& a, const T& b)
+template <class T>
+inline_ const T& TMax(const T& a, const T& b)
 {
 	return a < b ? b : a;
 }
-template <class T> inline_ void TSetMin(T& a, const T& b)
+template <class T>
+inline_ void TSetMin(T& a, const T& b)
 {
-	if (a > b)
+	if(a > b)
 		a = b;
 }
-template <class T> inline_ void TSetMax(T& a, const T& b)
+template <class T>
+inline_ void TSetMax(T& a, const T& b)
 {
-	if (a < b)
+	if(a < b)
 		a = b;
 }
 

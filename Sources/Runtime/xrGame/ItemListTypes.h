@@ -44,7 +44,7 @@ class ListItem
 	{
 		m_Flags.zero();
 	}
-	virtual ~ListItem(){};
+	virtual ~ListItem() {};
 	void SetName(LPCSTR _key)
 	{
 		key = _key;

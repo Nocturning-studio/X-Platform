@@ -28,7 +28,7 @@ class CPHParticlesPlayCall : public CPHAction
 	{
 		ps_name = psn;
 		c = contact;
-		if (invert_n)
+		if(invert_n)
 		{
 			c.normal[0] = -c.normal[0];
 			c.normal[1] = -c.normal[1];
@@ -78,12 +78,13 @@ class CPHWallMarksCall : public CPHAction
 	}
 };
 
-template <class Pars> void TContactShotMark(CDB::TRI* T, dContactGeom* c)
+template <class Pars>
+void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 {
 	dBodyID b = dGeomGetBody(c->g1);
 	dxGeomUserData* data;
 	bool b_invert_normal = false;
-	if (!b)
+	if(!b)
 	{
 		b = dGeomGetBody(c->g2);
 		data = dGeomGetUserData(c->g2);
@@ -93,7 +94,7 @@ template <class Pars> void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 	{
 		data = dGeomGetUserData(c->g1);
 	}
-	if (!b)
+	if(!b)
 		return;
 	dVector3 vel;
 	dMass m;
@@ -103,27 +104,27 @@ template <class Pars> void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 	fvec3 to_camera;
 	to_camera.sub(cast_fv(c->pos), Engine.RenderView.Position);
 	float square_cam_dist = to_camera.square_magnitude();
-	if (data)
+	if(data)
 	{
 		SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(T->material, data->material);
-		if (mtl_pair)
+		if(mtl_pair)
 		{
-			if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->CollideMarks.empty())
+			if(vel_cret > Pars::vel_cret_wallmark && !mtl_pair->CollideMarks.empty())
 			{
 				ref_shader pWallmarkShader = mtl_pair->CollideMarks[::Random.randI(0, mtl_pair->CollideMarks.size())];
 				Level().ph_commander().add_call(xr_new<CPHOnesCondition>(),
 												xr_new<CPHWallMarksCall>(*((fvec3*)c->pos), T, pWallmarkShader));
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST)
+			if(square_cam_dist < SQUARE_SOUND_EFFECT_DIST)
 			{
 
 				SGameMtl* static_mtl = GMLib.GetMaterialByIdx(T->material);
-				if (!static_mtl->Flags.test(SGameMtl::flPassable))
+				if(!static_mtl->Flags.test(SGameMtl::flPassable))
 				{
-					if (vel_cret > Pars::vel_cret_sound)
+					if(vel_cret > Pars::vel_cret_sound)
 					{
-						if (!mtl_pair->CollideSounds.empty())
+						if(!mtl_pair->CollideSounds.empty())
 						{
 							float volume =
 								collide_volume_min + vel_cret * (collide_volume_max - collide_volume_min) /
@@ -134,19 +135,19 @@ template <class Pars> void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 				}
 				else
 				{
-					if (data->ph_ref_object && !mtl_pair->CollideSounds.empty())
+					if(data->ph_ref_object && !mtl_pair->CollideSounds.empty())
 					{
 						CPHSoundPlayer* sp = NULL;
 						sp = data->ph_ref_object->ph_sound_player();
-						if (sp)
+						if(sp)
 							sp->Play(mtl_pair, *(fvec3*)c->pos);
 					}
 				}
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			if (square_cam_dist < SQUARE_PARTICLE_EFFECT_DIST)
+			if(square_cam_dist < SQUARE_PARTICLE_EFFECT_DIST)
 			{
-				if (vel_cret > Pars::vel_cret_particles && !mtl_pair->CollideParticles.empty())
+				if(vel_cret > Pars::vel_cret_particles && !mtl_pair->CollideParticles.empty())
 				{
 					LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
 					// отыграть партиклы столкновения материалов

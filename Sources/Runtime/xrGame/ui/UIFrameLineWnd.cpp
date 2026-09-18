@@ -21,7 +21,7 @@ void CUIFrameLineWnd::Init(LPCSTR base_name, float x, float y, float width, floa
 {
 	Init(x, y, width, height);
 	InitTexture(base_name, horizontal);
-	if (horizontal)
+	if(horizontal)
 		UITitleText.Init(0, 0, width, 50);
 	else
 		UITitleText.Init(0, 0, 50, height);
@@ -37,7 +37,7 @@ void CUIFrameLineWnd::InitTexture(LPCSTR tex_name, bool horizontal)
 
 	bHorizontal = horizontal;
 
-	if (horizontal)
+	if(horizontal)
 	{
 		UIFrameLine.Init(tex_name, rect.left, rect.top, rect.right - rect.left, horizontal, alNone);
 		UITitleText.Init(0, 0, rect.right - rect.left, 50);
@@ -55,7 +55,7 @@ void CUIFrameLineWnd::InitTexture(LPCSTR tex_name, bool horizontal)
 
 void CUIFrameLineWnd::Draw()
 {
-	if (m_bTextureAvailable)
+	if(m_bTextureAvailable)
 	{
 		fvec2 p;
 		GetAbsolutePos(p);
@@ -71,7 +71,7 @@ void CUIFrameLineWnd::Draw()
 void CUIFrameLineWnd::SetWidth(float width)
 {
 	inherited::SetWidth(width);
-	if (bHorizontal)
+	if(bHorizontal)
 		UIFrameLine.SetSize(width);
 }
 
@@ -80,7 +80,7 @@ void CUIFrameLineWnd::SetWidth(float width)
 void CUIFrameLineWnd::SetHeight(float height)
 {
 	inherited::SetHeight(height);
-	if (!bHorizontal)
+	if(!bHorizontal)
 		UIFrameLine.SetSize(height);
 }
 

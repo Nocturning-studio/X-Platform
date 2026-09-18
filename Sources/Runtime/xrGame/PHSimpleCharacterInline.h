@@ -5,7 +5,7 @@ void CPHSimpleCharacter::UpdateStaticDamage(dContact* c, SGameMtl* tri_material,
 	dReal smag = dDOT(v, v);
 	dReal plane_pgr = std::sqrt(smag - norm_prg * norm_prg);
 	dReal mag = 0.f;
-	if (tri_material->Flags.test(SGameMtl::flPassable))
+	if(tri_material->Flags.test(SGameMtl::flPassable))
 	{
 		mag = std::sqrt(smag) * tri_material->fBounceDamageFactor;
 	}
@@ -15,7 +15,7 @@ void CPHSimpleCharacter::UpdateStaticDamage(dContact* c, SGameMtl* tri_material,
 		vel_prg = _max(plane_pgr * tri_material->fPHFriction, norm_prg);
 		mag = (vel_prg)*tri_material->fBounceDamageFactor;
 	}
-	if (mag > m_collision_damage_info.m_contact_velocity)
+	if(mag > m_collision_damage_info.m_contact_velocity)
 	{
 		m_collision_damage_info.m_contact_velocity = mag;
 		m_collision_damage_info.m_dmc_signum = bo1 ? 1.f : -1.f;
@@ -41,7 +41,7 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
 	dReal norm_vel = dDOT(vel, norm);
 	dReal norm_obj_vel = dDOT(obj_vel, norm);
 
-	if ((bo1 && norm_vel > norm_obj_vel) || (!bo1 && norm_obj_vel > norm_vel))
+	if((bo1 && norm_vel > norm_obj_vel) || (!bo1 && norm_obj_vel > norm_vel))
 		return;
 
 	dVector3 Pc = {vel[0] * m_mass + obj_vel[0] * m.mass, vel[1] * m_mass + obj_vel[1] * m.mass,
@@ -59,7 +59,7 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
 	dReal KK = Pcnorm * Pcnorm / (m_mass + m.mass) / 2.f;
 	dReal accepted_energy = Kself * m_collision_damage_factor + Kobj * object_damage_factor - KK;
 	// DeltaK=m1*m2*(v1-v2)^2/(2*(m1+m2))
-	if (accepted_energy > 0.f)
+	if(accepted_energy > 0.f)
 	{
 		SGameMtl* obj_material = GMLib.GetMaterialByIdx(obj_material_idx);
 		c_vel = dSqrt(accepted_energy / m_mass * 2.f) * obj_material->fBounceDamageFactor;
@@ -67,7 +67,7 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
 	else
 		c_vel = 0.f;
 #ifdef DEBUG
-	if (ph_dbg_draw_mask.test(phDbgDispObjCollisionDammage) && c_vel > dbg_vel_collid_damage_to_display)
+	if(ph_dbg_draw_mask.test(phDbgDispObjCollisionDammage) && c_vel > dbg_vel_collid_damage_to_display)
 	{
 		float dbg_my_norm_vell = norm_vel;
 		float dbg_obj_norm_vell = norm_obj_vel;
@@ -116,11 +116,11 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
 		*/
 	}
 #endif
-	if (c_vel > m_collision_damage_info.m_contact_velocity)
+	if(c_vel > m_collision_damage_info.m_contact_velocity)
 	{
 		CPhysicsShellHolder* obj = bo1 ? retrieveRefObject(c->geom.g2) : retrieveRefObject(c->geom.g1);
 		VERIFY(obj);
-		if (!obj->getDestroy())
+		if(!obj->getDestroy())
 		{
 			m_collision_damage_info.m_contact_velocity = c_vel;
 			m_collision_damage_info.m_dmc_signum = bo1 ? 1.f : -1.f;
@@ -134,11 +134,11 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c, u16 obj_material_idx, 
 
 IC void CPHSimpleCharacter::foot_material_update(u16 contact_material_idx, u16 foot_material_idx)
 {
-	if (*p_lastMaterialIDX != u16(-1) && GMLib.GetMaterialByIdx(*p_lastMaterialIDX)->Flags.test(SGameMtl::flPassable) &&
-		!b_foot_mtl_check)
+	if(*p_lastMaterialIDX != u16(-1) && GMLib.GetMaterialByIdx(*p_lastMaterialIDX)->Flags.test(SGameMtl::flPassable) &&
+	   !b_foot_mtl_check)
 		return;
 	b_foot_mtl_check = false;
-	if (GMLib.GetMaterialByIdx(contact_material_idx)->Flags.test(SGameMtl::flPassable))
+	if(GMLib.GetMaterialByIdx(contact_material_idx)->Flags.test(SGameMtl::flPassable))
 		*p_lastMaterialIDX = contact_material_idx;
 	else
 		*p_lastMaterialIDX = foot_material_idx;

@@ -20,7 +20,7 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 
 	// make Client Name if options doesn't have it
 	LPCSTR NameStart = strstr(op_client, "/name=");
-	if (!NameStart)
+	if(!NameStart)
 	{
 		string512 tmp;
 		strcpy_s(tmp, op_client);
@@ -33,14 +33,14 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 		string1024 ret = "";
 		LPCSTR begin = NameStart + xr_strlen("/name=");
 		sscanf(begin, "%[^/]", ret);
-		if (!xr_strlen(ret))
+		if(!xr_strlen(ret))
 		{
 			string1024 tmpstr;
 			strcpy_s(tmpstr, op_client);
 			*(strstr(tmpstr, "name=") + 5) = 0;
 			strcat_s(tmpstr, xr_strlen(Core.UserName) ? Core.UserName : Core.CompName);
 			const char* ptmp = strstr(strstr(op_client, "name="), "/");
-			if (ptmp)
+			if(ptmp)
 				strcat_s(tmpstr, ptmp);
 			m_caClientOptions = tmpstr;
 		}
@@ -54,10 +54,10 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 	m_bDemoPlayMode = FALSE;
 	m_aDemoData.clear();
 	m_bDemoStarted = FALSE;
-	if (strstr(Core.Params, "-tdemo ") || strstr(Core.Params, "-tdemof "))
+	if(strstr(Core.Params, "-tdemo ") || strstr(Core.Params, "-tdemof "))
 	{
 		string1024 f_name;
-		if (strstr(Core.Params, "-tdemo "))
+		if(strstr(Core.Params, "-tdemo "))
 		{
 			sscanf(strstr(Core.Params, "-tdemo ") + 7, "%[^ ] ", f_name);
 			m_bDemoPlayByFrame = FALSE;
@@ -75,7 +75,7 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 	}
 	else
 	{
-		if (m_caServerOptions.size() == 0 || !strstr(*m_caServerOptions, "single"))
+		if(m_caServerOptions.size() == 0 || !strstr(*m_caServerOptions, "single"))
 		{
 			Demo_PrepareToStore();
 		}
@@ -94,14 +94,14 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 bool CLevel::net_start1()
 {
 	// Start client and server if need it
-	if (m_caServerOptions.size())
+	if(m_caServerOptions.size())
 	{
 		g_pGamePersistent->LoadTitle("st_server_starting");
 
 		typedef IGame_Persistent::params params;
 		params& p = g_pGamePersistent->m_game_params;
 		// Connect
-		if (!xr_strcmp(p.m_game_type, "single"))
+		if(!xr_strcmp(p.m_game_type, "single"))
 		{
 			Msg("Initializing xrServer...");
 			Server = xr_new<xrServer>();
@@ -113,20 +113,20 @@ bool CLevel::net_start1()
 		}
 
 		//		if (!strstr(*m_caServerOptions,"/alife"))
-		if (xr_strcmp(p.m_alife, "alife"))
+		if(xr_strcmp(p.m_alife, "alife"))
 		{
 			string64 l_name = "";
 			const char* SOpts = *m_caServerOptions;
 			strncpy(l_name, *m_caServerOptions, strchr(SOpts, '/') - SOpts);
 			// Activate level
-			if (strchr(l_name, '/'))
+			if(strchr(l_name, '/'))
 				*strchr(l_name, '/') = 0;
 
 			m_name = l_name;
 
 			int id = Engine.LevelManager.GetLevelID(l_name);
 
-			if (id < 0)
+			if(id < 0)
 			{
 				Engine.LoadingScreen->Hide();
 				Log("Can't find level: ", l_name);
@@ -141,9 +141,9 @@ bool CLevel::net_start1()
 
 bool CLevel::net_start2()
 {
-	if (net_start_result_total && m_caServerOptions.size())
+	if(net_start_result_total && m_caServerOptions.size())
 	{
-		if ((m_connect_server_err = Server->Connect(m_caServerOptions)) != xrServer::ErrNoError)
+		if((m_connect_server_err = Server->Connect(m_caServerOptions)) != xrServer::ErrNoError)
 		{
 			net_start_result_total = false;
 			Msg("! Failed to start server.");
@@ -157,10 +157,10 @@ bool CLevel::net_start2()
 
 bool CLevel::net_start3()
 {
-	if (!net_start_result_total)
+	if(!net_start_result_total)
 		return true;
 	// add server port if don't have one in options
-	if (!strstr(m_caClientOptions.c_str(), "port=") && Server)
+	if(!strstr(m_caClientOptions.c_str(), "port=") && Server)
 	{
 		string64 PortStr;
 		sprintf_s(PortStr, "/port=%d", Server->GetPort());
@@ -172,13 +172,13 @@ bool CLevel::net_start3()
 		m_caClientOptions = tmp;
 	}
 	// add password string to client, if don't have one
-	if (m_caServerOptions.size())
+	if(m_caServerOptions.size())
 	{
-		if (strstr(m_caServerOptions.c_str(), "psw=") && !strstr(m_caClientOptions.c_str(), "psw="))
+		if(strstr(m_caServerOptions.c_str(), "psw=") && !strstr(m_caClientOptions.c_str(), "psw="))
 		{
 			string64 PasswordStr = "";
 			const char* PSW = strstr(m_caServerOptions.c_str(), "psw=") + 4;
-			if (strchr(PSW, '/'))
+			if(strchr(PSW, '/'))
 				strncpy(PasswordStr, PSW, strchr(PSW, '/') - PSW);
 			else
 				strcpy_s(PasswordStr, PSW);
@@ -189,7 +189,7 @@ bool CLevel::net_start3()
 		};
 	};
 	// setting players GameSpy CDKey if it comes from command line
-	if (strstr(m_caClientOptions.c_str(), "/cdkey="))
+	if(strstr(m_caClientOptions.c_str(), "/cdkey="))
 	{
 		string64 CDKey;
 		const char* start = strstr(m_caClientOptions.c_str(), "/cdkey=") + xr_strlen("/cdkey=");
@@ -203,7 +203,7 @@ bool CLevel::net_start3()
 
 bool CLevel::net_start4()
 {
-	if (!net_start_result_total)
+	if(!net_start_result_total)
 		return true;
 
 	Engine.PopLoadingEvent();
@@ -220,13 +220,13 @@ bool CLevel::net_start4()
 
 bool CLevel::net_start5()
 {
-	if (net_start_result_total)
+	if(net_start_result_total)
 	{
 		NET_Packet NP;
 		NP.w_begin(M_CLIENTREADY);
 		Send(NP, net_flags(TRUE, TRUE));
 
-		if (OnClient() && Server)
+		if(OnClient() && Server)
 		{
 			Server->SLS_Clear();
 		};
@@ -241,22 +241,22 @@ struct LevelLoadFinalizer
 {
 	bool xr_stdcall net_start_finalizer()
 	{
-		if (g_pGameLevel && !g_start_total_res)
+		if(g_pGameLevel && !g_start_total_res)
 		{
 			shared_str ln = Level().name();
 			Msg("! Failed to start client. Check the connection or level existance.");
 			DEL_INSTANCE(g_pGameLevel);
 			Console->Execute("main_menu on");
 
-			if (g_connect_server_err == xrServer::ErrBELoad)
+			if(g_connect_server_err == xrServer::ErrBELoad)
 			{
 				MainMenu()->OnLoadError("BattlEye/BEServer.dll");
 			}
-			else if (g_connect_server_err == xrServer::ErrConnect && !psNET_direct_connect && !g_dedicated_server)
+			else if(g_connect_server_err == xrServer::ErrConnect && !psNET_direct_connect && !g_dedicated_server)
 			{
 				MainMenu()->SwitchToMultiplayerMenu();
 			}
-			else if (g_connect_server_err == xrServer::ErrNoLevel)
+			else if(g_connect_server_err == xrServer::ErrNoLevel)
 			{
 				MainMenu()->SwitchToMultiplayerMenu();
 				MainMenu()->OnLoadError(ln.c_str());
@@ -280,9 +280,9 @@ bool CLevel::net_start6()
 
 	Engine.LoadingScreen->Hide();
 
-	if (net_start_result_total)
+	if(net_start_result_total)
 	{
-		if (strstr(Core.Params, "-$"))
+		if(strstr(Core.Params, "-$"))
 		{
 			string256 buf, cmd, param;
 			sscanf(strstr(Core.Params, "-$") + 2, "%[^ ] %[^ ] ", cmd, param);
@@ -290,9 +290,9 @@ bool CLevel::net_start6()
 			Console->Execute(buf);
 		}
 
-		if (!g_dedicated_server)
+		if(!g_dedicated_server)
 		{
-			if (g_hud)
+			if(g_hud)
 				HUD().GetUI()->OnConnected();
 		}
 	}
@@ -304,7 +304,7 @@ void CLevel::InitializeClientGame(NET_Packet& P)
 {
 	string256 game_type_name;
 	P.r_stringZ(game_type_name);
-	if (game && !xr_strcmp(game_type_name, game->type_name()))
+	if(game && !xr_strcmp(game_type_name, game->type_name()))
 		return;
 
 	xr_delete(game);

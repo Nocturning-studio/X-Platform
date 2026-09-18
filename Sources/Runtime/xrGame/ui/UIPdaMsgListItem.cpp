@@ -35,7 +35,7 @@ void CUIPdaMsgListItem::Init(float x, float y, float width, float height)
 	xml_init.InitStatic(uiXml, "icon_static", 0, &UIIcon);
 
 	AttachChild(&UIName);
-	if (uiXml.NavigateToNode("name_static", 0))
+	if(uiXml.NavigateToNode("name_static", 0))
 		xml_init.InitStatic(uiXml, "name_static", 0, &UIName);
 	else
 	{

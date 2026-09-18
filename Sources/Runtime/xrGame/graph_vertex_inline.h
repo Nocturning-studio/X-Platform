@@ -24,17 +24,17 @@ IC CSGraphVertex::CVertex(const _data_type& data, const _vertex_id_type& vertex_
 TEMPLATE_SPECIALIZATION
 IC CSGraphVertex::~CVertex()
 {
-	while (!edges().empty())
+	while(!edges().empty())
 		remove_edge(edges().back().vertex_id());
 
-	while (!m_vertices.empty())
+	while(!m_vertices.empty())
 		m_vertices.back()->remove_edge(vertex_id());
 
 	try
 	{
 		delete_data(m_data);
 	}
-	catch (...)
+	catch(...)
 	{
 	}
 }
@@ -43,7 +43,7 @@ TEMPLATE_SPECIALIZATION
 IC const typename CSGraphVertex::_edge_type* CSGraphVertex::edge(const _vertex_id_type& vertex_id) const
 {
 	EDGES::const_iterator I = std::find(edges().begin(), edges().end(), vertex_id);
-	if (m_edges.end() == I)
+	if(m_edges.end() == I)
 		return (0);
 	return (&*I);
 }
@@ -52,7 +52,7 @@ TEMPLATE_SPECIALIZATION
 IC typename CSGraphVertex::_edge_type* CSGraphVertex::edge(const _vertex_id_type& vertex_id)
 {
 	EDGES::iterator I = std::find(m_edges.begin(), m_edges.end(), vertex_id);
-	if (m_edges.end() == I)
+	if(m_edges.end() == I)
 		return (0);
 	return (&*I);
 }
@@ -127,10 +127,10 @@ IC const typename CSGraphVertex::EDGES& CSGraphVertex::edges() const
 TEMPLATE_SPECIALIZATION
 IC bool CSGraphVertex::operator==(const CVertex& obj) const
 {
-	if (vertex_id() != obj.vertex_id())
+	if(vertex_id() != obj.vertex_id())
 		return (false);
 
-	if (!equal(edges(), obj.edges()))
+	if(!equal(edges(), obj.edges()))
 		return (false);
 
 	return (equal(data(), obj.data()));

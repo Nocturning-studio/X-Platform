@@ -11,11 +11,11 @@
 #define AT(rx, ry, rz) (rx * q[0] + ry * q[1] + rz * q[2]);
 #define S_CURVE(t) (t * t * (3.f - 2.f * t))
 #define LERP(t, a, b) (a + t * (b - a))
-#define PN_SETUP(i, b0, b1, r0, r1)                                                                                    \
-	t = vec[i] + 10000.f;                                                                                              \
-	b0 = iFloor(t) & (B - 1);                                                                                          \
-	b1 = (b0 + 1) & (B - 1);                                                                                           \
-	r0 = t - iFloor(t);                                                                                                \
+#define PN_SETUP(i, b0, b1, r0, r1) \
+	t = vec[i] + 10000.f;           \
+	b0 = iFloor(t) & (B - 1);       \
+	b1 = (b0 + 1) & (B - 1);        \
+	r0 = t - iFloor(t);             \
 	r1 = r0 - 1.f;
 
 static int start = 1;
@@ -39,7 +39,7 @@ float noise3(const fvec3& vec)
 	float a, b, c, d, t, u, v;
 	int i, j;
 
-	if (start)
+	if(start)
 	{
 		start = 0;
 		noise3Init();
@@ -101,26 +101,26 @@ void noise3Init()
 
 	srand(1);
 
-	for (i = 0; i < B; i++)
+	for(i = 0; i < B; i++)
 	{
 		do
 		{
-			for (j = 0; j < 3; j++)
+			for(j = 0; j < 3; j++)
 			{
 				rnd = rand();
 				v[j] = float((rnd % (B + B)) - B) / B;
 			}
 			s = DOT(v, v);
-		} while (s > 1.0);
+		} while(s > 1.0);
 		s = std::sqrt(s);
-		for (j = 0; j < 3; j++)
+		for(j = 0; j < 3; j++)
 			g[i][j] = v[j] / s;
 	}
 
-	for (i = 0; i < B; i++)
+	for(i = 0; i < B; i++)
 		p[i] = i;
 
-	for (i = B; i > 0; i -= 2)
+	for(i = B; i > 0; i -= 2)
 	{
 		rnd = rand();
 		k = p[i];
@@ -128,10 +128,10 @@ void noise3Init()
 		p[j] = k;
 	}
 
-	for (i = 0; i < B + 2; i++)
+	for(i = 0; i < B + 2; i++)
 	{
 		p[B + i] = p[i];
-		for (j = 0; j < 3; j++)
+		for(j = 0; j < 3; j++)
 			g[B + i][j] = g[i][j];
 	}
 }
@@ -147,7 +147,7 @@ float fractalsum3(const fvec3& v, float freq, int octaves)
 	v_[1] = v[1] * freq;
 	v_[2] = v[2] * freq;
 
-	for (i = 0; i < octaves; i++)
+	for(i = 0; i < octaves; i++)
 	{
 		sum += noise3(v_) / freq;
 		freq *= 2.059f;
@@ -169,7 +169,7 @@ float turbulence3(const fvec3& v, float freq, int octaves)
 	v_[1] = v[1] * freq;
 	v_[2] = v[2] * freq;
 
-	for (i = 0; i < octaves; i++)
+	for(i = 0; i < octaves; i++)
 	{
 		sum += _abs(noise3(v_)) / freq;
 		freq *= 2.059f;

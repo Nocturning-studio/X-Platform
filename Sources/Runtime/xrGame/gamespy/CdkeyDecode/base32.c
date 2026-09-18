@@ -17,7 +17,7 @@ char* gpcBase32Set = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 static void LeftShift(unsigned char* pc, int s, int n)
 {
 	int i;
-	for (i = s - 1; i > 0; --i)
+	for(i = s - 1; i > 0; --i)
 	{
 		pc[i] <<= n;
 		pc[i] |= (pc[i - 1] >> (8 - n));
@@ -30,7 +30,7 @@ static void LeftShift(unsigned char* pc, int s, int n)
 static void RightShift(unsigned char* pc, int s, int n)
 {
 	int i;
-	for (i = 0; i < s - 1; ++i)
+	for(i = 0; i < s - 1; ++i)
 	{
 		pc[i] >>= n;
 		pc[i] |= (pc[i + 1] << (8 - n));
@@ -45,7 +45,7 @@ static void RightShift(unsigned char* pc, int s, int n)
 static int Base32Value(unsigned char ch)
 {
 	const char* pc = strchr(gpcBase32Set, ch);
-	if (pc != 0)
+	if(pc != 0)
 	{
 		return (int)(pc - gpcBase32Set);
 	}
@@ -64,9 +64,9 @@ void MakeBase32Pretty(char* pcOut, const char* pcIn)
 {
 	int n = (int)strlen(pcIn);
 	int m;
-	while (n > 0)
+	while(n > 0)
 	{
-		if (n % 4 == 0)
+		if(n % 4 == 0)
 		{
 			m = 4;
 		}
@@ -80,7 +80,7 @@ void MakeBase32Pretty(char* pcOut, const char* pcIn)
 		pcIn += m;
 
 		n -= m;
-		if (n > 0)
+		if(n > 0)
 		{
 			*pcOut++ = '-';
 		}
@@ -97,15 +97,15 @@ void MakeBase32Pretty(char* pcOut, const char* pcIn)
 int CleanForBase32(char* newstr, const char* oldstr, int maxoutput)
 {
 	int numout = 0;
-	for (/* */; *oldstr != 0; ++oldstr)
+	for(/* */; *oldstr != 0; ++oldstr)
 	{
 		char ch;
-		if (*oldstr == '-')
+		if(*oldstr == '-')
 		{
 			continue;
 		}
 		ch = *oldstr;
-		if (numout + 1 == maxoutput) // see if we will overflow
+		if(numout + 1 == maxoutput) // see if we will overflow
 			return 0;
 		*newstr++ = islower(ch) ? ch - ('a' - 'A') : ch;
 		numout++;
@@ -128,27 +128,27 @@ int ConvertFromBase32(char* pcOut, const char* pcIn, int nInBytes)
 	int i;
 	int nTotalOut = 0;
 
-	while (nInBytes > 0)
+	while(nInBytes > 0)
 	{
 		int nCopyableBytes = (nInBytes > 8 ? 8 : nInBytes);
 		int nOutBytes = ((nCopyableBytes * 5) /* + 7*/) / 8;
 
 		memset(acShift, 0, sizeof(acShift));
 
-		for (i = 0; i < nCopyableBytes; ++i)
+		for(i = 0; i < nCopyableBytes; ++i)
 		{
 			acWorkCopy[i] = *(pcCursor + nCopyableBytes - i - 1);
 		}
 		pcCursor += nCopyableBytes;
 
-		for (i = 0; i < nCopyableBytes; ++i)
+		for(i = 0; i < nCopyableBytes; ++i)
 		{
 			// Make room for new bits
 			LeftShift(acShift, sizeof(acShift), 5);
 
 			// Put the value onto the end of the register
 			nValue = Base32Value(acWorkCopy[i]);
-			if (nValue < 0)
+			if(nValue < 0)
 			{
 				return -acWorkCopy[i];
 			}
@@ -182,7 +182,7 @@ int ConvertToBase32(char* pcOut, const char* pcIn, int nInBytes)
 	unsigned char acShift[5];
 	memset(acShift, 0, sizeof(acShift));
 
-	while (nInBytes > 0)
+	while(nInBytes > 0)
 	{
 		int i;
 		int nCopyableBytes = (nInBytes > 5 ? 5 : nInBytes);
@@ -192,7 +192,7 @@ int ConvertToBase32(char* pcOut, const char* pcIn, int nInBytes)
 		pcIn += nCopyableBytes;
 		nInBytes -= nCopyableBytes;
 
-		for (i = 0; i < nOutBytes; ++i)
+		for(i = 0; i < nOutBytes; ++i)
 		{
 			pcOut[nTotalOut++] = gpcBase32Set[acShift[0] & 0x1F];
 			RightShift(acShift, sizeof(acShift), 5);

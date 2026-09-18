@@ -27,7 +27,7 @@ void COptickCapture::Initialize()
 
 void COptickCapture::Destroy()
 {
-	if (m_need_capture)
+	if(m_need_capture)
 		StopCapturing();
 };
 
@@ -36,7 +36,7 @@ Base methods: Start, Stop, Save
 *********************************************************************************/
 void COptickCapture::StartCapturing()
 {
-	OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION | 
+	OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION |
 											Optick::Mode::TAGS |
 											Optick::Mode::IO));
 	Msg("- Optick capturing started");
@@ -49,7 +49,7 @@ void COptickCapture::TryToSaveCapture(str_c save_path)
 	{
 		OPTICK_SAVE_CAPTURE(save_path);
 	}
-	catch (...)
+	catch(...)
 	{
 		Msg("! An error occurred while saving optick capture");
 	}
@@ -66,9 +66,9 @@ Capturing a specified number of frames.
 *********************************************************************************/
 void COptickCapture::OnFrame()
 {
-	if (m_need_capture)
+	if(m_need_capture)
 	{
-		if (Engine.TimeManager.GetFrameCount() == m_end_capture_frame)
+		if(Engine.TimeManager.GetFrameCount() == m_end_capture_frame)
 		{
 			StopCapturing();
 			SaveCapturedFrames();
@@ -106,18 +106,18 @@ void COptickCapture::SaveCapturedFrames()
 };
 
 /*********************************************************************************
-Capturing in switcher mode: 
+Capturing in switcher mode:
 	first call switching to capture, second switching to save
 *********************************************************************************/
 void COptickCapture::SwitchProfiler()
 {
-	if (m_need_capture)
+	if(m_need_capture)
 	{
 		Msg("! Capturing already started, please wait until end of capturing and try again");
 		return;
 	}
 
-	if (!m_switched_to_capturing)
+	if(!m_switched_to_capturing)
 	{
 		Msg("- OptickAPI switched to capturing mode, execute command again to switch to saving mode");
 		SwitchToCapturing();

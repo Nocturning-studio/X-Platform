@@ -129,22 +129,22 @@ class ENGINE_API CBlender_Compile
 	void i_Filter(u32 s, u32 _min, u32 _mip, u32 _mag);
 	void i_sRGB(u32 s, bool state = true);
 
-private:
+  private:
 	// Вспомогательный макрос для распределения по scope
 	// __VA_ARGS__ позволяет передавать (Name, value) или (Name, "1")
-#define APPLY_SCOPE_MACRO(...)                                                                                         \
-	switch (scope)                                                                                                     \
-	{                                                                                                                  \
-	case ShaderScope::Vertex:                                                                                          \
-		macros_vs.add(__VA_ARGS__);                                                                                    \
-		break;                                                                                                         \
-	case ShaderScope::Pixel:                                                                                           \
-		macros_ps.add(__VA_ARGS__);                                                                                    \
-		break;                                                                                                         \
-	case ShaderScope::Both:                                                                                            \
-	default:                                                                                                           \
-		macros_common.add(__VA_ARGS__);                                                                                \
-		break;                                                                                                         \
+#define APPLY_SCOPE_MACRO(...)          \
+	switch(scope)                       \
+	{                                   \
+	case ShaderScope::Vertex:           \
+		macros_vs.add(__VA_ARGS__);     \
+		break;                          \
+	case ShaderScope::Pixel:            \
+		macros_ps.add(__VA_ARGS__);     \
+		break;                          \
+	case ShaderScope::Both:             \
+	default:                            \
+		macros_common.add(__VA_ARGS__); \
+		break;                          \
 	}
 
   public:
@@ -188,31 +188,30 @@ private:
 	// Удаляем макрос, чтобы не засорять глобальное пространство имен
 #undef APPLY_SCOPE_MACRO
 
-	void begin_Pass(LPCSTR vs = "null", 
-					LPCSTR ps = "null", 
-					LPCSTR _vs_entry = "main", 
+	void begin_Pass(LPCSTR vs = "null",
+					LPCSTR ps = "null",
+					LPCSTR _vs_entry = "main",
 					LPCSTR _ps_entry = "main",
 					bool bFog = FALSE,
-					BOOL bZtest = FALSE, 
+					BOOL bZtest = FALSE,
 					BOOL bZwrite = FALSE,
 					BOOL bABlend = FALSE,
-					D3DBLEND abSRC = D3DBLEND_ONE, 
+					D3DBLEND abSRC = D3DBLEND_ONE,
 					D3DBLEND abDST = D3DBLEND_ZERO);
 	void commit_Pass();
-	
 
 	void begin_Pass(PassDesc PassDescription)
 	{
-		begin_Pass(	PassDescription.VertexShader.c_str(), 
-					PassDescription.PixelShader.c_str(), 
-					PassDescription.VertexShaderEntry.c_str(),
-					PassDescription.PixelShaderEntry.c_str(),
-					PassDescription.EnableFog,
-					PassDescription.EnableZTest,
-					PassDescription.EnableZWrite,
-					PassDescription.EnableAlphaBlend, 
-					PassDescription.BlendSRC, 
-					PassDescription.BlendDST);
+		begin_Pass(PassDescription.VertexShader.c_str(),
+				   PassDescription.PixelShader.c_str(),
+				   PassDescription.VertexShaderEntry.c_str(),
+				   PassDescription.PixelShaderEntry.c_str(),
+				   PassDescription.EnableFog,
+				   PassDescription.EnableZTest,
+				   PassDescription.EnableZWrite,
+				   PassDescription.EnableAlphaBlend,
+				   PassDescription.BlendSRC,
+				   PassDescription.BlendDST);
 	};
 
 	void SetVertexShader(LPCSTR name)
@@ -237,9 +236,9 @@ private:
 
 	void set_Constant(LPCSTR name, R_constant_setup* s);
 	u32 set_Sampler(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false, u32 address = D3DTADDRESS_WRAP,
-				  u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR, bool b_srgb = true);
+					u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR, bool b_srgb = true);
 	u32 set_Sampler(LPCSTR name, shared_str texture, bool b_ps1x_ProjectiveDivide = false, u32 address = D3DTADDRESS_WRAP,
-				  u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR, bool b_srgb = true)
+					u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR, bool b_srgb = true)
 	{
 		return set_Sampler(name, texture.c_str(), b_ps1x_ProjectiveDivide, address, fmin, fmip, fmag, b_srgb);
 	}

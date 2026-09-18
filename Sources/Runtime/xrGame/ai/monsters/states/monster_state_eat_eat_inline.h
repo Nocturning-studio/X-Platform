@@ -25,14 +25,14 @@ void CStateMonsterEatingAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterEatingAbstract::execute()
 {
-	if (object->CorpseMan.get_corpse() != corpse)
+	if(object->CorpseMan.get_corpse() != corpse)
 		return;
 
 	object->set_action(ACT_EAT);
 	object->set_state_sound(MonsterSound::eMonsterSoundEat);
 
 	// סתוסעü קאסעü
-	if (time_last_eat + u32(1000 / object->db().m_fEatFreq) < Engine.TimeManager.GetGlobalTimeMs())
+	if(time_last_eat + u32(1000 / object->db().m_fEatFreq) < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		object->ChangeSatiety(object->db().m_fEatSlice);
 		corpse->m_fFood -= object->db().m_fEatSliceWeight;
@@ -47,7 +47,7 @@ bool CStateMonsterEatingAbstract::check_start_conditions()
 	VERIFY(corpse);
 
 	fvec3 nearest_bone_pos;
-	if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
+	if((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
 	{
 		nearest_bone_pos = corpse->Position();
 	}
@@ -57,7 +57,7 @@ bool CStateMonsterEatingAbstract::check_start_conditions()
 	float dist = nearest_bone_pos.distance_to(object->Position());
 	float dist_to_corpse = object->db().m_fDistToCorpse;
 
-	if (dist + 0.5f < dist_to_corpse)
+	if(dist + 0.5f < dist_to_corpse)
 		return true;
 	return false;
 }
@@ -65,13 +65,13 @@ bool CStateMonsterEatingAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterEatingAbstract::check_completion()
 {
-	if (time_state_started + TIME_TO_EAT < time())
+	if(time_state_started + TIME_TO_EAT < time())
 		return true;
-	if (object->CorpseMan.get_corpse() != corpse)
+	if(object->CorpseMan.get_corpse() != corpse)
 		return true;
 
 	fvec3 nearest_bone_pos;
-	if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
+	if((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
 	{
 		nearest_bone_pos = corpse->Position();
 	}
@@ -80,7 +80,7 @@ bool CStateMonsterEatingAbstract::check_completion()
 
 	float dist = nearest_bone_pos.distance_to(object->Position());
 	float dist_to_corpse = object->db().m_fDistToCorpse;
-	if (dist > dist_to_corpse + 0.5f)
+	if(dist > dist_to_corpse + 0.5f)
 		return true;
 
 	return false;

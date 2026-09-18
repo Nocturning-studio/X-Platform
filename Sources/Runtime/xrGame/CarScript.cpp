@@ -18,7 +18,7 @@ void CCar::script_register(lua_State* L)
 									   value("eWpnToDefaultDir", int(CCarWeapon::eWpnToDefaultDir))]
 				  .def("Action", &CCar::Action)
 				  //		.def("SetParam",		(void (CCar::*)(int,fvec2)) &CCar::SetParam)
-				  .def("SetParam", (void(CCar::*)(int, fvec3)) & CCar::SetParam)
+				  .def("SetParam", (void (CCar::*)(int, fvec3))&CCar::SetParam)
 				  .def("CanHit", &CCar::WpnCanHit)
 				  .def("FireDirDiff", &CCar::FireDirDiff)
 				  .def("IsObjectVisible", &CCar::isObjectVisible)

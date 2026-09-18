@@ -29,11 +29,11 @@ class ENGINE_API CRenderView
 	// Конструктор копирования
 	CRenderView(const CRenderView& other) = default;
 	// Конструктор перемещения
-	CRenderView(CRenderView && other) noexcept = default;
+	CRenderView(CRenderView&& other) noexcept = default;
 	// Оператор присваивания копированием
-	CRenderView& operator=(const CRenderView & other) = default;
+	CRenderView& operator=(const CRenderView& other) = default;
 	// Оператор присваивания перемещением
-	CRenderView& operator=(CRenderView && other) noexcept = default;
+	CRenderView& operator=(CRenderView&& other) noexcept = default;
 
 	// Основные методы расчета
 	void SetupView(const fvec3& pos, const fvec3& dir, const fvec3& top);

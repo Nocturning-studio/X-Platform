@@ -56,8 +56,8 @@ void CStalkerActionSolveZonePuzzle::initialize()
 
 #ifndef GRENADE_TEST
 	m_stop_weapon_handling_time = Engine.TimeManager.GetGlobalTimeMs();
-	if (object().inventory().ActiveItem() && object().best_weapon() &&
-		(object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
+	if(object().inventory().ActiveItem() && object().best_weapon() &&
+	   (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
 		m_stop_weapon_handling_time += ::Random32.random(30000) + 30000;
 
 	//	object().movement().set_desired_position	(0);
@@ -99,7 +99,7 @@ void CStalkerActionSolveZonePuzzle::finalize()
 
 	//	object().movement().set_desired_position	(0);
 
-	if (!object().g_Alive())
+	if(!object().g_Alive())
 		return;
 
 	object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
@@ -110,8 +110,8 @@ void CStalkerActionSolveZonePuzzle::execute()
 	inherited::execute();
 
 #ifndef GRENADE_TEST
-	if (Engine.TimeManager.GetGlobalTimeMs() >= m_stop_weapon_handling_time)
-		if (!object().best_weapon())
+	if(Engine.TimeManager.GetGlobalTimeMs() >= m_stop_weapon_handling_time)
+		if(!object().best_weapon())
 			object().CObjectHandler::set_goal(eObjectActionIdle);
 		else
 			object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
@@ -137,12 +137,12 @@ void CStalkerActionSolveZonePuzzle::execute()
 
 	static u32 m_time_to_strap = 0;
 	static u32 m_time_to_idle = 0;
-	if (!object().inventory().ActiveItem() ||
-		(object().inventory().ActiveItem() == object().inventory().m_slots[1].m_pIItem))
+	if(!object().inventory().ActiveItem() ||
+	   (object().inventory().ActiveItem() == object().inventory().m_slots[1].m_pIItem))
 	{
-		if (!m_time_to_strap)
+		if(!m_time_to_strap)
 			m_time_to_strap = Engine.TimeManager.GetGlobalTimeMs() + 10000;
-		if (Engine.TimeManager.GetGlobalTimeMs() >= m_time_to_strap)
+		if(Engine.TimeManager.GetGlobalTimeMs() >= m_time_to_strap)
 		{
 			m_time_to_idle = 0;
 			object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
@@ -152,11 +152,11 @@ void CStalkerActionSolveZonePuzzle::execute()
 	{
 		const CWeapon* weapon = smart_cast<const CWeapon*>(object().best_weapon());
 		VERIFY(weapon);
-		if (weapon->strapped_mode())
+		if(weapon->strapped_mode())
 		{
-			if (!m_time_to_idle)
+			if(!m_time_to_idle)
 				m_time_to_idle = Engine.TimeManager.GetGlobalTimeMs() + 10000;
-			if (Engine.TimeManager.GetGlobalTimeMs() >= m_time_to_idle)
+			if(Engine.TimeManager.GetGlobalTimeMs() >= m_time_to_idle)
 			{
 				m_time_to_strap = 0;
 				object().CObjectHandler::set_goal(eObjectActionIdle, object().inventory().m_slots[1].m_pIItem);
@@ -191,7 +191,7 @@ void CStalkerActionSmartTerrain::initialize()
 	object().movement().set_mental_state(eMentalStateFree);
 	object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 
-	if (!object().best_weapon())
+	if(!object().best_weapon())
 	{
 		object().CObjectHandler::set_goal(eObjectActionIdle);
 		return;
@@ -200,7 +200,7 @@ void CStalkerActionSmartTerrain::initialize()
 	object().CObjectHandler::set_goal(eObjectActionIdle);
 
 	CWeapon* best_weapon = smart_cast<CWeapon*>(object().best_weapon());
-	if (object().CObjectHandler::weapon_strapped(best_weapon))
+	if(object().CObjectHandler::weapon_strapped(best_weapon))
 		return;
 
 	object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
@@ -217,7 +217,7 @@ void CStalkerActionSmartTerrain::execute()
 {
 	inherited::execute();
 
-	if (completed())
+	if(completed())
 		object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
 
 	object().sound().play(eStalkerSoundHumming, 60000, 10000);
@@ -229,7 +229,7 @@ void CStalkerActionSmartTerrain::execute()
 
 	CALifeSmartTerrainTask* task = stalker->brain().smart_terrain().task(stalker);
 	THROW2(task, "Smart terrain is assigned but returns no task");
-	if (object().ai_location().game_vertex_id() != task->game_vertex_id())
+	if(object().ai_location().game_vertex_id() != task->game_vertex_id())
 	{
 		object().movement().set_path_type(MovementManager::ePathTypeGamePath);
 		object().movement().set_game_dest_vertex(task->game_vertex_id());
@@ -237,7 +237,7 @@ void CStalkerActionSmartTerrain::execute()
 	}
 
 	object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
-	if (object().movement().accessible(task->level_vertex_id()))
+	if(object().movement().accessible(task->level_vertex_id()))
 	{
 		object().movement().set_level_dest_vertex(task->level_vertex_id());
 		fvec3 temp = task->position();

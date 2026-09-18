@@ -39,11 +39,11 @@ void CStateChimeraThreatenWalkAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateChimeraThreatenWalkAbstract::check_completion()
 {
-	if (inherited::check_completion())
+	if(inherited::check_completion())
 		return true;
 
 	float dist_to_enemy = object->EnemyMan.get_enemy_position().distance_to(object->Position());
-	if (dist_to_enemy < DISTANCE_TO_ENEMY)
+	if(dist_to_enemy < DISTANCE_TO_ENEMY)
 		return true;
 
 	return false;
@@ -55,7 +55,7 @@ TEMPLATE_SPECIALIZATION
 bool CStateChimeraThreatenWalkAbstract::check_start_conditions()
 {
 	float dist_to_enemy = object->EnemyMan.get_enemy_position().distance_to(object->Position());
-	if (dist_to_enemy < MAX_DISTANCE_TO_ENEMY)
+	if(dist_to_enemy < MAX_DISTANCE_TO_ENEMY)
 		return true;
 	return false;
 }

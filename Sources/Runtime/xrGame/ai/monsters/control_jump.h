@@ -69,9 +69,9 @@ class CControlJump : public CControl_ComCustom<SControlJumpData>
 
 	// run-time params
 	u32 m_time_next_allowed;
-	u32 m_time_started;		   // time jump started
-	float m_jump_time;		   // physical-counted time of jump
-	float m_blend_speed;	   // current anim blend speed
+	u32 m_time_started;		 // time jump started
+	float m_jump_time;		 // physical-counted time of jump
+	float m_blend_speed;	 // current anim blend speed
 	fvec3 m_target_position; // save target position for internal needs
 
 	// state flags

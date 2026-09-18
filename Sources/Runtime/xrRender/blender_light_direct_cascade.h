@@ -21,7 +21,7 @@ class CBlender_accum_direct_cascade : public IBlender
 		PassDescription.PixelShader = "accumulating_light_stage_direct";
 		PassDescription.EnableZTest = true;
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_SUN_NEAR: // near pass - enable Z-test to perform depth-clipping
 		case SE_SUN_MIDDLE:

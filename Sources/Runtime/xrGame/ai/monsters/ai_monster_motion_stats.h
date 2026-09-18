@@ -23,7 +23,7 @@ class CMotionStats
 	u32 index; // индекс всегда указывает на подготовленное место в массиве
 
   public:
-	CMotionStats(CBaseMonster* pM) : pMonster(pM), index(0){};
+	CMotionStats(CBaseMonster* pM) : pMonster(pM), index(0) {};
 
 	void update();
 	bool is_good_motion(u32 elems_checked);

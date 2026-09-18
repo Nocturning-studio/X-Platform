@@ -41,9 +41,9 @@
 
 inline float sin_and_cos(float x, float alpha, float beta)
 {
-	while (x < 0)
+	while(x < 0)
 		x += 2 * PI;
-	while (x > 2 * PI)
+	while(x > 2 * PI)
 		x -= 2 * PI;
 
 	float c = std::cos(x);

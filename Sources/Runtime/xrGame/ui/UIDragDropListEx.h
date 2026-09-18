@@ -118,8 +118,8 @@ class CUIDragDropListEx : public CUIWindow, public CUIWndCallback
 
   public:
 	// items management
-	virtual void SetItem(CUICellItem* itm);					   // auto
-	virtual void SetItem(CUICellItem* itm, fvec2 abs_pos);  // start at cursor pos
+	virtual void SetItem(CUICellItem* itm);					// auto
+	virtual void SetItem(CUICellItem* itm, fvec2 abs_pos);	// start at cursor pos
 	virtual void SetItem(CUICellItem* itm, ivec2 cell_pos); // start at cell
 	bool CanSetItem(CUICellItem* itm);
 
@@ -155,7 +155,7 @@ class CUICellContainer : public CUIWindow
 	CUIDragDropListEx* m_pParentDragDropList;
 
 	ivec2 m_cellsCapacity; // count		(col,	row)
-	ivec2 m_cellSize;	  // pixels	(width, height)
+	ivec2 m_cellSize;	   // pixels	(width, height)
 	UI_CELLS_VEC m_cells;
 
 	void GetTexUVLT(fvec2& uv, u32 col, u32 row);

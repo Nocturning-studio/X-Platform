@@ -70,7 +70,7 @@ const u32 FIRE_MAKE_SENSE_INTERVAL = 10000;
 // Вспомогательная функция для определения направления попадания
 int GetHitDirection(const fvec3& hit_dir_local)
 {
-	if (_abs(hit_dir_local.z) > _abs(hit_dir_local.x))
+	if(_abs(hit_dir_local.z) > _abs(hit_dir_local.x))
 	{
 		return (hit_dir_local.z > 0) ? HIT_FRONT : HIT_BACK;
 	}
@@ -88,21 +88,21 @@ float CAI_Stalker::GetWeaponAccuracy() const
 	base *= m_fRankDisperison;
 
 	// [IMPROVEMENT] 1. Panic Spray
-	if (movement().mental_state() == eMentalStatePanic)
+	if(movement().mental_state() == eMentalStatePanic)
 		base *= 3.0f;
 
 	// [IMPROVEMENT] 2. Flinch
-	if (Engine.TimeManager.GetGlobalTimeMs() - m_dwLastHitTime < 1000)
+	if(Engine.TimeManager.GetGlobalTimeMs() - m_dwLastHitTime < 1000)
 		base *= 5.0f;
 
 	// [IMPROVEMENT] 3. Health Impact
 	float health = conditions().health();
-	if (health < 0.9f)
+	if(health < 0.9f)
 		base *= (1.0f + (1.0f - health) * 2.0f);
 
 	// [IMPROVEMENT] 4. Turn Penalty
 	float yaw_diff = _abs(angle_difference(movement().m_body.current.yaw, m_previous_yaw));
-	if (yaw_diff > PI_DIV_6)
+	if(yaw_diff > PI_DIV_6)
 		base *= 2.5f;
 
 	// [IMPROVEMENT] 5. Smart Zeroing & Blind Fire Penalty (CRASH FIX VERSION)
@@ -110,13 +110,13 @@ float CAI_Stalker::GetWeaponAccuracy() const
 	// нам нужно вернуть какое-то число, чтобы не крашнуть физику оружия.
 	const CEntityAlive* enemy = memory().enemy().selected();
 
-	if (enemy)
+	if(enemy)
 	{
 		// FIX: Используем ТОЛЬКО memory().memory().
 		// Мы НЕ трогаем memory().visual(), так как m_objects там может быть NULL.
 		const MemorySpace::CMemoryInfo* mem_info = &memory().memory(enemy);
 
-		if (mem_info)
+		if(mem_info)
 		{
 			// m_level_time - это время последнего обновления информации (Визуал ИЛИ Звук ИЛИ Хит)
 			u32 last_update_time = mem_info->m_level_time;
@@ -138,7 +138,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 			// Это на 100% безопасно и не вызывает вылетов.
 			bool is_fresh_contact = (time_since_update < 200);
 
-			if (is_fresh_contact)
+			if(is_fresh_contact)
 			{
 				// Цель "свежая" (видим или только что видели)
 				// Логика пристрелки (Zeroing) работает, если мы держим контакт долго.
@@ -158,7 +158,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 			}
 
 			// Бонус за префаер (если потеряли недавно, от 0.5 до 3 сек)
-			if (time_since_update > 500 && time_since_update < 3000)
+			if(time_since_update > 500 && time_since_update < 3000)
 			{
 				accuracy_mult *= 0.7f; // Стреляем точнее в точку исчезновения
 			}
@@ -173,26 +173,26 @@ float CAI_Stalker::GetWeaponAccuracy() const
 	}
 
 	// Стандартная логика движения
-	if (!movement().path_completed())
+	if(!movement().path_completed())
 	{
-		if (movement().movement_type() == eMovementTypeWalk)
-			if (movement().body_state() == eBodyStateStand)
+		if(movement().movement_type() == eMovementTypeWalk)
+			if(movement().body_state() == eBodyStateStand)
 				return (base * m_disp_walk_stand);
 			else
 				return (base * m_disp_walk_crouch);
-		else if (movement().movement_type() == eMovementTypeRun)
-			if (movement().body_state() == eBodyStateStand)
+		else if(movement().movement_type() == eMovementTypeRun)
+			if(movement().body_state() == eBodyStateStand)
 				return (base * m_disp_run_stand);
 			else
 				return (base * m_disp_run_crouch);
 	}
 
-	if (movement().body_state() == eBodyStateStand)
-		if (zoom_state())
+	if(movement().body_state() == eBodyStateStand)
+		if(zoom_state())
 			return (base * m_disp_stand_stand);
 		else
 			return (base * m_disp_stand_stand_zoom);
-	else if (zoom_state())
+	else if(zoom_state())
 		return (base * m_disp_stand_crouch);
 	else
 		return (base * m_disp_stand_crouch_zoom);
@@ -201,7 +201,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 {
 	//.	VERIFY				(inventory().ActiveItem());
-	if (!inventory().ActiveItem())
+	if(!inventory().ActiveItem())
 	{
 #ifdef DEBUG
 		Msg("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
@@ -212,10 +212,10 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 	}
 
 	CWeapon* weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-	if (!weapon)
+	if(!weapon)
 	{
 		CMissile* missile = smart_cast<CMissile*>(inventory().ActiveItem());
-		if (missile)
+		if(missile)
 		{
 			update_throw_params();
 			P = m_throw_position;
@@ -225,13 +225,13 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 		}
 		P = eye_matrix.c;
 		D = eye_matrix.k;
-		if (weapon_shot_effector().IsActive())
+		if(weapon_shot_effector().IsActive())
 			D = weapon_shot_effector_direction(D);
 		VERIFY(!fis_zero(D.square_magnitude()));
 		return;
 	}
 
-	if (!g_Alive() || !animation().script_animations().empty())
+	if(!g_Alive() || !animation().script_animations().empty())
 	{
 		P = weapon->get_LastFP();
 		D = weapon->get_LastFD();
@@ -245,33 +245,34 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 	fvec3 aim_target_pos = {0, 0, 0};
 
 	// Если врага не видно ИЛИ мы в ярости (Counter-Attack)
-	if (enemy && (!memory().visual().visible_right_now(enemy) || m_is_counter_attacking))
+	if(enemy && (!memory().visual().visible_right_now(enemy) || m_is_counter_attacking))
 	{
 		// Безопасно получаем память
 		const MemorySpace::CMemoryInfo* mem_info = &memory().memory(enemy);
 
-		if (mem_info)
+		if(mem_info)
 		{
 			suppress_fire = true;
 			aim_target_pos = mem_info->m_object_params.m_position;
 		}
 	}
 
-	switch (movement().body_state())
+	switch(movement().body_state())
 	{
-	case eBodyStateStand: {
-		if (movement().movement_type() == eMovementTypeStand)
+	case eBodyStateStand:
+	{
+		if(movement().movement_type() == eMovementTypeStand)
 		{
 			P = eye_matrix.c;
 			D = eye_matrix.k;
 
-			if (suppress_fire)
+			if(suppress_fire)
 			{
 				// Вычисляем вектор от глаз до точки подавления
 				D.sub(aim_target_pos, P).normalize();
 			}
 
-			if (weapon_shot_effector().IsActive())
+			if(weapon_shot_effector().IsActive())
 				D = weapon_shot_effector_direction(D);
 			VERIFY(!fis_zero(D.square_magnitude()));
 		}
@@ -279,7 +280,7 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 		{
 			D.setHP(-movement().m_head.current.yaw, -movement().m_head.current.pitch);
 
-			if (suppress_fire)
+			if(suppress_fire)
 			{
 				// При движении нужна коррекция позиции оружия
 				fvec3 fire_dir;
@@ -291,7 +292,7 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 				D = fire_dir;
 			}
 
-			if (weapon_shot_effector().IsActive())
+			if(weapon_shot_effector().IsActive())
 				D = weapon_shot_effector_direction(D);
 
 			Center(P);
@@ -301,16 +302,17 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, fvec3& P, fvec3& D)
 		}
 		return;
 	}
-	case eBodyStateCrouch: {
+	case eBodyStateCrouch:
+	{
 		P = eye_matrix.c;
 		D = eye_matrix.k;
 
-		if (suppress_fire)
+		if(suppress_fire)
 		{
 			D.sub(aim_target_pos, P).normalize();
 		}
 
-		if (weapon_shot_effector().IsActive())
+		if(weapon_shot_effector().IsActive())
 			D = weapon_shot_effector_direction(D);
 		VERIFY(!fis_zero(D.square_magnitude()));
 		return;
@@ -332,7 +334,7 @@ void CAI_Stalker::g_WeaponBones(int& L, int& R1, int& R2)
 	CObjectHandler::weapon_bones(r_hand, r_finger2, l_finger1);
 	R1 = r_hand;
 	R2 = r_finger2;
-	if (!animation().script_animations().empty() && animation().script_animations().front().hand_usage())
+	if(!animation().script_animations().empty() && animation().script_animations().front().hand_usage())
 		L = R2;
 	else
 		L = l_finger1;
@@ -340,19 +342,21 @@ void CAI_Stalker::g_WeaponBones(int& L, int& R1, int& R2)
 
 void CAI_Stalker::Hit(SHit* pHDS)
 {
-	if (invulnerable())
+	if(invulnerable())
 		return;
 
 	// [IMPROVEMENT] Suppression Logic (Rebalanced)
 	// Раньше было 3000 + бонус. Это слишком долго.
 	// Сделаем 1000 (1 сек) базы + бонус. Максимум 3 секунды.
-	
+
 	u32 suppression_duration = 1000 + (u32)(pHDS->damage() * 30.0f);
-	
+
 	// Опытные сталкеры (Ранг > 50) подавляются меньше
-	if (Rank() > 50) suppression_duration /= 2;
-	
-	if (suppression_duration > 3000) suppression_duration = 3000;
+	if(Rank() > 50)
+		suppression_duration /= 2;
+
+	if(suppression_duration > 3000)
+		suppression_duration = 3000;
 
 	m_suppression_end_time = Engine.TimeManager.GetGlobalTimeMs() + suppression_duration;
 	m_is_counter_attacking = false;
@@ -361,64 +365,64 @@ void CAI_Stalker::Hit(SHit* pHDS)
 	// хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	SHit HDS = *pHDS;
 	HDS.power *= m_fRankImmunity;
-	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound)
+	if(m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound)
 	{
 		float BoneArmour = m_boneHitProtection->getBoneArmour(HDS.bone());
 		float NewHitPower = HDS.damage() - BoneArmour;
-		if (NewHitPower < HDS.power * m_boneHitProtection->m_fHitFrac)
+		if(NewHitPower < HDS.power * m_boneHitProtection->m_fHitFrac)
 			HDS.power = HDS.power * m_boneHitProtection->m_fHitFrac;
 		else
 			HDS.power = NewHitPower;
 
-		if (wounded())
+		if(wounded())
 			HDS.power = 1000.f;
 	}
 
-	if (g_Alive())
+	if(g_Alive())
 	{
 		bool already_critically_wounded = critically_wounded();
 
-		if (!already_critically_wounded)
+		if(!already_critically_wounded)
 		{
 			const CCoverPoint* cover = agent_manager().member().member(this).cover();
-			if (cover && pHDS->initiator() && (pHDS->initiator()->ID() != ID()) && !fis_zero(pHDS->damage()) &&
-				brain().affect_cover())
+			if(cover && pHDS->initiator() && (pHDS->initiator()->ID() != ID()) && !fis_zero(pHDS->damage()) &&
+			   brain().affect_cover())
 				agent_manager().location().add(
 					xr_new<CDangerCoverLocation>(cover, Engine.TimeManager.GetGlobalTimeMs(), DANGER_INTERVAL, DANGER_DISTANCE));
 		}
 
 		const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());
-		if (entity_alive && !wounded())
+		if(entity_alive && !wounded())
 		{
-			if (is_relation_enemy(entity_alive))
+			if(is_relation_enemy(entity_alive))
 				sound().play(eStalkerSoundInjuring);
 		}
 
 		int weapon_type = -1;
-		if (best_weapon())
+		if(best_weapon())
 			weapon_type = best_weapon()->object().ef_weapon_type();
 
-		if (!wounded() && !already_critically_wounded)
+		if(!wounded() && !already_critically_wounded)
 		{
 			bool became_critically_wounded = update_critical_wounded(HDS.boneID, HDS.power);
-			if (!became_critically_wounded && animation().script_animations().empty() && (pHDS->bone() != BI_NONE))
+			if(!became_critically_wounded && animation().script_animations().empty() && (pHDS->bone() != BI_NONE))
 			{
 				// Проверяем, что визуал существует и является анимированным
-				if (!Visual())
+				if(!Visual())
 				{
 					inherited::Hit(&HDS);
 					return;
 				}
 
 				CKinematicsAnimated* tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
-				if (!tpKinematics)
+				if(!tpKinematics)
 				{
 					inherited::Hit(&HDS);
 					return;
 				}
 
 				// ПРОВЕРКА БЕЗОПАСНОСТИ: убедимся, что кость существует
-				if (pHDS->bone() >= tpKinematics->LL_BoneCount())
+				if(pHDS->bone() >= tpKinematics->LL_BoneCount())
 				{
 #ifdef DEBUG
 					Msg("! WARNING: tpKinematics has no bone_id %d", pHDS->bone());
@@ -444,7 +448,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 				int base_fx_index = iFloor(base_param);
 
 				// ПРОВЕРКА: если базовый индекс невалиден, не воспроизводим анимацию
-				if (base_fx_index == -1)
+				if(base_fx_index == -1)
 				{
 					inherited::Hit(&HDS);
 					return;
@@ -452,13 +456,13 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 				// Используем правильное определение направления для выбора анимации
 				int direction_offset = 0;
-				if (hit_dir == HIT_FRONT)
+				if(hit_dir == HIT_FRONT)
 					direction_offset = 0;
-				else if (hit_dir == HIT_BACK)
+				else if(hit_dir == HIT_BACK)
 					direction_offset = 1;
-				else if (hit_dir == HIT_LEFT)
+				else if(hit_dir == HIT_LEFT)
 					direction_offset = 2;
-				else if (hit_dir == HIT_RIGHT)
+				else if(hit_dir == HIT_RIGHT)
 					direction_offset = 3;
 				else
 					direction_offset = 0;
@@ -467,21 +471,21 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 				animation().play_fx(power_factor, fx_index);
 #ifdef DEBUG
-				//else
+				// else
 				//{
 				//	Msg("! WARNING: Invalid fx_index %d (max: %d) for bone %d, body_state %d", fx_index, max_fx_index,
 				//		pHDS->bone(), body_state);
-				//}
+				// }
 #endif
 			}
 			else
 			{
-				if (!already_critically_wounded && became_critically_wounded)
+				if(!already_critically_wounded && became_critically_wounded)
 				{
-					if (HDS.who)
+					if(HDS.who)
 					{
 						CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(HDS.who);
-						if (stalker)
+						if(stalker)
 							stalker->on_critical_wound_initiator(this);
 					}
 				}
@@ -494,10 +498,10 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 void CAI_Stalker::HitSignal(float amount, fvec3& vLocalDir, CObject* who, s16 element)
 {
-	if (getDestroy())
+	if(getDestroy())
 		return;
 
-	if (g_Alive())
+	if(g_Alive())
 		memory().hit().add(amount, vLocalDir, who, element);
 }
 
@@ -515,15 +519,15 @@ void CAI_Stalker::OnItemDrop(CInventoryItem* inventory_item, bool just_before_de
 	m_item_actuality = false;
 	m_sell_info_actuality = false;
 
-	if (!g_Alive())
+	if(!g_Alive())
 		return;
 
-	if (!critically_wounded())
+	if(!critically_wounded())
 		return;
 
 	//	VERIFY						(inventory().ActiveItem());
 
-	if (inventory().ActiveItem() && (inventory().ActiveItem() != inventory_item))
+	if(inventory().ActiveItem() && (inventory().ActiveItem() != inventory_item))
 		return;
 
 	brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, false);
@@ -535,15 +539,15 @@ void CAI_Stalker::update_best_item_info()
 
 	// [IMPROVEMENT] Smart Weapon Choice: Получаем дистанцию до врага
 	float dist_to_enemy = 1000.f; // По умолчанию далеко
-	if (memory().enemy().selected())
+	if(memory().enemy().selected())
 	{
 		dist_to_enemy = Position().distance_to(memory().enemy().selected()->Position());
 	}
 
-	if (m_item_actuality && m_best_item_to_kill && m_best_item_to_kill->can_kill())
+	if(m_item_actuality && m_best_item_to_kill && m_best_item_to_kill->can_kill())
 	{
 
-		if (!memory().enemy().selected())
+		if(!memory().enemy().selected())
 			return;
 
 		ai().ef_storage().non_alife().member() = this;
@@ -554,14 +558,14 @@ void CAI_Stalker::update_best_item_info()
 
 		// Коррекция ценности текущего оружия по дистанции
 		int weapon_type = m_best_item_to_kill->object().ef_weapon_type();
-		if (dist_to_enemy < 15.f && weapon_type >= 7)
+		if(dist_to_enemy < 15.f && weapon_type >= 7)
 			value *= 2.0f; // Дробовики/Пистолеты (обычно типы 7, 8) в упор
-		if (dist_to_enemy > 50.f && weapon_type >= 7)
+		if(dist_to_enemy > 50.f && weapon_type >= 7)
 			value *= 0.1f; // Дробовики далеко - мусор
-		if (dist_to_enemy < 10.f && weapon_type == 5)
+		if(dist_to_enemy < 10.f && weapon_type == 5)
 			value *= 0.5f; // Снайперки (тип 5) в упор - плохо
 
-		if (fsimilar(value, m_best_item_value))
+		if(fsimilar(value, m_best_item_value))
 			return;
 	}
 
@@ -579,30 +583,30 @@ void CAI_Stalker::update_best_item_info()
 	{
 		TIItemContainer::iterator I = inventory().m_all.begin();
 		TIItemContainer::iterator E = inventory().m_all.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			if ((*I)->can_kill())
+			if((*I)->can_kill())
 			{
 				ai().ef_storage().non_alife().member_item() = &(*I)->object();
 				float value;
-				if (memory().enemy().selected())
+				if(memory().enemy().selected())
 					value = ai().ef_storage().m_pfWeaponEffectiveness->ffGetValue();
 				else
 					value = (float)(*I)->object().ef_weapon_type();
 
 				// [IMPROVEMENT] Smart Weapon Choice: Применяем ту же логику коррекции
 				int w_type = (*I)->object().ef_weapon_type();
-				if (dist_to_enemy < 15.f && w_type >= 7)
+				if(dist_to_enemy < 15.f && w_type >= 7)
 					value *= 2.0f;
-				if (dist_to_enemy > 50.f && w_type >= 7)
+				if(dist_to_enemy > 50.f && w_type >= 7)
 					value *= 0.1f;
-				if (dist_to_enemy < 10.f && w_type == 5)
+				if(dist_to_enemy < 10.f && w_type == 5)
 					value *= 0.5f;
 
-				if (!fsimilar(value, m_best_item_value) && (value < m_best_item_value))
+				if(!fsimilar(value, m_best_item_value) && (value < m_best_item_value))
 					continue;
 
-				if (!fsimilar(value, m_best_item_value) && (value > m_best_item_value))
+				if(!fsimilar(value, m_best_item_value) && (value > m_best_item_value))
 				{
 					m_best_item_value = value;
 					m_best_item_to_kill = *I;
@@ -610,8 +614,8 @@ void CAI_Stalker::update_best_item_info()
 				}
 
 				VERIFY(fsimilar(value, m_best_item_value));
-				if (m_best_item_to_kill &&
-					((*I)->object().ef_weapon_type() <= m_best_item_to_kill->object().ef_weapon_type()))
+				if(m_best_item_to_kill &&
+				   ((*I)->object().ef_weapon_type() <= m_best_item_to_kill->object().ef_weapon_type()))
 					continue;
 
 				m_best_item_value = value;
@@ -621,7 +625,7 @@ void CAI_Stalker::update_best_item_info()
 	}
 
 	// check if we found
-	if (m_best_item_to_kill)
+	if(m_best_item_to_kill)
 	{
 		m_best_ammo = m_best_item_to_kill;
 		return;
@@ -633,17 +637,17 @@ void CAI_Stalker::update_best_item_info()
 	{
 		xr_vector<const CGameObject*>::const_iterator I = memory().item().objects().begin();
 		xr_vector<const CGameObject*>::const_iterator E = memory().item().objects().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			const CInventoryItem* inventory_item = smart_cast<const CInventoryItem*>(*I);
-			if (!inventory_item || !memory().item().useful(&inventory_item->object()))
+			if(!inventory_item || !memory().item().useful(&inventory_item->object()))
 				continue;
 			CInventoryItem* item = inventory_item->can_kill(&inventory());
-			if (item)
+			if(item)
 			{
 				ai().ef_storage().non_alife().member_item() = &inventory_item->object();
 				float value = ai().ef_storage().m_pfWeaponEffectiveness->ffGetValue();
-				if (value > m_best_item_value)
+				if(value > m_best_item_value)
 				{
 					m_best_item_value = value;
 					m_best_found_item_to_kill = inventory_item;
@@ -654,12 +658,12 @@ void CAI_Stalker::update_best_item_info()
 			else
 			{
 				item = inventory_item->can_make_killing(&inventory());
-				if (!item)
+				if(!item)
 					continue;
 
 				ai().ef_storage().non_alife().member_item() = &item->object();
 				float value = ai().ef_storage().m_pfWeaponEffectiveness->ffGetValue();
-				if (value > m_best_item_value)
+				if(value > m_best_item_value)
 				{
 					m_best_item_value = value;
 					m_best_item_to_kill = item;
@@ -671,24 +675,24 @@ void CAI_Stalker::update_best_item_info()
 	}
 
 	// check if we found such an item
-	if (m_best_found_item_to_kill || m_best_found_ammo)
+	if(m_best_found_item_to_kill || m_best_found_ammo)
 		return;
 
 	// check if we remember we saw item to kill
 	// and item which can make this item killing
 	xr_vector<const CGameObject*>::const_iterator I = memory().item().objects().begin();
 	xr_vector<const CGameObject*>::const_iterator E = memory().item().objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		const CInventoryItem* inventory_item = smart_cast<const CInventoryItem*>(*I);
-		if (!inventory_item || !memory().item().useful(&inventory_item->object()))
+		if(!inventory_item || !memory().item().useful(&inventory_item->object()))
 			continue;
 		const CInventoryItem* item = inventory_item->can_kill(memory().item().objects());
-		if (item)
+		if(item)
 		{
 			ai().ef_storage().non_alife().member_item() = &inventory_item->object();
 			float value = ai().ef_storage().m_pfWeaponEffectiveness->ffGetValue();
-			if (value > m_best_item_value)
+			if(value > m_best_item_value)
 			{
 				m_best_item_value = value;
 				m_best_found_item_to_kill = inventory_item;
@@ -731,11 +735,11 @@ bool CAI_Stalker::ready_to_kill()
 
 bool CAI_Stalker::ready_to_detour()
 {
-	if (!ready_to_kill())
+	if(!ready_to_kill())
 		return (false);
 
 	CWeapon* weapon = smart_cast<CWeapon*>(m_best_item_to_kill);
-	if (!weapon)
+	if(!weapon)
 		return (false);
 
 	return (weapon->GetAmmoElapsed() > weapon->GetAmmoMagSize() / 2);
@@ -777,9 +781,9 @@ IC BOOL ray_query_callback(collide::rq_result& result, LPVOID params)
 	//		return							(true);
 	//	}
 
-	if (!result.O)
+	if(!result.O)
 	{
-		if (param->m_power > param->m_power_threshold)
+		if(param->m_power > param->m_power_threshold)
 			return (true);
 
 		param->m_pick_distance = result.range;
@@ -787,16 +791,16 @@ IC BOOL ray_query_callback(collide::rq_result& result, LPVOID params)
 	}
 
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(result.O);
-	if (!entity_alive)
+	if(!entity_alive)
 	{
-		if (param->m_power > param->m_power_threshold)
+		if(param->m_power > param->m_power_threshold)
 			return (true);
 
 		param->m_pick_distance = result.range;
 		return (false);
 	}
 
-	if (param->m_holder->is_relation_enemy(entity_alive))
+	if(param->m_holder->is_relation_enemy(entity_alive))
 		param->m_can_kill_enemy = true;
 	else
 		param->m_can_kill_member = true;
@@ -826,7 +830,7 @@ void CAI_Stalker::can_kill_entity_from(const fvec3& position, fvec3 direction, f
 	m_pick_distance = 0.f;
 	rq_storage.r_clear();
 	can_kill_entity(position, direction, distance, rq_storage);
-	if (m_can_kill_member && m_can_kill_enemy)
+	if(m_can_kill_member && m_can_kill_enemy)
 		return;
 
 	float yaw, pitch, safety_fire_angle = 1.f * PI_DIV_8 * .5f;
@@ -834,17 +838,17 @@ void CAI_Stalker::can_kill_entity_from(const fvec3& position, fvec3 direction, f
 
 	direction.setHP(yaw - safety_fire_angle, pitch);
 	can_kill_entity(position, direction, distance, rq_storage);
-	if (m_can_kill_member && m_can_kill_enemy)
+	if(m_can_kill_member && m_can_kill_enemy)
 		return;
 
 	direction.setHP(yaw + safety_fire_angle, pitch);
 	can_kill_entity(position, direction, distance, rq_storage);
-	if (m_can_kill_member && m_can_kill_enemy)
+	if(m_can_kill_member && m_can_kill_enemy)
 		return;
 
 	direction.setHP(yaw, pitch - safety_fire_angle);
 	can_kill_entity(position, direction, distance, rq_storage);
-	if (m_can_kill_member && m_can_kill_enemy)
+	if(m_can_kill_member && m_can_kill_enemy)
 		return;
 
 	direction.setHP(yaw, pitch + safety_fire_angle);
@@ -854,7 +858,7 @@ void CAI_Stalker::can_kill_entity_from(const fvec3& position, fvec3 direction, f
 IC float CAI_Stalker::start_pick_distance() const
 {
 	float result = 50.f;
-	if (!memory().enemy().selected())
+	if(!memory().enemy().selected())
 		return (result);
 
 	return (_max(result, memory().enemy().selected()->Position().distance_to(Position()) + 1.f));
@@ -862,7 +866,7 @@ IC float CAI_Stalker::start_pick_distance() const
 
 float CAI_Stalker::pick_distance()
 {
-	if (!inventory().ActiveItem())
+	if(!inventory().ActiveItem())
 		return (start_pick_distance());
 
 	update_can_kill_info();
@@ -871,7 +875,7 @@ float CAI_Stalker::pick_distance()
 
 void CAI_Stalker::update_can_kill_info()
 {
-	if (m_pick_frame_id == Engine.TimeManager.GetFrameCount())
+	if(m_pick_frame_id == Engine.TimeManager.GetFrameCount())
 		return;
 
 	m_pick_frame_id = Engine.TimeManager.GetFrameCount();
@@ -884,7 +888,7 @@ void CAI_Stalker::update_can_kill_info()
 	can_kill_entity_from(position, direction, start_pick_distance());
 
 	// [IMPROVEMENT] Anti-Bodyblock: Если мы блокируем стрельбу долгое время
-	if (m_can_kill_member && !m_can_kill_enemy)
+	if(m_can_kill_member && !m_can_kill_enemy)
 	{
 		m_body_block_time += Engine.TimeManager.GetDeltaTimeMs();
 	}
@@ -904,12 +908,12 @@ bool CAI_Stalker::inside_anomaly()
 {
 	xr_vector<CObject*>::const_iterator I = feel_touch.begin();
 	xr_vector<CObject*>::const_iterator E = feel_touch.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CCustomZone* zone = smart_cast<CCustomZone*>(*I);
-		if (zone)
+		if(zone)
 		{
-			if (smart_cast<CRadioactiveZone*>(zone))
+			if(smart_cast<CRadioactiveZone*>(zone))
 				continue;
 
 			return (true);
@@ -920,21 +924,21 @@ bool CAI_Stalker::inside_anomaly()
 
 bool CAI_Stalker::zoom_state() const
 {
-	if (!inventory().ActiveItem())
+	if(!inventory().ActiveItem())
 		return (false);
 
-	if ((movement().movement_type() != eMovementTypeStand) && (movement().body_state() != eBodyStateCrouch) &&
-		!movement().path_completed())
+	if((movement().movement_type() != eMovementTypeStand) && (movement().body_state() != eBodyStateCrouch) &&
+	   !movement().path_completed())
 		return (false);
 
 	// [IMPROVEMENT] No Scope in CQC: Если враг в упор (ближе 3м), не используем оптику/зум
-	if (memory().enemy().selected())
+	if(memory().enemy().selected())
 	{
-		if (Position().distance_to(memory().enemy().selected()->Position()) < 3.0f)
+		if(Position().distance_to(memory().enemy().selected()->Position()) < 3.0f)
 			return (false);
 	}
 
-	switch (CObjectHandler::planner().current_action_state_id())
+	switch(CObjectHandler::planner().current_action_state_id())
 	{
 	case ObjectHandlerSpace::eWorldOperatorAim1:
 	case ObjectHandlerSpace::eWorldOperatorAim2:
@@ -958,7 +962,7 @@ void CAI_Stalker::update_range_fov(float& new_range, float& new_fov, float start
 {
 	float range = start_range, fov = start_fov;
 
-	if (zoom_state())
+	if(zoom_state())
 		inventory().ActiveItem()->modify_holder_params(range, fov);
 
 	return (inherited::update_range_fov(new_range, new_fov, range, fov));
@@ -968,11 +972,11 @@ bool CAI_Stalker::fire_make_sense()
 {
 	// Если врага вообще нет - стрелять не в кого
 	const CEntityAlive* enemy = memory().enemy().selected();
-	if (!enemy)
+	if(!enemy)
 		return (false);
 
 	// Предварительная проверка оружия (нужно для дистанций)
-	if (!best_weapon())
+	if(!best_weapon())
 		return (false);
 
 	// --- [FIX] CQC OVERRIDE (Экстренная самооборона) ---
@@ -981,66 +985,66 @@ bool CAI_Stalker::fire_make_sense()
 	// 2. Геометрию (pick_distance может тупить в упор)
 	// Стреляем на поражение любой ценой.
 	float dist_to_enemy = Position().distance_to(enemy->Position());
-	if (dist_to_enemy < 4.0f)
+	if(dist_to_enemy < 4.0f)
 		return (true);
 
 	// [IMPROVEMENT] 1. Defensive Suppression
 	// Если враг далеко, а мы подавлены - сидим тихо.
-	if (Engine.TimeManager.GetGlobalTimeMs() < m_suppression_end_time)
+	if(Engine.TimeManager.GetGlobalTimeMs() < m_suppression_end_time)
 		return (false);
 
 	// [IMPROVEMENT] 2. Counter-Attack (Rage Mode)
-	if (m_is_counter_attacking)
+	if(m_is_counter_attacking)
 		return (true);
 
 	// Проверка геометрии стрельбы
 	// pick_distance() возвращает дистанцию до ближайшего препятствия на линии огня
 	float pick_dist = pick_distance();
 
-	if ((pick_dist + PRECISE_DISTANCE) < dist_to_enemy)
+	if((pick_dist + PRECISE_DISTANCE) < dist_to_enemy)
 		return (false);
 
-	if (_abs(Position().y - enemy->Position().y) > FLOOR_DISTANCE)
+	if(_abs(Position().y - enemy->Position().y) > FLOOR_DISTANCE)
 		return (false);
 
 	// ВАЖНО: Мы уже проверили dist_to_enemy < 4.0f выше.
 	// Эта проверка теперь отсекает стрельбу в стену, только если враг ДАЛЕКО.
-	if (pick_dist < NEAR_DISTANCE)
+	if(pick_dist < NEAR_DISTANCE)
 		return (false);
 
 	// Если видим врага прямо сейчас - огонь разрешен
-	if (memory().visual().visible_right_now(enemy))
+	if(memory().visual().visible_right_now(enemy))
 		return (true);
 
 	// --- ЛОГИКА ОГНЯ НА ПОДАВЛЕНИЕ (GHOST TARGET) ---
 
 	// Получаем данные из памяти
 	const MemorySpace::CMemoryInfo* mem_info = &memory().memory(enemy);
-	if (!mem_info)
+	if(!mem_info)
 		return (false);
 
 	u32 last_time_seen = mem_info->m_level_time;
 	u32 time_delta = Engine.TimeManager.GetGlobalTimeMs() - last_time_seen;
 
 	// Если с момента потери контакта прошло больше 5 секунд - прекращаем стрелять
-	if (time_delta > 5000)
+	if(time_delta > 5000)
 		return (false);
 
 	// Работаем с указателем, чтобы избежать лишнего копирования объекта
 	// (Предполагаю, что cast_weapon возвращает указатель, судя по вашему коду)
 	CWeapon* weapon = best_weapon()->cast_weapon();
-	if (!weapon)
+	if(!weapon)
 		return (false);
 
 	// Не подавляем, если в магазине мало патронов (< 30%)
 	float ammo_ratio = (float)weapon->GetAmmoElapsed() / (float)weapon->GetAmmoMagSize();
-	if (ammo_ratio < 0.3f)
+	if(ammo_ratio < 0.3f)
 		return (false);
 
 	int w_type = weapon->ef_weapon_type();
 
 	// 6 = Автоматы, 7 = Дробовики, 8 = Пистолеты
-	if (w_type == 6 || w_type == 7 || w_type == 8)
+	if(w_type == 6 || w_type == 7 || w_type == 8)
 		return (true);
 
 	return (false);
@@ -1064,7 +1068,7 @@ void CAI_Stalker::on_weapon_hide(CWeapon* weapon)
 void CAI_Stalker::notify_on_wounded_or_killed(CObject* object)
 {
 	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(object);
-	if (!stalker)
+	if(!stalker)
 		return;
 
 	stalker->on_enemy_wounded_or_killed(this);
@@ -1072,7 +1076,7 @@ void CAI_Stalker::notify_on_wounded_or_killed(CObject* object)
 	typedef CAgentCorpseManager::MEMBER_CORPSES MEMBER_CORPSES;
 
 	const MEMBER_CORPSES& corpses = agent_manager().corpse().corpses();
-	if (std::find(corpses.begin(), corpses.end(), this) != corpses.end())
+	if(std::find(corpses.begin(), corpses.end(), this) != corpses.end())
 		return;
 
 	agent_manager().corpse().register_corpse(this);
@@ -1081,11 +1085,11 @@ void CAI_Stalker::notify_on_wounded_or_killed(CObject* object)
 void CAI_Stalker::notify_on_wounded_or_killed()
 {
 	ALife::_OBJECT_ID last_hit_object_id = memory().hit().last_hit_object_id();
-	if (last_hit_object_id == ALife::_OBJECT_ID(-1))
+	if(last_hit_object_id == ALife::_OBJECT_ID(-1))
 		return;
 
 	CObject* object = Level().Objects.net_Find(last_hit_object_id);
-	if (!object)
+	if(!object)
 		return;
 
 	notify_on_wounded_or_killed(object);
@@ -1093,23 +1097,23 @@ void CAI_Stalker::notify_on_wounded_or_killed()
 
 void CAI_Stalker::wounded(bool value)
 {
-	if (m_wounded == value)
+	if(m_wounded == value)
 		return;
 
-	if (value)
+	if(value)
 		notify_on_wounded_or_killed();
 
 	m_wounded = value;
 
-	if (!m_wounded && g_Alive())
+	if(!m_wounded && g_Alive())
 		character_physics_support()->CreateCharacter();
 
-	if (!m_wounded)
+	if(!m_wounded)
 		return;
 
 	character_physics_support()->movement()->DestroyCharacter();
 
-	if (!agent_manager().member().registered_in_combat(this))
+	if(!agent_manager().member().registered_in_combat(this))
 		return;
 
 	agent_manager().member().unregister_in_combat(this);
@@ -1117,14 +1121,14 @@ void CAI_Stalker::wounded(bool value)
 
 bool CAI_Stalker::wounded(const CRestrictedObject* object) const
 {
-	if (!wounded())
+	if(!wounded())
 		return (false);
 
 	VERIFY(object);
-	if (!object->accessible(Position()))
+	if(!object->accessible(Position()))
 		return (false);
 
-	if (!object->accessible(ai_location().level_vertex_id()))
+	if(!object->accessible(ai_location().level_vertex_id()))
 		return (false);
 
 	return (true);
@@ -1156,11 +1160,11 @@ void CAI_Stalker::throw_target(const fvec3& position)
 
 void CAI_Stalker::update_throw_params()
 {
-	if (m_throw_actual)
+	if(m_throw_actual)
 	{
-		if (m_computed_object_position.similar(Position()))
+		if(m_computed_object_position.similar(Position()))
 		{
-			if (m_computed_object_direction.similar(Direction()))
+			if(m_computed_object_direction.similar(Direction()))
 			{
 				VERIFY(_valid(m_throw_force));
 				return;
@@ -1186,10 +1190,10 @@ void CAI_Stalker::update_throw_params()
 
 bool CAI_Stalker::critically_wounded()
 {
-	if (critical_wound_type() == critical_wound_type_dummy)
+	if(critical_wound_type() == critical_wound_type_dummy)
 		return (false);
 
-	if (!brain().CStalkerPlanner::m_storage.property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded))
+	if(!brain().CStalkerPlanner::m_storage.property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded))
 	{
 		critical_wounded_state_stop();
 		return (false);
@@ -1200,17 +1204,17 @@ bool CAI_Stalker::critically_wounded()
 
 bool CAI_Stalker::critical_wound_external_conditions_suitable()
 {
-	if (movement().body_state() != eBodyStateStand)
+	if(movement().body_state() != eBodyStateStand)
 		return (false);
 
-	if (animation().non_script_need_update())
+	if(animation().non_script_need_update())
 		return (false);
 
 	CWeapon* active_weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-	if (!active_weapon)
+	if(!active_weapon)
 		return (false);
 
-	switch (active_weapon->animation_slot())
+	switch(active_weapon->animation_slot())
 	{
 	case 1: // pistols
 	case 2: // automatic weapon
@@ -1220,7 +1224,7 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
 		return (false);
 	}
 
-	if (!agent_manager().member().registered_in_combat(this))
+	if(!agent_manager().member().registered_in_combat(this))
 		return (false);
 
 	//	Msg								("%6d executing critical hit",Engine.TimeManager.GetGlobalTimeMs());
@@ -1244,17 +1248,17 @@ void CAI_Stalker::critical_wounded_state_start()
 
 bool CAI_Stalker::can_cry_enemy_is_wounded() const
 {
-	if (!brain().initialized())
+	if(!brain().initialized())
 		return (false);
 
-	if (brain().current_action_id() != StalkerDecisionSpace::eWorldOperatorCombatPlanner)
+	if(brain().current_action_id() != StalkerDecisionSpace::eWorldOperatorCombatPlanner)
 		return (false);
 
 	typedef CActionPlannerActionScript<CAI_Stalker> planner_type;
 	planner_type* planner = smart_cast<planner_type*>(&brain().current_action());
 	VERIFY(planner);
 
-	switch (planner->current_action_id())
+	switch(planner->current_action_id())
 	{
 	case StalkerDecisionSpace::eWorldOperatorGetReadyToKill:
 	case StalkerDecisionSpace::eWorldOperatorGetReadyToDetour:
@@ -1286,7 +1290,7 @@ bool CAI_Stalker::can_cry_enemy_is_wounded() const
 
 void CAI_Stalker::on_critical_wound_initiator(const CAI_Stalker* critically_wounded)
 {
-	if (!can_cry_enemy_is_wounded())
+	if(!can_cry_enemy_is_wounded())
 		return;
 
 	sound().play(eStalkerSoundEnemyCriticallyWounded);
@@ -1298,7 +1302,7 @@ void CAI_Stalker::on_enemy_wounded_or_killed(const CAI_Stalker* wounded_or_kille
 	// В этом режиме (fire_make_sense) мы стреляем агрессивнее.
 	m_rage_end_time = Engine.TimeManager.GetGlobalTimeMs() + 5000;
 
-	if (!can_cry_enemy_is_wounded())
+	if(!can_cry_enemy_is_wounded())
 		return;
 
 	sound().play(eStalkerSoundEnemyKilledOrWounded);
@@ -1306,7 +1310,7 @@ void CAI_Stalker::on_enemy_wounded_or_killed(const CAI_Stalker* wounded_or_kille
 
 bool CAI_Stalker::can_kill_member()
 {
-	if (!animation().script_animations().empty())
+	if(!animation().script_animations().empty())
 		return (false);
 
 	update_can_kill_info();

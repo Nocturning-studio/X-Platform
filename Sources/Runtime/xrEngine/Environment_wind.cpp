@@ -29,12 +29,12 @@ void CEnvWind::load(CInifile& config, const shared_str& section)
 CEnvWind* CEnvironment::AppendEnvWind(const shared_str& sect)
 {
 	// 1. Ищем, загружен ли уже такой пресет
-	for (EnvWindVecIt it = Winds.begin(); it != Winds.end(); it++)
-		if ((*it)->name().equal(sect))
+	for(EnvWindVecIt it = Winds.begin(); it != Winds.end(); it++)
+		if((*it)->name().equal(sect))
 			return (*it);
 
 	// 2. Если нет, проверяем наличие секции в файле winds.ltx
-	if (!m_winds_config->section_exist(sect))
+	if(!m_winds_config->section_exist(sect))
 	{
 		Msg("! Error: Wind section '%s' not found in environment\\winds.ltx", sect.c_str());
 		return NULL;

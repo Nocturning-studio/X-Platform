@@ -3,7 +3,8 @@
 #include "../state.h"
 #include "../states/monster_state_attack.h"
 
-template <typename _Object> class CStateBurerAttackMelee : public CStateMonsterAttack<_Object>
+template <typename _Object>
+class CStateBurerAttackMelee : public CStateMonsterAttack<_Object>
 {
 	typedef CStateMonsterAttack<_Object> inherited;
 

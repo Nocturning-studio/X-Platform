@@ -48,7 +48,7 @@ extern ENGINE_API CInifile* pGameIni;
 #define BOOST_THROW_EXCEPTION_HPP_INCLUDED
 namespace std
 {
-	class exception;
+class exception;
 }
 namespace boost
 {

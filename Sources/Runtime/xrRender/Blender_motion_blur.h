@@ -29,7 +29,7 @@ class CBlender_motion_blur : public IBlender
 
 		LPCSTR sh_name = "postprocess_stage_motion_blur";
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_PASS_SAVE_DEPTH_BUFFER:
 			C.begin_Pass("screen_quad", sh_name, "main", "SaveDepth");

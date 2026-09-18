@@ -36,7 +36,7 @@ CSpaceRestrictionManager::~CSpaceRestrictionManager()
 void show_restriction(const shared_str& restrictions)
 {
 	string256 temp;
-	for (int i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
+	for(int i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
 		Msg("     %s", _GetItem(*restrictions, i, temp));
 }
 
@@ -60,14 +60,14 @@ void CSpaceRestrictionManager::clear()
 void CSpaceRestrictionManager::remove_border(ALife::_OBJECT_ID id)
 {
 	CRestrictionPtr client_restriction = restriction(id);
-	if (client_restriction)
+	if(client_restriction)
 		client_restriction->remove_border();
 }
 
 shared_str CSpaceRestrictionManager::in_restrictions(ALife::_OBJECT_ID id)
 {
 	CRestrictionPtr client_restriction = restriction(id);
-	if (client_restriction)
+	if(client_restriction)
 		return (client_restriction->in_restrictions());
 	return ("");
 }
@@ -75,7 +75,7 @@ shared_str CSpaceRestrictionManager::in_restrictions(ALife::_OBJECT_ID id)
 shared_str CSpaceRestrictionManager::out_restrictions(ALife::_OBJECT_ID id)
 {
 	CRestrictionPtr client_restriction = restriction(id);
-	if (client_restriction)
+	if(client_restriction)
 		return (client_restriction->out_restrictions());
 	return ("");
 }
@@ -105,9 +105,9 @@ IC void CSpaceRestrictionManager::collect_garbage()
 {
 	SPACE_RESTRICTIONS::iterator I = m_space_restrictions.begin(), J;
 	SPACE_RESTRICTIONS::iterator E = m_space_restrictions.end();
-	for (; I != E;)
+	for(; I != E;)
 	{
-		if (!(*I).second->m_ref_count && (Engine.TimeManager.GetGlobalTimeMs() >= (*I).second->m_last_time_dec + time_to_delete))
+		if(!(*I).second->m_ref_count && (Engine.TimeManager.GetGlobalTimeMs() >= (*I).second->m_last_time_dec + time_to_delete))
 		{
 			J = I;
 			++I;
@@ -153,7 +153,7 @@ void CSpaceRestrictionManager::unrestrict(ALife::_OBJECT_ID id)
 bool CSpaceRestrictionManager::accessible(ALife::_OBJECT_ID id, const Fsphere& sphere)
 {
 	CRestrictionPtr client_restriction = restriction(id);
-	if (client_restriction)
+	if(client_restriction)
 		return (client_restriction->accessible(sphere));
 	return (true);
 }
@@ -161,7 +161,7 @@ bool CSpaceRestrictionManager::accessible(ALife::_OBJECT_ID id, const Fsphere& s
 bool CSpaceRestrictionManager::accessible(ALife::_OBJECT_ID id, u32 level_vertex_id, float radius)
 {
 	CRestrictionPtr client_restriction = restriction(id);
-	if (client_restriction)
+	if(client_restriction)
 		return (client_restriction->accessible(level_vertex_id, radius));
 	return (true);
 }
@@ -170,7 +170,7 @@ CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(
 																				shared_str in_restrictors)
 {
 	string4096 m_temp;
-	if (!xr_strlen(out_restrictors) && !xr_strlen(in_restrictors))
+	if(!xr_strlen(out_restrictors) && !xr_strlen(in_restrictors))
 		return (0);
 
 	out_restrictors = normalize_string(out_restrictors);
@@ -180,7 +180,7 @@ CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(
 	shared_str space_restrictions = m_temp;
 
 	SPACE_RESTRICTIONS::const_iterator I = m_space_restrictions.find(space_restrictions);
-	if (I != m_space_restrictions.end())
+	if(I != m_space_restrictions.end())
 		return ((*I).second);
 
 	CSpaceRestriction* client_restriction = xr_new<CSpaceRestriction>(this, out_restrictors, in_restrictors);
@@ -198,8 +198,8 @@ u32 CSpaceRestrictionManager::accessible_nearest(ALife::_OBJECT_ID id, const fve
 IC bool CSpaceRestrictionManager::restriction_presented(shared_str restrictions, shared_str restriction) const
 {
 	string4096 m_temp;
-	for (u32 i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
-		if (!xr_strcmp(restriction, _GetItem(*restrictions, i, m_temp)))
+	for(u32 i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
+		if(!xr_strcmp(restriction, _GetItem(*restrictions, i, m_temp)))
 			return (true);
 	return (false);
 }
@@ -209,10 +209,10 @@ IC void CSpaceRestrictionManager::join_restrictions(shared_str& restrictions, sh
 	string4096 m_temp1;
 	string4096 m_temp2;
 	strcpy(m_temp2, *restrictions);
-	for (u32 i = 0, n = _GetItemCount(*update), count = xr_strlen(m_temp2); i < n; ++i)
-		if (!restriction_presented(m_temp2, _GetItem(*update, i, m_temp1)))
+	for(u32 i = 0, n = _GetItemCount(*update), count = xr_strlen(m_temp2); i < n; ++i)
+		if(!restriction_presented(m_temp2, _GetItem(*update, i, m_temp1)))
 		{
-			if (count)
+			if(count)
 				strcat(m_temp2, ",");
 			strcat(m_temp2, m_temp1);
 			++count;
@@ -225,10 +225,10 @@ IC void CSpaceRestrictionManager::difference_restrictions(shared_str& restrictio
 	string4096 m_temp1;
 	string4096 m_temp2;
 	strcpy(m_temp2, "");
-	for (u32 i = 0, n = _GetItemCount(*restrictions), count = 0; i < n; ++i)
-		if (!restriction_presented(update, _GetItem(*restrictions, i, m_temp1)))
+	for(u32 i = 0, n = _GetItemCount(*restrictions), count = 0; i < n; ++i)
+		if(!restriction_presented(update, _GetItem(*restrictions, i, m_temp1)))
 		{
-			if (count)
+			if(count)
 				strcat(m_temp2, ",");
 			strcat(m_temp2, m_temp1);
 			++count;
@@ -240,7 +240,7 @@ void CSpaceRestrictionManager::add_restrictions(ALife::_OBJECT_ID id, shared_str
 												shared_str add_in_restrictions)
 {
 	CRestrictionPtr _client_restriction = restriction(id);
-	if (!_client_restriction)
+	if(!_client_restriction)
 	{
 		restrict(id, add_out_restrictions, add_in_restrictions);
 		return;
@@ -263,7 +263,7 @@ void CSpaceRestrictionManager::remove_restrictions(ALife::_OBJECT_ID id, shared_
 												   shared_str remove_in_restrictions)
 {
 	CRestrictionPtr _client_restriction = restriction(id);
-	if (!_client_restriction)
+	if(!_client_restriction)
 		return;
 
 	VERIFY(!_client_restriction->applied());
@@ -284,7 +284,7 @@ void CSpaceRestrictionManager::change_restrictions(ALife::_OBJECT_ID id, shared_
 												   shared_str remove_in_restrictions)
 {
 	CRestrictionPtr _client_restriction = restriction(id);
-	if (!_client_restriction)
+	if(!_client_restriction)
 	{
 		restrict(id, add_out_restrictions, add_in_restrictions);
 		return;
@@ -310,6 +310,6 @@ void CSpaceRestrictionManager::on_default_restrictions_changed()
 {
 	CLIENT_RESTRICTIONS::const_iterator I = m_clients->begin();
 	CLIENT_RESTRICTIONS::const_iterator E = m_clients->end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		restrict((*I).first, (*I).second.m_base_out_restrictions, (*I).second.m_base_in_restrictions);
 }

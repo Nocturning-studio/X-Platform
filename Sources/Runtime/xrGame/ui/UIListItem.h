@@ -51,7 +51,7 @@ class CUIListItem : public CUIButton
 		m_iGroupID = ID;
 	}
 
-	virtual void MarkSelected(bool b){};
+	virtual void MarkSelected(bool b) {};
 	// переопределяем критерий подсвечивания текста
 	virtual bool IsHighlightText();
 	virtual void SetHighlightText(bool Highlight)

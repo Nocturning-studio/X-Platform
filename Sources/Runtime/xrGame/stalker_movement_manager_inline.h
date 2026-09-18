@@ -20,7 +20,7 @@ IC void CStalkerMovementManager::set_head_orientation(const MonsterSpace::SBoneR
 
 IC void CStalkerMovementManager::set_desired_direction(const fvec3* desired_direction)
 {
-	if (desired_direction)
+	if(desired_direction)
 	{
 		m_target.m_use_desired_direction = true;
 		m_target.m_desired_direction = *desired_direction;

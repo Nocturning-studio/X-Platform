@@ -67,8 +67,8 @@ IC CAgentMemberManager::iterator CAgentMemberManager::member(MemorySpace::squad_
 {
 	iterator I = m_members.begin();
 	iterator E = m_members.end();
-	for (; I != E; ++I, mask >>= 1)
-		if (mask == 1)
+	for(; I != E; ++I, mask >>= 1)
+		if(mask == 1)
 			return (I);
 	NODEFAULT;
 #ifdef DEBUG

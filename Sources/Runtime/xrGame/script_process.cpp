@@ -26,7 +26,7 @@ CScriptProcess::CScriptProcess(shared_str name, shared_str scripts) : m_name(nam
 #endif
 
 	string256 I;
-	for (u32 i = 0, n = _GetItemCount(*scripts); i < n; ++i)
+	for(u32 i = 0, n = _GetItemCount(*scripts); i < n; ++i)
 		add_script(_GetItem(*scripts, i, I), false, false);
 
 	m_iterator = 0;
@@ -40,7 +40,7 @@ CScriptProcess::~CScriptProcess()
 void CScriptProcess::run_scripts()
 {
 	LPSTR S;
-	for (; !m_scripts_to_run.empty();)
+	for(; !m_scripts_to_run.empty();)
 	{
 		LPSTR I = m_scripts_to_run.back().m_script_name;
 		bool do_string = m_scripts_to_run.back().m_do_string;
@@ -51,7 +51,7 @@ void CScriptProcess::run_scripts()
 		CScriptThread* script = xr_new<CScriptThread>(S, do_string, reload);
 		xr_free(S);
 
-		if (script->active())
+		if(script->active())
 			m_scripts.push_back(script);
 		else
 			xr_delete(script);
@@ -71,20 +71,20 @@ void CScriptProcess::update()
 
 	run_scripts();
 
-	if (m_scripts.empty())
+	if(m_scripts.empty())
 		return;
 
 	// update script
 	g_ca_stdout[0] = 0;
 	u32 _id = (++m_iterator) % m_scripts.size();
-	if (!m_scripts[_id]->update())
+	if(!m_scripts[_id]->update())
 	{
 		xr_delete(m_scripts[_id]);
 		m_scripts.erase(m_scripts.begin() + _id);
 		--m_iterator; // try to avoid skipping
 	}
 
-	if (g_ca_stdout[0])
+	if(g_ca_stdout[0])
 	{
 		fputc(0, stderr);
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "%s", g_ca_stdout);
@@ -96,7 +96,7 @@ void CScriptProcess::update()
 	{
 		lua_setgcthreshold(ai().script_engine().lua(), 0);
 	}
-	catch (...)
+	catch(...)
 	{
 	}
 #endif

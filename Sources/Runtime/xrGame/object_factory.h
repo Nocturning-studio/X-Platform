@@ -65,10 +65,12 @@ class CObjectFactory
 	IC void add(CObjectItemAbstract* item);
 	IC const OBJECT_ITEM_STORAGE& clsids() const;
 	IC void actualize() const;
-	template <typename _unknown_type> IC void add(const CLASS_ID& clsid, LPCSTR script_clsid);
+	template <typename _unknown_type>
+	IC void add(const CLASS_ID& clsid, LPCSTR script_clsid);
 
 #ifndef NO_XR_GAME
-	template <typename _client_type, typename _server_type> IC void add(const CLASS_ID& clsid, LPCSTR script_clsid);
+	template <typename _client_type, typename _server_type>
+	IC void add(const CLASS_ID& clsid, LPCSTR script_clsid);
 	IC const CObjectItemAbstract& item(const CLASS_ID& clsid) const;
 #else
 	IC const CObjectItemAbstract* item(const CLASS_ID& clsid, bool no_assert) const;

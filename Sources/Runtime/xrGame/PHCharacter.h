@@ -123,7 +123,7 @@ class CPHCharacter : public CPHObject,
 	virtual void SwitchInInitContact() = 0;
 	bool IsEnabled()
 	{
-		if (!b_exist)
+		if(!b_exist)
 			return false;
 		return !!dBodyIsEnabled(m_body);
 	}
@@ -146,7 +146,7 @@ class CPHCharacter : public CPHObject,
 		return *p_lastMaterialIDX;
 	}
 	virtual bool TouchRestrictor(ERestrictionType rttype) = 0;
-	virtual void SetElevator(CClimableObject* climable){};
+	virtual void SetElevator(CClimableObject* climable) {};
 	virtual void SetMaterial(u16 material) = 0;
 	virtual void SetMaximumVelocity(dReal /**vel/**/)
 	{

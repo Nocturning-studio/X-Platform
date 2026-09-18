@@ -33,7 +33,7 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::execute()
 {
-	if (!object->CControlledActor::is_turning() && !m_effector_activated)
+	if(!object->CControlledActor::is_turning() && !m_effector_activated)
 	{
 		object->ActivateVampireEffector();
 		m_effector_activated = true;
@@ -41,7 +41,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute()
 
 	look_head();
 
-	switch (m_action)
+	switch(m_action)
 	{
 	case eActionPrepare:
 		execute_vampire_prepare();
@@ -58,7 +58,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute()
 		break;
 
 	case eActionWaitTripleEnd:
-		if (!object->com_man().ta_is_active())
+		if(!object->com_man().ta_is_active())
 		{
 			m_action = eActionCompleted;
 		}
@@ -78,7 +78,7 @@ void CStateBloodsuckerVampireExecuteAbstract::finalize()
 
 	object->start_invisible_predator();
 
-	if (object->CControlledActor::is_controlling())
+	if(object->CControlledActor::is_controlling())
 		object->CControlledActor::release();
 }
 
@@ -87,7 +87,7 @@ void CStateBloodsuckerVampireExecuteAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	if (object->CControlledActor::is_controlling())
+	if(object->CControlledActor::is_controlling())
 		object->CControlledActor::release();
 
 	object->start_invisible_predator();
@@ -100,11 +100,11 @@ bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
 
 	// проверить дистанцию
 	float dist = object->MeleeChecker.distance_to_enemy(enemy);
-	if ((dist > VAMPIRE_MAX_DIST) || (dist < VAMPIRE_MIN_DIST))
+	if((dist > VAMPIRE_MAX_DIST) || (dist < VAMPIRE_MIN_DIST))
 		return false;
 
 	// проверить направление на врага
-	if (!object->control().direction().is_face_target(enemy, PI_DIV_6))
+	if(!object->control().direction().is_face_target(enemy, PI_DIV_6))
 		return false;
 
 	return true;
@@ -130,7 +130,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_prepare()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 {
-	if (object->Position().distance_to(Actor()->Position()) > 2.f)
+	if(object->Position().distance_to(Actor()->Position()) > 2.f)
 	{
 		object->com_man().ta_deactivate();
 		m_action = eActionCompleted;
@@ -140,7 +140,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 	object->sound().play(CAI_Bloodsucker::eVampireSucking);
 
 	// проверить на грави удар
-	if (time_vampire_started + VAMPIRE_TIME_HOLD < Engine.TimeManager.GetGlobalTimeMs())
+	if(time_vampire_started + VAMPIRE_TIME_HOLD < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		m_action = eActionFire;
 	}

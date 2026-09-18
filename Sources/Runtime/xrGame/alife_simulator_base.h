@@ -87,7 +87,8 @@ class CALifeSimulatorBase : public IPureDestroyableObject
 	IC xrServer& server() const;
 	IC const CALifeTimeManager& time_manager() const;
 	IC shared_str* server_command_line() const;
-	template <typename T> IC T& registry(T* t) const;
+	template <typename T>
+	IC T& registry(T* t) const;
 
   protected:
 	void unload();

@@ -24,6 +24,6 @@ void CElectricBall::UpdateCLChild()
 {
 	inherited::UpdateCLChild();
 
-	if (H_Parent())
+	if(H_Parent())
 		Transform().set(H_Parent()->Transform());
 };

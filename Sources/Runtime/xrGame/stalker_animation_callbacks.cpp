@@ -14,7 +14,7 @@
 #include "game_object_space.h"
 #include "effectorshot.h"
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <int yaw_factor_non_fire, int pitch_factor_non_fire, int yaw_factor_fire, int pitch_factor_fire>
 
 #define _detail detail<yaw_factor_non_fire, pitch_factor_non_fire, yaw_factor_fire, pitch_factor_fire>
@@ -37,7 +37,7 @@ void _detail::callback(CBoneInstance* B)
 	fvec3 c = B->mTransform.c;
 	fmat4x4 spin;
 	float yaw_factor = 0, pitch_factor = 0;
-	if (A->sight().use_torso_look())
+	if(A->sight().use_torso_look())
 	{
 		yaw_factor = yaw_factor_fire / 100.f;
 		pitch_factor = pitch_factor_fire / 100.f;
@@ -49,7 +49,7 @@ void _detail::callback(CBoneInstance* B)
 	}
 
 	float effector_yaw = 0.f, effector_pitch = 0.f;
-	if (A->weapon_shot_effector().IsActive())
+	if(A->weapon_shot_effector().IsActive())
 	{
 		fvec3 temp;
 		A->weapon_shot_effector().GetDeltaAngle(temp);

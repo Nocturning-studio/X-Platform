@@ -52,7 +52,7 @@ void CWeaponKnife::Load(LPCSTR section)
 void CWeaponKnife::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
-	switch (S)
+	switch(S)
 	{
 	case eIdle:
 		switch2_Idle();
@@ -66,13 +66,14 @@ void CWeaponKnife::OnStateSwitch(u32 S)
 	case eHidden:
 		switch2_Hidden();
 		break;
-	case eFire: {
+	case eFire:
+	{
 		//-------------------------------------------
 		m_eHitType = m_eHitType_1;
 		// fHitPower		= fHitPower_1;
-		if (ParentIsActor())
+		if(ParentIsActor())
 		{
-			if (GameID() == GAME_SINGLE)
+			if(GameID() == GAME_SINGLE)
 			{
 				fCurrentHit = fvHitPower_1[g_SingleGameDifficulty];
 			}
@@ -90,13 +91,14 @@ void CWeaponKnife::OnStateSwitch(u32 S)
 		switch2_Attacking(S);
 	}
 	break;
-	case eFire2: {
+	case eFire2:
+	{
 		//-------------------------------------------
 		m_eHitType = m_eHitType_2;
 		// fHitPower		= fHitPower_2;
-		if (ParentIsActor())
+		if(ParentIsActor())
 		{
-			if (GameID() == GAME_SINGLE)
+			if(GameID() == GAME_SINGLE)
 			{
 				fCurrentHit = fvHitPower_2[g_SingleGameDifficulty];
 			}
@@ -131,7 +133,7 @@ void CWeaponKnife::KnifeStrike(const fvec3& pos, const fvec3& dir)
 	cartridge.fWallmarkSize = fWallmarkSize;
 	cartridge.bullet_material_idx = knife_material_idx;
 
-	while (m_magazine.size() < 2)
+	while(m_magazine.size() < 2)
 		m_magazine.push_back(cartridge);
 	iAmmoElapsed = m_magazine.size();
 	bool SendHit = SendHitAllowed(H_Parent());
@@ -143,7 +145,7 @@ void CWeaponKnife::KnifeStrike(const fvec3& pos, const fvec3& dir)
 	// fireDistance берется из конфига. Мы добавляем компенсацию сдвига (0.2f)
 	// и ставим жесткий минимум в 2.0 метра (игровая условность, чтобы попадать наверняка).
 	float fEffectiveDist = fireDistance + 0.2f;
-	if (fEffectiveDist < 2.0f)
+	if(fEffectiveDist < 2.0f)
 		fEffectiveDist = 2.0f;
 	// --- FIX END ---
 
@@ -153,17 +155,18 @@ void CWeaponKnife::KnifeStrike(const fvec3& pos, const fvec3& dir)
 
 void CWeaponKnife::OnAnimationEnd(u32 state)
 {
-	switch (state)
+	switch(state)
 	{
 	case eHiding:
 		SwitchState(eHidden);
 		break;
 	case eFire:
-	case eFire2: {
-		if (m_attackStart)
+	case eFire2:
+	{
+		if(m_attackStart)
 		{
 			m_attackStart = false;
-			if (GetState() == eFire)
+			if(GetState() == eFire)
 				m_pHUD->animPlay(random_anim(mhud_attack_e), TRUE, this, GetState());
 			else
 				m_pHUD->animPlay(random_anim(mhud_attack2_e), TRUE, this, GetState());
@@ -172,7 +175,7 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 			p1.set(get_LastFP());
 			d.set(get_LastFD());
 
-			if (H_Parent())
+			if(H_Parent())
 				smart_cast<CEntity*>(H_Parent())->g_fireParams(this, p1, d);
 			else
 				break;
@@ -203,10 +206,10 @@ void CWeaponKnife::state_Attacking(float)
 
 void CWeaponKnife::switch2_Attacking(u32 state)
 {
-	if (m_bPending)
+	if(m_bPending)
 		return;
 
-	if (state == eFire)
+	if(state == eFire)
 		m_pHUD->animPlay(random_anim(mhud_attack), FALSE, this, state);
 	else // eFire2
 		m_pHUD->animPlay(random_anim(mhud_attack2), FALSE, this, state);
@@ -258,13 +261,13 @@ void CWeaponKnife::Fire2Start()
 
 bool CWeaponKnife::Action(s32 cmd, u32 flags)
 {
-	if (inherited::Action(cmd, flags))
+	if(inherited::Action(cmd, flags))
 		return true;
-	switch (cmd)
+	switch(cmd)
 	{
 
 	case kWPN_ZOOM:
-		if (flags & CMD_START)
+		if(flags & CMD_START)
 			Fire2Start();
 		else
 			Fire2End();
@@ -282,7 +285,7 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	shared_str s_sHitPower_2;
 	// fHitPower_1		= fHitPower;
 
-	for (int i = 0; i < egdCount; i++)
+	for(int i = 0; i < egdCount; i++)
 		fvHitPower_1[i] = fvHitPower[i];
 
 	fHitImpulse_1 = fHitImpulse;
@@ -298,17 +301,17 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster];	// такие же
 
 	int num_game_diff_param = _GetItemCount(*s_sHitPower_2); // узнаём колличество параметров для хитов
-	if (num_game_diff_param > 1) // если задан второй параметр хита
+	if(num_game_diff_param > 1)								 // если задан второй параметр хита
 	{
 		fvHitPower_2[egdVeteran] =
 			(float)atof(_GetItem(*s_sHitPower_2, 1, buffer)); // то вычитываем его для уровня ветерана
 	}
-	if (num_game_diff_param > 2) // если задан третий параметр хита
+	if(num_game_diff_param > 2) // если задан третий параметр хита
 	{
 		fvHitPower_2[egdStalker] =
 			(float)atof(_GetItem(*s_sHitPower_2, 2, buffer)); // то вычитываем его для уровня сталкера
 	}
-	if (num_game_diff_param > 3) // если задан четвёртый параметр хита
+	if(num_game_diff_param > 3) // если задан четвёртый параметр хита
 	{
 		fvHitPower_2[egdNovice] =
 			(float)atof(_GetItem(*s_sHitPower_2, 3, buffer)); // то вычитываем его для уровня новичка

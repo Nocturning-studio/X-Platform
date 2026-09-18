@@ -27,15 +27,15 @@ char* timestamp(string64& dest)
 
 	// date
 	_strdate(temp);
-	for (it = 0; it < xr_strlen(temp); it++)
-		if ('/' == temp[it])
+	for(it = 0; it < xr_strlen(temp); it++)
+		if('/' == temp[it])
 			temp[it] = '-';
 	strconcat(sizeof(dest), dest, temp, "_");
 
 	// time
 	_strtime(temp);
-	for (it = 0; it < xr_strlen(temp); it++)
-		if (':' == temp[it])
+	for(it = 0; it < xr_strlen(temp); it++)
+		if(':' == temp[it])
 			temp[it] = '-';
 	strcat(dest, temp);
 	return dest;

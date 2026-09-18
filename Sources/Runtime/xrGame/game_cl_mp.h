@@ -95,7 +95,7 @@ struct Bonus_Struct
 	}
 	~Bonus_Struct()
 	{
-		if (IconShader)
+		if(IconShader)
 			IconShader.destroy();
 		IconShader = NULL;
 		IconRects.clear();
@@ -140,7 +140,7 @@ class game_cl_mp : public game_cl_GameState
 	virtual void OnWarnMessage(NET_Packet* P);
 	virtual void OnRadminMessage(u16 type, NET_Packet* P);
 
-	virtual void UpdateMapLocations(){};
+	virtual void UpdateMapLocations() {};
 
 	ref_shader m_EquipmentIconsShader;
 	ref_shader m_KillEventIconsShader;
@@ -209,27 +209,27 @@ class game_cl_mp : public game_cl_GameState
 	virtual void OnPlayerChangeName(NET_Packet& P);
 	virtual void OnPlayerVoted(game_PlayerState* ps);
 	virtual void OnSpectatorSelect();
-	virtual void OnSkinMenuBack(){};
-	virtual void OnTeamMenuBack(){};
-	virtual void OnTeamMenu_Cancel(){};
-	virtual void OnMapInfoAccept(){};
-	virtual void OnSkinMenu_Ok(){};
-	virtual void OnSkinMenu_Cancel(){};
-	virtual void OnBuySpawnMenu_Ok(){};
-	virtual void OnSellItemsFromRuck(){};
+	virtual void OnSkinMenuBack() {};
+	virtual void OnTeamMenuBack() {};
+	virtual void OnTeamMenu_Cancel() {};
+	virtual void OnMapInfoAccept() {};
+	virtual void OnSkinMenu_Ok() {};
+	virtual void OnSkinMenu_Cancel() {};
+	virtual void OnBuySpawnMenu_Ok() {};
+	virtual void OnSellItemsFromRuck() {};
 
 	virtual void OnGameMenuRespond(NET_Packet& P);
-	virtual void OnGameMenuRespond_Spectator(NET_Packet& P){};
-	virtual void OnGameMenuRespond_ChangeTeam(NET_Packet& P){};
-	virtual void OnGameMenuRespond_ChangeSkin(NET_Packet& P){};
+	virtual void OnGameMenuRespond_Spectator(NET_Packet& P) {};
+	virtual void OnGameMenuRespond_ChangeTeam(NET_Packet& P) {};
+	virtual void OnGameMenuRespond_ChangeSkin(NET_Packet& P) {};
 	virtual void OnGameRoundStarted();
 
 	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase);
 	virtual void net_import_update(NET_Packet& P);
 	virtual void net_import_state(NET_Packet& P);
 	virtual void OnRankChanged(u8 OldRank);
-	virtual void OnTeamChanged(){};
-	virtual void OnMoneyChanged(){};
+	virtual void OnTeamChanged() {};
+	virtual void OnMoneyChanged() {};
 	virtual void OnEventMoneyChanged(NET_Packet& P);
 
 	virtual void OnSwitchPhase_InProgress();

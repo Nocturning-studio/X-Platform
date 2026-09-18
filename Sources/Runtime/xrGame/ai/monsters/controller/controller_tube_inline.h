@@ -18,9 +18,9 @@ void CStateControllerTubeAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateControllerTubeAbstract::check_start_conditions()
 {
-	if (object->EnemyMan.see_enemy_duration() < SEE_ENEMY_DURATION)
+	if(object->EnemyMan.see_enemy_duration() < SEE_ENEMY_DURATION)
 		return false;
-	if (!object->m_psy_hit->check_start_conditions())
+	if(!object->m_psy_hit->check_start_conditions())
 		return false;
 
 	return true;

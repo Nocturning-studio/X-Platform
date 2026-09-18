@@ -13,7 +13,8 @@
 #include "script_engine_export.h"
 
 #pragma optimize("s", on)
-template <typename TList> struct Register
+template <typename TList>
+struct Register
 {
 	ASSERT_TYPELIST(TList);
 
@@ -29,24 +30,28 @@ template <typename TList> struct Register
 	}
 };
 
-template <> struct Register<Loki::NullType>
+template <>
+struct Register<Loki::NullType>
 {
 	static void _Register(lua_State* L)
 	{
 	}
 };
 
-template <typename T1, typename T2> struct TypePair
+template <typename T1, typename T2>
+struct TypePair
 {
 	typedef T1 first;
 	typedef T2 second;
 };
 
-template <typename TFullList> struct DynamicCast
+template <typename TFullList>
+struct DynamicCast
 {
 	ASSERT_TYPELIST(TFullList);
 
-	template <typename TList, typename T> struct Helper2
+	template <typename TList, typename T>
+	struct Helper2
 	{
 		typedef typename TList::Head Head;
 
@@ -56,24 +61,28 @@ template <typename TFullList> struct DynamicCast
 			declare<Loki::SuperSubclassStrict<Head, T>::value>();
 		}
 
-		template <bool _1> static void declare()
+		template <bool _1>
+		static void declare()
 		{
 		}
 
-		template <> static void declare<true>()
+		template <>
+		static void declare<true>()
 		{
 			Msg("Exporting function to cast from \"%s\" to \"%s\"", typeid(T).name(), typeid(Head).name());
 		}
 	};
 
-	template <typename T> struct Helper2<Loki::NullType, T>
+	template <typename T>
+	struct Helper2<Loki::NullType, T>
 	{
 		static void Register(lua_State* L)
 		{
 		}
 	};
 
-	template <typename TList> struct Helper
+	template <typename TList>
+	struct Helper
 	{
 		static void Register(lua_State* L)
 		{
@@ -82,7 +91,8 @@ template <typename TFullList> struct DynamicCast
 		}
 	};
 
-	template <> struct Helper<Loki::NullType>
+	template <>
+	struct Helper<Loki::NullType>
 	{
 		static void Register(lua_State* L)
 		{

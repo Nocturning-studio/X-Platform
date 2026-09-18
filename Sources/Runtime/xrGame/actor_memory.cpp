@@ -20,7 +20,7 @@ CActorMemory::CActorMemory(CActor* actor) : inherited(actor, 100), m_actor(actor
 BOOL CActorMemory::feel_vision_isRelevant(CObject* O)
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(O);
-	if (!entity_alive)
+	if(!entity_alive)
 		return (FALSE);
 
 	return (TRUE);

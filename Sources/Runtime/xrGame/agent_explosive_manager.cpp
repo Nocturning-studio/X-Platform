@@ -33,11 +33,11 @@ struct CRemoveExplosivesPredicate
 void CAgentExplosiveManager::remove_links(CObject* object)
 {
 	TO_BE_DESTROYED::iterator I = std::find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), object->ID());
-	if (I != m_explosives_to_remove.end())
+	if(I != m_explosives_to_remove.end())
 		m_explosives_to_remove.erase(I);
 
 	EXPLOSIVES::iterator J = std::find(m_explosives.begin(), m_explosives.end(), object->ID());
-	if (J != m_explosives.end())
+	if(J != m_explosives.end())
 		m_explosives.erase(J);
 }
 
@@ -45,13 +45,13 @@ void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, con
 {
 	{
 		xr_vector<CDangerExplosive>::iterator I = std::find(m_explosives.begin(), m_explosives.end(), explosive);
-		if (I != m_explosives.end())
+		if(I != m_explosives.end())
 			return;
 	}
 	{
 		TO_BE_DESTROYED::iterator I =
 			std::find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), game_object->ID());
-		if (I != m_explosives_to_remove.end())
+		if(I != m_explosives_to_remove.end())
 			return;
 	}
 
@@ -60,7 +60,7 @@ void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, con
 
 	u32 interval = AFTER_GRENADE_DESTROYED_INTERVAL;
 	const CMissile* missile = smart_cast<const CMissile*>(explosive);
-	if (missile && (missile->destroy_time() > Engine.TimeManager.GetGlobalTimeMs()))
+	if(missile && (missile->destroy_time() > Engine.TimeManager.GetGlobalTimeMs()))
 		interval = missile->destroy_time() - Engine.TimeManager.GetGlobalTimeMs() + AFTER_GRENADE_DESTROYED_INTERVAL;
 
 	object().location().add(xr_new<CDangerObjectLocation>(game_object, Engine.TimeManager.GetGlobalTimeMs(), interval, GRENADE_RADIUS));
@@ -72,23 +72,23 @@ bool CAgentExplosiveManager::process_explosive(CMemberOrder& member)
 	CDangerExplosive* best_grenade = 0;
 	xr_vector<CDangerExplosive>::iterator I = m_explosives.begin();
 	xr_vector<CDangerExplosive>::iterator E = m_explosives.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!member.object().memory().visual().visible_now((*I).m_game_object))
+		if(!member.object().memory().visual().visible_now((*I).m_game_object))
 			continue;
 
 		float dist_sqr = (*I).m_game_object->Position().distance_to_sqr(member.object().Position());
-		if (dist_sqr < min_dist_sqr)
+		if(dist_sqr < min_dist_sqr)
 		{
-			if ((*I).m_reactor &&
-				((*I).m_reactor->Position().distance_to_sqr((*I).m_game_object->Position()) <= min_dist_sqr))
+			if((*I).m_reactor &&
+			   ((*I).m_reactor->Position().distance_to_sqr((*I).m_game_object->Position()) <= min_dist_sqr))
 				continue;
 			min_dist_sqr = dist_sqr;
 			best_grenade = &*I;
 		}
 	}
 
-	if (!best_grenade)
+	if(!best_grenade)
 		return (false);
 
 	best_grenade->m_reactor = &member.object();
@@ -97,25 +97,25 @@ bool CAgentExplosiveManager::process_explosive(CMemberOrder& member)
 
 void CAgentExplosiveManager::react_on_explosives()
 {
-	for (;;)
+	for(;;)
 	{
 		bool changed = false;
 		CAgentMemberManager::iterator I = object().member().combat_members().begin();
 		CAgentMemberManager::iterator E = object().member().combat_members().end();
-		for (; I != E; ++I)
-			if (!(*I)->grenade_reaction().m_processing)
+		for(; I != E; ++I)
+			if(!(*I)->grenade_reaction().m_processing)
 				changed = process_explosive(**I);
 
-		if (!changed)
+		if(!changed)
 			break;
 	}
 
 	{
 		EXPLOSIVES::iterator I = m_explosives.begin();
 		EXPLOSIVES::iterator E = m_explosives.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			if (!(*I).m_reactor)
+			if(!(*I).m_reactor)
 				continue;
 
 			CMemberOrder::CGrenadeReaction& reaction = object().member().member((*I).m_reactor).grenade_reaction();

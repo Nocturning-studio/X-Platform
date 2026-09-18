@@ -76,7 +76,7 @@ class ENGINE_API CCustomMotion
 	{
 		string256 tmp;
 		tmp[0] = 0;
-		if (n)
+		if(n)
 		{
 			strcpy_s(tmp, n);
 			xr_strlwr(tmp);

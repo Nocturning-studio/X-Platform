@@ -22,7 +22,7 @@ CUITabButtonMP::CUITabButtonMP()
 
 void CUITabButtonMP::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (this == pWnd)
+	if(this == pWnd)
 		m_bIsEnabled = true;
 
 	CUITabButton::SendMessage(pWnd, msg, pData);
@@ -31,9 +31,9 @@ void CUITabButtonMP::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUITabButtonMP::UpdateTextAlign()
 {
 	//.	blya
-	if (m_orientationVertical)
+	if(m_orientationVertical)
 	{
-		if (CUIButton::BUTTON_PUSHED == m_eButtonState)
+		if(CUIButton::BUTTON_PUSHED == m_eButtonState)
 		{
 			m_TextOffset = m_text_ident_pushed;
 			//.			m_TextOffset.y =  - m_text_ident; //43
@@ -45,7 +45,7 @@ void CUITabButtonMP::UpdateTextAlign()
 	}
 	else
 	{
-		if (m_bCursorOverWindow)
+		if(m_bCursorOverWindow)
 		{
 			m_TextOffset = m_text_ident_cursor_over;
 			//.			m_TextOffset.x = 100;

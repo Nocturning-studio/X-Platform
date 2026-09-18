@@ -53,15 +53,15 @@ class ENGINE_API Vision : private pure_relcase
 	{
 		R.clear();
 		xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-		for (; I != E; I++)
-			if (positive(I->fuzzy))
+		for(; I != E; I++)
+			if(positive(I->fuzzy))
 				R.push_back(I->O);
 	}
 	fvec3 feel_vision_get_vispoint(CObject* _O)
 	{
 		xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-		for (; I != E; I++)
-			if (_O == I->O)
+		for(; I != E; I++)
+			if(_O == I->O)
 			{
 				VERIFY(positive(I->fuzzy));
 				return I->cp_LAST;

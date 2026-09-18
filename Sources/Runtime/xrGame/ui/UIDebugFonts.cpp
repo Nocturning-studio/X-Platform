@@ -33,10 +33,10 @@ void CUIDebugFonts::Init(float x, float y, float width, float height)
 
 bool CUIDebugFonts::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (DIK_ESCAPE == dik)
+	if(DIK_ESCAPE == dik)
 		this->GetHolder()->StartStopMenu(this, true);
 
-	if (DIK_F12 == dik)
+	if(DIK_F12 == dik)
 		return false;
 
 	return true;
@@ -52,7 +52,7 @@ void CUIDebugFonts::FillUpList()
 	pos.set(0, 0);
 	sz.set(UI_BASE_WIDTH, UI_BASE_HEIGHT);
 	string256 str;
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		CGameFont* F = *(*it);
 		CUIStatic* pItem = xr_new<CUIStatic>();

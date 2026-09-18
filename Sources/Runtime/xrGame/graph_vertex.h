@@ -10,7 +10,8 @@
 
 #include "object_broker.h"
 
-template <typename _data_type, typename _vertex_id_type, typename _graph_type> class CVertex
+template <typename _data_type, typename _vertex_id_type, typename _graph_type>
+class CVertex
 {
   public:
 	typedef _vertex_id_type _vertex_id_type;

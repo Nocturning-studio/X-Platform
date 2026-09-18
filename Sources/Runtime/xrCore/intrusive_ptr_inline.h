@@ -41,11 +41,11 @@ IC _intrusive_ptr::~intrusive_ptr()
 TEMPLATE_SPECIALIZATION
 IC void _intrusive_ptr::dec()
 {
-	if (!m_object)
+	if(!m_object)
 		return;
 
 	--m_object->base_type::m_ref_count;
-	if (!m_object->base_type::m_ref_count)
+	if(!m_object->base_type::m_ref_count)
 		m_object->base_type::_release(m_object);
 }
 
@@ -100,11 +100,11 @@ IC bool _intrusive_ptr::equal(const self_type& rhs) const
 TEMPLATE_SPECIALIZATION
 IC void _intrusive_ptr::set(object_type* rhs)
 {
-	if (m_object == rhs)
+	if(m_object == rhs)
 		return;
 	dec();
 	m_object = rhs;
-	if (!m_object)
+	if(!m_object)
 		return;
 	++m_object->m_ref_count;
 }
@@ -112,11 +112,11 @@ IC void _intrusive_ptr::set(object_type* rhs)
 TEMPLATE_SPECIALIZATION
 IC void _intrusive_ptr::set(self_type const& rhs)
 {
-	if (m_object == rhs.m_object)
+	if(m_object == rhs.m_object)
 		return;
 	dec();
 	m_object = rhs.m_object;
-	if (!m_object)
+	if(!m_object)
 		return;
 	++m_object->m_ref_count;
 }

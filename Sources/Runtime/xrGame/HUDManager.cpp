@@ -26,7 +26,7 @@ CHUDManager::~CHUDManager()
 
 void CHUDManager::Load()
 {
-	if (pUI)
+	if(pUI)
 	{
 		pUI->Load(pUI->UIGame());
 		return;
@@ -38,9 +38,9 @@ void CHUDManager::Load()
 //--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
-	if (!b_online)
+	if(!b_online)
 		return;
-	if (pUI)
+	if(pUI)
 		pUI->UIOnFrame();
 	m_pHUDTarget->CursorOnFrame();
 }
@@ -50,17 +50,17 @@ ENGINE_API extern float psHUD_FOV;
 
 void CHUDManager::Render_First()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+	if(!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
 		return;
-	if (0 == pUI)
+	if(0 == pUI)
 		return;
 	CObject* O = g_pGameLevel->CurrentViewEntity();
-	if (0 == O)
+	if(0 == O)
 		return;
 	CActor* A = smart_cast<CActor*>(O);
-	if (!A)
+	if(!A)
 		return;
-	if (A && !A->HUDview())
+	if(A && !A->HUDview())
 		return;
 
 	// only shadow
@@ -72,24 +72,24 @@ void CHUDManager::Render_First()
 
 void CHUDManager::Render_Last()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+	if(!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
 		return;
 
-	if (0 == pUI)
+	if(0 == pUI)
 		return;
 
 	CObject* O = g_pGameLevel->CurrentViewEntity();
-	if (0 == O)
+	if(0 == O)
 		return;
 
 	CActor* A = smart_cast<CActor*>(O);
-	if (A && !A->HUDview())
+	if(A && !A->HUDview())
 		return;
 
-	if (O->CLS_ID == CLSID_CAR)
+	if(O->CLS_ID == CLSID_CAR)
 		return;
 
-	if (O->CLS_ID == CLSID_SPECTATOR)
+	if(O->CLS_ID == CLSID_SPECTATOR)
 		return;
 
 	// hud itself
@@ -101,18 +101,18 @@ void CHUDManager::Render_Last()
 
 void CHUDManager::Render_Actor_Shadow() // added by KD
 {
-	if (0 == pUI)
+	if(0 == pUI)
 		return;
 
 	CObject* O = g_pGameLevel->CurrentViewEntity();
-	if (0 == O)
+	if(0 == O)
 		return;
 
 	CActor* A = smart_cast<CActor*>(O);
-	if (!A)
+	if(!A)
 		return;
 
-	if (A->active_cam() != eacFirstEye)
+	if(A->active_cam() != eacFirstEye)
 		return; // KD: we need to render actor shadow only in first eye cam mode because
 				// in other modes actor model already in scene graph and renders well
 
@@ -127,23 +127,23 @@ extern ENGINE_API BOOL bShowPauseString;
 #include "string_table.h"
 void CHUDManager::RenderUI()
 {
-	if (!b_online)
+	if(!b_online)
 		return;
 
 	BOOL bAlready = FALSE;
-	if (true || psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+	if(true || psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 	{
 		HitMarker.Render();
 		bAlready = !(pUI && !pUI->Render());
 		Font().Render();
 	}
 
-	if (psHUD_Flags.is(HUD_CROSSHAIR | HUD_CROSSHAIR_RT | HUD_CROSSHAIR_RT2) && !bAlready)
+	if(psHUD_Flags.is(HUD_CROSSHAIR | HUD_CROSSHAIR_RT | HUD_CROSSHAIR_RT2) && !bAlready)
 		m_pHUDTarget->Render();
 
 	draw_wnds_rects();
 
-	if (Device.Paused() && bShowPauseString)
+	if(Device.Paused() && bShowPauseString)
 	{
 		CGameFont* pFont = Font().pFontGraffiti50Russian;
 		pFont->SetColor(0x80FF0000);
@@ -201,16 +201,16 @@ void CHUDManager::OnDisconnected()
 {
 	//.	if(!b_online)			return;
 	b_online = false;
-	if (pUI)
+	if(pUI)
 		Engine.Events.Frame.Remove(pUI);
 }
 
 void CHUDManager::OnConnected()
 {
-	if (b_online)
+	if(b_online)
 		return;
 	b_online = true;
-	if (pUI)
+	if(pUI)
 	{
 		Engine.Events.Frame.Add(pUI, REG_PRIORITY_LOW - 1000);
 	}

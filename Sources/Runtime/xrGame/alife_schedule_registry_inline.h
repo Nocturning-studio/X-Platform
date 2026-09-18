@@ -25,12 +25,12 @@ IC void CALifeScheduleRegistry::objects_per_update(const u32& objects_per_update
 
 IC void CALifeScheduleRegistry::update()
 {
-	//OPTICK_EVENT("CALifeScheduleRegistry::update");
+	// OPTICK_EVENT("CALifeScheduleRegistry::update");
 
 	//	u32							count =
 	objects().empty() ? 0 : inherited::update(CUpdatePredicate(m_objects_per_update));
 #ifdef DEBUG
-	if (psAI_Flags.test(aiALife))
+	if(psAI_Flags.test(aiALife))
 	{
 		//		Msg						("[LSS][SU][%d : %d]",count, objects().size());
 	}
@@ -40,7 +40,7 @@ IC void CALifeScheduleRegistry::update()
 IC CSE_ALifeSchedulable* CALifeScheduleRegistry::object(const ALife::_OBJECT_ID& id, bool no_assert) const
 {
 	_const_iterator I = objects().find(id);
-	if (I == objects().end())
+	if(I == objects().end())
 	{
 		THROW2(no_assert, "The spesified object hasn't been found in the schedule registry!");
 		return (0);

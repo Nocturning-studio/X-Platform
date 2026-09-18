@@ -20,15 +20,15 @@ void CSE_ALifeCreatureAbstract::on_spawn()
 	m_dynamic_out_restrictions.clear();
 	m_dynamic_in_restrictions.clear();
 
-	if (smart_cast<CSE_ALifeGroupAbstract*>(this))
+	if(smart_cast<CSE_ALifeGroupAbstract*>(this))
 		return;
 
 	MONSTER_COMMUNITY monster_community;
 	monster_community.set(pSettings->r_string(s_name, "species"));
-	if (monster_community.team() != 255)
+	if(monster_community.team() != 255)
 		s_team = monster_community.team();
 
-	if (!g_Alive())
+	if(!g_Alive())
 		m_game_death_time = 0; // alife().time_manager().game_time();
 }
 

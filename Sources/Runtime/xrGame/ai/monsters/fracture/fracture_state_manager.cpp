@@ -35,9 +35,9 @@ void CStateManagerFracture::execute()
 	u32 state_id = u32(-1);
 	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-	if (enemy)
+	if(enemy)
 	{
-		switch (object->EnemyMan.get_danger_type())
+		switch(object->EnemyMan.get_danger_type())
 		{
 		case eStrong:
 			state_id = eStatePanic;
@@ -47,17 +47,17 @@ void CStateManagerFracture::execute()
 			break;
 		}
 	}
-	else if (object->HitMemory.is_hit())
+	else if(object->HitMemory.is_hit())
 	{
 		state_id = eStateHitted;
 	}
-	else if (object->hear_interesting_sound || object->hear_dangerous_sound)
+	else if(object->hear_interesting_sound || object->hear_dangerous_sound)
 	{
 		state_id = eStateHearDangerousSound;
 	}
 	else
 	{
-		if (can_eat())
+		if(can_eat())
 			state_id = eStateEat;
 		else
 		{

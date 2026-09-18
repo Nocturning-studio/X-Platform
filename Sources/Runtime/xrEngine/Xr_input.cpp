@@ -36,7 +36,7 @@ ENGINE_API Flags32 psMouseInvert = {FALSE};
 static bool g_exclusive = true;
 void on_error_dialog(bool before)
 {
-	if (!pInput || !g_exclusive)
+	if(!pInput || !g_exclusive)
 		return;
 
 	pInput->exclusive_mode(!before);
@@ -64,17 +64,17 @@ CInput::CInput(BOOL bExclusive, int deviceForInit)
 	//===================== Dummy pack
 	iCapture(&dummyController);
 
-	if (!pDI)
+	if(!pDI)
 		CHK_DX(DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, NULL));
 
 	// KEYBOARD
-	if (deviceForInit & keyboard_device_key)
+	if(deviceForInit & keyboard_device_key)
 		CHK_DX(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard,
 								 ((bExclusive) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND,
 								 KEYBOARDBUFFERSIZE));
 
 	// MOUSE
-	if (deviceForInit & mouse_device_key)
+	if(deviceForInit & mouse_device_key)
 		CHK_DX(
 			CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2,
 							  ((bExclusive) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY,
@@ -93,13 +93,13 @@ CInput::~CInput(void)
 	//_______________________
 
 	// Unacquire and release the device's interfaces
-	if (pMouse)
+	if(pMouse)
 	{
 		pMouse->Unacquire();
 		_RELEASE(pMouse);
 	}
 
-	if (pKeyboard)
+	if(pKeyboard)
 	{
 		pKeyboard->Unacquire();
 		_RELEASE(pKeyboard);
@@ -136,7 +136,7 @@ HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
 	// Set the cooperativity level to let DirectInput know how this device
 	// should interact with the system and with other DirectInput applications.
 	HRESULT _hr = (*device)->SetCooperativeLevel(Engine.WindowManager.GetHandle(), dwFlags);
-	if (FAILED(_hr) && (_hr == E_NOTIMPL))
+	if(FAILED(_hr) && (_hr == E_NOTIMPL))
 		Msg("! INPUT: Can't set coop level. Emulation???");
 	else
 		R_CHK(_hr);
@@ -158,20 +158,20 @@ HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
 
 void CInput::SetAllAcquire(BOOL bAcquire)
 {
-	if (pMouse)
+	if(pMouse)
 		bAcquire ? pMouse->Acquire() : pMouse->Unacquire();
-	if (pKeyboard)
+	if(pKeyboard)
 		bAcquire ? pKeyboard->Acquire() : pKeyboard->Unacquire();
 }
 
 void CInput::SetMouseAcquire(BOOL bAcquire)
 {
-	if (pMouse)
+	if(pMouse)
 		bAcquire ? pMouse->Acquire() : pMouse->Unacquire();
 }
 void CInput::SetKBDAcquire(BOOL bAcquire)
 {
-	if (pKeyboard)
+	if(pKeyboard)
 		bAcquire ? pKeyboard->Acquire() : pKeyboard->Unacquire();
 }
 //-----------------------------------------------------------------------
@@ -186,31 +186,31 @@ void CInput::KeyUpdate()
 	VERIFY(pKeyboard);
 
 	hr = pKeyboard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-	if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+	if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 	{
 		hr = pKeyboard->Acquire();
-		if (hr != S_OK)
+		if(hr != S_OK)
 			return;
 		hr = pKeyboard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-		if (hr != S_OK)
+		if(hr != S_OK)
 			return;
 	}
 
-	for (u32 i = 0; i < dwElements; i++)
+	for(u32 i = 0; i < dwElements; i++)
 	{
 		key = od[i].dwOfs;
 		KBState[key] = od[i].dwData & 0x80;
-		if (KBState[key])
+		if(KBState[key])
 			cbStack.back()->IR_OnKeyboardPress(key);
-		if (!KBState[key])
+		if(!KBState[key])
 			cbStack.back()->IR_OnKeyboardRelease(key);
 	}
-	for (u32 i = 0; i < COUNT_KB_BUTTONS; i++)
-		if (KBState[i])
+	for(u32 i = 0; i < COUNT_KB_BUTTONS; i++)
+		if(KBState[i])
 			cbStack.back()->IR_OnKeyboardHold(i);
 
 #ifndef _EDITOR
-	if (!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
+	if(!b_altF4 && iGetAsyncKeyState(DIK_F4) && (iGetAsyncKeyState(DIK_RMENU) || iGetAsyncKeyState(DIK_LMENU)))
 	{
 		b_altF4 = TRUE;
 		Engine.Event.Defer("KERNEL:disconnect");
@@ -227,16 +227,16 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	keyname.diph.dwObj = static_cast<DWORD>(dik);
 	keyname.diph.dwHow = DIPH_BYOFFSET; // DIPH_BYID; //DIPH_DEVICE;//
 	HRESULT hr = pKeyboard->GetProperty(DIPROP_KEYNAME, &keyname.diph);
-	if (FAILED(hr))
+	if(FAILED(hr))
 		return false;
 
 	const wchar_t* wct = keyname.wsz;
-	if (0 == wcslen(wct))
+	if(0 == wcslen(wct))
 		return false;
 
 	size_t cnt = wcstombs(dest_str, wct, dest_sz);
 	//.	Msg("dik_name for[%d], is w[%S] ch[%s]", dik, wct, dest_str);
-	if (cnt == -1)
+	if(cnt == -1)
 	{
 		// Msg("! cant convert dik_name for dik[%d], prop=[%S]", dik, wct);
 		return false;
@@ -264,13 +264,13 @@ void CInput::MouseUpdate()
 
 	// Сначала получаем буферизированные данные (важно для кликов, чтобы не пропустить нажатия)
 	hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-	if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+	if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 	{
 		hr = pMouse->Acquire();
-		if (hr != S_OK)
+		if(hr != S_OK)
 			return;
 		hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
-		if (hr != S_OK)
+		if(hr != S_OK)
 			return;
 	};
 
@@ -278,7 +278,7 @@ void CInput::MouseUpdate()
 	HRESULT hrState = pMouse->GetDeviceState(sizeof(DIMOUSESTATE2), &immediateMouseState);
 
 	// Если удалось получить мгновенное состояние - используем его для движения
-	if (SUCCEEDED(hrState))
+	if(SUCCEEDED(hrState))
 	{
 		offs[0] = immediateMouseState.lX;
 		offs[1] = immediateMouseState.lY;
@@ -295,119 +295,119 @@ void CInput::MouseUpdate()
 	mouse_prev[1] = mouseState[1];
 	mouse_prev[2] = mouseState[2];
 
-	for (u32 i = 0; i < dwElements; i++)
+	for(u32 i = 0; i < dwElements; i++)
 	{
-		switch (od[i].dwOfs)
+		switch(od[i].dwOfs)
 		{
 		// Оси обрабатываем только если не сработал GetDeviceState выше (fallback)
 		case DIMOFS_X:
-			if (FAILED(hrState))
+			if(FAILED(hrState))
 				offs[0] += od[i].dwData;
 			timeStamp[0] = od[i].dwTimeStamp;
 			break;
 		case DIMOFS_Y:
-			if (FAILED(hrState))
+			if(FAILED(hrState))
 				offs[1] += od[i].dwData;
 			timeStamp[1] = od[i].dwTimeStamp;
 			break;
 		case DIMOFS_Z:
-			if (FAILED(hrState))
+			if(FAILED(hrState))
 				offs[2] += od[i].dwData;
 			timeStamp[2] = od[i].dwTimeStamp;
 			break;
 
 		// Кнопки обрабатываем всегда через буфер, чтобы не терять быстрые нажатия
 		case DIMOFS_BUTTON0:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[0] = TRUE;
 				cbStack.back()->IR_OnMousePress(0);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[0] = FALSE;
 				cbStack.back()->IR_OnMouseRelease(0);
 			}
 			break;
 		case DIMOFS_BUTTON1:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[1] = TRUE;
 				cbStack.back()->IR_OnMousePress(1);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[1] = FALSE;
 				cbStack.back()->IR_OnMouseRelease(1);
 			}
 			break;
 		case DIMOFS_BUTTON2:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[2] = TRUE;
 				cbStack.back()->IR_OnMousePress(2);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[2] = FALSE;
 				cbStack.back()->IR_OnMouseRelease(2);
 			}
 			break;
 		case DIMOFS_BUTTON3:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[2] = TRUE;
 				cbStack.back()->IR_OnKeyboardPress(0xED + 103);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[2] = FALSE;
 				cbStack.back()->IR_OnKeyboardRelease(0xED + 103);
 			}
 			break;
 		case DIMOFS_BUTTON4:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[2] = TRUE;
 				cbStack.back()->IR_OnKeyboardPress(0xED + 104);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[2] = FALSE;
 				cbStack.back()->IR_OnKeyboardRelease(0xED + 104);
 			}
 			break;
 		case DIMOFS_BUTTON5:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[2] = TRUE;
 				cbStack.back()->IR_OnKeyboardPress(0xED + 105);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[2] = FALSE;
 				cbStack.back()->IR_OnKeyboardRelease(0xED + 105);
 			}
 			break;
 		case DIMOFS_BUTTON6:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[2] = TRUE;
 				cbStack.back()->IR_OnKeyboardPress(0xED + 106);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[2] = FALSE;
 				cbStack.back()->IR_OnKeyboardRelease(0xED + 106);
 			}
 			break;
 		case DIMOFS_BUTTON7:
-			if (od[i].dwData & 0x80)
+			if(od[i].dwData & 0x80)
 			{
 				mouseState[2] = TRUE;
 				cbStack.back()->IR_OnKeyboardPress(0xED + 107);
 			}
-			if (!(od[i].dwData & 0x80))
+			if(!(od[i].dwData & 0x80))
 			{
 				mouseState[2] = FALSE;
 				cbStack.back()->IR_OnKeyboardRelease(0xED + 107);
@@ -416,25 +416,25 @@ void CInput::MouseUpdate()
 		}
 	}
 
-	if (mouseState[0] && mouse_prev[0])
+	if(mouseState[0] && mouse_prev[0])
 	{
 		cbStack.back()->IR_OnMouseHold(0);
 	}
 
-	if (mouseState[1] && mouse_prev[1])
+	if(mouseState[1] && mouse_prev[1])
 	{
 		cbStack.back()->IR_OnMouseHold(1);
 	}
 
-	if (mouseState[2] && mouse_prev[2])
+	if(mouseState[2] && mouse_prev[2])
 	{
 		cbStack.back()->IR_OnMouseHold(2);
 	}
 
 	// Передаем движения
-	if (offs[0] || offs[1])
+	if(offs[0] || offs[1])
 		cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
-	if (offs[2])
+	if(offs[2])
 		cbStack.back()->IR_OnMouseWheel(offs[2]);
 }
 
@@ -442,13 +442,13 @@ void CInput::MouseUpdate()
 void CInput::iCapture(IInputReceiver* p)
 {
 	VERIFY(p);
-	if (pMouse)
+	if(pMouse)
 		MouseUpdate();
-	if (pKeyboard)
+	if(pKeyboard)
 		KeyUpdate();
 
 	// change focus
-	if (!cbStack.empty())
+	if(!cbStack.empty())
 		cbStack.back()->IR_OnDeactivate();
 	cbStack.push_back(p);
 	cbStack.back()->IR_OnActivate();
@@ -461,7 +461,7 @@ void CInput::iCapture(IInputReceiver* p)
 
 void CInput::iRelease(IInputReceiver* p)
 {
-	if (p == cbStack.back())
+	if(p == cbStack.back())
 	{
 		cbStack.back()->IR_OnDeactivate();
 		cbStack.pop_back();
@@ -471,8 +471,8 @@ void CInput::iRelease(IInputReceiver* p)
 	else
 	{ // we are not topmost receiver, so remove the nearest one
 		u32 cnt = cbStack.size();
-		for (; cnt > 0; --cnt)
-			if (cbStack[cnt - 1] == p)
+		for(; cnt > 0; --cnt)
+			if(cbStack[cnt - 1] == p)
 			{
 				xr_vector<IInputReceiver*>::iterator it = cbStack.begin();
 				std::advance(it, cnt - 1);
@@ -484,7 +484,7 @@ void CInput::iRelease(IInputReceiver* p)
 
 void CInput::OnAppActivate(void)
 {
-	if (CurrentIR())
+	if(CurrentIR())
 		CurrentIR()->IR_OnActivate();
 
 	SetAllAcquire(true);
@@ -497,7 +497,7 @@ void CInput::OnAppActivate(void)
 
 void CInput::OnAppDeactivate(void)
 {
-	if (CurrentIR())
+	if(CurrentIR())
 		CurrentIR()->IR_OnDeactivate();
 
 	SetAllAcquire(false);
@@ -512,16 +512,16 @@ void CInput::OnFrame(void)
 {
 	Engine.Statistic->Input.Begin();
 	dwCurTime = Engine.TimeManager.TimerAsync_MMT();
-	if (pKeyboard)
+	if(pKeyboard)
 		KeyUpdate();
-	if (pMouse)
+	if(pMouse)
 		MouseUpdate();
 	Engine.Statistic->Input.End();
 }
 
 IInputReceiver* CInput::CurrentIR()
 {
-	if (cbStack.size())
+	if(cbStack.size())
 		return cbStack.back();
 	else
 		return NULL;

@@ -18,8 +18,8 @@ CHM_Static::CHM_Static()
 {
 	// Initialize slots
 	Slot* slt = pool;
-	for (u32 i = 0; i < dhm_matrix; ++i)
-		for (u32 j = 0; j < dhm_matrix; ++j, ++slt)
+	for(u32 i = 0; i < dhm_matrix; ++i)
+		for(u32 j = 0; j < dhm_matrix; ++j, ++slt)
 			data[i][j] = slt;
 
 	// Center
@@ -34,21 +34,21 @@ void CHM_Static::Update()
 	int v_z = iFloor(view.z / dhm_size);
 
 	// *****	SCROLL
-	if (v_x != c_x)
+	if(v_x != c_x)
 	{
-		if (v_x > c_x)
+		if(v_x > c_x)
 		{
 			// scroll matrix to left
 			++c_x;
-			for (int z = 0; z < dhm_matrix; ++z)
+			for(int z = 0; z < dhm_matrix; ++z)
 			{
 				Slot* S = data[z][0];
-				if (S->bReady)
+				if(S->bReady)
 				{
 					S->bReady = FALSE;
 					task.push_back(S);
 				}
-				for (int x = 1; x < dhm_matrix; ++x)
+				for(int x = 1; x < dhm_matrix; ++x)
 					data[z][x - 1] = data[z][x];
 				data[z][dhm_matrix - 1] = S;
 				S->set(c_x - dhm_line + dhm_matrix - 1, c_z - dhm_line + z);
@@ -58,36 +58,36 @@ void CHM_Static::Update()
 		{
 			// scroll matrix to right
 			--c_x;
-			for (int z = 0; z < dhm_matrix; ++z)
+			for(int z = 0; z < dhm_matrix; ++z)
 			{
 				Slot* S = data[z][dhm_matrix - 1];
-				if (S->bReady)
+				if(S->bReady)
 				{
 					S->bReady = FALSE;
 					task.push_back(S);
 				}
-				for (int x = dhm_matrix - 1; x > 0; --x)
+				for(int x = dhm_matrix - 1; x > 0; --x)
 					data[z][x] = data[z][x - 1];
 				data[z][0] = S;
 				S->set(c_x - dhm_line + 0, c_z - dhm_line + z);
 			}
 		}
 	}
-	if (v_z != c_z)
+	if(v_z != c_z)
 	{
-		if (v_z > c_z)
+		if(v_z > c_z)
 		{
 			// scroll matrix down a bit
 			++c_z;
-			for (int x = 0; x < dhm_matrix; ++x)
+			for(int x = 0; x < dhm_matrix; ++x)
 			{
 				Slot* S = data[dhm_matrix - 1][x];
-				if (S->bReady)
+				if(S->bReady)
 				{
 					S->bReady = FALSE;
 					task.push_back(S);
 				}
-				for (int z = dhm_matrix - 1; z > 0; --z)
+				for(int z = dhm_matrix - 1; z > 0; --z)
 					data[z][x] = data[z - 1][x];
 				data[0][x] = S;
 				S->set(c_x - dhm_line + x, c_z - dhm_line + 0);
@@ -97,15 +97,15 @@ void CHM_Static::Update()
 		{
 			// scroll matrix up
 			--c_z;
-			for (int x = 0; x < dhm_matrix; ++x)
+			for(int x = 0; x < dhm_matrix; ++x)
 			{
 				Slot* S = data[0][x];
-				if (S->bReady)
+				if(S->bReady)
 				{
 					S->bReady = FALSE;
 					task.push_back(S);
 				}
-				for (int z = 0; z < dhm_matrix; ++z)
+				for(int z = 0; z < dhm_matrix; ++z)
 					data[z - 1][x] = data[z][x];
 				data[dhm_matrix - 1][x] = S;
 				S->set(c_x - dhm_line + x, c_z - dhm_line + dhm_matrix - 1);
@@ -114,7 +114,7 @@ void CHM_Static::Update()
 	}
 
 	// *****	perform TASKs
-	for (int taskid = 0; (taskid < tasksPerFrame) && (!task.empty()); ++taskid)
+	for(int taskid = 0; (taskid < tasksPerFrame) && (!task.empty()); ++taskid)
 	{
 		Slot* S = task.back();
 		task.pop_back();
@@ -130,7 +130,7 @@ void CHM_Static::Update()
 		XRC.BBoxMode(0); // BBOX_TRITEST
 		XRC.BBoxCollide(precalc_identity, g_pGameLevel->ObjectSpace.GetStaticModel(), precalc_identity, bb);
 		u32 triCount = XRC.GetBBoxContactCount();
-		if (0 == triCount)
+		if(0 == triCount)
 		{
 			S->clear();
 			continue;
@@ -140,7 +140,7 @@ void CHM_Static::Update()
 		RAPID::tri* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
 		fvec3 vecUP;
 		vecUP.set(0, 1, 0);
-		for (u32 tid = 0; tid < triCount; ++tid)
+		for(u32 tid = 0; tid < triCount; ++tid)
 		{
 			RAPID::tri& T = tris[XRC.BBoxContact[tid].id];
 			Poly P;
@@ -149,15 +149,15 @@ void CHM_Static::Update()
 			P.v[1].set(*T.verts[1]);
 			P.v[2].set(*T.verts[2]);
 			N.mknormal(P.v[0], P.v[1], P.v[2]);
-			if (N.dotproduct(vecUP) <= 0)
+			if(N.dotproduct(vecUP) <= 0)
 				continue;
 			polys.push_back(P);
 		}
 
 		// Perform testing
-		for (int z = 0; z < dhm_precision; ++z)
+		for(int z = 0; z < dhm_precision; ++z)
 		{
-			for (int x = 0; x < dhm_precision; ++x)
+			for(int x = 0; x < dhm_precision; ++x)
 			{
 				float rx = (float(x) / float(dhm_precision)) * dhm_size + bb.min.x;
 				float rz = (float(z) / float(dhm_precision)) * dhm_size + bb.min.z;
@@ -168,14 +168,14 @@ void CHM_Static::Update()
 				dir.set(0, -1, 0);
 
 				float r_u, r_v, r_range;
-				for (u32 tid = 0; tid < polys.size(); ++tid)
+				for(u32 tid = 0; tid < polys.size(); ++tid)
 				{
-					if (RAPID::TestRayTri(pos, dir, polys[tid].v, r_u, r_v, r_range, TRUE))
+					if(RAPID::TestRayTri(pos, dir, polys[tid].v, r_u, r_v, r_range, TRUE))
 					{
-						if (r_range >= 0)
+						if(r_range >= 0)
 						{
 							float y_test = pos.y - r_range;
-							if (y_test > ry)
+							if(y_test > ry)
 								ry = y_test;
 						}
 					}
@@ -221,7 +221,7 @@ float CHM_Dynamic::Query(float x, float z)
 //
 float CHeightMap::Query(float x, float z)
 {
-	if (dwFrame != Engine.TimeManager.GetFrameCount())
+	if(dwFrame != Engine.TimeManager.GetFrameCount())
 	{
 		dwFrame = Engine.TimeManager.GetFrameCount();
 		hm_static.Update();

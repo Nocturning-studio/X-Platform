@@ -57,10 +57,10 @@ CALifeHumanBrain::CALifeHumanBrain(object_type* object) : inherited(object)
 			  "Recompile Level Editor and xrAI and rebuild file \"game.spawn\"!");
 #endif
 
-	for (int i = 0, n = m_cpEquipmentPreferences.size(); i < n; ++i)
+	for(int i = 0, n = m_cpEquipmentPreferences.size(); i < n; ++i)
 		m_cpEquipmentPreferences[i] = u8(::Random.randI(3));
 
-	for (int i = 0, n = m_cpMainWeaponPreferences.size(); i < n; ++i)
+	for(int i = 0, n = m_cpMainWeaponPreferences.size(); i < n; ++i)
 		m_cpMainWeaponPreferences[i] = u8(::Random.randI(3));
 }
 
@@ -79,10 +79,10 @@ void CALifeHumanBrain::on_state_write(NET_Packet& packet)
 
 void CALifeHumanBrain::on_state_read(NET_Packet& packet)
 {
-	if (object().m_wVersion <= 19)
+	if(object().m_wVersion <= 19)
 		return;
 
-	if (object().m_wVersion < 110)
+	if(object().m_wVersion < 110)
 	{
 		{
 			DWORD_VECTOR temp;
@@ -94,16 +94,16 @@ void CALifeHumanBrain::on_state_read(NET_Packet& packet)
 		}
 	}
 
-	if (object().m_wVersion <= 35)
+	if(object().m_wVersion <= 35)
 		return;
 
-	if (object().m_wVersion < 110)
+	if(object().m_wVersion < 110)
 	{
 		shared_str temp;
 		packet.r_stringZ(temp);
 	}
 
-	if (object().m_wVersion < 118)
+	if(object().m_wVersion < 118)
 	{
 		ALife::OBJECT_VECTOR temp;
 		load_data(temp, packet);

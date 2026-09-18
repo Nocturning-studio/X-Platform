@@ -61,18 +61,18 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 	ps_who->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 
 	CSE_Abstract* pOldOwner = CL->owner;
-	if (pOldOwner && pOldOwner->owner == CL)
+	if(pOldOwner && pOldOwner->owner == CL)
 	{
 
 		CSE_ALifeCreatureActor* pOldActor = smart_cast<CSE_ALifeCreatureActor*>(pOldOwner);
 		CSE_Spectator* pOldSpectator = smart_cast<CSE_Spectator*>(pOldOwner);
 
-		if (pOldActor)
+		if(pOldActor)
 		{
 			AllowDeadBodyRemove(id, pOldActor->ID);
 			m_CorpseList.push_back(pOldOwner->ID);
 		};
-		if (pOldSpectator)
+		if(pOldSpectator)
 		{
 			pOldSpectator->owner = (xrClientData*)m_server->GetServerClient();
 			NET_Packet P;
@@ -93,11 +93,11 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 
 	R_ASSERT2(pA || pS, "Respawned Client is not Actor nor Spectator");
 
-	if (pA)
+	if(pA)
 	{
 		pA->s_team = u8(ps_who->team);
 
-		if (xr_strlen(SkinName) != 0)
+		if(xr_strlen(SkinName) != 0)
 			pA->set_visual(SkinName);
 
 		ps_who->resetFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
@@ -106,11 +106,11 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 		E->o_Position.set(rp.P);
 		E->o_Angle.set(rp.A);
 	}
-	else if (pS)
+	else if(pS)
 	{
 		fvec3 Pos, Angle;
 		///			ps_who->setFlag(GAME_PLAYER_FLAG_CS_SPECTATOR);
-		if (!GetPosAngleFromActor(id, Pos, Angle))
+		if(!GetPosAngleFromActor(id, Pos, Angle))
 			assign_RP(E, ps_who);
 		else
 		{
@@ -155,7 +155,8 @@ void game_sv_mp_script::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 Game
 #pragma warning(push)
 #pragma warning(disable : 4709)
 
-template <typename T> struct CWrapperBaseSVMPScript : public T, public luabind::wrap_base
+template <typename T>
+struct CWrapperBaseSVMPScript : public T, public luabind::wrap_base
 {
 	typedef T inherited;
 	typedef CWrapperBaseSVMPScript<T> self_type;
@@ -212,7 +213,7 @@ void game_sv_mp_script::script_register(lua_State* L)
 				  .def("type_name", &BaseType::type_name, &WrapType::type_name_static)
 				  .def("Update", &BaseType::Update, &WrapType::Update_static)
 				  .def("OnEvent", &BaseType::OnEvent, &WrapType::OnEvent_static)
-				  .def("Create", (void(BaseType::*)(LPCSTR))(&BaseType::Create), &WrapType::Create_static)
+				  .def("Create", (void (BaseType::*)(LPCSTR))(&BaseType::Create), &WrapType::Create_static)
 
 				  .def("OnPlayerHitPlayer", &BaseType::OnPlayerHitPlayer, &WrapType::OnPlayerHitPlayer_static)
 

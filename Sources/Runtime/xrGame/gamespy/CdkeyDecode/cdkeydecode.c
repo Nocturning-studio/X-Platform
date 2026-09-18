@@ -13,15 +13,15 @@ int DecodeKeyData(const char* key, unsigned char* extradata)
 	int extradatalen;
 	int i;
 
-	if (!CleanForBase32(cleankey, key, MAX_ENCODED_KEY + 1))
+	if(!CleanForBase32(cleankey, key, MAX_ENCODED_KEY + 1))
 		return 0;
 	keybytes = ConvertFromBase32((char*)keyandcheck, cleankey, (int)strlen(cleankey));
-	if (keybytes <= 0)
+	if(keybytes <= 0)
 		return 0; // decoded incorrectly
 	extradatalen = keybytes - KEY_LENGTH - CHECK_LENGTH;
-	if (extradatalen <= 0)
+	if(extradatalen <= 0)
 		return 0;
-	for (i = 0; i < extradatalen; i++)
+	for(i = 0; i < extradatalen; i++)
 		extradata[i] = keyandcheck[i] ^ keyandcheck[extradatalen + (i % KEY_LENGTH)];
 	return extradatalen;
 }
@@ -31,7 +31,7 @@ static unsigned short CreateCheck(unsigned char* key, int keylen, unsigned short
 	int i;
 	unsigned int check = 0;
 
-	for (i = 0; i < keylen; i++)
+	for(i = 0; i < keylen; i++)
 	{
 		check = check * 0x9CCF9319 + key[i];
 	}
@@ -46,10 +46,10 @@ int VerifyClientCheck(const char* key, unsigned short cskey)
 	int extradatalen = 0;
 	unsigned short correctcheck = 0;
 
-	if (!CleanForBase32(cleankey, key, MAX_ENCODED_KEY + 1))
+	if(!CleanForBase32(cleankey, key, MAX_ENCODED_KEY + 1))
 		return 0;
 	keybytes = ConvertFromBase32((char*)keyandcheck, cleankey, (int)strlen(cleankey));
-	if (keybytes <= 0)
+	if(keybytes <= 0)
 		return 0; // decoded incorrectly
 	extradatalen = keybytes - KEY_LENGTH - CHECK_LENGTH;
 

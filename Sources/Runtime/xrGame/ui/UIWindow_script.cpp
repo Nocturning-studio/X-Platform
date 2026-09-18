@@ -118,12 +118,12 @@ void CUIWindow::script_register(lua_State* L)
 			 .def("SetAutoDelete", &CUIWindow::SetAutoDelete)
 			 .def("IsAutoDelete", &CUIWindow::IsAutoDelete)
 
-			 .def("SetWndRect", (void(CUIWindow::*)(Frect)) & CUIWindow::SetWndRect_script)
-			 .def("SetWndRect", (void(CUIWindow::*)(float, float, float, float)) & CUIWindow::SetWndRect_script)
-			 .def("Init", (void(CUIWindow::*)(float, float, float, float)) & CUIWindow::Init)
-			 .def("Init", (void(CUIWindow::*)(Frect*)) & CUIWindow::Init)
-			 .def("SetWndPos", (void(CUIWindow::*)(float, float)) & CUIWindow::SetWndPos)
-			 .def("SetWndSize", (void(CUIWindow::*)(float, float)) & CUIWindow::SetWndSize)
+			 .def("SetWndRect", (void (CUIWindow::*)(Frect))&CUIWindow::SetWndRect_script)
+			 .def("SetWndRect", (void (CUIWindow::*)(float, float, float, float))&CUIWindow::SetWndRect_script)
+			 .def("Init", (void (CUIWindow::*)(float, float, float, float))&CUIWindow::Init)
+			 .def("Init", (void (CUIWindow::*)(Frect*))&CUIWindow::Init)
+			 .def("SetWndPos", (void (CUIWindow::*)(float, float))&CUIWindow::SetWndPos)
+			 .def("SetWndSize", (void (CUIWindow::*)(float, float))&CUIWindow::SetWndSize)
 			 .def("GetWidth", &CUIWindow::GetWidth)
 			 .def("SetWidth", &CUIWindow::SetWidth)
 			 .def("GetHeight", &CUIWindow::GetHeight)
@@ -159,7 +159,7 @@ void CUIWindow::script_register(lua_State* L)
 			 .def("SetHeight", &CUIFrameWindow::SetHeight)
 			 .def("SetColor", &CUIFrameWindow::SetColor)
 			 .def("GetTitleStatic", &CUIFrameWindow::GetTitleStatic)
-			 .def("Init", (void(CUIFrameWindow::*)(LPCSTR, float, float, float, float)) & CUIFrameWindow::Init),
+			 .def("Init", (void (CUIFrameWindow::*)(LPCSTR, float, float, float, float))&CUIFrameWindow::Init),
 
 		 class_<CUIFrameLineWnd, CUIWindow>("CUIFrameLineWnd")
 			 .def(constructor<>())
@@ -168,7 +168,7 @@ void CUIWindow::script_register(lua_State* L)
 			 .def("SetOrientation", &CUIFrameLineWnd::SetOrientation)
 			 .def("SetColor", &CUIFrameLineWnd::SetColor)
 			 .def("GetTitleStatic", &CUIFrameLineWnd::GetTitleStatic)
-			 .def("Init", (void(CUIFrameLineWnd::*)(LPCSTR, float, float, float, float, bool)) & CUIFrameLineWnd::Init),
+			 .def("Init", (void (CUIFrameLineWnd::*)(LPCSTR, float, float, float, float, bool))&CUIFrameLineWnd::Init),
 
 		 class_<CUILabel, CUIFrameLineWnd>("CUILabel")
 			 .def(constructor<>())
@@ -268,7 +268,7 @@ void CUIWindow::script_register(lua_State* L)
 
 				 // CUISleepWnd
 				 //				value("SLEEP_WND_PERFORM_BUTTON_CLICKED",
-				 //int(SLEEP_WND_PERFORM_BUTTON_CLICKED)),
+				 // int(SLEEP_WND_PERFORM_BUTTON_CLICKED)),
 
 				 // CUIOutfitSlot
 				 value("UNDRESS_OUTFIT", int(UNDRESS_OUTFIT)), value("OUTFIT_RETURNED_BACK", int(OUTFIT_RETURNED_BACK)),

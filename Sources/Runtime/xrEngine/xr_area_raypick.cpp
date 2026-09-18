@@ -41,7 +41,7 @@ BOOL CObjectSpace::_RayTest(const fvec3& start, const fvec3& dir, float range, c
 	collide::ray_defs Q(start, dir, range, CDB::OPT_ONLYFIRST, tgt);
 
 	// dynamic test
-	if (tgt & rqtDyn)
+	if(tgt & rqtDyn)
 	{
 		u32 d_flags = STYPE_COLLIDEABLE | ((tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((tgt & rqtShape) ? STYPE_SHAPE : 0);
 
@@ -49,45 +49,45 @@ BOOL CObjectSpace::_RayTest(const fvec3& start, const fvec3& dir, float range, c
 		g_SpatialSpace->q_ray(r_spatial, 0, d_flags, start, dir, range);
 
 		// Determine visibility for dynamic part of scene
-		for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+		for(u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 		{
 			ISpatial* spatial = r_spatial[o_it];
 			CObject* collidable = spatial->dcast_CObject();
-			if (collidable && (collidable != ignore_object))
+			if(collidable && (collidable != ignore_object))
 			{
 				ECollisionFormType tp = collidable->collidable.model->Type();
-				if ((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject) &&
-					collidable->collidable.model->_RayQuery(Q, r_temp))
+				if((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject) &&
+				   collidable->collidable.model->_RayQuery(Q, r_temp))
 					return TRUE;
-				if ((tgt & rqtShape) && (tp == cftShape) && collidable->collidable.model->_RayQuery(Q, r_temp))
+				if((tgt & rqtShape) && (tp == cftShape) && collidable->collidable.model->_RayQuery(Q, r_temp))
 					return TRUE;
 			}
 		}
 	}
 
 	// static test
-	if (tgt & rqtStatic)
+	if(tgt & rqtStatic)
 	{
 		// If we get here - test static model
-		if (cache)
+		if(cache)
 		{
 			// 0. similar query???
-			if (cache->similar(start, dir, range))
+			if(cache->similar(start, dir, range))
 			{
 				return cache->result;
 			}
 
 			// 1. Check cached polygon
 			float _u, _v, _range;
-			if (CDB::TestRayTri(start, dir, cache->verts, _u, _v, _range, false))
+			if(CDB::TestRayTri(start, dir, cache->verts, _u, _v, _range, false))
 			{
-				if (_range > 0 && _range < range)
+				if(_range > 0 && _range < range)
 					return TRUE;
 			}
 
 			// 2. Polygon doesn't pick - real database query
 			xrc.ray_query(&Static, start, dir, range);
-			if (0 == xrc.r_count())
+			if(0 == xrc.r_count())
 			{
 				cache->set(start, dir, range, FALSE);
 				return FALSE;
@@ -140,15 +140,15 @@ BOOL CObjectSpace::_RayPick(const fvec3& start, const fvec3& dir, float range, r
 	R.range = range;
 	R.element = -1;
 	// static test
-	if (tgt & rqtStatic)
+	if(tgt & rqtStatic)
 	{
 		xrc.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 		xrc.ray_query(&Static, start, dir, range);
-		if (xrc.r_count())
+		if(xrc.r_count())
 			R.set_if_less(xrc.r_begin());
 	}
 	// dynamic test
-	if (tgt & rqtDyn)
+	if(tgt & rqtDyn)
 	{
 		collide::ray_defs Q(start, dir, R.range, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, tgt);
 		// traverse object database
@@ -156,26 +156,26 @@ BOOL CObjectSpace::_RayPick(const fvec3& start, const fvec3& dir, float range, r
 			STYPE_COLLIDEABLE | ((tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((tgt & rqtShape) ? STYPE_SHAPE : 0);
 		g_SpatialSpace->q_ray(r_spatial, 0, d_flags, start, dir, range);
 		// Determine visibility for dynamic part of scene
-		for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+		for(u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 		{
 			ISpatial* spatial = r_spatial[o_it];
 			CObject* collidable = spatial->dcast_CObject();
-			if (0 == collidable)
+			if(0 == collidable)
 				continue;
-			if (collidable == ignore_object)
+			if(collidable == ignore_object)
 				continue;
 			ECollisionFormType tp = collidable->collidable.model->Type();
-			if (((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((tgt & rqtShape) && (tp == cftShape)))
+			if(((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((tgt & rqtShape) && (tp == cftShape)))
 			{
 				u32 C = D3DCOLOR_XRGB(64, 64, 64);
 				Q.range = R.range;
-				if (collidable->collidable.model->_RayQuery(Q, r_temp))
+				if(collidable->collidable.model->_RayQuery(Q, r_temp))
 				{
 					C = D3DCOLOR_XRGB(128, 128, 196);
 					R.set_if_less(r_temp.r_begin());
 				}
 #ifdef DEBUG
-				if (bDebug)
+				if(bDebug)
 				{
 					Fsphere S;
 					S.P = spatial->spatial.sphere.P;
@@ -221,51 +221,51 @@ BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
 		STYPE_COLLIDEABLE | ((R.tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((R.tgt & rqtShape) ? STYPE_SHAPE : 0);
 
 	// Test static
-	if (R.tgt & s_mask)
+	if(R.tgt & s_mask)
 	{
 		xrc.ray_options(R.flags);
 		xrc.ray_query(&Static, R.start, R.dir, R.range);
-		if (xrc.r_count())
+		if(xrc.r_count())
 		{
 			CDB::RESULT* _I = xrc.r_begin();
 			CDB::RESULT* _E = xrc.r_end();
-			for (; _I != _E; _I++)
+			for(; _I != _E; _I++)
 				r_temp.append_result(rq_result().set(0, _I->range, _I->id));
 		}
 	}
 	// Test dynamic
-	if (R.tgt & d_mask)
+	if(R.tgt & d_mask)
 	{
 		// Traverse object database
 		g_SpatialSpace->q_ray(r_spatial, 0, d_flags, R.start, R.dir, R.range);
-		for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+		for(u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 		{
 			CObject* collidable = r_spatial[o_it]->dcast_CObject();
-			if (0 == collidable)
+			if(0 == collidable)
 				continue;
-			if (collidable == ignore_object)
+			if(collidable == ignore_object)
 				continue;
 			ICollisionForm* cform = collidable->collidable.model;
 			ECollisionFormType tp = collidable->collidable.model->Type();
-			if (((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((R.tgt & rqtShape) && (tp == cftShape)))
+			if(((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((R.tgt & rqtShape) && (tp == cftShape)))
 			{
-				if (tb && !tb(R, collidable, user_data))
+				if(tb && !tb(R, collidable, user_data))
 					continue;
 				cform->_RayQuery(R, r_temp);
 			}
 		}
 	}
-	if (r_temp.r_count())
+	if(r_temp.r_count())
 	{
 		r_temp.r_sort();
 		collide::rq_result* _I = r_temp.r_begin();
 		collide::rq_result* _E = r_temp.r_end();
-		for (; _I != _E; _I++)
+		for(; _I != _E; _I++)
 		{
 			r_dest.append_result(*_I);
-			if (!(CB ? CB(*_I, user_data) : TRUE))
+			if(!(CB ? CB(*_I, user_data) : TRUE))
 				return r_dest.r_count();
-			if (R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST))
+			if(R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST))
 				return r_dest.r_count();
 		}
 	}
@@ -299,7 +299,7 @@ BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_de
 	do
 	{
 		r_temp.r_clear();
-		if (R.tgt & s_mask)
+		if(R.tgt & s_mask)
 		{
 			// static test allowed
 
@@ -307,7 +307,7 @@ BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_de
 			xrc.ray_options(s_rd.flags);
 			xrc.ray_query(&Static, s_rd.start, s_rd.dir, s_rd.range);
 
-			if (xrc.r_count())
+			if(xrc.r_count())
 			{
 				VERIFY(xrc.r_count() == 1);
 				rq_result s_res;
@@ -326,27 +326,27 @@ BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_de
 			}
 		}
 		// test dynamic
-		if (R.tgt & d_mask)
+		if(R.tgt & d_mask)
 		{
 			// Traverse object database
 			g_SpatialSpace->q_ray(r_spatial, 0, d_flags, d_rd.start, d_rd.dir, d_rd.range);
-			for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+			for(u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 			{
 				CObject* collidable = r_spatial[o_it]->dcast_CObject();
-				if (0 == collidable)
+				if(0 == collidable)
 					continue;
-				if (collidable == ignore_object)
+				if(collidable == ignore_object)
 					continue;
 				ICollisionForm* cform = collidable->collidable.model;
 				ECollisionFormType tp = collidable->collidable.model->Type();
-				if (((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) ||
-					((R.tgt & rqtShape) && (tp == cftShape)))
+				if(((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) ||
+				   ((R.tgt & rqtShape) && (tp == cftShape)))
 				{
-					if (tb && !tb(d_rd, collidable, user_data))
+					if(tb && !tb(d_rd, collidable, user_data))
 						continue;
 					u32 r_cnt = r_temp.r_count();
 					cform->_RayQuery(d_rd, r_temp);
-					for (int k = r_cnt; k < r_temp.r_count(); k++)
+					for(int k = r_cnt; k < r_temp.r_count(); k++)
 					{
 						rq_result& d_res = *(r_temp.r_begin() + k);
 						d_res.range += d_range;
@@ -357,23 +357,23 @@ BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_de
 		// set dynamic ray def
 		d_rd.start = s_rd.start;
 		d_range = R.range - s_rd.range;
-		if (r_temp.r_count())
+		if(r_temp.r_count())
 		{
 			r_temp.r_sort();
 			collide::rq_result* _I = r_temp.r_begin();
 			collide::rq_result* _E = r_temp.r_end();
-			for (; _I != _E; _I++)
+			for(; _I != _E; _I++)
 			{
 				r_dest.append_result(*_I);
-				if (!(CB ? CB(*_I, user_data) : TRUE))
+				if(!(CB ? CB(*_I, user_data) : TRUE))
 					return r_dest.r_count();
-				if (R.flags & CDB::OPT_ONLYFIRST)
+				if(R.flags & CDB::OPT_ONLYFIRST)
 					return r_dest.r_count();
 			}
 		}
-		if ((R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST)) && r_dest.r_count())
+		if((R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST)) && r_dest.r_count())
 			return r_dest.r_count();
-	} while (r_temp.r_count());
+	} while(r_temp.r_count());
 	return r_dest.r_count();
 }
 
@@ -381,7 +381,7 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 							 LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
 #ifdef DEBUG
-	if (R.range < EPS || !_valid(R.range))
+	if(R.range < EPS || !_valid(R.range))
 		Debug.fatal(DEBUG_INFO, "Invalid RayQuery range passed: %f.", R.range);
 #endif
 	// ÏÎËÓ×ÀÅÌ ÄÀÍÍÛÅ
@@ -411,67 +411,67 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 	s_res.set(0, s_rd.range, -1);
 	do
 	{
-		if ((R.tgt & s_mask) && sd_test.is(s_mask) && (next_test & s_mask))
+		if((R.tgt & s_mask) && sd_test.is(s_mask) && (next_test & s_mask))
 		{
 			s_res.set(0, s_rd.range, -1);
 			// Test static model
-			if (s_rd.range > EPS)
+			if(s_rd.range > EPS)
 			{
 				xrc.ray_options(s_rd.flags);
 				xrc.ray_query(&Static, s_rd.start, s_rd.dir, s_rd.range);
-				if (xrc.r_count())
+				if(xrc.r_count())
 				{
-					if (s_res.set_if_less(xrc.r_begin()))
+					if(s_res.set_if_less(xrc.r_begin()))
 					{
 						// set new static start & range
 						s_rd.range -= (s_res.range + EPS_L);
 						s_rd.start.mad(s_rd.dir, s_res.range + EPS_L);
 						s_res.range = R.range - s_rd.range - EPS_L;
 #ifdef DEBUG
-						if (!(fis_zero(s_res.range, EPS) || s_res.range >= 0.f))
+						if(!(fis_zero(s_res.range, EPS) || s_res.range >= 0.f))
 							Debug.fatal(DEBUG_INFO, "Invalid RayQuery static range: %f (%f). /#1/", s_res.range,
 										s_rd.range);
 #endif
 					}
 				}
 			}
-			if (!s_res.valid())
+			if(!s_res.valid())
 				sd_test.set(s_mask, FALSE);
 		}
-		if ((R.tgt & d_mask) && sd_test.is_any(d_mask) && (next_test & d_mask))
+		if((R.tgt & d_mask) && sd_test.is_any(d_mask) && (next_test & d_mask))
 		{
 			r_temp.r_clear();
 
-			if (d_rd.range > EPS)
+			if(d_rd.range > EPS)
 			{
 				// Traverse object database
 				g_SpatialSpace->q_ray(r_spatial, 0, d_flags, d_rd.start, d_rd.dir, d_rd.range);
 				// Determine visibility for dynamic part of scene
-				for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+				for(u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 				{
 					CObject* collidable = r_spatial[o_it]->dcast_CObject();
-					if (0 == collidable)
+					if(0 == collidable)
 						continue;
-					if (collidable == ignore_object)
+					if(collidable == ignore_object)
 						continue;
 					ICollisionForm* cform = collidable->collidable.model;
 					ECollisionFormType tp = collidable->collidable.model->Type();
-					if (((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) ||
-						((R.tgt & rqtShape) && (tp == cftShape)))
+					if(((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) ||
+					   ((R.tgt & rqtShape) && (tp == cftShape)))
 					{
-						if (tb && !tb(d_rd, collidable, user_data))
+						if(tb && !tb(d_rd, collidable, user_data))
 							continue;
 						cform->_RayQuery(d_rd, r_temp);
 					}
 #ifdef DEBUG
-					if (!((0 == r_temp.r_count()) || (r_temp.r_count() && (fis_zero(r_temp.r_begin()->range, EPS) ||
-																		   (r_temp.r_begin()->range >= 0.f)))))
+					if(!((0 == r_temp.r_count()) || (r_temp.r_count() && (fis_zero(r_temp.r_begin()->range, EPS) ||
+																		  (r_temp.r_begin()->range >= 0.f)))))
 						Debug.fatal(DEBUG_INFO, "Invalid RayQuery dynamic range: %f (%f). /#2/",
 									r_temp.r_begin()->range, d_rd.range);
 #endif
 				}
 			}
-			if (r_temp.r_count())
+			if(r_temp.r_count())
 			{
 				// set new dynamic start & range
 				rq_result& d_res = *r_temp.r_begin();
@@ -479,7 +479,7 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 				d_rd.start.mad(d_rd.dir, d_res.range + EPS_L);
 				d_res.range = R.range - d_rd.range - EPS_L;
 #ifdef DEBUG
-				if (!(fis_zero(d_res.range, EPS) || d_res.range >= 0.f))
+				if(!(fis_zero(d_res.range, EPS) || d_res.range >= 0.f))
 					Debug.fatal(DEBUG_INFO, "Invalid RayQuery dynamic range: %f (%f). /#3/", d_res.range, d_rd.range);
 #endif
 			}
@@ -488,10 +488,10 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 				sd_test.set(d_mask, FALSE);
 			}
 		}
-		if (s_res.valid() && r_temp.r_count())
+		if(s_res.valid() && r_temp.r_count())
 		{
 			// all test return result
-			if (s_res.range < r_temp.r_begin()->range)
+			if(s_res.range < r_temp.r_begin()->range)
 			{
 				// static nearer
 				BOOL need_calc = CB ? CB(s_res, user_data) : TRUE;
@@ -506,14 +506,14 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 				r_dest.append_result(*r_temp.r_begin());
 			}
 		}
-		else if (s_res.valid())
+		else if(s_res.valid())
 		{
 			// only static return result
 			BOOL need_calc = CB ? CB(s_res, user_data) : TRUE;
 			next_test = need_calc ? s_mask : rqtNone;
 			r_dest.append_result(s_res);
 		}
-		else if (r_temp.r_count())
+		else if(r_temp.r_count())
 		{
 			// only dynamic return result
 			BOOL need_calc = CB ? CB(*r_temp.r_begin(), user_data) : TRUE;
@@ -525,9 +525,9 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 			// nothing selected
 			next_test = rqtNone;
 		}
-		if ((R.flags & CDB::OPT_ONLYFIRST) || (R.flags & CDB::OPT_ONLYNEAREST))
+		if((R.flags & CDB::OPT_ONLYFIRST) || (R.flags & CDB::OPT_ONLYNEAREST))
 			break;
-	} while (next_test != rqtNone);
+	} while(next_test != rqtNone);
 	return r_dest.r_count();
 }
 

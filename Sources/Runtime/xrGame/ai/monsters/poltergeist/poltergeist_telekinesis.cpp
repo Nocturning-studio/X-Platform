@@ -48,17 +48,17 @@ void CPolterTele::update_schedule()
 {
 	inherited::update_schedule();
 
-	if (!m_object->g_Alive() || !Actor() || !Actor()->g_Alive())
+	if(!m_object->g_Alive() || !Actor() || !Actor()->g_Alive())
 		return;
-	if (Actor()->Position().distance_to(m_object->Position()) > m_pmt_distance)
+	if(Actor()->Position().distance_to(m_object->Position()) > m_pmt_distance)
 		return;
 
-	switch (m_state)
+	switch(m_state)
 	{
 	case eStartRaiseObjects:
-		if (m_time + m_time_next < time())
+		if(m_time + m_time_next < time())
 		{
-			if (!tele_raise_objects())
+			if(!tele_raise_objects())
 				m_state = eRaisingObjects;
 
 			m_time = time();
@@ -66,9 +66,9 @@ void CPolterTele::update_schedule()
 				m_pmt_raise_time_to_wait_in_objects / 2 + Random.randI(m_pmt_raise_time_to_wait_in_objects / 2);
 		}
 
-		if (m_state == eStartRaiseObjects)
+		if(m_state == eStartRaiseObjects)
 		{
-			if (m_object->CTelekinesis::get_objects_count() >= m_pmt_object_count)
+			if(m_object->CTelekinesis::get_objects_count() >= m_pmt_object_count)
 			{
 				m_state = eRaisingObjects;
 				m_time = time();
@@ -77,14 +77,14 @@ void CPolterTele::update_schedule()
 
 		break;
 	case eRaisingObjects:
-		if (m_time + m_pmt_time_to_hold > time())
+		if(m_time + m_pmt_time_to_hold > time())
 			break;
 
 		m_time = time();
 		m_time_next = 0;
 		m_state = eFireObjects;
 	case eFireObjects:
-		if (m_time + m_time_next < time())
+		if(m_time + m_time_next < time())
 		{
 			tele_fire_objects();
 
@@ -92,14 +92,14 @@ void CPolterTele::update_schedule()
 			m_time_next = m_pmt_time_to_wait_in_objects / 2 + Random.randI(m_pmt_time_to_wait_in_objects / 2);
 		}
 
-		if (m_object->CTelekinesis::get_objects_count() == 0)
+		if(m_object->CTelekinesis::get_objects_count() == 0)
 		{
 			m_state = eWait;
 			m_time = time();
 		}
 		break;
 	case eWait:
-		if (m_time + m_pmt_time_to_wait < time())
+		if(m_time + m_pmt_time_to_wait < time())
 		{
 			m_time_next = 0;
 			m_state = eStartRaiseObjects;
@@ -172,9 +172,9 @@ bool CPolterTele::trace_object(CObject* obj, const fvec3& target)
 	dir.normalize();
 
 	collide::rq_result l_rq;
-	if (Level().ObjectSpace.RayPick(trace_from, dir, range, collide::rqtBoth, l_rq, obj))
+	if(Level().ObjectSpace.RayPick(trace_from, dir, range, collide::rqtBoth, l_rq, obj))
 	{
-		if (l_rq.O == Actor())
+		if(l_rq.O == Actor())
 			return true;
 	}
 
@@ -186,21 +186,21 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*>& objects, const fvec3& p
 	m_nearest.clear_not_free();
 	Level().ObjectSpace.GetNearest(m_nearest, pos, m_pmt_radius, NULL);
 
-	for (u32 i = 0; i < m_nearest.size(); i++)
+	for(u32 i = 0; i < m_nearest.size(); i++)
 	{
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
 		CCustomMonster* custom_monster = smart_cast<CCustomMonster*>(m_nearest[i]);
-		if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || custom_monster ||
-			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
-			(obj->m_pPhysicsShell->getMass() < m_pmt_object_min_mass) ||
-			(obj->m_pPhysicsShell->getMass() > m_pmt_object_max_mass) || (obj == m_object) ||
-			m_object->CTelekinesis::is_active_object(obj) || !obj->m_pPhysicsShell->get_ApplyByGravity())
+		if(!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || custom_monster ||
+		   (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
+		   (obj->m_pPhysicsShell->getMass() < m_pmt_object_min_mass) ||
+		   (obj->m_pPhysicsShell->getMass() > m_pmt_object_max_mass) || (obj == m_object) ||
+		   m_object->CTelekinesis::is_active_object(obj) || !obj->m_pPhysicsShell->get_ApplyByGravity())
 			continue;
 
 		fvec3 center;
 		Actor()->Center(center);
 
-		if (trace_object(obj, center) || trace_object(obj, get_head_position(Actor())))
+		if(trace_object(obj, center) || trace_object(obj, get_head_position(Actor())))
 			objects.push_back(obj);
 	}
 }
@@ -229,7 +229,7 @@ bool CPolterTele::tele_raise_objects()
 
 	// сортировать и оставить только необходимое количество объектов
 	concurrency::parallel_sort(tele_objects.begin(), tele_objects.end(),
-			  best_object_predicate2_telekinesis(m_object->Position(), Actor()->Position()));
+							   best_object_predicate2_telekinesis(m_object->Position(), Actor()->Position()));
 
 	// оставить уникальные объекты
 	tele_objects.erase(std::unique(tele_objects.begin(), tele_objects.end()), tele_objects.end());
@@ -245,10 +245,10 @@ bool CPolterTele::tele_raise_objects()
 	//	bool	rotate = false;
 
 	//	CTelekinesis::activate		(obj, m_pmt_tele_raise_speed, m_pmt_tele_object_height, m_pmt_tele_time_object_keep,
-	//rotate);
+	// rotate);
 	//}
 
-	if (!tele_objects.empty())
+	if(!tele_objects.empty())
 	{
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(tele_objects[0]);
 
@@ -267,11 +267,11 @@ bool CPolterTele::tele_raise_objects()
 
 void CPolterTele::tele_fire_objects()
 {
-	for (u32 i = 0; i < m_object->CTelekinesis::get_objects_total_count(); i++)
+	for(u32 i = 0; i < m_object->CTelekinesis::get_objects_total_count(); i++)
 	{
 		CTelekineticObject tele_object = m_object->CTelekinesis::get_object_by_index(i);
 		// if (tele_object.get_state() != TS_Fire) {
-		if ((tele_object.get_state() == TS_Raise) || (tele_object.get_state() == TS_Keep))
+		if((tele_object.get_state() == TS_Raise) || (tele_object.get_state() == TS_Keep))
 		{
 			fvec3 enemy_pos;
 			enemy_pos = get_head_position(Actor());

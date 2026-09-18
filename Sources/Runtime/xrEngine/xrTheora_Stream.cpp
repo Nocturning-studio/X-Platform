@@ -57,17 +57,17 @@ BOOL CTheoraStream::ParseHeaders()
 	BOOL stateflag = FALSE;
 
 	// find Theora stream
-	while (!stateflag)
+	while(!stateflag)
 	{
 		int ret = ReadData();
-		if (ret == 0)
+		if(ret == 0)
 			break;
-		while (ogg_sync_pageout(&o_sync_state, &o_page) > 0)
+		while(ogg_sync_pageout(&o_sync_state, &o_page) > 0)
 		{
 			ogg_stream_state test;
 
 			// is this a mandated initial header? If not, stop parsing
-			if (!ogg_page_bos(&o_page))
+			if(!ogg_page_bos(&o_page))
 			{
 				// don't leak the page; get it into the appropriate stream
 				ogg_stream_pagein(&o_stream_state, &o_page);
@@ -80,7 +80,7 @@ BOOL CTheoraStream::ParseHeaders()
 			ogg_stream_packetout(&test, &o_packet);
 
 			// identify the codec: try theora
-			if (!header_count && theora_decode_header(&t_info, &t_comment, &o_packet) >= 0)
+			if(!header_count && theora_decode_header(&t_info, &t_comment, &o_packet) >= 0)
 			{
 				// it is theora
 				CopyMemory(&o_stream_state, &test, sizeof(test));
@@ -96,47 +96,47 @@ BOOL CTheoraStream::ParseHeaders()
 	}
 
 	// fail if theora stream not found in source
-	if (0 == header_count)
+	if(0 == header_count)
 		return FALSE;
 
 	// we're expecting more header packets.
-	while ((header_count && header_count < 3))
+	while((header_count && header_count < 3))
 	{
 		int ret;
 
 		// look for further theora headers
-		while (header_count && (header_count < 3) && 0 != (ret = ogg_stream_packetout(&o_stream_state, &o_packet)))
+		while(header_count && (header_count < 3) && 0 != (ret = ogg_stream_packetout(&o_stream_state, &o_packet)))
 		{
-			if (ret < 0)
+			if(ret < 0)
 			{
 				fprintf(stderr, "Error parsing Theora stream headers; corrupt stream?\n");
 				exit(1);
 			}
-			if (theora_decode_header(&t_info, &t_comment, &o_packet))
+			if(theora_decode_header(&t_info, &t_comment, &o_packet))
 			{
 				printf("Error parsing Theora stream headers; corrupt stream?\n");
 				exit(1);
 			}
 			header_count++;
-			if (header_count == 3)
+			if(header_count == 3)
 				break;
 		}
 
 		// The header pages/packets will arrive before anything else we
 		// care about, or the stream is not obeying spec
-		if (ogg_sync_pageout(&o_sync_state, &o_page) > 0)
+		if(ogg_sync_pageout(&o_sync_state, &o_page) > 0)
 		{
 			ogg_stream_pagein(&o_stream_state, &o_page);
 		}
 		else
 		{
 			int result = ReadData(); // someone needs more data
-			if (result == 0)
+			if(result == 0)
 				FATAL("End of file while searching for codec headers.");
 		}
 	}
 
-	if (3 != header_count)
+	if(3 != header_count)
 		return FALSE;
 
 	// init decode
@@ -148,11 +148,11 @@ BOOL CTheoraStream::ParseHeaders()
 	// calculate frame count & total length in ms & key rate
 	ogg_int64_t frame_count = 0;
 	ogg_int64_t p_key = 0, c_key = 0;
-	while (TRUE)
+	while(TRUE)
 	{
-		while (ogg_stream_packetout(&o_stream_state, &o_packet) > 0)
+		while(ogg_stream_packetout(&o_stream_state, &o_packet) > 0)
 		{
-			if ((0 == key_rate) && theora_packet_iskeyframe(&o_packet))
+			if((0 == key_rate) && theora_packet_iskeyframe(&o_packet))
 			{
 				p_key = c_key;
 				c_key = frame_count;
@@ -161,12 +161,12 @@ BOOL CTheoraStream::ParseHeaders()
 			frame_count++;
 		}
 		// check eof
-		if (source->eof())
+		if(source->eof())
 			break;
 		// no data yet for somebody.  Grab another page
-		if (0 == ReadData())
+		if(0 == ReadData())
 			break;
-		while (ogg_sync_pageout(&o_sync_state, &o_page) > 0)
+		while(ogg_sync_pageout(&o_sync_state, &o_page) > 0)
 			ogg_stream_pagein(&o_stream_state, &o_page);
 	}
 	tm_total = iFloor(frame_count / fpms);
@@ -184,20 +184,20 @@ BOOL CTheoraStream::Decode(u32 tm_play)
 	t_frame = iFloor(tm_play * fpms);
 	ogg_int64_t k_frame = t_frame - t_frame % key_rate;
 
-	if (d_frame < t_frame)
+	if(d_frame < t_frame)
 	{
 		BOOL result = FALSE;
 		ogg_packet o_packet;
-		while (d_frame < t_frame)
+		while(d_frame < t_frame)
 		{
-			while (FALSE == result)
+			while(FALSE == result)
 			{
 				// theora is one in, one out...
-				if (ogg_stream_packetout(&o_stream_state, &o_packet) > 0 && !theora_packet_isheader(&o_packet))
+				if(ogg_stream_packetout(&o_stream_state, &o_packet) > 0 && !theora_packet_isheader(&o_packet))
 				{
 					d_frame++;
 					//. hack preroll
-					if (d_frame < k_frame)
+					if(d_frame < k_frame)
 					{
 						//.						dbg_log				((stderr,"%04d: preroll\n",d_frame));
 						VERIFY((0 != d_frame % key_rate) || (0 == d_frame % key_rate) && theora_packet_iskeyframe(&o_packet));
@@ -210,7 +210,7 @@ BOOL CTheoraStream::Decode(u32 tm_play)
 					int res = theora_decode_packetin(&t_state, &o_packet);
 					VERIFY(res != OC_BADPACKET);
 					//.					dbg_log					((stderr,"%04d: granule frame\n",theora_granule_frame(&t_state,t_state.granulepos)));
-					if (d_frame >= t_frame)
+					if(d_frame >= t_frame)
 						result = TRUE;
 				}
 				else
@@ -218,12 +218,12 @@ BOOL CTheoraStream::Decode(u32 tm_play)
 			}
 			// check eof
 			VERIFY(!(FALSE == result && source->eof()));
-			if (FALSE == result)
+			if(FALSE == result)
 			{
 				// no data yet for somebody.  Grab another page
-				if (ReadData())
+				if(ReadData())
 				{
-					while (ogg_sync_pageout(&o_sync_state, &o_page) > 0)
+					while(ogg_sync_pageout(&o_sync_state, &o_page) > 0)
 						ogg_stream_pagein(&o_stream_state, &o_page);
 				}
 			}

@@ -28,7 +28,7 @@ struct dxGeomTransform : public dxGeom
 void CPHPositionsPairs::Positions(const fvec3*& p0, const fvec3*& p1)
 {
 	CODEGeom* g = *geom;
-	if (g->is_transformed_bt())
+	if(g->is_transformed_bt())
 	{
 		g->geometry_transform()->recomputeAABB();
 		p0 = (const fvec3*)dGeomGetUserData(g->geom())->last_pos;

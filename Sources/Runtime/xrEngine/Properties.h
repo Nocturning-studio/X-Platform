@@ -110,7 +110,7 @@ IC void xrPWRITE(IWriter& fs, u32 ID, LPCSTR name, LPCVOID data, u32 size)
 {
 	fs.w_u32(ID);
 	fs.w_stringZ(name);
-	if (data && size)
+	if(data && size)
 		fs.w(data, size);
 }
 IC void xrPWRITE_MARKER(IWriter& fs, LPCSTR name)
@@ -118,9 +118,9 @@ IC void xrPWRITE_MARKER(IWriter& fs, LPCSTR name)
 	xrPWRITE(fs, xrPID_MARKER, name, 0, 0);
 }
 
-#define xrPWRITE_PROP(FS, name, ID, data)                                                                              \
-	{                                                                                                                  \
-		xrPWRITE(fs, ID, name, &data, sizeof(data));                                                                   \
+#define xrPWRITE_PROP(FS, name, ID, data)            \
+	{                                                \
+		xrPWRITE(fs, ID, name, &data, sizeof(data)); \
 	}
 
 // Readers
@@ -135,19 +135,19 @@ IC void xrPREAD_MARKER(IReader& fs)
 	R_ASSERT(xrPID_MARKER == xrPREAD(fs));
 }
 
-#define xrPREAD_PROP(fs, ID, data)                                                                                     \
-	{                                                                                                                  \
-		R_ASSERT(ID == xrPREAD(fs));                                                                                   \
-		fs.r(&data, sizeof(data));                                                                                     \
-		switch (ID)                                                                                                    \
-		{                                                                                                              \
-		case xrPID_TOKEN:                                                                                              \
-			fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item));                                          \
-			break;                                                                                                     \
-		case xrPID_CLSID:                                                                                              \
-			fs.advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID));                                                 \
-			break;                                                                                                     \
-		};                                                                                                             \
+#define xrPREAD_PROP(fs, ID, data)                                            \
+	{                                                                         \
+		R_ASSERT(ID == xrPREAD(fs));                                          \
+		fs.r(&data, sizeof(data));                                            \
+		switch(ID)                                                            \
+		{                                                                     \
+		case xrPID_TOKEN:                                                     \
+			fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item)); \
+			break;                                                            \
+		case xrPID_CLSID:                                                     \
+			fs.advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID));        \
+			break;                                                            \
+		};                                                                    \
 	}
 #pragma pack(pop)
 #endif // xrPROPERTIES_H

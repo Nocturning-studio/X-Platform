@@ -34,7 +34,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 	//	{
 	int num = xml.GetNodesNum("", 0, "texture");
 	//		regions regs;
-	for (int i = 0; i < num; i++)
+	for(int i = 0; i < num; i++)
 	{
 		TEX_INFO info;
 
@@ -68,7 +68,7 @@ void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureCon
 
 	it = m_textures.find(texture_name);
 
-	if (it != m_textures.end())
+	if(it != m_textures.end())
 	{
 		tc->CreateShader(*((*it).second.file));
 		tc->SetOriginalRectEx((*it).second.rect);
@@ -94,7 +94,7 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
 
 	it = m_textures.find(texture_name);
 
-	if (it != m_textures.end())
+	if(it != m_textures.end())
 	{
 		tc->CreateShader(*((*it).second.file), shader_name);
 		tc->SetOriginalRectEx((*it).second.rect);
@@ -158,7 +158,7 @@ TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name
 	xr_map<shared_str, TEX_INFO>::iterator it;
 	it = m_textures.find(texture_name);
 
-	if (it != m_textures.end())
+	if(it != m_textures.end())
 		return (it->second);
 	else
 	{

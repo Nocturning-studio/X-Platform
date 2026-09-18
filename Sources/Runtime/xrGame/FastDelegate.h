@@ -153,7 +153,8 @@ namespace detail
 // I use it instead of static_cast<> to emphasize that I'm not doing
 // anything nasty.
 // Usage is identical to static_cast<>
-template <class OutputClass, class InputClass> inline OutputClass implicit_cast(InputClass input)
+template <class OutputClass, class InputClass>
+inline OutputClass implicit_cast(InputClass input)
 {
 	return input;
 }
@@ -168,12 +169,15 @@ template <class OutputClass, class InputClass> inline OutputClass implicit_cast(
 
 // This union is declared outside the horrible_cast because BCC 5.5.1
 // can't inline a function with a nested class, and gives a warning.
-template <class OutputClass, class InputClass> union horrible_union {
+template <class OutputClass, class InputClass>
+union horrible_union
+{
 	OutputClass out;
 	InputClass in;
 };
 
-template <class OutputClass, class InputClass> inline OutputClass horrible_cast(const InputClass input)
+template <class OutputClass, class InputClass>
+inline OutputClass horrible_cast(const InputClass input)
 {
 	horrible_union<OutputClass, InputClass> u;
 	// Cause a compile-time error if in, out and u are not the same size.
@@ -227,24 +231,28 @@ typedef void DefaultVoid;
 
 // Translate from 'DefaultVoid' to 'void'.
 // Everything else is unchanged
-template <class T> struct DefaultVoidToVoid
+template <class T>
+struct DefaultVoidToVoid
 {
 	typedef T type;
 };
 
-template <> struct DefaultVoidToVoid<DefaultVoid>
+template <>
+struct DefaultVoidToVoid<DefaultVoid>
 {
 	typedef void type;
 };
 
 // Translate from 'void' into 'DefaultVoid'
 // Everything else is unchanged
-template <class T> struct VoidToDefaultVoid
+template <class T>
+struct VoidToDefaultVoid
 {
 	typedef T type;
 };
 
-template <> struct VoidToDefaultVoid<void>
+template <>
+struct VoidToDefaultVoid<void>
 {
 	typedef DefaultVoid type;
 };
@@ -284,7 +292,7 @@ class GenericClass;
 #endif
 
 // The size of a single inheritance member function pointer.
-const int SINGLE_MEMFUNCPTR_SIZE = sizeof(void(xr_stdcall GenericClass::*)());
+const int SINGLE_MEMFUNCPTR_SIZE = sizeof(void (xr_stdcall GenericClass::*)());
 
 //						SimplifyMemFunc< >::Convert()
 //
@@ -298,7 +306,8 @@ const int SINGLE_MEMFUNCPTR_SIZE = sizeof(void(xr_stdcall GenericClass::*)());
 //	template specialisation, I use full specialisation of a wrapper struct.
 
 // general case -- don't know how to convert it. Force a compile failure
-template <int N> struct SimplifyMemFunc
+template <int N>
+struct SimplifyMemFunc
 {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass* Convert(X* pthis, XFuncType function_to_bind, GenericMemFuncType& bound_func)
@@ -312,7 +321,8 @@ template <int N> struct SimplifyMemFunc
 
 // For compilers where all member func ptrs are the same size, everything goes here.
 // For non-standard compilers, only single_inheritance classes go here.
-template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>
+template <>
+struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>
 {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass* Convert(X* pthis, XFuncType function_to_bind, GenericMemFuncType& bound_func)
@@ -346,14 +356,16 @@ template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>
 
 // __multiple_inheritance classes go here
 // Nasty hack for Microsoft and Intel (IA32 and Itanium)
-template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + sizeof(int)>
+template <>
+struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + sizeof(int)>
 {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass* Convert(X* pthis, XFuncType function_to_bind, GenericMemFuncType& bound_func)
 	{
 		// We need to use a horrible_cast to do this conversion.
 		// In MSVC, a multiple inheritance member pointer is internally defined as:
-		union {
+		union
+		{
 			XFuncType func;
 			struct
 			{
@@ -404,20 +416,23 @@ struct GenericVirtualClass : virtual public GenericClass
 };
 
 // __virtual_inheritance classes go here
-template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 2 * sizeof(int)>
+template <>
+struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 2 * sizeof(int)>
 {
 
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass* Convert(X* pthis, XFuncType function_to_bind, GenericMemFuncType& bound_func)
 	{
-		union {
+		union
+		{
 			XFuncType func;
 			GenericClass* (X::*ProbeFunc)();
 			MicrosoftVirtualMFP s;
 		} u;
 		u.func = function_to_bind;
 		bound_func = reinterpret_cast<GenericMemFuncType>(u.s.codeptr);
-		union {
+		union
+		{
 			GenericVirtualClass::ProbePtrType virtfunc;
 			MicrosoftVirtualMFP s;
 		} u2;
@@ -440,7 +455,8 @@ template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 2 * sizeof(int)>
 // Nasty hack for Microsoft Visual C++ 6.0
 // unknown_inheritance classes go here
 // There is a compiler bug in MSVC6 which generates incorrect code in this case!!
-template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3 * sizeof(int)>
+template <>
+struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3 * sizeof(int)>
 {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass* Convert(X* pthis, XFuncType function_to_bind, GenericMemFuncType& bound_func)
@@ -480,14 +496,16 @@ template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3 * sizeof(int)>
 // unknown_inheritance classes go here
 // This is probably the ugliest bit of code I've ever written. Look at the casts!
 // There is a compiler bug in MSVC6 which prevents it from using this code.
-template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3 * sizeof(int)>
+template <>
+struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3 * sizeof(int)>
 {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass* Convert(X* pthis, XFuncType function_to_bind, GenericMemFuncType& bound_func)
 	{
 		// The member function pointer is 16 bytes long. We can't use a normal cast, but
 		// we can use a union to do the conversion.
-		union {
+		union
+		{
 			XFuncType func;
 			// In VC++ and ICL, an unknown_inheritance member pointer
 			// is internally defined as:
@@ -504,7 +522,7 @@ template <> struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3 * sizeof(int)>
 		u.func = function_to_bind;
 		bound_func = u.s.funcaddress;
 		int virtual_delta = 0;
-		if (u.s.vtable_index)
+		if(u.s.vtable_index)
 		{ // Virtual inheritance is used
 			// First, get to the vtable.
 			// It is 'vtordisp' bytes from the start of the class.
@@ -588,7 +606,7 @@ class DelegateMemento
 
   public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
-	DelegateMemento() : m_pthis(0), m_pFunction(0), m_pStaticFunction(0){};
+	DelegateMemento() : m_pthis(0), m_pFunction(0), m_pStaticFunction(0) {};
 	void clear()
 	{
 		m_pthis = 0;
@@ -596,7 +614,7 @@ class DelegateMemento
 		m_pStaticFunction = 0;
 	}
 #else
-	DelegateMemento() : m_pthis(0), m_pFunction(0){};
+	DelegateMemento() : m_pthis(0), m_pFunction(0) {};
 	void clear()
 	{
 		m_pthis = 0;
@@ -608,12 +626,12 @@ class DelegateMemento
 	inline bool IsEqual(const DelegateMemento& x) const
 	{
 		// We have to cope with the static function pointers as a special case
-		if (m_pFunction != x.m_pFunction)
+		if(m_pFunction != x.m_pFunction)
 			return false;
 		// the static function ptrs must either both be equal, or both be 0.
-		if (m_pStaticFunction != x.m_pStaticFunction)
+		if(m_pStaticFunction != x.m_pStaticFunction)
 			return false;
-		if (m_pStaticFunction != 0)
+		if(m_pStaticFunction != 0)
 			return m_pthis == x.m_pthis;
 		else
 			return true;
@@ -629,10 +647,10 @@ class DelegateMemento
 	{
 		// deal with static function pointers first
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
-		if (m_pStaticFunction != 0 || right.m_pStaticFunction != 0)
+		if(m_pStaticFunction != 0 || right.m_pStaticFunction != 0)
 			return m_pStaticFunction < right.m_pStaticFunction;
 #endif
-		if (m_pthis != right.m_pthis)
+		if(m_pthis != right.m_pthis)
 			return m_pthis < right.m_pthis;
 		// There are no ordering operators for member function pointers,
 		// but we can fake one by comparing each byte. The resulting ordering is
@@ -712,7 +730,8 @@ class ClosurePtr : public DelegateMemento
 	// Here's the clever bit: we convert an arbitrary member function into a
 	// standard form. XMemFunc should be a member function of class X, but I can't
 	// enforce that here. It needs to be enforced by the wrapper class.
-	template <class X, class XMemFunc> inline void bindmemfunc(X* pthis, XMemFunc function_to_bind)
+	template <class X, class XMemFunc>
+	inline void bindmemfunc(X* pthis, XMemFunc function_to_bind)
 	{
 		m_pthis = SimplifyMemFunc<sizeof(function_to_bind)>::Convert(pthis, function_to_bind, m_pFunction);
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
@@ -723,7 +742,8 @@ class ClosurePtr : public DelegateMemento
 	// Since we know that the member function is const, it's safe to
 	// remove the const qualifier from the 'this' pointer with a const_cast.
 	// VC6 has problems if we just overload 'bindmemfunc', so we give it a different name.
-	template <class X, class XMemFunc> inline void bindconstmemfunc(const X* pthis, XMemFunc function_to_bind)
+	template <class X, class XMemFunc>
+	inline void bindconstmemfunc(const X* pthis, XMemFunc function_to_bind)
 	{
 		m_pthis =
 			SimplifyMemFunc<sizeof(function_to_bind)>::Convert(const_cast<X*>(pthis), function_to_bind, m_pFunction);
@@ -732,7 +752,8 @@ class ClosurePtr : public DelegateMemento
 #endif
 	}
 #ifdef FASTDELEGATE_GCC_BUG_8271 // At present, GCC doesn't recognize constness of MFPs in templates
-	template <class X, class XMemFunc> inline void bindmemfunc(const X* pthis, XMemFunc function_to_bind)
+	template <class X, class XMemFunc>
+	inline void bindmemfunc(const X* pthis, XMemFunc function_to_bind)
 	{
 		bindconstmemfunc(pthis, function_to_bind);
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
@@ -768,10 +789,11 @@ class ClosurePtr : public DelegateMemento
 	// The next two functions are for operator ==, =, and the copy constructor.
 	// We may need to convert the m_pthis pointers, so that
 	// they remain as self-references.
-	template <class DerivedClass> inline void CopyFrom(DerivedClass* pParent, const DelegateMemento& x)
+	template <class DerivedClass>
+	inline void CopyFrom(DerivedClass* pParent, const DelegateMemento& x)
 	{
 		SetMementoFrom(x);
-		if (m_pStaticFunction != 0)
+		if(m_pStaticFunction != 0)
 		{
 			// transform self references...
 			m_pthis = reinterpret_cast<GenericClass*>(pParent);
@@ -784,7 +806,7 @@ class ClosurePtr : public DelegateMemento
 	inline void bindstaticfunc(DerivedClass* pParent, ParentInvokerSig static_function_invoker,
 							   StaticFuncPtr function_to_bind)
 	{
-		if (function_to_bind == 0)
+		if(function_to_bind == 0)
 		{ // cope with assignment to 0
 			m_pFunction = 0;
 		}
@@ -810,7 +832,8 @@ class ClosurePtr : public DelegateMemento
 	// Note that the Sun C++ and MSVC documentation explicitly state that they
 	// support static_cast between void * and function pointers.
 
-	template <class DerivedClass> inline void CopyFrom(DerivedClass* pParent, const DelegateMemento& right)
+	template <class DerivedClass>
+	inline void CopyFrom(DerivedClass* pParent, const DelegateMemento& right)
 	{
 		SetMementoFrom(right);
 	}
@@ -822,7 +845,7 @@ class ClosurePtr : public DelegateMemento
 	inline void bindstaticfunc(DerivedClass* pParent, ParentInvokerSig static_function_invoker,
 							   StaticFuncPtr function_to_bind)
 	{
-		if (function_to_bind == 0)
+		if(function_to_bind == 0)
 		{ // cope with assignment to 0
 			m_pFunction = 0;
 		}
@@ -861,7 +884,7 @@ class ClosurePtr : public DelegateMemento
 	// Does the closure contain this static function?
 	inline bool IsEqualToStaticFuncPtr(StaticFuncPtr funcptr)
 	{
-		if (funcptr == 0)
+		if(funcptr == 0)
 			return empty();
 		// For the Evil method, if it doesn't actually contain a static function, this will return an arbitrary
 		// value that is not equal to any valid function pointer.
@@ -911,7 +934,8 @@ class ClosurePtr : public DelegateMemento
 // allows "if (dg==0) ..." to compile.
 
 // N=0
-template <class RetType = detail::DefaultVoid> class FastDelegate0
+template <class RetType = detail::DefaultVoid>
+class FastDelegate0
 {
   private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -955,16 +979,19 @@ template <class RetType = detail::DefaultVoid> class FastDelegate0
 		return x.m_Closure.IsLess(m_Closure);
 	}
 	// Binding to non-const member functions
-	template <class X, class Y> FastDelegate0(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)())
+	template <class X, class Y>
+	FastDelegate0(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)())
 	{
 		m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
 	}
-	template <class X, class Y> inline void bind(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)())
+	template <class X, class Y>
+	inline void bind(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)())
 	{
 		m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
 	}
 	// Binding to const member functions.
-	template <class X, class Y> FastDelegate0(const Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)() const)
+	template <class X, class Y>
+	FastDelegate0(const Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)() const)
 	{
 		m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind);
 	}
@@ -1000,7 +1027,7 @@ template <class RetType = detail::DefaultVoid> class FastDelegate0
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -1046,7 +1073,8 @@ template <class RetType = detail::DefaultVoid> class FastDelegate0
 };
 
 // N=1
-template <class Param1, class RetType = detail::DefaultVoid> class FastDelegate1
+template <class Param1, class RetType = detail::DefaultVoid>
+class FastDelegate1
 {
   private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1090,11 +1118,13 @@ template <class Param1, class RetType = detail::DefaultVoid> class FastDelegate1
 		return x.m_Closure.IsLess(m_Closure);
 	}
 	// Binding to non-const member functions
-	template <class X, class Y> FastDelegate1(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)(Param1 p1))
+	template <class X, class Y>
+	FastDelegate1(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)(Param1 p1))
 	{
 		m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
 	}
-	template <class X, class Y> inline void bind(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)(Param1 p1))
+	template <class X, class Y>
+	inline void bind(Y* pthis, DesiredRetType (xr_stdcall X::*function_to_bind)(Param1 p1))
 	{
 		m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
 	}
@@ -1136,7 +1166,7 @@ template <class Param1, class RetType = detail::DefaultVoid> class FastDelegate1
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -1182,7 +1212,8 @@ template <class Param1, class RetType = detail::DefaultVoid> class FastDelegate1
 };
 
 // N=2
-template <class Param1, class Param2, class RetType = detail::DefaultVoid> class FastDelegate2
+template <class Param1, class Param2, class RetType = detail::DefaultVoid>
+class FastDelegate2
 {
   private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1274,7 +1305,7 @@ template <class Param1, class Param2, class RetType = detail::DefaultVoid> class
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -1320,7 +1351,8 @@ template <class Param1, class Param2, class RetType = detail::DefaultVoid> class
 };
 
 // N=3
-template <class Param1, class Param2, class Param3, class RetType = detail::DefaultVoid> class FastDelegate3
+template <class Param1, class Param2, class Param3, class RetType = detail::DefaultVoid>
+class FastDelegate3
 {
   private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1414,7 +1446,7 @@ template <class Param1, class Param2, class Param3, class RetType = detail::Defa
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -1557,7 +1589,7 @@ class FastDelegate4
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -1701,7 +1733,7 @@ class FastDelegate5
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -1849,7 +1881,7 @@ class FastDelegate6
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -2002,7 +2034,7 @@ class FastDelegate7
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -2156,7 +2188,7 @@ class FastDelegate8
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::* unspecified_bool_type;
 
   public:
 	operator unspecified_bool_type() const
@@ -2217,7 +2249,8 @@ class FastDelegate8
 
 // Declare FastDelegate as a class template.  It will be specialized
 // later for all number of arguments.
-template <typename Signature> class FastDelegate;
+template <typename Signature>
+class FastDelegate;
 
 // N=0
 //  Specialization to allow use of

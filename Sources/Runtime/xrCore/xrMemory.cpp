@@ -16,7 +16,7 @@ bool shared_str_initialized = false;
 #ifdef DEBUG_MEMORY_MANAGER
 XRCORE_API void dump_phase()
 {
-	if (!Memory.debug_mode)
+	if(!Memory.debug_mode)
 		return;
 
 	static int phase_counter = 0;
@@ -54,11 +54,11 @@ void xrMemory::_initialize(BOOL bDebug)
 	stat_counter = 0;
 
 	const char* cmdLine = Core.Params;
-	if (!strstr(cmdLine, "-pure_alloc"))
+	if(!strstr(cmdLine, "-pure_alloc"))
 	{
 		u32 element = mem_pools_ebase;
 		u32 sector = mem_pools_ebase * 1024;
-		for (u32 pid = 0; pid < mem_pools_count; ++pid)
+		for(u32 pid = 0; pid < mem_pools_count; ++pid)
 		{
 			mem_pools[pid]._initialize(element, sector, 0x1);
 			element += mem_pools_ebase;
@@ -66,7 +66,7 @@ void xrMemory::_initialize(BOOL bDebug)
 	}
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (strstr(cmdLine, "-memo") == nullptr)
+	if(strstr(cmdLine, "-memo") == nullptr)
 		mem_initialized = TRUE;
 	else
 		g_bMEMO = TRUE;
@@ -91,7 +91,7 @@ void xrMemory::_destroy()
 	mem_alloc_show_stats();
 	mem_alloc_clear_stats();
 
-	if (debug_mode)
+	if(debug_mode)
 		dbg_dump_str_leaks();
 #endif
 
@@ -99,7 +99,7 @@ void xrMemory::_destroy()
 	xr_delete(g_pStringContainer);
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (debug_mode)
+	if(debug_mode)
 		dbg_dump_leaks();
 #endif
 
@@ -116,12 +116,12 @@ void xrMemory::mem_compact()
 	_heapmin();
 	HeapCompact(GetProcessHeap(), 0);
 
-	if (g_pStringContainer)
+	if(g_pStringContainer)
 		g_pStringContainer->clean();
-	if (g_pSharedMemoryContainer)
+	if(g_pSharedMemoryContainer)
 		g_pSharedMemoryContainer->clean();
 
-	if (strstr(Core.Params, "-swap_on_compact"))
+	if(strstr(Core.Params, "-swap_on_compact"))
 		SetProcessWorkingSetSize(GetCurrentProcess(), size_t(-1), size_t(-1));
 }
 
@@ -137,7 +137,7 @@ ICF u32 get_header(void* P)
 
 void xrMemory::mem_statistic(LPCSTR fn)
 {
-	if (!debug_mode)
+	if(!debug_mode)
 		return;
 	mem_compact();
 
@@ -149,13 +149,13 @@ void xrMemory::mem_statistic(LPCSTR fn)
 	fprintf(Fa, "POOL: %d %dKb\n", mem_pools_count, mem_pools_ebase);
 
 	fprintf(Fa, "$BEGIN CHUNK #1\n");
-	for (u32 k = 0; k < mem_pools_count; ++k)
+	for(u32 k = 0; k < mem_pools_count; ++k)
 		fprintf(Fa, "%2d: %d %db\n", k, mem_pools[k].get_block_count(), (k + 1) * 16);
 
 	fprintf(Fa, "$BEGIN CHUNK #2\n");
-	for (size_t it = 0; it < debug_info.size(); ++it)
+	for(size_t it = 0; it < debug_info.size(); ++it)
 	{
-		if (debug_info[it]._p == nullptr)
+		if(debug_info[it]._p == nullptr)
 			continue;
 
 		u32 p_current = get_header(debug_info[it]._p);
@@ -165,11 +165,11 @@ void xrMemory::mem_statistic(LPCSTR fn)
 	}
 
 	{
-		for (u32 k = 0; k < mem_pools_count; ++k)
+		for(u32 k = 0; k < mem_pools_count; ++k)
 		{
 			MEMPOOL& pool = mem_pools[k];
 			u8* list = pool.list;
-			while (list)
+			while(list)
 			{
 				pool.cs.Enter();
 				u8* next = *reinterpret_cast<u8**>(list);

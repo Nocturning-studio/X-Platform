@@ -6,7 +6,7 @@
 void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_control, fvec3& dest_position,
 												 float time_delta)
 {
-	if (!m_monster->is_hidden())
+	if(!m_monster->is_hidden())
 	{
 		inherited::move_along_path(movement_control, dest_position, time_delta);
 		return;
@@ -15,16 +15,16 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 	dest_position = m_monster->m_current_position;
 
 	// Если нет движения по пути
-	if (!enabled() || path_completed() || detail().path().empty() ||
-		detail().completed(m_monster->m_current_position, true) ||
-		(detail().curr_travel_point_index() >= detail().path().size() - 1) || fis_zero(old_desirable_speed()))
+	if(!enabled() || path_completed() || detail().path().empty() ||
+	   detail().completed(m_monster->m_current_position, true) ||
+	   (detail().curr_travel_point_index() >= detail().path().size() - 1) || fis_zero(old_desirable_speed()))
 	{
 		m_speed = 0.f;
 		dest_position = CalculateRealPosition();
 		return;
 	}
 
-	if (time_delta < EPS)
+	if(time_delta < EPS)
 	{
 		dest_position = CalculateRealPosition();
 		return;
@@ -43,7 +43,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 	u32 prev_cur_point_index = detail().curr_travel_point_index();
 
 	// обновить detail().curr_travel_point_index() в соответствие с текущей позицией
-	while (detail().curr_travel_point_index() < detail().path().size() - 2)
+	while(detail().curr_travel_point_index() < detail().path().size() - 2)
 	{
 
 		float pos_dist_to_cur_point =
@@ -53,7 +53,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 		float cur_point_dist_to_next_point = detail().path()[detail().curr_travel_point_index()].position.distance_to(
 			detail().path()[detail().curr_travel_point_index() + 1].position);
 
-		if ((pos_dist_to_cur_point > cur_point_dist_to_next_point) && (pos_dist_to_cur_point > pos_dist_to_next_point))
+		if((pos_dist_to_cur_point > cur_point_dist_to_next_point) && (pos_dist_to_cur_point > pos_dist_to_next_point))
 		{
 			++detail().m_current_travel_point;
 		}
@@ -69,17 +69,17 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 	// дистанция до целевой точки
 	float dist_to_target = dir_to_target.magnitude();
 
-	while (dist > dist_to_target)
+	while(dist > dist_to_target)
 	{
 		dest_position.set(target);
 
-		if (detail().curr_travel_point_index() + 1 >= detail().path().size())
+		if(detail().curr_travel_point_index() + 1 >= detail().path().size())
 			break;
 		else
 		{
 			dist -= dist_to_target;
 			++detail().m_current_travel_point;
-			if ((detail().curr_travel_point_index() + 1) >= detail().path().size())
+			if((detail().curr_travel_point_index() + 1) >= detail().path().size())
 				break;
 			target.set(detail().path()[detail().curr_travel_point_index() + 1].position);
 			dir_to_target.sub(target, dest_position);
@@ -87,10 +87,10 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
 		}
 	}
 
-	if (prev_cur_point_index != detail().curr_travel_point_index())
+	if(prev_cur_point_index != detail().curr_travel_point_index())
 		on_travel_point_change(prev_cur_point_index);
 
-	if (dist_to_target < EPS_L)
+	if(dist_to_target < EPS_L)
 	{
 		detail().m_current_travel_point = detail().path().size() - 1;
 		m_speed = 0.f;

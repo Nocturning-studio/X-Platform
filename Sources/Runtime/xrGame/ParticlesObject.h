@@ -69,7 +69,7 @@ class CParticlesObject : public CPS_Instance
 	}
 	static void Destroy(CParticlesObject*& p)
 	{
-		if (p)
+		if(p)
 		{
 			p->PSI_destroy();
 			p = 0;

@@ -23,7 +23,7 @@ void CWeaponBM16::Load(LPCSTR section)
 
 void CWeaponBM16::PlayReloadSound()
 {
-	if (m_magazine.size() == 1)
+	if(m_magazine.size() == 1)
 		PlaySound(m_sndReload1, get_LastFP());
 	else
 		PlaySound(sndReload, get_LastFP());
@@ -31,7 +31,7 @@ void CWeaponBM16::PlayReloadSound()
 
 void CWeaponBM16::PlayAnimShoot()
 {
-	if (m_magazine.size() == 1)
+	if(m_magazine.size() == 1)
 		m_pHUD->animPlay(random_anim(mhud_shot1), TRUE, this, GetState());
 	else
 		m_pHUD->animPlay(random_anim(mhud.mhud_shots), TRUE, this, GetState());
@@ -42,7 +42,7 @@ void CWeaponBM16::PlayAnimReload()
 	bool b_both = HaveCartridgeInInventory(2);
 
 	VERIFY(GetState() == eReload);
-	if (m_magazine.size() == 1 || !b_both)
+	if(m_magazine.size() == 1 || !b_both)
 		m_pHUD->animPlay(random_anim(mhud_reload1), TRUE, this, GetState());
 	else
 		m_pHUD->animPlay(random_anim(mhud.mhud_reload), TRUE, this, GetState());
@@ -50,22 +50,25 @@ void CWeaponBM16::PlayAnimReload()
 
 void CWeaponBM16::PlayAnimIdle()
 {
-	if (TryPlayAnimIdle())
+	if(TryPlayAnimIdle())
 		return;
 
-	if (IsZoomed())
+	if(IsZoomed())
 	{
-		switch (m_magazine.size())
+		switch(m_magazine.size())
 		{
-		case 0: {
+		case 0:
+		{
 			m_pHUD->animPlay(random_anim(mhud.mhud_idle_aim), TRUE, NULL, GetState());
 		}
 		break;
-		case 1: {
+		case 1:
+		{
 			m_pHUD->animPlay(random_anim(mhud_zoomed_idle1), TRUE, NULL, GetState());
 		}
 		break;
-		case 2: {
+		case 2:
+		{
 			m_pHUD->animPlay(random_anim(mhud_zoomed_idle2), TRUE, NULL, GetState());
 		}
 		break;
@@ -73,17 +76,20 @@ void CWeaponBM16::PlayAnimIdle()
 	}
 	else
 	{
-		switch (m_magazine.size())
+		switch(m_magazine.size())
 		{
-		case 0: {
+		case 0:
+		{
 			m_pHUD->animPlay(random_anim(mhud.mhud_idle), TRUE, NULL, GetState());
 		}
 		break;
-		case 1: {
+		case 1:
+		{
 			m_pHUD->animPlay(random_anim(mhud_idle1), TRUE, NULL, GetState());
 		}
 		break;
-		case 2: {
+		case 2:
+		{
 			m_pHUD->animPlay(random_anim(mhud_idle2), TRUE, NULL, GetState());
 		}
 		break;

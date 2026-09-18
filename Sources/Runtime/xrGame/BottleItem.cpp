@@ -25,10 +25,10 @@ void CBottleItem::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	if (pSettings->line_exist(section, "break_particles"))
+	if(pSettings->line_exist(section, "break_particles"))
 		m_sBreakParticles = pSettings->r_string(section, "break_particles");
 
-	if (pSettings->line_exist(section, "break_sound"))
+	if(pSettings->line_exist(section, "break_sound"))
 		sndBreaking.create(pSettings->r_string(section, "break_sound"), st_Effect, sg_SourceType);
 
 	m_alcohol = READ_IF_EXISTS(pSettings, r_float, section, "eat_alcohol", 0.0f);
@@ -38,7 +38,7 @@ void CBottleItem::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 
-	switch (type)
+	switch(type)
 	{
 	case GE_GRENADE_EXPLODE:
 		BreakToPieces();
@@ -52,7 +52,7 @@ void CBottleItem::BreakToPieces()
 	sndBreaking.play_at_pos(0, Position(), false);
 
 	// отыграть партиклы разбивания
-	if (*m_sBreakParticles)
+	if(*m_sBreakParticles)
 	{
 		// показываем эффекты
 		CParticlesObject* pStaticPG;
@@ -61,7 +61,7 @@ void CBottleItem::BreakToPieces()
 	}
 
 	// ликвидировать сам объект
-	if (Local())
+	if(Local())
 	{
 		DestroyObject();
 	}
@@ -71,10 +71,10 @@ void CBottleItem::Hit(SHit* pHDS)
 {
 	inherited::Hit(pHDS);
 
-	if (pHDS->damage() > BREAK_POWER)
+	if(pHDS->damage() > BREAK_POWER)
 	{
 		// Generate Expode event
-		if (Local())
+		if(Local())
 		{
 			NET_Packet P;
 			u_EventGen(P, GE_GRENADE_EXPLODE, ID());

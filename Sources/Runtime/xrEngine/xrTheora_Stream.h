@@ -26,11 +26,11 @@ class ENGINE_API CTheoraStream
 	u32 key_rate; // theora have const key rate
 	float fpms;
 
-protected:
+  protected:
 	int ReadData();
 	BOOL ParseHeaders();
 
-public:
+  public:
 	CTheoraStream();
 	virtual ~CTheoraStream();
 
@@ -43,4 +43,4 @@ public:
 	yuv_buffer* CurrentFrame() { return &t_yuv_buffer; }
 };
 
-#endif //xrTheora_StreamH
+#endif // xrTheora_StreamH

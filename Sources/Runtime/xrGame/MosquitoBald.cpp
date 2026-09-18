@@ -28,12 +28,12 @@ void CMosquitoBald::Postprocess(float /**val/**/)
 bool CMosquitoBald::BlowoutState()
 {
 	bool result = inherited::BlowoutState();
-	if (!result)
+	if(!result)
 	{
 		m_bLastBlowoutUpdate = false;
 		UpdateBlowout();
 	}
-	else if (!m_bLastBlowoutUpdate)
+	else if(!m_bLastBlowoutUpdate)
 	{
 		m_bLastBlowoutUpdate = true;
 		UpdateBlowout();
@@ -45,10 +45,10 @@ bool CMosquitoBald::BlowoutState()
 void CMosquitoBald::Affect(SZoneObjectInfo* O)
 {
 	CPhysicsShellHolder* pGameObject = smart_cast<CPhysicsShellHolder*>(O->object);
-	if (!pGameObject)
+	if(!pGameObject)
 		return;
 
-	if (O->zone_ignore)
+	if(O->zone_ignore)
 		return;
 
 	fvec3 P;
@@ -57,7 +57,7 @@ void CMosquitoBald::Affect(SZoneObjectInfo* O)
 #ifdef DEBUG
 	char l_pow[255];
 	sprintf_s(l_pow, "zone hit. %.1f", Power(pGameObject->Position().distance_to(P)));
-	if (bDebug)
+	if(bDebug)
 		Msg("%s %s", *pGameObject->cName(), l_pow);
 #endif
 
@@ -77,7 +77,7 @@ void CMosquitoBald::Affect(SZoneObjectInfo* O)
 	O->total_damage += power;
 	O->hit_num++;
 
-	if (power > 0.01f)
+	if(power > 0.01f)
 	{
 		m_dwDeltaTime = 0;
 		position_in_bone_space.set(0.f, 0.f, 0.f);

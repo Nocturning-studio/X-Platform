@@ -24,7 +24,8 @@ typedef CPropertyEvaluatorMember<CAI_Stalker> CObjectPropertyEvaluatorMember;
 // CObjectPropertyEvaluatorBase
 //////////////////////////////////////////////////////////////////////////
 
-template <typename _item_type> class CObjectPropertyEvaluatorBase : public CPropertyEvaluator<CAI_Stalker>
+template <typename _item_type>
+class CObjectPropertyEvaluatorBase : public CPropertyEvaluator<CAI_Stalker>
 {
   protected:
 	typedef CPropertyEvaluator<CAI_Stalker> inherited;

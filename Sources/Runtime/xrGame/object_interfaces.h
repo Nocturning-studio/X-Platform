@@ -16,13 +16,15 @@ class IPureDestroyableObject
 	virtual void destroy() = 0;
 };
 
-template <typename _storage_type> class IPureLîadableObject
+template <typename _storage_type>
+class IPureLîadableObject
 {
   public:
 	virtual void load(_storage_type & storage) = 0;
 };
 
-template <typename _storage_type> class IPureSavableObject
+template <typename _storage_type>
+class IPureSavableObject
 {
   public:
 	virtual void save(_storage_type& storage) = 0;

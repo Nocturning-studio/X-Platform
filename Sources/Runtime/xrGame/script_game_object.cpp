@@ -119,7 +119,7 @@ CScriptIniFile* CScriptGameObject::spawn_ini() const
 void CScriptGameObject::ResetActionQueue()
 {
 	CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>(&object());
-	if (!l_tpScriptMonster)
+	if(!l_tpScriptMonster)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member ResetActionQueue!");
 	else
@@ -129,10 +129,10 @@ void CScriptGameObject::ResetActionQueue()
 CScriptEntityAction* CScriptGameObject::GetCurrentAction() const
 {
 	CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>(&object());
-	if (!l_tpScriptMonster)
+	if(!l_tpScriptMonster)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member GetCurrentAction!");
-	else if (l_tpScriptMonster->GetCurrentAction())
+	else if(l_tpScriptMonster->GetCurrentAction())
 		return (xr_new<CScriptEntityAction>(l_tpScriptMonster->GetCurrentAction()));
 	return (0);
 }
@@ -140,7 +140,7 @@ CScriptEntityAction* CScriptGameObject::GetCurrentAction() const
 void CScriptGameObject::AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority)
 {
 	CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>(&object());
-	if (!l_tpScriptMonster)
+	if(!l_tpScriptMonster)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member AddAction!");
 	else
@@ -150,7 +150,7 @@ void CScriptGameObject::AddAction(const CScriptEntityAction* tpEntityAction, boo
 const CScriptEntityAction* CScriptGameObject::GetActionByIndex(u32 action_index)
 {
 	CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>(&object());
-	if (!l_tpScriptMonster)
+	if(!l_tpScriptMonster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CScriptEntity : cannot access class member GetActionByIndex!");
@@ -167,7 +167,7 @@ const CScriptEntityAction* CScriptGameObject::GetActionByIndex(u32 action_index)
 CPhysicsShell* CScriptGameObject::get_physics_shell() const
 {
 	CPhysicsShellHolder* ph_shell_holder = smart_cast<CPhysicsShellHolder*>(&object());
-	if (!ph_shell_holder)
+	if(!ph_shell_holder)
 		return NULL;
 	return ph_shell_holder->PPhysicsShell();
 }
@@ -179,7 +179,7 @@ CPhysicsShell* CScriptGameObject::get_physics_shell() const
 CHelicopter* CScriptGameObject::get_helicopter()
 {
 	CHelicopter* helicopter = smart_cast<CHelicopter*>(&object());
-	if (!helicopter)
+	if(!helicopter)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CGameObject : cannot access class member get_helicopter!");
@@ -191,7 +191,7 @@ CHelicopter* CScriptGameObject::get_helicopter()
 CHangingLamp* CScriptGameObject::get_hanging_lamp()
 {
 	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
-	if (!lamp)
+	if(!lamp)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : it is not a lamp!");
 		NODEFAULT;
@@ -202,7 +202,7 @@ CHangingLamp* CScriptGameObject::get_hanging_lamp()
 CHolderCustom* CScriptGameObject::get_custom_holder()
 {
 	CHolderCustom* holder = smart_cast<CHolderCustom*>(&object());
-	if (!holder)
+	if(!holder)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : it is not a holder!");
 	}
@@ -216,7 +216,7 @@ CHolderCustom* CScriptGameObject::get_custom_holder()
 LPCSTR CScriptGameObject::WhoHitName()
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(&object());
-	if (entity_alive)
+	if(entity_alive)
 		return entity_alive->conditions().GetWhoHitLastTime()
 				   ? (*entity_alive->conditions().GetWhoHitLastTime()->cName())
 				   : NULL;
@@ -231,7 +231,7 @@ LPCSTR CScriptGameObject::WhoHitName()
 LPCSTR CScriptGameObject::WhoHitSectionName()
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(&object());
-	if (entity_alive)
+	if(entity_alive)
 		return entity_alive->conditions().GetWhoHitLastTime()
 				   ? (*entity_alive->conditions().GetWhoHitLastTime()->cNameSect())
 				   : NULL;
@@ -246,7 +246,7 @@ LPCSTR CScriptGameObject::WhoHitSectionName()
 bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject* tpLuaGameObject)
 {
 	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(&object());
-	if (entity_alive && !entity_alive->g_Alive())
+	if(entity_alive && !entity_alive->g_Alive())
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CScriptGameObject : cannot check visibility of dead object!");
@@ -254,10 +254,10 @@ bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject* tpLuaGame
 	}
 
 	CScriptEntity* script_entity = smart_cast<CScriptEntity*>(&object());
-	if (!script_entity)
+	if(!script_entity)
 	{
 		CActor* actor = smart_cast<CActor*>(&object());
-		if (!actor)
+		if(!actor)
 		{
 			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 											"CScriptGameObject : cannot access class member CheckObjectVisibility!");
@@ -286,7 +286,7 @@ void CScriptGameObject::bind_object(CScriptBinderObject* game_object)
 void CScriptGameObject::set_previous_point(int point_index)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CGameObject : cannot access class member set_previous_point!");
 	else
@@ -296,7 +296,7 @@ void CScriptGameObject::set_previous_point(int point_index)
 void CScriptGameObject::set_start_point(int point_index)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CGameObject : cannot access class member set_start_point!");
 	else
@@ -306,7 +306,7 @@ void CScriptGameObject::set_start_point(int point_index)
 u32 CScriptGameObject::get_current_patrol_point_index()
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CGameObject : cannot call [get_current_patrol_point_index()]!");
@@ -322,7 +322,7 @@ u32 CScriptGameObject::get_current_patrol_point_index()
 fvec3 CScriptGameObject::bone_position(LPCSTR bone_name) const
 {
 	u16 bone_id;
-	if (xr_strlen(bone_name))
+	if(xr_strlen(bone_name))
 		bone_id = smart_cast<CKinematics*>(object().Visual())->LL_BoneID(bone_name);
 	else
 		bone_id = smart_cast<CKinematics*>(object().Visual())->LL_GetBoneRoot();
@@ -340,7 +340,7 @@ fvec3 CScriptGameObject::bone_position(LPCSTR bone_name) const
 u32 CScriptGameObject::GetAmmoElapsed()
 {
 	const CWeapon* weapon = smart_cast<const CWeapon*>(&object());
-	if (!weapon)
+	if(!weapon)
 		return (0);
 	return (weapon->GetAmmoElapsed());
 }
@@ -348,7 +348,7 @@ u32 CScriptGameObject::GetAmmoElapsed()
 void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 {
 	CWeapon* weapon = smart_cast<CWeapon*>(&object());
-	if (!weapon)
+	if(!weapon)
 		return;
 	weapon->SetAmmoElapsed(ammo_elapsed);
 }
@@ -356,7 +356,7 @@ void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 u32 CScriptGameObject::GetAmmoCurrent() const
 {
 	const CWeapon* weapon = smart_cast<const CWeapon*>(&object());
-	if (!weapon)
+	if(!weapon)
 		return (0);
 	return (weapon->GetAmmoCurrent(true));
 }
@@ -368,7 +368,7 @@ u32 CScriptGameObject::GetAmmoCurrent() const
 void CScriptGameObject::SetQueueSize(u32 queue_size)
 {
 	CWeaponMagazined* weapon = smart_cast<CWeaponMagazined*>(&object());
-	if (!weapon)
+	if(!weapon)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CWeaponMagazined : cannot access class member SetQueueSize!");
@@ -384,7 +384,7 @@ void CScriptGameObject::SetQueueSize(u32 queue_size)
 u32 CScriptGameObject::Cost() const
 {
 	CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&object());
-	if (!inventory_item)
+	if(!inventory_item)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member Cost!");
@@ -396,7 +396,7 @@ u32 CScriptGameObject::Cost() const
 float CScriptGameObject::GetCondition() const
 {
 	CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&object());
-	if (!inventory_item)
+	if(!inventory_item)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member GetCondition!");
@@ -408,7 +408,7 @@ float CScriptGameObject::GetCondition() const
 void CScriptGameObject::SetCondition(float val)
 {
 	CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&object());
-	if (!inventory_item)
+	if(!inventory_item)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member SetCondition!");
@@ -420,7 +420,7 @@ void CScriptGameObject::SetCondition(float val)
 
 void CScriptGameObject::eat(CScriptGameObject* item)
 {
-	if (!item)
+	if(!item)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member eat!");
@@ -428,7 +428,7 @@ void CScriptGameObject::eat(CScriptGameObject* item)
 	}
 
 	CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&item->object());
-	if (!inventory_item)
+	if(!inventory_item)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member eat!");
@@ -436,7 +436,7 @@ void CScriptGameObject::eat(CScriptGameObject* item)
 	}
 
 	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
-	if (!inventory_owner)
+	if(!inventory_owner)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSciptEntity : cannot access class member eat!");
@@ -449,7 +449,7 @@ void CScriptGameObject::eat(CScriptGameObject* item)
 bool CScriptGameObject::inside(const fvec3& position, float epsilon) const
 {
 	CSpaceRestrictor* space_restrictor = smart_cast<CSpaceRestrictor*>(&object());
-	if (!space_restrictor)
+	if(!space_restrictor)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CSpaceRestrictor : cannot access class member inside!");
@@ -469,7 +469,7 @@ bool CScriptGameObject::inside(const fvec3& position) const
 void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<bool>& functor)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
@@ -482,7 +482,7 @@ void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<b
 														const luabind::object& object)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
@@ -494,7 +494,7 @@ void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<b
 void CScriptGameObject::set_patrol_extrapolate_callback()
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
@@ -506,7 +506,7 @@ void CScriptGameObject::set_patrol_extrapolate_callback()
 void CScriptGameObject::extrapolate_length(float extrapolate_length)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member extrapolate_length!");
@@ -518,7 +518,7 @@ void CScriptGameObject::extrapolate_length(float extrapolate_length)
 float CScriptGameObject::extrapolate_length() const
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member extrapolate_length!");
@@ -530,7 +530,7 @@ float CScriptGameObject::extrapolate_length() const
 void CScriptGameObject::set_fov(float new_fov)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_fov!");
@@ -542,7 +542,7 @@ void CScriptGameObject::set_fov(float new_fov)
 void CScriptGameObject::set_range(float new_range)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member set_range!");
@@ -554,14 +554,14 @@ void CScriptGameObject::set_range(float new_range)
 u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, fvec3 direction, float max_distance) const
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member vertex_in_direction!");
 		return (u32(-1));
 	}
 
-	if (!monster->movement().restrictions().accessible(level_vertex_id))
+	if(!monster->movement().restrictions().accessible(level_vertex_id))
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster::vertex_in_direction - start vertex id is not accessible!");
@@ -582,7 +582,7 @@ u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, fvec3 direction,
 bool CScriptGameObject::invulnerable() const
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member invulnerable!");
@@ -595,7 +595,7 @@ bool CScriptGameObject::invulnerable() const
 void CScriptGameObject::invulnerable(bool invulnerable)
 {
 	CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-	if (!monster)
+	if(!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,
 										"CCustomMonster : cannot access class member invulnerable!");

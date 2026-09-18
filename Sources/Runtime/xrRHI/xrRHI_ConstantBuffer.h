@@ -17,7 +17,7 @@ class TypedConstantBuffer
 		m_buffer = backend.CreateConstantBuffer(layout);
 		// Строим маппинг имён на индекс для быстрого поиска
 		m_nameToIndex.reserve(layout.fields.size());
-		for (size_t i = 0; i < layout.fields.size(); ++i)
+		for(size_t i = 0; i < layout.fields.size(); ++i)
 			m_nameToIndex[layout.fields[i].name] = i;
 	}
 
@@ -27,13 +27,14 @@ class TypedConstantBuffer
 	}
 
 	// Установить значение по имени (тип должен совпадать по размеру)
-	template <typename T> void Set(IRenderBackend& backend, const char* name, const T& value)
+	template <typename T>
+	void Set(IRenderBackend& backend, const char* name, const T& value)
 	{
 		auto it = m_nameToIndex.find(name);
-		if (it == m_nameToIndex.end())
+		if(it == m_nameToIndex.end())
 			return;
 		const auto& field = m_layout.fields[it->second];
-		if (sizeof(T) != field.size)
+		if(sizeof(T) != field.size)
 		{
 			Print("! TypedConstantBuffer::Set: size mismatch for '%s'", name);
 			return;
@@ -44,15 +45,15 @@ class TypedConstantBuffer
 	void Set(IRenderBackend& backend, const char* name, float value)
 	{
 		auto it = m_nameToIndex.find(name);
-		if (it == m_nameToIndex.end())
+		if(it == m_nameToIndex.end())
 			return;
 		const auto& field = m_layout.fields[it->second];
-		if (field.cls == ConstantClass::Scalar && field.size == 16)
+		if(field.cls == ConstantClass::Scalar && field.size == 16)
 		{
 			// скалярный регистр – записываем только первый компонент
 			backend.UpdateConstantBuffer(m_buffer, field.offset, &value, sizeof(float));
 		}
-		else if (field.size == sizeof(float))
+		else if(field.size == sizeof(float))
 		{
 			backend.UpdateConstantBuffer(m_buffer, field.offset, &value, sizeof(float));
 		}
@@ -65,15 +66,15 @@ class TypedConstantBuffer
 	void Set(IRenderBackend& backend, const char* name, int value)
 	{
 		auto it = m_nameToIndex.find(name);
-		if (it == m_nameToIndex.end())
+		if(it == m_nameToIndex.end())
 			return;
 		const auto& field = m_layout.fields[it->second];
-		if (field.cls == ConstantClass::Scalar && field.size == 16)
+		if(field.cls == ConstantClass::Scalar && field.size == 16)
 		{
 			float tmp = *reinterpret_cast<float*>(&value); // побитовое копирование
 			backend.UpdateConstantBuffer(m_buffer, field.offset, &tmp, sizeof(float));
 		}
-		else if (field.size == sizeof(int))
+		else if(field.size == sizeof(int))
 		{
 			// для поля точного размера (маловероятно в DX9, но пусть будет)
 			backend.UpdateConstantBuffer(m_buffer, field.offset, &value, sizeof(int));
@@ -87,15 +88,15 @@ class TypedConstantBuffer
 	void Set(IRenderBackend& backend, const char* name, bool value)
 	{
 		auto it = m_nameToIndex.find(name);
-		if (it == m_nameToIndex.end())
+		if(it == m_nameToIndex.end())
 			return;
 		const auto& field = m_layout.fields[it->second];
-		if (field.cls == ConstantClass::Scalar && field.size == 16)
+		if(field.cls == ConstantClass::Scalar && field.size == 16)
 		{
 			float fval = value ? 1.0f : 0.0f;
 			backend.UpdateConstantBuffer(m_buffer, field.offset, &fval, sizeof(float));
 		}
-		else if (field.size == sizeof(bool))
+		else if(field.size == sizeof(bool))
 		{
 			backend.UpdateConstantBuffer(m_buffer, field.offset, &value, sizeof(bool));
 		}
@@ -114,10 +115,10 @@ class TypedConstantBuffer
 	void SetMatrix3x4(IRenderBackend& backend, const char* name, const fmat4x4& mat) // 3x4 хранится в 3 регистрах
 	{
 		auto it = m_nameToIndex.find(name);
-		if (it == m_nameToIndex.end())
+		if(it == m_nameToIndex.end())
 			return;
 		const auto& field = m_layout.fields[it->second];
-		if (field.size != 48) // 3 * 16
+		if(field.size != 48) // 3 * 16
 		{
 			Print("! TypedConstantBuffer::SetMatrix3x4: size mismatch");
 			return;
@@ -135,7 +136,7 @@ class TypedConstantBuffer
 	void SetArray(IRenderBackend& backend, const char* name, const void* data, u32 count)
 	{
 		auto it = m_nameToIndex.find(name);
-		if (it == m_nameToIndex.end())
+		if(it == m_nameToIndex.end())
 			return;
 		const auto& field = m_layout.fields[it->second];
 		u32 totalSize = count * field.size; // field.size - размер одного элемента

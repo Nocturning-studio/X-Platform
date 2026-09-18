@@ -28,7 +28,7 @@ void SStatDetailBData::load(IReader& stream)
 	load_data(int_count, stream);
 	load_data(int_points, stream);
 
-	if (ai().get_alife()->header().version() > 0x0002)
+	if(ai().get_alife()->header().version() > 0x0002)
 		load_data(str_value, stream);
 }
 
@@ -43,11 +43,11 @@ void SStatSectionData::load(IReader& stream)
 {
 	load_data(data, stream);
 
-	if (ai().get_alife()->header().version() == 0x0002)
+	if(ai().get_alife()->header().version() == 0x0002)
 	{
 		int tmp;
 		load_data(tmp, stream);
-		switch (tmp)
+		switch(tmp)
 		{
 		case 100:
 			key = "total";
@@ -82,9 +82,9 @@ SStatDetailBData& SStatSectionData::GetData(const shared_str& key)
 	vStatDetailData::iterator it = data.begin();
 	vStatDetailData::iterator it_e = data.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if ((*it).key == key)
+		if((*it).key == key)
 			return *it;
 	}
 	data.resize(data.size() + 1);
@@ -99,9 +99,9 @@ s32 SStatSectionData::GetTotalPoints() const
 	s32 res = 0;
 	vStatDetailData::const_iterator it = data.begin();
 	vStatDetailData::const_iterator it_e = data.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if ((*it).str_value.size() != 0)
+		if((*it).str_value.size() != 0)
 			return -1;
 
 		res += (*it).int_count * (*it).int_points;
@@ -135,9 +135,9 @@ SStatSectionData& CActorStatisticMgr::GetSection(const shared_str& key)
 	vStatSectionData& d = GetStorage();
 	vStatSectionData::iterator it = d.begin();
 	vStatSectionData::iterator it_e = d.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if ((*it).key == key)
+		if((*it).key == key)
 			return *it;
 	}
 	d.resize(d.size() + 1);
@@ -162,7 +162,7 @@ void CActorStatisticMgr::AddPoints(const shared_str& key, const shared_str& deta
 
 s32 CActorStatisticMgr::GetSectionPoints(const shared_str& key)
 {
-	if (key != "total")
+	if(key != "total")
 		return GetSection(key).GetTotalPoints();
 	else
 	{ // total
@@ -170,13 +170,13 @@ s32 CActorStatisticMgr::GetSectionPoints(const shared_str& key)
 		vStatSectionData& d = GetStorage();
 		vStatSectionData::iterator it = d.begin();
 		vStatSectionData::iterator it_e = d.end();
-		for (; it != it_e; ++it)
+		for(; it != it_e; ++it)
 		{
 			s32 _p = (*it).GetTotalPoints();
 
-			if (_p != -1)
+			if(_p != -1)
 			{
-				if (_total == -1)
+				if(_total == -1)
 					_total = 0;
 
 				_total += _p;

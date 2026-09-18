@@ -99,19 +99,19 @@ void CUISpawnWnd::InitTeamLogo()
 
 void CUISpawnWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
 		Game().StartStopMenu(this, true);
 		game_cl_TeamDeathmatch* tdm = smart_cast<game_cl_TeamDeathmatch*>(&(Game()));
-		if (pWnd == m_pImage1)
+		if(pWnd == m_pImage1)
 			tdm->OnTeamSelect(0);
-		else if (pWnd == m_pImage2)
+		else if(pWnd == m_pImage2)
 			tdm->OnTeamSelect(1);
-		else if (pWnd == m_pBtnAutoSelect)
+		else if(pWnd == m_pBtnAutoSelect)
 			tdm->OnTeamSelect(-1);
-		else if (pWnd == m_pBtnSpectator)
+		else if(pWnd == m_pBtnSpectator)
 			tdm->OnSpectatorSelect();
-		else if (pWnd == m_pBtnBack)
+		else if(pWnd == m_pBtnBack)
 			tdm->OnTeamMenuBack();
 	}
 
@@ -122,9 +122,9 @@ void CUISpawnWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (WINDOW_KEY_PRESSED != keyboard_action)
+	if(WINDOW_KEY_PRESSED != keyboard_action)
 	{
-		if (dik == DIK_TAB)
+		if(dik == DIK_TAB)
 		{
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -134,7 +134,7 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return false;
 	}
 
-	if (dik == DIK_TAB)
+	if(dik == DIK_TAB)
 	{
 		ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -145,17 +145,17 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 	game_cl_TeamDeathmatch* dm = smart_cast<game_cl_TeamDeathmatch*>(&(Game()));
 
-	if (DIK_1 == dik || DIK_2 == dik)
+	if(DIK_1 == dik || DIK_2 == dik)
 	{
 		dm->StartStopMenu(this, true);
 
-		if (DIK_1 == dik)
+		if(DIK_1 == dik)
 			dm->OnTeamSelect(0);
 		else
 			dm->OnTeamSelect(1);
 		return true;
 	}
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_ESCAPE:
 		dm->StartStopMenu(this, true);
@@ -167,9 +167,9 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return true;
 	case DIK_RETURN:
 		dm->StartStopMenu(this, true);
-		if (m_pImage1->GetSelectedState())
+		if(m_pImage1->GetSelectedState())
 			dm->OnTeamSelect(0);
-		else if (m_pImage2->GetSelectedState())
+		else if(m_pImage2->GetSelectedState())
 			dm->OnTeamSelect(1);
 		else
 			dm->OnTeamSelect(-1);
@@ -181,7 +181,7 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 void CUISpawnWnd::SetVisibleForBtn(ETEAMMENU_BTN btn, bool state)
 {
-	switch (btn)
+	switch(btn)
 	{
 	case TEAM_MENU_BACK:
 		this->m_pBtnBack->SetVisible(state);

@@ -32,9 +32,9 @@ class CDistanceFunction : public CBaseFunction
 	virtual u32 dwfGetDiscreteValue(u32 dwDiscretizationValue)
 	{
 		float fTemp = ffGetValue();
-		if (fTemp <= m_fMinResultValue)
+		if(fTemp <= m_fMinResultValue)
 			return (0);
-		else if (fTemp >= m_fMaxResultValue)
+		else if(fTemp >= m_fMaxResultValue)
 			return (dwDiscretizationValue - 1);
 		else
 			return (1);

@@ -2,7 +2,8 @@
 
 #include "state_defs.h"
 
-template <typename _Object> class CState
+template <typename _Object>
+class CState
 {
 	typedef CState<_Object> CSState;
 
@@ -71,7 +72,8 @@ template <typename _Object> class CState
 	typedef typename xr_map<u32, CSState*>::iterator STATE_MAP_IT;
 };
 
-template <typename _Object> class CStateMove : public CState<_Object>
+template <typename _Object>
+class CStateMove : public CState<_Object>
 {
 	typedef CState<_Object> inherited;
 

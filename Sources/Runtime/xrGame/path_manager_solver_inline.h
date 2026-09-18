@@ -8,13 +8,13 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename T1, typename T2, typename T3, typename T4, typename T5, bool T6, typename T7, typename T8,      \
-			  typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type,                  \
+#define TEMPLATE_SPECIALIZATION                                                                                   \
+	template <typename T1, typename T2, typename T3, typename T4, typename T5, bool T6, typename T7, typename T8, \
+			  typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type,             \
 			  typename _iteration_type>
 
-#define CSolverPathManager                                                                                             \
-	CPathManager<CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>, _DataStorage, _Parameters, _dist_type, _index_type,   \
+#define CSolverPathManager                                                                                           \
+	CPathManager<CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>, _DataStorage, _Parameters, _dist_type, _index_type, \
 				 _iteration_type>
 
 TEMPLATE_SPECIALIZATION
@@ -75,23 +75,25 @@ IC _dist_type CSolverPathManager::estimate(const _index_type& vertex_id) const
 TEMPLATE_SPECIALIZATION
 IC void CSolverPathManager::init_path()
 {
-	if (m_edge_path)
+	if(m_edge_path)
 		m_edge_path->clear();
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CSolverPathManager::create_path(T& vertex, _DataStorage& data_storage, bool reverse_order)
+template <typename T>
+IC void CSolverPathManager::create_path(T& vertex, _DataStorage& data_storage, bool reverse_order)
 {
 	VERIFY(this->data_storage);
-	if (m_edge_path)
+	if(m_edge_path)
 		data_storage.get_edge_path(*m_edge_path, &vertex, reverse_order);
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename T> IC void CSolverPathManager::create_path(T& vertex)
+template <typename T>
+IC void CSolverPathManager::create_path(T& vertex)
 {
 	VERIFY(this->data_storage);
-	if (m_edge_path)
+	if(m_edge_path)
 		data_storage->get_edge_path(*m_edge_path, &vertex, typename _Graph::reverse_search);
 }
 

@@ -16,11 +16,11 @@ CUIDMStatisticWnd::CUIDMStatisticWnd() : CUIStatsWnd(STATS_XML)
 	Show();
 };
 
-CUIDMStatisticWnd::~CUIDMStatisticWnd(){};
+CUIDMStatisticWnd::~CUIDMStatisticWnd() {};
 
 bool CUIDMStatisticWnd::SetItemData(Weapon_Statistic* pWS, CUIStatsListItem* pItem)
 {
-	if (!pWS)
+	if(!pWS)
 		return false;
 
 	string1024 Text;
@@ -41,13 +41,13 @@ void CUIDMStatisticWnd::Update()
 {
 	inherited::Update();
 	//-----------------------------------
-	if (!Game().local_player)
+	if(!Game().local_player)
 		return;
 
 	PLAYERS_STATS_it pPlayerI;
-	if (!Game().m_WeaponUsageStatistic->GetPlayer(Game().local_player->getName(), pPlayerI))
+	if(!Game().m_WeaponUsageStatistic->GetPlayer(Game().local_player->getName(), pPlayerI))
 	{
-		while (GetItemCount())
+		while(GetItemCount())
 		{
 			RemoveItem(0);
 		}
@@ -55,22 +55,22 @@ void CUIDMStatisticWnd::Update()
 	};
 	Player_Statistic* pPS = &(*pPlayerI);
 	//-----------------------------------------
-	while (pPS->aWeaponStats.size() < GetItemCount())
+	while(pPS->aWeaponStats.size() < GetItemCount())
 	{
 		RemoveItem(0);
 	};
 	//---------------------------------------
-	while (pPS->aWeaponStats.size() > GetItemCount())
+	while(pPS->aWeaponStats.size() > GetItemCount())
 	{
 		AddItem();
 	};
 	//---------------------------------------
-	for (u32 i = 0; i < GetItemCount(); i++)
+	for(u32 i = 0; i < GetItemCount(); i++)
 	{
 		CUIStatsListItem* pItem = GetItem(i);
-		if (!pItem)
+		if(!pItem)
 			continue;
-		if (SetItemData(&(pPS->aWeaponStats[i]), pItem))
+		if(SetItemData(&(pPS->aWeaponStats[i]), pItem))
 			continue;
 
 		pItem->FieldsVector[0]->SetText(NULL);

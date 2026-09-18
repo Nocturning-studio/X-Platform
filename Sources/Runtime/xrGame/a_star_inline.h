@@ -8,18 +8,15 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _dist_type, typename _priority_queue, typename _vertex_manager, typename _vertex_allocator,     \
-			  bool euclidian_heuristics, typename _data_storage_base, template <typename _T> class _vertex,            \
-			  template <typename _1, typename _2> class _builder_allocator_constructor,                                \
-			  template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4>           \
-			  class _manager_builder_allocator_constructor,                                                            \
-			  template <typename _algorithm, typename _manager, typename _builder, typename _allocator,                \
-						template <typename _T> class _vertex,                                                          \
-						template <typename _1, typename _2> class _builder_allocator_constructor,                      \
-						template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> \
-						class _manager_builder_allocator_constructor>                                                  \
-			  class _data_storage_constructor,                                                                         \
+#define TEMPLATE_SPECIALIZATION                                                                                                                                                                       \
+	template <typename _dist_type, typename _priority_queue, typename _vertex_manager, typename _vertex_allocator,                                                                                    \
+			  bool euclidian_heuristics, typename _data_storage_base, template <typename _T> class _vertex,                                                                                           \
+			  template <typename _1, typename _2> class _builder_allocator_constructor,                                                                                                               \
+			  template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> class _manager_builder_allocator_constructor,                                            \
+			  template <typename _algorithm, typename _manager, typename _builder, typename _allocator,                                                                                               \
+						template <typename _T> class _vertex,                                                                                                                                         \
+						template <typename _1, typename _2> class _builder_allocator_constructor,                                                                                                     \
+						template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> class _manager_builder_allocator_constructor> class _data_storage_constructor, \
 			  typename _iteration_type>
 
 #define CSAStar                                                                                                        \
@@ -38,7 +35,8 @@ CSAStar::~CAStar()
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename _PathManager> IC void CSAStar::initialize(_PathManager& path_manager)
+template <typename _PathManager>
+IC void CSAStar::initialize(_PathManager& path_manager)
 {
 	THROW2(!m_search_started, "Recursive graph engine usage is not allowed!");
 	m_search_started = true;
@@ -64,13 +62,14 @@ template <typename _PathManager> IC void CSAStar::initialize(_PathManager& path_
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename _PathManager> IC bool CSAStar::step(_PathManager& path_manager)
+template <typename _PathManager>
+IC bool CSAStar::step(_PathManager& path_manager)
 {
 	// get the best node, i.e. a node with the minimum 'f'
 	CGraphVertex& best = data_storage().get_best();
 
 	// check if this node is the one we are searching for
-	if (path_manager.is_goal_reached(best.index()))
+	if(path_manager.is_goal_reached(best.index()))
 	{
 		// we reached the goal, so we have to create a path
 		path_manager.init_path();
@@ -88,26 +87,26 @@ template <typename _PathManager> IC bool CSAStar::step(_PathManager& path_manage
 	_PathManager::const_iterator i;
 	_PathManager::const_iterator e;
 	path_manager.begin(best.index(), i, e);
-	for (; i != e; ++i)
+	for(; i != e; ++i)
 	{
 		const _index_type& neighbour_index = path_manager.get_value(i);
 		// check if neighbour is accessible
-		if (!path_manager.is_accessible(neighbour_index))
+		if(!path_manager.is_accessible(neighbour_index))
 			continue;
 		// check if neighbour is visited, i.e. is in the opened or
 		// closed lists
-		if (data_storage().is_visited(neighbour_index))
+		if(data_storage().is_visited(neighbour_index))
 		{
 			// so, this neighbour node has been already visited
 			// therefore get the pointer to this node
 			CGraphVertex& neighbour = data_storage().get_node(neighbour_index);
 			// check if this node is in the opened list
-			if (data_storage().is_opened(neighbour))
+			if(data_storage().is_opened(neighbour))
 			{
 				// compute 'g' for the node
 				_dist_type g = best.g() + path_manager.evaluate(best.index(), neighbour_index, i);
 				// check if new path is better than the older one
-				if (neighbour.g() > g)
+				if(neighbour.g() > g)
 				{
 					// so, new path is better
 					// assign corresponding values to the node
@@ -136,7 +135,7 @@ template <typename _PathManager> IC bool CSAStar::step(_PathManager& path_manage
 			// impossible that we can find a better path for a node
 			// which is in the closed list and therefore we have to do
 			// nothing here.
-			if (!path_manager.is_metric_euclidian())
+			if(!path_manager.is_metric_euclidian())
 			{
 				// so, we use a heurictics which doesn't gurantee that
 				// found path is the best, then we have to update all
@@ -146,7 +145,7 @@ template <typename _PathManager> IC bool CSAStar::step(_PathManager& path_manage
 
 				// check if new path is better than the older one
 				_dist_type g = best.g() + path_manager.evaluate(best.index(), neighbour_index, i);
-				if (neighbour.g() > g)
+				if(neighbour.g() > g)
 				{
 					// so, new path is better
 					// assign corresponding values to the node
@@ -191,15 +190,16 @@ template <typename _PathManager> IC bool CSAStar::step(_PathManager& path_manage
 }
 
 TEMPLATE_SPECIALIZATION
-template <typename _PathManager> IC bool CSAStar::find(_PathManager& path_manager)
+template <typename _PathManager>
+IC bool CSAStar::find(_PathManager& path_manager)
 {
 	// initialize data structures with new search
 	initialize(path_manager);
 	// iterate while opened list is not empty
-	for (_iteration_type i = _iteration_type(0); !data_storage().is_opened_empty(); ++i)
+	for(_iteration_type i = _iteration_type(0); !data_storage().is_opened_empty(); ++i)
 	{
 		// check if we reached limit
-		if (path_manager.is_limit_reached(i))
+		if(path_manager.is_limit_reached(i))
 		{
 			// so we reached limit, return failure
 			finalize(path_manager);
@@ -208,7 +208,7 @@ template <typename _PathManager> IC bool CSAStar::find(_PathManager& path_manage
 
 		// so, limit is not reached
 		// check if new step will get us success
-		if (step(path_manager))
+		if(step(path_manager))
 		{
 			// so this step reached the goal, return success
 			finalize(path_manager);

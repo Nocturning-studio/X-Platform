@@ -101,7 +101,7 @@ void CUIGameDM::SetClGame(game_cl_GameState* g)
 	m_game = smart_cast<game_cl_Deathmatch*>(g);
 	R_ASSERT(m_game);
 
-	if (m_pMapDesc && m_pMapDesc->IsShown())
+	if(m_pMapDesc && m_pMapDesc->IsShown())
 	{
 		HUD().GetUI()->StartStopMenu(m_pMapDesc, true);
 	}
@@ -176,7 +176,7 @@ CUIGameDM::~CUIGameDM()
 
 void CUIGameDM::ReInitShownUI()
 {
-	if (m_pInventoryMenu && m_pInventoryMenu->IsShown())
+	if(m_pInventoryMenu && m_pInventoryMenu->IsShown())
 	{
 		m_pInventoryMenu->InitInventory();
 	}
@@ -190,7 +190,7 @@ void CUIGameDM::SetTimeMsgCaption(LPCSTR str)
 
 void CUIGameDM::ShowFragList(bool bShow)
 {
-	if (bShow)
+	if(bShow)
 		AddDialogToRender(m_pFragLists);
 	else
 		RemoveDialogToRender(m_pFragLists);
@@ -198,14 +198,14 @@ void CUIGameDM::ShowFragList(bool bShow)
 
 void CUIGameDM::ShowPlayersList(bool bShow)
 {
-	if (bShow)
+	if(bShow)
 		AddDialogToRender(m_pPlayerLists);
 	else
 		RemoveDialogToRender(m_pPlayerLists);
 }
 void CUIGameDM::ShowStatistic(bool bShow)
 {
-	if (bShow)
+	if(bShow)
 		AddDialogToRender(m_pStatisticWnds);
 	else
 		RemoveDialogToRender(m_pStatisticWnds);
@@ -218,7 +218,7 @@ void CUIGameDM::SetSpectrModeMsgCaption(LPCSTR str)
 
 void CUIGameDM::SetSpectatorMsgCaption(LPCSTR str)
 {
-	if (GameCaptions())
+	if(GameCaptions())
 		GameCaptions()->setCaption(m_spectator_caption, str, NORMAL_MSG_COLOR, true);
 }
 
@@ -254,11 +254,11 @@ void CUIGameDM::SetWarmUpCaption(LPCSTR str)
 
 void CUIGameDM::SetVoteMessage(LPCSTR str)
 {
-	if (!str)
+	if(!str)
 		xr_delete(m_voteStatusWnd);
 	else
 	{
-		if (!m_voteStatusWnd)
+		if(!m_voteStatusWnd)
 		{
 			CUIXml uiXml;
 			uiXml.Init(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
@@ -272,23 +272,24 @@ void CUIGameDM::SetVoteMessage(LPCSTR str)
 
 void CUIGameDM::SetVoteTimeResultMsg(LPCSTR str)
 {
-	if (m_voteStatusWnd)
+	if(m_voteStatusWnd)
 		m_voteStatusWnd->SetVoteTimeResultMsg(str);
 }
 
 bool CUIGameDM::IR_OnKeyboardPress(int dik)
 {
-	if (inherited::IR_OnKeyboardPress(dik))
+	if(inherited::IR_OnKeyboardPress(dik))
 		return true;
 
 	EGameActions cmd = get_binded_action(dik);
-	switch (cmd)
+	switch(cmd)
 	{
 	case kINVENTORY:
 	case kBUY:
 	case kSKIN:
 	case kTEAM:
-	case kMAP: {
+	case kMAP:
+	{
 		return Game().OnKeyboardPress(cmd);
 	}
 	break;
@@ -303,27 +304,27 @@ bool CUIGameDM::IR_OnKeyboardRelease(int dik)
 
 void CUIGameDM::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	inherited::OnFrame();
 	m_pMoneyIndicator->Update();
 	m_pRankIndicator->Update();
 
 	m_pFragLimitIndicator->Update();
-	if (m_voteStatusWnd && m_voteStatusWnd->IsShown())
+	if(m_voteStatusWnd && m_voteStatusWnd->IsShown())
 		m_voteStatusWnd->Update();
 }
 
 void CUIGameDM::Render()
 {
-	//OPTICK_EVENT("CUIGameDM::Render");
+	// OPTICK_EVENT("CUIGameDM::Render");
 
 	inherited::Render();
 	m_pMoneyIndicator->Draw();
 	m_pRankIndicator->Draw();
 
 	m_pFragLimitIndicator->Draw();
-	if (m_voteStatusWnd && m_voteStatusWnd->IsShown())
+	if(m_voteStatusWnd && m_voteStatusWnd->IsShown())
 		m_voteStatusWnd->Draw();
 }
 
@@ -350,7 +351,7 @@ void CUIGameDM::SetRank(s16 team, u8 rank)
 void CUIGameDM::SetFraglimit(int local_frags, int fraglimit)
 {
 	string64 str;
-	if (fraglimit)
+	if(fraglimit)
 		sprintf_s(str, "%d/%d", local_frags, fraglimit);
 	else
 		sprintf_s(str, "%d", local_frags);

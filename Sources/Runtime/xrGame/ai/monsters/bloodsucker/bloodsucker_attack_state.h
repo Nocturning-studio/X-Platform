@@ -1,7 +1,8 @@
 #pragma once
 #include "../states/monster_state_attack.h"
 
-template <typename _Object> class CBloodsuckerStateAttack : public CStateMonsterAttack<_Object>
+template <typename _Object>
+class CBloodsuckerStateAttack : public CStateMonsterAttack<_Object>
 {
 	typedef CStateMonsterAttack<_Object> inherited_attack;
 

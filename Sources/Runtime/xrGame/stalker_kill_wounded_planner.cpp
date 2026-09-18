@@ -71,7 +71,7 @@ void CStalkerKillWoundedPlanner::finalize()
 {
 	inherited::finalize();
 
-	if (object().memory().enemy().selected())
+	if(object().memory().enemy().selected())
 	{
 		inherited_action::m_storage->set_property(eWorldPropertyKilledWounded, false);
 		object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);

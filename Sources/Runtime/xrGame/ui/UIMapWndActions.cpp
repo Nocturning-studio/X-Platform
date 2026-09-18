@@ -103,7 +103,7 @@ class CSomeMapEvaluator : public CPropertyEvaluator<CUIMapWnd>
 	CSomeMapEvaluator(LPCSTR evaluator_name) : inherited((CUIMapWnd*)NULL, evaluator_name)
 	{
 	}
-	virtual ~CSomeMapEvaluator(){};
+	virtual ~CSomeMapEvaluator() {};
 };
 
 class CEvaluatorTargetMapShown : public CSomeMapEvaluator
@@ -112,7 +112,7 @@ class CEvaluatorTargetMapShown : public CSomeMapEvaluator
 	typedef CSomeMapEvaluator inherited;
 
   public:
-	CEvaluatorTargetMapShown(LPCSTR evaluator_name = 0) : inherited(evaluator_name){};
+	CEvaluatorTargetMapShown(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
 	virtual bool evaluate();
 };
 
@@ -122,7 +122,7 @@ class CEvaluatorMapMinimized : public CSomeMapEvaluator
 	typedef CSomeMapEvaluator inherited;
 
   public:
-	CEvaluatorMapMinimized(LPCSTR evaluator_name = 0) : inherited(evaluator_name){};
+	CEvaluatorMapMinimized(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
 	virtual bool evaluate();
 };
 
@@ -132,7 +132,7 @@ class CEvaluatorMapResized : public CSomeMapEvaluator
 	typedef CSomeMapEvaluator inherited;
 
   public:
-	CEvaluatorMapResized(LPCSTR evaluator_name = 0) : inherited(evaluator_name){};
+	CEvaluatorMapResized(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
 	virtual bool evaluate();
 };
 
@@ -217,18 +217,18 @@ void CMapActionZoomControl::init_internal()
 	bool bMove = !fis_zero(dist, EPS_L);
 	bool bZoom = !fsimilar(m_targetZoom, m_object->GlobalMap()->GetCurrentZoom(), EPS_L);
 	m_endMovingTime = Engine.TimeManager.GetGlobalTime();
-	if (bZoom && bMove)
+	if(bZoom && bMove)
 		m_endMovingTime += _max(map_zoom_time, dist / map_resize_speed);
-	else if (bZoom)
+	else if(bZoom)
 		m_endMovingTime += map_zoom_time;
-	else if (bMove)
+	else if(bMove)
 		m_endMovingTime += _max(dist / map_resize_speed, min_move_time);
 }
 
 void CMapActionZoomControl::update_target_state()
 {
 	float cur_map_zoom = m_object->GetZoom();
-	if (!fsimilar(cur_map_zoom, m_targetZoom))
+	if(!fsimilar(cur_map_zoom, m_targetZoom))
 	{ // re-init
 		m_targetZoom = cur_map_zoom;
 		init_internal();
@@ -250,7 +250,7 @@ void CMapActionZoomControl::execute()
 	float time_to = m_endMovingTime - gt;
 	float dt = _min(Engine.TimeManager.GetDeltaTime(), time_to);
 
-	if (m_endMovingTime > Engine.TimeManager.GetGlobalTime())
+	if(m_endMovingTime > Engine.TimeManager.GetGlobalTime())
 	{
 		Frect current_rect = gm->GetWndRect();
 		current_rect.x1 += ((m_desiredMapRect.x1 - current_rect.x1) / time_to) * dt;
@@ -313,9 +313,9 @@ void CMapActionIdle::execute()
 
 bool CEvaluatorTargetMapShown::evaluate()
 {
-	if (m_storage->property(1))
+	if(m_storage->property(1))
 		return true;
-	if (m_storage->property(2))
+	if(m_storage->property(2))
 		return true;
 	fvec2 pt = m_object->m_tgtCenter;
 	pt.mul(m_object->GlobalMap()->GetCurrentZoom());
@@ -324,7 +324,7 @@ bool CEvaluatorTargetMapShown::evaluate()
 	pt.add(_p);
 	Frect rect = m_object->ActiveMapRect();
 	rect.grow(rect.width(), rect.height());
-	if (rect.in(pt))
+	if(rect.in(pt))
 	{
 		m_storage->set_property(2, true);
 		return true;
@@ -334,7 +334,7 @@ bool CEvaluatorTargetMapShown::evaluate()
 
 bool CEvaluatorMapMinimized::evaluate()
 {
-	if (m_storage->property(1))
+	if(m_storage->property(1))
 		return true;
 	bool res = !!fsimilar(m_object->GlobalMap()->GetCurrentZoom(), m_object->GlobalMap()->GetMinZoom(), EPS_L);
 	return res;
@@ -342,7 +342,7 @@ bool CEvaluatorMapMinimized::evaluate()
 
 bool CEvaluatorMapResized::evaluate()
 {
-	if (m_storage->property(1))
+	if(m_storage->property(1))
 		return true;
 	return m_storage->property(3);
 }

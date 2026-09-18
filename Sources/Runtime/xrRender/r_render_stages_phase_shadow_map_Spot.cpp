@@ -30,9 +30,9 @@ void CRender::render_shadow_map_spot(light* L)
 
 void CRender::render_shadow_map_spot_transluent(light* L)
 {
-	//VERIFY(RenderImplementation.o.Tshadows);
+	// VERIFY(RenderImplementation.o.Tshadows);
 	RenderBackend.set_ColorWriteEnable();
-	if (IRender_Light::OMNIPART == L->LightFlags.type)
+	if(IRender_Light::OMNIPART == L->LightFlags.type)
 	{
 		// omni-part
 		CHK_DX(RenderBackend.GetDevice()->Clear(0L, NULL, D3DCLEAR_TARGET, 0xffffffff, 1.0f, 0L));
@@ -42,7 +42,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		// real-spot
 		// Select color-mask
 		ref_shader shader = L->get_shader_spot();
-		if (!shader)
+		if(!shader)
 			shader = RenderTarget->s_accum_spot;
 		RenderBackend.set_Element(shader->E[SE_L_FILL]);
 

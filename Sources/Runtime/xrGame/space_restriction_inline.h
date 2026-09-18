@@ -34,16 +34,17 @@ IC shared_str CSpaceRestriction::in_restrictions() const
 	return (m_in_restrictions);
 }
 
-template <typename T1, typename T2> IC void CSpaceRestriction::add_border(T1 p1, T2 p2)
+template <typename T1, typename T2>
+IC void CSpaceRestriction::add_border(T1 p1, T2 p2)
 {
-	if (!initialized())
+	if(!initialized())
 		return;
 
 	VERIFY(!m_applied);
 
 	m_applied = true;
 
-	if (m_out_space_restriction)
+	if(m_out_space_restriction)
 	{
 		ai().level_graph().set_mask(border());
 		return;
@@ -52,8 +53,8 @@ template <typename T1, typename T2> IC void CSpaceRestriction::add_border(T1 p1,
 #ifdef USE_FREE_IN_RESTRICTIONS
 	FREE_IN_RESTRICTIONS::iterator I = m_free_in_restrictions.begin();
 	FREE_IN_RESTRICTIONS::iterator E = m_free_in_restrictions.end();
-	for (; I != E; ++I)
-		if (affect((*I).m_restriction, p1, p2))
+	for(; I != E; ++I)
+		if(affect((*I).m_restriction, p1, p2))
 		{
 			VERIFY(!(*I).m_enabled);
 			(*I).m_enabled = true;

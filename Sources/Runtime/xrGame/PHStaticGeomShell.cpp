@@ -75,7 +75,7 @@ CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj, ObjectContactCallba
 	CKinematics* K = smart_cast<CKinematics*>(V);
 	VERIFY(K);
 	K->CalculateBones();
-	for (u16 k = 0; k < K->LL_BoneCount(); k++)
+	for(u16 k = 0; k < K->LL_BoneCount(); k++)
 	{
 		K->LL_GetBoneInstance(k).Callback_overwrite = TRUE;
 		K->LL_GetBoneInstance(k).Callback = cb;

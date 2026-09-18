@@ -72,7 +72,7 @@ CHUDTarget::CHUDTarget()
 
 void CHUDTarget::net_Relcase(CObject* O)
 {
-	if (RQ.O == O)
+	if(RQ.O == O)
 		RQ.O = NULL;
 
 	RQR.r_clear();
@@ -86,7 +86,7 @@ void CHUDTarget::Load()
 ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
-	if (result.O)
+	if(result.O)
 	{
 		*RQ = result;
 		return FALSE;
@@ -95,7 +95,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 	{
 		// получить треугольник и узнать его материал
 		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
+		if(GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
 			return TRUE;
 	}
 	*RQ = result;
@@ -104,7 +104,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 
 void CHUDTarget::CursorOnFrame()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	fvec3 p1, dir;
 
@@ -112,7 +112,7 @@ void CHUDTarget::CursorOnFrame()
 	dir = Engine.RenderView.Direction;
 
 	// Render cursor
-	if (Level().CurrentEntity())
+	if(Level().CurrentEntity())
 	{
 		RQ.O = 0;
 		RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.99f;
@@ -121,7 +121,7 @@ void CHUDTarget::CursorOnFrame()
 		collide::ray_defs RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
 		RQR.r_clear();
 		VERIFY(!fis_zero(RD.dir.square_magnitude()));
-		if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, NULL, Level().CurrentEntity()))
+		if(Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, NULL, Level().CurrentEntity()))
 			clamp(RQ.range, NEAR_LIM, RQ.range);
 	}
 }
@@ -129,15 +129,15 @@ void CHUDTarget::CursorOnFrame()
 extern ENGINE_API BOOL g_bRendering;
 void CHUDTarget::Render()
 {
-	//OPTICK_EVENT("CHUDTarget::Render");
+	// OPTICK_EVENT("CHUDTarget::Render");
 
 	VERIFY(g_bRendering);
 
 	CObject* O = Level().CurrentEntity();
-	if (0 == O)
+	if(0 == O)
 		return;
 	CEntity* E = smart_cast<CEntity*>(O);
-	if (0 == E)
+	if(0 == E)
 		return;
 
 	fvec3 p1 = Engine.RenderView.Position;
@@ -156,32 +156,32 @@ void CHUDTarget::Render()
 	F->SetAligment(CGameFont::alCenter);
 	F->OutSetI(0.f, 0.05f);
 
-	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST) && psHUD_Flags.test(HUD_DRAW))
+	if(psHUD_Flags.test(HUD_CROSSHAIR_DIST) && psHUD_Flags.test(HUD_DRAW))
 	{
 		F->SetColor(C);
 		F->OutNext("%4.1f", RQ.range);
 	}
 
-	if (psHUD_Flags.test(HUD_INFO))
+	if(psHUD_Flags.test(HUD_INFO))
 	{
-		if (RQ.O)
+		if(RQ.O)
 		{
 			CEntityAlive* E = smart_cast<CEntityAlive*>(RQ.O);
 			CEntityAlive* pCurEnt = smart_cast<CEntityAlive*>(Level().CurrentEntity());
 			PIItem l_pI = smart_cast<PIItem>(RQ.O);
 
-			if (IsGameTypeSingle())
+			if(IsGameTypeSingle())
 			{
 				CInventoryOwner* our_inv_owner = smart_cast<CInventoryOwner*>(pCurEnt);
-				if (E && E->g_Alive() && !E->cast_base_monster())
+				if(E && E->g_Alive() && !E->cast_base_monster())
 				{
 					//.					CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
 					CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E);
 
-					if (our_inv_owner && others_inv_owner)
+					if(our_inv_owner && others_inv_owner)
 					{
 
-						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+						switch(RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
 						{
 						case ALife::eRelationTypeEnemy:
 							C = C_ON_ENEMY;
@@ -194,7 +194,7 @@ void CHUDTarget::Render()
 							break;
 						}
 
-						if (fuzzyShowInfo > 0.5f)
+						if(fuzzyShowInfo > 0.5f)
 						{
 							CStringTable strtbl;
 							F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
@@ -205,9 +205,9 @@ void CHUDTarget::Render()
 
 					fuzzyShowInfo += SHOW_INFO_SPEED * Engine.TimeManager.GetDeltaTime();
 				}
-				else if (l_pI && our_inv_owner && RQ.range < 2.0f * our_inv_owner->inventory().GetTakeDist() * 2.0f)
+				else if(l_pI && our_inv_owner && RQ.range < 2.0f * our_inv_owner->inventory().GetTakeDist() * 2.0f)
 				{
-					if (fuzzyShowInfo > 0.5f)
+					if(fuzzyShowInfo > 0.5f)
 					{
 						F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
 						F->OutNext("%s", l_pI->Name /*Complex*/ ());
@@ -217,20 +217,20 @@ void CHUDTarget::Render()
 			}
 			else
 			{
-				if (E && (E->GetfHealth() > 0))
+				if(E && (E->GetfHealth() > 0))
 				{
-					if (pCurEnt && GameID() == GAME_SINGLE)
+					if(pCurEnt && GameID() == GAME_SINGLE)
 					{
-						if (GameID() == GAME_DEATHMATCH)
+						if(GameID() == GAME_DEATHMATCH)
 							C = C_ON_ENEMY;
 						else
 						{
-							if (E->g_Team() != pCurEnt->g_Team())
+							if(E->g_Team() != pCurEnt->g_Team())
 								C = C_ON_ENEMY;
 							else
 								C = C_ON_FRIEND;
 						};
-						if (RQ.range >= recon_mindist() && RQ.range <= recon_maxdist())
+						if(RQ.range >= recon_mindist() && RQ.range <= recon_maxdist())
 						{
 							float ddist = (RQ.range - recon_mindist()) / (recon_maxdist() - recon_mindist());
 							float dspeed = recon_minspeed() + (recon_maxspeed() - recon_minspeed()) * ddist;
@@ -238,13 +238,13 @@ void CHUDTarget::Render()
 						}
 						else
 						{
-							if (RQ.range < recon_mindist())
+							if(RQ.range < recon_mindist())
 								fuzzyShowInfo += recon_minspeed() * Engine.TimeManager.GetDeltaTime();
 							else
 								fuzzyShowInfo = 0;
 						};
 
-						if (fuzzyShowInfo > 0.5f)
+						if(fuzzyShowInfo > 0.5f)
 						{
 							clamp(fuzzyShowInfo, 0.f, 1.f);
 							int alpha_C = iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f);
@@ -264,7 +264,7 @@ void CHUDTarget::Render()
 	}
 
 	// отрендерить кружочек или крестик
-	if (!m_bShowCrosshair)
+	if(!m_bShowCrosshair)
 	{
 		/*
 				// actual rendering

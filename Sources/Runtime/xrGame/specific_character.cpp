@@ -43,9 +43,9 @@ CSpecificCharacter::~CSpecificCharacter()
 
 void CSpecificCharacter::InitXmlIdToIndex()
 {
-	if (!id_to_index::tag_name)
+	if(!id_to_index::tag_name)
 		id_to_index::tag_name = "specific_character";
-	if (!id_to_index::file_str)
+	if(!id_to_index::file_str)
 		id_to_index::file_str = pSettings->r_string("profiles", "specific_characters_files");
 }
 
@@ -74,13 +74,13 @@ void CSpecificCharacter::load_shared(LPCSTR)
 	pXML->SetLocalRoot(item_node);
 
 	int norandom = pXML->ReadAttribInt(item_node, "no_random", 0);
-	if (1 == norandom)
+	if(1 == norandom)
 		data()->m_bNoRandom = true;
 	else
 		data()->m_bNoRandom = false;
 
 	int team_default = pXML->ReadAttribInt(item_node, "team_default", 0);
-	if (1 == team_default)
+	if(1 == team_default)
 		data()->m_bDefaultForCommunity = true;
 	else
 		data()->m_bDefaultForCommunity = false;
@@ -91,7 +91,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
 #ifdef XRGAME_EXPORTS
 
 	LPCSTR start_dialog = pXML->Read("start_dialog", 0, NULL);
-	if (start_dialog)
+	if(start_dialog)
 	{
 		data()->m_StartDialog = start_dialog;
 	}
@@ -100,7 +100,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
 
 	int dialogs_num = pXML->GetNodesNum(pXML->GetLocalRoot(), "actor_dialog");
 	data()->m_ActorDialogs.clear();
-	for (int i = 0; i < dialogs_num; ++i)
+	for(int i = 0; i < dialogs_num; ++i)
 	{
 		shared_str dialog_name = pXML->Read(pXML->GetLocalRoot(), "actor_dialog", i, "");
 		data()->m_ActorDialogs.push_back(dialog_name);
@@ -125,12 +125,12 @@ void CSpecificCharacter::load_shared(LPCSTR)
 #ifdef XRGAME_EXPORTS
 	data()->m_sSupplySpawn = pXML->Read("supplies", 0, "");
 
-	if (!data()->m_sSupplySpawn.empty())
+	if(!data()->m_sSupplySpawn.empty())
 	{
 		xr_string& str = data()->m_sSupplySpawn;
 		xr_string::size_type pos = str.find("\\n");
 
-		while (xr_string::npos != pos)
+		while(xr_string::npos != pos)
 		{
 			str.replace(pos, 2, "\n");
 			pos = str.find("\\n", pos + 1);
@@ -146,10 +146,10 @@ void CSpecificCharacter::load_shared(LPCSTR)
 
 	data()->m_Classes.clear();
 	int classes_num = pXML->GetNodesNum(pXML->GetLocalRoot(), "class");
-	for (int i = 0; i < classes_num; i++)
+	for(int i = 0; i < classes_num; i++)
 	{
 		LPCSTR char_class = pXML->Read("class", 0, "");
-		if (char_class)
+		if(char_class)
 		{
 			char* buf_str = xr_strdup(char_class);
 			xr_strlwr(buf_str);
@@ -168,7 +168,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
 	data()->m_Community.set(buf_str);
 	xr_free(buf_str);
 
-	if (data()->m_Community.index() == NO_COMMUNITY_INDEX)
+	if(data()->m_Community.index() == NO_COMMUNITY_INDEX)
 		Debug.fatal(DEBUG_INFO, "wrong 'community' '%s' in specific character %s ", team, *m_OwnId);
 
 	data()->m_Rank = pXML->ReadInt("rank", 0, NO_RANK);
@@ -177,7 +177,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
 	R_ASSERT3(data()->m_Reputation != NO_REPUTATION, "'reputation' field not fulfiled for specific character",
 			  *m_OwnId);
 
-	if (pXML->NavigateToNode(pXML->GetLocalRoot(), "money", 0))
+	if(pXML->NavigateToNode(pXML->GetLocalRoot(), "money", 0))
 	{
 		MoneyDef().min_money = pXML->ReadAttribInt("money", 0, "min");
 		MoneyDef().max_money = pXML->ReadAttribInt("money", 0, "max");

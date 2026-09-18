@@ -13,23 +13,23 @@
 #include "xrEngine/skeletoncustom.h"
 #include "phworld.h"
 extern CPHWorld* ph_world;
-#define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z)                                                                    \
-	if (x > y)                                                                                                         \
-		if (x > z)                                                                                                     \
-		{                                                                                                              \
-			inst_x;                                                                                                    \
-		}                                                                                                              \
-		else                                                                                                           \
-		{                                                                                                              \
-			inst_z;                                                                                                    \
-		}                                                                                                              \
-	else if (y > z)                                                                                                    \
-	{                                                                                                                  \
-		inst_y;                                                                                                        \
-	}                                                                                                                  \
-	else                                                                                                               \
-	{                                                                                                                  \
-		inst_z;                                                                                                        \
+#define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z) \
+	if(x > y)                                       \
+		if(x > z)                                   \
+		{                                           \
+			inst_x;                                 \
+		}                                           \
+		else                                        \
+		{                                           \
+			inst_z;                                 \
+		}                                           \
+	else if(y > z)                                  \
+	{                                               \
+		inst_y;                                     \
+	}                                               \
+	else                                            \
+	{                                               \
+		inst_z;                                     \
 	}
 
 CGraviArtefact::CGraviArtefact(void)
@@ -49,7 +49,7 @@ void CGraviArtefact::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	if (pSettings->line_exist(section, "jump_height"))
+	if(pSettings->line_exist(section, "jump_height"))
 		m_fJumpHeight = pSettings->r_float(section, "jump_height");
 	//	m_fEnergy = pSettings->r_float(section,"energy");
 }
@@ -58,30 +58,30 @@ void CGraviArtefact::UpdateCLChild()
 {
 
 	VERIFY(!ph_world->Processing());
-	if (getVisible() && m_pPhysicsShell)
+	if(getVisible() && m_pPhysicsShell)
 	{
-		if (m_fJumpHeight)
+		if(m_fJumpHeight)
 		{
 			fvec3 dir;
 			dir.set(0, -1.f, 0);
 			collide::rq_result RQ;
 
 			// проверить высоту артифакта
-			if (Level().ObjectSpace.RayPick(Position(), dir, m_fJumpHeight, collide::rqtBoth, RQ, this))
+			if(Level().ObjectSpace.RayPick(Position(), dir, m_fJumpHeight, collide::rqtBoth, RQ, this))
 			{
 				dir.y = 1.f;
 				m_pPhysicsShell->applyImpulse(dir, 30.f * Engine.TimeManager.GetDeltaTime() * m_pPhysicsShell->getMass());
 			}
 		}
 	}
-	else if (H_Parent())
+	else if(H_Parent())
 	{
 		Transform().set(H_Parent()->Transform());
 
-		if (GameID() == GAME_ARTEFACTHUNT && m_CarringBoneID != u16(-1))
+		if(GameID() == GAME_ARTEFACTHUNT && m_CarringBoneID != u16(-1))
 		{
 			CKinematics* K = smart_cast<CKinematics*>(H_Parent()->Visual());
-			if (K)
+			if(K)
 			{
 				K->CalculateBones();
 				fmat4x4 Ruck_MTX = K->LL_GetTransform(m_CarringBoneID);

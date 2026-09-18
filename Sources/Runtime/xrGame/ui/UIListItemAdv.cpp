@@ -8,7 +8,7 @@ CUIListItemAdv::~CUIListItemAdv()
 void CUIListItemAdv::SetTextColor(u32 color)
 {
 	CUIListItem::SetTextColor(color);
-	for (my_it it = m_fields.begin(); it != m_fields.end(); it++)
+	for(my_it it = m_fields.begin(); it != m_fields.end(); it++)
 		(*it)->SetTextColor(color);
 }
 
@@ -41,7 +41,7 @@ void CUIListItemAdv::AddWindow(CUIWindow* pWnd)
 float CUIListItemAdv::GetNextLeftPos()
 {
 	float p = 0;
-	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 		p += (*it)->GetWidth();
 
 	return p;

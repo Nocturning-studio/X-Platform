@@ -48,7 +48,6 @@ class ENGINE_API CObjectSpace
 	}
 
   private:
-
 	BOOL _RayTest(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt,
 				  collide::ray_cache* cache, CObject* ignore_object);
 	BOOL _RayPick(const fvec3& start, const fvec3& dir, float range, collide::rq_target tgt, collide::rq_result& R,

@@ -12,7 +12,7 @@
 #include "ai_space.h"
 #include "graph_engine.h"
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 
 #define CPathManagerTemplate CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>
@@ -49,7 +49,7 @@ IC void CPathManagerTemplate::build_path(const _vertex_id_type start_vertex_id, 
 	VERIFY(m_graph && m_evaluator && m_graph->valid_vertex_id(start_vertex_id) &&
 		   m_graph->valid_vertex_id(dest_vertex_id));
 
-	if ((m_failed_start_vertex_id == start_vertex_id) && (m_failed_dest_vertex_id == dest_vertex_id))
+	if((m_failed_start_vertex_id == start_vertex_id) && (m_failed_dest_vertex_id == dest_vertex_id))
 	{
 		before_search(start_vertex_id, dest_vertex_id);
 		m_failed = true;
@@ -67,7 +67,7 @@ IC void CPathManagerTemplate::build_path(const _vertex_id_type start_vertex_id, 
 	m_intermediate_index = _index_type(-1);
 	m_actuality = !failed();
 
-	if (!m_failed)
+	if(!m_failed)
 		return;
 
 	m_failed_start_vertex_id = start_vertex_id;
@@ -116,7 +116,7 @@ IC bool CPathManagerTemplate::failed() const
 TEMPLATE_SPECIALIZATION
 IC void CPathManagerTemplate::set_evaluator(_VertexEvaluator* evaluator)
 {
-	if ((evaluator != m_evaluator) || !m_evaluator->actual())
+	if((evaluator != m_evaluator) || !m_evaluator->actual())
 		m_actuality = false;
 	m_evaluator = evaluator;
 }

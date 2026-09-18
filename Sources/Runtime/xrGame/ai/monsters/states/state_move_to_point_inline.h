@@ -21,13 +21,13 @@ void CStateMonsterMoveToPointAbstract::execute()
 	object->path().set_generic_parameters();
 	object->path().set_distance_to_end(data.completion_dist);
 
-	if (data.accelerated)
+	if(data.accelerated)
 	{
 		object->anim().accel_activate(EAccelType(data.accel_type));
 		object->anim().accel_set_braking(data.braking);
 	}
 
-	if (data.action.sound_type != u32(-1))
+	if(data.action.sound_type != u32(-1))
 	{
 		object->set_state_sound(data.action.sound_type, data.action.sound_delay == u32(-1));
 	}
@@ -36,9 +36,9 @@ void CStateMonsterMoveToPointAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterMoveToPointAbstract::check_completion()
 {
-	if (data.action.time_out != 0)
+	if(data.action.time_out != 0)
 	{
-		if (time_state_started + data.action.time_out < Engine.TimeManager.GetGlobalTimeMs())
+		if(time_state_started + data.action.time_out < Engine.TimeManager.GetGlobalTimeMs())
 			return true;
 	}
 
@@ -46,7 +46,7 @@ bool CStateMonsterMoveToPointAbstract::check_completion()
 		((fis_zero(data.completion_dist))
 			 ? (data.point.distance_to_xz(object->Position()) < ai().level_graph().header().cell_size())
 			 : true);
-	if (object->control().path_builder().is_path_end(data.completion_dist) && real_path_end)
+	if(object->control().path_builder().is_path_end(data.completion_dist) && real_path_end)
 		return true;
 
 	return false;
@@ -77,13 +77,13 @@ void CStateMonsterMoveToPointExAbstract::execute()
 	object->path().set_use_covers();
 	object->path().set_cover_params(5.f, 30.f, 1.f, 30.f);
 
-	if (data.accelerated)
+	if(data.accelerated)
 	{
 		object->anim().accel_activate(EAccelType(data.accel_type));
 		object->anim().accel_set_braking(data.braking);
 	}
 
-	if (data.action.sound_type != u32(-1))
+	if(data.action.sound_type != u32(-1))
 	{
 		object->set_state_sound(data.action.sound_type, data.action.sound_delay == u32(-1));
 	}
@@ -92,9 +92,9 @@ void CStateMonsterMoveToPointExAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterMoveToPointExAbstract::check_completion()
 {
-	if (data.action.time_out != 0)
+	if(data.action.time_out != 0)
 	{
-		if (time_state_started + data.action.time_out < Engine.TimeManager.GetGlobalTimeMs())
+		if(time_state_started + data.action.time_out < Engine.TimeManager.GetGlobalTimeMs())
 			return true;
 	}
 
@@ -102,7 +102,7 @@ bool CStateMonsterMoveToPointExAbstract::check_completion()
 		((fis_zero(data.completion_dist))
 			 ? (data.point.distance_to_xz(object->Position()) < ai().level_graph().header().cell_size())
 			 : true);
-	if (object->control().path_builder().is_path_end(data.completion_dist) && real_path_end)
+	if(object->control().path_builder().is_path_end(data.completion_dist) && real_path_end)
 		return true;
 
 	return false;

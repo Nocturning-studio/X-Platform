@@ -60,19 +60,19 @@ INetLog::INetLog(LPCSTR sFileName, u32 dwStartTime)
 INetLog::~INetLog()
 {
 	FlushLog();
-	if (m_pLogFile)
+	if(m_pLogFile)
 		fclose(m_pLogFile);
 	m_pLogFile = NULL;
 }
 
 void INetLog::FlushLog()
 {
-	if (m_pLogFile)
+	if(m_pLogFile)
 	{
-		for (xr_vector<SLogPacket>::iterator it = m_aLogPackets.begin(); it != m_aLogPackets.end(); it++)
+		for(xr_vector<SLogPacket>::iterator it = m_aLogPackets.begin(); it != m_aLogPackets.end(); it++)
 		{
 			SLogPacket* pLPacket = &(*it);
-			if (pLPacket->m_u16Type >= sizeof(PacketName) / sizeof(PacketName[0]))
+			if(pLPacket->m_u16Type >= sizeof(PacketName) / sizeof(PacketName[0]))
 				fprintf(m_pLogFile, "%s %10d %10d %10d\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time,
 						pLPacket->m_u16Type, pLPacket->m_u32Size);
 			else
@@ -86,7 +86,7 @@ void INetLog::FlushLog()
 
 void INetLog::LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn)
 {
-	if (!pPacket)
+	if(!pPacket)
 		return;
 
 	m_cs.Enter();
@@ -99,7 +99,7 @@ void INetLog::LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn)
 	NewPacket.m_bIsIn = IsIn;
 
 	m_aLogPackets.push_back(NewPacket);
-	if (m_aLogPackets.size() > 100)
+	if(m_aLogPackets.size() > 100)
 		FlushLog();
 
 	m_cs.Leave();
@@ -107,7 +107,7 @@ void INetLog::LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn)
 
 void INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 {
-	if (!data)
+	if(!data)
 		return;
 
 	m_cs.Enter();
@@ -120,7 +120,7 @@ void INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 	NewPacket.m_bIsIn = IsIn;
 
 	m_aLogPackets.push_back(NewPacket);
-	if (m_aLogPackets.size() > 100)
+	if(m_aLogPackets.size() > 100)
 		FlushLog();
 
 	m_cs.Leave();

@@ -42,7 +42,7 @@ void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
 	CInventoryOwner* pOthersIO = smart_cast<CInventoryOwner*>(pOthersGO);
 	THROW(pOthersIO);
 
-	if (!phrase_dialog->IsFinished())
+	if(!phrase_dialog->IsFinished())
 	{
 		CHARACTER_GOODWILL attitude = RELATION_REGISTRY().GetAttitude(pOthersIO, pInvOwner);
 
@@ -52,19 +52,19 @@ void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
 		// последнюю из списка (самую грубую)
 		int phrase_num = phrase_dialog->PhraseList().size() - 1;
 		u32 i = 0;
-		for (; i < phrase_dialog->PhraseList().size(); ++i)
+		for(; i < phrase_dialog->PhraseList().size(); ++i)
 		{
 			phrase_goodwill = phrase_dialog->PhraseList()[phrase_num]->GoodwillLevel();
-			if (attitude >= phrase_goodwill)
+			if(attitude >= phrase_goodwill)
 			{
 				phrase_num = i;
 				break;
 			}
 		}
 
-		for (i = 0; i < phrase_dialog->PhraseList().size(); i++)
+		for(i = 0; i < phrase_dialog->PhraseList().size(); i++)
 		{
-			if (phrase_goodwill == phrase_dialog->PhraseList()[phrase_num]->GoodwillLevel())
+			if(phrase_goodwill == phrase_dialog->PhraseList()[phrase_num]->GoodwillLevel())
 				phrases.push_back(i);
 		}
 
@@ -99,7 +99,7 @@ void CAI_PhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partn
 	m_AvailableDialogs.clear();
 	m_CheckedDialogs.clear();
 
-	if (*m_sStartDialog)
+	if(*m_sStartDialog)
 		inherited::AddAvailableDialog(*m_sStartDialog, partner);
 	inherited::AddAvailableDialog("hello_dialog", partner);
 

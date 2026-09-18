@@ -63,22 +63,22 @@ bool BattlEyeSystem::ReloadServerDLL(xrServer* xr_server)
 	strconcat(sizeof(new_file_name), new_file_name, dll_file_name, ".new");
 	strconcat(sizeof(err_file_name), err_file_name, dll_file_name, ".error");
 
-	if (rename(dll_file_name, old_file_name))
+	if(rename(dll_file_name, old_file_name))
 	{
 		Msg("! Could not rename %s to %s", dll_file_name, old_file_name);
 		return false;
 	}
-	if (rename(new_file_name, dll_file_name))
+	if(rename(new_file_name, dll_file_name))
 	{
 		Msg("! Could not rename %s to %s", new_file_name, dll_file_name);
 		return false;
 	}
 
 	server = xr_new<BattlEyeServer>(xr_server);
-	if (server->IsLoaded()) // (1) if loaded from BEServer.dll (new version)
+	if(server->IsLoaded()) // (1) if loaded from BEServer.dll (new version)
 	{
 		server->AddConnectedPlayers();
-		if (!DeleteFile(old_file_name))
+		if(!DeleteFile(old_file_name))
 		{
 			Msg("! Could not delete old %s", old_file_name);
 			// return _false;
@@ -89,19 +89,19 @@ bool BattlEyeSystem::ReloadServerDLL(xrServer* xr_server)
 	xr_delete(server);
 	server = NULL;
 
-	if (rename(dll_file_name, err_file_name))
+	if(rename(dll_file_name, err_file_name))
 	{
 		Msg("! Could not rename %s to %s", dll_file_name, err_file_name);
 		return false;
 	}
-	if (rename(old_file_name, dll_file_name))
+	if(rename(old_file_name, dll_file_name))
 	{
 		Msg("! Could not rename %s to %s", old_file_name, dll_file_name);
 		return false;
 	}
 
 	server = xr_new<BattlEyeServer>(xr_server);
-	if (server->IsLoaded()) // (2) if loaded from BEServer.dll (prev version)
+	if(server->IsLoaded()) // (2) if loaded from BEServer.dll (prev version)
 	{
 		server->AddConnectedPlayers();
 		return true;
@@ -125,21 +125,21 @@ bool BattlEyeSystem::ReloadClientDLL()
 	strconcat(sizeof(new_file_name), new_file_name, dll_file_name, ".new");
 	strconcat(sizeof(err_file_name), err_file_name, dll_file_name, ".error");
 
-	if (rename(dll_file_name, old_file_name))
+	if(rename(dll_file_name, old_file_name))
 	{
 		Msg("! Could not rename %s to %s", dll_file_name, old_file_name);
 		return false;
 	}
-	if (rename(new_file_name, dll_file_name))
+	if(rename(new_file_name, dll_file_name))
 	{
 		Msg("! Could not rename %s to %s", new_file_name, dll_file_name);
 		return false;
 	}
 
 	client = xr_new<BattlEyeClient>();
-	if (client->IsLoaded()) // (1) if loaded from BEClient.dll (new version)
+	if(client->IsLoaded()) // (1) if loaded from BEClient.dll (new version)
 	{
-		if (!DeleteFile(old_file_name))
+		if(!DeleteFile(old_file_name))
 		{
 			Msg("! Could not delete old %s", old_file_name);
 			// return _false;
@@ -150,19 +150,19 @@ bool BattlEyeSystem::ReloadClientDLL()
 	xr_delete(client);
 	client = NULL;
 
-	if (rename(dll_file_name, err_file_name))
+	if(rename(dll_file_name, err_file_name))
 	{
 		Msg("! Could not rename %s to %s", dll_file_name, err_file_name);
 		return false;
 	}
-	if (rename(old_file_name, dll_file_name))
+	if(rename(old_file_name, dll_file_name))
 	{
 		Msg("! Could not rename %s to %s", old_file_name, dll_file_name);
 		return false;
 	}
 
 	client = xr_new<BattlEyeClient>();
-	if (client->IsLoaded()) // (2) if loaded from BEClient.dll (prev version)
+	if(client->IsLoaded()) // (2) if loaded from BEClient.dll (prev version)
 	{
 		return true;
 	}
@@ -176,12 +176,12 @@ bool BattlEyeSystem::LoadClient()
 {
 	// if ( Level().IsClient() )
 	{
-		if (client)
+		if(client)
 		{
 			return true;
 		}
 		client = xr_new<BattlEyeClient>();
-		if (client->IsLoaded())
+		if(client->IsLoaded())
 		{
 			return true;
 		}
@@ -195,12 +195,12 @@ bool BattlEyeSystem::LoadClient()
 
 bool BattlEyeSystem::LoadServer(xrServer* xr_server)
 {
-	if (server)
+	if(server)
 	{
 		return true;
 	}
 	server = xr_new<BattlEyeServer>(xr_server);
-	if (server->IsLoaded())
+	if(server->IsLoaded())
 	{
 		return true;
 	}
@@ -214,11 +214,11 @@ bool BattlEyeSystem::LoadServer(xrServer* xr_server)
 
 void BattlEyeSystem::UpdateClient()
 {
-	if (!client)
+	if(!client)
 	{
 		return;
 	}
-	if (!client->Run())
+	if(!client->Run())
 	{
 		ReloadClientDLL();
 	}
@@ -226,11 +226,11 @@ void BattlEyeSystem::UpdateClient()
 
 void BattlEyeSystem::UpdateServer(xrServer* xr_server)
 {
-	if (!server)
+	if(!server)
 	{
 		return;
 	}
-	if (!server->Run())
+	if(!server->Run())
 	{
 		ReloadServerDLL(xr_server);
 	}
@@ -238,7 +238,7 @@ void BattlEyeSystem::UpdateServer(xrServer* xr_server)
 
 void BattlEyeSystem::ReadPacketClient(NET_Packet* pack)
 {
-	if (!client)
+	if(!client)
 	{
 		return;
 	}
@@ -254,7 +254,7 @@ void BattlEyeSystem::ReadPacketClient(NET_Packet* pack)
 
 void BattlEyeSystem::ReadPacketServer(u32 sender, NET_Packet* pack)
 {
-	if (!server)
+	if(!server)
 	{
 		return;
 	}
@@ -271,12 +271,12 @@ void BattlEyeSystem::ReadPacketServer(u32 sender, NET_Packet* pack)
 bool BattlEyeSystem::TestLoadClient()
 {
 	m_test_load_client = false;
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 	{
 		return true; // false = Error
 	}
 
-	if (LoadClient()) // test load
+	if(LoadClient()) // test load
 	{
 		xr_delete(client);
 		client = NULL;
@@ -292,9 +292,9 @@ bool BattlEyeSystem::InitDir()
 	FS.update_path(dir_be, "$app_data_root$", "");
 	strcat_s(dir_be, sizeof(dir_be), BATTLEYE_DIR);
 
-	if (FS.can_write_to_folder(dir_be) == NULL)
+	if(FS.can_write_to_folder(dir_be) == NULL)
 	{
-		if (!CreateDirectory(dir_be, NULL))
+		if(!CreateDirectory(dir_be, NULL))
 		{
 			Msg("! Cannot make folder >>> %s", dir_be);
 			return false;
@@ -302,14 +302,14 @@ bool BattlEyeSystem::InitDir()
 	}
 
 	string_path fn_sv;
-	if (!InitDLL(BATTLEYE_SERVER_DLL, fn_sv))
+	if(!InitDLL(BATTLEYE_SERVER_DLL, fn_sv))
 	{
 		return false;
 	}
 	SetServerPath(fn_sv);
 
 	string_path fn_cl;
-	if (!InitDLL(BATTLEYE_CLIENT_DLL, fn_cl))
+	if(!InitDLL(BATTLEYE_CLIENT_DLL, fn_cl))
 	{
 		return false;
 	}
@@ -325,7 +325,7 @@ bool BattlEyeSystem::InitDLL(LPCSTR dll_name, string_path& out_file)
 	strcat_s(out_file, sizeof(out_file), dll_name);
 
 	ft = fopen(out_file, "r");
-	if (ft == NULL)
+	if(ft == NULL)
 	{
 		HMODULE h_game = GetModuleHandle("xrGame.dll");
 		R_ASSERT(h_game);
@@ -340,7 +340,7 @@ bool BattlEyeSystem::InitDLL(LPCSTR dll_name, string_path& out_file)
 		strconcat(sizeof(fn_orig), fn_orig, disk, cur_dir, dll_name);
 
 		ft = fopen(fn_orig, "r");
-		if (ft == NULL)
+		if(ft == NULL)
 		{
 			Msg("! File not found >>> %s", fn_orig);
 			return false;
@@ -349,7 +349,7 @@ bool BattlEyeSystem::InitDLL(LPCSTR dll_name, string_path& out_file)
 
 		CopyFile(fn_orig, out_file, FALSE);
 		ft = fopen(out_file, "r");
-		if (ft == NULL)
+		if(ft == NULL)
 		{
 			Msg("! File not found >>> %s", out_file);
 			return false;

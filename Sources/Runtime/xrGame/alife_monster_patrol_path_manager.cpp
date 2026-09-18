@@ -62,9 +62,9 @@ void CALifeMonsterPatrolPathManager::select_nearest()
 	float best_distance = flt_max;
 	CPatrolPath::const_vertex_iterator I = path().vertices().begin();
 	CPatrolPath::const_vertex_iterator E = path().vertices().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if ((*I).second->data().game_vertex_id() == object().m_tGraphID)
+		if((*I).second->data().game_vertex_id() == object().m_tGraphID)
 		{
 			m_current_vertex_index = (*I).second->vertex_id();
 			break;
@@ -73,7 +73,7 @@ void CALifeMonsterPatrolPathManager::select_nearest()
 		float distance =
 			global_position.distance_to(ai().game_graph().vertex((*I).second->data().game_vertex_id())->game_point());
 
-		if (distance >= best_distance)
+		if(distance >= best_distance)
 			continue;
 
 		best_distance = distance;
@@ -90,21 +90,25 @@ void CALifeMonsterPatrolPathManager::actualize()
 	m_actual = true;
 	m_completed = false;
 
-	switch (start_type())
+	switch(start_type())
 	{
-	case PatrolPathManager::ePatrolStartTypeFirst: {
+	case PatrolPathManager::ePatrolStartTypeFirst:
+	{
 		m_current_vertex_index = 0;
 		break;
 	}
-	case PatrolPathManager::ePatrolStartTypeLast: {
+	case PatrolPathManager::ePatrolStartTypeLast:
+	{
 		m_current_vertex_index = path().vertices().size() - 1;
 		break;
 	}
-	case PatrolPathManager::ePatrolStartTypeNearest: {
+	case PatrolPathManager::ePatrolStartTypeNearest:
+	{
 		select_nearest();
 		break;
 	}
-	case PatrolPathManager::ePatrolStartTypePoint: {
+	case PatrolPathManager::ePatrolStartTypePoint:
+	{
 		m_current_vertex_index = m_start_vertex_index;
 		break;
 	}
@@ -119,10 +123,10 @@ void CALifeMonsterPatrolPathManager::actualize()
 
 bool CALifeMonsterPatrolPathManager::location_reached() const
 {
-	if (object().m_tGraphID != target_game_vertex_id())
+	if(object().m_tGraphID != target_game_vertex_id())
 		return (false);
 
-	if (object().m_tNodeID != target_level_vertex_id())
+	if(object().m_tNodeID != target_level_vertex_id())
 		return (false);
 
 	return (true);
@@ -137,25 +141,27 @@ void CALifeMonsterPatrolPathManager::navigate()
 	EDGES::const_iterator E = vertex.edges().end();
 
 	u32 branching_factor = 0;
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (*I == m_previous_vertex_index)
+		if(*I == m_previous_vertex_index)
 			continue;
 
 		++branching_factor;
 	}
 
-	if (!branching_factor)
+	if(!branching_factor)
 	{
-		switch (route_type())
+		switch(route_type())
 		{
-		case PatrolPathManager::ePatrolRouteTypeStop: {
+		case PatrolPathManager::ePatrolRouteTypeStop:
+		{
 			VERIFY(!m_completed);
 			m_completed = true;
 			break;
 		};
-		case PatrolPathManager::ePatrolRouteTypeContinue: {
-			if (vertex.edges().empty())
+		case PatrolPathManager::ePatrolRouteTypeContinue:
+		{
+			if(vertex.edges().empty())
 			{
 				VERIFY(!m_completed);
 				m_completed = true;
@@ -174,12 +180,12 @@ void CALifeMonsterPatrolPathManager::navigate()
 
 	u32 chosen = use_randomness() ? object().randI(branching_factor) : 0;
 	u32 branch = 0;
-	for (I = B; I != E; ++I)
+	for(I = B; I != E; ++I)
 	{
-		if (*I == m_previous_vertex_index)
+		if(*I == m_previous_vertex_index)
 			continue;
 
-		if (chosen == branch)
+		if(chosen == branch)
 			break;
 
 		++branch;
@@ -192,16 +198,16 @@ void CALifeMonsterPatrolPathManager::navigate()
 
 void CALifeMonsterPatrolPathManager::update()
 {
-	if (!m_path)
+	if(!m_path)
 		return;
 
-	if (completed())
+	if(completed())
 		return;
 
-	if (!actual())
+	if(!actual())
 		actualize();
 
-	if (!location_reached())
+	if(!location_reached())
 		return;
 
 	navigate();

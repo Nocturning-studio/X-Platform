@@ -58,7 +58,7 @@ void CLensFlareDescriptor::AddFlare(float fRadius, float fOpacity, float fPositi
 ref_shader CLensFlareDescriptor::CreateShader(LPCSTR tex_name, LPCSTR sh_name)
 {
 	ref_shader R;
-	if (tex_name && tex_name[0])
+	if(tex_name && tex_name[0])
 		R.create(sh_name, tex_name);
 	return R;
 }
@@ -67,7 +67,7 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 {
 	section = sect;
 	m_Flags.set(flSource, pIni->r_bool(sect, "sun"));
-	if (m_Flags.is(flSource))
+	if(m_Flags.is(flSource))
 	{
 		LPCSTR S = pIni->r_string(sect, "sun_shader");
 		LPCSTR T = pIni->r_string(sect, "sun_texture");
@@ -76,7 +76,7 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 		SetSource(r, i, T, S);
 	}
 	m_Flags.set(flFlare, pIni->r_bool(sect, "flares"));
-	if (m_Flags.is(flFlare))
+	if(m_Flags.is(flFlare))
 	{
 		LPCSTR S = pIni->r_string(sect, "flare_shader");
 		LPCSTR T = pIni->r_string(sect, "flare_textures");
@@ -85,7 +85,7 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 		LPCSTR P = pIni->r_string(sect, "flare_position");
 		u32 tcnt = _GetItemCount(T);
 		string256 name;
-		for (u32 i = 0; i < tcnt; i++)
+		for(u32 i = 0; i < tcnt; i++)
 		{
 			_GetItem(R, i, name);
 			float r = (float)atof(name);
@@ -98,7 +98,7 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 		}
 	}
 	m_Flags.set(flGradient, CInifile::IsBOOL(pIni->r_string(sect, "gradient")));
-	if (m_Flags.is(flGradient))
+	if(m_Flags.is(flGradient))
 	{
 		LPCSTR S = pIni->r_string(sect, "gradient_shader");
 		LPCSTR T = pIni->r_string(sect, "gradient_texture");
@@ -117,7 +117,7 @@ void CLensFlareDescriptor::OnDeviceCreate()
 	// shaders
 	m_Gradient.hShader = CreateShader(*m_Gradient.texture, *m_Gradient.shader);
 	m_Source.hShader = CreateShader(*m_Source.texture, *m_Source.shader);
-	for (FlareIt it = m_Flares.begin(); it != m_Flares.end(); it++)
+	for(FlareIt it = m_Flares.begin(); it != m_Flares.end(); it++)
 		it->hShader = CreateShader(*it->texture, *it->shader);
 }
 
@@ -126,7 +126,7 @@ void CLensFlareDescriptor::OnDeviceDestroy()
 	// shaders
 	m_Gradient.hShader.destroy();
 	m_Source.hShader.destroy();
-	for (FlareIt it = m_Flares.begin(); it != m_Flares.end(); it++)
+	for(FlareIt it = m_Flares.begin(); it != m_Flares.end(); it++)
 		it->hShader.destroy();
 }
 
@@ -180,18 +180,18 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 {
 	STranspParam* fp = (STranspParam*)params;
 	float vis = 1.f;
-	if (result.O)
+	if(result.O)
 	{
 		vis = 0.f;
 		CKinematics* K = PKinematics(result.O->renderable.visual);
-		if (K && (result.element > 0))
+		if(K && (result.element > 0))
 			vis = g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
 	}
 	else
 	{
 		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
 		vis = g_pGamePersistent->MtlTransparent(T->material);
-		if (fis_zero(vis))
+		if(fis_zero(vis))
 		{
 			fvec3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
 			fp->parent->m_ray_cache.set(fp->P, fp->D, fp->f, TRUE);
@@ -209,20 +209,20 @@ IC void blend_lerp(float& cur, float tgt, float speed, float dt)
 {
 	float diff = tgt - cur;
 	float diff_a = _abs(diff);
-	if (diff_a < EPS_S)
+	if(diff_a < EPS_S)
 		return;
 	float mot = speed * dt;
-	if (mot > diff_a)
+	if(mot > diff_a)
 		mot = diff_a;
 	cur += (diff / diff_a) * mot;
 }
 
 void CLensFlare::OnFrame(shared_str id)
 {
-	if (dwFrame == Engine.TimeManager.GetFrameCount())
+	if(dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
 #ifndef _EDITOR
-	if (!g_pGameLevel)
+	if(!g_pGameLevel)
 		return;
 #endif
 	dwFrame = Engine.TimeManager.GetFrameCount();
@@ -238,24 +238,24 @@ void CLensFlare::OnFrame(shared_str id)
 
 	CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
 
-	switch (m_State)
+	switch(m_State)
 	{
 	case lfsNone:
 		m_State = lfsShow;
 		m_Current = desc;
 		break;
 	case lfsIdle:
-		if (desc != m_Current)
+		if(desc != m_Current)
 			m_State = lfsHide;
 		break;
 	case lfsShow:
 		m_StateBlend = m_Current ? (m_StateBlend + m_Current->m_StateBlendUpSpeed * Engine.TimeManager.GetDeltaTime() * tf) : 1.f + EPS;
-		if (m_StateBlend >= 1.f)
+		if(m_StateBlend >= 1.f)
 			m_State = lfsIdle;
 		break;
 	case lfsHide:
 		m_StateBlend = m_Current ? (m_StateBlend - m_Current->m_StateBlendDnSpeed * Engine.TimeManager.GetDeltaTime() * tf) : 0.f - EPS;
-		if (m_StateBlend <= 0.f)
+		if(m_StateBlend <= 0.f)
 		{
 			m_State = lfsShow;
 			m_Current = desc;
@@ -265,7 +265,7 @@ void CLensFlare::OnFrame(shared_str id)
 	}
 	clamp(m_StateBlend, 0.f, 1.f);
 
-	if ((m_Current == 0) || (LightColor.magnitude_rgb() == 0.f))
+	if((m_Current == 0) || (LightColor.magnitude_rgb() == 0.f))
 	{
 		bRender = false;
 		return;
@@ -297,7 +297,7 @@ void CLensFlare::OnFrame(shared_str id)
 
 	fDot = vecLight.dotproduct(vecDir);
 
-	if (fDot <= 0.01f)
+	if(fDot <= 0.01f)
 	{
 		bRender = false;
 		return;
@@ -320,13 +320,13 @@ void CLensFlare::OnFrame(shared_str id)
 	vecX.set(1.0f, 0.0f, 0.0f);
 	matEffCamPos.transform_dir(vecX);
 	vecX.normalize();
-	//R_ASSERT(_valid(vecX));
+	// R_ASSERT(_valid(vecX));
 	vecY.crossproduct(vecX, vecDir);
-	//R_ASSERT(_valid(vecY));
+	// R_ASSERT(_valid(vecY));
 
 #ifdef _EDITOR
 	float dist = UI->ZFar();
-	if (Tools->RayPick(Device.m_Camera.GetPosition(), vSunDir, dist))
+	if(Tools->RayPick(Device.m_Camera.GetPosition(), vSunDir, dist))
 		fBlend = fBlend - BLEND_DEC_SPEED * Engine.TimeManager.GetDeltaTime();
 	else
 		fBlend = fBlend + BLEND_INC_SPEED * Engine.TimeManager.GetDeltaTime();
@@ -334,7 +334,7 @@ void CLensFlare::OnFrame(shared_str id)
 	CObject* o_main = g_pGameLevel->CurrentViewEntity();
 	STranspParam TP(this, Engine.RenderView.Position, vSunDir, 1000.f, EPS_L);
 	collide::ray_defs RD(TP.P, TP.D, TP.f, CDB::OPT_CULL, collide::rqtBoth);
-	if (m_ray_cache.result && m_ray_cache.similar(TP.P, TP.D, TP.f))
+	if(m_ray_cache.result && m_ray_cache.similar(TP.P, TP.D, TP.f))
 	{
 		// similar with previous query == 0
 		TP.vis = 0.f;
@@ -342,7 +342,7 @@ void CLensFlare::OnFrame(shared_str id)
 	else
 	{
 		float _u, _v, _range;
-		if (CDB::TestRayTri(TP.P, TP.D, m_ray_cache.verts, _u, _v, _range, false) && (_range > 0 && _range < TP.f))
+		if(CDB::TestRayTri(TP.P, TP.D, m_ray_cache.verts, _u, _v, _range, false) && (_range > 0 && _range < TP.f))
 		{
 			TP.vis = 0.f;
 		}
@@ -350,7 +350,7 @@ void CLensFlare::OnFrame(shared_str id)
 		{
 			// cache outdated. real query.
 			r_dest.r_clear();
-			if (g_pGameLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, NULL, o_main))
+			if(g_pGameLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, NULL, o_main))
 				m_ray_cache.result = FALSE;
 		}
 	}
@@ -360,7 +360,7 @@ void CLensFlare::OnFrame(shared_str id)
 	clamp(fBlend, 0.0f, 1.0f);
 
 	// gradient
-	if (m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
+	if(m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
 	{
 		fvec3 scr_pos;
 		Engine.RenderView.ViewProjection.transform(scr_pos, vecLight);
@@ -369,12 +369,12 @@ void CLensFlare::OnFrame(shared_str id)
 		float sun_max = 2.5f;
 		scr_pos.y *= -1;
 
-		if (_abs(scr_pos.x) > sun_blend)
+		if(_abs(scr_pos.x) > sun_blend)
 			kx = ((sun_max - (float)_abs(scr_pos.x))) / (sun_max - sun_blend);
-		if (_abs(scr_pos.y) > sun_blend)
+		if(_abs(scr_pos.y) > sun_blend)
 			ky = ((sun_max - (float)_abs(scr_pos.y))) / (sun_max - sun_blend);
 
-		if (!((_abs(scr_pos.x) > sun_max) || (_abs(scr_pos.y) > sun_max)))
+		if(!((_abs(scr_pos.x) > sun_max) || (_abs(scr_pos.y) > sun_max)))
 		{
 			float op = m_StateBlend * m_Current->m_Gradient.fOpacity;
 			fGradientValue = kx * ky * op * fBlend;
@@ -391,11 +391,11 @@ float CLensFlare::GetBlendFactor()
 
 void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 {
-	//OPTICK_EVENT("CLensFlare::Render");
+	// OPTICK_EVENT("CLensFlare::Render");
 
-	if (!bRender)
+	if(!bRender)
 		return;
-	if (!m_Current)
+	if(!m_Current)
 		return;
 	VERIFY(m_Current);
 
@@ -412,13 +412,13 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 
 	float fDistance = FAR_DIST * 0.75f;
 
-	if (bSun)
+	if(bSun)
 	{
-		if (m_Current->m_Flags.is(CLensFlareDescriptor::flSource))
+		if(m_Current->m_Flags.is(CLensFlareDescriptor::flSource))
 		{
 			vecSx.mul(vecX, m_Current->m_Source.fRadius * fDistance);
 			vecSy.mul(vecY, m_Current->m_Source.fRadius * fDistance);
-			if (m_Current->m_Source.ignore_color)
+			if(m_Current->m_Source.ignore_color)
 				color.set(1.f, 1.f, 1.f, 1.f);
 			else
 				color.set(dwLight);
@@ -439,16 +439,16 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 			_2render.push_back(m_Current->m_Source.hShader);
 		}
 	}
-	if (fBlend >= EPS_L)
+	if(fBlend >= EPS_L)
 	{
-		if (bFlares)
+		if(bFlares)
 		{
 			vecDx.normalize(vecAxis);
 			vecDy.crossproduct(vecDx, vecDir);
-			if (m_Current->m_Flags.is(CLensFlareDescriptor::flFlare))
+			if(m_Current->m_Flags.is(CLensFlareDescriptor::flFlare))
 			{
-				for (CLensFlareDescriptor::FlareIt it = m_Current->m_Flares.begin(); it != m_Current->m_Flares.end();
-					 it++)
+				for(CLensFlareDescriptor::FlareIt it = m_Current->m_Flares.begin(); it != m_Current->m_Flares.end();
+					it++)
 				{
 					CLensFlareDescriptor::SFlare& F = *it;
 					vec.mul(vecAxis, F.fPosition);
@@ -472,9 +472,9 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 			}
 		}
 		// gradient
-		if (bGradient && (fGradientValue >= EPS_L))
+		if(bGradient && (fGradientValue >= EPS_L))
 		{
-			if (m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
+			if(m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
 			{
 				vecSx.mul(vecX, m_Current->m_Gradient.fRadius * fGradientValue * fDistance);
 				vecSy.mul(vecY, m_Current->m_Gradient.fRadius * fGradientValue * fDistance);
@@ -503,9 +503,9 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 
 	RenderBackend.set_transform_world(Fidentity);
 	RenderBackend.set_Geometry(hGeom);
-	for (u32 i = 0; i < _2render.size(); i++)
+	for(u32 i = 0; i < _2render.size(); i++)
 	{
-		if (_2render[i])
+		if(_2render[i])
 		{
 			u32 vBase = i * 4 + VS_Offset;
 			RenderBackend.set_Shader(_2render[i]);
@@ -516,10 +516,10 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 
 shared_str CLensFlare::AppendDef(CEnvironment& environment, CInifile* pIni, LPCSTR sect)
 {
-	if (!sect || (0 == sect[0]))
+	if(!sect || (0 == sect[0]))
 		return "";
-	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-		if (0 == xr_strcmp(*(*it)->section, sect))
+	for(LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
+		if(0 == xr_strcmp(*(*it)->section, sect))
 			return sect;
 
 	environment.add_flare(m_Palette, sect);
@@ -532,14 +532,14 @@ void CLensFlare::OnDeviceCreate()
 	hGeom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
 
 	// palette
-	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
+	for(LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
 		(*it)->OnDeviceCreate();
 }
 
 void CLensFlare::OnDeviceDestroy()
 {
 	// palette
-	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
+	for(LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
 		(*it)->OnDeviceDestroy();
 
 	// VS

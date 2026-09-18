@@ -41,7 +41,7 @@ void CUIEncyclopediaArticleWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
 {
-	if (article->data()->image.TextureAvailable())
+	if(article->data()->image.TextureAvailable())
 	{
 		m_UIImage->SetShader(article->data()->image.GetShader());
 		m_UIImage->SetOriginalRect(article->data()->image.GetStaticItem()->GetOriginalRect());

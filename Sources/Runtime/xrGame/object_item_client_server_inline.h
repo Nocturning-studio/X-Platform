@@ -40,10 +40,10 @@ ObjectFactory::SERVER_BASE_CLASS* CSObjectItemClientServer::server_object(LPCSTR
 #undef CSObjectItemClientServer
 
 #ifndef NO_XR_GAME
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _client_type_single, typename _client_type_mp, typename _server_type_single,                    \
+#define TEMPLATE_SPECIALIZATION                                                                     \
+	template <typename _client_type_single, typename _client_type_mp, typename _server_type_single, \
 			  typename _server_type_mp>
-#define CSObjectItemClientServerSingleMp                                                                               \
+#define CSObjectItemClientServerSingleMp \
 	CObjectItemClientServerSingleMp<_client_type_single, _client_type_mp, _server_type_single, _server_type_mp>
 
 TEMPLATE_SPECIALIZATION

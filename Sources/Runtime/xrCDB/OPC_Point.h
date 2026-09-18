@@ -343,17 +343,17 @@ class ICEMATHS_API icePoint
 	//! Clamps each element
 	inline_ Point& Clamp(float min, float max)
 	{
-		if (x < min)
+		if(x < min)
 			x = min;
-		if (x > max)
+		if(x > max)
 			x = max;
-		if (y < min)
+		if(y < min)
 			y = min;
-		if (y > max)
+		if(y > max)
 			y = max;
-		if (z < min)
+		if(z < min)
 			z = min;
-		if (z > max)
+		if(z > max)
 			z = max;
 		return *this;
 	}
@@ -383,19 +383,19 @@ class ICEMATHS_API icePoint
 	//! Slighty moves the point
 	void Tweak(udword coordmask, udword tweakmask)
 	{
-		if (coordmask & 1)
+		if(coordmask & 1)
 		{
 			udword Dummy = IR(x);
 			Dummy ^= tweakmask;
 			x = FR(Dummy);
 		}
-		if (coordmask & 2)
+		if(coordmask & 2)
 		{
 			udword Dummy = IR(y);
 			Dummy ^= tweakmask;
 			y = FR(Dummy);
 		}
-		if (coordmask & 4)
+		if(coordmask & 4)
 		{
 			udword Dummy = IR(z);
 			Dummy ^= tweakmask;
@@ -409,15 +409,15 @@ class ICEMATHS_API icePoint
 	inline_ void TweakBigger()
 	{
 		udword Dummy = (IR(x) & TWEAKNOTMASK);
-		if (!IS_NEGATIVE_FLOAT(x))
+		if(!IS_NEGATIVE_FLOAT(x))
 			Dummy += TWEAKMASK + 1;
 		x = FR(Dummy);
 		Dummy = (IR(y) & TWEAKNOTMASK);
-		if (!IS_NEGATIVE_FLOAT(y))
+		if(!IS_NEGATIVE_FLOAT(y))
 			Dummy += TWEAKMASK + 1;
 		y = FR(Dummy);
 		Dummy = (IR(z) & TWEAKNOTMASK);
-		if (!IS_NEGATIVE_FLOAT(z))
+		if(!IS_NEGATIVE_FLOAT(z))
 			Dummy += TWEAKMASK + 1;
 		z = FR(Dummy);
 	}
@@ -426,15 +426,15 @@ class ICEMATHS_API icePoint
 	inline_ void TweakSmaller()
 	{
 		udword Dummy = (IR(x) & TWEAKNOTMASK);
-		if (IS_NEGATIVE_FLOAT(x))
+		if(IS_NEGATIVE_FLOAT(x))
 			Dummy += TWEAKMASK + 1;
 		x = FR(Dummy);
 		Dummy = (IR(y) & TWEAKNOTMASK);
-		if (IS_NEGATIVE_FLOAT(y))
+		if(IS_NEGATIVE_FLOAT(y))
 			Dummy += TWEAKMASK + 1;
 		y = FR(Dummy);
 		Dummy = (IR(z) & TWEAKNOTMASK);
-		if (IS_NEGATIVE_FLOAT(z))
+		if(IS_NEGATIVE_FLOAT(z))
 			Dummy += TWEAKMASK + 1;
 		z = FR(Dummy);
 	}
@@ -443,7 +443,7 @@ class ICEMATHS_API icePoint
 	inline_ Point& Normalize()
 	{
 		float M = x * x + y * y + z * z;
-		if (M)
+		if(M)
 		{
 			M = 1.0f / std::sqrt(M);
 			x *= M;
@@ -501,9 +501,9 @@ class ICEMATHS_API icePoint
 	{
 		const float* Vals = &x;
 		PointComponent m = _X;
-		if (Vals[_Y] > Vals[m])
+		if(Vals[_Y] > Vals[m])
 			m = _Y;
-		if (Vals[_Z] > Vals[m])
+		if(Vals[_Z] > Vals[m])
 			m = _Z;
 		return m;
 	}
@@ -513,9 +513,9 @@ class ICEMATHS_API icePoint
 	{
 		const float* Vals = &x;
 		PointComponent m = _X;
-		if (AIR(Vals[_Y]) > AIR(Vals[m]))
+		if(AIR(Vals[_Y]) > AIR(Vals[m]))
 			m = _Y;
-		if (AIR(Vals[_Z]) > AIR(Vals[m]))
+		if(AIR(Vals[_Z]) > AIR(Vals[m]))
 			m = _Z;
 		return m;
 	}
@@ -525,9 +525,9 @@ class ICEMATHS_API icePoint
 	{
 		const float* Vals = &x;
 		PointComponent m = _X;
-		if (Vals[_Y] < Vals[m])
+		if(Vals[_Y] < Vals[m])
 			m = _Y;
-		if (Vals[_Z] < Vals[m])
+		if(Vals[_Z] < Vals[m])
 			m = _Z;
 		return m;
 	}

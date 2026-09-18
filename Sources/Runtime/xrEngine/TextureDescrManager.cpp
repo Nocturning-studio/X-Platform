@@ -10,7 +10,7 @@ class cl_dt_scaler : public R_constant_setup
   public:
 	float scale;
 
-	cl_dt_scaler(float s) : scale(s){};
+	cl_dt_scaler(float s) : scale(s) {};
 	virtual void setup(R_constant* C)
 	{
 		RenderBackend.set_Constant(C, scale, scale, scale, 1 / r_dtex_range);
@@ -20,8 +20,8 @@ class cl_dt_scaler : public R_constant_setup
 void fix_texture_thm_name(LPSTR fn)
 {
 	LPSTR _ext = strext(fn);
-	if (_ext && (0 == xr_stricmp(_ext, ".tga") || 0 == xr_stricmp(_ext, ".thm") || 0 == xr_stricmp(_ext, ".dds") ||
-				 0 == xr_stricmp(_ext, ".bmp") || 0 == xr_stricmp(_ext, ".ogm")))
+	if(_ext && (0 == xr_stricmp(_ext, ".tga") || 0 == xr_stricmp(_ext, ".thm") || 0 == xr_stricmp(_ext, ".dds") ||
+				0 == xr_stricmp(_ext, ".bmp") || 0 == xr_stricmp(_ext, ".ogm")))
 		*_ext = 0;
 }
 
@@ -30,15 +30,15 @@ void CTextureDescrMngr::LoadLTX()
 	string_path fname;
 	FS.update_path(fname, "$game_textures$", "textures.ltx");
 
-	if (FS.exist(fname))
+	if(FS.exist(fname))
 	{
 		CInifile ini(fname);
-		if (ini.section_exist("association"))
+		if(ini.section_exist("association"))
 		{
 			CInifile::Sect& data = ini.r_section("association");
 			CInifile::SectCIt I = data.Data.begin();
 			CInifile::SectCIt E = data.Data.end();
-			for (; I != E; ++I)
+			for(; I != E; ++I)
 			{
 				const CInifile::Item& item = *I;
 
@@ -53,19 +53,19 @@ void CTextureDescrMngr::LoadLTX()
 				desc.m_assoc->detail_name = T;
 				desc.m_assoc->cs = xr_new<cl_dt_scaler>(s);
 				desc.m_assoc->usage = 0;
-				if (strstr(item.second.c_str(), "usage[diffuse_or_bump]"))
+				if(strstr(item.second.c_str(), "usage[diffuse_or_bump]"))
 					desc.m_assoc->usage = (1 << 0) | (1 << 1);
-				else if (strstr(item.second.c_str(), "usage[bump]"))
+				else if(strstr(item.second.c_str(), "usage[bump]"))
 					desc.m_assoc->usage = (1 << 1);
-				else if (strstr(item.second.c_str(), "usage[diffuse]"))
+				else if(strstr(item.second.c_str(), "usage[diffuse]"))
 					desc.m_assoc->usage = (1 << 0);
 			}
 		} //"association"
 
-		if (ini.section_exist("specification"))
+		if(ini.section_exist("specification"))
 		{
 			CInifile::Sect& sect = ini.r_section("specification");
-			for (CInifile::SectCIt I2 = sect.Data.begin(); I2 != sect.Data.end(); ++I2)
+			for(CInifile::SectCIt I2 = sect.Data.begin(); I2 != sect.Data.end(); ++I2)
 			{
 				const CInifile::Item& item = *I2;
 
@@ -76,14 +76,14 @@ void CTextureDescrMngr::LoadLTX()
 				int res = sscanf(item.second.c_str(), "bump_mode[%[^]]], material[%f], steep_parallax[%[^]]", bmode,
 								 &desc.m_spec->m_material, bSteepParallax);
 				R_ASSERT(res >= 2);
-				if ((bmode[0] == 'u') && (bmode[1] == 's') && (bmode[2] == 'e') && (bmode[3] == ':'))
+				if((bmode[0] == 'u') && (bmode[1] == 's') && (bmode[2] == 'e') && (bmode[3] == ':'))
 				{
 					// bump-map specified
 					desc.m_spec->m_bump_name = bmode + 4;
 				}
-				if (res == 3)
+				if(res == 3)
 				{
-					if ((bSteepParallax[0] == 'u') && (bSteepParallax[1] == 's') && (bSteepParallax[2] == 'e'))
+					if((bSteepParallax[0] == 'u') && (bSteepParallax[1] == 's') && (bSteepParallax[2] == 'e'))
 					{
 						// parallax
 						desc.m_spec->m_steep_parallax = TRUE;
@@ -100,10 +100,10 @@ void CTextureDescrMngr::LoadLTX()
 			}
 		} //"specification"
 #ifdef _EDITOR
-		if (ini.section_exist("types"))
+		if(ini.section_exist("types"))
 		{
 			CInifile::Sect& data = ini.r_section("types");
-			for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
+			for(CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
 			{
 				CInifile::Item& item = *I;
 
@@ -124,7 +124,7 @@ void CTextureDescrMngr::LoadTHM()
 	FS_FileSetIt It_e = flist.end();
 	STextureParams tp;
 	string_path fn;
-	for (; It != It_e; ++It)
+	for(; It != It_e; ++It)
 	{
 		FS.update_path(fn, "$game_textures$", (*It).name.c_str());
 		IReader* F = FS.r_open(fn);
@@ -140,17 +140,17 @@ void CTextureDescrMngr::LoadTHM()
 		texture_desc& desc = m_texture_details[fn];
 		desc.m_type = tp.type;
 #endif
-		if (STextureParams::ttImage == tp.fmt || STextureParams::ttTerrain == tp.fmt ||
-			STextureParams::ttNormalMap == tp.fmt)
+		if(STextureParams::ttImage == tp.fmt || STextureParams::ttTerrain == tp.fmt ||
+		   STextureParams::ttNormalMap == tp.fmt)
 		{
 #ifndef _EDITOR
 			texture_desc& desc = m_texture_details[fn];
 #endif
 
-			if (tp.detail_name.size() &&
-				tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
+			if(tp.detail_name.size() &&
+			   tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
 			{
-				if (desc.m_assoc)
+				if(desc.m_assoc)
 					xr_delete(desc.m_assoc);
 
 				desc.m_assoc = xr_new<texture_assoc>();
@@ -158,19 +158,19 @@ void CTextureDescrMngr::LoadTHM()
 				desc.m_assoc->cs = xr_new<cl_dt_scaler>(tp.detail_scale);
 				desc.m_assoc->usage = 0;
 
-				if (tp.flags.is(STextureParams::flDiffuseDetail))
+				if(tp.flags.is(STextureParams::flDiffuseDetail))
 					desc.m_assoc->usage |= (1 << 0);
 
-				if (tp.flags.is(STextureParams::flBumpDetail))
+				if(tp.flags.is(STextureParams::flBumpDetail))
 					desc.m_assoc->usage |= (1 << 1);
 			}
-			if (desc.m_spec)
+			if(desc.m_spec)
 				xr_delete(desc.m_spec);
 
 			desc.m_spec = xr_new<texture_spec>();
 			desc.m_spec->m_material = tp.material + tp.material_weight;
 
-			if (tp.bump_mode == STextureParams::tbmUse)
+			if(tp.bump_mode == STextureParams::tbmUse)
 				desc.m_spec->m_bump_name = tp.bump_name;
 		}
 	}
@@ -191,7 +191,7 @@ void CTextureDescrMngr::UnLoad()
 {
 	map_TD::iterator I = m_texture_details.begin();
 	map_TD::iterator E = m_texture_details.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		xr_delete(I->second.m_assoc);
 		xr_delete(I->second.m_spec);
@@ -202,9 +202,9 @@ void CTextureDescrMngr::UnLoad()
 shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
 {
 	map_TD::const_iterator I = m_texture_details.find(tex_name);
-	if (I != m_texture_details.end())
+	if(I != m_texture_details.end())
 	{
-		if (I->second.m_spec)
+		if(I->second.m_spec)
 		{
 			return I->second.m_spec->m_bump_name;
 		}
@@ -215,9 +215,9 @@ shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
 float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 {
 	map_TD::const_iterator I = m_texture_details.find(tex_name);
-	if (I != m_texture_details.end())
+	if(I != m_texture_details.end())
 	{
-		if (I->second.m_spec)
+		if(I->second.m_spec)
 		{
 			return I->second.m_spec->m_material;
 		}
@@ -228,9 +228,9 @@ float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const
 {
 	map_TD::const_iterator I = m_texture_details.find(tex_name);
-	if (I != m_texture_details.end())
+	if(I != m_texture_details.end())
 	{
-		if (I->second.m_assoc)
+		if(I->second.m_assoc)
 		{
 			u8 usage = I->second.m_assoc->usage;
 			bDiffuse = !!(usage & (1 << 0));
@@ -242,9 +242,9 @@ void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffu
 BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res, R_constant_setup*& CS) const
 {
 	map_TD::const_iterator I = m_texture_details.find(tex_name);
-	if (I != m_texture_details.end())
+	if(I != m_texture_details.end())
 	{
-		if (I->second.m_assoc)
+		if(I->second.m_assoc)
 		{
 			texture_assoc* TA = I->second.m_assoc;
 			res = TA->detail_name.c_str();
@@ -259,9 +259,9 @@ BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res
 void CTextureDescrMngr::GetParallax(const shared_str& tex_name, BOOL& bSteepParallax) const
 {
 	map_TD::const_iterator I = m_texture_details.find(tex_name);
-	if (I != m_texture_details.end())
+	if(I != m_texture_details.end())
 	{
-		if (I->second.m_spec)
+		if(I->second.m_spec)
 		{
 			bSteepParallax = I->second.m_spec->m_steep_parallax;
 		}
@@ -272,7 +272,7 @@ void CTextureDescrMngr::GetParallax(const shared_str& tex_name, BOOL& bSteepPara
 u32 CTextureDescrMngr::GetTextureType(const shared_str& tex_name) const
 {
 	map_TD::const_iterator I = m_texture_details.find(tex_name);
-	if (I != m_texture_details.end())
+	if(I != m_texture_details.end())
 	{
 		return I->second.m_type;
 	}

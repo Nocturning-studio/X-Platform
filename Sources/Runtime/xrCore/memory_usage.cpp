@@ -7,9 +7,9 @@ XRCORE_API void vminfo(size_t* _free, size_t* reserved, size_t* committed)
 	MEMORY_BASIC_INFORMATION memory_info;
 	memory_info.BaseAddress = 0;
 	*_free = *reserved = *committed = 0;
-	while (VirtualQuery(memory_info.BaseAddress, &memory_info, sizeof(memory_info)))
+	while(VirtualQuery(memory_info.BaseAddress, &memory_info, sizeof(memory_info)))
 	{
-		switch (memory_info.State)
+		switch(memory_info.State)
 		{
 		case MEM_FREE:
 			*_free += memory_info.RegionSize;
@@ -42,11 +42,11 @@ int heap_walk(HANDLE heap_handle, struct _heapinfo* _entry)
 	Entry.wFlags = 0;
 	Entry.iRegionIndex = 0;
 	Entry.cbData = 0;
-	if ((Entry.lpData = _entry->_pentry) == NULL)
+	if((Entry.lpData = _entry->_pentry) == NULL)
 	{
-		if (!HeapWalk(heap_handle, &Entry))
+		if(!HeapWalk(heap_handle, &Entry))
 		{
-			if (GetLastError() == ERROR_CALL_NOT_IMPLEMENTED)
+			if(GetLastError() == ERROR_CALL_NOT_IMPLEMENTED)
 			{
 				_doserrno = ERROR_CALL_NOT_IMPLEMENTED;
 				errno = ENOSYS;
@@ -57,9 +57,9 @@ int heap_walk(HANDLE heap_handle, struct _heapinfo* _entry)
 	}
 	else
 	{
-		if (_entry->_useflag == _USEDENTRY)
+		if(_entry->_useflag == _USEDENTRY)
 		{
-			if (!HeapValidate(heap_handle, 0, _entry->_pentry))
+			if(!HeapValidate(heap_handle, 0, _entry->_pentry))
 				return _HEAPBADNODE;
 			Entry.wFlags = PROCESS_HEAP_ENTRY_BUSY;
 		}
@@ -71,10 +71,10 @@ int heap_walk(HANDLE heap_handle, struct _heapinfo* _entry)
 		__try
 		{
 			errflag = 0;
-			if (!HeapWalk(heap_handle, &Entry))
+			if(!HeapWalk(heap_handle, &Entry))
 				errflag = 1;
 		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
+		__except(EXCEPTION_EXECUTE_HANDLER)
 		{
 			errflag = 2;
 		}
@@ -82,16 +82,16 @@ int heap_walk(HANDLE heap_handle, struct _heapinfo* _entry)
 		/*
 		 * Check errflag to see how HeapWalk fared...
 		 */
-		if (errflag == 1)
+		if(errflag == 1)
 		{
 			/*
 			 * HeapWalk returned an error.
 			 */
-			if ((errval = GetLastError()) == ERROR_NO_MORE_ITEMS)
+			if((errval = GetLastError()) == ERROR_NO_MORE_ITEMS)
 			{
 				return _HEAPEND;
 			}
-			else if (errval == ERROR_CALL_NOT_IMPLEMENTED)
+			else if(errval == ERROR_CALL_NOT_IMPLEMENTED)
 			{
 				_doserrno = errval;
 				errno = ENOSYS;
@@ -99,7 +99,7 @@ int heap_walk(HANDLE heap_handle, struct _heapinfo* _entry)
 			}
 			return _HEAPBADNODE;
 		}
-		else if (errflag == 2)
+		else if(errflag == 2)
 		{
 			/*
 			 * Exception occurred during the HeapWalk!
@@ -108,14 +108,14 @@ int heap_walk(HANDLE heap_handle, struct _heapinfo* _entry)
 		}
 	}
 
-	if (Entry.wFlags & (PROCESS_HEAP_REGION | PROCESS_HEAP_UNCOMMITTED_RANGE))
+	if(Entry.wFlags & (PROCESS_HEAP_REGION | PROCESS_HEAP_UNCOMMITTED_RANGE))
 	{
 		goto nextBlock;
 	}
 
 	_entry->_pentry = (int*)Entry.lpData;
 	_entry->_size = Entry.cbData;
-	if (Entry.wFlags & PROCESS_HEAP_ENTRY_BUSY)
+	if(Entry.wFlags & PROCESS_HEAP_ENTRY_BUSY)
 	{
 		_entry->_useflag = _USEDENTRY;
 	}
@@ -135,9 +135,9 @@ u32 mem_usage_impl(HANDLE heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
 	size_t total = 0;
 	u32 blocks_free = 0;
 	u32 blocks_used = 0;
-	while ((heapstatus = heap_walk(heap_handle, &hinfo)) == _HEAPOK)
+	while((heapstatus = heap_walk(heap_handle, &hinfo)) == _HEAPOK)
 	{
-		if (hinfo._useflag == _USEDENTRY)
+		if(hinfo._useflag == _USEDENTRY)
 		{
 			total += hinfo._size;
 			blocks_used += 1;
@@ -147,12 +147,12 @@ u32 mem_usage_impl(HANDLE heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
 			blocks_free += 1;
 		}
 	}
-	if (pBlocksFree)
+	if(pBlocksFree)
 		*pBlocksFree = 1024 * (u32)blocks_free;
-	if (pBlocksUsed)
+	if(pBlocksUsed)
 		*pBlocksUsed = 1024 * (u32)blocks_used;
 
-	switch (heapstatus)
+	switch(heapstatus)
 	{
 	case _HEAPEMPTY:
 		break;

@@ -16,7 +16,7 @@ void read_bones(CKinematics* K, LPCSTR S, xr_vector<u16>& bones)
 {
 	string64 S1;
 	int count = _GetItemCount(S);
-	for (int i = 0; i < count; ++i)
+	for(int i = 0; i < count; ++i)
 	{
 		_GetItem(S, i, S1);
 
@@ -31,7 +31,7 @@ void CCarDamageParticles::Init(CCar* car)
 {
 	CKinematics* K = smart_cast<CKinematics*>(car->Visual());
 	CInifile* ini = K->LL_UserData();
-	if (ini->section_exist("damage_particles"))
+	if(ini->section_exist("damage_particles"))
 	{
 		m_car_damage_particles1 = ini->r_string("damage_particles", "car_damage_particles1");
 		m_car_damage_particles2 = ini->r_string("damage_particles", "car_damage_particles2");
@@ -45,10 +45,10 @@ void CCarDamageParticles::Init(CCar* car)
 
 void CCarDamageParticles::Play1(CCar* car)
 {
-	if (*m_car_damage_particles1)
+	if(*m_car_damage_particles1)
 	{
 		BIDS_I i = bones1.begin(), e = bones1.end();
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 			car->StartParticles(m_car_damage_particles1, *i, fvec3().set(0, 1, 0), car->ID());
 	}
 }
@@ -56,10 +56,10 @@ void CCarDamageParticles::Play1(CCar* car)
 void CCarDamageParticles::Play2(CCar* car)
 {
 	VERIFY(!ph_world->Processing());
-	if (*m_car_damage_particles2)
+	if(*m_car_damage_particles2)
 	{
 		BIDS_I i = bones2.begin(), e = bones2.end();
-		for (; e != i; ++i)
+		for(; e != i; ++i)
 			car->StartParticles(m_car_damage_particles2, *i, fvec3().set(0, 1, 0), car->ID());
 	}
 }
@@ -67,14 +67,14 @@ void CCarDamageParticles::Play2(CCar* car)
 void CCarDamageParticles::PlayWheel1(CCar* car, u16 bone_id)
 {
 	VERIFY(!ph_world->Processing());
-	if (*m_wheels_damage_particles1)
+	if(*m_wheels_damage_particles1)
 		car->StartParticles(m_wheels_damage_particles1, bone_id, fvec3().set(0, 1, 0), car->ID());
 }
 
 void CCarDamageParticles::PlayWheel2(CCar* car, u16 bone_id)
 {
 	VERIFY(!ph_world->Processing());
-	if (*m_wheels_damage_particles2)
+	if(*m_wheels_damage_particles2)
 		car->StartParticles(m_wheels_damage_particles2, bone_id, fvec3().set(0, 1, 0), car->ID());
 }
 

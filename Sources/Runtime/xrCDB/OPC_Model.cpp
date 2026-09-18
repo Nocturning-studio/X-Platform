@@ -183,11 +183,11 @@ OPCODE_Model::~OPCODE_Model()
 bool OPCODE_Model::Build(const OPCODECREATE& create)
 {
 	// 1) Checkings
-	if (!create.NbTris || !create.Tris || !create.Verts)
+	if(!create.NbTris || !create.Tris || !create.Verts)
 		return false;
 
 	// In this lib, we only support complete trees
-	if (!(create.Rules & SPLIT_COMPLETE))
+	if(!(create.Rules & SPLIT_COMPLETE))
 		return SetIceError; //("OPCODE WARNING: supports complete trees only! Use SPLIT_COMPLETE.\n");
 
 	// Check topology. If the model contains degenerate faces, collision report can be wrong in some cases.
@@ -195,12 +195,12 @@ bool OPCODE_Model::Build(const OPCODECREATE& create)
 	// you can try this: www.codercorner.com/Consolidation.zip
 	const IndexedTriangle* Tris = (const IndexedTriangle*)create.Tris;
 	udword NbDegenerate = 0;
-	for (udword i = 0; i < create.NbTris; i++)
+	for(udword i = 0; i < create.NbTris; i++)
 	{
-		if (Tris[i].IsDegenerate())
+		if(Tris[i].IsDegenerate())
 			NbDegenerate++;
 	}
-	if (NbDegenerate)
+	if(NbDegenerate)
 		Log("OPCODE WARNING: found %d degenerate faces in model! Collision might report wrong results!\n",
 			NbDegenerate);
 	// We continue nonetheless....
@@ -216,7 +216,7 @@ bool OPCODE_Model::Build(const OPCODECREATE& create)
 	TB.mVerts = create.Verts;
 	TB.mRules = create.Rules;
 	TB.mNbPrimitives = create.NbTris;
-	if (!mSource->Build(&TB))
+	if(!mSource->Build(&TB))
 		return false;
 
 	// 3) Create an optimized tree according to user-settings
@@ -224,27 +224,27 @@ bool OPCODE_Model::Build(const OPCODECREATE& create)
 	mNoLeaf = create.NoLeaf;
 	mQuantized = create.Quantized;
 
-	if (mNoLeaf)
+	if(mNoLeaf)
 	{
-		if (mQuantized)
+		if(mQuantized)
 			mTree = xr_new<AABBQuantizedNoLeafTree>();
 		else
 			mTree = xr_new<AABBNoLeafTree>();
 	}
 	else
 	{
-		if (mQuantized)
+		if(mQuantized)
 			mTree = xr_new<AABBQuantizedTree>();
 		else
 			mTree = xr_new<AABBCollisionTree>();
 	}
 
 	// 3-2) Create optimized tree
-	if (!mTree->Build(mSource))
+	if(!mTree->Build(mSource))
 		return false;
 
 	// 3-3) Delete generic tree if needed
-	if (!create.KeepOriginal)
+	if(!create.KeepOriginal)
 	{
 		mSource->destroy(&TB);
 		xr_delete(mSource);
@@ -252,7 +252,7 @@ bool OPCODE_Model::Build(const OPCODECREATE& create)
 
 #ifdef __MESHMERIZER_H__
 	// 4) Convex hull
-	if (create.CollisionHull)
+	if(create.CollisionHull)
 	{
 		// Create hull
 		mHull = xr_new<CollisionHull>();

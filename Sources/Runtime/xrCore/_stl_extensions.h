@@ -4,7 +4,8 @@
 #include <new>	   // placement new
 
 // Аллокатор xalloc, использующий xr_alloc/xr_free
-template <class T> class xalloc
+template <class T>
+class xalloc
 {
   public:
 	typedef size_t size_type;
@@ -15,7 +16,8 @@ template <class T> class xalloc
 	typedef const T& const_reference;
 	typedef T value_type;
 
-	template <class U> struct rebind
+	template <class U>
+	struct rebind
 	{
 		typedef xalloc<U> other;
 	};
@@ -34,11 +36,13 @@ template <class T> class xalloc
 
 	xalloc(const xalloc&) noexcept = default;
 
-	template <class U> xalloc(const xalloc<U>&) noexcept
+	template <class U>
+	xalloc(const xalloc<U>&) noexcept
 	{
 	}
 
-	template <class U> xalloc& operator=(const xalloc<U>&) noexcept
+	template <class U>
+	xalloc& operator=(const xalloc<U>&) noexcept
 	{
 		return *this;
 	}
@@ -65,7 +69,7 @@ template <class T> class xalloc
 
 	void construct(pointer ptr, const T& val)
 	{
-		::new (static_cast<void*>(ptr)) T(val);
+		::new(static_cast<void*>(ptr)) T(val);
 	}
 
 	void destroy(pointer ptr) noexcept
@@ -81,19 +85,22 @@ template <class T> class xalloc
 };
 
 // Операторы сравнения (всегда true/false для любых экземпляров)
-template <class T, class U> inline bool operator==(const xalloc<T>&, const xalloc<U>&) noexcept
+template <class T, class U>
+inline bool operator==(const xalloc<T>&, const xalloc<U>&) noexcept
 {
 	return true;
 }
 
-template <class T, class U> inline bool operator!=(const xalloc<T>&, const xalloc<U>&) noexcept
+template <class T, class U>
+inline bool operator!=(const xalloc<T>&, const xalloc<U>&) noexcept
 {
 	return false;
 }
 
 struct xr_allocator
 {
-	template <typename T> struct helper
+	template <typename T>
+	struct helper
 	{
 		typedef xalloc<T> result;
 	};
@@ -103,7 +110,8 @@ struct xr_allocator
 		return xr_malloc(n);
 	}
 
-	template <typename T> static void dealloc(T*& p)
+	template <typename T>
+	static void dealloc(T*& p)
 	{
 		xr_free(p);
 	}
@@ -111,12 +119,14 @@ struct xr_allocator
 
 namespace std
 {
-template <class Tp1, class Tp2> inline xalloc<Tp2>& __stl_alloc_rebind(xalloc<Tp1>& a, const Tp2*)
+template <class Tp1, class Tp2>
+inline xalloc<Tp2>& __stl_alloc_rebind(xalloc<Tp1>& a, const Tp2*)
 {
 	return reinterpret_cast<xalloc<Tp2>&>(a);
 }
 
-template <class Tp1, class Tp2> inline xalloc<Tp2> __stl_alloc_create(xalloc<Tp1>&, const Tp2*)
+template <class Tp1, class Tp2>
+inline xalloc<Tp2> __stl_alloc_create(xalloc<Tp1>&, const Tp2*)
 {
 	return xalloc<Tp2>();
 }
@@ -128,7 +138,8 @@ typedef std::basic_string<char, std::char_traits<char>, xalloc<char>> xr_string;
 // Контейнеры, наследующие стандартные и расширяющие их функциональность
 
 // ---------- vector ----------
-template <typename T, typename Alloc = xalloc<T>> class xr_vector : public std::vector<T, Alloc>
+template <typename T, typename Alloc = xalloc<T>>
+class xr_vector : public std::vector<T, Alloc>
 {
   private:
 	using inherited = std::vector<T, Alloc>;
@@ -170,7 +181,7 @@ template <typename T, typename Alloc = xalloc<T>> class xr_vector : public std::
 
 	void clear_and_reserve()
 	{
-		if (capacity() <= (size() + size() / 4))
+		if(capacity() <= (size() + size() / 4))
 			clear_not_free();
 		else
 		{
@@ -206,7 +217,8 @@ template <typename T, typename Alloc = xalloc<T>> class xr_vector : public std::
 };
 
 // Частичная специализация для bool
-template <> class xr_vector<bool, xalloc<bool>> : public std::vector<bool, xalloc<bool>>
+template <>
+class xr_vector<bool, xalloc<bool>> : public std::vector<bool, xalloc<bool>>
 {
   private:
 	using inherited = std::vector<bool, xalloc<bool>>;
@@ -226,7 +238,8 @@ template <> class xr_vector<bool, xalloc<bool>> : public std::vector<bool, xallo
 	}
 };
 
-template <typename Alloc> class xr_vector<bool, Alloc> : public std::vector<bool, Alloc>
+template <typename Alloc>
+class xr_vector<bool, Alloc> : public std::vector<bool, Alloc>
 {
   private:
 	using inherited = std::vector<bool, Alloc>;
@@ -247,7 +260,8 @@ template <typename Alloc> class xr_vector<bool, Alloc> : public std::vector<bool
 };
 
 // ---------- deque ----------
-template <typename T, typename Alloc = xalloc<T>> class xr_deque : public std::deque<T, Alloc>
+template <typename T, typename Alloc = xalloc<T>>
+class xr_deque : public std::deque<T, Alloc>
 {
   private:
 	using inherited = std::deque<T, Alloc>;
@@ -264,7 +278,8 @@ template <typename T, typename Alloc = xalloc<T>> class xr_deque : public std::d
 };
 
 // ---------- stack ----------
-template <typename T, typename Container = xr_vector<T>> class xr_stack
+template <typename T, typename Container = xr_vector<T>>
+class xr_stack
 {
   public:
 	using container_type = Container;
@@ -331,7 +346,8 @@ template <typename T, typename Container = xr_vector<T>> class xr_stack
 };
 
 // ---------- list ----------
-template <typename T, typename Alloc = xalloc<T>> class xr_list : public std::list<T, Alloc>
+template <typename T, typename Alloc = xalloc<T>>
+class xr_list : public std::list<T, Alloc>
 {
   private:
 	using inherited = std::list<T, Alloc>;
@@ -397,7 +413,8 @@ class xr_multimap : public std::multimap<K, V, Pred, Alloc>
 	}
 };
 
-template <class Ty1, class Ty2> inline std::pair<Ty1, Ty2> mk_pair(Ty1 val1, Ty2 val2)
+template <class Ty1, class Ty2>
+inline std::pair<Ty1, Ty2> mk_pair(Ty1 val1, Ty2 val2)
 {
 	return std::pair<Ty1, Ty2>(val1, val2);
 }
@@ -420,45 +437,45 @@ struct pred_stri
 };
 
 // Макросы для удобного объявления типов контейнеров
-#define DEF_VECTOR(N, T)                                                                                               \
-	typedef xr_vector<T> N;                                                                                            \
+#define DEF_VECTOR(N, T)    \
+	typedef xr_vector<T> N; \
 	typedef N::iterator N##_it;
-#define DEF_LIST(N, T)                                                                                                 \
-	typedef xr_list<T> N;                                                                                              \
+#define DEF_LIST(N, T)    \
+	typedef xr_list<T> N; \
 	typedef N::iterator N##_it;
-#define DEF_DEQUE(N, T)                                                                                                \
-	typedef xr_deque<T> N;                                                                                             \
+#define DEF_DEQUE(N, T)    \
+	typedef xr_deque<T> N; \
 	typedef N::iterator N##_it;
-#define DEF_MAP(N, K, T)                                                                                               \
-	typedef xr_map<K, T> N;                                                                                            \
+#define DEF_MAP(N, K, T)    \
+	typedef xr_map<K, T> N; \
 	typedef N::iterator N##_it;
 
-#define DEFINE_VECTOR(T, N, I)                                                                                         \
-	typedef xr_vector<T> N;                                                                                            \
+#define DEFINE_VECTOR(T, N, I) \
+	typedef xr_vector<T> N;    \
 	typedef N::iterator I;
-#define DEFINE_LIST(T, N, I)                                                                                           \
-	typedef xr_list<T> N;                                                                                              \
+#define DEFINE_LIST(T, N, I) \
+	typedef xr_list<T> N;    \
 	typedef N::iterator I;
-#define DEFINE_DEQUE(T, N, I)                                                                                          \
-	typedef xr_deque<T> N;                                                                                             \
+#define DEFINE_DEQUE(T, N, I) \
+	typedef xr_deque<T> N;    \
 	typedef N::iterator I;
-#define DEFINE_MAP(K, T, N, I)                                                                                         \
-	typedef xr_map<K, T> N;                                                                                            \
+#define DEFINE_MAP(K, T, N, I) \
+	typedef xr_map<K, T> N;    \
 	typedef N::iterator I;
-#define DEFINE_MAP_PRED(K, T, N, I, P)                                                                                 \
-	typedef xr_map<K, T, P> N;                                                                                         \
+#define DEFINE_MAP_PRED(K, T, N, I, P) \
+	typedef xr_map<K, T, P> N;         \
 	typedef N::iterator I;
-#define DEFINE_MMAP(K, T, N, I)                                                                                        \
-	typedef xr_multimap<K, T> N;                                                                                       \
+#define DEFINE_MMAP(K, T, N, I)  \
+	typedef xr_multimap<K, T> N; \
 	typedef N::iterator I;
-#define DEFINE_SVECTOR(T, C, N, I)                                                                                     \
-	typedef svector<T, C> N;                                                                                           \
+#define DEFINE_SVECTOR(T, C, N, I) \
+	typedef svector<T, C> N;       \
 	typedef N::iterator I;
-#define DEFINE_SET(T, N, I)                                                                                            \
-	typedef xr_set<T> N;                                                                                               \
+#define DEFINE_SET(T, N, I) \
+	typedef xr_set<T> N;    \
 	typedef N::iterator I;
-#define DEFINE_SET_PRED(T, N, I, P)                                                                                    \
-	typedef xr_set<T, P> N;                                                                                            \
+#define DEFINE_SET_PRED(T, N, I, P) \
+	typedef xr_set<T, P> N;         \
 	typedef N::iterator I;
 #define DEFINE_STACK(T, N) typedef xr_stack<T> N;
 

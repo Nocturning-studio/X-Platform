@@ -13,6 +13,6 @@
 
 #include "psystem.h"
 
-#pragma comment( lib, "xrCore.lib"	)
+#pragma comment(lib, "xrCore.lib")
 
-#endif //stdafxH
+#endif // stdafxH

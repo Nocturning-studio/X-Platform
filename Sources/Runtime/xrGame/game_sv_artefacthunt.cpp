@@ -73,15 +73,15 @@ void game_sv_ArtefactHunt::Create(shared_str& options)
 	Artefact_rpoints.clear();
 
 	string_path fn_game;
-	if (FS.exist(fn_game, "$level$", "level.game"))
+	if(FS.exist(fn_game, "$level$", "level.game"))
 	{
 		IReader* F = FS.r_open(fn_game);
 		IReader* O = 0;
 
 		// Load RPoints
-		if (0 != (O = F->open_chunk(RPOINT_CHUNK)))
+		if(0 != (O = F->open_chunk(RPOINT_CHUNK)))
 		{
-			for (int id = 0; O->find_chunk(id); ++id)
+			for(int id = 0; O->find_chunk(id); ++id)
 			{
 				RPoint R;
 				u8 team;
@@ -93,9 +93,10 @@ void game_sv_ArtefactHunt::Create(shared_str& options)
 				VERIFY(team >= 0 && team < 4);
 				type = O->r_u8();
 				u16 res = O->r_u16();
-				switch (type)
+				switch(type)
 				{
-				case rptArtefactSpawn: {
+				case rptArtefactSpawn:
+				{
 					Artefact_rpoints.push_back(R);
 				}
 				break;
@@ -142,7 +143,7 @@ void game_sv_ArtefactHunt::OnRoundStart()
 
 	Artefact_PrepareForSpawn();
 	//-------------------------------------------------------
-	if (Get_ReinforcementTime() == -1)
+	if(Get_ReinforcementTime() == -1)
 	{
 		RespawnAllNotAlivePlayers();
 	};
@@ -151,19 +152,22 @@ void game_sv_ArtefactHunt::OnRoundStart()
 KILL_RES game_sv_ArtefactHunt::GetKillResult(game_PlayerState* pKiller, game_PlayerState* pVictim)
 {
 	KILL_RES Res = inherited::GetKillResult(pKiller, pVictim);
-	switch (Res)
+	switch(Res)
 	{
-	case KR_TEAMMATE: {
-		if (pVictim->GameID == artefactBearerID)
+	case KR_TEAMMATE:
+	{
+		if(pVictim->GameID == artefactBearerID)
 			Res = KR_TEAMMATE_CRITICAL;
 	}
 	break;
-	case KR_RIVAL: {
-		if (pVictim->GameID == artefactBearerID)
+	case KR_RIVAL:
+	{
+		if(pVictim->GameID == artefactBearerID)
 			Res = KR_RIVAL_CRITICAL;
 	}
 	break;
-	default: {
+	default:
+	{
 	}
 	break;
 	};
@@ -174,32 +178,35 @@ bool game_sv_ArtefactHunt::OnKillResult(KILL_RES KillResult, game_PlayerState* p
 {
 	bool res = true;
 	TeamStruct* pTeam = GetTeamData(u8(pKiller->team));
-	switch (KillResult)
+	switch(KillResult)
 	{
-	case KR_TEAMMATE_CRITICAL: {
+	case KR_TEAMMATE_CRITICAL:
+	{
 		//.			pKiller->kills -= 1;
 		pKiller->m_iTeamKills++;
-		if (pTeam)
+		if(pTeam)
 			Player_AddMoney(pKiller, pTeam->m_iM_TargetTeam);
 		res = false;
 	}
 	break;
-	case KR_RIVAL_CRITICAL: {
+	case KR_RIVAL_CRITICAL:
+	{
 		//.			pKiller->kills += 1;
 		pKiller->m_iRivalKills++;
 		pKiller->m_iKillsInRowCurr++;
 		pKiller->m_iKillsInRowMax = _max(pKiller->m_iKillsInRowCurr, pKiller->m_iKillsInRowMax);
-		if (pTeam)
+		if(pTeam)
 		{
 			u32 ResMoney = pTeam->m_iM_TargetRival;
-			if (pKiller->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
+			if(pKiller->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 				ResMoney = s32(ResMoney * pTeam->m_fInvinsibleKillModifier);
 			Player_AddMoney(pKiller, ResMoney);
 		};
 		res = true;
 	}
 	break;
-	default: {
+	default:
+	{
 		res = inherited::OnKillResult(KillResult, pKiller, pVictim);
 	}
 	break;
@@ -210,22 +217,25 @@ bool game_sv_ArtefactHunt::OnKillResult(KILL_RES KillResult, game_PlayerState* p
 void game_sv_ArtefactHunt::OnGiveBonus(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim,
 									   KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)
 {
-	if (!pKiller)
+	if(!pKiller)
 		return;
-	switch (KillResult)
+	switch(KillResult)
 	{
-	case KR_RIVAL: {
-		if (pVictim->GameID == m_iAfBearerMenaceID)
+	case KR_RIVAL:
+	{
+		if(pVictim->GameID == m_iAfBearerMenaceID)
 			Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "assist_kill", 0));
 
 		inherited::OnGiveBonus(KR_RIVAL, pKiller, pVictim, KillType, SpecialKillType, pWeaponA);
 	}
 	break;
-	case KR_RIVAL_CRITICAL: {
+	case KR_RIVAL_CRITICAL:
+	{
 		inherited::OnGiveBonus(KR_RIVAL, pKiller, pVictim, KillType, SpecialKillType, pWeaponA);
 	}
 	break;
-	default: {
+	default:
+	{
 		inherited::OnGiveBonus(KillResult, pKiller, pVictim, KillType, SpecialKillType, pWeaponA);
 	}
 	break;
@@ -238,23 +248,24 @@ void game_sv_ArtefactHunt::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_
 {
 	inherited::OnPlayerKillPlayer(ps_killer, ps_killed, KillType, SpecialKillType, pWeaponA);
 
-	if (ps_killed && ps_killed->GameID == m_iAfBearerMenaceID)
+	if(ps_killed && ps_killed->GameID == m_iAfBearerMenaceID)
 		m_iAfBearerMenaceID = 0;
 };
 
 void game_sv_ArtefactHunt::OnPlayerReady(ClientID id)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id);
-	if (!xrCData || !xrCData->owner)
+	if(!xrCData || !xrCData->owner)
 		return;
 	//	if	(GAME_PHASE_INPROGRESS == phase) return;
-	switch (m_phase)
+	switch(m_phase)
 	{
-	case GAME_PHASE_INPROGRESS: {
+	case GAME_PHASE_INPROGRESS:
+	{
 		CSE_Abstract* pOwner = xrCData->owner;
 		CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 
-		if (pS && (Get_ReinforcementTime() != 0 && !xrCData->ps->m_bPayForSpawn) && (m_dwWarmUp_CurTime == 0))
+		if(pS && (Get_ReinforcementTime() != 0 && !xrCData->ps->m_bPayForSpawn) && (m_dwWarmUp_CurTime == 0))
 		{
 			return;
 		}
@@ -267,16 +278,16 @@ void game_sv_ArtefactHunt::OnPlayerReady(ClientID id)
 void game_sv_ArtefactHunt::OnPlayerBuySpawn(ClientID sender)
 {
 	xrClientData* xrCData = m_server->ID_to_client(sender);
-	if (!xrCData || !xrCData->owner)
+	if(!xrCData || !xrCData->owner)
 		return;
-	if (!xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+	if(!xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		return;
-	if (xrCData->ps->m_bPayForSpawn)
+	if(xrCData->ps->m_bPayForSpawn)
 		return;
 	xrCData->ps->m_bPayForSpawn = true;
 	Player_AddMoney(xrCData->ps, m_iMoney_for_BuySpawn);
 	OnPlayerReady(sender);
-	if (!xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+	if(!xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
 		xrCData->ps->m_bPayForSpawn = false;
 	}
@@ -286,29 +297,29 @@ bool game_sv_ArtefactHunt::assign_rp_tmp(game_PlayerState* ps_who, xr_vector<RPo
 										 xr_vector<u32>& rpIDEnemy, xr_vector<u32>& EnemyIt, bool force_find)
 {
 	dest.clear();
-	for (u32 p = 0; p < rps.size(); ++p)
+	for(u32 p = 0; p < rps.size(); ++p)
 	{
 		RPoint rp = rps[p];
 
 		bool Blocked = false;
-		for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+		for(u32 p_it = 0; p_it < get_players_count(); ++p_it)
 		{
 			game_PlayerState* PS = get_it(p_it);
-			if (!PS)
+			if(!PS)
 				continue;
 
-			if (PS->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+			if(PS->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 				continue;
 
 			CObject* pPlayer = Level().Objects.net_Find(PS->GameID);
-			if (!pPlayer)
+			if(!pPlayer)
 				continue;
 
-			if (rp.P.distance_to(pPlayer->Position()) <= 0.4f && !force_find)
+			if(rp.P.distance_to(pPlayer->Position()) <= 0.4f && !force_find)
 			{
 				Blocked = true;
 
-				if ((ps_who->team != PS->team) && !teams.empty())
+				if((ps_who->team != PS->team) && !teams.empty())
 				{
 					rpIDEnemy.push_back(p);
 					EnemyIt.push_back(p_it);
@@ -317,15 +328,15 @@ bool game_sv_ArtefactHunt::assign_rp_tmp(game_PlayerState* ps_who, xr_vector<RPo
 			}
 		};
 
-		if (Blocked || rp.Blocked)
+		if(Blocked || rp.Blocked)
 		{
 			continue;
 		};
 		dest.push_back(p);
 	}
 
-	if (force_find && dest.size() == 0)
-		for (u32 i = 0; i < rps.size(); ++i)
+	if(force_find && dest.size() == 0)
+		for(u32 i = 0; i < rps.size(); ++i)
 			dest.push_back(i);
 
 	return dest.size() > 0;
@@ -334,14 +345,14 @@ bool game_sv_ArtefactHunt::assign_rp_tmp(game_PlayerState* ps_who, xr_vector<RPo
 void game_sv_ArtefactHunt::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 {
 	CSE_Spectator* pSpectator = smart_cast<CSE_Spectator*>(E);
-	if (pSpectator)
+	if(pSpectator)
 	{
 		inherited::assign_RP(E, ps_who);
 		return;
 	};
 
 	CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(E);
-	if (!pA)
+	if(!pA)
 	{
 		inherited::assign_RP(E, ps_who);
 		return;
@@ -355,10 +366,10 @@ void game_sv_ArtefactHunt::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	xr_vector<u32> rpIDEnemy;
 	xr_vector<u32> EnemyIt;
 
-	if (!assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, true))
+	if(!assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, true))
 		assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, false);
 
-	if (rpID.empty() && !rpIDEnemy.empty())
+	if(rpID.empty() && !rpIDEnemy.empty())
 	{
 		u32 PointID = ::Random.randI(rpIDEnemy.size());
 		;
@@ -394,25 +405,25 @@ void game_sv_ArtefactHunt::SetRP(CSE_Abstract* E, RPoint* pRP)
 	pRP->BlockedByID = E->ID;
 	pRP->BlockTime = Level().timeServer();
 
-	if (std::find(rpointsBlocked.begin(), rpointsBlocked.end(), pRP) == rpointsBlocked.end())
+	if(std::find(rpointsBlocked.begin(), rpointsBlocked.end(), pRP) == rpointsBlocked.end())
 		rpointsBlocked.push_back(pRP);
 }
 
 void game_sv_ArtefactHunt::CheckRPUnblock()
 {
-	if (rpointsBlocked.empty())
+	if(rpointsBlocked.empty())
 		return;
-	for (u32 b = 0; b < rpointsBlocked.size();)
+	for(u32 b = 0; b < rpointsBlocked.size();)
 	{
 		RPoint* pRP = rpointsBlocked[b];
-		if (!pRP->Blocked || pRP->BlockTime + 1000 < Level().timeServer())
+		if(!pRP->Blocked || pRP->BlockTime + 1000 < Level().timeServer())
 		{
 			pRP->Blocked = false;
 			rpointsBlocked.erase(rpointsBlocked.begin() + b);
 			continue;
 		};
 		CObject* pPlayer = Level().Objects.net_Find(pRP->BlockedByID);
-		if (!pPlayer || pRP->P.distance_to(pPlayer->Position()) <= 0.4f)
+		if(!pPlayer || pRP->P.distance_to(pPlayer->Position()) <= 0.4f)
 		{
 			pRP->Blocked = false;
 			continue;
@@ -424,7 +435,7 @@ void game_sv_ArtefactHunt::CheckRPUnblock()
 u32 game_sv_ArtefactHunt::RP_2_Use(CSE_Abstract* E)
 {
 	CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(E);
-	if (!pA)
+	if(!pA)
 		return 0;
 
 	return u32(pA->g_team());
@@ -433,7 +444,7 @@ u32 game_sv_ArtefactHunt::RP_2_Use(CSE_Abstract* E)
 void game_sv_ArtefactHunt::LoadTeams()
 {
 	m_sBaseWeaponCostSection._set("artefacthunt_base_cost");
-	if (!pSettings->section_exist(m_sBaseWeaponCostSection))
+	if(!pSettings->section_exist(m_sBaseWeaponCostSection))
 	{
 		R_ASSERT2(0, "No section for base weapon cost for this type of the Game!");
 		return;
@@ -453,10 +464,10 @@ BOOL game_sv_ArtefactHunt::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 	VERIFY(e_what);
 
 	CSE_ALifeCreatureActor* A = smart_cast<CSE_ALifeCreatureActor*>(e_who);
-	if (A)
+	if(A)
 	{
 		CSE_ALifeItemArtefact* pIArtefact = smart_cast<CSE_ALifeItemArtefact*>(e_what);
-		if (pIArtefact)
+		if(pIArtefact)
 		{
 			artefactBearerID = eid_who;
 			m_iAfBearerMenaceID = 0;
@@ -466,7 +477,7 @@ BOOL game_sv_ArtefactHunt::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 			m_eAState = IN_POSSESSION;
 			xrClientData* xrCData = e_who->owner;
 			game_PlayerState* ps_who = xrCData->ps;
-			if (ps_who)
+			if(ps_who)
 			{
 				NET_Packet P;
 				// P.w_begin			(M_GAMEMESSAGE);
@@ -476,19 +487,19 @@ BOOL game_sv_ArtefactHunt::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 				P.w_u16(ps_who->team);
 				u_EventSend(P);
 				//-- Artefact is taken for first time
-				if (!m_bArtefactWasTaken)
+				if(!m_bArtefactWasTaken)
 				{
 					m_bArtefactWasTaken = true;
 					TeamStruct* pTeam = GetTeamData(u8(ps_who->team));
-					if (pTeam)
+					if(pTeam)
 					{
 						u32 cnt = get_players_count();
-						for (u32 it = 0; it < cnt; ++it)
+						for(u32 it = 0; it < cnt; ++it)
 						{
 							// init
 							xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 							game_PlayerState* pstate = l_pC->ps;
-							if (!l_pC->net_Ready || pstate->IsSkip() || pstate->team != ps_who->team)
+							if(!l_pC->net_Ready || pstate->IsSkip() || pstate->team != ps_who->team)
 								continue;
 
 							Player_AddExperience(
@@ -502,10 +513,10 @@ BOOL game_sv_ArtefactHunt::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 
 		// Actor touches something
 		CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(e_what);
-		if (W)
+		if(W)
 		{
 			//---------------------------------------------------------------
-			if (IsBuyableItem(*e_what->s_name))
+			if(IsBuyableItem(*e_what->s_name))
 				return TRUE;
 			//---------------------------------------------------------------
 		}
@@ -521,10 +532,10 @@ void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
 	VERIFY(e_what);
 
 	CSE_ALifeCreatureActor* A = smart_cast<CSE_ALifeCreatureActor*>(e_who);
-	if (A)
+	if(A)
 	{
 		CSE_ALifeItemArtefact* pIArtefact = smart_cast<CSE_ALifeItemArtefact*>(e_what);
-		if (pIArtefact)
+		if(pIArtefact)
 		{
 			artefactBearerID = 0;
 			m_iAfBearerMenaceID = 0;
@@ -536,7 +547,7 @@ void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
 			xrClientData* xrCData = e_who->owner;
 			game_PlayerState* ps_who = xrCData->ps;
 
-			if (ps_who && !bNoLostMessage)
+			if(ps_who && !bNoLostMessage)
 			{
 				NET_Packet P;
 				GenerateGameMessage(P);
@@ -554,23 +565,23 @@ void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
 void game_sv_ArtefactHunt::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 {
 	CSE_Abstract* e_who = m_server->ID_to_entity(id);
-	if (e_who == NULL)
+	if(e_who == NULL)
 		return;
 
 	CSE_ALifeCreatureActor* eActor = smart_cast<CSE_ALifeCreatureActor*>(e_who);
-	if (eActor)
+	if(eActor)
 	{
-		if (eActor->g_team() == zone_team)
+		if(eActor->g_team() == zone_team)
 		{
 			game_PlayerState* ps = eActor->owner->ps;
-			if (ps)
+			if(ps)
 				ps->setFlag(GAME_PLAYER_FLAG_ONBASE);
 
 			signal_Syncronize();
 
 			xr_vector<u16>& C = eActor->children;
 			xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), m_dwArtefactID);
-			if (C.end() != c)
+			if(C.end() != c)
 			{
 				OnArtefactOnBase(eActor->owner->ID);
 				Game().m_WeaponUsageStatistic->OnPlayerBringArtefact(ps);
@@ -582,19 +593,19 @@ void game_sv_ArtefactHunt::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 void game_sv_ArtefactHunt::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
 {
 	CSE_Abstract* e_who = m_server->ID_to_entity(id);
-	if (!e_who)
+	if(!e_who)
 		return;
 
 	//	CSE_Abstract*		e_zone	= m_server->ID_to_entity(id_zone);	VERIFY(e_zone	);
 
 	CSE_ALifeCreatureActor* eActor = smart_cast<CSE_ALifeCreatureActor*>(e_who);
 	//	CSE_ALifeTeamBaseZone*	eZoneBase = smart_cast<CSE_ALifeTeamBaseZone*> (e_zone);
-	if (eActor /*&& eZoneBase*/)
+	if(eActor /*&& eZoneBase*/)
 	{
-		if (eActor->g_team() == zone_team)
+		if(eActor->g_team() == zone_team)
 		{
 			game_PlayerState* ps = eActor->owner->ps;
-			if (ps)
+			if(ps)
 				ps->resetFlag(GAME_PLAYER_FLAG_ONBASE);
 
 			signal_Syncronize();
@@ -604,24 +615,24 @@ void game_sv_ArtefactHunt::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
 
 void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 {
-	if (Get_ReinforcementTime() == -1 || Get_ReturnPlayers())
+	if(Get_ReinforcementTime() == -1 || Get_ReturnPlayers())
 	{
 		MoveAllAlivePlayers();
 	};
-	if (Get_ReinforcementTime() > 0 || Get_ReinforcementTime() == -1)
+	if(Get_ReinforcementTime() > 0 || Get_ReinforcementTime() == -1)
 	{
 		RespawnAllNotAlivePlayers();
 	};
 	//-----------------------------------------------------------
 	game_PlayerState* ps = get_id(id_who);
-	if (!ps)
+	if(!ps)
 		return;
 	//-----------------------------------------------
 	// add player's points
 
 	Set_RankUp_Allowed(true);
 	TeamStruct* pTeam = GetTeamData(u8(ps->team));
-	if (pTeam)
+	if(pTeam)
 	{
 		Player_AddMoney(ps, pTeam->m_iM_TargetSucceed);
 		Player_AddExperience(ps, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_succeed", 0));
@@ -629,14 +640,14 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 
 		// Add money to players in this team
 		u32 cnt = get_players_count();
-		for (u32 it = 0; it < cnt; ++it)
+		for(u32 it = 0; it < cnt; ++it)
 		{
 			// init
 			xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 			game_PlayerState* pstate = l_pC->ps;
-			if (!l_pC->net_Ready || pstate->IsSkip() || pstate == ps)
+			if(!l_pC->net_Ready || pstate->IsSkip() || pstate == ps)
 				continue;
-			if (pstate->team == ps->team)
+			if(pstate->team == ps->team)
 			{
 				Player_AddMoney(pstate, pTeam->m_iM_TargetSucceedAll);
 				Player_AddExperience(pstate,
@@ -645,7 +656,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 			else
 			{
 				Player_AddMoney(pstate, pTeam->m_iM_TargetFailed);
-				if (!m_bArtefactWasDropped)
+				if(!m_bArtefactWasDropped)
 					pstate->experience_New *=
 						READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_failed_all_mul", 1.0f);
 			};
@@ -680,7 +691,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 	u_EventSend(P);
 	//-----------------------------------------------
 	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
-	if (pActor)
+	if(pActor)
 	{
 		pActor->SetfHealth(pActor->GetMaxHealth());
 		//-------------------------------------------
@@ -700,7 +711,7 @@ void game_sv_ArtefactHunt::SpawnArtefact()
 	//	if (OnClient()) return;
 
 	CSE_Abstract* E = NULL;
-	if (pSettings->line_exist("artefacthunt_gamedata", "artefact"))
+	if(pSettings->line_exist("artefacthunt_gamedata", "artefact"))
 		E = spawn_begin(pSettings->r_string("artefacthunt_gamedata", "artefact"));
 	else
 		return;
@@ -723,7 +734,7 @@ void game_sv_ArtefactHunt::SpawnArtefact()
 
 	signal_Syncronize();
 	//-------------------------------------------------
-	if (g_sv_dm_bAnomaliesEnabled)
+	if(g_sv_dm_bAnomaliesEnabled)
 		StartAnomalies();
 	//-------------------------------------------------
 	m_bArtefactWasTaken = false;
@@ -732,7 +743,7 @@ void game_sv_ArtefactHunt::SpawnArtefact()
 
 void game_sv_ArtefactHunt::RemoveArtefact()
 {
-	if (m_dwArtefactID != 0)
+	if(m_dwArtefactID != 0)
 	{
 		NET_Packet P;
 		//-----------------------------------------------
@@ -752,14 +763,15 @@ void game_sv_ArtefactHunt::Update()
 {
 	inherited::Update();
 
-	switch (Phase())
+	switch(Phase())
 	{
 	case GAME_PHASE_TEAM1_ELIMINATED:
-	case GAME_PHASE_TEAM2_ELIMINATED: {
-		if (m_delayedTeamEliminated && m_TeamEliminatedDelay < Engine.TimeManager.TimerAsync())
+	case GAME_PHASE_TEAM2_ELIMINATED:
+	{
+		if(m_delayedTeamEliminated && m_TeamEliminatedDelay < Engine.TimeManager.TimerAsync())
 		{
 			switch_Phase(GAME_PHASE_INPROGRESS);
-			if (Get_ReturnPlayers())
+			if(Get_ReturnPlayers())
 			{
 				MoveAllAlivePlayers();
 			}
@@ -767,28 +779,30 @@ void game_sv_ArtefactHunt::Update()
 		};
 	}
 	break;
-	case GAME_PHASE_PENDING: {
+	case GAME_PHASE_PENDING:
+	{
 	}
 	break;
-	case GAME_PHASE_INPROGRESS: {
+	case GAME_PHASE_INPROGRESS:
+	{
 		UpdatePlayersNotSendedMoveRespond();
 		//---------------------------------------------------
 		CheckRPUnblock();
 		//---------------------------------------------------
-		if (m_dwWarmUp_CurTime == 0)
+		if(m_dwWarmUp_CurTime == 0)
 		{
 			//---------------------------------------------------
-			if (Get_ReinforcementTime() > 0)
+			if(Get_ReinforcementTime() > 0)
 			{
 				u32 CurTime = Level().timeServer();
-				if (m_dwNextReinforcementTime < CurTime)
+				if(m_dwNextReinforcementTime < CurTime)
 				{
 					RespawnAllNotAlivePlayers();
 					m_dwNextReinforcementTime = CurTime + Get_ReinforcementTime() * 1000;
 				}
 			};
 			//---------------------------------------------------
-			if (Get_ReinforcementTime() == -1 && m_dwArtefactID != 0)
+			if(Get_ReinforcementTime() == -1 && m_dwArtefactID != 0)
 			{
 				CheckForAnyAlivePlayer();
 				CheckForTeamElimination();
@@ -797,11 +811,11 @@ void game_sv_ArtefactHunt::Update()
 			CheckForTeamWin();
 		}
 		//---------------------------------------------------
-		if (Artefact_NeedToSpawn())
+		if(Artefact_NeedToSpawn())
 			return;
-		if (Artefact_NeedToRemove())
+		if(Artefact_NeedToRemove())
 			return;
-		if (Artefact_MissCheck())
+		if(Artefact_MissCheck())
 			return;
 	}
 	break;
@@ -810,21 +824,21 @@ void game_sv_ArtefactHunt::Update()
 
 bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 {
-	if (g_SV_Force_Artefact_Spawn)
+	if(g_SV_Force_Artefact_Spawn)
 		return true;
 	///	return true;
 	// Check if all players ready
 	u32 cnt = get_players_count();
 
 	u32 TeamAlived[2] = {0, 0};
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
-		if (!ps->team)
+		if(!ps->team)
 			continue;
 
-		if (!l_pC->net_Ready || ps->IsSkip() || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+		if(!l_pC->net_Ready || ps->IsSkip() || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 			continue;
 		else
 		{
@@ -834,7 +848,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 		}
 	}
 
-	if (TeamAlived[0] == 0 || TeamAlived[1] == 0)
+	if(TeamAlived[0] == 0 || TeamAlived[1] == 0)
 		return FALSE;
 
 	return TRUE;
@@ -845,13 +859,13 @@ void game_sv_ArtefactHunt::OnCreate(u16 id_who)
 	inherited::OnCreate(id_who);
 
 	CSE_Abstract* pEntity = get_entity_from_eid(id_who);
-	if (!pEntity)
+	if(!pEntity)
 		return;
 	CSE_ALifeItemArtefact* pIArtefact = smart_cast<CSE_ALifeItemArtefact*>(pEntity);
-	if (pIArtefact)
+	if(pIArtefact)
 		m_dwArtefactID = pIArtefact->ID;
 	CSE_ALifeTeamBaseZone* pTeamBase = smart_cast<CSE_ALifeTeamBaseZone*>(pEntity);
-	if (pTeamBase && m_bSwapBases)
+	if(pTeamBase && m_bSwapBases)
 	{
 		pTeamBase->m_team = 3 - pTeamBase->m_team;
 	}
@@ -887,7 +901,7 @@ void game_sv_ArtefactHunt::Assign_Artefact_RPoint(CSE_Abstract* E)
 
 void game_sv_ArtefactHunt::OnTimelimitExceed()
 {
-	if (GetTeamScore(0) == GetTeamScore(1))
+	if(GetTeamScore(0) == GetTeamScore(1))
 		return;
 	u8 winning_team = (GetTeamScore(0) < GetTeamScore(1)) ? 1 : 0;
 	OnTeamScore(winning_team, false);
@@ -907,7 +921,7 @@ void game_sv_ArtefactHunt::net_Export_State(NET_Packet& P, ClientID id_to)
 	P.w_u8((u8)Get_BearerCantSprint());
 
 	P.w_s32(Get_ReinforcementTime());
-	if (Get_ReinforcementTime() > 0)
+	if(Get_ReinforcementTime() > 0)
 	{
 		u32 CurTime = Level().timeServer();
 		u32 dTime = m_dwNextReinforcementTime - CurTime;
@@ -939,17 +953,17 @@ void game_sv_ArtefactHunt::Artefact_PrepareForRemove()
 
 bool game_sv_ArtefactHunt::Artefact_NeedToSpawn()
 {
-	if (m_eAState == ON_FIELD || m_eAState == IN_POSSESSION)
+	if(m_eAState == ON_FIELD || m_eAState == IN_POSSESSION)
 		return false;
 
-	if (m_dwArtefactID != 0)
+	if(m_dwArtefactID != 0)
 		return false;
 
 	VERIFY(m_dwArtefactID == 0);
 
-	if (m_dwArtefactSpawnTime < Engine.TimeManager.GetGlobalTimeMs())
+	if(m_dwArtefactSpawnTime < Engine.TimeManager.GetGlobalTimeMs())
 	{
-		if (ArtefactSpawn_Allowed() || 0 != m_ArtefactsSpawnedTotal)
+		if(ArtefactSpawn_Allowed() || 0 != m_ArtefactsSpawnedTotal)
 		{
 			m_dwArtefactSpawnTime = 0;
 			// time to spawn Artefact;
@@ -962,15 +976,15 @@ bool game_sv_ArtefactHunt::Artefact_NeedToSpawn()
 
 bool game_sv_ArtefactHunt::Artefact_NeedToRemove()
 {
-	if (m_eAState == IN_POSSESSION)
+	if(m_eAState == IN_POSSESSION)
 		return false;
-	if (m_eAState == NOARTEFACT)
-		return false;
-
-	if (Get_ArtefactsStayTime() == 0)
+	if(m_eAState == NOARTEFACT)
 		return false;
 
-	if (m_dwArtefactRemoveTime < Engine.TimeManager.GetGlobalTimeMs())
+	if(Get_ArtefactsStayTime() == 0)
+		return false;
+
+	if(m_dwArtefactRemoveTime < Engine.TimeManager.GetGlobalTimeMs())
 	{
 		//		VERIFY (m_eAState == ON_FIELD);
 		RemoveArtefact();
@@ -981,13 +995,13 @@ bool game_sv_ArtefactHunt::Artefact_NeedToRemove()
 
 bool game_sv_ArtefactHunt::Artefact_MissCheck()
 {
-	if (m_eAState == NONE)
+	if(m_eAState == NONE)
 		return false;
 
-	if (m_dwArtefactID != 0)
+	if(m_dwArtefactID != 0)
 	{
 		CSE_Abstract* E = get_entity_from_eid(m_dwArtefactID);
-		if (!E)
+		if(!E)
 		{
 			Artefact_PrepareForSpawn();
 			return true;
@@ -999,15 +1013,15 @@ bool game_sv_ArtefactHunt::Artefact_MissCheck()
 void game_sv_ArtefactHunt::RespawnAllNotAlivePlayers()
 {
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
 
-		if (!l_pC->net_Ready || ps->IsSkip())
+		if(!l_pC->net_Ready || ps->IsSkip())
 			continue;
 
-		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) && !ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+		if(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) && !ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 		{
 			RespawnPlayer(l_pC->ID, true);
 			SpawnWeaponsForActor(l_pC->owner, ps);
@@ -1022,12 +1036,12 @@ void game_sv_ArtefactHunt::RespawnAllNotAlivePlayers()
 void game_sv_ArtefactHunt::CheckForAnyAlivePlayer()
 {
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
 
-		if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())
+		if(!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())
 			continue;
 		// found at least one alive player
 		return;
@@ -1042,22 +1056,22 @@ bool game_sv_ArtefactHunt::CheckAlivePlayersInTeam(s16 Team)
 	u32 cnt = get_players_count();
 	u32 cnt_alive = 0;
 	u32 cnt_exist = 0;
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
-		if (!l_pC->net_Ready)
+		if(!l_pC->net_Ready)
 			continue;
 		game_PlayerState* ps = l_pC->ps;
-		if (ps->IsSkip() || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+		if(ps->IsSkip() || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 			continue;
-		if (ps->team != Team)
+		if(ps->team != Team)
 			continue;
 		cnt_exist++;
-		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+		if(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			continue;
 		cnt_alive++;
 	};
-	if (cnt_exist == 0)
+	if(cnt_exist == 0)
 		return true;
 	return cnt_alive != 0;
 };
@@ -1069,18 +1083,18 @@ void game_sv_ArtefactHunt::MoveAllAlivePlayers()
 	NET_Packet tmpP;
 	tmpP.B.count = 0;
 
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
-		if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())
+		if(!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())
 			continue;
 		CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(l_pC->owner);
 		CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
-		if (!pA || !pActor)
+		if(!pA || !pActor)
 			continue;
 
-		if (!ps->testFlag(GAME_PLAYER_FLAG_ONBASE))
+		if(!ps->testFlag(GAME_PLAYER_FLAG_ONBASE))
 			assign_RP(l_pC->owner, ps);
 		//-----------------------------------------------
 		fvec3 Pos = pA->o_Position;
@@ -1105,7 +1119,7 @@ void game_sv_ArtefactHunt::MoveAllAlivePlayers()
 		l_pC->net_PassUpdates = FALSE;
 		l_pC->net_LastMoveUpdateTime = Level().timeServer();
 	};
-	if (AliveCount == 0)
+	if(AliveCount == 0)
 		return;
 
 	NET_Packet MovePacket;
@@ -1119,17 +1133,17 @@ void game_sv_ArtefactHunt::MoveAllAlivePlayers()
 void game_sv_ArtefactHunt::UpdatePlayersNotSendedMoveRespond()
 {
 	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; it++)
+	for(u32 it = 0; it < cnt; it++)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
-		if (!l_pC)
+		if(!l_pC)
 			continue;
 		game_PlayerState* ps = l_pC->ps;
-		if (!l_pC->net_Ready || ps->IsSkip())
+		if(!l_pC->net_Ready || ps->IsSkip())
 			continue;
-		if (l_pC->net_PassUpdates)
+		if(l_pC->net_PassUpdates)
 			continue;
-		if (l_pC->net_LastMoveUpdateTime > Level().timeServer() - 1000)
+		if(l_pC->net_LastMoveUpdateTime > Level().timeServer() - 1000)
 			continue;
 		ReplicatePlayersStateToPlayer(l_pC->ID);
 		l_pC->net_PassUpdates = FALSE;
@@ -1144,14 +1158,14 @@ void game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 	NET_Packet tmpP;
 	tmpP.B.count = 0;
 
-	for (u32 it = 0; it < cnt; ++it)
+	for(u32 it = 0; it < cnt; ++it)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 		game_PlayerState* ps = l_pC->ps;
-		if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())
+		if(!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())
 			continue;
 		CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(l_pC->owner);
-		if (!pA)
+		if(!pA)
 			continue;
 		//-----------------------------------------------
 		NET_Packet P;
@@ -1173,11 +1187,11 @@ void game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 void game_sv_ArtefactHunt::CheckForTeamElimination()
 {
 	u8 WinTeam = 0;
-	if (!CheckAlivePlayersInTeam(1))
+	if(!CheckAlivePlayersInTeam(1))
 		WinTeam = 2;
-	else if (!CheckAlivePlayersInTeam(2))
+	else if(!CheckAlivePlayersInTeam(2))
 		WinTeam = 1;
-	if (!WinTeam)
+	if(!WinTeam)
 		return;
 
 	SetTeamScore(WinTeam - 1, GetTeamScore(WinTeam - 1) + 1);
@@ -1185,14 +1199,14 @@ void game_sv_ArtefactHunt::CheckForTeamElimination()
 	//-----------------------------------------------------------------------------
 	u32 cnt = get_players_count();
 	TeamStruct* pWTeam = GetTeamData(WinTeam);
-	if (pWTeam)
+	if(pWTeam)
 	{
-		for (u32 it = 0; it < cnt; ++it)
+		for(u32 it = 0; it < cnt; ++it)
 		{
 			// init
 			xrClientData* l_pC = (xrClientData*)m_server->client_Get(it);
 			game_PlayerState* pstate = l_pC->ps;
-			if (!l_pC->net_Ready || pstate->IsSkip() || pstate->team != WinTeam)
+			if(!l_pC->net_Ready || pstate->IsSkip() || pstate->team != WinTeam)
 				continue;
 			Player_AddMoney(pstate, pWTeam->m_iM_RivalsWipedOut);
 		};
@@ -1209,21 +1223,21 @@ extern INT g_sv_Skip_Winner_Waiting;
 void game_sv_ArtefactHunt::CheckForTeamWin()
 {
 	u8 WinTeam = 0;
-	if (GetTeamScore(0) >= Get_ArtefactsCount())
+	if(GetTeamScore(0) >= Get_ArtefactsCount())
 		WinTeam = 1;
-	else if (GetTeamScore(1) >= Get_ArtefactsCount())
+	else if(GetTeamScore(1) >= Get_ArtefactsCount())
 		WinTeam = 2;
-	if (!WinTeam)
+	if(!WinTeam)
 	{
-		if (!GetTimeLimit())
+		if(!GetTimeLimit())
 			return;
-		if (GetTimeLimit() && ((Level().timeServer() - StartTime())) > u32(GetTimeLimit() * 60000))
+		if(GetTimeLimit() && ((Level().timeServer() - StartTime())) > u32(GetTimeLimit() * 60000))
 		{
 			int Team1 = GetTeamScore(0);
 			int Team2 = GetTeamScore(1);
-			if (Team1 == Team2)
+			if(Team1 == Team2)
 			{
-				if (!g_sv_Skip_Winner_Waiting)
+				if(!g_sv_Skip_Winner_Waiting)
 				{
 					return;
 				};
@@ -1249,9 +1263,9 @@ void game_sv_ArtefactHunt::CheckForTeamWin()
 
 void game_sv_ArtefactHunt::check_Player_for_Invincibility(game_PlayerState* ps)
 {
-	if (!ps)
+	if(!ps)
 		return;
-	if (Get_ShieldedBases() && ps->testFlag(GAME_PLAYER_FLAG_ONBASE))
+	if(Get_ShieldedBases() && ps->testFlag(GAME_PLAYER_FLAG_ONBASE))
 		ps->setFlag(GAME_PLAYER_FLAG_INVINCIBLE);
 	else
 		inherited::check_Player_for_Invincibility(ps);
@@ -1259,15 +1273,15 @@ void game_sv_ArtefactHunt::check_Player_for_Invincibility(game_PlayerState* ps)
 
 void game_sv_ArtefactHunt::Check_ForClearRun(game_PlayerState* ps)
 {
-	if (!ps)
+	if(!ps)
 		return;
-	if (!ps->m_bClearRun)
+	if(!ps->m_bClearRun)
 	{
 		ps->m_bClearRun = true;
 		return;
 	};
 	TeamStruct* pTeam = GetTeamData(u8(ps->team));
-	if (!pTeam)
+	if(!pTeam)
 		return;
 
 	Player_AddMoney(ps, pTeam->m_iM_ClearRunBonus);
@@ -1283,15 +1297,15 @@ void game_sv_ArtefactHunt::ReadOptions(shared_str& options)
 	g_sv_dm_dwFragLimit = 0;
 	//----------------------------------------------------------------------------
 	g_sv_ah_iReinforcementTime = get_option_i(*options, "reinf", g_sv_ah_iReinforcementTime);
-	if (g_sv_ah_iReinforcementTime < 0)
+	if(g_sv_ah_iReinforcementTime < 0)
 		g_sv_ah_iReinforcementTime = -1;
 	//----------------------------------------------------------------------------
 }
 
 static bool g_bConsoleCommandsCreated_AHUNT = false;
-void game_sv_ArtefactHunt::ConsoleCommands_Create(){};
+void game_sv_ArtefactHunt::ConsoleCommands_Create() {};
 
-void game_sv_ArtefactHunt::ConsoleCommands_Clear(){};
+void game_sv_ArtefactHunt::ConsoleCommands_Clear() {};
 
 //  [7/5/2005]
 #ifdef DEBUG
@@ -1300,14 +1314,14 @@ extern Flags32 dbg_net_Draw_Flags;
 
 void game_sv_ArtefactHunt::OnRender()
 {
-	//OPTICK_EVENT("game_sv_ArtefactHunt::OnRender");
+	// OPTICK_EVENT("game_sv_ArtefactHunt::OnRender");
 
-	if (dbg_net_Draw_Flags.test(1 << 9))
+	if(dbg_net_Draw_Flags.test(1 << 9))
 	{
 		fmat4x4 T;
 		T.identity();
 		fvec3 V0, V1;
-		for (u32 i = 0; i < Artefact_rpoints.size(); i++)
+		for(u32 i = 0; i < Artefact_rpoints.size(); i++)
 		{
 			RPoint rp = Artefact_rpoints[i];
 			V1 = V0 = rp.P;
@@ -1331,9 +1345,9 @@ void game_sv_ArtefactHunt::OnRender()
 //  [7/29/2005]
 bool game_sv_ArtefactHunt::Player_Check_Rank(game_PlayerState* ps)
 {
-	if (!inherited::Player_Check_Rank(ps))
+	if(!inherited::Player_Check_Rank(ps))
 		return false;
-	if (ps->af_count < m_aRanks[ps->rank + 1].m_iTerms[1])
+	if(ps->af_count < m_aRanks[ps->rank + 1].m_iTerms[1])
 		return false;
 	return true;
 }
@@ -1341,9 +1355,9 @@ bool game_sv_ArtefactHunt::Player_Check_Rank(game_PlayerState* ps)
 
 void game_sv_ArtefactHunt::OnPlayerHitPlayer_Case(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS)
 {
-	if (pHitS->hit_type != ALife::eHitTypePhysicStrike)
+	if(pHitS->hit_type != ALife::eHitTypePhysicStrike)
 	{
-		if (ps_hitted->testFlag(GAME_PLAYER_FLAG_ONBASE) && Get_ShieldedBases())
+		if(ps_hitted->testFlag(GAME_PLAYER_FLAG_ONBASE) && Get_ShieldedBases())
 		{
 			pHitS->power = 0;
 			pHitS->impulse = 0;
@@ -1359,14 +1373,14 @@ void game_sv_ArtefactHunt::OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_P
 	game_PlayerState* ps_hitter = get_eid(id_hitter);
 	game_PlayerState* ps_hitted = get_eid(id_hitted);
 
-	if (!ps_hitter || !ps_hitted)
+	if(!ps_hitter || !ps_hitted)
 		return;
-	if (ps_hitter->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps_hitted->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+	if(ps_hitter->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps_hitted->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		return;
-	if (ps_hitted->team == ps_hitter->team)
+	if(ps_hitted->team == ps_hitter->team)
 		return;
 
-	if (ps_hitted->GameID == artefactBearerID)
+	if(ps_hitted->GameID == artefactBearerID)
 		m_iAfBearerMenaceID = ps_hitter->GameID;
 };
 

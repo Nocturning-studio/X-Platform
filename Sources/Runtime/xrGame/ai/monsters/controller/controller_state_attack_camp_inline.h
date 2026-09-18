@@ -27,14 +27,14 @@ void CStateControlCampAbstract::initialize()
 	fvec3 direction;
 
 	// trace discretely left
-	for (float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang - ANGLE_DISP_STEP))
+	for(float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang - ANGLE_DISP_STEP))
 	{
 
 		direction.setHP(ang, 0.f);
 
-		if (Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, object))
+		if(Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, object))
 		{
-			if ((l_rq.range < TRACE_STATIC_DIST))
+			if((l_rq.range < TRACE_STATIC_DIST))
 			{
 				m_angle_from = ang;
 				break;
@@ -43,14 +43,14 @@ void CStateControlCampAbstract::initialize()
 	}
 
 	// trace discretely right
-	for (float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang + ANGLE_DISP_STEP))
+	for(float ang = angle; angle_difference(ang, angle) < ANGLE_DISP; ang = angle_normalize(ang + ANGLE_DISP_STEP))
 	{
 
 		direction.setHP(ang, 0.f);
 
-		if (Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, object))
+		if(Level().ObjectSpace.RayPick(trace_from, direction, TRACE_STATIC_DIST, collide::rqtStatic, l_rq, object))
 		{
-			if ((l_rq.range < TRACE_STATIC_DIST))
+			if((l_rq.range < TRACE_STATIC_DIST))
 			{
 				m_angle_to = ang;
 				break;
@@ -82,7 +82,7 @@ void CStateControlCampAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateControlCampAbstract::check_start_conditions()
 {
-	if (object->EnemyMan.see_enemy_now())
+	if(object->EnemyMan.see_enemy_now())
 		return false;
 	return true;
 }
@@ -90,9 +90,9 @@ bool CStateControlCampAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateControlCampAbstract::check_completion()
 {
-	if (object->EnemyMan.see_enemy_now())
+	if(object->EnemyMan.see_enemy_now())
 		return true;
-	if (time_state_started + 2000 < time())
+	if(time_state_started + 2000 < time())
 		return true;
 
 	return false;
@@ -101,11 +101,11 @@ bool CStateControlCampAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateControlCampAbstract::update_target_angle()
 {
-	if (m_time_next_updated > time())
+	if(m_time_next_updated > time())
 		return;
 	m_time_next_updated = time() + Random.randI(TIME_POINT_CHANGE_MIN, TIME_POINT_CHANGE_MAX);
 
-	if (fsimilar(m_target_angle, m_angle_from))
+	if(fsimilar(m_target_angle, m_angle_from))
 		m_target_angle = m_angle_to;
 	else
 		m_target_angle = m_angle_from;

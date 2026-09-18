@@ -49,16 +49,16 @@ bool g_b_ClearGameCaptions = false;
 
 void CUIGameCustom::OnFrame()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
 	st_vec::iterator it = m_custom_statics.begin();
-	for (; it != m_custom_statics.end(); ++it)
+	for(; it != m_custom_statics.end(); ++it)
 		(*it).Update();
 
 	m_custom_statics.erase(std::remove_if(m_custom_statics.begin(), m_custom_statics.end(), predicate_remove_stat()),
 						   m_custom_statics.end());
 
-	if (g_b_ClearGameCaptions)
+	if(g_b_ClearGameCaptions)
 	{
 		delete_data(m_custom_statics);
 		g_b_ClearGameCaptions = false;
@@ -67,11 +67,11 @@ void CUIGameCustom::OnFrame()
 
 void CUIGameCustom::Render()
 {
-	//OPTICK_EVENT("CUIGameCustom::Render");
+	// OPTICK_EVENT("CUIGameCustom::Render");
 
 	GameCaptions()->Draw();
 	st_vec::iterator it = m_custom_statics.begin();
-	for (; it != m_custom_statics.end(); ++it)
+	for(; it != m_custom_statics.end(); ++it)
 		(*it).Draw();
 }
 
@@ -134,10 +134,10 @@ void CUIGameCustom::RemoveCustomMessage(LPCSTR id)
 
 SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance)
 {
-	if (bSingleInstance)
+	if(bSingleInstance)
 	{
 		st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
-		if (it != m_custom_statics.end())
+		if(it != m_custom_statics.end())
 			return &(*it);
 	}
 
@@ -149,7 +149,7 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
 	sss.m_name = id;
 	xml_init.InitStatic(*m_msgs_xml, id, 0, sss.m_static);
 	float ttl = m_msgs_xml->ReadAttribFlt(id, 0, "ttl", -1);
-	if (ttl > 0.0f)
+	if(ttl > 0.0f)
 		sss.m_endTime = Engine.TimeManager.GetGlobalTime() + ttl;
 
 	return &sss;
@@ -158,7 +158,7 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
 SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 {
 	st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
-	if (it != m_custom_statics.end())
+	if(it != m_custom_statics.end())
 	{
 		return &(*it);
 	}
@@ -168,7 +168,7 @@ SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
 {
 	st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
-	if (it != m_custom_statics.end())
+	if(it != m_custom_statics.end())
 	{
 		xr_delete((*it).m_static);
 		m_custom_statics.erase(it);
@@ -182,13 +182,13 @@ extern CUISequencer* g_tutorial2;
 
 void CUIGameCustom::reset_ui()
 {
-	if (g_tutorial2)
+	if(g_tutorial2)
 	{
 		g_tutorial2->Destroy();
 		xr_delete(g_tutorial2);
 	}
 
-	if (g_tutorial)
+	if(g_tutorial)
 	{
 		g_tutorial->Destroy();
 		xr_delete(g_tutorial);
@@ -207,20 +207,20 @@ void SDrawStaticStruct::destroy()
 
 bool SDrawStaticStruct::IsActual()
 {
-	if (m_endTime < 0)
+	if(m_endTime < 0)
 		return true;
 	return Engine.TimeManager.GetGlobalTime() < m_endTime;
 }
 
 void SDrawStaticStruct::Draw()
 {
-	if (m_static)
+	if(m_static)
 		m_static->Draw();
 }
 
 void SDrawStaticStruct::Update()
 {
-	if (!IsActual())
+	if(!IsActual())
 		delete_data(m_static);
 	else
 		m_static->Update();
@@ -239,7 +239,7 @@ void CMapListHelper::Load()
 	CInifile::Sect w = map_list_cfg.r_section("weather");
 	CInifile::SectCIt wi = w.Data.begin();
 	CInifile::SectCIt wi_e = w.Data.end();
-	for (; wi != wi_e; ++wi)
+	for(; wi != wi_e; ++wi)
 	{
 		m_weathers.resize(m_weathers.size() + 1);
 		SGameWeathers& gw = m_weathers.back();
@@ -250,7 +250,7 @@ void CMapListHelper::Load()
 	// read original maps from config
 	CInifile::RootIt it = map_list_cfg.sections().begin();
 	CInifile::RootIt it_e = map_list_cfg.sections().end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		m_storage.resize(m_storage.size() + 1);
 		SGameTypeMaps& Itm = m_storage.back();
@@ -260,7 +260,7 @@ void CMapListHelper::Load()
 		CInifile::SectCIt sit = (*it)->Data.begin();
 		CInifile::SectCIt sit_e = (*it)->Data.end();
 
-		for (; sit != sit_e; ++sit)
+		for(; sit != sit_e; ++sit)
 		{
 			Itm.m_map_names.push_back((*sit).first);
 		}
@@ -272,22 +272,22 @@ void CMapListHelper::Load()
 	FS_FileSetIt fit = fset.begin();
 	FS_FileSetIt fit_e = fset.end();
 
-	for (; fit != fit_e; ++fit)
+	for(; fit != fit_e; ++fit)
 	{
 		string_path map_cfg_fn;
 		FS.update_path(map_cfg_fn, "$game_levels$", (*fit).name.c_str());
 		CInifile map_ini(map_cfg_fn);
 
-		if (map_ini.section_exist("map_usage"))
+		if(map_ini.section_exist("map_usage"))
 		{
 			CInifile::Sect S = map_ini.r_section("map_usage");
 			CInifile::SectCIt si = S.Data.begin();
 			CInifile::SectCIt si_e = S.Data.end();
-			for (; si != si_e; ++si)
+			for(; si != si_e; ++si)
 			{
 				const shared_str& game_type = (*si).first;
 				SGameTypeMaps* M = GetMapListInt(game_type);
-				if (!M)
+				if(!M)
 				{
 					Msg("--unknown game type-%s", game_type.c_str());
 					m_storage.resize(m_storage.size() + 1);
@@ -298,7 +298,7 @@ void CMapListHelper::Load()
 				}
 				shared_str _map_name = (*fit).name.substr(0, (*fit).name.find('\\')).c_str();
 
-				if (M->m_map_names.end() == std::find(M->m_map_names.begin(), M->m_map_names.end(), _map_name))
+				if(M->m_map_names.end() == std::find(M->m_map_names.begin(), M->m_map_names.end(), _map_name))
 					M->m_map_names.push_back(_map_name);
 			}
 		}
@@ -310,7 +310,7 @@ void CMapListHelper::Load()
 
 const SGameTypeMaps& CMapListHelper::GetMapListFor(const shared_str& game_type)
 {
-	if (!m_storage.size())
+	if(!m_storage.size())
 		Load();
 
 	return *GetMapListInt(game_type);
@@ -321,9 +321,9 @@ SGameTypeMaps* CMapListHelper::GetMapListInt(const shared_str& game_type)
 
 	TSTORAGE_CIT it = m_storage.begin();
 	TSTORAGE_CIT it_e = m_storage.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (game_type == (*it).m_game_type_name)
+		if(game_type == (*it).m_game_type_name)
 			return &(*it);
 	}
 	return NULL;
@@ -331,16 +331,16 @@ SGameTypeMaps* CMapListHelper::GetMapListInt(const shared_str& game_type)
 
 const SGameTypeMaps& CMapListHelper::GetMapListFor(const EGameTypes game_id)
 {
-	if (!m_storage.size())
+	if(!m_storage.size())
 	{
 		Load();
 		R_ASSERT2(m_storage.size(), "unable to fill map list");
 	}
 	TSTORAGE_CIT it = m_storage.begin();
 	TSTORAGE_CIT it_e = m_storage.end();
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
-		if (game_id == (*it).m_game_type_id)
+		if(game_id == (*it).m_game_type_id)
 			return (*it);
 	}
 	return m_storage[0];
@@ -348,7 +348,7 @@ const SGameTypeMaps& CMapListHelper::GetMapListFor(const EGameTypes game_id)
 
 const GAME_WEATHERS& CMapListHelper::GetGameWeathers()
 {
-	if (!m_weathers.size())
+	if(!m_weathers.size())
 		Load();
 
 	return m_weathers;

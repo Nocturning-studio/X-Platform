@@ -16,7 +16,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 	VERIFY(e_parent && e_entity);
 	game->OnDetach(id_parent, id_entity);
 
-	if (0xffff == e_entity->ID_Parent)
+	if(0xffff == e_entity->ID_Parent)
 	{
 		Msg("~ ERROR: can't detach independant object. entity[%s:%d], parent[%s:%d], section[%s]",
 			e_entity->name_replace(), id_entity, e_parent->name_replace(), id_parent, *e_entity->s_name);
@@ -33,7 +33,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 	C.erase(c);
 
 	// Signal to everyone (including sender)
-	if (send_message)
+	if(send_message)
 	{
 		DWORD MODE = net_flags(TRUE, TRUE, FALSE, TRUE);
 		SendBroadcast(BroadcastCID, P, MODE);

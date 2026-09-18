@@ -5,8 +5,6 @@
 extern "C"
 {
 	EXPORT_FN_DECL(bool, ptCheckForPatch, (
-//		int productID,  const gsi_char * versionUniqueID,  int distributionID, 
-		ptPatchCallback callback, 
-		PTBool blocking, 
-		void * instance ));
+											  //		int productID,  const gsi_char * versionUniqueID,  int distributionID,
+											  ptPatchCallback callback, PTBool blocking, void* instance));
 }

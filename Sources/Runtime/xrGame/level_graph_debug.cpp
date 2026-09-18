@@ -27,7 +27,7 @@
 
 void CLevelGraph::setup_current_level(const int& level_id)
 {
-	if (m_current_level_id == level_id)
+	if(m_current_level_id == level_id)
 		return;
 
 	m_current_actual = false;
@@ -36,27 +36,27 @@ void CLevelGraph::setup_current_level(const int& level_id)
 
 void CLevelGraph::render()
 {
-	if (psAI_Flags.test(aiDrawGameGraph))
+	if(psAI_Flags.test(aiDrawGameGraph))
 	{
 		//		if (psHUD_Flags.test(HUD_DRAW))
 		draw_game_graph();
 	}
 
-	if (!bDebug && !psAI_Flags.test(aiMotion))
+	if(!bDebug && !psAI_Flags.test(aiMotion))
 		return;
 
-	if (bDebug && psAI_Flags.test(aiDebug))
+	if(bDebug && psAI_Flags.test(aiDebug))
 		draw_nodes();
 
 	draw_restrictions();
 
-	if (psAI_Flags.test(aiCover))
+	if(psAI_Flags.test(aiCover))
 		draw_covers();
 
-	if (!psHUD_Flags.test(HUD_DRAW))
+	if(!psHUD_Flags.test(HUD_DRAW))
 		return;
 
-	if (psAI_Flags.test(aiMotion))
+	if(psAI_Flags.test(aiMotion))
 		draw_objects();
 
 #ifdef DEBUG
@@ -71,7 +71,7 @@ void modify(const int& vertex_id, Fbox& bounding_box)
 
 	CGameGraph::const_iterator I, E;
 	graph.begin(vertex_id, I, E);
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		bounding_box.modify(graph.vertex(graph.value(vertex_id, I))->game_point());
 }
 
@@ -85,13 +85,13 @@ void CLevelGraph::update_current_info()
 	bool found = false;
 	bool all = (m_current_level_id == -1);
 	const CGameGraph& graph = ai().game_graph();
-	for (int i = 0, n = (int)graph.header().vertex_count(); i < n; ++i)
+	for(int i = 0, n = (int)graph.header().vertex_count(); i < n; ++i)
 	{
-		if (!all)
+		if(!all)
 		{
-			if (graph.vertex(i)->level_id() != m_current_level_id)
+			if(graph.vertex(i)->level_id() != m_current_level_id)
 			{
-				if (found)
+				if(found)
 					break;
 				continue;
 			}
@@ -144,17 +144,17 @@ void CLevelGraph::draw_vertex(const int& vertex_id)
 	CGameGraph::const_iterator I, E;
 	const CGameGraph& graph = ai().game_graph();
 	graph.begin(vertex_id, I, E);
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		int neighbour_id = graph.value(vertex_id, I);
-		if (neighbour_id < vertex_id)
+		if(neighbour_id < vertex_id)
 			draw_edge(vertex_id, neighbour_id);
 	}
 }
 
 void CLevelGraph::draw_stalkers(const int& vertex_id)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	const float radius = .0105f;
@@ -166,44 +166,44 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 	font.SetColor(D3DCOLOR_XRGB(255, 255, 0));
 
 	bool show_text = true;
-	for (;;)
+	for(;;)
 	{
 		fvec4 temp;
 		Engine.RenderView.ViewProjection.transform(temp, position);
 		font.OutSetI(temp.x, -temp.y);
 		font.SetHeightI(.05f / std::sqrt(temp.w));
 
-		if (temp.z < 0.f)
+		if(temp.z < 0.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.w < 0.f)
+		if(temp.w < 0.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.x < -1.f)
+		if(temp.x < -1.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.y < -1.f)
+		if(temp.y < -1.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 		{
 			show_text = false;
 			break;
@@ -218,16 +218,16 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 	const OBJECT_REGISTRY& objects = ai().alife().graph().objects()[vertex_id].objects();
 
 	CDebugRenderer& render = Level().debug_renderer();
-	if (show_text)
+	if(show_text)
 	{
 		bool first_time = true;
 		const_iterator I = objects.objects().begin();
 		const_iterator E = objects.objects().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			CSE_ALifeDynamicObject* object = (*I).second;
 			CSE_ALifeHumanStalker* stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
-			if (!stalker)
+			if(!stalker)
 				continue;
 
 			const PATH& path = stalker->brain().movement().detail().path();
@@ -235,10 +235,10 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 				(path.size() < 2) ? 0.f : stalker->brain().movement().detail().walked_distance();
 			//			font.OutNext		("%s",stalker->name_replace());
 
-			if ((path.size() >= 2) && !fis_zero(walked_distance))
+			if((path.size() >= 2) && !fis_zero(walked_distance))
 				continue;
 
-			if (!first_time)
+			if(!first_time)
 				continue;
 
 			fvec3 position = convert_position(graph.vertex(stalker->m_tGraphID)->game_point());
@@ -250,22 +250,22 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 
 	const_iterator I = objects.objects().begin();
 	const_iterator E = objects.objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CSE_ALifeDynamicObject* object = (*I).second;
 		CSE_ALifeHumanStalker* stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
-		if (!stalker)
+		if(!stalker)
 			continue;
 
 		const PATH& path = stalker->brain().movement().detail().path();
-		if (path.size() < 2)
+		if(path.size() < 2)
 			continue;
 
 		u32 game_vertex_id0 = stalker->m_tGraphID;
 		u32 game_vertex_id1 = path[path.size() - 2];
 		const float& walked_distance = stalker->brain().movement().detail().walked_distance();
 
-		if (fis_zero(walked_distance))
+		if(fis_zero(walked_distance))
 			continue;
 
 		fvec3 position0 = graph.vertex(game_vertex_id0)->game_point();
@@ -285,22 +285,22 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 		fvec4 temp;
 		Engine.RenderView.ViewProjection.transform(temp, direction);
 
-		if (temp.z < 0.f)
+		if(temp.z < 0.f)
 			continue;
 
-		if (temp.w < 0.f)
+		if(temp.w < 0.f)
 			continue;
 
-		if (temp.x < -1.f)
+		if(temp.x < -1.f)
 			continue;
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 			continue;
 
-		if (temp.y < -1.f)
+		if(temp.y < -1.f)
 			continue;
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 			continue;
 
 		font.SetHeightI(.05f / std::sqrt(temp.w));
@@ -309,7 +309,7 @@ void CLevelGraph::draw_stalkers(const int& vertex_id)
 
 void CLevelGraph::draw_objects(const int& vertex_id)
 {
-	if (!ai().get_alife())
+	if(!ai().get_alife())
 		return;
 
 	const float radius = .0105f;
@@ -321,44 +321,44 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 	font.SetColor(D3DCOLOR_XRGB(255, 255, 0));
 
 	bool show_text = true;
-	for (;;)
+	for(;;)
 	{
 		fvec4 temp;
 		Engine.RenderView.ViewProjection.transform(temp, position);
 		font.OutSetI(temp.x, -temp.y);
 		font.SetHeightI(.05f / std::sqrt(temp.w));
 
-		if (temp.z < 0.f)
+		if(temp.z < 0.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.w < 0.f)
+		if(temp.w < 0.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.x < -1.f)
+		if(temp.x < -1.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.y < -1.f)
+		if(temp.y < -1.f)
 		{
 			show_text = false;
 			break;
 		}
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 		{
 			show_text = false;
 			break;
@@ -373,16 +373,16 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 	const OBJECT_REGISTRY& objects = ai().alife().graph().objects()[vertex_id].objects();
 
 	CDebugRenderer& render = Level().debug_renderer();
-	if (show_text)
+	if(show_text)
 	{
 		bool first_time = true;
 		const_iterator I = objects.objects().begin();
 		const_iterator E = objects.objects().end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			CSE_ALifeDynamicObject* object = (*I).second;
 			CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
-			if (!monster)
+			if(!monster)
 				continue;
 
 			const PATH& path = monster->brain().movement().detail().path();
@@ -390,10 +390,10 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 				(path.size() < 2) ? 0.f : monster->brain().movement().detail().walked_distance();
 			//			font.OutNext		("%s",monster->name_replace());
 
-			if ((path.size() >= 2) && !fis_zero(walked_distance))
+			if((path.size() >= 2) && !fis_zero(walked_distance))
 				continue;
 
-			if (!first_time)
+			if(!first_time)
 				continue;
 
 			fvec3 position = convert_position(graph.vertex(monster->m_tGraphID)->game_point());
@@ -405,22 +405,22 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 
 	const_iterator I = objects.objects().begin();
 	const_iterator E = objects.objects().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		CSE_ALifeDynamicObject* object = (*I).second;
 		CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
-		if (!monster)
+		if(!monster)
 			continue;
 
 		const PATH& path = monster->brain().movement().detail().path();
-		if (path.size() < 2)
+		if(path.size() < 2)
 			continue;
 
 		u32 game_vertex_id0 = monster->m_tGraphID;
 		u32 game_vertex_id1 = path[path.size() - 2];
 		const float& walked_distance = monster->brain().movement().detail().walked_distance();
 
-		if (fis_zero(walked_distance))
+		if(fis_zero(walked_distance))
 			continue;
 
 		fvec3 position0 = graph.vertex(game_vertex_id0)->game_point();
@@ -440,22 +440,22 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 		fvec4 temp;
 		Engine.RenderView.ViewProjection.transform(temp, direction);
 
-		if (temp.z < 0.f)
+		if(temp.z < 0.f)
 			continue;
 
-		if (temp.w < 0.f)
+		if(temp.w < 0.f)
 			continue;
 
-		if (temp.x < -1.f)
+		if(temp.x < -1.f)
 			continue;
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 			continue;
 
-		if (temp.y < -1.f)
+		if(temp.y < -1.f)
 			continue;
 
-		if (temp.x > 1.f)
+		if(temp.x > 1.f)
 			continue;
 
 		font.SetHeightI(.05f / std::sqrt(temp.w));
@@ -464,7 +464,7 @@ void CLevelGraph::draw_objects(const int& vertex_id)
 
 void CLevelGraph::draw_game_graph()
 {
-	if (!Level().CurrentEntity())
+	if(!Level().CurrentEntity())
 		return;
 
 	//	fvec3					camera_position = Level().CurrentEntity()->Position();
@@ -491,13 +491,13 @@ void CLevelGraph::draw_game_graph()
 
 	bool found = false;
 	bool all = (m_current_level_id == -1);
-	for (int i = 0, n = (int)graph.header().vertex_count(); i < n; ++i)
+	for(int i = 0, n = (int)graph.header().vertex_count(); i < n; ++i)
 	{
-		if (!all)
+		if(!all)
 		{
-			if (graph.vertex(i)->level_id() != m_current_level_id)
+			if(graph.vertex(i)->level_id() != m_current_level_id)
 			{
-				if (found)
+				if(found)
 					break;
 
 				continue;
@@ -508,10 +508,10 @@ void CLevelGraph::draw_game_graph()
 
 		draw_vertex(i);
 
-		if (psAI_Flags.test(aiDrawGameGraphStalkers))
+		if(psAI_Flags.test(aiDrawGameGraphStalkers))
 			draw_stalkers(i);
 
-		if (psAI_Flags.test(aiDrawGameGraphObjects))
+		if(psAI_Flags.test(aiDrawGameGraphObjects))
 			draw_objects(i);
 	}
 

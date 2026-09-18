@@ -41,10 +41,10 @@ IC u16 script_server_object_version()
 {
 	static bool initialized = false;
 	static u16 script_version = 0;
-	if (!initialized)
+	if(!initialized)
 	{
 		initialized = true;
-		if (!pSettings->section_exist(script_section) || !pSettings->line_exist(script_section, current_version))
+		if(!pSettings->section_exist(script_section) || !pSettings->line_exist(script_section, current_version))
 			script_version = 0;
 		script_version = pSettings->r_u16(script_section, current_version);
 	}
@@ -110,11 +110,11 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
 	//	m_max_spawn_interval		= 0;
 	m_ini_file = 0;
 
-	if (pSettings->line_exist(caSection, "custom_data"))
+	if(pSettings->line_exist(caSection, "custom_data"))
 	{
 		string_path file_name;
 		FS.update_path(file_name, "$game_config$", pSettings->r_string(caSection, "custom_data"));
-		if (!FS.exist(file_name))
+		if(!FS.exist(file_name))
 		{
 			DbgMsg("! cannot open config file %s", file_name);
 		}
@@ -161,7 +161,7 @@ CSE_Motion* CSE_Abstract::motion()
 
 CInifile& CSE_Abstract::spawn_ini()
 {
-	if (!m_ini_file)
+	if(!m_ini_file)
 #pragma warning(push)
 #pragma warning(disable : 4238)
 		m_ini_file = xr_new<CInifile>(&IReader((void*)(*(m_ini_string)), m_ini_string.size()),
@@ -186,7 +186,7 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
 	tNetPacket.w_u16(ID_Phantom);
 
 	s_flags.set(M_SPAWN_VERSION, TRUE);
-	if (bLocal)
+	if(bLocal)
 		tNetPacket.w_u16(u16(s_flags.flags | M_SPAWN_OBJECT_LOCAL));
 	else
 		tNetPacket.w_u16(u16(s_flags.flags & ~(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER)));
@@ -200,7 +200,7 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
 	tNetPacket.w_u16(client_data_size);
 	//	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ?
 	// s_name_replace : "");
-	if (client_data_size > 0)
+	if(client_data_size > 0)
 	{
 		tNetPacket.w(&*client_data.begin(), client_data_size);
 	}
@@ -252,27 +252,27 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 	tNetPacket.r_u16(s_flags.flags);
 
 	// dangerous!!!!!!!!!
-	if (s_flags.is(M_SPAWN_VERSION))
+	if(s_flags.is(M_SPAWN_VERSION))
 		tNetPacket.r_u16(m_wVersion);
 
-	if (0 == m_wVersion)
+	if(0 == m_wVersion)
 	{
 		tNetPacket.r_pos -= sizeof(u16);
 		m_wVersion = 0;
 		return FALSE;
 	}
 
-	if (m_wVersion > 69)
+	if(m_wVersion > 69)
 		m_script_version = tNetPacket.r_u16();
 
 	// read specific data
 
 	// client object custom data serialization LOAD
-	if (m_wVersion > 70)
+	if(m_wVersion > 70)
 	{
 		u16 client_data_size =
 			(m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); // не может быть больше 256 байт
-		if (client_data_size > 0)
+		if(client_data_size > 0)
 		{
 			//			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ?
 			// s_name_replace : "");
@@ -285,15 +285,15 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 	else
 		client_data.clear();
 
-	if (m_wVersion > 79)
+	if(m_wVersion > 79)
 		tNetPacket.r(&m_tSpawnID, sizeof(m_tSpawnID));
 
-	if (m_wVersion < 112)
+	if(m_wVersion < 112)
 	{
-		if (m_wVersion > 82)
+		if(m_wVersion > 82)
 			tNetPacket.r_float(); // m_spawn_probability);
 
-		if (m_wVersion > 83)
+		if(m_wVersion > 83)
 		{
 			tNetPacket.r_u32(); // m_spawn_flags.assign(tNetPacket.r_u32());
 			xr_string temp;
@@ -304,7 +304,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 			tNetPacket.r_u64(); // m_last_spawn_time);
 		}
 
-		if (m_wVersion > 84)
+		if(m_wVersion > 84)
 		{
 			tNetPacket.r_u64(); // m_min_spawn_interval);
 			tNetPacket.r_u64(); // m_max_spawn_interval);
@@ -323,7 +323,7 @@ void CSE_Abstract::load(NET_Packet& tNetPacket)
 {
 	CPureServerObject::load(tNetPacket);
 	u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); // не может быть больше 256 байт
-	if (client_data_size > 0)
+	if(client_data_size > 0)
 	{
 #ifdef DEBUG
 //		Msg						("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ?
@@ -335,7 +335,7 @@ void CSE_Abstract::load(NET_Packet& tNetPacket)
 	else
 	{
 #ifdef DEBUG
-		if (!client_data.empty())
+		if(!client_data.empty())
 			Msg("CSE_Abstract::load: client_data is cleared for [%d][%s]", ID, name_replace());
 #endif // DEBUG
 		client_data.clear();
@@ -408,7 +408,7 @@ void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec& items)
 //&m_spawn_flags,			flSpawnOnSurgeOnly); 	PHelper().CreateFlag32
 //(items,PrepareKey(pref,*s_name,"Spawn\\spawn if destroyed only"),	&m_spawn_flags,			flSpawnIfDestroyedOnly);
 // PHelper().CreateFlag32 (items,PrepareKey(pref,*s_name,"Spawn\\spawn infinite count"),		&m_spawn_flags,
-//flSpawnInfiniteCount); 	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\auto destroy on spawn"),
+// flSpawnInfiniteCount); 	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\auto destroy on spawn"),
 //&m_spawn_flags, flSpawnDestroyOnSpawn);
 #endif // DEBUG
 #endif // XRGAME_EXPORTS

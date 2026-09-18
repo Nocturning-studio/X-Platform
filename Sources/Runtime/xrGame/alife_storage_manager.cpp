@@ -36,13 +36,13 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 
 	string_path save;
 	strcpy(save, m_save_name);
-	if (save_name)
+	if(save_name)
 	{
 		strconcat(sizeof(m_save_name), m_save_name, save_name, SAVE_EXTENSION);
 	}
 	else
 	{
-		if (!xr_strlen(m_save_name))
+		if(!xr_strlen(m_save_name))
 		{
 			Log("There is no file name specified!");
 			return;
@@ -84,7 +84,7 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 	Msg("* Game %s is successfully saved to file '%s'", m_save_name, temp);
 #endif // DEBUG
 
-	if (!update_name)
+	if(!update_name)
 		strcpy(m_save_name, save);
 }
 
@@ -106,7 +106,7 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, LPCSTR fil
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator B = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator I;
-	for (I = B; I != E; ++I)
+	for(I = B; I != E; ++I)
 	{
 		ALife::_OBJECT_ID id = (*I).second->ID;
 		(*I).second->ID = server().PerformIDgen(id);
@@ -118,7 +118,7 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, LPCSTR fil
 
 	can_register_objects(true);
 
-	for (I = B; I != E; ++I)
+	for(I = B; I != E; ++I)
 		(*I).second->on_register();
 }
 
@@ -128,9 +128,9 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 	timer.Start();
 	string256 save;
 	strcpy(save, m_save_name);
-	if (!save_name)
+	if(!save_name)
 	{
-		if (!xr_strlen(m_save_name))
+		if(!xr_strlen(m_save_name))
 			R_ASSERT2(false, "There is no file name specified!");
 	}
 	else
@@ -140,7 +140,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 
 	IReader* stream;
 	stream = FS.r_open(file_name);
-	if (!stream)
+	if(!stream)
 	{
 		Msg("* Cannot find saved game %s", file_name);
 		strcpy(m_save_name, save);

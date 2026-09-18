@@ -33,7 +33,7 @@ void CWeaponBinoculars::Load(LPCSTR section)
 
 bool CWeaponBinoculars::Action(s32 cmd, u32 flags)
 {
-	switch (cmd)
+	switch(cmd)
 	{
 	case kWPN_FIRE:
 		return inherited::Action(kWPN_ZOOM, flags);
@@ -44,12 +44,12 @@ bool CWeaponBinoculars::Action(s32 cmd, u32 flags)
 
 void CWeaponBinoculars::OnZoomIn()
 {
-	if (H_Parent() && !IsZoomed())
+	if(H_Parent() && !IsZoomed())
 	{
 		HUD_SOUND::StopSound(sndZoomOut);
 		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());
 		HUD_SOUND::PlaySound(sndZoomIn, H_Parent()->Position(), H_Parent(), b_hud_mode);
-		if (m_bVision && !m_binoc_vision)
+		if(m_bVision && !m_binoc_vision)
 		{
 			//.VERIFY			(!m_binoc_vision);
 			m_binoc_vision = xr_new<CBinocularsVision>(this);
@@ -62,7 +62,7 @@ void CWeaponBinoculars::OnZoomIn()
 
 void CWeaponBinoculars::OnZoomOut()
 {
-	if (H_Parent() && IsZoomed() && !IsRotatingToZoom())
+	if(H_Parent() && IsZoomed() && !IsRotatingToZoom())
 	{
 		HUD_SOUND::StopSound(sndZoomIn);
 		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());
@@ -93,13 +93,13 @@ void CWeaponBinoculars::UpdateCL()
 {
 	inherited::UpdateCL();
 	// manage visible entities here...
-	if (H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
+	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
 		m_binoc_vision->Update();
 }
 
 void CWeaponBinoculars::OnDrawUI()
 {
-	if (H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
+	if(H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
 		m_binoc_vision->Draw();
 	inherited::OnDrawUI();
 }
@@ -153,7 +153,7 @@ void CWeaponBinoculars::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_n
 
 void CWeaponBinoculars::net_Relcase(CObject* object)
 {
-	if (!m_binoc_vision)
+	if(!m_binoc_vision)
 		return;
 
 	m_binoc_vision->remove_links(object);

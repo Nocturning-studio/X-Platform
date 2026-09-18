@@ -42,7 +42,7 @@ IC void CGameManagerTemplate::after_search()
 TEMPLATE_SPECIALIZATION
 IC bool CGameManagerTemplate::completed() const
 {
-	if (path().empty() || (m_intermediate_index >= (_vertex_id_type)path().size() - 1))
+	if(path().empty() || (m_intermediate_index >= (_vertex_id_type)path().size() - 1))
 		return (inherited::completed());
 	return (false);
 }
@@ -51,9 +51,9 @@ TEMPLATE_SPECIALIZATION
 IC void CGameManagerTemplate::select_intermediate_vertex()
 {
 	VERIFY(!path().empty());
-	if (m_intermediate_index != _index_type(-1))
+	if(m_intermediate_index != _index_type(-1))
 		++m_intermediate_index;
-	else if (path().size() < 2)
+	else if(path().size() < 2)
 		m_intermediate_index = 0;
 	else
 		m_intermediate_index = 1;

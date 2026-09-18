@@ -21,7 +21,7 @@ void interactive_motion::setup(LPCSTR m, CPhysicsShell* s)
 
 	VERIFY(s);
 	motion = smart_cast<CKinematicsAnimated*>(s->PKinematics())->LL_MotionID(m);
-	if (motion.valid())
+	if(motion.valid())
 		flags.set(fl_use_death_motion, TRUE);
 }
 
@@ -48,7 +48,7 @@ void interactive_motion::state_start(CPhysicsShell* s)
 	s->add_ObjectContactCallback(get_depth);
 	collide(s);
 
-	if (flags.test(fl_switch_dm_toragdoll))
+	if(flags.test(fl_switch_dm_toragdoll))
 	{
 		flags.assign(0);
 		s->remove_ObjectContactCallback(get_depth);
@@ -72,7 +72,7 @@ void interactive_motion::update(CPhysicsShell* s)
 	VERIFY(K);
 	K->CalculateBones();
 	collide(s);
-	if (flags.test(fl_switch_dm_toragdoll))
+	if(flags.test(fl_switch_dm_toragdoll))
 	{
 		switch_to_free(s);
 	}
@@ -98,7 +98,7 @@ void interactive_motion::switch_to_free(CPhysicsShell* s)
 void imotion_position::state_start(CPhysicsShell* s)
 {
 	inherited::state_start(s);
-	if (!is_enabled())
+	if(!is_enabled())
 		return;
 	s->Disable();
 	s->EnabledCallbacks(FALSE);
@@ -121,7 +121,7 @@ void imotion_position::collide(CPhysicsShell* s)
 {
 	depth = 0;
 	s->CollideAll();
-	if (depth > 0.05)
+	if(depth > 0.05)
 		flags.set(fl_switch_dm_toragdoll, TRUE);
 }
 ////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ void imotion_position::collide(CPhysicsShell* s)
 void imotion_velocity::state_start(CPhysicsShell* s)
 {
 	inherited::state_start(s);
-	if (!is_enabled())
+	if(!is_enabled())
 		return;
 	s->set_ApplyByGravity(false);
 	// s->set_DynamicLimits(default_l_limit,default_w_limit * 5.f);
@@ -149,7 +149,7 @@ void imotion_velocity::collide(CPhysicsShell* s)
 
 void imotion_velocity::move_update(CPhysicsShell* s)
 {
-	if (!s->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit))
+	if(!s->AnimToVelocityState(Engine.TimeManager.GetDeltaTime(), 2 * default_l_limit, 10.f * default_w_limit))
 		flags.set(fl_switch_dm_toragdoll, TRUE);
 	fmat4x4 sv;
 	sv.set(s->mTransform);

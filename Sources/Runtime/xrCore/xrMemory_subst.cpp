@@ -4,7 +4,7 @@
 #include "xrMemory_align.h"
 #include "xrMemory_pure.h"
 
-#pragma warning(disable: 4456)
+#pragma warning(disable : 4456)
 
 #ifndef DEBUG_MEMORY_MANAGER
 #define debug_mode 0
@@ -33,7 +33,7 @@ ICF u32 get_header(void* P)
 ICF u32 get_pool(size_t size)
 {
 	u32 pid = u32(size / mem_pools_ebase);
-	if (pid >= mem_pools_count)
+	if(pid >= mem_pools_count)
 		return mem_generic;
 	else
 		return pid;
@@ -43,14 +43,13 @@ ICF u32 get_pool(size_t size)
 bool g_use_pure_alloc = false;
 #endif // PURE_ALLOC
 
-void* xrMemory::mem_alloc(size_t size, const char* _name
-)
+void* xrMemory::mem_alloc(size_t size, const char* _name)
 {
 	stat_calls++;
 
 #ifdef PURE_ALLOC
 	static bool g_use_pure_alloc_initialized = false;
-	if (!g_use_pure_alloc_initialized)
+	if(!g_use_pure_alloc_initialized)
 	{
 		g_use_pure_alloc_initialized = true;
 		g_use_pure_alloc =
@@ -62,7 +61,7 @@ void* xrMemory::mem_alloc(size_t size, const char* _name
 			;
 	}
 
-	if (g_use_pure_alloc)
+	if(g_use_pure_alloc)
 	{
 		void* result = malloc(size);
 #ifdef USE_MEMORY_MONITOR
@@ -73,7 +72,7 @@ void* xrMemory::mem_alloc(size_t size, const char* _name
 #endif // PURE_ALLOC
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)
+	if(mem_initialized)
 		debug_cs.Enter();
 #endif // DEBUG_MEMORY_MANAGER
 
@@ -81,7 +80,7 @@ void* xrMemory::mem_alloc(size_t size, const char* _name
 	void* _ptr = 0;
 
 	//
-	if (!mem_initialized /*|| debug_mode*/)
+	if(!mem_initialized /*|| debug_mode*/)
 	{
 		// generic
 		//	Igor: Reserve 1 byte for xrMemory header
@@ -93,13 +92,13 @@ void* xrMemory::mem_alloc(size_t size, const char* _name
 	else
 	{
 #ifdef DEBUG_MEMORY_MANAGER
-		//save_stack_trace();
+		// save_stack_trace();
 #endif // DEBUG
 	   //	accelerated
 	   //	Igor: Reserve 1 byte for xrMemory header
 		u32 pool = get_pool(1 + size + _footer);
 		// u32	pool				=	get_pool	(size+_footer);
-		if (mem_generic == pool)
+		if(mem_generic == pool)
 		{
 			// generic
 			//	Igor: Reserve 1 byte for xrMemory header
@@ -120,17 +119,17 @@ void* xrMemory::mem_alloc(size_t size, const char* _name
 	}
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (debug_mode)
+	if(debug_mode)
 		dbg_register(_ptr, size, _name);
-	if (mem_initialized)
+	if(mem_initialized)
 		debug_cs.Leave();
-		// if(g_globalCheckAddr==_ptr){
-		//	__asm int 3;
-		// }
-		// if (_name && (0==strcmp(_name,"class ISpatial *")) && (size==376))
-		//{
-		//	__asm int 3;
-		// }
+	// if(g_globalCheckAddr==_ptr){
+	//	__asm int 3;
+	// }
+	// if (_name && (0==strcmp(_name,"class ISpatial *")) && (size==376))
+	//{
+	//	__asm int 3;
+	// }
 #endif // DEBUG_MEMORY_MANAGER
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::monitor_alloc(_ptr, size, _name);
@@ -146,7 +145,7 @@ void xrMemory::mem_free(void* P)
 #endif // USE_MEMORY_MONITOR
 
 #ifdef PURE_ALLOC
-	if (g_use_pure_alloc)
+	if(g_use_pure_alloc)
 	{
 		free(P);
 		return;
@@ -154,19 +153,19 @@ void xrMemory::mem_free(void* P)
 #endif // PURE_ALLOC
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (g_globalCheckAddr == P)
+	if(g_globalCheckAddr == P)
 		__asm int 3;
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)
+	if(mem_initialized)
 		debug_cs.Enter();
 #endif // DEBUG_MEMORY_MANAGER
-	if (debug_mode)
+	if(debug_mode)
 		dbg_unregister(P);
 	u32 pool = get_header(P);
 	void* _real = (void*)(((u8*)P) - 1);
-	if (mem_generic == pool)
+	if(mem_generic == pool)
 	{
 		// generic
 		xr_aligned_free(_real);
@@ -178,7 +177,7 @@ void xrMemory::mem_free(void* P)
 		mem_pools[pool].destroy(_real);
 	}
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)
+	if(mem_initialized)
 		debug_cs.Leave();
 #endif // DEBUG_MEMORY_MANAGER
 }
@@ -194,7 +193,7 @@ void* xrMemory::mem_realloc(void* P, size_t size
 {
 	stat_calls++;
 #ifdef PURE_ALLOC
-	if (g_use_pure_alloc)
+	if(g_use_pure_alloc)
 	{
 		void* result = realloc(P, size);
 #ifdef USE_MEMORY_MONITOR
@@ -204,7 +203,7 @@ void* xrMemory::mem_realloc(void* P, size_t size
 		return (result);
 	}
 #endif // PURE_ALLOC
-	if (0 == P)
+	if(0 == P)
 	{
 		return mem_alloc(size
 #ifdef DEBUG_MEMORY_NAME
@@ -215,12 +214,12 @@ void* xrMemory::mem_realloc(void* P, size_t size
 	}
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (g_globalCheckAddr == P)
+	if(g_globalCheckAddr == P)
 		__asm int 3;
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)
+	if(mem_initialized)
 		debug_cs.Enter();
 #endif // DEBUG_MEMORY_MANAGER
 	u32 p_current = get_header(P);
@@ -229,9 +228,9 @@ void* xrMemory::mem_realloc(void* P, size_t size
 	// u32		p_new				= get_pool	(size+(debug_mode?4:0));
 	u32 p_mode;
 
-	if (mem_generic == p_current)
+	if(mem_generic == p_current)
 	{
-		if (p_new < p_current)
+		if(p_new < p_current)
 			p_mode = 2;
 		else
 			p_mode = 0;
@@ -241,11 +240,11 @@ void* xrMemory::mem_realloc(void* P, size_t size
 
 	void* _real = (void*)(((u8*)P) - 1);
 	void* _ptr = NULL;
-	if (0 == p_mode)
+	if(0 == p_mode)
 	{
 		u32 _footer = debug_mode ? 4 : 0;
 #ifdef DEBUG_MEMORY_MANAGER
-		if (debug_mode)
+		if(debug_mode)
 		{
 			g_bDbgFillMemory = false;
 			dbg_unregister(P);
@@ -258,7 +257,7 @@ void* xrMemory::mem_realloc(void* P, size_t size
 		_ptr = (void*)(((u8*)_real2) + 1);
 		*acc_header(_ptr) = mem_generic;
 #ifdef DEBUG_MEMORY_MANAGER
-		if (debug_mode)
+		if(debug_mode)
 			dbg_register(_ptr, size, _name);
 #endif // DEBUG_MEMORY_MANAGER
 #ifdef USE_MEMORY_MONITOR
@@ -266,7 +265,7 @@ void* xrMemory::mem_realloc(void* P, size_t size
 		memory_monitor::monitor_alloc(_ptr, size, _name);
 #endif // USE_MEMORY_MONITOR
 	}
-	else if (1 == p_mode)
+	else if(1 == p_mode)
 	{
 		// pooled realloc
 		R_ASSERT2(p_current < mem_pools_count, "Memory corruption");
@@ -284,7 +283,7 @@ void* xrMemory::mem_realloc(void* P, size_t size
 		mem_free(p_old);
 		_ptr = p_new;
 	}
-	else if (2 == p_mode)
+	else if(2 == p_mode)
 	{
 		// relocate into another mmgr(pooled) from real
 		void* p_old = P;
@@ -300,10 +299,10 @@ void* xrMemory::mem_realloc(void* P, size_t size
 	}
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)
+	if(mem_initialized)
 		debug_cs.Leave();
 
-	if (g_globalCheckAddr == _ptr)
+	if(g_globalCheckAddr == _ptr)
 		__asm int 3;
 #endif // DEBUG_MEMORY_MANAGER
 

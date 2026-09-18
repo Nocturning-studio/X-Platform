@@ -25,18 +25,18 @@ void SAllDDOParams::Reset()
 void SAllDDOParams::Load(CInifile* ini)
 {
 	Reset();
-	if (!ini)
+	if(!ini)
 		return;
-	if (!ini->section_exist("disable"))
+	if(!ini->section_exist("disable"))
 		return;
-	if (ini->line_exist("disable", "linear_factor"))
+	if(ini->line_exist("disable", "linear_factor"))
 		translational.Mul(ini->r_float("disable", "linear_factor"));
-	if (ini->line_exist("disable", "angular_factor"))
+	if(ini->line_exist("disable", "angular_factor"))
 		rotational.Mul(ini->r_float("disable", "angular_factor"));
-	if (ini->line_exist("disable", "change_count"))
+	if(ini->line_exist("disable", "change_count"))
 	{
 		int ch_cnt = ini->r_s8("disable", "change_count");
-		if (ch_cnt < 0)
+		if(ch_cnt < 0)
 			L2frames = L2frames >> u16(-ch_cnt);
 		else
 			L2frames = L2frames << u16(ch_cnt);

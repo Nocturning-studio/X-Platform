@@ -20,19 +20,19 @@ extern CUIButtonHint* g_btnHint;
 
 void CUIHint::OnRender()
 {
-	//OPTICK_EVENT("CUIHint::OnRender");
+	// OPTICK_EVENT("CUIHint::OnRender");
 
 	bool bGlobalHierarchyVisible = false;
 
-	if (m_ownerWnd)
+	if(m_ownerWnd)
 	{
 		// Проверяем всю цепочку окон от владельца до корня
 		bGlobalHierarchyVisible = true;
 
 		CUIWindow* pCurrent = m_ownerWnd;
-		while (pCurrent)
+		while(pCurrent)
 		{
-			if (!pCurrent->IsShown())
+			if(!pCurrent->IsShown())
 			{
 				bGlobalHierarchyVisible = false;
 				break;
@@ -42,9 +42,9 @@ void CUIHint::OnRender()
 	}
 
 	// Обработка кастомного хинта
-	if (m_hint)
+	if(m_hint)
 	{
-		if (bGlobalHierarchyVisible)
+		if(bGlobalHierarchyVisible)
 		{
 			m_hint->Update();
 			Draw(); // Рисуем только если вся цепочка видима
@@ -58,9 +58,9 @@ void CUIHint::OnRender()
 
 	// Обработка глобального хинта (g_btnHint)
 	// Используем этот метод как "сторожа" для g_btnHint
-	if (m_ownerWnd && g_btnHint->Owner() == m_ownerWnd)
+	if(m_ownerWnd && g_btnHint->Owner() == m_ownerWnd)
 	{
-		if (!bGlobalHierarchyVisible)
+		if(!bGlobalHierarchyVisible)
 		{
 			g_btnHint->Discard();
 		}

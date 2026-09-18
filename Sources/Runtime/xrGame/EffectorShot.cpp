@@ -45,7 +45,7 @@ void CWeaponShotEffector::Shot(float angle)
 	fAngleVert += (angle * fAngleVertFrac + m_Random.randF(-1, 1) * angle * (1 - fAngleVertFrac));
 	//	VERIFY(!fis_zero(fAngleVertMax));
 	clamp(fAngleVert, -fAngleVertMax, fAngleVertMax);
-	if (fis_zero(fAngleVert - fAngleVertMax))
+	if(fis_zero(fAngleVert - fAngleVertMax))
 		fAngleVert *= m_Random.randF(0.9f, 1.1f);
 
 	fAngleHorz = fAngleHorz + (fAngleVert / fAngleVertMax) * m_Random.randF(-1, 1) * fAngleHorzStep;
@@ -63,9 +63,9 @@ void CWeaponShotEffector::Shot(float angle)
 
 void CWeaponShotEffector::Update()
 {
-	//OPTICK_EVENT("CWeaponShotEffector::Update");
+	// OPTICK_EVENT("CWeaponShotEffector::Update");
 
-	if (bActive)
+	if(bActive)
 	{
 		float time_to_relax = _abs(fAngleVert) / fRelaxSpeed;
 		//		VERIFY(_valid(time_to_relax));
@@ -78,51 +78,51 @@ void CWeaponShotEffector::Update()
 		float relax_speed_l = (fis_zero(time_to_relax_l)) ? 0.0f : _abs(fLastDeltaHorz) / time_to_relax_l;
 		//		VERIFY(_valid(relax_speed_l));
 		//-------------------------------------------------------
-		if (fAngleHorz >= 0.f)
+		if(fAngleHorz >= 0.f)
 			fAngleHorz -= relax_speed * Engine.TimeManager.GetDeltaTime();
 		else
 			fAngleHorz += relax_speed * Engine.TimeManager.GetDeltaTime();
 
-		if (bSSActive)
+		if(bSSActive)
 		{
-			if (fLastDeltaHorz >= 0.f)
+			if(fLastDeltaHorz >= 0.f)
 				fLastDeltaHorz -= relax_speed_l * Engine.TimeManager.GetDeltaTime();
 			else
 				fLastDeltaHorz += relax_speed_l * Engine.TimeManager.GetDeltaTime();
 		}
 		//		VERIFY(_valid(fLastDeltaHorz));
 		//-------------------------------------------------------
-		if (fAngleVert >= 0.f)
+		if(fAngleVert >= 0.f)
 		{
 			fAngleVert -= fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
-			if (fAngleVert < 0.f)
+			if(fAngleVert < 0.f)
 				bActive = FALSE;
 		}
 		else
 		{
 			fAngleVert += fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
-			if (fAngleVert > 0.f)
+			if(fAngleVert > 0.f)
 				bActive = FALSE;
 		}
 
-		if (bSSActive)
+		if(bSSActive)
 		{
-			if (fLastDeltaVert >= 0.f)
+			if(fLastDeltaVert >= 0.f)
 			{
 				fLastDeltaVert -= fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
-				if (fLastDeltaVert < 0.f)
+				if(fLastDeltaVert < 0.f)
 					bSSActive = FALSE;
 			}
 			else
 			{
 				fLastDeltaVert += fRelaxSpeed * Engine.TimeManager.GetDeltaTime();
-				if (fLastDeltaVert > 0.f)
+				if(fLastDeltaVert > 0.f)
 					bSSActive = FALSE;
 			}
 		};
 
 		//-------------------------------------------------------
-		if (!bActive)
+		if(!bActive)
 		{
 			fAngleVert = 0.f;
 			fAngleHorz = 0.f;
@@ -130,7 +130,7 @@ void CWeaponShotEffector::Update()
 			bSSActive = FALSE;
 		}
 		//-------------------------------------------------------
-		if (!bSSActive)
+		if(!bSSActive)
 		{
 			fLastDeltaVert = 0.f;
 			fLastDeltaHorz = 0.f;
@@ -166,7 +166,7 @@ void CWeaponShotEffector::GetLastDelta(fvec3& delta_angle)
 
 void CWeaponShotEffector::SetRndSeed(s32 Seed)
 {
-	if (m_LastSeed == 0)
+	if(m_LastSeed == 0)
 	{
 		m_LastSeed = Seed;
 		m_Random.seed(Seed);
@@ -200,13 +200,13 @@ CCameraShotEffector::~CCameraShotEffector()
 
 BOOL CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	if (bActive)
+	if(bActive)
 	{
 		float h, p;
 		info.d.getHP(h, p);
-		if (bSingleShoot)
+		if(bSingleShoot)
 		{
-			if (bSSActive)
+			if(bSSActive)
 				info.d.setHP(h + fLastDeltaHorz, p + fLastDeltaVert);
 		}
 		else

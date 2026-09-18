@@ -2,7 +2,8 @@
 #define _FIXEDSET_H
 #pragma once
 
-template <class K, class allocator = xr_allocator> class FixedSET
+template <class K, class allocator = xr_allocator>
+class FixedSET
 {
 	enum
 	{
@@ -36,27 +37,27 @@ template <class K, class allocator = xr_allocator> class FixedSET
 		VERIFY(newNodes);
 
 		ZeroMemory(newNodes, Size(newLimit));
-		if (limit)
+		if(limit)
 			CopyMemory(newNodes, nodes, Size(limit));
 
-		for (u32 I = 0; I < pool; I++)
+		for(u32 I = 0; I < pool; I++)
 		{
 			VERIFY(nodes);
 			TNode* Nold = nodes + I;
 			TNode* Nnew = newNodes + I;
 
-			if (Nold->left)
+			if(Nold->left)
 			{
 				u32 Lid = u32(Nold->left - nodes);
 				Nnew->left = newNodes + Lid;
 			}
-			if (Nold->right)
+			if(Nold->right)
 			{
 				u32 Rid = u32(Nold->right - nodes);
 				Nnew->right = newNodes + Rid;
 			}
 		}
-		if (nodes)
+		if(nodes)
 		allocator:
 			dealloc(nodes);
 
@@ -65,7 +66,7 @@ template <class K, class allocator = xr_allocator> class FixedSET
 	}
 	IC TNode* Alloc(const K& key)
 	{
-		if (pool == limit)
+		if(pool == limit)
 			Realloc();
 		TNode* node = nodes + pool;
 		node->key = key;
@@ -83,18 +84,18 @@ template <class K, class allocator = xr_allocator> class FixedSET
 
 	IC void recurseLR(TNode* N, callback CB)
 	{
-		if (N->left)
+		if(N->left)
 			recurseLR(N->left, CB);
 		CB(N);
-		if (N->right)
+		if(N->right)
 			recurseLR(N->right, CB);
 	}
 	IC void recurseRL(TNode* N, callback CB)
 	{
-		if (N->right)
+		if(N->right)
 			recurseRL(N->right, CB);
 		CB(N);
-		if (N->left)
+		if(N->left)
 			recurseRL(N->left, CB);
 	}
 
@@ -112,14 +113,14 @@ template <class K, class allocator = xr_allocator> class FixedSET
 	}
 	IC TNode* insert(const K& k)
 	{
-		if (pool)
+		if(pool)
 		{
 			TNode* node = nodes;
 
 		once_more:
-			if (k < node->key)
+			if(k < node->key)
 			{
-				if (node->left)
+				if(node->left)
 				{
 					node = node->left;
 					goto once_more;
@@ -131,9 +132,9 @@ template <class K, class allocator = xr_allocator> class FixedSET
 					return N;
 				}
 			}
-			else if (k > node->key)
+			else if(k > node->key)
 			{
-				if (node->right)
+				if(node->right)
 				{
 					node = node->right;
 					goto once_more;
@@ -155,14 +156,14 @@ template <class K, class allocator = xr_allocator> class FixedSET
 	}
 	IC TNode* insertInAnyWay(const K& k)
 	{
-		if (pool)
+		if(pool)
 		{
 			TNode* node = nodes;
 
 		once_more:
-			if (k <= node->key)
+			if(k <= node->key)
 			{
-				if (node->left)
+				if(node->left)
 				{
 					node = node->left;
 					goto once_more;
@@ -176,7 +177,7 @@ template <class K, class allocator = xr_allocator> class FixedSET
 			}
 			else
 			{
-				if (node->right)
+				if(node->right)
 				{
 					node = node->right;
 					goto once_more;
@@ -221,23 +222,23 @@ template <class K, class allocator = xr_allocator> class FixedSET
 
 	IC void traverseLR(callback CB)
 	{
-		if (pool)
+		if(pool)
 			recurseLR(nodes, CB);
 	}
 	IC void traverseRL(callback CB)
 	{
-		if (pool)
+		if(pool)
 			recurseRL(nodes, CB);
 	}
 	IC void traverseANY(callback CB)
 	{
 		TNode* _end = end();
-		for (TNode* cur = begin(); cur != _end; cur++)
+		for(TNode* cur = begin(); cur != _end; cur++)
 			CB(cur);
 	}
 	IC void for_each(callback CB)
 	{
-		for (int i = 0; i < limit; i++)
+		for(int i = 0; i < limit; i++)
 			CB(nodes + i);
 	}
 };

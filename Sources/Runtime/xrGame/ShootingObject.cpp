@@ -26,7 +26,7 @@ CShootingObject::CShootingObject(void)
 	fTimeToFire = 0;
 	// fHitPower						= 0.0f;
 
-	for (int i = 0; i < egdCount; i++)
+	for(int i = 0; i < egdCount; i++)
 		fvHitPower[i] = 0.0f;
 
 	m_fStartBulletSpeed = 1000.f;
@@ -61,7 +61,7 @@ void CShootingObject::reinit()
 
 void CShootingObject::Load(LPCSTR section)
 {
-	if (pSettings->line_exist(section, "light_disabled"))
+	if(pSettings->line_exist(section, "light_disabled"))
 	{
 		m_bLightShotEnabled = !pSettings->r_bool(section, "light_disabled");
 	}
@@ -102,7 +102,7 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	fireDispersionBase = deg2rad(fireDispersionBase);
 
 	// Разброс в прицеле
-	if (pSettings->line_exist(section, "zoom_fire_dispersion_base")) // Если нашли секцию то читаем ее
+	if(pSettings->line_exist(section, "zoom_fire_dispersion_base")) // Если нашли секцию то читаем ее
 	{
 		zoom_fireDispersionBase = pSettings->r_float(section, "zoom_fire_dispersion_base");
 		zoom_fireDispersionBase = deg2rad(zoom_fireDispersionBase);
@@ -118,24 +118,24 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	fvHitPower[egdMaster] =
 		(float)atof(_GetItem(*s_sHitPower, 0, buffer)); // первый параметр - это хит для уровня игры мастер
 
-	#pragma todo("NSDeathman to ALL: пофиксить то что первый параметр хита задается для мастера, не легенды")
+#pragma todo("NSDeathman to ALL: пофиксить то что первый параметр хита задается для мастера, не легенды")
 	fvHitPower[egdLegend] = fvHitPower[egdMaster] * 3;
 	fvHitPower[egdVeteran] = fvHitPower[egdMaster]; // изначально параметры для других уровней
 	fvHitPower[egdStalker] = fvHitPower[egdMaster]; // сложности
 	fvHitPower[egdNovice] = fvHitPower[egdMaster];	// такие же
 
 	int num_game_diff_param = _GetItemCount(*s_sHitPower); // узнаём колличество параметров для хитов
-	if (num_game_diff_param > 1)						   // если задан второй параметр хита
+	if(num_game_diff_param > 1)							   // если задан второй параметр хита
 	{
 		fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); // то вычитываем его для уровня
 																				 // ветерана
 	}
-	if (num_game_diff_param > 2) // если задан третий параметр хита
+	if(num_game_diff_param > 2) // если задан третий параметр хита
 	{
 		fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); // то вычитываем его для уровня
 																				 // сталкера
 	}
-	if (num_game_diff_param > 3) // если задан четвёртый параметр хита
+	if(num_game_diff_param > 3) // если задан четвёртый параметр хита
 	{
 		fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); // то вычитываем его для уровня новичка
 	}
@@ -147,7 +147,7 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	// начальная скорость пули
 	m_fStartBulletSpeed = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "bullet_speed"));
 	m_bUseAimBullet = pSettings->r_bool(section, strconcat(sizeof(full_name), full_name, prefix, "use_aim_bullet"));
-	if (m_bUseAimBullet)
+	if(m_bUseAimBullet)
 	{
 		m_fTimeToAim = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "time_to_aim"));
 	}
@@ -157,7 +157,7 @@ void CShootingObject::LoadLights(LPCSTR section, LPCSTR prefix)
 {
 	string256 full_name;
 	// light
-	if (m_bLightShotEnabled)
+	if(m_bLightShotEnabled)
 	{
 		fvec3 clr = pSettings->r_fvector3(section, strconcat(sizeof(full_name), full_name, prefix, "light_color"));
 		light_base_color.set(clr.x, clr.y, clr.z, 1);
@@ -173,10 +173,10 @@ void CShootingObject::LoadLights(LPCSTR section, LPCSTR prefix)
 
 void CShootingObject::Light_Start()
 {
-	if (!light_render)
+	if(!light_render)
 		Light_Create();
 
-	if (Engine.TimeManager.GetFrameCount() != light_frame)
+	if(Engine.TimeManager.GetFrameCount() != light_frame)
 	{
 		light_frame = Engine.TimeManager.GetFrameCount();
 		light_time = light_lifetime;
@@ -198,7 +198,7 @@ void CShootingObject::Light_Render(const fvec3& P)
 							light_build_color.b * light_scale);
 	light_render->set_range(light_build_range * light_scale);
 
-	if (!light_render->get_active())
+	if(!light_render->get_active())
 	{
 		light_render->set_active(true);
 	}
@@ -211,10 +211,10 @@ void CShootingObject::Light_Render(const fvec3& P)
 void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const fvec3& pos,
 									 const fvec3& vel, bool auto_remove_flag)
 {
-	if (!particles_name)
+	if(!particles_name)
 		return;
 
-	if (pParticles != NULL)
+	if(pParticles != NULL)
 	{
 		UpdateParticles(pParticles, pos, vel);
 		return;
@@ -227,7 +227,7 @@ void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR parti
 }
 void CShootingObject::StopParticles(CParticlesObject*& pParticles)
 {
-	if (pParticles == NULL)
+	if(pParticles == NULL)
 		return;
 
 	pParticles->Stop();
@@ -236,7 +236,7 @@ void CShootingObject::StopParticles(CParticlesObject*& pParticles)
 
 void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const fvec3& pos, const fvec3& vel)
 {
-	if (!pParticles)
+	if(!pParticles)
 		return;
 
 	fmat4x4 particles_pos;
@@ -245,7 +245,7 @@ void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const fvec3
 
 	pParticles->SetTransform(particles_pos);
 
-	if (!pParticles->IsAutoRemove() && !pParticles->IsLooped() && !pParticles->PSI_alive())
+	if(!pParticles->IsAutoRemove() && !pParticles->IsLooped() && !pParticles->PSI_alive())
 	{
 		pParticles->Stop();
 		CParticlesObject::Destroy(pParticles);
@@ -257,7 +257,7 @@ void CShootingObject::LoadShellParticles(LPCSTR section, LPCSTR prefix)
 	string256 full_name;
 	strconcat(sizeof(full_name), full_name, prefix, "shell_particles");
 
-	if (pSettings->line_exist(section, full_name))
+	if(pSettings->line_exist(section, full_name))
 	{
 		m_sShellParticles = pSettings->r_string(section, full_name);
 		vLoadedShellPoint =
@@ -271,15 +271,15 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
 
 	// flames
 	strconcat(sizeof(full_name), full_name, prefix, "flame_particles");
-	if (pSettings->line_exist(section, full_name))
+	if(pSettings->line_exist(section, full_name))
 		m_sFlameParticles = pSettings->r_string(section, full_name);
 
 	strconcat(sizeof(full_name), full_name, prefix, "smoke_particles");
-	if (pSettings->line_exist(section, full_name))
+	if(pSettings->line_exist(section, full_name))
 		m_sSmokeParticles = pSettings->r_string(section, full_name);
 
 	strconcat(sizeof(full_name), full_name, prefix, "shot_particles");
-	if (pSettings->line_exist(section, full_name))
+	if(pSettings->line_exist(section, full_name))
 		m_sShotParticles = pSettings->r_string(section, full_name);
 
 	// текущие партиклы
@@ -289,9 +289,9 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
 
 void CShootingObject::OnShellDrop(const fvec3& play_pos, const fvec3& parent_vel)
 {
-	if (!m_sShellParticles)
+	if(!m_sShellParticles)
 		return;
-	if (Engine.RenderView.Position.distance_to_sqr(play_pos) > 2 * 2)
+	if(Engine.RenderView.Position.distance_to_sqr(play_pos) > 2 * 2)
 		return;
 
 	CParticlesObject* pShellParticles = CParticlesObject::Create(*m_sShellParticles, TRUE);
@@ -313,11 +313,11 @@ void CShootingObject::StartSmokeParticles(const fvec3& play_pos, const fvec3& pa
 
 void CShootingObject::StartFlameParticles()
 {
-	if (0 == m_sFlameParticlesCurrent.size())
+	if(0 == m_sFlameParticlesCurrent.size())
 		return;
 
 	// если партиклы циклические
-	if (m_pFlameParticles && m_pFlameParticles->IsLooped() && m_pFlameParticles->IsPlaying())
+	if(m_pFlameParticles && m_pFlameParticles->IsLooped() && m_pFlameParticles->IsPlaying())
 	{
 		UpdateFlameParticles();
 		return;
@@ -330,9 +330,9 @@ void CShootingObject::StartFlameParticles()
 }
 void CShootingObject::StopFlameParticles()
 {
-	if (0 == m_sFlameParticlesCurrent.size())
+	if(0 == m_sFlameParticlesCurrent.size())
 		return;
-	if (m_pFlameParticles == NULL)
+	if(m_pFlameParticles == NULL)
 		return;
 
 	m_pFlameParticles->SetAutoRemove(true);
@@ -342,9 +342,9 @@ void CShootingObject::StopFlameParticles()
 
 void CShootingObject::UpdateFlameParticles()
 {
-	if (0 == m_sFlameParticlesCurrent.size())
+	if(0 == m_sFlameParticlesCurrent.size())
 		return;
-	if (!m_pFlameParticles)
+	if(!m_pFlameParticles)
 		return;
 
 	fmat4x4 pos;
@@ -353,7 +353,7 @@ void CShootingObject::UpdateFlameParticles()
 
 	m_pFlameParticles->SetTransform(pos);
 
-	if (!m_pFlameParticles->IsLooped() && !m_pFlameParticles->IsPlaying() && !m_pFlameParticles->PSI_alive())
+	if(!m_pFlameParticles->IsLooped() && !m_pFlameParticles->IsPlaying() && !m_pFlameParticles->PSI_alive())
 	{
 		m_pFlameParticles->Stop();
 		CParticlesObject::Destroy(m_pFlameParticles);
@@ -363,17 +363,17 @@ void CShootingObject::UpdateFlameParticles()
 // подсветка от выстрела
 void CShootingObject::UpdateLight()
 {
-	if (light_render && light_time > 0)
+	if(light_render && light_time > 0)
 	{
 		light_time -= Engine.TimeManager.GetDeltaTime();
-		if (light_time <= 0)
+		if(light_time <= 0)
 			StopLight();
 	}
 }
 
 void CShootingObject::StopLight()
 {
-	if (light_render)
+	if(light_render)
 	{
 		light_render->set_active(false);
 	}
@@ -381,7 +381,7 @@ void CShootingObject::StopLight()
 
 void CShootingObject::RenderLight()
 {
-	if (light_render && light_time > 0)
+	if(light_render && light_time > 0)
 	{
 		Light_Render(get_CurrentFirePoint());
 	}
@@ -389,14 +389,14 @@ void CShootingObject::RenderLight()
 
 bool CShootingObject::SendHitAllowed(CObject* pUser)
 {
-	if (Game().IsServerControlHits())
+	if(Game().IsServerControlHits())
 		return OnServer();
 
-	if (OnServer())
+	if(OnServer())
 	{
-		if (pUser->CLS_ID == CLSID_OBJECT_ACTOR)
+		if(pUser->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
-			if (Level().CurrentControlEntity() != pUser)
+			if(Level().CurrentControlEntity() != pUser)
 			{
 				return false;
 			}
@@ -405,9 +405,9 @@ bool CShootingObject::SendHitAllowed(CObject* pUser)
 	}
 	else
 	{
-		if (pUser->CLS_ID == CLSID_OBJECT_ACTOR)
+		if(pUser->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
-			if (Level().CurrentControlEntity() == pUser)
+			if(Level().CurrentControlEntity() == pUser)
 			{
 				return true;
 			}
@@ -429,17 +429,17 @@ void CShootingObject::FireBullet(const fvec3& pos, const fvec3& shot_dir, float 
 	m_iCurrentParentID = parent_id;
 
 	bool aim_bullet;
-	if (m_bUseAimBullet)
+	if(m_bUseAimBullet)
 	{
-		if (ParentMayHaveAimBullet())
+		if(ParentMayHaveAimBullet())
 		{
-			if (m_fPredBulletTime == 0.0)
+			if(m_fPredBulletTime == 0.0)
 			{
 				aim_bullet = true;
 			}
 			else
 			{
-				if ((Engine.TimeManager.GetGlobalTime() - m_fPredBulletTime) >= m_fTimeToAim)
+				if((Engine.TimeManager.GetGlobalTime() - m_fPredBulletTime) >= m_fTimeToAim)
 				{
 					aim_bullet = true;
 				}
@@ -461,9 +461,9 @@ void CShootingObject::FireBullet(const fvec3& pos, const fvec3& shot_dir, float 
 	m_fPredBulletTime = Engine.TimeManager.GetGlobalTime();
 
 	float l_fHitPower;
-	if (ParentIsActor()) // если из оружия стреляет актёр(игрок)
+	if(ParentIsActor()) // если из оружия стреляет актёр(игрок)
 	{
-		if (GameID() == GAME_SINGLE)
+		if(GameID() == GAME_SINGLE)
 		{
 			l_fHitPower = fvHitPower[g_SingleGameDifficulty];
 		}

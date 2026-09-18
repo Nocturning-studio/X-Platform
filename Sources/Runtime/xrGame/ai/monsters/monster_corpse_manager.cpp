@@ -20,9 +20,9 @@ void CMonsterCorpseManager::init_external(CBaseMonster* M)
 
 void CMonsterCorpseManager::update()
 {
-	if (forced)
+	if(forced)
 	{
-		if (corpse->m_fFood < 1)
+		if(corpse->m_fFood < 1)
 		{
 			corpse = 0;
 			return;
@@ -32,7 +32,7 @@ void CMonsterCorpseManager::update()
 	{
 		corpse = monster->CorpseMemory.get_corpse();
 
-		if (corpse)
+		if(corpse)
 		{
 			SMonsterCorpse corpse_info = monster->CorpseMemory.get_corpse_info();
 			position = corpse_info.position;
@@ -56,7 +56,7 @@ void CMonsterCorpseManager::unforce_corpse()
 {
 	corpse = monster->CorpseMemory.get_corpse();
 
-	if (corpse)
+	if(corpse)
 	{
 		SMonsterCorpse corpse_info = monster->CorpseMemory.get_corpse_info();
 		position = corpse_info.position;

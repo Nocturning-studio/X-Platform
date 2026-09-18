@@ -57,13 +57,13 @@ class ENGINE_API CTimeManager
 		return m_dwTimeContinual;
 	}
 
-	IC u32 GetGlobalTimeMsFixed() const 
-	{ 
-		return m_dwTimeGlobalFixed; 
+	IC u32 GetGlobalTimeMsFixed() const
+	{
+		return m_dwTimeGlobalFixed;
 	}
-	IC float GetGlobalTimeFixed() const 
-	{ 
-		return m_fTimeGlobalFixed; 
+	IC float GetGlobalTimeFixed() const
+	{
+		return m_fTimeGlobalFixed;
 	}
 
 	// Сброс счетчика кадров (например, при смене уровня)
@@ -100,10 +100,10 @@ class ENGINE_API CTimeManager
   private:
 	// Таймеры
 	u32 m_Timer_MM_Delta;
-	CTimer_paused m_Timer; // Игровой таймер (паузится)
+	CTimer_paused m_Timer;		 // Игровой таймер (паузится)
 	CTimer_paused m_TimerGlobal; // Глобальный таймер (не паузится обычно, но зависит от time_factor)
-	CTimer m_TimerMM;	 // Мультимедийный таймер
-	CTimer m_FrameTimer; // Таймер длительности кадра
+	CTimer m_TimerMM;			 // Мультимедийный таймер
+	CTimer m_FrameTimer;		 // Таймер длительности кадра
 
 	// Переменные состояния
 	u32 m_dwFrame;

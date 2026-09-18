@@ -33,29 +33,29 @@ void CSunOccluder::Load()
 {
 	// Путь к файлу: gamedata/levels/<current_level>/sun_occluder.obj
 	string_path fn;
-	if (!FS.exist(fn, "$level$", "sun_occluder.obj"))
+	if(!FS.exist(fn, "$level$", "sun_occluder.obj"))
 	{
 		Msg("! [SunOccluder] File not found: %s", fn);
 		return;
 	}
 
 	IReader* F = FS.r_open(fn);
-	if (!F)
+	if(!F)
 		return;
 
 	xr_vector<fvec3> temp_verts;
 	xr_vector<u16> temp_inds;
 
 	string512 line;
-	while (!F->eof())
+	while(!F->eof())
 	{
 		F->r_string(line, sizeof(line));
 
 		// Пропускаем пустые строки
-		if (line[0] == 0)
+		if(line[0] == 0)
 			continue;
 
-		if (line[0] == 'v' && line[1] == ' ')
+		if(line[0] == 'v' && line[1] == ' ')
 		{
 			// Вершина (v x y z)
 			fvec3 v;
@@ -67,19 +67,20 @@ void CSunOccluder::Load()
 
 			temp_verts.push_back(v);
 		}
-		else if (line[0] == 'f' && line[1] == ' ')
+		else if(line[0] == 'f' && line[1] == ' ')
 		{
 			// Грань (f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3)
 			int i1 = 0, i2 = 0, i3 = 0;
 			char* p = line + 2; // Пропускаем "f "
 
-			auto parse_index = [&](char*& ptr) -> int {
-				while (*ptr == ' ' || *ptr == '\t')
+			auto parse_index = [&](char*& ptr) -> int
+			{
+				while(*ptr == ' ' || *ptr == '\t')
 					ptr++;
-				if (*ptr == 0)
+				if(*ptr == 0)
 					return 0;
 				int val = atoi(ptr);
-				while (*ptr != 0 && *ptr != ' ' && *ptr != '\t')
+				while(*ptr != 0 && *ptr != ' ' && *ptr != '\t')
 					ptr++;
 				return val;
 			};
@@ -89,9 +90,9 @@ void CSunOccluder::Load()
 			i3 = parse_index(p);
 
 			// Проверка на корректность индексов
-			if (i1 > 0 && i2 > 0 && i3 > 0)
+			if(i1 > 0 && i2 > 0 && i3 > 0)
 			{
-				if (i1 <= temp_verts.size() && i2 <= temp_verts.size() && i3 <= temp_verts.size())
+				if(i1 <= temp_verts.size() && i2 <= temp_verts.size() && i3 <= temp_verts.size())
 				{
 					// !!! ИЗМЕНЕНИЕ 2: Свапаем порядок индексов (i2 и i3 местами).
 					// Поскольку мы отзеркалили одну ось (X), порядок обхода вершин
@@ -110,7 +111,7 @@ void CSunOccluder::Load()
 	m_VertexCount = temp_verts.size();
 	m_IndexCount = temp_inds.size();
 
-	if (m_VertexCount == 0 || m_IndexCount == 0)
+	if(m_VertexCount == 0 || m_IndexCount == 0)
 	{
 		Msg("! [SunOccluder] Error: Mesh is empty!");
 		return;
@@ -125,7 +126,7 @@ void CSunOccluder::Load()
 
 	v_occluder* pV;
 	R_CHK(m_VB->Lock(0, 0, (void**)&pV, 0));
-	for (u32 i = 0; i < m_VertexCount; i++)
+	for(u32 i = 0; i < m_VertexCount; i++)
 	{
 		pV[i].P = temp_verts[i];
 	}
@@ -161,7 +162,7 @@ void CSunOccluder::Render()
 {
 	PROFILE_FUNCTION();
 
-	if (!m_Loaded)
+	if(!m_Loaded)
 		return;
 
 	RenderBackend.set_Geometry(m_Geom);

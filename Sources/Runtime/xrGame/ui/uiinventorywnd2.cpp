@@ -30,7 +30,7 @@ PIItem CUIInventoryWnd::CurrentIItem()
 
 void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if (m_pCurrentCellItem == itm)
+	if(m_pCurrentCellItem == itm)
 		return;
 	m_pCurrentCellItem = itm;
 	UIItemInfo.InitItem(CurrentIItem());
@@ -38,11 +38,11 @@ void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
 
 void CUIInventoryWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == &UIPropertiesBox && msg == PROPERTY_CLICKED)
+	if(pWnd == &UIPropertiesBox && msg == PROPERTY_CLICKED)
 	{
 		ProcessPropertiesBoxClicked();
 	}
-	else if (UIExitButton == pWnd && BUTTON_CLICKED == msg)
+	else if(UIExitButton == pWnd && BUTTON_CLICKED == msg)
 	{
 		GetHolder()->StartStopMenu(this, true);
 	}
@@ -58,7 +58,7 @@ void CUIInventoryWnd::InitInventory_delayed()
 void CUIInventoryWnd::InitInventory()
 {
 	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
-	if (!pInvOwner)
+	if(!pInvOwner)
 		return;
 
 	m_pInv = &pInvOwner->inventory();
@@ -70,14 +70,14 @@ void CUIInventoryWnd::InitInventory()
 
 	// Slots
 	PIItem _itm = m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
-	if (_itm)
+	if(_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIPistolList->SetItem(itm);
 	}
 
 	_itm = m_pInv->m_slots[RIFLE_SLOT].m_pIItem;
-	if (_itm)
+	if(_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIAutomaticList->SetItem(itm);
@@ -88,7 +88,7 @@ void CUIInventoryWnd::InitInventory()
 	m_pUIOutfitList->SetItem(outfit);
 
 	TIItemContainer::iterator it, it_e;
-	for (it = m_pInv->m_belt.begin(), it_e = m_pInv->m_belt.end(); it != it_e; ++it)
+	for(it = m_pInv->m_belt.begin(), it_e = m_pInv->m_belt.end(); it != it_e; ++it)
 	{
 		CUICellItem* itm = create_cell_item(*it);
 		m_pUIBeltList->SetItem(itm);
@@ -98,14 +98,14 @@ void CUIInventoryWnd::InitInventory()
 	concurrency::parallel_sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
 	int i = 1;
-	for (it = ruck_list.begin(), it_e = ruck_list.end(); it != it_e; ++it, ++i)
+	for(it = ruck_list.begin(), it_e = ruck_list.end(); it != it_e; ++it, ++i)
 	{
 		CUICellItem* itm = create_cell_item(*it);
 		m_pUIBagList->SetItem(itm);
 	}
 	// fake
 	_itm = m_pInv->m_slots[GRENADE_SLOT].m_pIItem;
-	if (_itm)
+	if(_itm)
 	{
 		CUICellItem* itm = create_cell_item(_itm);
 		m_pUIBagList->SetItem(itm);
@@ -120,10 +120,10 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 {
 
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!pActor)
+	if(!pActor)
 		return;
 
-	if (!b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
+	if(!b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
 	{
 		SendEvent_Item_Drop(CurrentIItem());
 		SetCurrentItem(NULL);
@@ -131,11 +131,11 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 		return;
 	}
 
-	if (b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
+	if(b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
 	{
 		u32 cnt = CurrentItem()->ChildsCount();
 
-		for (u32 i = 0; i < cnt; ++i)
+		for(u32 i = 0; i < cnt; ++i)
 		{
 			CUICellItem* itm = CurrentItem()->PopChild();
 			PIItem iitm = (PIItem)itm->m_pData;
@@ -157,11 +157,11 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 	PIItem iitem = (PIItem)itm->m_pData;
 	u32 _slot = iitem->GetSlot();
 
-	if (GetInventory()->CanPutInSlot(iitem))
+	if(GetInventory()->CanPutInSlot(iitem))
 	{
 		CUIDragDropListEx* new_owner = GetSlotList(_slot);
 
-		if (_slot == GRENADE_SLOT && !new_owner)
+		if(_slot == GRENADE_SLOT && !new_owner)
 			return true; // fake, sorry (((
 
 		bool result = GetInventory()->Slot(iitem);
@@ -179,7 +179,7 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 	}
 	else
 	{ // in case slot is busy
-		if (!force_place || _slot == NO_ACTIVE_SLOT || GetInventory()->m_slots[_slot].m_bPersistent)
+		if(!force_place || _slot == NO_ACTIVE_SLOT || GetInventory()->m_slots[_slot].m_bPersistent)
 			return false;
 
 		PIItem _iitem = GetInventory()->m_slots[_slot].m_pIItem;
@@ -200,11 +200,11 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	PIItem iitem = (PIItem)itm->m_pData;
 
-	if (GetInventory()->CanPutInRuck(iitem))
+	if(GetInventory()->CanPutInRuck(iitem))
 	{
 		CUIDragDropListEx* old_owner = itm->OwnerList();
 		CUIDragDropListEx* new_owner = NULL;
-		if (b_use_cursor_pos)
+		if(b_use_cursor_pos)
 		{
 			new_owner = CUIDragDropListEx::m_drag_item->BackList();
 			VERIFY(new_owner == m_pUIBagList);
@@ -216,7 +216,7 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 		VERIFY(result);
 		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 
-		if (b_use_cursor_pos)
+		if(b_use_cursor_pos)
 			new_owner->SetItem(i, old_owner->GetDragItemPosition());
 		else
 			new_owner->SetItem(i);
@@ -231,11 +231,11 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	PIItem iitem = (PIItem)itm->m_pData;
 
-	if (GetInventory()->CanPutInBelt(iitem))
+	if(GetInventory()->CanPutInBelt(iitem))
 	{
 		CUIDragDropListEx* old_owner = itm->OwnerList();
 		CUIDragDropListEx* new_owner = NULL;
-		if (b_use_cursor_pos)
+		if(b_use_cursor_pos)
 		{
 			new_owner = CUIDragDropListEx::m_drag_item->BackList();
 			VERIFY(new_owner == m_pUIBeltList);
@@ -248,7 +248,7 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 
 		//.	UIBeltList.RearrangeItems();
-		if (b_use_cursor_pos)
+		if(b_use_cursor_pos)
 			new_owner->SetItem(i, old_owner->GetDragItemPosition());
 		else
 			new_owner->SetItem(i);
@@ -280,41 +280,44 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 {
 	CUIDragDropListEx* old_owner = itm->OwnerList();
 	CUIDragDropListEx* new_owner = CUIDragDropListEx::m_drag_item->BackList();
-	if (old_owner == new_owner || !old_owner || !new_owner)
+	if(old_owner == new_owner || !old_owner || !new_owner)
 		return false;
 
 	EListType t_new = GetType(new_owner);
 	EListType t_old = GetType(old_owner);
 
 	// Real Wolf.
-	if (t_new == t_old && t_new != iwSlot)
+	if(t_new == t_old && t_new != iwSlot)
 		return true;
 
-	switch (t_new)
+	switch(t_new)
 	{
-	case iwSlot: {
+	case iwSlot:
+	{
 		uint32 slot = CurrentIItem()->GetSlot();
 
-		if (GetSlotList(slot) == new_owner && t_new != t_old)
+		if(GetSlotList(slot) == new_owner && t_new != t_old)
 			ToSlot(itm, true);
 
-		else if (new_owner == m_pUIPistolList && slot == RIFLE_SLOT)
+		else if(new_owner == m_pUIPistolList && slot == RIFLE_SLOT)
 		{
 			CurrentIItem()->SetSlot(PISTOL_SLOT);
 			ToSlot(itm, true);
 		}
-		else if (new_owner == m_pUIAutomaticList && slot == PISTOL_SLOT)
+		else if(new_owner == m_pUIAutomaticList && slot == PISTOL_SLOT)
 		{
 			CurrentIItem()->SetSlot(RIFLE_SLOT);
 			ToSlot(itm, true);
 		}
 	}
 	break;
-	case iwBag: {
+	case iwBag:
+	{
 		ToBag(itm, true);
 	}
 	break;
-	case iwBelt: {
+	case iwBelt:
+	{
 		ToBelt(itm, true);
 	}
 	break;
@@ -327,29 +330,32 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 
 bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 {
-	if (TryUseItem((PIItem)itm->m_pData))
+	if(TryUseItem((PIItem)itm->m_pData))
 		return true;
 
 	CUIDragDropListEx* old_owner = itm->OwnerList();
 	EListType t_old = GetType(old_owner);
 
-	switch (t_old)
+	switch(t_old)
 	{
-	case iwSlot: {
+	case iwSlot:
+	{
 		ToBag(itm, false);
 	}
 	break;
 
-	case iwBag: {
-		if (!ToSlot(itm, false))
+	case iwBag:
+	{
+		if(!ToSlot(itm, false))
 		{
-			if (!ToBelt(itm, false))
+			if(!ToBelt(itm, false))
 				ToSlot(itm, true);
 		}
 	}
 	break;
 
-	case iwBelt: {
+	case iwBelt:
+	{
 		ToBag(itm, false);
 	}
 	break;
@@ -367,9 +373,9 @@ bool CUIInventoryWnd::OnItemRButtonClick(CUICellItem* itm)
 
 CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 {
-	if (slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)
+	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)
 		return NULL;
-	switch (slot_idx)
+	switch(slot_idx)
 	{
 	case PISTOL_SLOT:
 		return m_pUIPistolList;

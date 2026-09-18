@@ -35,14 +35,14 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 
 	m_background->SetStretchTexture(true);
 
-	if ((GameID() != GAME_SINGLE) && !itm)
+	if((GameID() != GAME_SINGLE) && !itm)
 	{
 		CObject* pActor = NULL;
 
 		pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
 		xr_string a;
-		if (pActor)
+		if(pActor)
 			a = *pActor->cNameVisual();
 		else
 			a = *m_default_outfit;
@@ -50,18 +50,18 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 		xr_string::iterator it = std::find(a.rbegin(), a.rend(), '\\').base();
 
 		// Cut leading full path
-		if (it != a.begin())
+		if(it != a.begin())
 			a.erase(a.begin(), it);
 		// Cut trailing ".ogf"
 		R_ASSERT(xr_strlen(a.c_str()) > 4);
-		if ('.' == a[a.size() - 4])
+		if('.' == a[a.size() - 4])
 			a.erase(a.size() - 4);
 
 		m_background->InitTexture(a.c_str());
 	}
 	else
 	{
-		if (itm)
+		if(itm)
 		{
 			PIItem _iitem = (PIItem)itm->m_pData;
 			CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(_iitem);
@@ -98,21 +98,21 @@ void CUIOutfitDragDropList::SetDefaultOutfit(LPCSTR default_outfit)
 
 void CUIOutfitDragDropList::SetItem(CUICellItem* itm)
 {
-	if (itm)
+	if(itm)
 		inherited::SetItem(itm);
 	SetOutfit(itm);
 }
 
 void CUIOutfitDragDropList::SetItem(CUICellItem* itm, fvec2 abs_pos)
 {
-	if (itm)
+	if(itm)
 		inherited::SetItem(itm, abs_pos);
 	SetOutfit(itm);
 }
 
 void CUIOutfitDragDropList::SetItem(CUICellItem* itm, ivec2 cell_pos)
 {
-	if (itm)
+	if(itm)
 		inherited::SetItem(itm, cell_pos);
 	SetOutfit(itm);
 }

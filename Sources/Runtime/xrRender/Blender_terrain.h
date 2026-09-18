@@ -8,7 +8,7 @@
 class CBlender_terrain : public IBlender
 {
   public:
-	string64 oT2_Name;	// name of secondary texture
+	string64 oT2_Name;		// name of secondary texture
 	string64 oT2_transform; // transform for secondary texture
 	string64 oR_Name;
 	string64 oG_Name;
@@ -52,7 +52,7 @@ class CBlender_terrain : public IBlender
 	void Load(IReader& fs, u16 version)
 	{
 		IBlender::Load(fs, version);
-		if (version < 3)
+		if(version < 3)
 		{
 			xrPREAD_MARKER(fs);
 			xrPREAD_PROP(fs, xrPID_TEXTURE, oT2_Name);
@@ -80,14 +80,14 @@ class CBlender_terrain : public IBlender
 
 		strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_mask");
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_NORMAL_HQ: // deffer
-			if (ps_r_material_quality == 1)
+			if(ps_r_material_quality == 1)
 				BumpType = 1; // normal
-			else if (ps_r_material_quality == 2 || ps_r_material_quality == 3)
+			else if(ps_r_material_quality == 2 || ps_r_material_quality == 3)
 				BumpType = 2; // parallax
-			else if (ps_r_material_quality == 4)
+			else if(ps_r_material_quality == 4)
 				BumpType = 3; // steep parallax
 
 			C.set_Define("MATERIAL_QUALITY", (int)ps_r_material_quality, CBlender_Compile::ShaderScope::Pixel);
@@ -101,13 +101,13 @@ class CBlender_terrain : public IBlender
 
 			C.set_Sampler("s_mask", mask);
 			C.set_Sampler("s_base", C.L_textures[0], false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
-			//C.set_Sampler("s_cell_bomber", "vfx\\vfx_cell_bomber", false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
+			// C.set_Sampler("s_cell_bomber", "vfx\\vfx_cell_bomber", false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 			C.set_Sampler("s_dt_r", oR_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 			C.set_Sampler("s_dt_g", oG_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 			C.set_Sampler("s_dt_b", oB_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 			C.set_Sampler("s_dt_a", oA_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, true);
 
-			if (ps_r_material_quality > 0)
+			if(ps_r_material_quality > 0)
 			{
 				C.set_Sampler("s_dn_r", strconcat(sizeof(oRb_Name), oRb_Name, oR_Name, "_bump"), false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, false);
 				C.set_Sampler("s_dn_g", strconcat(sizeof(oGb_Name), oGb_Name, oG_Name, "_bump"), false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC, false);

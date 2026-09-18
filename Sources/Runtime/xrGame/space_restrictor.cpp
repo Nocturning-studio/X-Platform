@@ -46,16 +46,18 @@ BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 	CCF_Shape* shape = xr_new<CCF_Shape>(this);
 	collidable.model = shape;
 
-	for (u32 i = 0; i < se_shape->shapes.size(); ++i)
+	for(u32 i = 0; i < se_shape->shapes.size(); ++i)
 	{
 		CShapeData::shape_def& S = se_shape->shapes[i];
-		switch (S.type)
+		switch(S.type)
 		{
-		case 0: {
+		case 0:
+		{
 			shape->add_sphere(S.data.sphere);
 			break;
 		}
-		case 1: {
+		case 1:
+		{
 			shape->add_box(S.data.box);
 			break;
 		}
@@ -66,14 +68,14 @@ BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
 	BOOL result = inherited::net_Spawn(data);
 
-	if (!result)
+	if(!result)
 		return (FALSE);
 
 	setEnabled(FALSE);
 	setVisible(FALSE);
 
-	if (!ai().get_level_graph() || (RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) ==
-									RestrictionSpace::eRestrictorTypeNone))
+	if(!ai().get_level_graph() || (RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) ==
+								   RestrictionSpace::eRestrictorTypeNone))
 		return (TRUE);
 
 	Level().space_restriction_manager().register_restrictor(
@@ -86,10 +88,10 @@ void CSpaceRestrictor::net_Destroy()
 {
 	inherited::net_Destroy();
 
-	if (!ai().get_level_graph())
+	if(!ai().get_level_graph())
 		return;
 
-	if (RestrictionSpace::ERestrictorTypes(m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone)
+	if(RestrictionSpace::ERestrictorTypes(m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone)
 		return;
 
 	Level().space_restriction_manager().unregister_restrictor(this);
@@ -97,10 +99,10 @@ void CSpaceRestrictor::net_Destroy()
 
 bool CSpaceRestrictor::inside(const Fsphere& sphere) const
 {
-	if (!actual())
+	if(!actual())
 		prepare();
 
-	if (!m_selfbounds.intersect(sphere))
+	if(!m_selfbounds.intersect(sphere))
 		return (false);
 
 	return (prepared_inside(sphere));
@@ -131,11 +133,12 @@ void CSpaceRestrictor::prepare() const
 
 	SHAPES::const_iterator I = shape->shapes.begin();
 	SHAPES::const_iterator E = shape->shapes.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		switch ((*I).type)
+		switch((*I).type)
 		{
-		case 0: { // sphere
+		case 0:
+		{ // sphere
 			Fsphere temp;
 			const Fsphere& sphere = (*I).data.sphere;
 			Transform().transform_tiny(temp.P, sphere.P);
@@ -143,7 +146,8 @@ void CSpaceRestrictor::prepare() const
 			m_spheres.push_back(temp);
 			break;
 		}
-		case 1: { // box
+		case 1:
+		{ // box
 			fmat4x4 sphere;
 			const fmat4x4& box = (*I).data.box;
 			sphere.mul_43(Transform(), box);
@@ -194,18 +198,18 @@ bool CSpaceRestrictor::prepared_inside(const Fsphere& sphere) const
 	{
 		SPHERES::const_iterator I = m_spheres.begin();
 		SPHERES::const_iterator E = m_spheres.end();
-		for (; I != E; ++I)
-			if (sphere.intersect(*I))
+		for(; I != E; ++I)
+			if(sphere.intersect(*I))
 				return (true);
 	}
 
 	{
 		BOXES::const_iterator I = m_boxes.begin();
 		BOXES::const_iterator E = m_boxes.end();
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
-			for (u32 i = 0; i < PLANE_COUNT; ++i)
-				if ((*I).m_planes[i].classify(sphere.P) > sphere.R)
+			for(u32 i = 0; i < PLANE_COUNT; ++i)
+				if((*I).m_planes[i].classify(sphere.P) > sphere.R)
 					goto continue_loop;
 			return (true);
 		continue_loop:
@@ -224,11 +228,11 @@ extern Flags32 dbg_net_Draw_Flags;
 
 void CSpaceRestrictor::OnRender()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
-	if (!bDebug)
+	if(!bDebug)
 		return;
-	if (!(dbg_net_Draw_Flags.is_any((1 << 2))))
+	if(!(dbg_net_Draw_Flags.is_any((1 << 2))))
 		return;
 	RenderBackend.OnFrameEnd();
 	fvec3 l_half;
@@ -239,16 +243,17 @@ void CSpaceRestrictor::OnRender()
 
 	u32 Color = 0;
 	CCustomZone* custom_zone = smart_cast<CCustomZone*>(this);
-	if (custom_zone && custom_zone->IsEnabled())
+	if(custom_zone && custom_zone->IsEnabled())
 		Color = D3DCOLOR_XRGB(0, 255, 255);
 	else
 		Color = D3DCOLOR_XRGB(255, 0, 0);
 
-	for (l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
+	for(l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
 	{
-		switch (l_pShape->type)
+		switch(l_pShape->type)
 		{
-		case 0: {
+		case 0:
+		{
 			Fsphere& l_sphere = l_pShape->data.sphere;
 			l_ball.scale(l_sphere.R, l_sphere.R, l_sphere.R);
 			// l_ball.scale(1.f, 1.f, 1.f);
@@ -260,14 +265,15 @@ void CSpaceRestrictor::OnRender()
 			Level().debug_renderer().draw_ellipse(l_ball, Color);
 		}
 		break;
-		case 1: {
+		case 1:
+		{
 			l_box.mul(Transform(), l_pShape->data.box);
 			Level().debug_renderer().draw_obb(l_box, l_half, Color);
 		}
 		break;
 		}
 	}
-	if (Engine.RenderView.Position.distance_to(Transform().c) < 100.0f)
+	if(Engine.RenderView.Position.distance_to(Transform().c) < 100.0f)
 	{
 
 		// DRAW name
@@ -288,9 +294,9 @@ void CSpaceRestrictor::OnRender()
 		res.transform(v_res, shift);
 
 		// check if the object in sight
-		if (v_res.z < 0 || v_res.w < 0)
+		if(v_res.z < 0 || v_res.w < 0)
 			return;
-		if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y > 1.f)
+		if(v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y > 1.f)
 			return;
 
 		// get real (x,y)
@@ -301,10 +307,10 @@ void CSpaceRestrictor::OnRender()
 		HUD().Font().pFontMedium->OutSet(x, y -= delta_height);
 		HUD().Font().pFontMedium->OutNext(Name());
 		CCustomZone* z = smart_cast<CCustomZone*>(this);
-		if (z)
+		if(z)
 		{
 			string64 str;
-			switch (z->ZoneState())
+			switch(z->ZoneState())
 			{
 			case CCustomZone::eZoneStateIdle:
 				strcpy(str, "IDLE");

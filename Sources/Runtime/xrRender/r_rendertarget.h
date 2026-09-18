@@ -100,10 +100,10 @@ class CRenderTarget : public IRender_Target
 	IDirect3DTexture9* t_noise_surf[TEX_jitter_count];
 	ref_texture t_noise[TEX_jitter_count];
 
-	IDirect3DSurface9* surf_screenshot_normal; // HW.fTarget, SM_NORMAL
-	IDirect3DTexture9* tex_screenshot_gamesave; // Container of "surf_screenshot_gamesave"
+	IDirect3DSurface9* surf_screenshot_normal;	 // HW.fTarget, SM_NORMAL
+	IDirect3DTexture9* tex_screenshot_gamesave;	 // Container of "surf_screenshot_gamesave"
 	IDirect3DSurface9* surf_screenshot_gamesave; // DXT1, SM_FOR_GAMESAVE
-	
+
   public:
 	// OCCq
 	ref_shader s_occq;
@@ -168,7 +168,7 @@ class CRenderTarget : public IRender_Target
 	void create_blenders();
 	void delete_blenders();
 	void delete_textures();
- 
+
 	void CompileShaders();
 
 	void accum_point_geom_create();

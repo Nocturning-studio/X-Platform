@@ -6,13 +6,13 @@
 void game_sv_Deathmatch::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 {
 
-	switch (type)
+	switch(type)
 	{
 	case GAME_EVENT_PLAYER_KILL: // dm only  (g_kill)
 	{
 		u16 ID = P.r_u16();
 		xrClientData* l_pC = (xrClientData*)get_client(ID);
-		if (!l_pC)
+		if(!l_pC)
 			break;
 		KillPlayer(l_pC->ID, l_pC->ps->GameID);
 	}
@@ -21,7 +21,7 @@ void game_sv_Deathmatch::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sen
 	case GAME_EVENT_PLAYER_BUY_FINISHED: // dm only
 	{
 		xrClientData* l_pC = m_server->ID_to_client(sender);
-		if (!l_pC)
+		if(!l_pC)
 			break;
 		OnPlayerBuyFinished(l_pC->ID, P);
 	}

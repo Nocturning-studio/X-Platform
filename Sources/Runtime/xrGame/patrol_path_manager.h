@@ -15,7 +15,8 @@
 #include "patrol_path_manager_space.h"
 #include "script_callback_ex.h"
 
-template <typename _return_type> class CScriptCallbackEx;
+template <typename _return_type>
+class CScriptCallbackEx;
 
 class CRestrictedObject;
 class CGameObject;

@@ -27,12 +27,12 @@ void CUIStatix::Update()
 
 	SetColor(0xffffffff);
 
-	if (m_bCursorOverWindow)
+	if(m_bCursorOverWindow)
 	{
 		SetColor(0xff349F06);
 	}
 
-	if (!IsEnabled())
+	if(!IsEnabled())
 	{
 		SetColor(0x80ffffff);
 	};
@@ -44,7 +44,7 @@ void CUIStatix::OnFocusLost()
 {
 	CUIStatic::OnFocusLost();
 	SetColor(0xffffffff);
-	if (!IsEnabled())
+	if(!IsEnabled())
 	{
 		SetColor(0x80ffffff);
 	};
@@ -67,13 +67,13 @@ void CUIStatix::SetSelectedState(bool state)
 	bool b = m_bSelected;
 	m_bSelected = state;
 
-	if (b == m_bSelected)
+	if(b == m_bSelected)
 		return;
 
-	if (!state)
+	if(!state)
 		OnFocusLost();
 
-	if (state)
+	if(state)
 		start_anim();
 	else
 		stop_anim();

@@ -27,7 +27,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	Presence::MaterialParams GetDefaultParams(Presence::MaterialType type)
 	{
 		Presence::MaterialParams p;
-		switch (type)
+		switch(type)
 		{
 		case Presence::MaterialType::Stone:
 			return {0.05f, 0.60f, 0.10f, 0.8f};
@@ -51,7 +51,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 	// -------------------------------------------------------------------------
 	void BuildMaterialCache(Presence::AudioSystem* pSystem)
 	{
-		if (!pSystem)
+		if(!pSystem)
 			return;
 		// Если кэш перестраивается (hot reload), очищаем старый
 		m_MaterialCache.clear();
@@ -59,7 +59,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		Msg("[Presence Audio] Building material cache...");
 
 		// 1. Регистрируем базовые типы
-		for (int i = 0; i < (int)Presence::MaterialType::Count; i++)
+		for(int i = 0; i < (int)Presence::MaterialType::Count; i++)
 		{
 			pSystem->SetMaterialProperties(i, GetDefaultParams((Presence::MaterialType)i));
 		}
@@ -69,7 +69,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		FS.update_path(configPath, "$game_config$", "presence_audio_materials.ltx");
 		CInifile* pConfig = FS.exist(configPath) ? new CInifile(configPath, TRUE, TRUE, FALSE) : nullptr;
 
-		if (pConfig)
+		if(pConfig)
 			Msg("[Presence Audio] Loaded config: %s", configPath);
 		else
 			Msg("! [Presence Audio] Config not found, using heuristics.");
@@ -80,10 +80,10 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 
 		int customCount = 0;
 
-		for (u32 i = 0; i < mtlCount; i++)
+		for(u32 i = 0; i < mtlCount; i++)
 		{
 			SGameMtl* mtl = GMLib.GetMaterialByIdx(i);
-			if (!mtl)
+			if(!mtl)
 			{
 				m_MaterialCache[i] = (int)Presence::MaterialType::Stone;
 				continue;
@@ -93,7 +93,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			int finalID = (int)Presence::MaterialType::Stone;
 
 			// A. Проверка конфига
-			if (pConfig && pConfig->section_exist(name))
+			if(pConfig && pConfig->section_exist(name))
 			{
 				Presence::MaterialParams p;
 				p.transmission = pConfig->r_float(name, "transmission");
@@ -109,23 +109,23 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			else
 			{
 				// Специальная проверка для невидимых стен/сеток (важно для геймплея!)
-				if (strstr(name, "fake") || strstr(name, "invisible") || strstr(name, "setka"))
+				if(strstr(name, "fake") || strstr(name, "invisible") || strstr(name, "setka"))
 					finalID = (int)Presence::MaterialType::Air;
-				else if (strstr(name, "wood") || strstr(name, "plank"))
+				else if(strstr(name, "wood") || strstr(name, "plank"))
 					finalID = (int)Presence::MaterialType::Wood;
-				else if (strstr(name, "metal") || strstr(name, "pipe") || strstr(name, "door"))
+				else if(strstr(name, "metal") || strstr(name, "pipe") || strstr(name, "door"))
 					finalID = (int)Presence::MaterialType::Metal;
-				else if (strstr(name, "glass") || strstr(name, "window"))
+				else if(strstr(name, "glass") || strstr(name, "window"))
 					finalID = (int)Presence::MaterialType::Glass;
-				else if (strstr(name, "grass") || strstr(name, "earth") || strstr(name, "cloth"))
+				else if(strstr(name, "grass") || strstr(name, "earth") || strstr(name, "cloth"))
 					finalID = (int)Presence::MaterialType::Soft;
-				else if (strstr(name, "asphalt") || strstr(name, "concrete"))
+				else if(strstr(name, "asphalt") || strstr(name, "concrete"))
 					finalID = (int)Presence::MaterialType::Stone;
 			}
 			m_MaterialCache[i] = finalID;
 		}
 
-		if (pConfig)
+		if(pConfig)
 			xr_delete(pConfig);
 		m_bCacheBuilt = true;
 		Msg("[Presence Audio] Cache built: %d materials (%d custom).", m_MaterialCache.size(), customCount);
@@ -144,7 +144,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		result.materialID = 0;
 
 		// Критическая проверка: уровень мог выгрузиться
-		if (!g_pGameLevel)
+		if(!g_pGameLevel)
 			return result;
 
 		// Конвертация векторов
@@ -154,7 +154,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 
 		// Валидация направления (предотвращение NaN)
 		float mag = xDir.magnitude();
-		if (mag < EPS_S)
+		if(mag < EPS_S)
 			return result;
 		xDir.div(mag);
 
@@ -162,7 +162,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		const float K_BIAS = 0.05f;
 		xStart.mad(xDir, K_BIAS);
 		float traceDist = maxDist - K_BIAS;
-		if (traceDist <= EPS_S)
+		if(traceDist <= EPS_S)
 			return result;
 
 		collide::rq_result rq;
@@ -171,7 +171,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		// Игнорируем динамические объекты (NPC, ящики) для расчета реверберации
 		BOOL hit = g_pGameLevel->ObjectSpace.RayPick(xStart, xDir, traceDist, collide::rqtStatic, rq, NULL);
 
-		if (hit)
+		if(hit)
 		{
 			result.isHit = true;
 			result.distance = rq.range + K_BIAS;
@@ -185,7 +185,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			result.normal = Presence::float3(xNorm.x, xNorm.y, xNorm.z);
 
 			u16 mtl_idx = (u16)tri->material;
-			if (mtl_idx < m_MaterialCache.size())
+			if(mtl_idx < m_MaterialCache.size())
 				result.materialID = m_MaterialCache[mtl_idx];
 			else
 				result.materialID = (int)Presence::MaterialType::Stone; // Fallback

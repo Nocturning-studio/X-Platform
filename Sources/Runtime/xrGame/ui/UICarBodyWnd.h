@@ -78,7 +78,7 @@ class CUICarBodyWnd : public CUIDialogWnd
 	CUIStatic* m_pUIOurBagWnd;
 	CUIStatic* m_pUIOthersBagWnd;
 
-	//èíôîðìàöèÿ î ïåðñîíàæàõ
+	// èíôîðìàöèÿ î ïåðñîíàæàõ
 	CUIStatic* m_pUIOurIcon;
 	CUIStatic* m_pUIOthersIcon;
 	CUICharacterInfo* m_pUICharacterInfoLeft;

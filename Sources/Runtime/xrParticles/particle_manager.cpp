@@ -40,14 +40,14 @@ ParticleActions* CParticleManager::GetActionListPtr(int a_list_num)
 int CParticleManager::CreateEffect(u32 max_particles)
 {
 	int eff_id = -1;
-	for (int i = 0; i < (int)effect_vec.size(); i++)
-		if (!effect_vec[i])
+	for(int i = 0; i < (int)effect_vec.size(); i++)
+		if(!effect_vec[i])
 		{
 			eff_id = i;
 			break;
 		}
 
-	if (eff_id < 0)
+	if(eff_id < 0)
 	{
 		// Couldn't find a big enough gap. Reallocate.
 		eff_id = effect_vec.size();
@@ -66,14 +66,14 @@ void CParticleManager::DestroyEffect(int effect_id)
 int CParticleManager::CreateActionList()
 {
 	int list_id = -1;
-	for (int i = 0; i < (int)alist_vec.size(); i++)
-		if (!alist_vec[i])
+	for(int i = 0; i < (int)alist_vec.size(); i++)
+		if(!alist_vec[i])
 		{
 			list_id = i;
 			break;
 		}
 
-	if (list_id < 0)
+	if(list_id < 0)
 	{
 		// Couldn't find a big enough gap. Reallocate.
 		list_id = alist_vec.size();
@@ -97,12 +97,12 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
 	//    ParticleEffect* pe		= GetEffectPtr(effect_id);
 	// Execute the specified action list.
 	ParticleActions* pa = GetActionListPtr(alist_id);
-	if (pa == NULL)
+	if(pa == NULL)
 		return; // ERROR
 	// Step through all the actions in the action list.
-	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+	for(PAVecIt it = pa->begin(); it != pa->end(); it++)
 	{
-		switch ((*it)->type)
+		switch((*it)->type)
 		{
 		case PASourceID:
 			static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, FALSE);
@@ -121,19 +121,19 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 {
 	// Execute the specified action list.
 	ParticleActions* pa = GetActionListPtr(alist_id);
-	if (pa == NULL)
+	if(pa == NULL)
 		return; // ERROR
 	// Step through all the actions in the action list.
-	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+	for(PAVecIt it = pa->begin(); it != pa->end(); it++)
 	{
-		switch ((*it)->type)
+		switch((*it)->type)
 		{
 		case PASourceID:
 			static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, TRUE);
 			break;
 		}
 	}
-	if (!deffered)
+	if(!deffered)
 	{
 		// effect
 		ParticleEffect* pe = GetEffectPtr(effect_id);
@@ -147,11 +147,11 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
 	ParticleEffect* pe = GetEffectPtr(effect_id);
 	ParticleActions* pa = GetActionListPtr(alist_id);
 
-	if (pe == nullptr || pa == nullptr)
+	if(pe == nullptr || pa == nullptr)
 		return;
 
 	// Step through all the actions in the action list.
-	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+	for(PAVecIt it = pa->begin(); it != pa->end(); it++)
 		(*it)->Execute(pe, dt);
 }
 void CParticleManager::Render(int effect_id)
@@ -163,19 +163,19 @@ void CParticleManager::Transform(int alist_id, const fmat4x4& full, const fvec3&
 	// Execute the specified action list.
 	ParticleActions* pa = GetActionListPtr(alist_id);
 
-	if (pa == NULL)
+	if(pa == NULL)
 		return; // ERROR
 
 	fmat4x4 mT;
 	mT.translate(full.c);
 
 	// Step through all the actions in the action list.
-	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+	for(PAVecIt it = pa->begin(); it != pa->end(); it++)
 	{
 		BOOL r = (*it)->m_Flags.is(ParticleAction::ALLOW_ROTATE);
 		const fmat4x4& m = r ? full : mT;
 		(*it)->Transform(m);
-		switch ((*it)->type)
+		switch((*it)->type)
 		{
 		case PASourceID:
 			static_cast<PASource*>(*it)->parent_vel =
@@ -196,7 +196,7 @@ void CParticleManager::SetMaxParticles(int effect_id, u32 max_particles)
 	ParticleEffect* pe = GetEffectPtr(effect_id);
 
 	// 1. ѕроверка на валидность указател€
-	if (!pe)
+	if(!pe)
 	{
 		Msg("! [ERROR] CParticleManager::SetMaxParticles: Effect is NULL! ID: %d", effect_id);
 		return;
@@ -204,7 +204,7 @@ void CParticleManager::SetMaxParticles(int effect_id, u32 max_particles)
 
 	// 2. ѕроверка на адекватность количества частиц
 	// ќбычно партиклов не должно быть миллионы. ѕоставим лимит, например, 100 000.
-	if (max_particles > 100000)
+	if(max_particles > 100000)
 	{
 		Msg("! [ERROR] CParticleManager::SetMaxParticles: Suspicious max_particles count: %u. ID: %d. Clamping to "
 			"1000.",
@@ -238,7 +238,7 @@ u32 CParticleManager::GetParticlesCount(int effect_id)
 ParticleAction* CParticleManager::CreateAction(PActionEnum type)
 {
 	ParticleAction* pa = 0;
-	switch (type)
+	switch(type)
 	{
 	case PAAvoidID:
 		pa = xr_new<PAAvoid>();
@@ -344,10 +344,10 @@ u32 CParticleManager::LoadActions(int alist_id, IReader& R)
 	// Execute the specified action list.
 	ParticleActions* pa = GetActionListPtr(alist_id);
 	pa->clear();
-	if (R.length())
+	if(R.length())
 	{
 		u32 cnt = R.r_u32();
-		for (u32 k = 0; k < cnt; k++)
+		for(u32 k = 0; k < cnt; k++)
 		{
 			ParticleAction* act = CreateAction((PActionEnum)R.r_u32());
 			act->Load(R);
@@ -361,6 +361,6 @@ void CParticleManager::SaveActions(int alist_id, IWriter& W)
 	// Execute the specified action list.
 	ParticleActions* pa = GetActionListPtr(alist_id);
 	W.w_u32(pa->size());
-	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+	for(PAVecIt it = pa->begin(); it != pa->end(); it++)
 		(*it)->Save(W);
 }

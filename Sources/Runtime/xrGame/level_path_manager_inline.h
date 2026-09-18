@@ -34,7 +34,7 @@ IC bool CLevelManagerTemplate::actual() const
 TEMPLATE_SPECIALIZATION
 IC void CLevelManagerTemplate::build_path(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
 {
-	//OPTICK_EVENT("CLevelManagerTemplate::build_path");
+	// OPTICK_EVENT("CLevelManagerTemplate::build_path");
 	START_PROFILE("Build Path/Level Path");
 
 	THROW(ai().level_graph().valid_vertex_id(start_vertex_id) && ai().level_graph().valid_vertex_id(dest_vertex_id));
@@ -42,7 +42,7 @@ IC void CLevelManagerTemplate::build_path(const _vertex_id_type start_vertex_id,
 	inherited::build_path(start_vertex_id, dest_vertex_id);
 
 #ifdef DEBUG
-	if (failed())
+	if(failed())
 	{
 		Msg("~ NPC %s couldn't build path from \n~ [%d][%f][%f][%f]\n~ to\n~ [%d][%f][%f][%f]",
 			*m_object->object().cName(), start_vertex_id, VPUSH(ai().level_graph().vertex_position(start_vertex_id)),
@@ -57,7 +57,7 @@ TEMPLATE_SPECIALIZATION
 IC void CLevelManagerTemplate::before_search(const _vertex_id_type start_vertex_id,
 											 const _vertex_id_type dest_vertex_id)
 {
-	if (m_object)
+	if(m_object)
 	{
 		m_object->add_border(start_vertex_id, dest_vertex_id);
 		VERIFY(!m_object->applied() || ai().level_graph().is_accessible(start_vertex_id));
@@ -68,7 +68,7 @@ IC void CLevelManagerTemplate::before_search(const _vertex_id_type start_vertex_
 TEMPLATE_SPECIALIZATION
 IC void CLevelManagerTemplate::after_search()
 {
-	if (m_object)
+	if(m_object)
 		m_object->remove_border();
 }
 

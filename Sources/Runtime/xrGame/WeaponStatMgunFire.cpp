@@ -38,14 +38,14 @@ void CWeaponStatMgun::UpdateFire()
 	inheritedShooting::UpdateFlameParticles();
 	inheritedShooting::UpdateLight();
 
-	if (!IsWorking())
+	if(!IsWorking())
 	{
-		if (fTime < 0)
+		if(fTime < 0)
 			fTime = 0.f;
 		return;
 	}
 
-	if (fTime <= 0)
+	if(fTime <= 0)
 	{
 		OnShot();
 		fTime += fTimeToFire;
@@ -65,7 +65,7 @@ void CWeaponStatMgun::OnShot()
 
 	StartShotParticles();
 
-	if (m_bLightShotEnabled)
+	if(m_bLightShotEnabled)
 		Light_Start();
 
 	StartFlameParticles();
@@ -82,10 +82,10 @@ void CWeaponStatMgun::OnShot()
 
 void CWeaponStatMgun::AddShotEffector()
 {
-	if (OwnerActor())
+	if(OwnerActor())
 	{
 		CCameraShotEffector* S = smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot));
-		if (!S)
+		if(!S)
 			S = (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(
 				xr_new<CCameraShotEffector>(camMaxAngle, camRelaxSpeed, 0.25f, 0.01f, 0.7f));
 		R_ASSERT(S);
@@ -95,6 +95,6 @@ void CWeaponStatMgun::AddShotEffector()
 
 void CWeaponStatMgun::RemoveShotEffector()
 {
-	if (OwnerActor())
+	if(OwnerActor())
 		OwnerActor()->Cameras().RemoveCamEffector(eCEShot);
 }

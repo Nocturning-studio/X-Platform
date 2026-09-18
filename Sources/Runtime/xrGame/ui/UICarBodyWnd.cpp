@@ -109,7 +109,7 @@ void CUICarBodyWnd::Init()
 	m_pUIOthersBagWnd->AttachChild(m_pUIOthersBagList);
 	xml_init.InitDragDropListEx(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
 
-	//èíôîðìàöèÿ î ïðåäìåòå
+	// èíôîðìàöèÿ î ïðåäìåòå
 	m_pUIDescWnd = xr_new<CUIFrameWindow>();
 	m_pUIDescWnd->SetAutoDelete(true);
 	AttachChild(m_pUIDescWnd);
@@ -146,24 +146,24 @@ void CUICarBodyWnd::Init()
 
 	// Load sounds
 
-	if (uiXml.NavigateToNode("action_sounds", 0))
+	if(uiXml.NavigateToNode("action_sounds", 0))
 	{
 		XML_NODE* stored_root = uiXml.GetLocalRoot();
 		uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
-		if (uiXml.NavigateToNode("snd_detach_addon", 0))
+		if(uiXml.NavigateToNode("snd_detach_addon", 0))
 			::Sound->create(sounds[eCarBodyDetachAddon], uiXml.Read("snd_detach_addon", 0, NULL), st_Effect,
 							sg_SourceType);
-		if (uiXml.NavigateToNode("snd_item_to_ruck", 0))
+		if(uiXml.NavigateToNode("snd_item_to_ruck", 0))
 			::Sound->create(sounds[eCarBodyItemToRuck], uiXml.Read("snd_item_to_ruck", 0, NULL), st_Effect,
 							sg_SourceType);
-		if (uiXml.NavigateToNode("snd_item_use", 0))
+		if(uiXml.NavigateToNode("snd_item_use", 0))
 			::Sound->create(sounds[eCarBodyItemUse], uiXml.Read("snd_item_use", 0, NULL), st_Effect, sg_SourceType);
-		if (uiXml.NavigateToNode("snd_properties", 0))
+		if(uiXml.NavigateToNode("snd_properties", 0))
 			::Sound->create(sounds[eCarBodyProperties], uiXml.Read("snd_properties", 0, NULL), st_Effect,
 							sg_SourceType);
-		if (uiXml.NavigateToNode("snd_open", 0))
+		if(uiXml.NavigateToNode("snd_open", 0))
 			::Sound->create(sounds[eCarBodySndOpen], uiXml.Read("snd_open", 0, NULL), st_Effect, sg_SourceType);
-		if (uiXml.NavigateToNode("snd_close", 0))
+		if(uiXml.NavigateToNode("snd_close", 0))
 			::Sound->create(sounds[eCarBodySndClose], uiXml.Read("snd_close", 0, NULL), st_Effect, sg_SourceType);
 
 		uiXml.SetLocalRoot(stored_root);
@@ -200,13 +200,13 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	m_pUIOthersIcon->Show(true);
 
 	CBaseMonster* monster = NULL;
-	if (m_pOthersObject)
+	if(m_pOthersObject)
 	{
 		monster = smart_cast<CBaseMonster*>(m_pOthersObject);
-		if (monster || m_pOthersObject->use_simplified_visual())
+		if(monster || m_pOthersObject->use_simplified_visual())
 		{
 			m_pUICharacterInfoRight->ClearInfo();
-			if (monster)
+			if(monster)
 			{
 				shared_str monster_tex_name = pSettings->r_string(monster->cNameSect(), "icon");
 				m_pUICharacterInfoRight->UIIcon().InitTexture(monster_tex_name.c_str());
@@ -223,21 +223,21 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	EnableAll();
 	UpdateLists();
 
-	if (!monster)
+	if(!monster)
 	{
 		CInfoPortionWrapper* known_info_registry = xr_new<CInfoPortionWrapper>();
 		known_info_registry->registry().init(other_id);
 		KNOWN_INFO_VECTOR& known_info = known_info_registry->registry().objects();
 
 		KNOWN_INFO_VECTOR_IT it = known_info.begin();
-		for (int i = 0; it != known_info.end(); ++it, ++i)
+		for(int i = 0; it != known_info.end(); ++it, ++i)
 		{
 			(*it).info_id;
 			NET_Packet P;
 			CGameObject::u_EventGen(P, GE_INFO_TRANSFER, our_id);
 			P.w_u16(0);					// not used
-			P.w_stringZ((*it).info_id); //ñîîáùåíèå
-			P.w_u8(1);					//äîáàâëåíèå ñîîáùåíèÿ
+			P.w_stringZ((*it).info_id); // ñîîáùåíèå
+			P.w_u8(1);					// äîáàâëåíèå ñîîáùåíèÿ
 			CGameObject::u_EventSend(P);
 		}
 		known_info.clear();
@@ -254,13 +254,13 @@ void CUICarBodyWnd::UpdateLists_delayed()
 
 void CUICarBodyWnd::Hide()
 {
-	if (&sounds[eCarBodySndClose])
+	if(&sounds[eCarBodySndClose])
 		PlaySnd(eCarBodySndClose);
 	InventoryUtilities::SendInfoToActor("ui_car_body_hide");
 	m_pUIOurBagList->ClearAll(true);
 	m_pUIOthersBagList->ClearAll(true);
 	inherited::Hide();
-	if (m_pInventoryBox)
+	if(m_pInventoryBox)
 		m_pInventoryBox->m_in_use = false;
 }
 
@@ -274,9 +274,9 @@ void CUICarBodyWnd::UpdateLists()
 	m_pOurObject->inventory().AddAvailableItems(ruck_list, true);
 	concurrency::parallel_sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
-	//Íàø ðþêçàê
+	// Íàø ðþêçàê
 	TIItemContainer::iterator it;
-	for (it = ruck_list.begin(); ruck_list.end() != it; ++it)
+	for(it = ruck_list.begin(); ruck_list.end() != it; ++it)
 	{
 		CUICellItem* itm = create_cell_item(*it);
 		m_pUIOurBagList->SetItem(itm);
@@ -284,7 +284,7 @@ void CUICarBodyWnd::UpdateLists()
 	}
 
 	ruck_list.clear();
-	if (m_pOthersObject)
+	if(m_pOthersObject)
 		m_pOthersObject->inventory().AddAvailableItems(ruck_list, false);
 	else
 		m_pInventoryBox->AddAvailableItems(ruck_list);
@@ -292,7 +292,7 @@ void CUICarBodyWnd::UpdateLists()
 	concurrency::parallel_sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
 	//×óæîé ðþêçàê
-	for (it = ruck_list.begin(); ruck_list.end() != it; ++it)
+	for(it = ruck_list.begin(); ruck_list.end() != it; ++it)
 	{
 		CUICellItem* itm = create_cell_item(*it);
 		m_pUIOthersBagList->SetItem(itm);
@@ -304,23 +304,24 @@ void CUICarBodyWnd::UpdateLists()
 
 void CUICarBodyWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg && m_pUITakeAll == pWnd)
+	if(BUTTON_CLICKED == msg && m_pUITakeAll == pWnd)
 	{
 		TakeAll();
 	}
-	else if (pWnd == m_pUIPropertiesBox && msg == PROPERTY_CLICKED)
+	else if(pWnd == m_pUIPropertiesBox && msg == PROPERTY_CLICKED)
 	{
-		if (m_pUIPropertiesBox->GetClickedItem())
+		if(m_pUIPropertiesBox->GetClickedItem())
 		{
-			switch (m_pUIPropertiesBox->GetClickedItem()->GetTAG())
+			switch(m_pUIPropertiesBox->GetClickedItem()->GetTAG())
 			{
-			case INVENTORY_EAT_ACTION: //ñúåñòü îáúåêò
+			case INVENTORY_EAT_ACTION: // ñúåñòü îáúåêò
 				EatItem();
 				break;
-			case INVENTORY_UNLOAD_MAGAZINE: {
+			case INVENTORY_UNLOAD_MAGAZINE:
+			{
 				CUICellItem* itm = CurrentItem();
 				(smart_cast<CWeaponMagazined*>((CWeapon*)itm->m_pData))->UnloadMagazine();
-				for (u32 i = 0; i < itm->ChildsCount(); ++i)
+				for(u32 i = 0; i < itm->ChildsCount(); ++i)
 				{
 					CUICellItem* child_itm = itm->Child(i);
 					(smart_cast<CWeaponMagazined*>((CWeapon*)child_itm->m_pData))->UnloadMagazine();
@@ -350,14 +351,14 @@ void CUICarBodyWnd::Draw()
 
 void CUICarBodyWnd::Update()
 {
-	if (m_b_need_update || m_pOurObject->inventory().ModifyFrame() == Engine.TimeManager.GetFrameCount() ||
-		(m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Engine.TimeManager.GetFrameCount()))
+	if(m_b_need_update || m_pOurObject->inventory().ModifyFrame() == Engine.TimeManager.GetFrameCount() ||
+	   (m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Engine.TimeManager.GetFrameCount()))
 
 		UpdateLists();
 
-	if (m_pOthersObject && (smart_cast<CGameObject*>(m_pOurObject))
-								   ->Position()
-								   .distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f)
+	if(m_pOthersObject && (smart_cast<CGameObject*>(m_pOurObject))
+								  ->Position()
+								  .distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f)
 	{
 		GetHolder()->StartStopMenu(this, true);
 	}
@@ -370,7 +371,7 @@ void CUICarBodyWnd::Show()
 	inherited::Show();
 	SetCurrentItem(NULL);
 	InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
-	if (&sounds[eCarBodySndOpen])
+	if(&sounds[eCarBodySndOpen])
 		PlaySnd(eCarBodySndOpen);
 }
 
@@ -398,7 +399,7 @@ PIItem CUICarBodyWnd::CurrentIItem()
 
 void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if (m_pCurrentCellItem == itm)
+	if(m_pCurrentCellItem == itm)
 		return;
 	m_pCurrentCellItem = itm;
 	m_pUIItemInfo->InitItem(CurrentIItem());
@@ -408,18 +409,18 @@ void CUICarBodyWnd::TakeAll()
 {
 	u32 cnt = m_pUIOthersBagList->ItemsCount();
 	u16 tmp_id = 0;
-	if (m_pInventoryBox)
+	if(m_pInventoryBox)
 	{
 		tmp_id = (smart_cast<CGameObject*>(m_pOurObject))->ID();
 	}
 
-	for (u32 i = 0; i < cnt; ++i)
+	for(u32 i = 0; i < cnt; ++i)
 	{
 		CUICellItem* ci = m_pUIOthersBagList->GetItemIdx(i);
-		for (u32 j = 0; j < ci->ChildsCount(); ++j)
+		for(u32 j = 0; j < ci->ChildsCount(); ++j)
 		{
 			PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
-			if (m_pOthersObject)
+			if(m_pOthersObject)
 				TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
 			else
 			{
@@ -429,13 +430,13 @@ void CUICarBodyWnd::TakeAll()
 			}
 		}
 		PIItem itm = (PIItem)(ci->m_pData);
-		if (m_pOthersObject)
+		if(m_pOthersObject)
 			TransferItem(itm, m_pOthersObject, m_pOurObject, false);
 		else
 		{
 			move_item(m_pInventoryBox->ID(), tmp_id, itm->object().ID());
 			//.			Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(),
-			//itm->object().lua_game_object() );
+			// itm->object().lua_game_object() );
 		}
 	}
 }
@@ -444,17 +445,17 @@ void CUICarBodyWnd::TakeAll()
 
 bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (inherited::OnKeyboard(dik, keyboard_action))
+	if(inherited::OnKeyboard(dik, keyboard_action))
 		return true;
 
-	if (keyboard_action == WINDOW_KEY_PRESSED)
+	if(keyboard_action == WINDOW_KEY_PRESSED)
 	{
-		if (is_binded(kUSE, dik))
+		if(is_binded(kUSE, dik))
 		{
 			GetHolder()->StartStopMenu(this, true);
 			return true;
 		}
-		else if (is_binded(kSPRINT_TOGGLE, dik))
+		else if(is_binded(kSPRINT_TOGGLE, dik))
 		{
 			TakeAll();
 			return true;
@@ -468,7 +469,7 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 void CUICarBodyWnd::ActivatePropertiesBox()
 {
-	if (m_pInventoryBox)
+	if(m_pInventoryBox)
 		return;
 
 	m_pUIPropertiesBox->RemoveAll();
@@ -481,49 +482,49 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	bool b_show = false;
 
 	LPCSTR _action_ = NULL;
-	if (pMedkit || pAntirad)
+	if(pMedkit || pAntirad)
 	{
 		_action_ = "st_use";
 		b_show = true;
 	}
-	else if (pEatableItem)
+	else if(pEatableItem)
 	{
-		if (pBottleItem)
+		if(pBottleItem)
 			_action_ = "st_drink";
 		else
 			_action_ = "st_eat";
 		b_show = true;
 	}
 
-	//îòñîåäèíåíèå àääîíîâ îò âåùè
-	if (pWeapon)
+	// îòñîåäèíåíèå àääîíîâ îò âåùè
+	if(pWeapon)
 	{
-		if (pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
+		if(pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
 		{
 			m_pUIPropertiesBox->AddItem("st_detach_gl", NULL, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
 			b_show = true;
 		}
-		if (pWeapon->ScopeAttachable() && pWeapon->IsScopeAttached())
+		if(pWeapon->ScopeAttachable() && pWeapon->IsScopeAttached())
 		{
 			m_pUIPropertiesBox->AddItem("st_detach_scope", NULL, INVENTORY_DETACH_SCOPE_ADDON);
 			b_show = true;
 		}
-		if (pWeapon->SilencerAttachable() && pWeapon->IsSilencerAttached())
+		if(pWeapon->SilencerAttachable() && pWeapon->IsSilencerAttached())
 		{
 			m_pUIPropertiesBox->AddItem("st_detach_silencer", NULL, INVENTORY_DETACH_SILENCER_ADDON);
 			b_show = true;
 		}
-		if (smart_cast<CWeaponMagazined*>(pWeapon) && IsGameTypeSingle())
+		if(smart_cast<CWeaponMagazined*>(pWeapon) && IsGameTypeSingle())
 		{
 			bool b = (0 != pWeapon->GetAmmoElapsed());
 
-			if (!b)
+			if(!b)
 			{
 				CUICellItem* itm = CurrentItem();
-				for (u32 i = 0; i < itm->ChildsCount(); ++i)
+				for(u32 i = 0; i < itm->ChildsCount(); ++i)
 				{
 					pWeapon = smart_cast<CWeaponMagazined*>((CWeapon*)itm->Child(i)->m_pData);
-					if (pWeapon->GetAmmoElapsed())
+					if(pWeapon->GetAmmoElapsed())
 					{
 						b = true;
 						break;
@@ -531,7 +532,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 				}
 			}
 
-			if (b)
+			if(b)
 			{
 				m_pUIPropertiesBox->AddItem("st_unload_magazine", NULL, INVENTORY_UNLOAD_MAGAZINE);
 				b_show = true;
@@ -551,10 +552,10 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		if (CurrentItem()->ChildsCount())
 			m_pUIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
 	}*/
-	if (_action_)
+	if(_action_)
 		m_pUIPropertiesBox->AddItem(_action_, NULL, INVENTORY_EAT_ACTION);
 
-	if (b_show)
+	if(b_show)
 	{
 		m_pUIPropertiesBox->AutoUpdateSize();
 		m_pUIPropertiesBox->BringAllToTop();
@@ -566,7 +567,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		cursor__pos = GetUICursor()->GetCursorPosition();
 		cursor__pos.sub(vis_rect.lt);
 		m_pUIPropertiesBox->Show(vis_rect, cursor__pos);
-		if (&sounds[eCarBodyProperties])
+		if(&sounds[eCarBodyProperties])
 			PlaySnd(eCarBodyProperties);
 	}
 }
@@ -574,11 +575,11 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 void CUICarBodyWnd::EatItem()
 {
 	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if (!pActor)
+	if(!pActor)
 		return;
 
 	CUIDragDropListEx* owner_list = CurrentItem()->OwnerList();
-	if (owner_list == m_pUIOthersBagList)
+	if(owner_list == m_pUIOthersBagList)
 	{
 		u16 owner_id = (m_pInventoryBox) ? m_pInventoryBox->ID() : smart_cast<CGameObject*>(m_pOthersObject)->ID();
 
@@ -591,7 +592,7 @@ void CUICarBodyWnd::EatItem()
 	CGameObject::u_EventGen(P, GEG_PLAYER_ITEM_EAT, Actor()->ID());
 	P.w_u16(CurrentIItem()->object().ID());
 	CGameObject::u_EventSend(P);
-	if (&sounds[eCarBodyItemUse])
+	if(&sounds[eCarBodyItemUse])
 		PlaySnd(eCarBodyItemUse);
 }
 
@@ -600,15 +601,15 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 	CUIDragDropListEx* old_owner = itm->OwnerList();
 	CUIDragDropListEx* new_owner = CUIDragDropListEx::m_drag_item->BackList();
 
-	if (old_owner == new_owner || !old_owner || !new_owner ||
-		(false && new_owner == m_pUIOthersBagList && m_pInventoryBox))
+	if(old_owner == new_owner || !old_owner || !new_owner ||
+	   (false && new_owner == m_pUIOthersBagList && m_pInventoryBox))
 		return true;
 
-	if (m_pOthersObject)
+	if(m_pOthersObject)
 	{
-		if (TransferItem(CurrentIItem(), (old_owner == m_pUIOthersBagList) ? m_pOthersObject : m_pOurObject,
-						 (old_owner == m_pUIOurBagList) ? m_pOthersObject : m_pOurObject,
-						 (old_owner == m_pUIOurBagList)))
+		if(TransferItem(CurrentIItem(), (old_owner == m_pUIOthersBagList) ? m_pOthersObject : m_pOurObject,
+						(old_owner == m_pUIOurBagList) ? m_pOthersObject : m_pOurObject,
+						(old_owner == m_pUIOurBagList)))
 		{
 			CUICellItem* ci = old_owner->RemoveItem(CurrentItem(), false);
 			new_owner->SetItem(ci);
@@ -624,13 +625,13 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 				  CurrentIItem()->object().ID());
 
 		//		Actor()->callback		(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(),
-		//CurrentIItem()->object().lua_game_object() );
+		// CurrentIItem()->object().lua_game_object() );
 
 		CUICellItem* ci = old_owner->RemoveItem(CurrentItem(), false);
 		new_owner->SetItem(ci);
 	}
 	SetCurrentItem(NULL);
-	if (&sounds[eCarBodyDropItem])
+	if(&sounds[eCarBodyDropItem])
 		PlaySnd(eCarBodyDropItem);
 
 	return true;
@@ -646,11 +647,11 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 	CUIDragDropListEx* old_owner = itm->OwnerList();
 	CUIDragDropListEx* new_owner = (old_owner == m_pUIOthersBagList) ? m_pUIOurBagList : m_pUIOthersBagList;
 
-	if (m_pOthersObject)
+	if(m_pOthersObject)
 	{
-		if (TransferItem(CurrentIItem(), (old_owner == m_pUIOthersBagList) ? m_pOthersObject : m_pOurObject,
-						 (old_owner == m_pUIOurBagList) ? m_pOthersObject : m_pOurObject,
-						 (old_owner == m_pUIOurBagList)))
+		if(TransferItem(CurrentIItem(), (old_owner == m_pUIOthersBagList) ? m_pOthersObject : m_pOurObject,
+						(old_owner == m_pUIOurBagList) ? m_pOthersObject : m_pOurObject,
+						(old_owner == m_pUIOurBagList)))
 		{
 			CUICellItem* ci = old_owner->RemoveItem(CurrentItem(), false);
 			new_owner->SetItem(ci);
@@ -658,7 +659,7 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 	}
 	else
 	{
-		if (false && old_owner == m_pUIOurBagList)
+		if(false && old_owner == m_pUIOurBagList)
 			return true;
 		bool bMoveDirection = (old_owner == m_pUIOthersBagList);
 
@@ -666,7 +667,7 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 		move_item(bMoveDirection ? m_pInventoryBox->ID() : tmp_id, bMoveDirection ? tmp_id : m_pInventoryBox->ID(),
 				  CurrentIItem()->object().ID());
 		//.		Actor()->callback		(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(),
-		//CurrentIItem()->object().lua_game_object() );
+		// CurrentIItem()->object().lua_game_object() );
 	}
 	SetCurrentItem(NULL);
 
@@ -694,12 +695,12 @@ void CUICarBodyWnd::move_item(u16 from_id, u16 to_id, u16 what_id)
 	P.w_u16(what_id);
 	CGameObject::u_EventSend(P);
 
-	//äðóãîìó èíâåíòàðþ - âçÿòü âåùü
+	// äðóãîìó èíâåíòàðþ - âçÿòü âåùü
 	CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, to_id);
 	P.w_u16(what_id);
 	CGameObject::u_EventSend(P);
 
-	if (&sounds[eCarBodyItemToRuck])
+	if(&sounds[eCarBodyItemToRuck])
 		PlaySnd(eCarBodyItemToRuck);
 }
 
@@ -709,14 +710,14 @@ bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInven
 	CGameObject* go_from = smart_cast<CGameObject*>(owner_from);
 	CGameObject* go_to = smart_cast<CGameObject*>(owner_to);
 
-	if (smart_cast<CBaseMonster*>(go_to))
+	if(smart_cast<CBaseMonster*>(go_to))
 		return false;
-	if (b_check)
+	if(b_check)
 	{
 		float invWeight = owner_to->inventory().CalcTotalWeight();
 		float maxWeight = owner_to->inventory().GetMaxWeight();
 		float itmWeight = itm->Weight();
-		if (invWeight + itmWeight >= maxWeight)
+		if(invWeight + itmWeight >= maxWeight)
 			return false;
 	}
 
@@ -737,13 +738,13 @@ void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 void CUICarBodyWnd::ColorizeItem(CUICellItem* itm)
 {
 	CInventoryItem* jitem = (CInventoryItem*)itm->m_pData;
-	if (jitem->m_eItemPlace == eItemPlaceBelt || jitem->m_eItemPlace == eItemPlaceSlot)
+	if(jitem->m_eItemPlace == eItemPlaceBelt || jitem->m_eItemPlace == eItemPlaceSlot)
 		itm->SetColor(color_rgba(200, 255, 200, 255));
 }
 
 void CUICarBodyWnd::DetachAddon(const char* addon_name)
 {
-	if (OnClient())
+	if(OnClient())
 	{
 		NET_Packet P;
 		CurrentIItem()->object().u_EventGen(P, GE_ADDON_DETACH, CurrentIItem()->object().ID());
@@ -752,19 +753,19 @@ void CUICarBodyWnd::DetachAddon(const char* addon_name)
 	};
 	CurrentIItem()->Detach(addon_name, true);
 
-	//ñïðÿòàòü âåùü èç àêòèâíîãî ñëîòà â èíâåíòàðü íà âðåìÿ âûçîâà ìåíþøêè
-	// CActor *pActor								= smart_cast<CActor*>(Level().CurrentEntity());
-	// if (pActor && CurrentIItem() == pActor->inventory().ActiveItem())
+	// ñïðÿòàòü âåùü èç àêòèâíîãî ñëîòà â èíâåíòàðü íà âðåìÿ âûçîâà ìåíþøêè
+	//  CActor *pActor								= smart_cast<CActor*>(Level().CurrentEntity());
+	//  if (pActor && CurrentIItem() == pActor->inventory().ActiveItem())
 	//{
 	//		m_iCurrentActiveSlot				= pActor->inventory().GetActiveSlot();
 	//		pActor->inventory().Activate		(NO_ACTIVE_SLOT);
-	//}
-	if (&sounds[eCarBodyDetachAddon])
+	// }
+	if(&sounds[eCarBodyDetachAddon])
 		PlaySnd(eCarBodyDetachAddon);
 }
 
 void CUICarBodyWnd::PlaySnd(eCarBodySndAction a)
 {
-	if (sounds[a]._handle())
+	if(sounds[a]._handle())
 		sounds[a].play(NULL, sm_2D);
 }

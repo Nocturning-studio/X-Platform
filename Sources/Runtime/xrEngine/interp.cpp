@@ -29,14 +29,14 @@
 static float range(float v, float lo, float hi, int* i)
 {
 	float v2, r = hi - lo;
-	if (r == 0.0)
+	if(r == 0.0)
 	{
-		if (i)
+		if(i)
 			*i = 0;
 		return lo;
 	}
 	v2 = lo + v - r * (float)floor((float)v / r);
-	if (i)
+	if(i)
 		*i = -(int)((v2 - v) / r + (v2 > v ? 0.5 : -0.5));
 	return v2;
 }
@@ -92,9 +92,9 @@ static float bez2_time(float x0, float x1, float x2, float x3, float time, float
 
 	t = *t0 + (*t1 - *t0) * 0.5f;
 	v = bezier(x0, x1, x2, x3, t);
-	if (_abs(time - v) > .0001f)
+	if(_abs(time - v) > .0001f)
 	{
-		if (v > time)
+		if(v > time)
 			*t1 = t;
 		else
 			*t0 = t;
@@ -113,14 +113,14 @@ static float bez2(st_Key* key0, st_Key* key1, float time)
 {
 	float x, y, t, t0 = 0.0f, t1 = 1.0f;
 
-	if (key0->shape == SHAPE_BEZ2)
+	if(key0->shape == SHAPE_BEZ2)
 		x = key0->time + key0->param[2];
 	else
 		x = key0->time + (key1->time - key0->time) / 3.0f;
 
 	t = bez2_time(key0->time, x, key1->time + key1->param[0], key1->time, time, &t0, &t1);
 
-	if (key0->shape == SHAPE_BEZ2)
+	if(key0->shape == SHAPE_BEZ2)
 		y = key0->value + key0->param[3];
 	else
 		y = key0->value + key0->param[1] / 3.0f;
@@ -139,14 +139,14 @@ static float outgoing(st_Key* key0p, st_Key* key0, st_Key* key1)
 {
 	float a, b, d, t, out;
 
-	switch (key0->shape)
+	switch(key0->shape)
 	{
 	case SHAPE_TCB:
 		a = (1.0f - key0->tension) * (1.0f + key0->continuity) * (1.0f + key0->bias);
 		b = (1.0f - key0->tension) * (1.0f - key0->continuity) * (1.0f - key0->bias);
 		d = key1->value - key0->value;
 
-		if (key0p)
+		if(key0p)
 		{
 			t = (key1->time - key0->time) / (key1->time - key0p->time);
 			out = t * (a * (key0->value - key0p->value) + b * d);
@@ -157,7 +157,7 @@ static float outgoing(st_Key* key0p, st_Key* key0, st_Key* key1)
 
 	case SHAPE_LINE:
 		d = key1->value - key0->value;
-		if (key0p)
+		if(key0p)
 		{
 			t = (key1->time - key0->time) / (key1->time - key0p->time);
 			out = t * (key0->value - key0p->value + d);
@@ -169,13 +169,13 @@ static float outgoing(st_Key* key0p, st_Key* key0, st_Key* key1)
 	case SHAPE_BEZI:
 	case SHAPE_HERM:
 		out = key0->param[1];
-		if (key0p)
+		if(key0p)
 			out *= (key1->time - key0->time) / (key1->time - key0p->time);
 		break;
 
 	case SHAPE_BEZ2:
 		out = key0->param[3] * (key1->time - key0->time);
-		if (_abs(key0->param[2]) > 1e-5f)
+		if(_abs(key0->param[2]) > 1e-5f)
 			out /= key0->param[2];
 		else
 			out *= 1e5f;
@@ -200,11 +200,11 @@ static float incoming(st_Key* key0, st_Key* key1, st_Key* key1n)
 {
 	float a, b, d, t, in;
 
-	switch (key1->shape)
+	switch(key1->shape)
 	{
 	case SHAPE_LINE:
 		d = key1->value - key0->value;
-		if (key1n)
+		if(key1n)
 		{
 			t = (key1->time - key0->time) / (key1n->time - key0->time);
 			in = t * (key1n->value - key1->value + d);
@@ -218,7 +218,7 @@ static float incoming(st_Key* key0, st_Key* key1, st_Key* key1n)
 		b = (1.0f - key1->tension) * (1.0f + key1->continuity) * (1.0f - key1->bias);
 		d = key1->value - key0->value;
 
-		if (key1n)
+		if(key1n)
 		{
 			t = (key1->time - key0->time) / (key1n->time - key0->time);
 			in = t * (b * (key1n->value - key1->value) + a * d);
@@ -230,13 +230,13 @@ static float incoming(st_Key* key0, st_Key* key1, st_Key* key1n)
 	case SHAPE_BEZI:
 	case SHAPE_HERM:
 		in = key1->param[0];
-		if (key1n)
+		if(key1n)
 			in *= (key1->time - key0->time) / (key1n->time - key0->time);
 		break;
 
 	case SHAPE_BEZ2:
 		in = key1->param[1] * (key1->time - key0->time);
-		if (_abs(key1->param[0]) > 1e-5f)
+		if(_abs(key1->param[0]) > 1e-5f)
 			in /= key1->param[0];
 		else
 			in *= 1e5f;
@@ -264,11 +264,11 @@ float evalEnvelope(CEnvelope* env, float time)
 	int noff;
 
 	// if there's no key, the value is 0
-	if (env->keys.empty())
+	if(env->keys.empty())
 		return 0.0f;
 
 	// if there's only one key, the value is constant
-	if (env->keys.size() == 1)
+	if(env->keys.size() == 1)
 		return env->keys[0]->value;
 
 	// find the first and last keys
@@ -279,9 +279,9 @@ float evalEnvelope(CEnvelope* env, float time)
 	ekey_p = env->keys[sz - 2];
 
 	// use pre-behavior if time is before first key time
-	if (time < skey->time)
+	if(time < skey->time)
 	{
-		switch (env->behavior[0])
+		switch(env->behavior[0])
 		{
 		case BEH_RESET:
 			return 0.0f;
@@ -292,7 +292,7 @@ float evalEnvelope(CEnvelope* env, float time)
 			break;
 		case BEH_OSCILLATE:
 			time = range(time, skey->time, ekey->time, &noff);
-			if (noff % 2)
+			if(noff % 2)
 				time = ekey->time - skey->time - time;
 			break;
 		case BEH_OFFSET:
@@ -305,9 +305,9 @@ float evalEnvelope(CEnvelope* env, float time)
 		}
 	}
 	// use post-behavior if time is after last key time
-	else if (time > ekey->time)
+	else if(time > ekey->time)
 	{
-		switch (env->behavior[1])
+		switch(env->behavior[1])
 		{
 		case BEH_RESET:
 			return 0.0f;
@@ -318,7 +318,7 @@ float evalEnvelope(CEnvelope* env, float time)
 			break;
 		case BEH_OSCILLATE:
 			time = range(time, skey->time, ekey->time, &noff);
-			if (noff % 2)
+			if(noff % 2)
 				time = ekey->time - skey->time - time;
 			break;
 		case BEH_OFFSET:
@@ -332,28 +332,28 @@ float evalEnvelope(CEnvelope* env, float time)
 	}
 	// get the endpoints of the interval being evaluated
 	int k = 0;
-	while (time > env->keys[k + 1]->time)
+	while(time > env->keys[k + 1]->time)
 		k++;
 	VERIFY((k + 1) < sz);
 
 	key1 = env->keys[k + 1];
 	key0 = env->keys[k];
-	if (k > 0)
+	if(k > 0)
 		key0_p = env->keys[k - 1];
-	if ((k + 2) < sz)
+	if((k + 2) < sz)
 		key1_n = env->keys[k + 2];
 
 	// check for singularities first
-	if (time == key0->time)
+	if(time == key0->time)
 		return key0->value + offset;
-	else if (time == key1->time)
+	else if(time == key1->time)
 		return key1->value + offset;
 
 	// get interval length, time in [0, 1]
 	t = (time - key0->time) / (key1->time - key0->time);
 
 	// interpolate
-	switch (key1->shape)
+	switch(key1->shape)
 	{
 	case SHAPE_TCB:
 	case SHAPE_BEZI:

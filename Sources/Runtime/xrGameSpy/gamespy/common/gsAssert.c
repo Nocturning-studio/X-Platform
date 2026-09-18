@@ -3,175 +3,159 @@
 #include "gsCommon.h"
 #include "gsDebug.h"
 
-
-
 // This is the platform specific default assert condition handler
-extern void  _gsDebugAssert	(const char * string);
+extern void _gsDebugAssert(const char* string);
 
 static gsDebugAssertCallback gsDebugAssertHandler = _gsDebugAssert;
 
-//  Call this function to override the default assert handler  
+//  Call this function to override the default assert handler
 //	New function should render message / log message based on string passed
 void gsDebugAssertCallbackSet(gsDebugAssertCallback theCallback)
 {
-	if (theCallback)
+	if(theCallback)
 		gsDebugAssertHandler = theCallback;
 	else
 		gsDebugAssertHandler = _gsDebugAssert;
 }
 
-
 // This is the default assert condition handler
-void  gsDebugAssert				(const char *szError,const char *szText, const char *szFile, int line)
+void gsDebugAssert(const char* szError, const char* szText, const char* szFile, int line)
 {
 	char String[256];
-	// format into buffer 
-	sprintf(&String[0], szError,szText,szFile,line);
+	// format into buffer
+	sprintf(&String[0], szError, szText, szFile, line);
 
 	// call plat specific handler
 	(*gsDebugAssertHandler)(String);
-
 }
-
 
 // ****************************************************
 // Todo: move to platform specific modules
 #ifdef _XBOX
-	// ErrorMessage: Displays message and goes into an infinite loop
-	// continues rendering
-	void  _gsDebugAssert			(const char *string)
-	{
-		//DebugBreak();
-		OutputDebugString( string);
-		exit(0);
-	}
+// ErrorMessage: Displays message and goes into an infinite loop
+// continues rendering
+void _gsDebugAssert(const char* string)
+{
+	// DebugBreak();
+	OutputDebugString(string);
+	exit(0);
+}
 
 #elif defined _WIN32
-	#include <windows.h>
-	#pragma warning(disable: 4127) // disable warnings from "conditional expression is constant"
+#include <windows.h>
+#pragma warning(disable : 4127) // disable warnings from "conditional expression is constant"
 
-	// ErrorMessage: Displays message and goes into an infinite loop
-	// continues rendering
-	void  _gsDebugAssert			(const char *string)
+// ErrorMessage: Displays message and goes into an infinite loop
+// continues rendering
+void _gsDebugAssert(const char* string)
+{
+
+	// DebugBreak();
+
+#ifdef _CONSOLE //,_MBCS
+
+	printf("%s", string);
+	while(1)
 	{
+	};
 
-		//DebugBreak();
-		
+#else
+	{
+		int rcode;
 
-		#ifdef _CONSOLE   //,_MBCS
+		OutputDebugString(string);
+		rcode = MessageBox(NULL, string, "Assert Failed", MB_ABORTRETRYIGNORE | MB_ICONHAND | MB_SETFOREGROUND | MB_TASKMODAL);
 
-			printf("%s",string);
-			while(1)
-			{
-			};
-
-		#else
+		if(rcode == IDABORT)
 		{
-			int rcode;
-		
-			OutputDebugString( string);
-			rcode = MessageBox(NULL,string,"Assert Failed",MB_ABORTRETRYIGNORE|MB_ICONHAND|MB_SETFOREGROUND|MB_TASKMODAL);
-
-			if(rcode == IDABORT)
-			{
-				exit(0);
-			}
-			if(rcode == IDRETRY)
-			{
-				DebugBreak();
-				return;
-			}
+			exit(0);
 		}
-		#endif
+		if(rcode == IDRETRY)
+		{
+			DebugBreak();
+			return;
+		}
 	}
+#endif
+}
 
 #elif defined _PSP
-	// ToDo:
-	// ErrorMessage: Displays message and goes into an infinite loop
-	// continues rendering
-	void  _gsDebugAssert			(const char *string)
+// ToDo:
+// ErrorMessage: Displays message and goes into an infinite loop
+// continues rendering
+void _gsDebugAssert(const char* string)
+{
+	printf(string);
+
+	while(1)
 	{
-		printf(string);
-		
-		while(1)
-		{
-		};
-
-	}
-
+	};
+}
 
 #elif defined _PS2
 
-	// already included in gsPlatform.h
-	/*
-	#include <eetypes.h>
-	#include <eekernel.h>
-	*/
+// already included in gsPlatform.h
+/*
+#include <eetypes.h>
+#include <eekernel.h>
+*/
 
-	// ErrorMessage: Displays message and goes into an infinite loop
-	// continues rendering
-	void  _gsDebugAssert			(const char *string)
-	{
+// ErrorMessage: Displays message and goes into an infinite loop
+// continues rendering
+void _gsDebugAssert(const char* string)
+{
 
-		scePrintf(string);
-		while(1);;
-	}
-
-
+	scePrintf(string);
+	while(1)
+		;
+	;
+}
 
 #elif defined _MACOSX
-	void  _gsDebugAssert			(const char *string)
+void _gsDebugAssert(const char* string)
+{
+	printf(string);
+
+	while(1)
 	{
-		printf(string);
-		
-		while(1)
-		{
-		};
-
-	}
-
+	};
+}
 
 #elif defined _LINUX
-	void  _gsDebugAssert			(const char *string)
+void _gsDebugAssert(const char* string)
+{
+	printf(string);
+
+	while(1)
 	{
-		printf(string);
-		
-		while(1)
-		{
-		};
-
-	}
-
+	};
+}
 
 #elif defined _NITRO
-	void  _gsDebugAssert			(const char *string)
-	{
+void _gsDebugAssert(const char* string)
+{
 #if SDK_FINALROM != 1
-		OS_TPanic("%s",string);
+	OS_TPanic("%s", string);
 #else
-		GSI_UNUSED(string);
+	GSI_UNUSED(string);
 #endif
-	}
+}
 
 #elif defined(_REVOLUTION)
-	void _gsDebugAssert(const char *string)
-	{
-		OSHalt(string);
-		
-	}
+void _gsDebugAssert(const char* string)
+{
+	OSHalt(string);
+}
 #else
-	// ErrorMessage: Displays message and goes into an infinite loop
-	// continues rendering
-	void  _gsDebugAssert			(const char *string)
-	{
+// ErrorMessage: Displays message and goes into an infinite loop
+// continues rendering
+void _gsDebugAssert(const char* string)
+{
 
-		printf(string);
-		while(1);;
-
-	}
+	printf(string);
+	while(1)
+		;
+	;
+}
 
 #endif
-
-
-
-

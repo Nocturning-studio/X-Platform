@@ -27,7 +27,7 @@ CUIPdaContactsWnd::~CUIPdaContactsWnd()
 void CUIPdaContactsWnd::Show(bool status)
 {
 	inherited::Show(status);
-	if (status)
+	if(status)
 		UIDetailsWnd->Clear();
 }
 
@@ -82,19 +82,19 @@ void CUIPdaContactsWnd::Init()
 
 void CUIPdaContactsWnd::Update()
 {
-	if (TRUE == m_flags.test(flNeedUpdate))
+	if(TRUE == m_flags.test(flNeedUpdate))
 	{
 		RemoveAll();
 
 		CPda* pPda = Actor()->GetPDA();
-		if (!pPda)
+		if(!pPda)
 			return;
 
 		pPda->ActivePDAContacts(m_pda_list);
 
 		xr_vector<CPda*>::iterator it = m_pda_list.begin();
 
-		for (; it != m_pda_list.end(); ++it)
+		for(; it != m_pda_list.end(); ++it)
 		{
 			AddContact(*it);
 		}
@@ -119,14 +119,14 @@ void CUIPdaContactsWnd::RemoveContact(CPda* pda)
 {
 	u32 cnt = UIListWnd->GetSize();
 
-	for (u32 i = 0; i < cnt; ++i)
+	for(u32 i = 0; i < cnt; ++i)
 	{
 		CUIWindow* w = UIListWnd->GetItem(i);
 		CUIPdaContactItem* itm = (CUIPdaContactItem*)(w);
 
-		if (itm->m_data == (void*)pda)
+		if(itm->m_data == (void*)pda)
 		{
-			if (itm->GetSelected())
+			if(itm->GetSelected())
 				UIDetailsWnd->Clear();
 			UIListWnd->RemoveWindow(w);
 			return;
@@ -163,7 +163,7 @@ extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
 void CUIPdaContactItem::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
-	if (b)
+	if(b)
 	{
 		m_cw->UIDetailsWnd->Clear();
 		CCharacterInfo chInfo;
@@ -176,7 +176,7 @@ void CUIPdaContactItem::SetSelected(bool b)
 
 bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
 {
-	if (mouse_btn == MOUSE_1)
+	if(mouse_btn == MOUSE_1)
 	{
 		m_cw->UIListWnd->SetSelected(this);
 		return true;

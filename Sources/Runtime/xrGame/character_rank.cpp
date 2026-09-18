@@ -24,9 +24,9 @@ CHARACTER_RANK::RANK_KILL_TABLE CHARACTER_RANK::m_rank_kill_table;
 
 int CHARACTER_RANK::ValueToIndex(CHARACTER_RANK_VALUE val)
 {
-	for (int i = 0; i < (int)m_pItemDataVector->size(); i++)
+	for(int i = 0; i < (int)m_pItemDataVector->size(); i++)
 	{
-		if (val < (*m_pItemDataVector)[i].threshold)
+		if(val < (*m_pItemDataVector)[i].threshold)
 			return i;
 	}
 	return GetMaxIndex();

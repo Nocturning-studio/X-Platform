@@ -36,13 +36,13 @@ class XRCORE_API CTimerBase
 	}
 	ICF void Start()
 	{
-		if (bPause)
+		if(bPause)
 			return;
 		qwStartTime = CPU::QPC() - qwPauseAccum;
 	}
 	ICF u64 GetElapsed_ticks() const
 	{
-		if (bPause)
+		if(bPause)
 			return qwPausedTime;
 		else
 			return CPU::QPC() - qwStartTime - CPU::qpc_overhead - qwPauseAccum;
@@ -91,7 +91,7 @@ class XRCORE_API CTimer : public CTimerBase
 
 	ICF void Start()
 	{
-		if (bPause)
+		if(bPause)
 			return;
 
 		inherited::Start();
@@ -155,11 +155,11 @@ class XRCORE_API CTimer_paused_ex : public CTimer
 	}
 	IC void Pause(BOOL b)
 	{
-		if (bPause == b)
+		if(bPause == b)
 			return;
 
 		u64 _current = CPU::QPC() - CPU::qpc_overhead;
-		if (b)
+		if(b)
 		{
 			save_clock = _current;
 			qwPausedTime = CTimerBase::GetElapsed_ticks();
@@ -202,14 +202,14 @@ class XRCORE_API CStatTimer
 
 	ICF void Begin()
 	{
-		if (!g_bEnableStatGather)
+		if(!g_bEnableStatGather)
 			return;
 		count++;
 		T.Start();
 	}
 	ICF void End()
 	{
-		if (!g_bEnableStatGather)
+		if(!g_bEnableStatGather)
 			return;
 		accum += T.GetElapsed_ticks();
 	}

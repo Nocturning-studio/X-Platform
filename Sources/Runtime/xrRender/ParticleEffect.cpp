@@ -14,11 +14,11 @@ void PS::OnEffectParticleBirth(void* owner, u32, PAPI::Particle& m, u32)
 	CParticleEffect* PE = static_cast<CParticleEffect*>(owner);
 	VERIFY(PE);
 	CPEDef* PED = PE->GetDefinition();
-	if (PED)
+	if(PED)
 	{
-		if (PED->m_Flags.is(CPEDef::dfRandomFrame))
+		if(PED->m_Flags.is(CPEDef::dfRandomFrame))
 			m.frame = (u16)iFloor(Random.randI(PED->m_Frame.m_iFrameCount) * 255.f);
-		if (PED->m_Flags.is(CPEDef::dfAnimated) && PED->m_Flags.is(CPEDef::dfRandomPlayback) && Random.randI(2))
+		if(PED->m_Flags.is(CPEDef::dfAnimated) && PED->m_Flags.is(CPEDef::dfRandomPlayback) && Random.randI(2))
 			m.flags.set(Particle::ANIMATE_CCW, TRUE);
 	}
 }
@@ -61,7 +61,7 @@ void CParticleEffect::Play()
 void CParticleEffect::Stop(BOOL bDefferedStop)
 {
 	ParticleManager()->StopEffect(m_HandleEffect, m_HandleActionList, bDefferedStop);
-	if (bDefferedStop)
+	if(bDefferedStop)
 	{
 		m_RT_Flags.set(flRT_DefferedStop, TRUE);
 	}
@@ -79,7 +79,7 @@ void CParticleEffect::RefreshShader()
 void CParticleEffect::UpdateParent(const fmat4x4& m, const fvec3& velocity, BOOL bTransform)
 {
 	m_RT_Flags.set(flRT_Transform, bTransform);
-	if (bTransform)
+	if(bTransform)
 		m_Transform.set(m);
 	else
 	{
@@ -90,12 +90,12 @@ void CParticleEffect::UpdateParent(const fmat4x4& m, const fvec3& velocity, BOOL
 
 void CParticleEffect::OnFrame(u32 frame_dt)
 {
-	if (m_Def && m_RT_Flags.is(flRT_Playing))
+	if(m_Def && m_RT_Flags.is(flRT_Playing))
 	{
 		m_MemDT += frame_dt;
 
 		int StepCount = 0;
-		if (m_MemDT >= uDT_STEP)
+		if(m_MemDT >= uDT_STEP)
 		{
 			// allow maximum of three steps (99ms) to avoid slowdown after loading
 			// it will really skip updates at less than 10fps, which is unplayable
@@ -104,14 +104,14 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 			clamp(StepCount, 0, 3);
 		}
 
-		for (; StepCount; StepCount--)
+		for(; StepCount; StepCount--)
 		{
-			if (m_Def->m_Flags.is(CPEDef::dfTimeLimit))
+			if(m_Def->m_Flags.is(CPEDef::dfTimeLimit))
 			{
-				if (!m_RT_Flags.is(flRT_DefferedStop))
+				if(!m_RT_Flags.is(flRT_DefferedStop))
 				{
 					m_fElapsedLimit -= fDT_STEP;
-					if (m_fElapsedLimit < 0.f)
+					if(m_fElapsedLimit < 0.f)
 					{
 						m_fElapsedLimit = m_Def->m_fTimeLimit;
 						Stop(true);
@@ -126,31 +126,31 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 			ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
 
 			// our actions
-			if (m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))
+			if(m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))
 				m_Def->ExecuteAnimate(particles, p_cnt, fDT_STEP);
-			if (m_Def->m_Flags.is(CPEDef::dfCollision))
+			if(m_Def->m_Flags.is(CPEDef::dfCollision))
 				m_Def->ExecuteCollision(particles, p_cnt, fDT_STEP, this, m_CollisionCallback);
 
 			//-move action
-			if (p_cnt)
+			if(p_cnt)
 			{
 				vis.box.invalidate();
 				float p_size = 0.f;
-				for (u32 i = 0; i < p_cnt; i++)
+				for(u32 i = 0; i < p_cnt; i++)
 				{
 					Particle& m = particles[i];
 					vis.box.modify((fvec3&)m.pos);
-					if (m.size.x > p_size)
+					if(m.size.x > p_size)
 						p_size = m.size.x;
-					if (m.size.y > p_size)
+					if(m.size.y > p_size)
 						p_size = m.size.y;
-					if (m.size.z > p_size)
+					if(m.size.z > p_size)
 						p_size = m.size.z;
 				}
 				vis.box.grow(p_size);
 				vis.box.getsphere(vis.sphere.P, vis.sphere.R);
 			}
-			if (m_RT_Flags.is(flRT_DefferedStop) && (0 == p_cnt))
+			if(m_RT_Flags.is(flRT_DefferedStop) && (0 == p_cnt))
 			{
 				m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, FALSE);
 				break;
@@ -168,7 +168,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 BOOL CParticleEffect::Compile(CPEDef* def)
 {
 	m_Def = def;
-	if (m_Def)
+	if(m_Def)
 	{
 		// refresh shader
 		RefreshShader();
@@ -179,10 +179,10 @@ BOOL CParticleEffect::Compile(CPEDef* def)
 		ParticleManager()->SetMaxParticles(m_HandleEffect, m_Def->m_MaxParticles);
 		ParticleManager()->SetCallback(m_HandleEffect, OnEffectParticleBirth, OnEffectParticleDead, this, 0);
 		// time limit
-		if (m_Def->m_Flags.is(CPEDef::dfTimeLimit))
+		if(m_Def->m_Flags.is(CPEDef::dfTimeLimit))
 			m_fElapsedLimit = m_Def->m_fTimeLimit;
 	}
-	if (def)
+	if(def)
 		shader = def->m_CachedShader;
 	return TRUE;
 }
@@ -207,12 +207,12 @@ void CParticleEffect::Copy(IRender_Visual*)
 
 void CParticleEffect::OnDeviceCreate()
 {
-	if (m_Def)
+	if(m_Def)
 	{
-		if (m_Def->m_Flags.is(CPEDef::dfSprite))
+		if(m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
 			geom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
-			if (m_Def)
+			if(m_Def)
 				shader = m_Def->m_CachedShader;
 		}
 	}
@@ -220,9 +220,9 @@ void CParticleEffect::OnDeviceCreate()
 
 void CParticleEffect::OnDeviceDestroy()
 {
-	if (m_Def)
+	if(m_Def)
 	{
-		if (m_Def->m_Flags.is(CPEDef::dfSprite))
+		if(m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
 			geom.destroy();
 			shader.destroy();
@@ -296,38 +296,38 @@ void CParticleEffect::Render(float)
 	u32 p_cnt;
 	ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
 
-	if (p_cnt > 0)
+	if(p_cnt > 0)
 	{
-		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
+		if(m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
 			FVF::LIT* pv_start = (FVF::LIT*)RenderBackend.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			FVF::LIT* pv = pv_start;
 
-			for (u32 i = 0; i < p_cnt; i++)
+			for(u32 i = 0; i < p_cnt; i++)
 			{
 				PAPI::Particle& m = particles[i];
 
 				fvec2 lt, rb;
 				lt.set(0.f, 0.f);
 				rb.set(1.f, 1.f);
-				if (m_Def->m_Flags.is(CPEDef::dfFramed))
+				if(m_Def->m_Flags.is(CPEDef::dfFramed))
 					m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
 				float r_x = m.size.x * 0.5f;
 				float r_y = m.size.y * 0.5f;
-				if (m_Def->m_Flags.is(CPEDef::dfVelocityScale))
+				if(m_Def->m_Flags.is(CPEDef::dfVelocityScale))
 				{
 					float speed = m.vel.magnitude();
 					r_x += speed * m_Def->m_VelocityScale.x;
 					r_y += speed * m_Def->m_VelocityScale.y;
 				}
-				if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
+				if(m_Def->m_Flags.is(CPEDef::dfAlignToPath))
 				{
 					float speed = m.vel.magnitude();
-					if ((speed < EPS_S) && m_Def->m_Flags.is(CPEDef::dfWorldAlign))
+					if((speed < EPS_S) && m_Def->m_Flags.is(CPEDef::dfWorldAlign))
 					{
 						fmat4x4 M;
 						M.setXYZ(m_Def->m_APDefaultRotation);
-						if (m_RT_Flags.is(flRT_Transform))
+						if(m_RT_Flags.is(flRT_Transform))
 						{
 							fvec3 p;
 							m_Transform.transform_tiny(p, m.pos);
@@ -339,19 +339,19 @@ void CParticleEffect::Render(float)
 							FillSprite(pv, M.k, M.i, m.pos, lt, rb, r_x, r_y, m.color, m.rot.x);
 						}
 					}
-					else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
+					else if((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
 					{
 						fmat4x4 M;
 						M.identity();
 						M.k.div(m.vel, speed);
 						M.j.set(0, 1, 0);
-						if (_abs(M.j.dotproduct(M.k)) > .99f)
+						if(_abs(M.j.dotproduct(M.k)) > .99f)
 							M.j.set(0, 0, 1);
 						M.i.crossproduct(M.j, M.k);
 						M.i.normalize();
 						M.j.crossproduct(M.k, M.i);
 						M.j.normalize();
-						if (m_RT_Flags.is(flRT_Transform))
+						if(m_RT_Flags.is(flRT_Transform))
 						{
 							fvec3 p;
 							m_Transform.transform_tiny(p, m.pos);
@@ -366,11 +366,11 @@ void CParticleEffect::Render(float)
 					else
 					{
 						fvec3 dir;
-						if (speed >= EPS_S)
+						if(speed >= EPS_S)
 							dir.div(m.vel, speed);
 						else
 							dir.setHP(-m_Def->m_APDefaultRotation.y, -m_Def->m_APDefaultRotation.x);
-						if (m_RT_Flags.is(flRT_Transform))
+						if(m_RT_Flags.is(flRT_Transform))
 						{
 							fvec3 p, d;
 							m_Transform.transform_tiny(p, m.pos);
@@ -385,7 +385,7 @@ void CParticleEffect::Render(float)
 				}
 				else
 				{
-					if (m_RT_Flags.is(flRT_Transform))
+					if(m_RT_Flags.is(flRT_Transform))
 					{
 						fvec3 p;
 						m_Transform.transform_tiny(p, m.pos);
@@ -400,15 +400,15 @@ void CParticleEffect::Render(float)
 			}
 			dwCount = u32(pv - pv_start);
 			RenderBackend.Vertex.Unlock(dwCount, geom->vb_stride);
-			if (dwCount)
+			if(dwCount)
 			{
 				RenderBackend.set_transform_world(Fidentity);
 				RenderBackend.set_Geometry(geom);
 
 				//              u32 cm					= RenderBackend.get_CullMode();
 				RenderBackend.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling)
-										? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_BACKFACE : CULL_FRONTFACE)
-										: CULL_DISABLE);
+											   ? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_BACKFACE : CULL_FRONTFACE)
+											   : CULL_DISABLE);
 				RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
 				RenderBackend.set_CullMode(CULL_BACKFACE);
 			}

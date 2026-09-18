@@ -61,7 +61,7 @@ XRCORE_API void dump_file_mappings()
 
 	FILE_MAPPINGS::const_iterator I = g_file_mappings.begin();
 	FILE_MAPPINGS::const_iterator E = g_file_mappings.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		Msg("* [0x%08x][%d][%s]", (*I).first, (*I).second.first, (*I).second.second.c_str());
 }
 #endif // DEBUG
@@ -72,9 +72,9 @@ XRCORE_API void dump_file_mappings()
 void VerifyPath(LPCSTR path)
 {
 	string1024 tmp;
-	for (int i = 0; path[i]; i++)
+	for(int i = 0; path[i]; i++)
 	{
-		if (path[i] != '\\' || i == 0)
+		if(path[i] != '\\' || i == 0)
 			continue;
 		CopyMemory(tmp, path, i);
 		tmp[i] = 0;
@@ -92,7 +92,7 @@ void* FileDownload(LPCSTR fn, u32* pdwSize)
 #else
 	hFile = _open(fn, O_RDONLY | O_BINARY | O_SEQUENTIAL, _S_IREAD);
 #endif
-	if (hFile <= 0)
+	if(hFile <= 0)
 	{
 		Sleep(1);
 #ifdef _EDITOR
@@ -117,7 +117,7 @@ void* FileDownload(LPCSTR fn, u32* pdwSize)
 	int r_bytes = _read(hFile, buf, size);
 	R_ASSERT3(r_bytes == (int)size, "Can't read file data:", fn);
 	_close(hFile);
-	if (pdwSize)
+	if(pdwSize)
 		*pdwSize = size;
 	return buf;
 }
@@ -148,7 +148,7 @@ void* FileDecompress(const char* fn, const char* sign, u32* size)
 	int H = _open(fn, O_BINARY | O_RDONLY, _S_IREAD);
 	R_ASSERT2(H > 0, fn);
 	_read(H, &F, 8);
-	if (strncmp(M, F, 8) != 0)
+	if(strncmp(M, F, 8) != 0)
 	{
 		F[8] = 0;
 		Msg("FATAL: signatures doesn't match, file(%s) / requested(%s)", F, sign);
@@ -159,7 +159,7 @@ void* FileDecompress(const char* fn, const char* sign, u32* size)
 	u32 SZ;
 	SZ = _readLZ(H, ptr, _filelength(H) - 8);
 	_close(H);
-	if (size)
+	if(size)
 		*size = SZ;
 	return ptr;
 }
@@ -176,14 +176,14 @@ CMemoryWriter::~CMemoryWriter()
 
 void CMemoryWriter::w(const void* ptr, u32 count)
 {
-	if (position + count > mem_size)
+	if(position + count > mem_size)
 	{
 		// reallocate
-		if (mem_size == 0)
+		if(mem_size == 0)
 			mem_size = 128;
-		while (mem_size <= (position + count))
+		while(mem_size <= (position + count))
 			mem_size *= 2;
-		if (0 == data)
+		if(0 == data)
 			data = (BYTE*)Memory.mem_alloc(mem_size
 #ifdef DEBUG_MEMORY_NAME
 										   ,
@@ -200,7 +200,7 @@ void CMemoryWriter::w(const void* ptr, u32 count)
 	}
 	CopyMemory(data + position, ptr, count);
 	position += count;
-	if (position > file_size)
+	if(position > file_size)
 		file_size = position;
 }
 
@@ -208,7 +208,7 @@ void CMemoryWriter::w(const void* ptr, u32 count)
 bool CMemoryWriter::save_to(LPCSTR fn)
 {
 	IWriter* F = FS.w_open(fn);
-	if (F)
+	if(F)
 	{
 		F->w(pointer(), size());
 		FS.w_close(F);
@@ -235,7 +235,7 @@ void IWriter::close_chunk()
 }
 u32 IWriter::chunk_size() // returns size of currently opened chunk, 0 otherwise
 {
-	if (chunk_pos.empty())
+	if(chunk_pos.empty())
 		return 0;
 	return tell() - chunk_pos.top() - 4;
 }
@@ -246,10 +246,10 @@ void IWriter::w_compressed(void* ptr, u32 count)
 	unsigned dest_sz = 0;
 	_compressLZ(&dest, &dest_sz, ptr, count);
 
-	if (g_dummy_stuff)
+	if(g_dummy_stuff)
 		g_dummy_stuff(dest, dest_sz, dest);
 
-	if (dest && dest_sz)
+	if(dest && dest_sz)
 		w(dest, dest_sz);
 	xr_free(dest);
 }
@@ -257,7 +257,7 @@ void IWriter::w_compressed(void* ptr, u32 count)
 void IWriter::w_chunk(u32 type, void* data, u32 size)
 {
 	open_chunk(type);
-	if (type & CFS_CompressMark)
+	if(type & CFS_CompressMark)
 		w_compressed(data, size);
 	else
 		w(data, size);
@@ -267,7 +267,7 @@ void IWriter::w_sdir(const fvec3& D)
 {
 	fvec3 C;
 	float mag = D.magnitude();
-	if (mag > EPS_S)
+	if(mag > EPS_S)
 	{
 		C.div(D, mag);
 	}
@@ -295,9 +295,9 @@ IReader* IReader::open_chunk(u32 ID)
 {
 	BOOL bCompressed;
 	u32 dwSize = find_chunk(ID, &bCompressed);
-	if (dwSize != 0)
+	if(dwSize != 0)
 	{
-		if (bCompressed)
+		if(bCompressed)
 		{
 			BYTE* dest;
 			unsigned dest_sz;
@@ -319,7 +319,7 @@ void IReader::close()
 
 IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
 {
-	if (0 == _prev)
+	if(0 == _prev)
 	{
 		// first
 		rewind();
@@ -332,11 +332,11 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
 	}
 
 	//	open
-	if (elapsed() < 8)
+	if(elapsed() < 8)
 		return NULL;
 	ID = r_u32();
 	u32 _size = r_u32();
-	if (ID & CFS_CompressMark)
+	if(ID & CFS_CompressMark)
 	{
 		// compressed
 		u8* dest;
@@ -358,11 +358,11 @@ void IReader::r(void* p, int cnt)
 	advance(cnt);
 #ifdef DEBUG
 	BOOL bShow = FALSE;
-	if (dynamic_cast<CFileReader*>(this))
+	if(dynamic_cast<CFileReader*>(this))
 		bShow = TRUE;
-	if (dynamic_cast<CVirtualFileReader*>(this))
+	if(dynamic_cast<CVirtualFileReader*>(this))
 		bShow = TRUE;
-	if (bShow)
+	if(bShow)
 	{
 		FS.dwOpenCounter++;
 	}
@@ -377,13 +377,13 @@ IC u32 IReader::advance_term_string()
 {
 	u32 sz = 0;
 	char* src = (char*)data;
-	while (!eof())
+	while(!eof())
 	{
 		Pos++;
 		sz++;
-		if (!eof() && is_term(src[Pos]))
+		if(!eof() && is_term(src[Pos]))
 		{
-			while (!eof() && is_term(src[Pos]))
+			while(!eof() && is_term(src[Pos]))
 				Pos++;
 			break;
 		}
@@ -409,7 +409,7 @@ void IReader::r_stringZ(char* dest, u32 tgt_sz)
 	char* src = (char*)data;
 	u32 sz = xr_strlen(src);
 
-	while ((src[Pos] != 0) && (!eof()))
+	while((src[Pos] != 0) && (!eof()))
 		*dest++ = src[Pos++];
 	*dest = 0;
 	Pos++;
@@ -428,7 +428,7 @@ void IReader::r_stringZ(xr_string& dest)
 void IReader::skip_stringZ()
 {
 	char* src = (char*)data;
-	while ((src[Pos] != 0) && (!eof()))
+	while((src[Pos] != 0) && (!eof()))
 		Pos++;
 	Pos++;
 };

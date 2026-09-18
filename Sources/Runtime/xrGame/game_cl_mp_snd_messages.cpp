@@ -5,15 +5,15 @@
 
 void game_cl_mp::LoadSndMessage(LPCSTR caSection, LPCSTR caLine, u32 ID)
 {
-	if (!pSettings->section_exist(caSection))
+	if(!pSettings->section_exist(caSection))
 		return;
-	if (!pSettings->line_exist(caSection, caLine))
+	if(!pSettings->line_exist(caSection, caLine))
 		return;
 
 	string4096 Line;
 	std::strcpy(Line, pSettings->r_string(caSection, caLine));
 	u32 count = _GetItemCount(Line);
-	if (count < 2)
+	if(count < 2)
 		return;
 	string4096 Name, Prior;
 	_GetItem(Line, 0, Name);
@@ -25,7 +25,7 @@ void game_cl_mp::LoadSndMessage(LPCSTR caSection, LPCSTR caLine, u32 ID)
 void game_cl_mp::PlaySndMessage(u32 ID)
 {
 	SNDMESSAGES_it it = std::find(m_pSndMessages.begin(), m_pSndMessages.end(), ID);
-	if (it == m_pSndMessages.end() || !(*it == ID))
+	if(it == m_pSndMessages.end() || !(*it == ID))
 	{
 		R_ASSERT2(0, "No such sound!!!");
 		return;
@@ -33,42 +33,42 @@ void game_cl_mp::PlaySndMessage(u32 ID)
 	SND_Message& SndMsg = *it;
 
 	//	if (Level().timeServer()<pSndMgs->pSound._handle()->length_ms() + pSndMgs->LastStarted) return;
-	if (SndMsg.pSound._feedback())
+	if(SndMsg.pSound._feedback())
 		return;
 
 	u32 MaxDelay = 0;
-	for (u32 i = 0; i < m_pSndMessagesInPlay.size(); i++)
+	for(u32 i = 0; i < m_pSndMessagesInPlay.size(); i++)
 	{
 		SND_Message* pSndMsgIP = m_pSndMessagesInPlay[i];
-		if (!pSndMsgIP->pSound._feedback())
+		if(!pSndMsgIP->pSound._feedback())
 			continue;
-		if (pSndMsgIP->priority > SndMsg.priority)
+		if(pSndMsgIP->priority > SndMsg.priority)
 			return;
-		if (pSndMsgIP->priority < SndMsg.priority)
+		if(pSndMsgIP->priority < SndMsg.priority)
 		{
 			pSndMsgIP->pSound.stop();
 			continue;
 		}
-		if (pSndMsgIP->priority == SndMsg.priority)
+		if(pSndMsgIP->priority == SndMsg.priority)
 		{
 			// if (Level().timeServer_Async()>pSndMsgIP->LastStarted + pSndMsgIP->pSound._handle()->length_ms())
 			// continue;
-			if (Level().timeServer_Async() >
-				pSndMsgIP->LastStarted + iFloor(pSndMsgIP->pSound.get_length_sec() * 1000.0f))
+			if(Level().timeServer_Async() >
+			   pSndMsgIP->LastStarted + iFloor(pSndMsgIP->pSound.get_length_sec() * 1000.0f))
 				continue;
 
 			// u32 Delay = pSndMsgIP->LastStarted + pSndMsgIP->pSound._handle()->length_ms() -
 			// Level().timeServer_Async();
 			u32 Delay = pSndMsgIP->LastStarted + iFloor(pSndMsgIP->pSound.get_length_sec() * 1000.0f) -
 						Level().timeServer_Async();
-			if (Delay > MaxDelay)
+			if(Delay > MaxDelay)
 			{
 				MaxDelay = Delay;
 			};
 		}
 	}
 #ifdef DEBUG
-	if (MaxDelay > 0)
+	if(MaxDelay > 0)
 	{
 		Msg("- SndMsgDelay - %d", MaxDelay);
 	};
@@ -81,10 +81,10 @@ void game_cl_mp::PlaySndMessage(u32 ID)
 
 void game_cl_mp::UpdateSndMessages()
 {
-	for (u32 i = 0; i < m_pSndMessagesInPlay.size();)
+	for(u32 i = 0; i < m_pSndMessagesInPlay.size();)
 	{
 		SND_Message* pSndMsg = m_pSndMessagesInPlay[i];
-		if (pSndMsg->pSound._feedback() == NULL)
+		if(pSndMsg->pSound._feedback() == NULL)
 		{
 			m_pSndMessagesInPlay.erase(m_pSndMessagesInPlay.begin() + i);
 			continue;

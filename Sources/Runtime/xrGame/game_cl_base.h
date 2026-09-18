@@ -87,7 +87,7 @@ class game_cl_GameState : public game_GameState, public ISheduled
 		return *m_game_type_name;
 	};
 	void set_type_name(LPCSTR s);
-	virtual void Init(){};
+	virtual void Init() {};
 	virtual void net_import_state(NET_Packet& P);
 	virtual void net_import_update(NET_Packet& P);
 	virtual void net_import_GameTime(NET_Packet& P); // update GameTime only for remote clients
@@ -124,7 +124,7 @@ class game_cl_GameState : public game_GameState, public ISheduled
 	{
 		return NULL;
 	};
-	virtual void GetMapEntities(xr_vector<SZoneMapEntityData>& dst){};
+	virtual void GetMapEntities(xr_vector<SZoneMapEntityData>& dst) {};
 
 	void StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	virtual void shedule_Update(u32 dt);
@@ -132,11 +132,11 @@ class game_cl_GameState : public game_GameState, public ISheduled
 	void u_EventGen(NET_Packet& P, u16 type, u16 dest);
 	void u_EventSend(NET_Packet& P);
 
-	virtual void ChatSayTeam(const shared_str& phrase){};
-	virtual void ChatSayAll(const shared_str& phrase){};
-	virtual void OnChatMessage(NET_Packet* P){};
-	virtual void OnWarnMessage(NET_Packet* P){};
-	virtual void OnRadminMessage(u16 type, NET_Packet* P){};
+	virtual void ChatSayTeam(const shared_str& phrase) {};
+	virtual void ChatSayAll(const shared_str& phrase) {};
+	virtual void OnChatMessage(NET_Packet* P) {};
+	virtual void OnWarnMessage(NET_Packet* P) {};
+	virtual void OnRadminMessage(u16 type, NET_Packet* P) {};
 
 	virtual bool IsVotingEnabled()
 	{
@@ -150,14 +150,14 @@ class game_cl_GameState : public game_GameState, public ISheduled
 	{
 		return false;
 	};
-	virtual void SetVotingActive(bool Active){};
-	virtual void SendStartVoteMessage(LPCSTR args){};
-	virtual void SendVoteYesMessage(){};
-	virtual void SendVoteNoMessage(){};
-	virtual void OnVoteStart(NET_Packet& P){};
-	virtual void OnVoteStop(NET_Packet& P){};
+	virtual void SetVotingActive(bool Active) {};
+	virtual void SendStartVoteMessage(LPCSTR args) {};
+	virtual void SendVoteYesMessage() {};
+	virtual void SendVoteNoMessage() {};
+	virtual void OnVoteStart(NET_Packet& P) {};
+	virtual void OnVoteStop(NET_Packet& P) {};
 
-	virtual void OnRender(){};
+	virtual void OnRender() {};
 	virtual bool IsServerControlHits()
 	{
 		return m_bServerControlHits;
@@ -175,10 +175,10 @@ class game_cl_GameState : public game_GameState, public ISheduled
 		return true;
 	};
 
-	virtual void OnSpawn(CObject* pObj){};
-	virtual void OnDestroy(CObject* pObj){};
+	virtual void OnSpawn(CObject* pObj) {};
+	virtual void OnDestroy(CObject* pObj) {};
 
-	virtual void OnPlayerFlagsChanged(game_PlayerState* ps){};
-	virtual void OnPlayerVoted(game_PlayerState* ps){};
+	virtual void OnPlayerFlagsChanged(game_PlayerState* ps) {};
+	virtual void OnPlayerVoted(game_PlayerState* ps) {};
 	virtual void SendPickUpEvent(u16 ID_who, u16 ID_what);
 };

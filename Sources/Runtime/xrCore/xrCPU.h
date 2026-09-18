@@ -27,4 +27,3 @@ XRCORE_API u64 QPC();
 XRCORE_API u64 GetCLK();
 XRCORE_API void Initialize();
 }; // namespace CPU
-

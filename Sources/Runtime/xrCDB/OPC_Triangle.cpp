@@ -33,11 +33,11 @@ using namespace Meshmerizer;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool IndexedTriangle::IsDegenerate() const
 {
-	if (mVRef[0] == mVRef[1])
+	if(mVRef[0] == mVRef[1])
 		return true;
-	if (mVRef[1] == mVRef[2])
+	if(mVRef[1] == mVRef[2])
 		return true;
-	if (mVRef[2] == mVRef[0])
+	if(mVRef[2] == mVRef[0])
 		return true;
 	return false;
 }

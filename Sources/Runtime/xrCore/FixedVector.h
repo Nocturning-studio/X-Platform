@@ -4,7 +4,8 @@
 
 #include "xrDebug_macros.h"
 
-template <class T, const int dim> class svector
+template <class T, const int dim>
+class svector
 {
   public:
 	typedef size_t size_type;
@@ -121,7 +122,7 @@ template <class T, const int dim> class svector
 	{
 		VERIFY(id < count);
 		count--;
-		for (u32 i = id; i < count; i++)
+		for(u32 i = id; i < count; i++)
 			array[i] = array[i + 1];
 	}
 	IC void erase(iterator it)
@@ -132,7 +133,7 @@ template <class T, const int dim> class svector
 	IC void insert(u32 id, reference V)
 	{
 		VERIFY(id < count);
-		for (int i = count; i > int(id); i--)
+		for(int i = count; i > int(id); i--)
 			array[i] = array[i - 1];
 		count++;
 		array[id] = V;
@@ -145,10 +146,10 @@ template <class T, const int dim> class svector
 	}
 	IC BOOL equal(const svector<value_type, dim>& base) const
 	{
-		if (size() != base.size())
+		if(size() != base.size())
 			return FALSE;
-		for (u32 cmp = 0; cmp < size(); cmp++)
-			if ((*this)[cmp] != base[cmp])
+		for(u32 cmp = 0; cmp < size(); cmp++)
+			if((*this)[cmp] != base[cmp])
 				return FALSE;
 		return TRUE;
 	}

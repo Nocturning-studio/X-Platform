@@ -26,13 +26,13 @@ BOOL CLevel::Load_GameSpecific_Before()
 	g_pGamePersistent->LoadTitle("st_loading_ai_objects");
 	string_path fn_game;
 
-	if (GamePersistent().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
+	if(GamePersistent().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
 		ai().load(net_SessionName());
 
 #ifdef ALIFE_MP
-	if (!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+	if(!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
 #else
-	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+	if(!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
 #endif
 	{
 		IReader* stream = FS.r_open(fn_game);
@@ -47,7 +47,7 @@ BOOL CLevel::Load_GameSpecific_After()
 {
 	// loading static particles
 	string_path fn_game;
-	if (FS.exist(fn_game, "$level$", "level.ps_static"))
+	if(FS.exist(fn_game, "$level$", "level.ps_static"))
 	{
 		g_pGamePersistent->LoadTitle("st_loading_static_particles");
 		IReader* F = FS.r_open(fn_game);
@@ -56,7 +56,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		string256 ref_name;
 		fmat4x4 transform;
 		fvec3 zero_vel = {0.f, 0.f, 0.f};
-		for (IReader* OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ))
+		for(IReader* OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ))
 		{
 			OBJ->r_stringZ(ref_name, sizeof(ref_name));
 			OBJ->r(&transform, sizeof(fmat4x4));
@@ -69,14 +69,14 @@ BOOL CLevel::Load_GameSpecific_After()
 		FS.r_close(F);
 	}
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		// loading static sounds
 		VERIFY(m_level_sound_manager);
 		m_level_sound_manager->Load();
 
 		// loading SOM
-		if (FS.exist(fn_game, "$level$", "level.som"))
+		if(FS.exist(fn_game, "$level$", "level.som"))
 		{
 			g_pGamePersistent->LoadTitle("st_loading_som");
 			IReader* F = FS.r_open(fn_game);
@@ -85,11 +85,11 @@ BOOL CLevel::Load_GameSpecific_After()
 		}
 
 		// loading random (around player) sounds
-		if (pSettings->section_exist("sounds_random"))
+		if(pSettings->section_exist("sounds_random"))
 		{
 			CInifile::Sect& S = pSettings->r_section("sounds_random");
 			Sounds_Random.reserve(S.Data.size());
-			for (CInifile::SectCIt I = S.Data.begin(); S.Data.end() != I; ++I)
+			for(CInifile::SectCIt I = S.Data.begin(); S.Data.end() != I; ++I)
 			{
 				Sounds_Random.push_back(ref_sound());
 				Sound->create(Sounds_Random.back(), *I->first, st_Effect, sg_SourceType);
@@ -101,7 +101,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		// loading scripts
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
-		if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))
+		if(pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))
 		{
 			ai().script_engine().add_script_process(
 				ScriptEngine::eScriptProcessorLevel,
@@ -113,12 +113,12 @@ BOOL CLevel::Load_GameSpecific_After()
 													xr_new<CScriptProcess>("level", ""));
 		}
 
-		if (game && (GameID() != GAME_SINGLE))
+		if(game && (GameID() != GAME_SINGLE))
 		{
 			CInifile& gameLtx = *pGameIni;
-			if (gameLtx.section_exist(Level().name()))
+			if(gameLtx.section_exist(Level().name()))
 			{
-				if (gameLtx.line_exist(Level().name(), "weathers"))
+				if(gameLtx.line_exist(Level().name(), "weathers"))
 				{
 					LPCSTR weathers_sect = gameLtx.r_string(Level().name(), "weathers");
 					GamePersistent().Environment().SetWeather(weathers_sect);
@@ -169,29 +169,29 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, u32 count)
 	u16 index = 0, static_mtl_count = 1;
 	int max_ID = 0;
 	int max_static_ID = 0;
-	for (GameMtlIt I = GMLib.FirstMaterial(); GMLib.LastMaterial() != I; ++I, ++index)
+	for(GameMtlIt I = GMLib.FirstMaterial(); GMLib.LastMaterial() != I; ++I, ++index)
 	{
-		if (!(*I)->Flags.test(SGameMtl::flDynamic))
+		if(!(*I)->Flags.test(SGameMtl::flDynamic))
 		{
 			++static_mtl_count;
 			translator.push_back(translation_pair((*I)->GetID(), index));
-			if ((*I)->GetID() > max_static_ID)
+			if((*I)->GetID() > max_static_ID)
 				max_static_ID = (*I)->GetID();
 		}
-		if ((*I)->GetID() > max_ID)
+		if((*I)->GetID() > max_ID)
 			max_ID = (*I)->GetID();
 	}
 	// Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
 	VERIFY(max_static_ID < 0xFFFF);
 
-	if (static_mtl_count < 128)
+	if(static_mtl_count < 128)
 	{
 		CDB::TRI* I = tris;
 		CDB::TRI* E = tris + count;
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			ID_INDEX_PAIRS::iterator i = std::find(translator.begin(), translator.end(), (u16)(*I).material);
-			if (i != translator.end())
+			if(i != translator.end())
 			{
 				(*I).material = (*i).m_index;
 				SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
@@ -209,10 +209,10 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, u32 count)
 	{
 		CDB::TRI* I = tris;
 		CDB::TRI* E = tris + count;
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 		{
 			ID_INDEX_PAIRS::iterator i = std::lower_bound(translator.begin(), translator.end(), (u16)(*I).material);
-			if ((i != translator.end()) && ((*i).m_id == (*I).material))
+			if((i != translator.end()) && ((*i).m_id == (*I).material))
 			{
 				(*I).material = (*i).m_index;
 				SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
@@ -228,6 +228,6 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, u32 count)
 
 void CLevel::BlockCheatLoad()
 {
-	if (game && (GameID() != GAME_SINGLE))
+	if(game && (GameID() != GAME_SINGLE))
 		phTimefactor = 1.f;
 }

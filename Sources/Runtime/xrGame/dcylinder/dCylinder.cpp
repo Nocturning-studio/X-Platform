@@ -51,7 +51,7 @@ inline bool circleIntersection(const dReal* n1, const dReal* cp1, dReal r1, cons
 	B_A = B / A;
 	B_A_2 = B_A * B_A;
 	D = B_A_2 - C;
-	if (D < 0.f)
+	if(D < 0.f)
 	{ // somewhat strange solution
 	  //- it is needed to set some
 	  // axis to sepparate cylinders
@@ -71,7 +71,7 @@ inline bool circleIntersection(const dReal* n1, const dReal* cp1, dReal r1, cons
 	B_A_2 = B_A * B_A;
 	D = B_A_2 - C;
 
-	if (D < 0.f)
+	if(D < 0.f)
 	{
 		t3 = -B_A + dSqrt(-D);
 		t4 = -B_A - dSqrt(-D);
@@ -100,9 +100,9 @@ inline bool circleIntersection(const dReal* n1, const dReal* cp1, dReal r1, cons
 	dReal l2_3 = dDOT(L2_3, L2_3);
 	dReal l2_4 = dDOT(L2_4, L2_4);
 
-	if (l1_3 < l1_4)
-		if (l2_3 < l2_4)
-			if (l1_3 < l2_3)
+	if(l1_3 < l1_4)
+		if(l2_3 < l2_4)
+			if(l1_3 < l2_3)
 			{
 				// l1_3;
 				point[0] = 0.5f * (O1[0] + O3[0]);
@@ -116,7 +116,7 @@ inline bool circleIntersection(const dReal* n1, const dReal* cp1, dReal r1, cons
 				point[1] = 0.5f * (O2[1] + O3[1]);
 				point[2] = 0.5f * (O2[2] + O3[2]);
 			}
-		else if (l1_3 < l2_4)
+		else if(l1_3 < l2_4)
 		{
 			// l1_3;
 			point[0] = 0.5f * (O1[0] + O3[0]);
@@ -131,8 +131,8 @@ inline bool circleIntersection(const dReal* n1, const dReal* cp1, dReal r1, cons
 			point[2] = 0.5f * (O2[2] + O4[2]);
 		}
 
-	else if (l2_3 < l2_4)
-		if (l1_4 < l2_3)
+	else if(l2_3 < l2_4)
+		if(l1_4 < l2_3)
 		{
 			// l1_4;
 			point[0] = 0.5f * (O1[0] + O4[0]);
@@ -146,7 +146,7 @@ inline bool circleIntersection(const dReal* n1, const dReal* cp1, dReal r1, cons
 			point[1] = 0.5f * (O2[1] + O3[1]);
 			point[2] = 0.5f * (O2[2] + O3[2]);
 		}
-	else if (l1_4 < l2_4)
+	else if(l1_4 < l2_4)
 	{
 		// l1_4;
 		point[0] = 0.5f * (O1[0] + O4[0]);
@@ -175,7 +175,7 @@ void lineClosestApproach(const dVector3 pa, const dVector3 ua, const dVector3 pb
 	dReal q1 = dDOT(ua, p);
 	dReal q2 = -dDOT(ub, p);
 	dReal d = 1 - uaub * uaub;
-	if (d <= 0)
+	if(d <= 0)
 	{
 		// @@@ this needs to be made more robust
 		*alpha = 0;
@@ -244,16 +244,16 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 	// set to a vector3 relative to body 1. invert_normal is 1 if the sign of
 	// the normal should be flipped.
 
-#define TEST(expr1, expr2, norm, cc)                                                                                   \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	if (s2 > s)                                                                                                        \
-	{                                                                                                                  \
-		s = s2;                                                                                                        \
-		normalR = norm;                                                                                                \
-		invert_normal = ((expr1) < 0);                                                                                 \
-		*code = (cc);                                                                                                  \
+#define TEST(expr1, expr2, norm, cc)   \
+	s2 = dFabs(expr1) - (expr2);       \
+	if(s2 > 0)                         \
+		return 0;                      \
+	if(s2 > s)                         \
+	{                                  \
+		s = s2;                        \
+		normalR = norm;                \
+		invert_normal = ((expr1) < 0); \
+		*code = (cc);                  \
 	}
 
 	s = -dInfinity;
@@ -280,19 +280,19 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 	TEST(dDOT41(R2 + 2, p), (radius * sQ23 + hlz * Q23 + B3), R2 + 2, 3);
 
 #undef TEST
-#define TEST(expr1, expr2, n1, n2, n3, cc)                                                                             \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	if (s2 > s)                                                                                                        \
-	{                                                                                                                  \
-		s = s2;                                                                                                        \
-		normalR = 0;                                                                                                   \
-		normalC[0] = (n1);                                                                                             \
-		normalC[1] = (n2);                                                                                             \
-		normalC[2] = (n3);                                                                                             \
-		invert_normal = ((expr1) < 0);                                                                                 \
-		*code = (cc);                                                                                                  \
+#define TEST(expr1, expr2, n1, n2, n3, cc) \
+	s2 = dFabs(expr1) - (expr2);           \
+	if(s2 > 0)                             \
+		return 0;                          \
+	if(s2 > s)                             \
+	{                                      \
+		s = s2;                            \
+		normalR = 0;                       \
+		normalC[0] = (n1);                 \
+		normalC[1] = (n2);                 \
+		normalC[2] = (n3);                 \
+		invert_normal = ((expr1) < 0);     \
+		*code = (cc);                      \
 	}
 
 	// separating axis is a normal to the cylinder axis passing across the nearest box vertex
@@ -311,16 +311,16 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 		// using Ax find box vertex which is nearest to the cylinder axis
 		dReal sign;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] = p2[i];
 		sign = (dDOT14(Ax, R2 + 0) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += sign * B1 * R2[i * 4];
 		sign = (dDOT14(Ax, R2 + 1) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += sign * B2 * R2[i * 4 + 1];
 		sign = (dDOT14(Ax, R2 + 2) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += sign * B3 * R2[i * 4 + 2];
 
 		// building axis which is normal to cylinder ax to the nearest box vertex
@@ -422,24 +422,24 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 	// note: cross product axes need to be scaled when s is computed.
 	// normal (n1,n2,n3) is relative to box 1.
 
-#define TEST(expr1, expr2, n1, n2, n3, cc)                                                                             \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	l = dSqrt((n1) * (n1) + (n2) * (n2) + (n3) * (n3));                                                                \
-	if (l > 0)                                                                                                         \
-	{                                                                                                                  \
-		s2 /= l;                                                                                                       \
-		if (s2 > s)                                                                                                    \
-		{                                                                                                              \
-			s = s2;                                                                                                    \
-			normalR = 0;                                                                                               \
-			normalC[0] = (n1) / l;                                                                                     \
-			normalC[1] = (n2) / l;                                                                                     \
-			normalC[2] = (n3) / l;                                                                                     \
-			invert_normal = ((expr1) < 0);                                                                             \
-			*code = (cc);                                                                                              \
-		}                                                                                                              \
+#define TEST(expr1, expr2, n1, n2, n3, cc)              \
+	s2 = dFabs(expr1) - (expr2);                        \
+	if(s2 > 0)                                          \
+		return 0;                                       \
+	l = dSqrt((n1) * (n1) + (n2) * (n2) + (n3) * (n3)); \
+	if(l > 0)                                           \
+	{                                                   \
+		s2 /= l;                                        \
+		if(s2 > s)                                      \
+		{                                               \
+			s = s2;                                     \
+			normalR = 0;                                \
+			normalC[0] = (n1) / l;                      \
+			normalC[1] = (n2) / l;                      \
+			normalC[2] = (n3) / l;                      \
+			invert_normal = ((expr1) < 0);              \
+			*code = (cc);                               \
+		}                                               \
 	}
 
 	// crosses between cylinder axis and box axes
@@ -452,7 +452,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 
 	// if we get to this point, the boxes interpenetrate. compute the normal
 	// in global coordinates.
-	if (normalR)
+	if(normalR)
 	{
 		normal[0] = normalR[0];
 		normal[1] = normalR[4];
@@ -460,7 +460,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 	}
 	else
 	{
-		if (*code > 7)
+		if(*code > 7)
 			dMULTIPLY0_331(normal, R1, normalC);
 		else
 		{
@@ -470,7 +470,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 		}
 	}
 
-	if (invert_normal)
+	if(invert_normal)
 	{
 		normal[0] = -normal[0];
 		normal[1] = -normal[1];
@@ -480,13 +480,13 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 
 	// compute contact point(s)
 
-	if (*code > 7)
+	if(*code > 7)
 	{
 		// find point on the cylinder pa deepest along normal
 		dVector3 pa;
 		dReal sign, cos1, cos3, factor;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] = p1[i];
 
 		cos1 = dDOT14(normal, R1 + 0);
@@ -496,72 +496,72 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 		cos1 /= factor;
 		cos3 /= factor;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += cos1 * radius * R1[i * 4];
 
 		sign = (dDOT14(normal, R1 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += sign * hlz * R1[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += cos3 * radius * R1[i * 4 + 2];
 
 		// find vertex of the box  deepest along normal
 		dVector3 pb;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] = p2[i];
 		sign = (dDOT14(normal, R2 + 0) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += sign * B1 * R2[i * 4];
 		sign = (dDOT14(normal, R2 + 1) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += sign * B2 * R2[i * 4 + 1];
 		sign = (dDOT14(normal, R2 + 2) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += sign * B3 * R2[i * 4 + 2];
 
 		dReal alpha, beta;
 		dVector3 ua, ub;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			ua[i] = R1[1 + i * 4];
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			ub[i] = R2[*code - 8 + i * 4];
 
 		lineClosestApproach(pa, ua, pb, ub, &alpha, &beta);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += ua[i] * alpha;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += ub[i] * beta;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			contact[0].pos[i] = REAL(0.5) * (pa[i] + pb[i]);
 		contact[0].depth = *depth;
 		return 1;
 	}
 
-	if (*code == 4)
+	if(*code == 4)
 	{
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			contact[0].pos[i] = pb[i];
 		contact[0].depth = *depth;
 		return 1;
 	}
 
 	dVector3 vertex;
-	if (*code == 0)
+	if(*code == 0)
 	{
 
 		dReal sign;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] = p2[i];
 		sign = (dDOT14(normal, R2 + 0) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] += sign * B1 * R2[i * 4];
 		sign = (dDOT14(normal, R2 + 1) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] += sign * B2 * R2[i * 4 + 1];
 		sign = (dDOT14(normal, R2 + 2) > 0) ? REAL(-1.0) : REAL(1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] += sign * B3 * R2[i * 4 + 2];
 	}
 	else
@@ -577,13 +577,13 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 		cos3 /= factor;
 		sign = (dDOT14(normal, R1 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			center[i] = p1[i] + sign * hlz * R1[i * 4 + 1];
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] = center[i] + cos1 * radius * R1[i * 4];
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] += cos3 * radius * R1[i * 4 + 2];
-		if (*code < 4)
+		if(*code < 4)
 		{
 
 			dReal A1, A3, centerDepth, Q1, Q3, sQ2;
@@ -592,7 +592,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 			Q3 = Q31;
 			sQ2 = sQ21;
 			int ret = 1;
-			switch (*code)
+			switch(*code)
 			{
 			// case 1:
 			//	centerDepth=*depth-radius*sQ21;
@@ -610,7 +610,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 				break;
 			}
 
-			if (sQ2 < M_SQRT1_2)
+			if(sQ2 < M_SQRT1_2)
 			{
 
 				centerDepth = *depth - radius * sQ2;
@@ -621,7 +621,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 				CONTACT(contact, ret * skip)->pos[2] = center[2] + A1 * R1[8] + A3 * R1[10];
 				CONTACT(contact, ret * skip)->depth = centerDepth + Q1 * A1 + Q3 * A3;
 
-				if (CONTACT(contact, ret * skip)->depth > 0.f)
+				if(CONTACT(contact, ret * skip)->depth > 0.f)
 					++ret;
 
 				A1 = (-cos1 * M_COS_PI_3 + cos3 * M_SIN_PI_3) * radius;
@@ -631,17 +631,17 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 				CONTACT(contact, ret * skip)->pos[2] = center[2] + A1 * R1[8] + A3 * R1[10];
 				CONTACT(contact, ret * skip)->depth = centerDepth + Q1 * A1 + Q3 * A3;
 
-				if (CONTACT(contact, ret * skip)->depth > 0.f)
+				if(CONTACT(contact, ret * skip)->depth > 0.f)
 					++ret;
 			}
 
-			for (i = 0; i < 3; ++i)
+			for(i = 0; i < 3; ++i)
 				contact[0].pos[i] = vertex[i];
 			contact[0].depth = *depth;
 			return ret;
 		}
 	}
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		contact[0].pos[i] = vertex[i];
 	contact[0].depth = *depth;
 	return 1;
@@ -670,16 +670,16 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 
 	dReal proj, cos1, cos3;
 
-#define TEST(expr1, expr2, norm, cc)                                                                                   \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	if (s2 > s)                                                                                                        \
-	{                                                                                                                  \
-		s = s2;                                                                                                        \
-		normalR = norm;                                                                                                \
-		invert_normal = ((expr1) < 0);                                                                                 \
-		*code = (cc);                                                                                                  \
+#define TEST(expr1, expr2, norm, cc)   \
+	s2 = dFabs(expr1) - (expr2);       \
+	if(s2 > 0)                         \
+		return 0;                      \
+	if(s2 > s)                         \
+	{                                  \
+		s = s2;                        \
+		normalR = norm;                \
+		invert_normal = ((expr1) < 0); \
+		*code = (cc);                  \
 	}
 
 	s = -dInfinity;
@@ -696,19 +696,19 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 	// note: cross product axes need to be scaled when s is computed.
 
 #undef TEST
-#define TEST(expr1, expr2, n1, n2, n3, cc)                                                                             \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	if (s2 > s)                                                                                                        \
-	{                                                                                                                  \
-		s = s2;                                                                                                        \
-		normalR = 0;                                                                                                   \
-		normalC[0] = (n1);                                                                                             \
-		normalC[1] = (n2);                                                                                             \
-		normalC[2] = (n3);                                                                                             \
-		invert_normal = ((expr1) < 0);                                                                                 \
-		*code = (cc);                                                                                                  \
+#define TEST(expr1, expr2, n1, n2, n3, cc) \
+	s2 = dFabs(expr1) - (expr2);           \
+	if(s2 > 0)                             \
+		return 0;                          \
+	if(s2 > s)                             \
+	{                                      \
+		s = s2;                            \
+		normalR = 0;                       \
+		normalC[0] = (n1);                 \
+		normalC[1] = (n2);                 \
+		normalC[2] = (n3);                 \
+		invert_normal = ((expr1) < 0);     \
+		*code = (cc);                      \
 	}
 
 	dVector3 tAx, Ax, pa, pb;
@@ -724,7 +724,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 
 		// making ax which is perpendicular to cyl1 ax passing across cyl2 position//
 		//(project p on cyl1 flat surface )
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] = p2[i];
 		// cos1 = dDOT14(p,R1+0);
 		// cos3 = dDOT14(p,R1+2) ;
@@ -739,14 +739,14 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		factor = dSqrt(cos1 * cos1 + cos3 * cos3);
 		cos1 /= factor;
 		cos3 /= factor;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] -= cos1 * radius2 * R2[i * 4];
 
 		sign = (dDOT14(tAx, R2 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] -= sign * hlz2 * R2[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] -= cos3 * radius2 * R2[i * 4 + 2];
 
 		// making perpendicular to cyl1 ax passing across pb
@@ -770,7 +770,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 
 		dReal sign, factor;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] = p1[i];
 
 		// making ax which is perpendicular to cyl2 ax passing across cyl1 position//
@@ -789,14 +789,14 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		cos3 /= factor;
 
 		// find deepest point pa of cyl2 on direction of tAx
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += cos1 * radius1 * R1[i * 4];
 
 		sign = (dDOT14(tAx, R1 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += sign * hlz1 * R1[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += cos3 * radius1 * R1[i * 4 + 2];
 
 		proj = dDOT14(pa, R2 + 1) - dDOT14(p2, R2 + 1);
@@ -826,17 +826,17 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 	{
 		dVector3 ca, cb;
 		dReal sign;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			ca[i] = p1[i];
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			cb[i] = p2[i];
 		// find two nearest flat rings
 		sign = (pp1[1] > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			ca[i] += sign * hlz1 * R1[i * 4 + 1];
 
 		sign = (pp2[1] > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			cb[i] -= sign * hlz2 * R2[i * 4 + 1];
 
 		dVector3 tAx, tAx1;
@@ -886,7 +886,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 
 	// if we get to this point, the cylinders interpenetrate. compute the normal
 	// in global coordinates.
-	if (normalR)
+	if(normalR)
 	{
 		normal[0] = normalR[0];
 		normal[1] = normalR[4];
@@ -898,7 +898,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		normal[1] = normalC[1];
 		normal[2] = normalC[2];
 	}
-	if (invert_normal)
+	if(invert_normal)
 	{
 		normal[0] = -normal[0];
 		normal[1] = -normal[1];
@@ -909,91 +909,91 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 
 	// compute contact point(s)
 
-	if (*code == 3)
+	if(*code == 3)
 	{
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			contact[0].pos[i] = pb[i];
 		contact[0].depth = *depth;
 		return 1;
 	}
 
-	if (*code == 4)
+	if(*code == 4)
 	{
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			contact[0].pos[i] = pa[i];
 		contact[0].depth = *depth;
 		return 1;
 	}
 
-	if (*code == 5)
+	if(*code == 5)
 	{
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			contact[0].pos[i] = point[i];
 		contact[0].depth = *depth;
 		return 1;
 	}
 
-	if (*code == 6)
+	if(*code == 6)
 	{
 		dVector3 pa;
 		dReal sign, cos1, cos3, factor;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] = p1[i];
 
 		cos1 = dDOT14(normal, R1 + 0);
 		cos3 = dDOT14(normal, R1 + 2);
 		factor = dSqrt(cos1 * cos1 + cos3 * cos3);
-		if (factor > 0.f)
+		if(factor > 0.f)
 		{
 			cos1 /= factor;
 			cos3 /= factor;
 		}
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += cos1 * radius1 * R1[i * 4];
 
 		sign = (dDOT14(normal, R1 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += sign * hlz1 * R1[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += cos3 * radius1 * R1[i * 4 + 2];
 
 		// find a point pb on the intersecting edge of cylinder 2
 		dVector3 pb;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] = p2[i];
 		cos1 = dDOT14(normal, R2 + 0);
 		cos3 = dDOT14(normal, R2 + 2);
 		factor = dSqrt(cos1 * cos1 + cos3 * cos3);
-		if (factor > 0.f)
+		if(factor > 0.f)
 		{
 			cos1 /= factor;
 			cos3 /= factor;
 		}
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] -= cos1 * radius2 * R2[i * 4];
 
 		sign = (dDOT14(normal, R2 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] -= sign * hlz2 * R2[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] -= cos3 * radius2 * R2[i * 4 + 2];
 
 		dReal alpha, beta;
 		dVector3 ua, ub;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			ua[i] = R1[1 + i * 4];
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			ub[i] = R2[1 + i * 4];
 		lineClosestApproach(pa, ua, pb, ub, &alpha, &beta);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pa[i] += ua[i] * alpha;
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			pb[i] += ub[i] * beta;
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			contact[0].pos[i] = REAL(0.5) * (pa[i] + pb[i]);
 		contact[0].depth = *depth;
 		return 1;
@@ -1008,7 +1008,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 
 	dVector3 vertex;
 	int ret = 1;
-	if (*code == 0)
+	if(*code == 0)
 	{
 
 		// flat face from cylinder 1 touches a edge/face from cylinder 2.
@@ -1017,7 +1017,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		cos1 = dDOT14(normal, R2 + 0);
 		cos3 = dDOT14(normal, R2 + 2);
 		factor = dSqrt(cos1 * cos1 + cos3 * cos3);
-		if (factor > 0.f)
+		if(factor > 0.f)
 		{
 			cos1 /= factor;
 			cos3 /= factor;
@@ -1025,13 +1025,13 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		dVector3 center;
 
 		sign = (dDOT14(normal, R2 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			center[i] = p2[i] - sign * hlz2 * R2[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] = center[i] - cos1 * radius2 * R2[i * 4];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] -= cos3 * radius2 * R2[i * 4 + 2];
 
 		dReal A1, A3, centerDepth, Q1, Q3;
@@ -1046,7 +1046,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		CONTACT(contact, ret * skip)->pos[2] = center[2] + A1 * R2[8] + A3 * R2[10];
 		CONTACT(contact, ret * skip)->depth = centerDepth + (Q1 * A1) + (Q3 * A3);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 
 		A1 = -(-cos1 * M_COS_PI_3 + cos3 * M_SIN_PI_3) * radius2;
@@ -1056,7 +1056,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		CONTACT(contact, ret * skip)->pos[2] = center[2] + A1 * R2[8] + A3 * R2[10];
 		CONTACT(contact, ret * skip)->depth = centerDepth + (Q1 * A1) + (Q3 * A3);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 	}
 	else
@@ -1067,7 +1067,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		cos1 = dDOT14(normal, R1 + 0);
 		cos3 = dDOT14(normal, R1 + 2);
 		factor = dSqrt(cos1 * cos1 + cos3 * cos3);
-		if (factor > 0.f)
+		if(factor > 0.f)
 		{
 			cos1 /= factor;
 			cos3 /= factor;
@@ -1076,12 +1076,12 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		dVector3 center;
 
 		sign = (dDOT14(normal, R1 + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			center[i] = p1[i] + sign * hlz1 * R1[i * 4 + 1];
 
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] = center[i] + cos1 * radius1 * R1[i * 4];
-		for (i = 0; i < 3; ++i)
+		for(i = 0; i < 3; ++i)
 			vertex[i] += cos3 * radius1 * R1[i * 4 + 2];
 
 		dReal A1, A3, centerDepth, Q1, Q3;
@@ -1096,7 +1096,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		CONTACT(contact, ret * skip)->pos[2] = center[2] + A1 * R1[8] + A3 * R1[10];
 		CONTACT(contact, ret * skip)->depth = centerDepth + dFabs(Q1 * A1) + dFabs(Q3 * A3);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 
 		A1 = (-cos1 * M_COS_PI_3 + cos3 * M_SIN_PI_3) * radius1;
@@ -1106,10 +1106,10 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
 		CONTACT(contact, ret * skip)->pos[2] = center[2] + A1 * R1[8] + A3 * R1[10];
 		CONTACT(contact, ret * skip)->depth = centerDepth + dFabs(Q1 * A1) + dFabs(Q3 * A3);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 	}
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		contact[0].pos[i] = vertex[i];
 	contact[0].depth = *depth;
 	return ret;
@@ -1144,16 +1144,16 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 
 	dReal s, s2;
 	unsigned char code;
-#define TEST(expr1, expr2, norm, cc)                                                                                   \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	if (s2 > s)                                                                                                        \
-	{                                                                                                                  \
-		s = s2;                                                                                                        \
-		normalR = norm;                                                                                                \
-		invert_normal = ((expr1) < 0);                                                                                 \
-		code = (cc);                                                                                                   \
+#define TEST(expr1, expr2, norm, cc)   \
+	s2 = dFabs(expr1) - (expr2);       \
+	if(s2 > 0)                         \
+		return 0;                      \
+	if(s2 > s)                         \
+	{                                  \
+		s = s2;                        \
+		normalR = norm;                \
+		invert_normal = ((expr1) < 0); \
+		code = (cc);                   \
 	}
 
 	s = -dInfinity;
@@ -1166,19 +1166,19 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 	// note: cross product axes need to be scaled when s is computed.
 	// normal (n1,n2,n3) is relative to
 #undef TEST
-#define TEST(expr1, expr2, n1, n2, n3, cc)                                                                             \
-	s2 = dFabs(expr1) - (expr2);                                                                                       \
-	if (s2 > 0)                                                                                                        \
-		return 0;                                                                                                      \
-	if (s2 > s)                                                                                                        \
-	{                                                                                                                  \
-		s = s2;                                                                                                        \
-		normalR = 0;                                                                                                   \
-		normalC[0] = (n1);                                                                                             \
-		normalC[1] = (n2);                                                                                             \
-		normalC[2] = (n3);                                                                                             \
-		invert_normal = ((expr1) < 0);                                                                                 \
-		code = (cc);                                                                                                   \
+#define TEST(expr1, expr2, n1, n2, n3, cc) \
+	s2 = dFabs(expr1) - (expr2);           \
+	if(s2 > 0)                             \
+		return 0;                          \
+	if(s2 > s)                             \
+	{                                      \
+		s = s2;                            \
+		normalR = 0;                       \
+		normalC[0] = (n1);                 \
+		normalC[1] = (n2);                 \
+		normalC[2] = (n3);                 \
+		invert_normal = ((expr1) < 0);     \
+		code = (cc);                       \
 	}
 
 	// making ax which is perpendicular to cyl1 ax to sphere center//
@@ -1200,14 +1200,14 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 
 	dVector3 pa;
 	dReal sign, factor;
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		pa[i] = p1[i];
 
 	cos1 = dDOT14(Ax, R + 0);
 	cos3 = dDOT14(Ax, R + 2);
 	factor = dSqrt(cos1 * cos1 + cos3 * cos3);
 	// Если сфера находится строго на оси цилиндра, factor будет ~0.
-	if (factor > EPS) // Используем EPS (малое число) вместо точного 0
+	if(factor > EPS) // Используем EPS (малое число) вместо точного 0
 	{
 		cos1 /= factor;
 		cos3 /= factor;
@@ -1218,12 +1218,12 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 		cos1 = 0.f;
 		cos3 = 0.f;
 	}
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		pa[i] += cos1 * cylRadius * R[i * 4];
 	sign = (dDOT14(Ax, R + 1) > 0) ? REAL(1.0) : REAL(-1.0);
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		pa[i] += sign * hl * R[i * 4 + 1];
-	for (i = 0; i < 3; ++i)
+	for(i = 0; i < 3; ++i)
 		pa[i] += cos3 * cylRadius * R[i * 4 + 2];
 
 	Ax[0] = p2[0] - pa[0];
@@ -1239,7 +1239,7 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 
 #undef TEST
 
-	if (normalR)
+	if(normalR)
 	{
 		normal[0] = normalR[0];
 		normal[1] = normalR[4];
@@ -1252,7 +1252,7 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 		normal[1] = normalC[1];
 		normal[2] = normalC[2];
 	}
-	if (invert_normal)
+	if(invert_normal)
 	{
 		normal[0] = -normal[0];
 		normal[1] = -normal[1];
@@ -1282,7 +1282,7 @@ int dCollideCylB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
 	dGeomBoxGetLengths(o2, boxSides);
 	int num = dCylBox(dGeomGetPosition(o1), dGeomGetRotation(o1), cylRadius, cylLength, dGeomGetPosition(o2),
 					  dGeomGetRotation(o2), boxSides, normal, &depth, &code, flags & NUMC_MASK, contact, skip);
-	for (int i = 0; i < num; ++i)
+	for(int i = 0; i < num; ++i)
 	{
 		CONTACT(contact, i * skip)->normal[0] = -normal[0];
 		CONTACT(contact, i * skip)->normal[1] = -normal[1];
@@ -1306,7 +1306,7 @@ int dCollideCylCyl(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 		dCylCyl(dGeomGetPosition(o1), dGeomGetRotation(o1), cylRadius1, cylLength1, dGeomGetPosition(o2),
 				dGeomGetRotation(o2), cylRadius2, cylLength2, normal, &depth, &code, flags & NUMC_MASK, contact, skip);
 
-	for (int i = 0; i < num; ++i)
+	for(int i = 0; i < num; ++i)
 	{
 		CONTACT(contact, i * skip)->normal[0] = -normal[0];
 		CONTACT(contact, i * skip)->normal[1] = -normal[1];
@@ -1354,7 +1354,7 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
 	dReal dist = -pp + dDOT(n, p);
 	dReal outDepth = sidePr - dist;
 
-	if (outDepth < 0.f)
+	if(outDepth < 0.f)
 		return 0;
 
 	dVector3 pos;
@@ -1391,7 +1391,7 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
 	contact->depth = outDepth;
 	ret = 1;
 
-	if (dFabs(Q2) > M_SQRT1_2)
+	if(dFabs(Q2) > M_SQRT1_2)
 	{
 
 		CONTACT(contact, ret * skip)->pos[0] = pos[0] + 2.f * A1 * R[0];
@@ -1399,7 +1399,7 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
 		CONTACT(contact, ret * skip)->pos[2] = pos[2] + 2.f * A1 * R[8];
 		CONTACT(contact, ret * skip)->depth = outDepth - dFabs(Q1 * 2.f * A1);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 
 		CONTACT(contact, ret * skip)->pos[0] = pos[0] + 2.f * A3 * R[2];
@@ -1407,7 +1407,7 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
 		CONTACT(contact, ret * skip)->pos[2] = pos[2] + 2.f * A3 * R[10];
 		CONTACT(contact, ret * skip)->depth = outDepth - dFabs(Q3 * 2.f * A3);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 	}
 	else
@@ -1418,11 +1418,11 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
 		CONTACT(contact, ret * skip)->pos[2] = pos[2] + 2.f * (A2 > 0 ? hlz * R[9] : -hlz * R[9]);
 		CONTACT(contact, ret * skip)->depth = outDepth - dFabs(Q2 * 2.f * A2);
 
-		if (CONTACT(contact, ret * skip)->depth > 0.f)
+		if(CONTACT(contact, ret * skip)->depth > 0.f)
 			++ret;
 	}
 
-	for (unsigned int i = 0; i < ret; ++i)
+	for(unsigned int i = 0; i < ret; ++i)
 	{
 		CONTACT(contact, i * skip)->g1 = const_cast<dxGeom*>(o1);
 		CONTACT(contact, i * skip)->g2 = const_cast<dxGeom*>(o2);
@@ -1464,15 +1464,15 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 	// if C < 0 then ray start position within infinite extension of cylinder
 	// if ray start position is inside the cylinder
 	int inside_cyl = 0;
-	if (C < 0 && !(k < -lz2 || k > lz2))
+	if(C < 0 && !(k < -lz2 || k > lz2))
 		inside_cyl = 1;
 	// compute ray collision with infinite cylinder, except for the case where
 	// the ray is outside the cylinder but within the infinite cylinder
 	// (it that case the ray can only hit endcaps)
-	if (!inside_cyl && C < 0)
+	if(!inside_cyl && C < 0)
 	{
 		// set k to cap position to check
-		if (k < 0)
+		if(k < 0)
 			k = -lz2;
 		else
 			k = lz2;
@@ -1486,14 +1486,14 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 		dReal A = dDOT(r, r);
 		dReal B = 2 * dDOT(q, r);
 		k = B * B - 4 * A * C;
-		if (k < 0)
+		if(k < 0)
 		{
 			// the ray does not intersect the infinite cylinder, but if the ray is
 			// inside and parallel to the cylinder axis it may intersect the end
 			// caps. set k to cap position to check.
-			if (!inside_cyl)
+			if(!inside_cyl)
 				return 0;
-			if (uv < 0)
+			if(uv < 0)
 				k = -lz2;
 			else
 				k = lz2;
@@ -1503,13 +1503,13 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 			k = dSqrt(k);
 			A = dRecip(2 * A);
 			dReal alpha = (-B - k) * A;
-			if (alpha < 0)
+			if(alpha < 0)
 			{
 				alpha = (-B + k) * A;
-				if (alpha < 0)
+				if(alpha < 0)
 					return 0;
 			}
-			if (alpha > length)
+			if(alpha > length)
 				return 0;
 			// the ray intersects the infinite cylinder. check to see if the
 			// intersection point is between the caps
@@ -1521,7 +1521,7 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 			q[2] = contact->pos[2] - p[2];
 			k = dDOT14(q, R + 1);
 			dReal nsign = inside_cyl ? -REAL(1.) : REAL(1.);
-			if (k >= -lz2 && k <= lz2)
+			if(k >= -lz2 && k <= lz2)
 			{
 				contact->normal[0] = nsign * (contact->pos[0] - (p[0] + k * R[0 * 4 + 1]));
 				contact->normal[1] = nsign * (contact->pos[1] - (p[1] + k * R[1 * 4 + 1]));
@@ -1532,7 +1532,7 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 			}
 			// the infinite cylinder intersection point is not between the caps.
 			// set k to cap position to check.
-			if (k < 0)
+			if(k < 0)
 				k = -lz2;
 			else
 				k = lz2;
@@ -1547,10 +1547,10 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 	q[2] = start[2] - (p[2] + k * R[2 * 4 + 1]);
 	dReal alpha = -dDOT14(q, R + 1);
 	dReal k2 = dDOT14(dir, R + 1);
-	if (k2 == 0)
+	if(k2 == 0)
 		return 0; // ray parallel to the plane
 	alpha /= k2;
-	if (alpha < 0 || alpha > length)
+	if(alpha < 0 || alpha > length)
 		return 0; // too short
 	contact->pos[0] = start[0] + alpha * dir[0];
 	contact->pos[1] = start[1] + alpha * dir[1];
@@ -1565,13 +1565,13 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
 
 static dColliderFn* dCylinderColliderFn(int num)
 {
-	if (num == dBoxClass)
+	if(num == dBoxClass)
 		return (dColliderFn*)&dCollideCylB;
-	if (num == dSphereClass)
+	if(num == dSphereClass)
 		return (dColliderFn*)&dCollideCylS;
-	if (num == dCylinderClassUser)
+	if(num == dCylinderClassUser)
 		return (dColliderFn*)&dCollideCylCyl;
-	if (num == dPlaneClass)
+	if(num == dPlaneClass)
 		return (dColliderFn*)&dCollideCylPlane;
 	return 0;
 }
@@ -1600,7 +1600,7 @@ static void dCylinderAABB(dxGeom* geom, dReal aabb[6])
 dxGeom* dCreateCylinder(dSpaceID space, dReal r, dReal lz)
 {
 	VERIFY(r > 0 && lz > 0);
-	if (dCylinderClassUser == -1)
+	if(dCylinderClassUser == -1)
 	{
 		dGeomClass c;
 		c.bytes = sizeof(dxCylinder);
@@ -1612,7 +1612,7 @@ dxGeom* dCreateCylinder(dSpaceID space, dReal r, dReal lz)
 	}
 
 	dGeomID g = dCreateGeom(dCylinderClassUser);
-	if (space)
+	if(space)
 		dSpaceAdd(space, g);
 	dxCylinder* c = (dxCylinder*)dGeomGetClassData(g);
 

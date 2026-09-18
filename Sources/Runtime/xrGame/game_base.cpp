@@ -78,7 +78,7 @@ void game_PlayerState::resetFlag(u16 f)
 void game_PlayerState::net_Export(NET_Packet& P, BOOL Full)
 {
 	P.w_u8(Full ? 1 : 0);
-	if (Full)
+	if(Full)
 		P.w_stringZ(name);
 
 	P.w_u8(team);
@@ -104,7 +104,7 @@ void game_PlayerState::net_Import(NET_Packet& P)
 {
 	BOOL bFullUpdate = !!P.r_u8();
 
-	if (bFullUpdate)
+	if(bFullUpdate)
 		P.r_stringZ(name);
 
 	P.r_u8(team);
@@ -130,7 +130,7 @@ void game_PlayerState::net_Import(NET_Packet& P)
 
 void game_PlayerState::SetGameID(u16 NewID)
 {
-	if (mOldIDs.size() >= 10)
+	if(mOldIDs.size() >= 10)
 	{
 		mOldIDs.pop_front();
 	};
@@ -140,7 +140,7 @@ void game_PlayerState::SetGameID(u16 NewID)
 bool game_PlayerState::HasOldID(u16 ID)
 {
 	OLD_GAME_ID_it ID_i = std::find(mOldIDs.begin(), mOldIDs.end(), ID);
-	if (ID_i != mOldIDs.end() && *(ID_i) == ID)
+	if(ID_i != mOldIDs.end() && *(ID_i) == ID)
 		return true;
 	return false;
 }
@@ -169,7 +169,7 @@ game_GameState::game_GameState()
 
 CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 {
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		string_path S;
 		FS.update_path(S, "$game_config$", "script.ltx");
@@ -184,39 +184,39 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 		shared_str clsid = result(game_type_name, isServer);
 
 		xr_delete(l_tpIniFile);
-		if (clsid.size() == 0)
+		if(clsid.size() == 0)
 			Debug.fatal(DEBUG_INFO, "Unknown game type: %s", game_type_name);
 
 		return (TEXT2CLSID(*clsid));
 	}
 
-	if (isServer)
+	if(isServer)
 	{
-		if (!xr_strcmp(game_type_name, "single"))
+		if(!xr_strcmp(game_type_name, "single"))
 			return (TEXT2CLSID("SV_SINGL"));
 
-		if (!xr_strcmp(game_type_name, "deathmatch"))
+		if(!xr_strcmp(game_type_name, "deathmatch"))
 			return (TEXT2CLSID("SV_DM"));
 
-		if (!xr_strcmp(game_type_name, "teamdeathmatch"))
+		if(!xr_strcmp(game_type_name, "teamdeathmatch"))
 			return (TEXT2CLSID("SV_TDM"));
 
-		if (!xr_strcmp(game_type_name, "artefacthunt"))
+		if(!xr_strcmp(game_type_name, "artefacthunt"))
 			return (TEXT2CLSID("SV_AHUNT"));
 
 		return (TEXT2CLSID(""));
 	}
 
-	if (!xr_strcmp(game_type_name, "single"))
+	if(!xr_strcmp(game_type_name, "single"))
 		return (TEXT2CLSID("CL_SINGL"));
 
-	if (!xr_strcmp(game_type_name, "deathmatch"))
+	if(!xr_strcmp(game_type_name, "deathmatch"))
 		return (TEXT2CLSID("CL_DM"));
 
-	if (!xr_strcmp(game_type_name, "teamdeathmatch"))
+	if(!xr_strcmp(game_type_name, "teamdeathmatch"))
 		return (TEXT2CLSID("CL_TDM"));
 
-	if (!xr_strcmp(game_type_name, "artefacthunt"))
+	if(!xr_strcmp(game_type_name, "artefacthunt"))
 		return (TEXT2CLSID("CL_AHUNT"));
 
 	return (TEXT2CLSID(""));

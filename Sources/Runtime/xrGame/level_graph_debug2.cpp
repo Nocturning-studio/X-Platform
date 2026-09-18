@@ -67,7 +67,7 @@ void CLevelGraph::draw_nodes()
 	{
 		const_iterator i, e;
 		begin(ID, i, e);
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 			linked.push_back(value(ID, i));
 	}
 
@@ -93,15 +93,15 @@ void CLevelGraph::draw_nodes()
 	max_position.add(30.f);
 
 	CLevelGraph::const_vertex_iterator I, E;
-	if (valid_vertex_position(min_position))
+	if(valid_vertex_position(min_position))
 		I = std::lower_bound(begin(), end(), vertex_position(min_position).xz(), &vertex::predicate2);
 	else
 		I = begin();
 
-	if (valid_vertex_position(max_position))
+	if(valid_vertex_position(max_position))
 	{
 		E = std::upper_bound(begin(), end(), vertex_position(max_position).xz(), &vertex::predicate);
-		if (E != end())
+		if(E != end())
 			++E;
 	}
 	else
@@ -109,7 +109,7 @@ void CLevelGraph::draw_nodes()
 
 	//////////////////////////////////////////////////////////////////////////
 
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		const CLevelGraph::CVertex& N = *I;
 		fvec3 PC;
@@ -117,11 +117,11 @@ void CLevelGraph::draw_nodes()
 
 		u32 Nid = vertex_id(I);
 
-		if (Engine.RenderView.Position.distance_to(PC) > 30)
+		if(Engine.RenderView.Position.distance_to(PC) > 30)
 			continue;
 
 		float sr = header().cell_size();
-		if (::Render->ViewBase.testSphere_dirty(PC, sr))
+		if(::Render->ViewBase.testSphere_dirty(PC, sr))
 		{
 
 			u32 LL = ((b_light) ? iFloor(float(N.light()) / 15.f * 255.f) : iFloor(vertex_cover(I) / 4 * 255.f));
@@ -131,16 +131,16 @@ void CLevelGraph::draw_nodes()
 			u32 CH = D3DCOLOR_XRGB(0, 128, 0);
 
 			BOOL bHL = FALSE;
-			if (Nid == u32(ID))
+			if(Nid == u32(ID))
 			{
 				bHL = TRUE;
 				CT = D3DCOLOR_XRGB(0, 255, 0);
 			}
 			else
 			{
-				for (u32 t = 0; t < linked.size(); ++t)
+				for(u32 t = 0; t < linked.size(); ++t)
 				{
-					if (linked[t] == Nid)
+					if(linked[t] == Nid)
 					{
 						bHL = TRUE;
 						CT = CH;
@@ -178,16 +178,16 @@ void CLevelGraph::draw_nodes()
 			Level().debug_renderer().draw_aabb(PC, sc, sc, sc, CC);
 
 			// render id
-			if (bHL)
+			if(bHL)
 			{
 				fvec3 T;
 				fvec4 S;
 				T.set(PC);
 				T.y += 0.3f;
 				Engine.RenderView.ViewProjection.transform(S, T);
-				if (S.z < 0 || S.z < 0)
+				if(S.z < 0 || S.z < 0)
 					continue;
-				if (S.x < -1.f || S.x > 1.f || S.y < -1.f || S.x > 1.f)
+				if(S.x < -1.f || S.x > 1.f || S.y < -1.f || S.x > 1.f)
 					continue;
 				F->SetHeightI(0.05f / std::sqrt(_abs(S.w)));
 				F->SetColor(0xffffffff);
@@ -206,11 +206,11 @@ void CLevelGraph::draw_restrictions()
 
 	CRandom R;
 
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
-		if (!(*I).second->m_ref_count)
+		if(!(*I).second->m_ref_count)
 			continue;
-		if (!(*I).second->initialized())
+		if(!(*I).second->initialized())
 			continue;
 
 		u8 b = u8(R.randI(255));
@@ -219,7 +219,7 @@ void CLevelGraph::draw_restrictions()
 
 		xr_vector<u32>::const_iterator i = (*I).second->border().begin();
 		xr_vector<u32>::const_iterator e = (*I).second->border().end();
-		for (; i != e; ++i)
+		for(; i != e; ++i)
 		{
 			fvec3 temp = ai().level_graph().vertex_position(*i);
 			temp.y += .1f;
@@ -229,11 +229,11 @@ void CLevelGraph::draw_restrictions()
 #ifdef USE_FREE_IN_RESTRICTIONS
 		CSpaceRestriction::FREE_IN_RESTRICTIONS::const_iterator II = (*I).second->m_free_in_restrictions.begin();
 		CSpaceRestriction::FREE_IN_RESTRICTIONS::const_iterator EE = (*I).second->m_free_in_restrictions.end();
-		for (; II != EE; ++II)
+		for(; II != EE; ++II)
 		{
 			xr_vector<u32>::const_iterator i = (*II).m_restriction->border().begin();
 			xr_vector<u32>::const_iterator e = (*II).m_restriction->border().end();
-			for (; i != e; ++i)
+			for(; i != e; ++i)
 			{
 				fvec3 temp = ai().level_graph().vertex_position(*i);
 				temp.y += .1f;
@@ -242,7 +242,7 @@ void CLevelGraph::draw_restrictions()
 			{
 				xr_vector<u32>::const_iterator i = (*II).m_restriction->border().begin();
 				xr_vector<u32>::const_iterator e = (*II).m_restriction->border().end();
-				for (; i != e; ++i)
+				for(; i != e; ++i)
 				{
 					fvec3 temp = ai().level_graph().vertex_position(*i);
 					temp.y += .1f;
@@ -262,7 +262,7 @@ void CLevelGraph::draw_covers()
 	ai().cover_manager().covers().nearest(Engine.RenderView.Position, 5.f, nearest);
 	xr_vector<CCoverPoint*>::const_iterator I = nearest.begin();
 	xr_vector<CCoverPoint*>::const_iterator E = nearest.end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 	{
 		fvec3 position = (*I)->position();
 		position.y += 1.f;
@@ -274,7 +274,7 @@ void CLevelGraph::draw_covers()
 		fvec3 direction;
 		float best_value = -1.f;
 		u32 i = 0, j = 0;
-		for (i = 0, j = 0; i < 36; ++i)
+		for(i = 0, j = 0; i < 36; ++i)
 		{
 			float value = cover_in_direction(float(10 * i) / 180.f * PI, v);
 			direction.setHP(float(10 * i) / 180.f * PI, 0);
@@ -284,7 +284,7 @@ void CLevelGraph::draw_covers()
 			direction.y = position.y;
 			Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(0, 0, 255));
 			value = compute_square(float(10 * i) / 180.f * PI, PI / 2.f, v);
-			if (value > best_value)
+			if(value > best_value)
 			{
 				best_value = value;
 				j = i;
@@ -317,26 +317,26 @@ void CLevelGraph::draw_objects()
 {
 	u32 I = 0;
 	u32 E = Level().Objects.o_count();
-	for (; I < E; ++I)
+	for(; I < E; ++I)
 	{
 		CObject* _O = Level().Objects.o_get_by_iterator(I);
 		CTeamBaseZone* team_base_zone = smart_cast<CTeamBaseZone*>(_O);
-		if (team_base_zone)
+		if(team_base_zone)
 		{
 			team_base_zone->OnRender();
 			continue;
 		}
 
 		CCustomMonster* tpCustomMonster = smart_cast<CCustomMonster*>(_O);
-		if (tpCustomMonster)
+		if(tpCustomMonster)
 		{
 			tpCustomMonster->OnRender();
-			if (!tpCustomMonster->movement().detail().path().empty())
+			if(!tpCustomMonster->movement().detail().path().empty())
 			{
 				fvec3 temp = tpCustomMonster->movement()
-								   .detail()
-								   .path()[tpCustomMonster->movement().detail().path().size() - 1]
-								   .position;
+								 .detail()
+								 .path()[tpCustomMonster->movement().detail().path().size() - 1]
+								 .position;
 				Level().debug_renderer().draw_aabb(temp, 1.f, 1.f, 1.f, D3DCOLOR_XRGB(0, 0, 255));
 			}
 		}
@@ -347,11 +347,11 @@ void CLevelGraph::draw_objects()
 #ifndef AI_COMPILER
 void CLevelGraph::draw_debug_node()
 {
-	if (g_bDebugNode)
+	if(g_bDebugNode)
 	{
 		fvec3 pos_src, pos_dest;
 
-		if (ai().level_graph().valid_vertex_id(g_dwDebugNodeSource))
+		if(ai().level_graph().valid_vertex_id(g_dwDebugNodeSource))
 		{
 			pos_src = ai().level_graph().vertex_position(g_dwDebugNodeSource);
 			pos_dest = pos_src;
@@ -361,7 +361,7 @@ void CLevelGraph::draw_debug_node()
 			Level().debug_renderer().draw_line(Fidentity, pos_src, pos_dest, D3DCOLOR_XRGB(0, 0, 255));
 		}
 
-		if (ai().level_graph().valid_vertex_id(g_dwDebugNodeDest))
+		if(ai().level_graph().valid_vertex_id(g_dwDebugNodeDest))
 		{
 			pos_src = ai().level_graph().vertex_position(g_dwDebugNodeDest);
 			pos_dest = pos_src;

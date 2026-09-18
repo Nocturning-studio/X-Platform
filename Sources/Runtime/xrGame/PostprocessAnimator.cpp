@@ -57,7 +57,7 @@ CPostprocessAnimator::~CPostprocessAnimator()
 #ifndef _PP_EDITOR_
 BOOL CPostprocessAnimator::Valid()
 {
-	if (m_bCyclic)
+	if(m_bCyclic)
 		return TRUE;
 
 	return CEffectorPP::Valid();
@@ -66,7 +66,7 @@ BOOL CPostprocessAnimator::Valid()
 
 void CPostprocessAnimator::Clear()
 {
-	for (int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
+	for(int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
 		xr_delete(m_Params[a]);
 }
 
@@ -75,8 +75,8 @@ void CPostprocessAnimator::Load(LPCSTR name)
 	m_Name = name;
 #ifndef _PP_EDITOR_
 	string_path full_path;
-	if (!FS.exist(full_path, "$level$", name))
-		if (!FS.exist(full_path, "$game_anims$", name))
+	if(!FS.exist(full_path, "$level$", name))
+		if(!FS.exist(full_path, "$game_anims$", name))
 			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", name);
 #else  /*_PP_EDITOR_*/
 	string_path full_path;
@@ -84,9 +84,9 @@ void CPostprocessAnimator::Load(LPCSTR name)
 #endif /*_PP_EDITOR_*/
 
 	LPCSTR ext = strext(full_path);
-	if (ext)
+	if(ext)
 	{
-		if (!xr_strcmp(ext, POSTPROCESS_FILE_EXTENSION))
+		if(!xr_strcmp(ext, POSTPROCESS_FILE_EXTENSION))
 		{
 			IReader* F = FS.r_open(full_path);
 			u32 dwVersion = F->r_u32();
@@ -121,7 +121,7 @@ void CPostprocessAnimator::Load(LPCSTR name)
 			// load noise fps
 			VERIFY(m_Params[9]);
 			m_Params[9]->load(*F);
-			if (dwVersion >= 0x0002)
+			if(dwVersion >= 0x0002)
 			{
 				VERIFY(m_Params[10]);
 				m_Params[10]->load(*F);
@@ -136,14 +136,14 @@ void CPostprocessAnimator::Load(LPCSTR name)
 
 	f_length = GetLength();
 #ifndef _PP_EDITOR_
-	if (!m_bCyclic)
+	if(!m_bCyclic)
 		fLifeTime = f_length;
 #endif
 }
 
 void CPostprocessAnimator::Stop(float sp)
 {
-	if (m_bStop)
+	if(m_bStop)
 		return;
 	m_bStop = true;
 	VERIFY(_valid(sp));
@@ -153,7 +153,7 @@ void CPostprocessAnimator::Stop(float sp)
 float CPostprocessAnimator::GetLength()
 {
 	float v = 0.0f;
-	for (int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
+	for(int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
 	{
 		float t = m_Params[a]->get_length();
 		v = _max(t, v);
@@ -163,9 +163,9 @@ float CPostprocessAnimator::GetLength()
 
 void CPostprocessAnimator::Update(float tm)
 {
-	//OPTICK_EVENT("CPostprocessAnimator::Update");
+	// OPTICK_EVENT("CPostprocessAnimator::Update");
 
-	for (int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
+	for(int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
 		m_Params[a]->update(tm);
 }
 
@@ -192,20 +192,20 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 	VERIFY(_valid(m_factor_speed));
 	VERIFY(_valid(m_dest_factor));
 
-	if (m_bCyclic)
+	if(m_bCyclic)
 		fLifeTime = 100000;
 
 	CEffectorPP::Process(PPInfo);
 
-	if (m_start_time < 0.0f)
+	if(m_start_time < 0.0f)
 		m_start_time = Engine.TimeManager.GetGlobalTime();
 
-	if (m_bCyclic && ((Engine.TimeManager.GetGlobalTime() - m_start_time) > f_length))
+	if(m_bCyclic && ((Engine.TimeManager.GetGlobalTime() - m_start_time) > f_length))
 		m_start_time += f_length;
 
 	Update(Engine.TimeManager.GetGlobalTime() - m_start_time);
 
-	if (m_bStop)
+	if(m_bStop)
 		m_factor -= Engine.TimeManager.GetDeltaTime() * m_factor_speed;
 	else
 		m_factor += m_factor_speed * Engine.TimeManager.GetDeltaTime() * (m_dest_factor - m_factor);
@@ -219,17 +219,17 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 	m_EffectorParams.color_gray += pp_identity.color_gray;
 	m_EffectorParams.color_add += pp_identity.color_add;
 
-	if (0 == m_Params[pp_noise_i]->get_keys_count())
+	if(0 == m_Params[pp_noise_i]->get_keys_count())
 	{
 		m_EffectorParams.noise.intensity = pp_identity.noise.intensity;
 	}
 
-	if (0 == m_Params[pp_noise_g]->get_keys_count())
+	if(0 == m_Params[pp_noise_g]->get_keys_count())
 	{
 		m_EffectorParams.noise.grain = pp_identity.noise.grain;
 	}
 
-	if (0 == m_Params[pp_noise_f]->get_keys_count())
+	if(0 == m_Params[pp_noise_f]->get_keys_count())
 	{
 		m_EffectorParams.noise.fps = pp_identity.noise.fps;
 	}
@@ -238,14 +238,14 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 
 	PPInfo.lerp(pp_identity, m_EffectorParams, m_factor);
 
-	if (PPInfo.noise.grain <= 0.0f)
+	if(PPInfo.noise.grain <= 0.0f)
 	{
 		R_ASSERT3(0, "noise.grain cant be zero! see postprocess", *m_Name);
 	}
 
 	m_EffectorParams.radiation_intensity = m_radiation_intensity;
 
-	if (fsimilar(m_factor, 0.0001f, EPS_S))
+	if(fsimilar(m_factor, 0.0001f, EPS_S))
 		return FALSE;
 
 	return TRUE;
@@ -348,7 +348,7 @@ SPPInfo::SPPInfo()
 void CPostprocessAnimator::ResetParam(pp_params param)
 {
 	xr_delete(m_Params[param]);
-	switch (param)
+	switch(param)
 	{
 	case pp_base_color:
 		m_Params[0] = xr_new<CPostProcessColor>(&m_EffectorParams.color_base); // base color
@@ -404,12 +404,12 @@ void CPostProcessColor::delete_value(float time)
 void CPostProcessColor::add_value(float time, float value, int index)
 {
 	KeyIt i;
-	if (0 == index)
+	if(0 == index)
 	{
 		m_Red.InsertKey(time, value);
 		i = m_Red.FindKey(time, 0.01f);
 	}
-	else if (1 == index)
+	else if(1 == index)
 	{
 		m_Green.InsertKey(time, value);
 		i = m_Green.FindKey(time, 0.01f);
@@ -427,9 +427,9 @@ void CPostProcessColor::add_value(float time, float value, int index)
 void CPostProcessColor::update_value(float time, float value, int index)
 {
 	KeyIt i;
-	if (0 == index)
+	if(0 == index)
 		i = m_Red.FindKey(time, 0.01f);
-	else if (1 == index)
+	else if(1 == index)
 		i = m_Green.FindKey(time, 0.01f);
 	else
 		i = m_Blue.FindKey(time, 0.01f);
@@ -443,9 +443,9 @@ void CPostProcessColor::update_value(float time, float value, int index)
 void CPostProcessColor::get_value(float time, float& value, int index)
 {
 	KeyIt i;
-	if (0 == index)
+	if(0 == index)
 		i = m_Red.FindKey(time, 0.01f);
-	else if (1 == index)
+	else if(1 == index)
 		i = m_Green.FindKey(time, 0.01f);
 	else
 		i = m_Blue.FindKey(time, 0.01f);
@@ -491,14 +491,14 @@ void CPostProcessValue::get_value(float time, float& value, int index)
 #ifndef _PP_EDITOR_
 BOOL CPostprocessAnimatorLerp::Process(SPPInfo& PPInfo)
 {
-	if (!m_bStop)
+	if(!m_bStop)
 		m_factor = m_get_factor_func();
 	return CPostprocessAnimator::Process(PPInfo);
 }
 
 BOOL CPostprocessAnimatorLerpConst::Process(SPPInfo& PPInfo)
 {
-	if (!m_bStop)
+	if(!m_bStop)
 		m_factor = m_power;
 	return CPostprocessAnimator::Process(PPInfo);
 }

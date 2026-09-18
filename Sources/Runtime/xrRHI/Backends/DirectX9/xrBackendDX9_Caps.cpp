@@ -5,7 +5,7 @@ RHI_BEGIN
 
 XRRHI_API std::string DecodeShaderVersion(u32 version)
 {
-	if (version == 0)
+	if(version == 0)
 		return "None";
 
 	unsigned int high = (version >> 16) & 0xFFFF;
@@ -13,7 +13,8 @@ XRRHI_API std::string DecodeShaderVersion(u32 version)
 	unsigned int major = (low >> 8) & 0xFF;
 	unsigned int minor = low & 0xFF;
 
-	const char* type = (high == 0xFFFE) ? "vs" : (high == 0xFFFF) ? "ps" : "unknown";
+	const char* type = (high == 0xFFFE) ? "vs" : (high == 0xFFFF) ? "ps"
+																  : "unknown";
 
 	std::stringstream ss;
 	ss << type << "_" << major << "_" << minor;
@@ -24,7 +25,7 @@ void CRenderBackendDX9::CacheDeviceCapsFromD3D()
 {
 	// 1. Получаем актуальные D3DCAPS9
 	D3DCAPS9 caps = {};
-	if (m_pDevice)
+	if(m_pDevice)
 		m_pDevice->GetDeviceCaps(&caps);
 
 	// 2. Идентификация
@@ -61,18 +62,18 @@ void CRenderBackendDX9::CacheDeviceCapsFromD3D()
 
 	m_DeviceCaps.VertexCacheMethod = 0;
 	m_DeviceCaps.VertexCacheSize = 16;
-	if (m_pDevice)
+	if(m_pDevice)
 	{
 		IDirect3DQuery9* q_vc = nullptr;
 		HRESULT hr = m_pDevice->CreateQuery(D3DQUERYTYPE_VCACHE, &q_vc);
-		if (SUCCEEDED(hr) && q_vc)
+		if(SUCCEEDED(hr) && q_vc)
 		{
 			D3DDEVINFO_VCACHE vc;
 			q_vc->Issue(D3DISSUE_END);
-			if (SUCCEEDED(q_vc->GetData(&vc, sizeof(vc), D3DGETDATA_FLUSH)))
+			if(SUCCEEDED(q_vc->GetData(&vc, sizeof(vc), D3DGETDATA_FLUSH)))
 			{
 				m_DeviceCaps.VertexCacheMethod = vc.OptMethod;
-				if (vc.OptMethod == 1)
+				if(vc.OptMethod == 1)
 					m_DeviceCaps.VertexCacheSize = vc.CacheSize;
 			}
 			q_vc->Release();

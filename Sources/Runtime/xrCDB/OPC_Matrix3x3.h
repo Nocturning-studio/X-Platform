@@ -161,25 +161,25 @@ class ICEMATHS_API Matrix3x3
 	//! Checks for identity
 	inline_ bool IsIdentity() const
 	{
-		if (IR(m[0][0]) != IEEE_1_0)
+		if(IR(m[0][0]) != IEEE_1_0)
 			return false;
-		if (IR(m[0][1]) != 0)
+		if(IR(m[0][1]) != 0)
 			return false;
-		if (IR(m[0][2]) != 0)
-			return false;
-
-		if (IR(m[1][0]) != 0)
-			return false;
-		if (IR(m[1][1]) != IEEE_1_0)
-			return false;
-		if (IR(m[1][2]) != 0)
+		if(IR(m[0][2]) != 0)
 			return false;
 
-		if (IR(m[2][0]) != 0)
+		if(IR(m[1][0]) != 0)
 			return false;
-		if (IR(m[2][1]) != 0)
+		if(IR(m[1][1]) != IEEE_1_0)
 			return false;
-		if (IR(m[2][2]) != IEEE_1_0)
+		if(IR(m[1][2]) != 0)
+			return false;
+
+		if(IR(m[2][0]) != 0)
+			return false;
+		if(IR(m[2][1]) != 0)
+			return false;
+		if(IR(m[2][2]) != IEEE_1_0)
 			return false;
 
 		return true;
@@ -500,7 +500,7 @@ class ICEMATHS_API Matrix3x3
 		Identity();
 		Term.Identity();
 
-		for (udword div = 1; div <= NbTerms; div++)
+		for(udword div = 1; div <= NbTerms; div++)
 		{
 			Temp.Mult(Term, a);
 			Term.Mult(Temp, 1.0f / float(div));
@@ -569,7 +569,7 @@ class ICEMATHS_API Matrix3x3
 	//! Operator for Matrix3x3 Div = Matrix3x3 / float;
 	inline_ Matrix3x3 operator/(float s) const
 	{
-		if (s)
+		if(s)
 			s = 1.0f / s;
 		return Matrix3x3(m[0][0] * s, m[0][1] * s, m[0][2] * s, m[1][0] * s, m[1][1] * s, m[1][2] * s, m[2][0] * s,
 						 m[2][1] * s, m[2][2] * s);
@@ -652,7 +652,7 @@ class ICEMATHS_API Matrix3x3
 	//! Operator for Matrix3x3 /= float
 	inline_ Matrix3x3& operator/=(float s)
 	{
-		if (s)
+		if(s)
 			s = 1.0f / s;
 		m[0][0] *= s;
 		m[0][1] *= s;

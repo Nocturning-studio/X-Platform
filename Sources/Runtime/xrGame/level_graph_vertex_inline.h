@@ -19,9 +19,9 @@ IC float CLevelGraph::distance(const fvec3& position, const fvec3& point0, const
 	V.div(d);
 	float t = V.dotproduct(c);
 
-	if (t <= 0.0f)
+	if(t <= 0.0f)
 		return position.distance_to_sqr(point0);
-	if (t >= d)
+	if(t >= d)
 		return position.distance_to_sqr(point1);
 
 	fvec3 R;
@@ -103,7 +103,7 @@ IC CLevelGraph::ELineIntersections CLevelGraph::intersect(float x1, float y1, /*
 	 * same side of line 1, the line segments do not intersect.
 	 */
 
-	if ((r3 * r4 > EPS) && !fis_zero(r3, EPS_L) && !fis_zero(r4, EPS_L))
+	if((r3 * r4 > EPS) && !fis_zero(r3, EPS_L) && !fis_zero(r4, EPS_L))
 		return (eLineIntersectionNone);
 
 	/* Compute a2, b2, c2 */
@@ -122,18 +122,18 @@ IC CLevelGraph::ELineIntersections CLevelGraph::intersect(float x1, float y1, /*
 	 * not intersect.
 	 */
 
-	if ((r1 * r2 > EPS) && !fis_zero(r1, EPS_L) && !fis_zero(r2, EPS_L))
+	if((r1 * r2 > EPS) && !fis_zero(r1, EPS_L) && !fis_zero(r2, EPS_L))
 		return (eLineIntersectionNone);
 
 	// Check for equality
-	if (fis_zero(r1 * r2) && fis_zero(r3 * r4))
+	if(fis_zero(r1 * r2) && fis_zero(r3 * r4))
 		return eLineIntersectionEqual;
 
 	/* Line segments intersect: compute intersection point.
 	 */
 
 	denom = a1 * b2 - a2 * b1;
-	if (fis_zero(denom))
+	if(fis_zero(denom))
 		return (eLineIntersectionCollinear);
 
 	num = b1 * c2 - b2 * c1;
@@ -191,7 +191,7 @@ IC CLevelGraph::ELineIntersections CLevelGraph::intersect_no_check(float x1, flo
 	 */
 
 	// Check for equality
-	if (fis_zero(r1 * r2) && fis_zero(r3 * r4))
+	if(fis_zero(r1 * r2) && fis_zero(r3 * r4))
 	{
 		*x = x4;
 		*y = y4;
@@ -202,7 +202,7 @@ IC CLevelGraph::ELineIntersections CLevelGraph::intersect_no_check(float x1, flo
 	 */
 
 	denom = a1 * b2 - a2 * b1;
-	if (fis_zero(denom))
+	if(fis_zero(denom))
 	{
 		*x = x4;
 		*y = y4;
@@ -233,15 +233,15 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 {
 	bool bFound = false;
 
-	if (inside(tContour0.v1, tContour1))
+	if(inside(tContour0.v1, tContour1))
 	{
 		tSegment.v1 = tContour0.v1;
 		bFound = true;
 	}
 
-	if (inside(tContour0.v2, tContour1))
+	if(inside(tContour0.v2, tContour1))
 	{
-		if (!bFound)
+		if(!bFound)
 		{
 			tSegment.v1 = tContour0.v2;
 			bFound = true;
@@ -252,9 +252,9 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 			return;
 		}
 	}
-	if (inside(tContour0.v3, tContour1))
+	if(inside(tContour0.v3, tContour1))
 	{
-		if (!bFound)
+		if(!bFound)
 		{
 			tSegment.v1 = tContour0.v3;
 			bFound = true;
@@ -265,9 +265,9 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 			return;
 		}
 	}
-	if (inside(tContour0.v4, tContour1))
+	if(inside(tContour0.v4, tContour1))
 	{
-		if (!bFound)
+		if(!bFound)
 		{
 			tSegment.v1 = tContour0.v4;
 			bFound = true;
@@ -278,24 +278,24 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 			return;
 		}
 	}
-	if (bFound)
+	if(bFound)
 	{
-		if (inside(tContour1.v1, tContour0) && (!(similar(tSegment.v1, tContour1.v1))))
+		if(inside(tContour1.v1, tContour0) && (!(similar(tSegment.v1, tContour1.v1))))
 		{
 			tSegment.v2 = tContour1.v1;
 			return;
 		}
-		if (inside(tContour1.v2, tContour0) && (!(similar(tSegment.v1, tContour1.v2))))
+		if(inside(tContour1.v2, tContour0) && (!(similar(tSegment.v1, tContour1.v2))))
 		{
 			tSegment.v2 = tContour1.v2;
 			return;
 		}
-		if (inside(tContour1.v3, tContour0) && (!(similar(tSegment.v1, tContour1.v3))))
+		if(inside(tContour1.v3, tContour0) && (!(similar(tSegment.v1, tContour1.v3))))
 		{
 			tSegment.v2 = tContour1.v3;
 			return;
 		}
-		if (inside(tContour1.v4, tContour0) && (!(similar(tSegment.v1, tContour1.v4))))
+		if(inside(tContour1.v4, tContour0) && (!(similar(tSegment.v1, tContour1.v4))))
 		{
 			tSegment.v2 = tContour1.v4;
 			return;
@@ -303,14 +303,14 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 	}
 	else
 	{
-		if (inside(tContour1.v1, tContour0))
+		if(inside(tContour1.v1, tContour0))
 		{
 			tSegment.v1 = tContour1.v1;
 			bFound = true;
 		}
-		if (inside(tContour1.v2, tContour0))
+		if(inside(tContour1.v2, tContour0))
 		{
-			if (!bFound)
+			if(!bFound)
 			{
 				tSegment.v1 = tContour1.v2;
 				bFound = true;
@@ -321,9 +321,9 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 				return;
 			}
 		}
-		if (inside(tContour1.v3, tContour0))
+		if(inside(tContour1.v3, tContour0))
 		{
-			if (!bFound)
+			if(!bFound)
 			{
 				tSegment.v1 = tContour1.v3;
 				bFound = true;
@@ -334,9 +334,9 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 				return;
 			}
 		}
-		if (inside(tContour1.v4, tContour0))
+		if(inside(tContour1.v4, tContour0))
 		{
-			if (!bFound)
+			if(!bFound)
 			{
 				tSegment.v1 = tContour1.v4;
 				bFound = true;
@@ -349,7 +349,7 @@ IC void CLevelGraph::intersect(SSegment& tSegment, const SContour& tContour0, co
 		}
 	}
 
-	if (bFound)
+	if(bFound)
 	{
 		tSegment.v2 = tSegment.v1;
 		Log("! AI_PathNodes: segment has null length");
@@ -372,12 +372,12 @@ IC float CLevelGraph::nearest(fvec3& Dest, const fvec3& P, const fvec3& A, const
 	float t = V.dotproduct(c);
 
 	// Check to see if ‘t’ is beyond the extents of the line segment
-	if (t <= 0.0f)
+	if(t <= 0.0f)
 	{
 		Dest.set(A);
 		return P.distance_to_sqr(Dest);
 	}
-	if (t >= d)
+	if(t >= d)
 	{
 		Dest.set(B);
 		return P.distance_to_sqr(Dest);
@@ -426,21 +426,21 @@ IC void CLevelGraph::nearest(fvec3& destination, const fvec3& position, const CL
 	best = nearest(destination, position, contour.v1, contour.v2);
 
 	dist = nearest(T, position, contour.v2, contour.v3);
-	if (dist < best)
+	if(dist < best)
 	{
 		best = dist;
 		destination.set(T);
 	}
 
 	dist = nearest(T, position, contour.v3, contour.v4);
-	if (dist < best)
+	if(dist < best)
 	{
 		best = dist;
 		destination.set(T);
 	}
 
 	dist = nearest(T, position, contour.v4, contour.v1);
-	if (dist < best)
+	if(dist < best)
 	{
 		best = dist;
 		destination.set(T);
@@ -453,25 +453,25 @@ IC bool CLevelGraph::intersect(fvec3& dst, const fvec3& v1, const fvec3& v2, con
 							   const fvec3& v4) const
 {
 	// corner check (v4 - end, v1-v2 - segm)
-	if (v4.similar(v1, corner_r))
+	if(v4.similar(v1, corner_r))
 	{
 		dst.set(v1);
 		return (true);
 	}
 
-	if (v4.similar(v2, corner_r))
+	if(v4.similar(v2, corner_r))
 	{
 		dst.set(v2);
 		return (true);
 	}
 
-	if (v3.similar(v1, corner_r))
+	if(v3.similar(v1, corner_r))
 	{
 		dst.set(v1);
 		return (true);
 	}
 
-	if (v3.similar(v2, corner_r))
+	if(v3.similar(v2, corner_r))
 	{
 		dst.set(v2);
 		return (true);
@@ -479,7 +479,7 @@ IC bool CLevelGraph::intersect(fvec3& dst, const fvec3& v1, const fvec3& v2, con
 
 	// projected intersection
 	fvec3 T;
-	if (eLineIntersectionIntersect != intersect(v1.x, v1.z, v2.x, v2.z, v3.x, v3.z, v4.x, v4.z, &T.x, &T.z))
+	if(eLineIntersectionIntersect != intersect(v1.x, v1.z, v2.x, v2.z, v3.x, v3.z, v4.x, v4.z, &T.x, &T.z))
 		return (false);
 
 	// unproject into 3D
@@ -488,10 +488,10 @@ IC bool CLevelGraph::intersect(fvec3& dst, const fvec3& v1, const fvec3& v2, con
 	float bary1 = (T.x - v1.x) / lx;
 	float bary2 = (T.z - v1.z) / lz;
 
-	if (fis_zero(lx, EPS_L))
+	if(fis_zero(lx, EPS_L))
 		bary1 = bary2;
 
-	if (fis_zero(lz, EPS_L))
+	if(fis_zero(lz, EPS_L))
 		bary2 = bary1;
 
 	float bary = (bary1 + bary2) / 2;
@@ -514,16 +514,16 @@ IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, float b1,
 {
 	fAngle = angle_normalize(fAngle - 0 * PI_DIV_2);
 
-	if (fAngle < PI_DIV_2)
+	if(fAngle < PI_DIV_2)
 		;
-	else if (fAngle < PI)
+	else if(fAngle < PI)
 	{
 		fAngle -= PI_DIV_2;
 		b3 = b0;
 		b0 = b1;
 		b1 = b2;
 	}
-	else if (fAngle < 3 * PI_DIV_2)
+	else if(fAngle < 3 * PI_DIV_2)
 	{
 		fAngle -= PI;
 		b0 = b2;
@@ -541,10 +541,10 @@ IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, float b1,
 
 	float fSquare;
 
-	if (fAngle + fAngleOfView >= PI_DIV_2)
+	if(fAngle + fAngleOfView >= PI_DIV_2)
 	{
 		fSquare = square(b1, b2, fAngleOfView + fAngle - PI_DIV_2);
-		if (fAngle - fAngleOfView < 0)
+		if(fAngle - fAngleOfView < 0)
 		{
 			fSquare += square(b0, b1);
 			fSquare += square(b0, b3, fAngleOfView - fAngle);
@@ -555,7 +555,7 @@ IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, float b1,
 	else
 	{
 		fSquare = square(b0, b1, fAngle + fAngleOfView);
-		if (fAngle - fAngleOfView < 0)
+		if(fAngle - fAngleOfView < 0)
 			fSquare += square(b0, b3, fAngleOfView - fAngle);
 		else
 			fSquare -= square(b0, b1, fAngle - fAngleOfView);
@@ -606,7 +606,7 @@ IC float CLevelGraph::cover_in_direction(float angle, u32 vertex_id) const
 IC u32 CLevelGraph::check_position_in_direction(u32 start_vertex_id, const fvec2& start_position,
 												const fvec2& finish_position) const
 {
-	if (inside(start_vertex_id, finish_position))
+	if(inside(start_vertex_id, finish_position))
 		return (start_vertex_id);
 	return (check_position_in_direction_slow(start_vertex_id, start_position, finish_position));
 }
@@ -614,7 +614,7 @@ IC u32 CLevelGraph::check_position_in_direction(u32 start_vertex_id, const fvec2
 IC bool CLevelGraph::check_vertex_in_direction(u32 start_vertex_id, const fvec2& start_position,
 											   u32 finish_vertex_id) const
 {
-	if (start_vertex_id == finish_vertex_id)
+	if(start_vertex_id == finish_vertex_id)
 		return (true);
 	return (check_vertex_in_direction_slow(start_vertex_id, start_position, finish_vertex_id));
 }
@@ -639,10 +639,10 @@ float CLevelGraph::vertex_cover_angle(u32 vertex_id, float inc_angle, _predicate
 	float best_angle = 0.f;
 	float best_value = compute_square(best_angle, PI_DIV_2, vertex_id);
 
-	for (float angle = inc_angle; angle <= PI_MUL_2; angle += inc_angle)
+	for(float angle = inc_angle; angle <= PI_MUL_2; angle += inc_angle)
 	{
 		float cover = compute_square(angle, PI_DIV_2, vertex_id);
-		if (compare_predicate(cover, best_value))
+		if(compare_predicate(cover, best_value))
 		{
 			best_value = cover;
 			best_angle = angle;

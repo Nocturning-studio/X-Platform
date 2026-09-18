@@ -51,19 +51,19 @@ inline bool TriContainPoint(const dReal* v0, const dReal* v1, const dReal* v2, c
 	c = 0;
 	dVector3 cross0, cross1, cross2;
 	dCROSS(cross0, =, triAx, triSideAx0);
-	if (dDOT(cross0, pos) < dDOT(cross0, v0))
+	if(dDOT(cross0, pos) < dDOT(cross0, v0))
 	{
 		c = 1;
 		return false;
 	}
 	dCROSS(cross1, =, triAx, triSideAx1);
-	if (dDOT(cross1, pos) < dDOT(cross1, v1))
+	if(dDOT(cross1, pos) < dDOT(cross1, v1))
 	{
 		c = 2;
 		return false;
 	}
 	dCROSS(cross2, =, triAx, triSideAx2);
-	if (dDOT(cross2, pos) < dDOT(cross2, v2))
+	if(dDOT(cross2, pos) < dDOT(cross2, v2))
 	{
 		c = 3;
 		return false;
@@ -104,14 +104,14 @@ IC float DistToFragmenton(const dReal* point, const dReal* pt1, const dReal* pt2
 	dReal sq_mag_V = dDOT(V, V);
 	dReal dot_L_V = dDOT(L, V);
 	dReal t = -dot_L_V / sq_mag_V; // t
-	if (t < 0.f)
+	if(t < 0.f)
 	{
 		c = 1;
 		dVectorSet(p, pt1);
 		dVectorSet(to_point, L);
 		return dSqrt(dDOT(L, L));
 	}
-	else if (t > 1.f)
+	else if(t > 1.f)
 	{
 		c = 2;
 		dVectorSet(p, pt2);
@@ -128,13 +128,13 @@ IC float DistToFragmenton(const dReal* point, const dReal* pt1, const dReal* pt2
 }
 ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDist& c, const fvec3* V_array)
 {
-	if (!TriPlaneContainPoint(T))
+	if(!TriPlaneContainPoint(T))
 	{
 		c = tdBehind;
 		return -1.f;
 	}
 	u16 code;
-	if (TriContainPoint(T, pos, code))
+	if(TriContainPoint(T, pos, code))
 	{
 		c = tdPlane;
 
@@ -148,7 +148,7 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
 	u16 cd = u16(-1);
 	float tdist = 0.f;
 
-	switch (code)
+	switch(code)
 	{
 	case 1:
 		tdist = DistToFragmenton(pos, VRT[0], VRT[1], p, dir, cd);
@@ -162,10 +162,10 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
 	default:
 		NODEFAULT;
 	}
-	switch (cd)
+	switch(cd)
 	{
 	case 0:
-		if (tdist > EPS_S)
+		if(tdist > EPS_S)
 			cast_fv(dir).mul(1.f / tdist);
 		c = tdSide;
 		return tdist;
@@ -180,7 +180,7 @@ ICF float DistToTri(Triangle* T, const float* pos, float* dir, float* p, ETriDis
 	}
 	dVectorSub(dir, p, pos);
 	float sqd = dDOT(dir, dir);
-	if (sqd > EPS_S)
+	if(sqd > EPS_S)
 	{
 		tdist = dSqrt(sqd);
 		cast_fv(dir).mul(1.f / tdist);

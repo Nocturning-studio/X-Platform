@@ -30,13 +30,13 @@ void character_hit_animation_controller::SetupHitMotions(CKinematicsAnimated& ca
 	hit_downr = ca.LL_MotionID("hit_downr");
 
 	base_bone = ca.LL_BoneID("bip01_spine1"); // bip01_spine1
-	for (u16 i = 0; num_anims > i; ++i)
+	for(u16 i = 0; num_anims > i; ++i)
 		block_times[i] = 0;
 }
 
 IC void set_blend_params(CBlend* B)
 {
-	if (!B)
+	if(!B)
 		return;
 	B->blendAmount = 1.0;
 }
@@ -47,11 +47,11 @@ IC void play_cycle(CKinematicsAnimated* CA, const MotionID& m, u8 channel, u32& 
 	const u32 dellay = 1;
 	const u32 dellay1 = 100;
 	float power = base_power;
-	if (Engine.TimeManager.GetGlobalTimeMs() > time_block)
+	if(Engine.TimeManager.GetGlobalTimeMs() > time_block)
 	{
 		CBlend* B = (CA->PlayCycle(m, mixin, 0, 0, channel));
 
-		if (Engine.TimeManager.GetGlobalTimeMs() < time_block + dellay1)
+		if(Engine.TimeManager.GetGlobalTimeMs() < time_block + dellay1)
 			power *= 0.5f;
 		B->blendAmount = power;
 		B->blendPower = power;
@@ -65,7 +65,7 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 	CKinematicsAnimated* CA = smart_cast<CKinematicsAnimated*>(ea.Visual());
 
 	// play_cycle(CA,all_shift_down,1,block_times[6],1) ;
-	if (!(CA->LL_BoneCount() > bi))
+	if(!(CA->LL_BoneCount() > bi))
 		return;
 
 	fvec3 dr = dir;
@@ -73,7 +73,7 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 	GetBaseMatrix(m, ea);
 
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(phDbgHitAnims))
+	if(ph_dbg_draw_mask1.test(phDbgHitAnims))
 	{
 		DBG_OpenCashedDraw();
 		DBG_DrawLine(m.c, fvec3().sub(m.c, fvec3().mul(dir, 1.5)), D3DCOLOR_XRGB(255, 0, 255));
@@ -93,14 +93,14 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 	hit_point.x = 0;
 	float rotational_ammount = hit_point.magnitude() * power_factor * 3; //_abs(torqu.x)
 
-	if (torqu.x < 0)
+	if(torqu.x < 0)
 		play_cycle(CA, hit_downr, 2, block_times[6], 1);
 	else
 		play_cycle(CA, hit_downl, 2, block_times[6], 1);
 
-	if (!IsEffected(bi, *CA))
+	if(!IsEffected(bi, *CA))
 		return;
-	if (torqu.x < 0)
+	if(torqu.x < 0)
 		play_cycle(CA, turn_right, 1, block_times[4], rotational_ammount);
 
 	else
@@ -113,12 +113,12 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 
 	const float side_secretive_threshold = 0.2f;
 	dr.mul(power_factor);
-	if (dr.y > side_secretive_threshold)
+	if(dr.y > side_secretive_threshold)
 		play_cycle(CA, rthit_motion, 1, block_times[0], _abs(dr.y));
-	else if (dr.y < -side_secretive_threshold)
+	else if(dr.y < -side_secretive_threshold)
 		play_cycle(CA, lthit_motion, 1, block_times[1], _abs(dr.y));
 
-	if (dr.z < 0.f)
+	if(dr.z < 0.f)
 		play_cycle(CA, fvhit_motion, 1, block_times[2], _abs(dr.z));
 	else
 		play_cycle(CA, bkhit_motion, 1, block_times[3], _abs(dr.z));
@@ -139,10 +139,10 @@ void character_hit_animation_controller::PlayHitMotion(const fvec3& dir, const f
 bool character_hit_animation_controller::IsEffected(u16 bi, CKinematics& ca) const
 {
 	u16 root = ca.LL_GetBoneRoot();
-	for (; bi != root;)
+	for(; bi != root;)
 	{
 		CBoneData& bd = ca.LL_GetData(bi);
-		if (bi == base_bone)
+		if(bi == base_bone)
 			return true;
 		bi = bd.GetParentID();
 	}

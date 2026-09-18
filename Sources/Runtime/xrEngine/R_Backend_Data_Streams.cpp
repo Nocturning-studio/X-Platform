@@ -47,7 +47,7 @@ void* VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
 
 	// Check if there is need to flush and perform lock
 	BYTE* pData = 0;
-	if ((vl_Count + vl_mPosition) >= vl_mSize)
+	if((vl_Count + vl_mPosition) >= vl_mSize)
 	{
 		// FLUSH-LOCK
 		mPosition = 0;
@@ -124,7 +124,7 @@ u16* IndexStream::Lock(u32 Count, u32& vOffset)
 	// or there is not enough space for the index data,
 	// then flush the buffer contents
 	u32 dwFlags = LOCKFLAGS_APPEND;
-	if (2 * (Count + mPosition) >= mSize)
+	if(2 * (Count + mPosition) >= mSize)
 	{
 		mPosition = 0;			   // clear position
 		dwFlags = LOCKFLAGS_FLUSH; // discard it's contens

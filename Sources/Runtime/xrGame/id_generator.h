@@ -53,13 +53,13 @@ class CID_Generator
 		VERIFY(l_tID_Block.m_tCount);
 		BLOCK_ID l_tBlockID = BLOCK_ID(&l_tID_Block - m_tppBlocks);
 
-		if (l_tID_Block.m_tCount == 1)
+		if(l_tID_Block.m_tCount == 1)
 		{
 			--m_available_count;
 			VERIFY(m_available_count >= 0);
 		}
 
-		if (tInvalidValueID == tValueID)
+		if(tInvalidValueID == tValueID)
 			return (VALUE_ID(l_tID_Block.m_tpIDs[--l_tID_Block.m_tCount]) + l_tBlockID * tBlockSize + tMinValue);
 
 		TYPE_ID* l_tpBlockID = std::find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount,
@@ -73,20 +73,20 @@ class CID_Generator
 	IC CID_Generator()
 	{
 		m_available_count = 0;
-		for (VALUE_ID i = tMinValue;; ++i)
+		for(VALUE_ID i = tMinValue;; ++i)
 		{
 			vfFreeID(i, tStartTime);
-			if (i >= tMaxValue)
+			if(i >= tMaxValue)
 				break;
 		}
 		VERIFY(m_available_count == m_tBlockCount);
-		for (u32 j = 0; j < m_tBlockCount; ++j)
+		for(u32 j = 0; j < m_tBlockCount; ++j)
 			std::reverse(m_tppBlocks[j].m_tpIDs, m_tppBlocks[j].m_tpIDs + m_tppBlocks[j].m_tCount);
 	}
 
 	IC VALUE_ID tfGetID(VALUE_ID tValueID = tInvalidValueID)
 	{
-		if (tInvalidValueID != tValueID)
+		if(tInvalidValueID != tValueID)
 			return (tfGetFromBlock(m_tppBlocks[tfGetBlockByValue(tValueID)], tValueID));
 
 		R_ASSERT2(m_available_count, "Not enough IDs");
@@ -102,7 +102,7 @@ class CID_Generator
 
 		VERIFY(l_tID_Block.m_tCount < tBlockSize);
 
-		if (!l_tID_Block.m_tCount)
+		if(!l_tID_Block.m_tCount)
 		{
 			++m_available_count;
 			VERIFY(m_available_count <= m_tBlockCount);

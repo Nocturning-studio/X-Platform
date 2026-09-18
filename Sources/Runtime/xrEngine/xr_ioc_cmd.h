@@ -28,30 +28,30 @@ enum
 	TUTORIALS_ENABLE = (1ul << 2ul)
 };
 
-#define CMD0(cls)                                                                                                      \
-	{                                                                                                                  \
-		static cls x##cls();                                                                                           \
-		Console->AddCommand(&x##cls);                                                                                  \
+#define CMD0(cls)                     \
+	{                                 \
+		static cls x##cls();          \
+		Console->AddCommand(&x##cls); \
 	}
-#define CMD1(cls, p1)                                                                                                  \
-	{                                                                                                                  \
-		static cls x##cls(p1);                                                                                         \
-		Console->AddCommand(&x##cls);                                                                                  \
+#define CMD1(cls, p1)                 \
+	{                                 \
+		static cls x##cls(p1);        \
+		Console->AddCommand(&x##cls); \
 	}
-#define CMD2(cls, p1, p2)                                                                                              \
-	{                                                                                                                  \
-		static cls x##cls(p1, p2);                                                                                     \
-		Console->AddCommand(&x##cls);                                                                                  \
+#define CMD2(cls, p1, p2)             \
+	{                                 \
+		static cls x##cls(p1, p2);    \
+		Console->AddCommand(&x##cls); \
 	}
-#define CMD3(cls, p1, p2, p3)                                                                                          \
-	{                                                                                                                  \
-		static cls x##cls(p1, p2, p3);                                                                                 \
-		Console->AddCommand(&x##cls);                                                                                  \
+#define CMD3(cls, p1, p2, p3)          \
+	{                                  \
+		static cls x##cls(p1, p2, p3); \
+		Console->AddCommand(&x##cls);  \
 	}
-#define CMD4(cls, p1, p2, p3, p4)                                                                                      \
-	{                                                                                                                  \
-		static cls x##cls(p1, p2, p3, p4);                                                                             \
-		Console->AddCommand(&x##cls);                                                                                  \
+#define CMD4(cls, p1, p2, p3, p4)          \
+	{                                      \
+		static cls x##cls(p1, p2, p3, p4); \
+		Console->AddCommand(&x##cls);      \
 	}
 
 class ENGINE_API IConsole_Command
@@ -89,7 +89,7 @@ class ENGINE_API IConsole_Command
 	};
 	virtual ~IConsole_Command()
 	{
-		if (Console)
+		if(Console)
 			Console->RemoveCommand(this);
 	};
 
@@ -117,7 +117,7 @@ class ENGINE_API IConsole_Command
 	{
 		TStatus S;
 		Status(S);
-		if (S[0])
+		if(S[0])
 			F->w_printf("%s %s\r\n", cName, S);
 	}
 
@@ -136,24 +136,24 @@ class ENGINE_API CCC_Mask : public IConsole_Command
 	u32 mask;
 
   public:
-	CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command(N), value(V), mask(M){};
+	CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command(N), value(V), mask(M) {};
 	const BOOL GetValue() const
 	{
 		return value->test(mask);
 	}
 	virtual void Execute(LPCSTR args)
 	{
-		if (EQ(args, "on"))
+		if(EQ(args, "on"))
 			value->set(mask, TRUE);
-		else if (EQ(args, "off"))
+		else if(EQ(args, "off"))
 			value->set(mask, FALSE);
-		else if (EQ(args, "1"))
+		else if(EQ(args, "1"))
 			value->set(mask, TRUE);
-		else if (EQ(args, "0"))
+		else if(EQ(args, "0"))
 			value->set(mask, FALSE);
-		else if (EQ(args, "true"))
+		else if(EQ(args, "true"))
 			value->set(mask, TRUE);
-		else if (EQ(args, "false"))
+		else if(EQ(args, "false"))
 			value->set(mask, FALSE);
 		else
 			InvalidSyntax();
@@ -221,29 +221,29 @@ class ENGINE_API CCC_Token : public IConsole_Command
 	xr_token* tokens;
 
   public:
-	CCC_Token(LPCSTR N, u32* V, xr_token* T) : IConsole_Command(N), value(V), tokens(T){};
+	CCC_Token(LPCSTR N, u32* V, xr_token* T) : IConsole_Command(N), value(V), tokens(T) {};
 
 	virtual void Execute(LPCSTR args)
 	{
 		xr_token* tok = tokens;
-		while (tok->name)
+		while(tok->name)
 		{
-			if (xr_stricmp(tok->name, args) == 0)
+			if(xr_stricmp(tok->name, args) == 0)
 			{
 				*value = tok->id;
 				break;
 			}
 			tok++;
 		}
-		if (!tok->name)
+		if(!tok->name)
 			InvalidSyntax();
 	}
 	virtual void Status(TStatus& S)
 	{
 		xr_token* tok = tokens;
-		while (tok->name)
+		while(tok->name)
 		{
-			if (tok->id == (int)(*value))
+			if(tok->id == (int)(*value))
 			{
 				strcpy_s(S, tok->name);
 				return;
@@ -257,9 +257,9 @@ class ENGINE_API CCC_Token : public IConsole_Command
 	{
 		I[0] = 0;
 		xr_token* tok = tokens;
-		while (tok->name)
+		while(tok->name)
 		{
-			if (I[0])
+			if(I[0])
 				strcat(I, "/");
 			strcat(I, tok->name);
 			tok++;
@@ -275,9 +275,9 @@ class ENGINE_API CCC_Token : public IConsole_Command
 		TStatus str;
 		bool res = false;
 		xr_token* tok = GetToken();
-		while (tok->name && !res)
+		while(tok->name && !res)
 		{
-			if (tok->id == (int)(*value))
+			if(tok->id == (int)(*value))
 			{
 				sprintf_s(str, sizeof(str), "%s  (current)", tok->name);
 				tips.push_back(str);
@@ -285,12 +285,12 @@ class ENGINE_API CCC_Token : public IConsole_Command
 			}
 			tok++;
 		}
-		if (!res)
+		if(!res)
 		{
 			tips.push_back("---  (current)");
 		}
 		tok = GetToken();
-		while (tok->name)
+		while(tok->name)
 		{
 			tips.push_back(tok->name);
 			tok++;
@@ -306,7 +306,7 @@ class ENGINE_API CCC_Float : public IConsole_Command
 
   public:
 	CCC_Float(LPCSTR N, float* V, float _min = 0, float _max = 1)
-		: IConsole_Command(N), value(V), min(_min), max(_max){};
+		: IConsole_Command(N), value(V), min(_min), max(_max) {};
 	const float GetValue() const
 	{
 		return *value;
@@ -328,7 +328,7 @@ class ENGINE_API CCC_Float : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		float v = float(atof(args));
-		if (v < (min - EPS) || v > (max + EPS))
+		if(v < (min - EPS) || v > (max + EPS))
 			InvalidSyntax();
 		else
 			*value = v;
@@ -336,7 +336,7 @@ class ENGINE_API CCC_Float : public IConsole_Command
 	virtual void Status(TStatus& S)
 	{
 		sprintf_s(S, sizeof(S), "%3.5f", *value);
-		while (xr_strlen(S) && ('0' == S[xr_strlen(S) - 1]))
+		while(xr_strlen(S) && ('0' == S[xr_strlen(S) - 1]))
 			S[xr_strlen(S) - 1] = 0;
 	}
 	virtual void Info(TInfo& I)
@@ -373,17 +373,17 @@ class ENGINE_API CCC_Vector3 : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		fvec3 v;
-		if (3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
+		if(3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
 		{
 			InvalidSyntax();
 			return;
 		}
-		if (v.x < min.x || v.y < min.y || v.z < min.z)
+		if(v.x < min.x || v.y < min.y || v.z < min.z)
 		{
 			InvalidSyntax();
 			return;
 		}
-		if (v.x > max.x || v.y > max.y || v.z > max.z)
+		if(v.x > max.x || v.y > max.y || v.z > max.z)
 		{
 			InvalidSyntax();
 			return;
@@ -434,12 +434,12 @@ class ENGINE_API CCC_Integer : public IConsole_Command
 		fmax = max;
 	}
 
-	CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command(N), value(V), min(_min), max(_max){};
+	CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command(N), value(V), min(_min), max(_max) {};
 
 	virtual void Execute(LPCSTR args)
 	{
 		int v = atoi(args);
-		if (v < min || v > max)
+		if(v < min || v > max)
 			InvalidSyntax();
 		else
 			*value = v;

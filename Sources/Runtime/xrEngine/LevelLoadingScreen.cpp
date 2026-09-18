@@ -15,18 +15,18 @@ static LPCSTR _GetFontTexName(LPCSTR section)
 	int idx = def_idx;
 	u32 h = Device.dwHeight;
 
-	if (h <= 600)
+	if(h <= 600)
 		idx = 0;
-	else if (h <= 1024)
+	else if(h <= 1024)
 		idx = 2;
-	else if (h <= 1440)
+	else if(h <= 1440)
 		idx = 3;
 	else
 		idx = 3;
 
-	while (idx >= 0)
+	while(idx >= 0)
 	{
-		if (pSettings->line_exist(section, tex_names[idx]))
+		if(pSettings->line_exist(section, tex_names[idx]))
 			return pSettings->r_string(section, tex_names[idx]);
 		--idx;
 	}
@@ -49,7 +49,7 @@ CLevelLoadingScreen::~CLevelLoadingScreen()
 
 void CLevelLoadingScreen::Destroy()
 {
-	if (pFontSystem)
+	if(pFontSystem)
 	{
 		Engine.Events.Render.Remove(pFontSystem);
 		xr_delete(pFontSystem);
@@ -64,7 +64,7 @@ void CLevelLoadingScreen::InitializeFont()
 	LPCSTR font_tex_name = _GetFontTexName(section);
 	R_ASSERT(font_tex_name);
 
-	if (!pFontSystem)
+	if(!pFontSystem)
 	{
 		pFontSystem = xr_new<CGameFont>("font", font_tex_name, 0);
 		Engine.Events.Render.Add(pFontSystem, REG_PRIORITY_LOW - 1000);
@@ -74,19 +74,19 @@ void CLevelLoadingScreen::InitializeFont()
 		pFontSystem->Initialize("font", font_tex_name);
 	}
 
-	if (pSettings->line_exist(section, "size"))
+	if(pSettings->line_exist(section, "size"))
 	{
 		float sz = pSettings->r_float(section, "size");
 		pFontSystem->SetHeight(sz);
 	}
-	if (pSettings->line_exist(section, "interval"))
+	if(pSettings->line_exist(section, "interval"))
 		pFontSystem->SetInterval(pSettings->r_fvector2(section, "interval"));
 }
 
 void CLevelLoadingScreen::Show()
 {
 	ll_dwReference++;
-	if (1 == ll_dwReference)
+	if(1 == ll_dwReference)
 	{
 		bIsActive = true;
 		g_appLoaded = FALSE;
@@ -110,10 +110,10 @@ void CLevelLoadingScreen::Show()
 void CLevelLoadingScreen::Hide()
 {
 	ll_dwReference--;
-	if (0 == ll_dwReference)
+	if(0 == ll_dwReference)
 	{
 		bIsActive = false;
-		if (g_pGamePersistent)
+		if(g_pGamePersistent)
 			g_pGamePersistent->LoadTitle("st_loading_end");
 
 		Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
@@ -136,7 +136,7 @@ void CLevelLoadingScreen::SetTitle(LPCSTR str)
 	Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 	Log(app_title);
 
-	if (g_pGamePersistent && g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
+	if(g_pGamePersistent && g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
 		max_load_stage = 26;
 	else
 		max_load_stage = 16;
@@ -150,7 +150,7 @@ void CLevelLoadingScreen::ForceRender()
 
 	Device.Begin();
 
-	if (g_dedicated_server)
+	if(g_dedicated_server)
 		Console->OnRender();
 	else
 		DrawInternal();
@@ -163,7 +163,7 @@ void CLevelLoadingScreen::UpdateLevelLogo()
 	// Используем наш новый Engine.LevelManager
 	LPCSTR folderName = Engine.LevelManager.GetCurrentLevelFolderName();
 
-	if (!folderName)
+	if(!folderName)
 	{
 		hLevelLogo.create("font", "intro\\intro_no_start_picture");
 		return;
@@ -175,10 +175,10 @@ void CLevelLoadingScreen::UpdateLevelLogo()
 
 	// Убираем слеш в конце, если есть
 	size_t len = xr_strlen(temp);
-	if (len > 0 && temp[len - 1] == '\\')
+	if(len > 0 && temp[len - 1] == '\\')
 		temp[len - 1] = 0;
 
-	if (FS.exist(temp2, "$game_textures$", temp, ".dds"))
+	if(FS.exist(temp2, "$game_textures$", temp, ".dds"))
 		hLevelLogo.create("font", temp);
 	else
 		hLevelLogo.create("font", "intro\\intro_no_start_picture");
@@ -186,7 +186,7 @@ void CLevelLoadingScreen::UpdateLevelLogo()
 
 u32 CLevelLoadingScreen::CalcProgressColor(u32 idx, u32 total, int stage, int max_stage)
 {
-	if (idx > (total / 2))
+	if(idx > (total / 2))
 		idx = total - idx;
 	float kk = (float(stage + 1) / float(max_stage)) * (total / 2.0f);
 	float f = 1 / (expf((float(idx) - kk) * 0.5f) + 1.0f);
@@ -271,7 +271,7 @@ void CLevelLoadingScreen::DrawInternal()
 	float tc_delta = back_text_coords.width() / v_cnt;
 	u32 clr = C;
 
-	for (u32 idx = 0; idx < v_cnt + 1; ++idx)
+	for(u32 idx = 0; idx < v_cnt + 1; ++idx)
 	{
 		clr = CalcProgressColor(idx, v_cnt, load_stage, max_load_stage);
 		pv->set(back_coords.lt.x + pos_delta * idx + offs, back_coords.rb.y + offs, 0 + EPS_S, 1, clr,
@@ -296,7 +296,7 @@ void CLevelLoadingScreen::DrawInternal()
 	pFontSystem->OnRender();
 
 	// draw level-specific screenshot
-	if (hLevelLogo)
+	if(hLevelLogo)
 	{
 		Frect r;
 		r.lt.set(257, 369);

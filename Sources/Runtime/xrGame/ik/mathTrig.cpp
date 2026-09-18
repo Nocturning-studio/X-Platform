@@ -82,11 +82,11 @@ int math_solve_trig1(float a, float b, float c, float theta[2])
 {
 	float temp = (a * a + b * b - c * c);
 
-	if (temp < 0.0)
+	if(temp < 0.0)
 	{
 		// temp is practically zero
 
-		if (_abs(temp / (_abs(a * a) + _abs(b * b) + _abs(c * c))) < 1e-6)
+		if(_abs(temp / (_abs(a * a) + _abs(b * b) + _abs(c * c))) < 1e-6)
 		{
 			// printf("Special case\n");
 			theta[0] = (float)(2 * atan(-b / (-a - c)));
@@ -101,7 +101,7 @@ int math_solve_trig1(float a, float b, float c, float theta[2])
 
 	// Calculate answer in radians
 	theta[0] = (float)atan2(b, a);
-	if (num == 2)
+	if(num == 2)
 	{
 		theta[1] = theta[0] - temp;
 		theta[0] += temp;
@@ -130,12 +130,12 @@ float solve_trig2(float a, float b, float c, float d)
 //
 int myacos(float x, float solns[2])
 {
-	if (_abs(x) > 1)
+	if(_abs(x) > 1)
 		return 0;
 
 	solns[0] = angle_normalize_signed(acosf(x));
 
-	if (math_iszero(solns[0]))
+	if(math_iszero(solns[0]))
 		return 1;
 
 	solns[1] = -solns[0];
@@ -148,15 +148,15 @@ int myacos(float x, float solns[2])
 //
 int myasin(float x, float solns[2])
 {
-	if (_abs(x) > 1)
+	if(_abs(x) > 1)
 		return 0;
 
 	solns[0] = (float)angle_normalize_signed(asinf(x));
 
-	if (math_iszero(solns[0]))
+	if(math_iszero(solns[0]))
 		return 1;
 
-	if (solns[0] > 0)
+	if(solns[0] > 0)
 		solns[1] = PI - solns[0];
 	else
 		solns[1] = -PI - solns[0];

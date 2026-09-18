@@ -35,7 +35,7 @@ void CMonsterMorale::update_schedule(u32 dt)
 {
 	float cur_v = 1.f;
 
-	switch (m_state)
+	switch(m_state)
 	{
 	case eStable:
 		cur_v = m_v_stable;

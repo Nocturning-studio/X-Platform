@@ -26,7 +26,8 @@
 
 // #include "alife_abstract_registry.h"
 
-template <typename _index_type, typename _data_type> class CALifeAbstractRegistry;
+template <typename _index_type, typename _data_type>
+class CALifeAbstractRegistry;
 
 // для всех персонажей, те порции информации, которые они помнят
 typedef CALifeAbstractRegistry<u16, KNOWN_INFO_VECTOR> CInfoPortionRegistry;

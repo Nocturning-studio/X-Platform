@@ -196,11 +196,11 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 void CUITradeWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (pWnd == &m_uidata->UIToTalkButton && msg == BUTTON_CLICKED)
+	if(pWnd == &m_uidata->UIToTalkButton && msg == BUTTON_CLICKED)
 	{
 		SwitchToTalk();
 	}
-	else if (pWnd == &m_uidata->UIPerformTradeButton && msg == BUTTON_CLICKED)
+	else if(pWnd == &m_uidata->UIPerformTradeButton && msg == BUTTON_CLICKED)
 	{
 		PerformTrade();
 	}
@@ -211,7 +211,7 @@ void CUITradeWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 void CUITradeWnd::Draw()
 {
 	inherited::Draw();
-	if (m_uidata->UIDealMsg)
+	if(m_uidata->UIDealMsg)
 		m_uidata->UIDealMsg->Draw();
 }
 
@@ -221,28 +221,28 @@ void CUITradeWnd::Update()
 {
 	EListType et = eNone;
 
-	if (m_pInv->ModifyFrame() == Engine.TimeManager.GetFrameCount() && m_pOthersInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
+	if(m_pInv->ModifyFrame() == Engine.TimeManager.GetFrameCount() && m_pOthersInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
 	{
 		et = eBoth;
 	}
-	else if (m_pInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
+	else if(m_pInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
 	{
 		et = e1st;
 	}
-	else if (m_pOthersInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
+	else if(m_pOthersInv->ModifyFrame() == Engine.TimeManager.GetFrameCount())
 	{
 		et = e2nd;
 	}
-	if (et != eNone)
+	if(et != eNone)
 		UpdateLists(et);
 
 	inherited::Update();
 	UpdateCameraDirection(smart_cast<CGameObject*>(m_pOthersInvOwner));
 
-	if (m_uidata->UIDealMsg)
+	if(m_uidata->UIDealMsg)
 	{
 		m_uidata->UIDealMsg->Update();
-		if (!m_uidata->UIDealMsg->IsActual())
+		if(!m_uidata->UIDealMsg->IsActual())
 		{
 			HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
 			HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
@@ -268,12 +268,12 @@ void CUITradeWnd::Hide()
 	InventoryUtilities::SendInfoToActor("ui_trade_hide");
 	inherited::Show(false);
 	inherited::Enable(false);
-	if (bStarted)
+	if(bStarted)
 		StopTrade();
 
 	m_uidata->UIDealMsg = NULL;
 
-	if (HUD().GetUI()->UIGame())
+	if(HUD().GetUI()->UIGame())
 	{
 		HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
 		HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
@@ -287,18 +287,18 @@ void CUITradeWnd::Hide()
 
 void CUITradeWnd::StartTrade()
 {
-	if (m_pTrade)
+	if(m_pTrade)
 		m_pTrade->TradeCB(true);
-	if (m_pOthersTrade)
+	if(m_pOthersTrade)
 		m_pOthersTrade->TradeCB(true);
 	bStarted = true;
 }
 
 void CUITradeWnd::StopTrade()
 {
-	if (m_pTrade)
+	if(m_pTrade)
 		m_pTrade->TradeCB(false);
-	if (m_pOthersTrade)
+	if(m_pOthersTrade)
 		m_pOthersTrade->TradeCB(false);
 	bStarted = false;
 }
@@ -314,10 +314,10 @@ bool CUITradeWnd::CanMoveToOther(PIItem pItem)
 	float otherInvWeight = m_pOthersInv->CalcTotalWeight();
 	float otherMaxWeight = m_pOthersInv->GetMaxWeight();
 
-	if (!m_pOthersInvOwner->trade_parameters().enabled(CTradeParameters::action_buy(0), pItem->object().cNameSect()))
+	if(!m_pOthersInvOwner->trade_parameters().enabled(CTradeParameters::action_buy(0), pItem->object().cNameSect()))
 		return (false);
 
-	if (otherInvWeight - r2 + r1 + itmWeight > otherMaxWeight)
+	if(otherInvWeight - r2 + r1 + itmWeight > otherMaxWeight)
 		return false;
 
 	return true;
@@ -331,7 +331,7 @@ void move_item(CUICellItem* itm, CUIDragDropListEx* from, CUIDragDropListEx* to)
 
 bool CUITradeWnd::ToOurTrade()
 {
-	if (!CanMoveToOther(CurrentIItem()))
+	if(!CanMoveToOther(CurrentIItem()))
 		return false;
 
 	move_item(CurrentItem(), &m_uidata->UIOurBagList, &m_uidata->UIOurTradeList);
@@ -367,12 +367,12 @@ float CUITradeWnd::CalcItemsWeight(CUIDragDropListEx* pList)
 {
 	float res = 0.0f;
 
-	for (u32 i = 0; i < pList->ItemsCount(); ++i)
+	for(u32 i = 0; i < pList->ItemsCount(); ++i)
 	{
 		CUICellItem* itm = pList->GetItemIdx(i);
 		PIItem iitem = (PIItem)itm->m_pData;
 		res += iitem->Weight();
-		for (u32 j = 0; j < itm->ChildsCount(); ++j)
+		for(u32 j = 0; j < itm->ChildsCount(); ++j)
 		{
 			PIItem jitem = (PIItem)itm->Child(j)->m_pData;
 			res += jitem->Weight();
@@ -385,13 +385,13 @@ u32 CUITradeWnd::CalcItemsPrice(CUIDragDropListEx* pList, CTrade* pTrade, bool b
 {
 	u32 iPrice = 0;
 
-	for (u32 i = 0; i < pList->ItemsCount(); ++i)
+	for(u32 i = 0; i < pList->ItemsCount(); ++i)
 	{
 		CUICellItem* itm = pList->GetItemIdx(i);
 		PIItem iitem = (PIItem)itm->m_pData;
 		iPrice += pTrade->GetItemPrice(iitem, bBuying);
 
-		for (u32 j = 0; j < itm->ChildsCount(); ++j)
+		for(u32 j = 0; j < itm->ChildsCount(); ++j)
 		{
 			PIItem jitem = (PIItem)itm->Child(j)->m_pData;
 			iPrice += pTrade->GetItemPrice(jitem, bBuying);
@@ -404,7 +404,7 @@ u32 CUITradeWnd::CalcItemsPrice(CUIDragDropListEx* pList, CTrade* pTrade, bool b
 void CUITradeWnd::PerformTrade()
 {
 
-	if (m_uidata->UIOurTradeList.ItemsCount() == 0 && m_uidata->UIOthersTradeList.ItemsCount() == 0)
+	if(m_uidata->UIOurTradeList.ItemsCount() == 0 && m_uidata->UIOthersTradeList.ItemsCount() == 0)
 		return;
 
 	int our_money = (int)m_pInvOwner->get_money();
@@ -415,7 +415,7 @@ void CUITradeWnd::PerformTrade()
 	our_money += delta_price;
 	others_money -= delta_price;
 
-	if (our_money >= 0 && others_money >= 0 && (m_iOurTradePrice >= 0 || m_iOthersTradePrice > 0))
+	if(our_money >= 0 && others_money >= 0 && (m_iOurTradePrice >= 0 || m_iOthersTradePrice > 0))
 	{
 		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
 
@@ -424,7 +424,7 @@ void CUITradeWnd::PerformTrade()
 	}
 	else
 	{
-		if (others_money < 0)
+		if(others_money < 0)
 			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
 		else
 			m_uidata->UIDealMsg = HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
@@ -464,7 +464,7 @@ void CUITradeWnd::UpdatePrices()
 	sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
 	m_uidata->UIOurMoneyStatic.SetText(buf);
 
-	if (!m_pOthersInvOwner->InfinitiveMoney())
+	if(!m_pOthersInvOwner->InfinitiveMoney())
 	{
 		sprintf_s(buf, "%d RU", m_pOthersInvOwner->get_money());
 		m_uidata->UIOtherMoneyStatic.SetText(buf);
@@ -477,7 +477,7 @@ void CUITradeWnd::UpdatePrices()
 
 void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
 {
-	while (pSellList->ItemsCount())
+	while(pSellList->ItemsCount())
 	{
 		CUICellItem* itm = pSellList->RemoveItem(pSellList->GetItemIdx(0), false);
 		pTrade->TransferItem((PIItem)itm->m_pData, bBuying);
@@ -490,13 +490,13 @@ void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList, CUIDragDropListEx*
 
 void CUITradeWnd::UpdateLists(EListType mode)
 {
-	if (mode == eBoth || mode == e1st)
+	if(mode == eBoth || mode == e1st)
 	{
 		m_uidata->UIOurBagList.ClearAll(true);
 		m_uidata->UIOurTradeList.ClearAll(true);
 	}
 
-	if (mode == eBoth || mode == e2nd)
+	if(mode == eBoth || mode == e2nd)
 	{
 		m_uidata->UIOthersBagList.ClearAll(true);
 		m_uidata->UIOthersTradeList.ClearAll(true);
@@ -504,7 +504,7 @@ void CUITradeWnd::UpdateLists(EListType mode)
 
 	UpdatePrices();
 
-	if (mode == eBoth || mode == e1st)
+	if(mode == eBoth || mode == e1st)
 	{
 		ruck_list.clear();
 		m_pInv->AddAvailableItems(ruck_list, true);
@@ -512,7 +512,7 @@ void CUITradeWnd::UpdateLists(EListType mode)
 		FillList(ruck_list, m_uidata->UIOurBagList, true);
 	}
 
-	if (mode == eBoth || mode == e2nd)
+	if(mode == eBoth || mode == e2nd)
 	{
 		ruck_list.clear();
 		m_pOthersInv->AddAvailableItems(ruck_list, true);
@@ -526,10 +526,10 @@ void CUITradeWnd::FillList(TIItemContainer& cont, CUIDragDropListEx& dragDropLis
 	TIItemContainer::iterator it = cont.begin();
 	TIItemContainer::iterator it_e = cont.end();
 
-	for (; it != it_e; ++it)
+	for(; it != it_e; ++it)
 	{
 		CUICellItem* itm = create_cell_item(*it);
-		if (do_colorize)
+		if(do_colorize)
 			ColorizeItem(itm, CanMoveToOther(*it));
 		dragDropList.SetItem(itm);
 	}
@@ -556,16 +556,16 @@ bool CUITradeWnd::OnItemDrop(CUICellItem* itm)
 {
 	CUIDragDropListEx* old_owner = itm->OwnerList();
 	CUIDragDropListEx* new_owner = CUIDragDropListEx::m_drag_item->BackList();
-	if (old_owner == new_owner || !old_owner || !new_owner)
+	if(old_owner == new_owner || !old_owner || !new_owner)
 		return false;
 
-	if (old_owner == &m_uidata->UIOurBagList && new_owner == &m_uidata->UIOurTradeList)
+	if(old_owner == &m_uidata->UIOurBagList && new_owner == &m_uidata->UIOurTradeList)
 		ToOurTrade();
-	else if (old_owner == &m_uidata->UIOurTradeList && new_owner == &m_uidata->UIOurBagList)
+	else if(old_owner == &m_uidata->UIOurTradeList && new_owner == &m_uidata->UIOurBagList)
 		ToOurBag();
-	else if (old_owner == &m_uidata->UIOthersBagList && new_owner == &m_uidata->UIOthersTradeList)
+	else if(old_owner == &m_uidata->UIOthersBagList && new_owner == &m_uidata->UIOthersTradeList)
 		ToOthersTrade();
-	else if (old_owner == &m_uidata->UIOthersTradeList && new_owner == &m_uidata->UIOthersBagList)
+	else if(old_owner == &m_uidata->UIOthersTradeList && new_owner == &m_uidata->UIOthersBagList)
 		ToOthersBag();
 
 	return true;
@@ -576,13 +576,13 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 	SetCurrentItem(itm);
 	CUIDragDropListEx* old_owner = itm->OwnerList();
 
-	if (old_owner == &m_uidata->UIOurBagList)
+	if(old_owner == &m_uidata->UIOurBagList)
 		ToOurTrade();
-	else if (old_owner == &m_uidata->UIOurTradeList)
+	else if(old_owner == &m_uidata->UIOurTradeList)
 		ToOurBag();
-	else if (old_owner == &m_uidata->UIOthersBagList)
+	else if(old_owner == &m_uidata->UIOthersBagList)
 		ToOthersTrade();
-	else if (old_owner == &m_uidata->UIOthersTradeList)
+	else if(old_owner == &m_uidata->UIOthersTradeList)
 		ToOthersBag();
 	else
 		R_ASSERT2(false, "wrong parent for cell item");
@@ -602,18 +602,18 @@ PIItem CUITradeWnd::CurrentIItem()
 
 void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if (m_pCurrentCellItem == itm)
+	if(m_pCurrentCellItem == itm)
 		return;
 	m_pCurrentCellItem = itm;
 	m_uidata->UIItemInfo.InitItem(CurrentIItem());
 
-	if (!m_pCurrentCellItem)
+	if(!m_pCurrentCellItem)
 		return;
 
 	CUIDragDropListEx* owner = itm->OwnerList();
 	bool bBuying = (owner == &m_uidata->UIOurBagList) || (owner == &m_uidata->UIOurTradeList);
 
-	if (itm && m_uidata->UIItemInfo.UICost)
+	if(itm && m_uidata->UIItemInfo.UICost)
 	{
 
 		string256 str;
@@ -639,6 +639,6 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
 {
-	if (!b)
+	if(!b)
 		itm->SetColor(color_rgba(255, 100, 100, 255));
 }

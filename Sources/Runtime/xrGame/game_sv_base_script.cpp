@@ -29,7 +29,7 @@ bool tutorial_is_allowed()
 
 void start_tutorial(LPCSTR name)
 {
-	if (g_tutorial)
+	if(g_tutorial)
 	{
 		VERIFY(!g_tutorial2);
 		g_tutorial2 = g_tutorial;
@@ -37,7 +37,7 @@ void start_tutorial(LPCSTR name)
 
 	g_tutorial = xr_new<CUISequencer>();
 	g_tutorial->Start(name);
-	if (g_tutorial2)
+	if(g_tutorial2)
 		g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
 }
 

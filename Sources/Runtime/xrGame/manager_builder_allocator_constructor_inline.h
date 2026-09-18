@@ -8,13 +8,13 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <typename _manager, typename _builder, typename _allocator,                                               \
-			  template <typename _builder, typename _allocator> class _builder_allocator_constructor>                  \
+#define TEMPLATE_SPECIALIZATION                                                                       \
+	template <typename _manager, typename _builder, typename _allocator,                              \
+			  template <typename _builder, typename _allocator> class _builder_allocator_constructor> \
 	template <template <typename T> class _vertex, template <typename T1, typename T2> class _index_vertex>
 
-#define CConstructorManagerBuilderAllocator                                                                            \
-	CManagerBuilderAllocatorConstructor<_manager, _builder, _allocator,                                                \
+#define CConstructorManagerBuilderAllocator                             \
+	CManagerBuilderAllocatorConstructor<_manager, _builder, _allocator, \
 										_builder_allocator_constructor>::CDataStorage<_vertex, _index_vertex>
 
 TEMPLATE_SPECIALIZATION

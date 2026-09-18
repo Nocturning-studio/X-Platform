@@ -1,7 +1,7 @@
 /******
 nonport.h
 GameSpy Common Code
-  
+
 Copyright 1999-2002 GameSpy Industries, Inc
 
 18002 Skypark Circle
@@ -15,7 +15,8 @@ devsupport@gamespy.com
 #define _NONPORT_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 #include "common/gsCommon.h"
 #ifdef __cplusplus

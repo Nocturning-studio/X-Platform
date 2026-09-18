@@ -27,7 +27,7 @@ void CScriptActionPlannerWrapper::setup_static(CScriptActionPlanner* planner, CS
 void CScriptActionPlannerWrapper::update()
 {
 #ifdef LOG_ACTION
-	if ((psAI_Flags.test(aiGOAPScript) && !m_use_log) || (!psAI_Flags.test(aiGOAPScript) && m_use_log))
+	if((psAI_Flags.test(aiGOAPScript) && !m_use_log) || (!psAI_Flags.test(aiGOAPScript) && m_use_log))
 		set_use_log(!!psAI_Flags.test(aiGOAPScript));
 #endif
 

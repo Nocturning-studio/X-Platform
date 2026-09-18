@@ -16,7 +16,8 @@
 
 class CScriptGameObject;
 
-template <typename _object_type> class CActionBase : public GraphEngineSpace::CWorldOperator
+template <typename _object_type>
+class CActionBase : public GraphEngineSpace::CWorldOperator
 {
   protected:
 	typedef GraphEngineSpace::CWorldOperator inherited;

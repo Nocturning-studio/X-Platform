@@ -27,7 +27,7 @@ class CBlender_antialiasing : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_PASS_NFAA:
 			C.begin_Pass("screen_quad", "postprocess_stage_antialiasing_pass_nfaa");

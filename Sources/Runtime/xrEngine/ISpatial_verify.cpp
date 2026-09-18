@@ -23,9 +23,9 @@ class CWalkerVerify
 
 		// recurse
 		float c_R = n_R / 2;
-		for (u32 octant = 0; octant < 8; octant++)
+		for(u32 octant = 0; octant < 8; octant++)
 		{
-			if (0 == N->children[octant])
+			if(0 == N->children[octant])
 				continue;
 			fvec3 c_C;
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);

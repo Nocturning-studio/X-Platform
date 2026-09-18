@@ -13,6 +13,6 @@ CScriptTokenList::~CScriptTokenList()
 {
 	iterator I = tokens().begin();
 	iterator E = tokens().end();
-	for (; I != E; ++I)
+	for(; I != E; ++I)
 		xr_free((*I).name);
 }

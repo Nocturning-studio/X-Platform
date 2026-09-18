@@ -45,13 +45,13 @@ void CPHCharacter::UnFreezeContent()
 }
 void CPHCharacter::getForce(fvec3& force)
 {
-	if (!b_exist)
+	if(!b_exist)
 		return;
 	force.set(*(fvec3*)dBodyGetForce(m_body));
 }
 void CPHCharacter::setForce(const fvec3& force)
 {
-	if (!b_exist)
+	if(!b_exist)
 		return;
 	dBodySetForce(m_body, force.x, force.y, force.z);
 }
@@ -70,7 +70,7 @@ void CPHCharacter::get_State(SPHNetState& state)
 	//	state.accel = GetAcceleration();
 	//	state.max_velocity = GetMaximumVelocity();
 
-	if (!b_exist)
+	if(!b_exist)
 	{
 		state.enabled = false;
 		return;
@@ -88,13 +88,13 @@ void CPHCharacter::set_State(const SPHNetState& state)
 	//	SetAcceleration(state.accel);
 	//	SetMaximumVelocity(state.max_velocity);
 
-	if (!b_exist)
+	if(!b_exist)
 		return;
-	if (state.enabled)
+	if(state.enabled)
 	{
 		Enable();
 	};
-	if (!state.enabled)
+	if(!state.enabled)
 	{
 		Disable();
 	};
@@ -111,7 +111,7 @@ void CPHCharacter::Disable()
 
 void CPHCharacter::Enable()
 {
-	if (!b_exist)
+	if(!b_exist)
 		return;
 	CPHObject::activate();
 	dBodyEnable(m_body);
@@ -124,7 +124,7 @@ void CarHitCallback(bool& /**do_colide/**/, dContact& /**c/**/)
 void CPHCharacter::GetSavedVelocity(fvec3& vvel)
 {
 
-	if (IsEnabled())
+	if(IsEnabled())
 		vvel.set(m_safe_velocity);
 	else
 		GetVelocity(vvel);
@@ -133,7 +133,7 @@ void CPHCharacter::GetSavedVelocity(fvec3& vvel)
 void CPHCharacter::CutVelocity(float l_limit, float /*a_limit*/)
 {
 	dVector3 limitedl, diffl;
-	if (dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl))
+	if(dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl))
 	{
 		dVectorSub(diffl, limitedl, dBodyGetLinearVel(m_body));
 		dBodySetLinearVel(m_body, diffl[0], diffl[1], diffl[2]);

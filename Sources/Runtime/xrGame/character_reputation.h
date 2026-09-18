@@ -28,8 +28,8 @@ class CHARACTER_REPUTATION : public CIni_IdToIndex<1, REPUTATION_DATA, shared_st
 	friend inherited;
 
   public:
-	CHARACTER_REPUTATION() : m_current_value(NO_REPUTATION){};
-	~CHARACTER_REPUTATION(){};
+	CHARACTER_REPUTATION() : m_current_value(NO_REPUTATION) {};
+	~CHARACTER_REPUTATION() {};
 
 	void set(CHARACTER_REPUTATION_VALUE);
 

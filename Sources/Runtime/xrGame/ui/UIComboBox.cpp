@@ -45,7 +45,7 @@ void CUIComboBox::SetListLength(int length)
 void CUIComboBox::Init(float x, float y, float width)
 {
 	m_bInited = true;
-	if (0 == m_iListHeight)
+	if(0 == m_iListHeight)
 		m_iListHeight = 4;
 
 	//.	width								-= CB_BTN_SIZE;
@@ -102,7 +102,7 @@ void CUIComboBox::OnListItemSelect()
 	m_itoken_id = (int)(__int64)itm->GetData();
 	ShowList(false);
 
-	if (bk_itoken_id != m_itoken_id)
+	if(bk_itoken_id != m_itoken_id)
 	{
 		SaveValue();
 		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, NULL);
@@ -115,13 +115,13 @@ void CUIComboBox::SetCurrentValue()
 	m_list.Clear();
 	xr_token* tok = GetOptToken();
 
-	if (tok == nullptr)
+	if(tok == nullptr)
 	{
 		Msg("!CUIComboBox::SetCurrentValue() - Token is nullptr!");
 		return;
 	}
-	
-	while (tok->name)
+
+	while(tok->name)
 	{
 		AddItem_(tok->name, tok->id);
 		tok++;
@@ -133,7 +133,7 @@ void CUIComboBox::SetCurrentValue()
 	m_list.SetSelectedText(cur_val);
 
 	CUIListBoxItem* itm = m_list.GetSelectedItem();
-	if (itm)
+	if(itm)
 		m_itoken_id = (int)(__int64)itm->GetData();
 	else
 		m_itoken_id = 1; // first
@@ -180,7 +180,7 @@ void CUIComboBox::OnBtnClicked()
 
 void CUIComboBox::ShowList(bool bShow)
 {
-	if (bShow)
+	if(bShow)
 	{
 		SetHeight(m_text.GetHeight() + m_list.GetHeight());
 
@@ -209,7 +209,7 @@ CUIListBox* CUIComboBox::GetListWnd()
 void CUIComboBox::Update()
 {
 	CUIWindow::Update();
-	if (!m_bIsEnabled)
+	if(!m_bIsEnabled)
 	{
 		SetState(S_Disabled);
 		m_text.SetTextColor(m_textColor[1]);
@@ -221,20 +221,20 @@ void CUIComboBox::Update()
 void CUIComboBox::OnFocusLost()
 {
 	CUIWindow::OnFocusLost();
-	if (m_bIsEnabled)
+	if(m_bIsEnabled)
 		SetState(S_Enabled);
 }
 
 void CUIComboBox::OnFocusReceive()
 {
 	CUIWindow::OnFocusReceive();
-	if (m_bIsEnabled)
+	if(m_bIsEnabled)
 		SetState(S_Highlighted);
 }
 
 bool CUIComboBox::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	if (CUIWindow::OnMouse(x, y, mouse_action))
+	if(CUIWindow::OnMouse(x, y, mouse_action))
 		return true;
 
 	bool bCursorOverScb = false;
@@ -243,18 +243,18 @@ bool CUIComboBox::OnMouse(float x, float y, EUIMessages mouse_action)
 	//.	Frect wndRect		= m_list.ScrollBar()->GetWndRect();
 	//.	bCursorOverScb		= wndRect.in(m_list.ScrollBar()->cursor_pos)
 	bCursorOverScb = m_list.ScrollBar()->CursorOverWindow();
-	switch (m_eState)
+	switch(m_eState)
 	{
 	case LIST_EXPANDED:
 
-		if ((!bCursorOverScb) && mouse_action == WINDOW_LBUTTON_DOWN)
+		if((!bCursorOverScb) && mouse_action == WINDOW_LBUTTON_DOWN)
 		{
 			ShowList(false);
 			return true;
 		}
 		break;
 	case LIST_FONDED:
-		if (mouse_action == WINDOW_LBUTTON_DOWN)
+		if(mouse_action == WINDOW_LBUTTON_DOWN)
 		{
 			OnBtnClicked();
 			return true;
@@ -276,7 +276,7 @@ void CUIComboBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWindow::SendMessage(pWnd, msg, pData);
 
-	switch (msg)
+	switch(msg)
 	{
 		/*		case BUTTON_CLICKED:
 					if (pWnd == &m_btn || pWnd == &m_list)
@@ -284,7 +284,7 @@ void CUIComboBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 					break;
 		*/
 	case LIST_ITEM_CLICKED:
-		if (pWnd == &m_list)
+		if(pWnd == &m_list)
 			OnListItemSelect();
 		break;
 	default:

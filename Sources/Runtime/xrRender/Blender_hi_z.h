@@ -24,7 +24,7 @@ class CBlender_hi_z : public IBlender
 	{
 		IBlender::Compile(C);
 
-		switch (C.iElement)
+		switch(C.iElement)
 		{
 		case SE_HI_Z_GENERATE_MIP_CHAIN_PASS:
 			C.begin_Pass("screen_quad", "hi_z_stage_pass_copy_buffer");
@@ -42,4 +42,3 @@ class CBlender_hi_z : public IBlender
 	~CBlender_hi_z() = default;
 };
 ///////////////////////////////////////////////////////////////////////////////////
-

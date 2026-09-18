@@ -50,51 +50,51 @@ ICF BOOL isect_fpu(const fvec3& min, const fvec3& max, const ray_t& ray, fvec3& 
 	BOOL Inside = TRUE;
 
 	// Find candidate planes.
-	if (ray.pos[0] < min[0])
+	if(ray.pos[0] < min[0])
 	{
 		coord[0] = min[0];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[0]))
+		if(uf(ray.inv_dir[0]))
 			MaxT[0] = (min[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
 	}
-	else if (ray.pos[0] > max[0])
+	else if(ray.pos[0] > max[0])
 	{
 		coord[0] = max[0];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[0]))
+		if(uf(ray.inv_dir[0]))
 			MaxT[0] = (max[0] - ray.pos[0]) * ray.inv_dir[0]; // Calculate T distances to candidate planes
 	}
-	if (ray.pos[1] < min[1])
+	if(ray.pos[1] < min[1])
 	{
 		coord[1] = min[1];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[1]))
+		if(uf(ray.inv_dir[1]))
 			MaxT[1] = (min[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
 	}
-	else if (ray.pos[1] > max[1])
+	else if(ray.pos[1] > max[1])
 	{
 		coord[1] = max[1];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[1]))
+		if(uf(ray.inv_dir[1]))
 			MaxT[1] = (max[1] - ray.pos[1]) * ray.inv_dir[1]; // Calculate T distances to candidate planes
 	}
-	if (ray.pos[2] < min[2])
+	if(ray.pos[2] < min[2])
 	{
 		coord[2] = min[2];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[2]))
+		if(uf(ray.inv_dir[2]))
 			MaxT[2] = (min[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
 	}
-	else if (ray.pos[2] > max[2])
+	else if(ray.pos[2] > max[2])
 	{
 		coord[2] = max[2];
 		Inside = FALSE;
-		if (uf(ray.inv_dir[2]))
+		if(uf(ray.inv_dir[2]))
 			MaxT[2] = (max[2] - ray.pos[2]) * ray.inv_dir[2]; // Calculate T distances to candidate planes
 	}
 
 	// Ray ray.pos inside bounding box
-	if (Inside)
+	if(Inside)
 	{
 		coord = ray.pos;
 		return true;
@@ -102,42 +102,42 @@ ICF BOOL isect_fpu(const fvec3& min, const fvec3& max, const ray_t& ray, fvec3& 
 
 	// Get largest of the maxT's for final choice of intersection
 	u32 WhichPlane = 0;
-	if (MaxT[1] > MaxT[0])
+	if(MaxT[1] > MaxT[0])
 		WhichPlane = 1;
-	if (MaxT[2] > MaxT[WhichPlane])
+	if(MaxT[2] > MaxT[WhichPlane])
 		WhichPlane = 2;
 
 	// Check final candidate actually inside box (if max < 0)
-	if (uf(MaxT[WhichPlane]) & 0x80000000)
+	if(uf(MaxT[WhichPlane]) & 0x80000000)
 		return false;
 
-	if (0 == WhichPlane)
+	if(0 == WhichPlane)
 	{ // 1 & 2
 		coord[1] = ray.pos[1] + MaxT[0] * ray.fwd_dir[1];
-		if ((coord[1] < min[1]) || (coord[1] > max[1]))
+		if((coord[1] < min[1]) || (coord[1] > max[1]))
 			return false;
 		coord[2] = ray.pos[2] + MaxT[0] * ray.fwd_dir[2];
-		if ((coord[2] < min[2]) || (coord[2] > max[2]))
+		if((coord[2] < min[2]) || (coord[2] > max[2]))
 			return false;
 		return true;
 	}
-	if (1 == WhichPlane)
+	if(1 == WhichPlane)
 	{ // 0 & 2
 		coord[0] = ray.pos[0] + MaxT[1] * ray.fwd_dir[0];
-		if ((coord[0] < min[0]) || (coord[0] > max[0]))
+		if((coord[0] < min[0]) || (coord[0] > max[0]))
 			return false;
 		coord[2] = ray.pos[2] + MaxT[1] * ray.fwd_dir[2];
-		if ((coord[2] < min[2]) || (coord[2] > max[2]))
+		if((coord[2] < min[2]) || (coord[2] > max[2]))
 			return false;
 		return true;
 	}
-	if (2 == WhichPlane)
+	if(2 == WhichPlane)
 	{ // 0 & 1
 		coord[0] = ray.pos[0] + MaxT[2] * ray.fwd_dir[0];
-		if ((coord[0] < min[0]) || (coord[0] > max[0]))
+		if((coord[0] < min[0]) || (coord[0] > max[0]))
 			return false;
 		coord[1] = ray.pos[1] + MaxT[2] * ray.fwd_dir[1];
-		if ((coord[1] < min[1]) || (coord[1] > max[1]))
+		if((coord[1] < min[1]) || (coord[1] > max[1]))
 			return false;
 		return true;
 	}
@@ -207,7 +207,8 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 
 extern fvec3 c_spatial_offset[8];
 
-template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalkerQRay
+template <bool b_use_sse, bool b_first, bool b_nearest>
+class _MM_ALIGN16 CWalkerQRay
 {
   public:
 	ray_t ray;
@@ -223,20 +224,20 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 		ray.pos.set(_start);
 		ray.inv_dir.set(1.f, 1.f, 1.f).div(_dir);
 		ray.fwd_dir.set(_dir);
-		if (!b_use_sse)
+		if(!b_use_sse)
 		{
 			// for FPU - zero out inf
-			if (_abs(_dir.x) > flt_eps)
+			if(_abs(_dir.x) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.x = 0;
-			if (_abs(_dir.y) > flt_eps)
+			if(_abs(_dir.y) > flt_eps)
 			{
 			}
 			else
 				ray.inv_dir.y = 0;
-			if (_abs(_dir.z) > flt_eps)
+			if(_abs(_dir.z) > flt_eps)
 			{
 			}
 			else
@@ -269,43 +270,43 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 	void walk(ISpatial_NODE* N, fvec3& n_C, float n_R)
 	{
 		// Actual ray/aabb test
-		if (b_use_sse)
+		if(b_use_sse)
 		{
 			// use SSE
 			float d;
-			if (!_box_sse(n_C, n_R, d))
+			if(!_box_sse(n_C, n_R, d))
 				return;
-			if (d > range)
+			if(d > range)
 				return;
 		}
 		else
 		{
 			// use FPU
 			fvec3 P;
-			if (!_box_fpu(n_C, n_R, P))
+			if(!_box_fpu(n_C, n_R, P))
 				return;
-			if (P.distance_to_sqr(ray.pos) > range2)
+			if(P.distance_to_sqr(ray.pos) > range2)
 				return;
 		}
 
 		// test items
 		xr_vector<ISpatial*>::iterator _it = N->items.begin();
 		xr_vector<ISpatial*>::iterator _end = N->items.end();
-		for (; _it != _end; _it++)
+		for(; _it != _end; _it++)
 		{
 			ISpatial* S = *_it;
-			if (mask != (S->spatial.type & mask))
+			if(mask != (S->spatial.type & mask))
 				continue;
 			Fsphere& sS = S->spatial.sphere;
 			int quantity;
 			float afT[2];
 			Fsphere::ERP_Result result = sS.intersect(ray.pos, ray.fwd_dir, range, quantity, afT);
 
-			if (result == Fsphere::rpOriginInside || ((result == Fsphere::rpOriginOutside) && (afT[0] < range)))
+			if(result == Fsphere::rpOriginInside || ((result == Fsphere::rpOriginOutside) && (afT[0] < range)))
 			{
-				if (b_nearest)
+				if(b_nearest)
 				{
-					switch (result)
+					switch(result)
 					{
 					case Fsphere::rpOriginInside:
 						range = afT[0] < range ? afT[0] : range;
@@ -317,21 +318,21 @@ template <bool b_use_sse, bool b_first, bool b_nearest> class _MM_ALIGN16 CWalke
 					range2 = range * range;
 				}
 				space->q_result->push_back(S);
-				if (b_first)
+				if(b_first)
 					return;
 			}
 		}
 
 		// recurse
 		float c_R = n_R / 2;
-		for (u32 octant = 0; octant < 8; octant++)
+		for(u32 octant = 0; octant < 8; octant++)
 		{
-			if (0 == N->children[octant])
+			if(0 == N->children[octant])
 				continue;
 			fvec3 c_C;
 			c_C.mad(n_C, c_spatial_offset[octant], c_R);
 			walk(N->children[octant], c_C, c_R);
-			if (b_first && !space->q_result->empty())
+			if(b_first && !space->q_result->empty())
 				return;
 		}
 	}
@@ -343,11 +344,11 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const fv
 	cs.Enter();
 	q_result = &R;
 	q_result->clear_not_free();
-	if (CPU::ID.hasFeature(CpuFeature::Sse))
+	if(CPU::ID.hasFeature(CpuFeature::Sse))
 	{
-		if (_o & O_ONLYFIRST)
+		if(_o & O_ONLYFIRST)
 		{
-			if (_o & O_ONLYNEAREST)
+			if(_o & O_ONLYNEAREST)
 			{
 				CWalkerQRay<true, true, true> W(this, _mask_and, _start, _dir, _range);
 				W.walk(m_root, m_center, m_bounds);
@@ -360,7 +361,7 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const fv
 		}
 		else
 		{
-			if (_o & O_ONLYNEAREST)
+			if(_o & O_ONLYNEAREST)
 			{
 				CWalkerQRay<true, false, true> W(this, _mask_and, _start, _dir, _range);
 				W.walk(m_root, m_center, m_bounds);
@@ -374,9 +375,9 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const fv
 	}
 	else
 	{
-		if (_o & O_ONLYFIRST)
+		if(_o & O_ONLYFIRST)
 		{
-			if (_o & O_ONLYNEAREST)
+			if(_o & O_ONLYNEAREST)
 			{
 				CWalkerQRay<false, true, true> W(this, _mask_and, _start, _dir, _range);
 				W.walk(m_root, m_center, m_bounds);
@@ -389,7 +390,7 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const fv
 		}
 		else
 		{
-			if (_o & O_ONLYNEAREST)
+			if(_o & O_ONLYNEAREST)
 			{
 				CWalkerQRay<false, false, true> W(this, _mask_and, _start, _dir, _range);
 				W.walk(m_root, m_center, m_bounds);

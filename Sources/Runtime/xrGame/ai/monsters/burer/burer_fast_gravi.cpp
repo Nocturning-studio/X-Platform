@@ -7,11 +7,11 @@
 
 bool CBurerFastGravi::check_start_conditions()
 {
-	if (is_active())
+	if(is_active())
 		return false;
-	if (m_man->is_captured_pure())
+	if(m_man->is_captured_pure())
 		return false;
-	if (!m_object->EnemyMan.get_enemy())
+	if(!m_object->EnemyMan.get_enemy())
 		return false;
 
 	return true;
@@ -33,10 +33,10 @@ void CBurerFastGravi::deactivate()
 
 void CBurerFastGravi::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
 {
-	if (type == ControlCom::eventTAChange)
+	if(type == ControlCom::eventTAChange)
 	{
 		STripleAnimEventData* event_data = (STripleAnimEventData*)data;
-		if (event_data->m_current_state == eStateExecute)
+		if(event_data->m_current_state == eStateExecute)
 		{
 			process_hit();
 			m_object->com_man().ta_pointbreak();

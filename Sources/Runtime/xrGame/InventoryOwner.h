@@ -70,7 +70,7 @@ class CInventoryOwner : public CAttachmentOwner
 	// торговля и общение с персонажем
 
 	virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
-	virtual void OnFollowerCmd(int cmd){}; // redefine for CAI_Stalkker
+	virtual void OnFollowerCmd(int cmd) {}; // redefine for CAI_Stalkker
 	// инициализация объекта торговли
 	CTrade* GetTrade();
 

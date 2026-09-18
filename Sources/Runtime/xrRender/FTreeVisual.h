@@ -8,9 +8,9 @@ class FTreeVisual : public IRender_Visual, public IRender_Mesh
   private:
 	struct _5color
 	{
-		fvec3 rgb; // - all static lighting
-		float hemi;	 // - hemisphere
-		float sun;	 // - sun
+		fvec3 rgb;	// - all static lighting
+		float hemi; // - hemisphere
+		float sun;	// - sun
 	};
 
   protected:

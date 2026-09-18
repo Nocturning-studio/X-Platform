@@ -37,21 +37,21 @@ void CBastArtefact::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, dCon
 	l_pUD1 = retrieveGeomUserData(c.geom.g1);
 	l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
-	if (!l_pUD1 || !l_pUD2)
+	if(!l_pUD1 || !l_pUD2)
 		return;
 
 	// определить кто есть кто, из двух столкнувшихся предметов
 	CBastArtefact* pBastArtefact = l_pUD1 ? smart_cast<CBastArtefact*>(l_pUD1->ph_ref_object) : NULL;
-	if (!pBastArtefact)
+	if(!pBastArtefact)
 		pBastArtefact = l_pUD2 ? smart_cast<CBastArtefact*>(l_pUD2->ph_ref_object) : NULL;
-	if (!pBastArtefact)
+	if(!pBastArtefact)
 		return;
-	if (!pBastArtefact->IsAttacking())
+	if(!pBastArtefact->IsAttacking())
 		return;
 
 	CEntityAlive* pEntityAlive = NULL;
 	pEntityAlive = l_pUD1 ? smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object) : NULL;
-	if (!pEntityAlive)
+	if(!pEntityAlive)
 		pEntityAlive = l_pUD2 ? smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object) : NULL;
 
 	pBastArtefact->BastCollision(pEntityAlive);
@@ -60,12 +60,12 @@ void CBastArtefact::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, dCon
 void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
 {
 	// попали во что-то живое
-	if (pEntityAlive && pEntityAlive->g_Alive())
+	if(pEntityAlive && pEntityAlive->g_Alive())
 	{
 		m_AttakingEntity = NULL;
 		m_pHitedEntity = pEntityAlive;
 
-		if (m_AliveList.size() > 1)
+		if(m_AliveList.size() > 1)
 		{
 			m_bStrike = true;
 		}
@@ -85,7 +85,7 @@ void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
 BOOL CBastArtefact::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL result = inherited::net_Spawn(DC);
-	if (!result)
+	if(!result)
 		return FALSE;
 
 	m_bStrike = false;
@@ -135,24 +135,24 @@ void CBastArtefact::UpdateCLChild()
 	// Log						("--- A - CBastArtefact",renderable.transform);
 
 	// современем энергия по немногу тоже уменьшается
-	if (m_fEnergy > 0)
+	if(m_fEnergy > 0)
 		m_fEnergy -= m_fEnergyDecreasePerTime * Engine.TimeManager.GetDeltaTime();
 
-	if (getVisible() && m_pPhysicsShell)
+	if(getVisible() && m_pPhysicsShell)
 	{
-		if (m_bStrike)
+		if(m_bStrike)
 		{
 			// выбрать жертву, если она еще не выбрана
-			if (!m_AliveList.empty() && m_AttakingEntity == NULL)
+			if(!m_AliveList.empty() && m_AttakingEntity == NULL)
 			{
 				CEntityAlive* pEntityToHit = NULL;
-				if (m_AliveList.size() > 1)
+				if(m_AliveList.size() > 1)
 				{
 					do
 					{
 						int rnd = ::Random.randI(m_AliveList.size());
 						pEntityToHit = m_AliveList[rnd];
-					} while (pEntityToHit == m_pHitedEntity);
+					} while(pEntityToHit == m_pHitedEntity);
 				}
 				else
 				{
@@ -163,9 +163,9 @@ void CBastArtefact::UpdateCLChild()
 			}
 		}
 
-		if (m_AttakingEntity)
+		if(m_AttakingEntity)
 		{
-			if (m_AttakingEntity->g_Alive() && m_fEnergy > m_fStrikeImpulse)
+			if(m_AttakingEntity->g_Alive() && m_fEnergy > m_fStrikeImpulse)
 			{
 				m_fEnergy -= m_fStrikeImpulse;
 
@@ -184,7 +184,7 @@ void CBastArtefact::UpdateCLChild()
 			}
 		}
 
-		if (m_fEnergy > 0 && ::Random.randF(0.f, 1.0f) < (m_fEnergy / (m_fStrikeImpulse * 100.f)))
+		if(m_fEnergy > 0 && ::Random.randF(0.f, 1.0f) < (m_fEnergy / (m_fStrikeImpulse * 100.f)))
 		{
 			CParticlesObject* pStaticPG;
 			pStaticPG = CParticlesObject::Create(*m_sParticleName, TRUE);
@@ -198,7 +198,7 @@ void CBastArtefact::UpdateCLChild()
 			pStaticPG->Play();
 		}
 	}
-	else if (H_Parent())
+	else if(H_Parent())
 		Transform().set(H_Parent()->Transform());
 }
 
@@ -210,14 +210,14 @@ void CBastArtefact::UpdateCLChild()
 void CBastArtefact::Hit(SHit* pHDS)
 {
 	SHit HDS = *pHDS;
-	if (HDS.impulse > m_fImpulseThreshold && !m_AliveList.empty())
+	if(HDS.impulse > m_fImpulseThreshold && !m_AliveList.empty())
 	{
 		m_bStrike = true;
 		m_AttakingEntity = m_pHitedEntity = NULL;
 
 		m_fEnergy += m_fStrikeImpulse * HDS.impulse;
 
-		if (m_fEnergy > m_fEnergyMax)
+		if(m_fEnergy > m_fEnergyMax)
 			m_fEnergy = m_fEnergyMax;
 
 		// чтоб выстрел не повлиял на траекторию полета артефакта
@@ -231,7 +231,7 @@ void CBastArtefact::Hit(SHit* pHDS)
 // объект можно поднять только в спокойном состоянии
 bool CBastArtefact::Useful() const
 {
-	if (m_fEnergy > 0)
+	if(m_fEnergy > 0)
 		return false;
 	else
 		return true;
@@ -241,7 +241,7 @@ void CBastArtefact::feel_touch_new(CObject* O)
 {
 	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(O);
 
-	if (pEntityAlive && pEntityAlive->g_Alive())
+	if(pEntityAlive && pEntityAlive->g_Alive())
 	{
 		m_AliveList.push_back(pEntityAlive);
 	}
@@ -251,7 +251,7 @@ void CBastArtefact::feel_touch_delete(CObject* O)
 {
 	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(O);
 
-	if (pEntityAlive)
+	if(pEntityAlive)
 	{
 		m_AliveList.erase(std::find(m_AliveList.begin(), m_AliveList.end(), pEntityAlive));
 	}
@@ -261,7 +261,7 @@ BOOL CBastArtefact::feel_touch_contact(CObject* O)
 {
 	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(O);
 
-	if (pEntityAlive && pEntityAlive->g_Alive())
+	if(pEntityAlive && pEntityAlive->g_Alive())
 		return TRUE;
 	else
 		return FALSE;

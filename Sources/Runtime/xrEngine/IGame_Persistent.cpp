@@ -55,7 +55,7 @@ void IGame_Persistent::OnAppDeactivate()
 
 void IGame_Persistent::OnAppStart()
 {
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		Environment().load();
 }
 
@@ -77,7 +77,7 @@ void IGame_Persistent::PreStart(LPCSTR op)
 	new_game_params.parse_cmd_line(op);
 
 	// change game type
-	if (0 != xr_strcmp(prev_type, new_game_params.m_game_type))
+	if(0 != xr_strcmp(prev_type, new_game_params.m_game_type))
 	{
 		OnGameEnd();
 	}
@@ -88,12 +88,12 @@ void IGame_Persistent::Start(LPCSTR op)
 	strcpy_s(prev_type, m_game_params.m_game_type);
 	m_game_params.parse_cmd_line(op);
 	// change game type
-	if ((0 != xr_strcmp(prev_type, m_game_params.m_game_type)))
+	if((0 != xr_strcmp(prev_type, m_game_params.m_game_type)))
 	{
-		if (*m_game_params.m_game_type)
+		if(*m_game_params.m_game_type)
 			OnGameStart();
 #ifndef _EDITOR
-		if (g_hud)
+		if(g_hud)
 			DEL_INSTANCE(g_hud);
 #endif
 	}
@@ -108,7 +108,7 @@ void IGame_Persistent::Disconnect()
 	// clear "need to play" particles
 	destroy_particles(true);
 
-	if (g_hud)
+	if(g_hud)
 		g_hud->OnDisconnected();
 
 	ObjectPool.clear();
@@ -119,7 +119,7 @@ void IGame_Persistent::OnGameStart()
 {
 #ifndef _EDITOR
 	LoadTitle("st_prefetching_objects");
-	if (strstr(Core.Params, "-noprefetch"))
+	if(strstr(Core.Params, "-noprefetch"))
 		return;
 
 	// prefetch game objects & models
@@ -131,9 +131,9 @@ void IGame_Persistent::OnGameStart()
 	Log("Loading models...");
 	Render->models_Prefetch();
 
-	#pragma todo("NSDeathman to all: Так не должно быть - вернуть при фиксе бага с использованием старых lmap на новом уровне, и уборке кастыля с перезагрузкой текстур")
-	//Log("Loading textures...");
-	//Engine.ResourceManager->DeferredUpload();
+#pragma todo("NSDeathman to all: Так не должно быть - вернуть при фиксе бага с использованием старых lmap на новом уровне, и уборке кастыля с перезагрузкой текстур")
+	// Log("Loading textures...");
+	// Engine.ResourceManager->DeferredUpload();
 
 	p_time = 1000.f * Engine.TimeManager.GetTimerGlobal()->GetElapsed_sec() - p_time;
 	u32 p_mem = Memory.mem_usage() - mem_0;
@@ -156,7 +156,7 @@ void IGame_Persistent::OnFrame()
 	PROFILE_FUNCTION();
 
 #ifndef DEDICATED_SERVER
-	if (!Device.Paused())
+	if(!Device.Paused())
 		Environment().OnFrame();
 #endif
 
@@ -167,19 +167,19 @@ void IGame_Persistent::OnFrame()
 	Engine.Statistic->Particles_destroy = ps_destroy.size();
 
 	// Play req particle systems
-	while (ps_needtoplay.size())
+	while(ps_needtoplay.size())
 	{
 		CPS_Instance* psi = ps_needtoplay.back();
 		ps_needtoplay.pop_back();
 		psi->Play();
 	}
 	// Destroy inactive particle systems
-	while (ps_destroy.size())
+	while(ps_destroy.size())
 	{
 		//		u32 cnt					= ps_destroy.size();
 		CPS_Instance* psi = ps_destroy.back();
 		VERIFY(psi);
-		if (psi->Locked())
+		if(psi->Locked())
 		{
 			Log("--locked");
 			break;
@@ -197,7 +197,7 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 #ifndef _EDITOR
 	ps_needtoplay.clear();
 
-	while (ps_destroy.size())
+	while(ps_destroy.size())
 	{
 		CPS_Instance* psi = ps_destroy.back();
 		VERIFY(psi);
@@ -207,9 +207,9 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 	}
 
 	// delete active particles
-	if (all_particles)
+	if(all_particles)
 	{
-		for (; !ps_active.empty();)
+		for(; !ps_active.empty();)
 			(*ps_active.begin())->PSI_internal_delete();
 	}
 	else
@@ -227,7 +227,7 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 		};
 
 		CPS_Instance** E = std::remove_if(I, I + active_size, &destroy_on_game_load::predicate);
-		for (; I != E; ++I)
+		for(; I != E; ++I)
 			(*I)->PSI_internal_delete();
 	}
 

@@ -23,16 +23,18 @@ struct lua_State;
 #define save_type_list(type)
 #endif
 
-#define DECLARE_SCRIPT_REGISTER_FUNCTION                                                                               \
-  public:                                                                                                              \
+#define DECLARE_SCRIPT_REGISTER_FUNCTION \
+  public:                                \
 	static void script_register(lua_State*);
 #define DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT static void script_register(lua_State*);
 
-template <typename T> struct enum_exporter
+template <typename T>
+struct enum_exporter
 {
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-template <typename T> struct class_exporter
+template <typename T>
+struct class_exporter
 {
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

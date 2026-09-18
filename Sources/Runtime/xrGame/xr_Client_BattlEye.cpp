@@ -21,13 +21,13 @@ BattlEyeClient::BattlEyeClient()
 
 void BattlEyeClient::InitDLL()
 {
-	if (!Level().battleye_system.InitDir())
+	if(!Level().battleye_system.InitDir())
 	{
 		return;
 	}
 
 	m_module = LoadLibrary(Level().battleye_system.GetClientPath());
-	if (!m_module)
+	if(!m_module)
 	{
 		Msg("! Error LoadLibrary  %s", BATTLEYE_CLIENT_DLL);
 		return;
@@ -37,10 +37,10 @@ void BattlEyeClient::InitDLL()
 	//	Level().battleye_system.SetClientPath( path_dll );
 
 	Init = (InitCl_t)GetProcAddress(m_module, "Init");
-	if (!Init)
+	if(!Init)
 	{
 		Msg("! Error GetProcAddress <Init> from %s", BATTLEYE_CLIENT_DLL);
-		if (!FreeLibrary(m_module))
+		if(!FreeLibrary(m_module))
 		{
 			Msg("! Error FreeLibrary for %s " BATTLEYE_CLIENT_DLL);
 		}
@@ -52,10 +52,10 @@ void BattlEyeClient::InitDLL()
 		//		Level().battleye_system.auto_update,
 		PrintMessage, SendPacket, &pfnExit, &pfnRun, &pfnCommand, &pfnNewPacket);
 
-	if (!m_succefull)
+	if(!m_succefull)
 	{
 		Msg("! Error initialization of %s (function Init return false)", BATTLEYE_CLIENT_DLL);
-		if (!FreeLibrary(m_module))
+		if(!FreeLibrary(m_module))
 		{
 			Msg("! Error FreeLibrary for %s", BATTLEYE_CLIENT_DLL);
 		}
@@ -75,9 +75,9 @@ void BattlEyeClient::PrintMessage(char* message)
 		sprintf_s(text, sizeof(text), "BattlEye Client: %s", message);
 		Msg("%s", text);
 
-		if (g_be_message_out) //==2
+		if(g_be_message_out) //==2
 		{
-			if (Level().game)
+			if(Level().game)
 			{
 				Level().game->CommonMessageOut(text);
 			}
@@ -127,16 +127,16 @@ BattlEyeClient::~BattlEyeClient()
 
 void BattlEyeClient::ReleaseDLL()
 {
-	if (m_succefull)
+	if(m_succefull)
 	{
-		if (!pfnExit())
+		if(!pfnExit())
 		{
 			Msg("! Error unloading data in %s", BATTLEYE_CLIENT_DLL);
 		}
 	}
-	if (m_module)
+	if(m_module)
 	{
-		if (!FreeLibrary(m_module))
+		if(!FreeLibrary(m_module))
 		{
 			Msg("! Error FreeLibrary for %s", BATTLEYE_CLIENT_DLL);
 		}

@@ -31,7 +31,7 @@ CUIMapDesc::CUIMapDesc()
 	m_pBtnNext = xr_new<CUI3tButton>();
 	AttachChild(m_pBtnNext);
 
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		m_pFrame[i] = xr_new<CUIStatic>();
 		AttachChild(m_pFrame[i]);
@@ -56,7 +56,7 @@ CUIMapDesc::~CUIMapDesc()
 
 	xr_delete(m_pMapInfo);
 
-	for (int i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 		xr_delete(m_pFrame[i]);
 }
 
@@ -76,7 +76,7 @@ void CUIMapDesc::Init()
 
 	CInifile& gameLtx = *pGameIni;
 
-	if (gameLtx.section_exist(Level().name()), *Level().name() && gameLtx.line_exist(Level().name(), "texture"))
+	if(gameLtx.section_exist(Level().name()), *Level().name() && gameLtx.line_exist(Level().name(), "texture"))
 	{
 		m_pImage->InitTexture(gameLtx.r_string(Level().name(), "texture"));
 	}
@@ -100,22 +100,22 @@ void CUIMapDesc::Init()
 
 void CUIMapDesc::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if (BUTTON_CLICKED == msg)
+	if(BUTTON_CLICKED == msg)
 	{
 		game_cl_mp* dm = smart_cast<game_cl_mp*>(&(Game()));
 		dm->StartStopMenu(this, true);
-		if (pWnd == m_pBtnSpectator)
+		if(pWnd == m_pBtnSpectator)
 			dm->OnSpectatorSelect();
-		else if (pWnd == m_pBtnNext)
+		else if(pWnd == m_pBtnNext)
 			dm->OnMapInfoAccept();
 	}
 }
 
 bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	if (WINDOW_KEY_RELEASED == keyboard_action)
+	if(WINDOW_KEY_RELEASED == keyboard_action)
 	{
-		if (dik == DIK_TAB)
+		if(dik == DIK_TAB)
 		{
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -126,7 +126,7 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return false;
 	}
 
-	if (dik == DIK_TAB)
+	if(dik == DIK_TAB)
 	{
 		ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -137,7 +137,7 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 	game_cl_mp* dm = smart_cast<game_cl_mp*>(&(Game()));
 
-	switch (dik)
+	switch(dik)
 	{
 	case DIK_ESCAPE:
 		dm->StartStopMenu(this, true);
@@ -151,7 +151,7 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return true;
 		break;
 	}
-	if (int x = sizeof x)
+	if(int x = sizeof x)
 	{
 	}
 

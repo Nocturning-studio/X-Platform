@@ -58,16 +58,18 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 
 	feel_touch.clear();
 
-	for (u32 i = 0; i < l_tpALifeScriptZone->shapes.size(); ++i)
+	for(u32 i = 0; i < l_tpALifeScriptZone->shapes.size(); ++i)
 	{
 		CSE_Shape::shape_def& S = l_tpALifeScriptZone->shapes[i];
-		switch (S.type)
+		switch(S.type)
 		{
-		case 0: {
+		case 0:
+		{
 			l_pShape->add_sphere(S.data.sphere);
 			break;
 		}
-		case 1: {
+		case 1:
+		{
 			l_pShape->add_box(S.data.box);
 			break;
 		}
@@ -77,7 +79,7 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 	m_Team = l_tpALifeScriptZone->m_team;
 
 	BOOL bOk = inherited::net_Spawn(DC);
-	if (bOk)
+	if(bOk)
 	{
 		l_pShape->ComputeBounds();
 		fvec3 P;
@@ -85,7 +87,7 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 		setEnabled(TRUE);
 	}
 
-	if (GameID() != GAME_SINGLE && !g_dedicated_server)
+	if(GameID() != GAME_SINGLE && !g_dedicated_server)
 	{
 		char BaseMapLocation[1024];
 		sprintf_s(BaseMapLocation, "mp_team_base_%d_location", m_Team);
@@ -97,7 +99,7 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 
 void CTeamBaseZone::net_Destroy()
 {
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 		Level().MapManager().RemoveMapLocationByObjectID(ID());
 
 	inherited::net_Destroy();
@@ -115,7 +117,7 @@ void CTeamBaseZone::shedule_Update(u32 dt)
 
 void CTeamBaseZone::feel_touch_new(CObject* tpObject)
 {
-	if (OnServer() && tpObject->CLS_ID == CLSID_OBJECT_ACTOR)
+	if(OnServer() && tpObject->CLS_ID == CLSID_OBJECT_ACTOR)
 	{
 		NET_Packet P_;
 
@@ -129,7 +131,7 @@ void CTeamBaseZone::feel_touch_new(CObject* tpObject)
 
 void CTeamBaseZone::feel_touch_delete(CObject* tpObject)
 {
-	if (OnServer() && tpObject->CLS_ID == CLSID_OBJECT_ACTOR)
+	if(OnServer() && tpObject->CLS_ID == CLSID_OBJECT_ACTOR)
 	{
 		NET_Packet P_;
 		u_EventGen(P_, GE_GAME_EVENT, ID());
@@ -143,7 +145,7 @@ void CTeamBaseZone::feel_touch_delete(CObject* tpObject)
 BOOL CTeamBaseZone::feel_touch_contact(CObject* O)
 {
 	CActor* pActor = smart_cast<CActor*>(O);
-	if (!pActor)
+	if(!pActor)
 		return (FALSE);
 	return ((CCF_Shape*)CFORM())->Contact(O);
 }
@@ -152,11 +154,11 @@ BOOL CTeamBaseZone::feel_touch_contact(CObject* O)
 extern Flags32 dbg_net_Draw_Flags;
 void CTeamBaseZone::OnRender()
 {
-	//PROFILE_FUNCTION();
+	// PROFILE_FUNCTION();
 
-	if (!bDebug)
+	if(!bDebug)
 		return;
-	if (!(dbg_net_Draw_Flags.is_any((1 << 3))))
+	if(!(dbg_net_Draw_Flags.is_any((1 << 3))))
 		return;
 	//	RenderBackend.OnFrameEnd();
 	fvec3 l_half;
@@ -165,11 +167,12 @@ void CTeamBaseZone::OnRender()
 	xr_vector<CCF_Shape::shape_def>& l_shapes = ((CCF_Shape*)CFORM())->Shapes();
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 
-	for (l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
+	for(l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
 	{
-		switch (l_pShape->type)
+		switch(l_pShape->type)
 		{
-		case 0: {
+		case 0:
+		{
 			Fsphere& l_sphere = l_pShape->data.sphere;
 			l_ball.scale(l_sphere.R, l_sphere.R, l_sphere.R);
 			fvec3 l_p;
@@ -178,7 +181,8 @@ void CTeamBaseZone::OnRender()
 			Level().debug_renderer().draw_ellipse(l_ball, D3DCOLOR_XRGB(0, 255, 255));
 		}
 		break;
-		case 1: {
+		case 1:
+		{
 			l_box.mul(Transform(), l_pShape->data.box);
 			Level().debug_renderer().draw_obb(l_box, l_half, D3DCOLOR_XRGB(0, 255, 255));
 		}

@@ -5,17 +5,15 @@
 #include "../gsAssert.h"
 #include "../gsDebug.h"
 
+void gsiInitializeCriticalSection(GSICriticalSection* theCrit) { InitializeCriticalSection(theCrit); }
+void gsiEnterCriticalSection(GSICriticalSection* theCrit) { EnterCriticalSection(theCrit); }
+void gsiLeaveCriticalSection(GSICriticalSection* theCrit) { LeaveCriticalSection(theCrit); }
+void gsiDeleteCriticalSection(GSICriticalSection* theCrit) { DeleteCriticalSection(theCrit); }
 
-
-void gsiInitializeCriticalSection(GSICriticalSection *theCrit) { InitializeCriticalSection(theCrit); }
-void gsiEnterCriticalSection     (GSICriticalSection *theCrit) { EnterCriticalSection(theCrit);      }
-void gsiLeaveCriticalSection     (GSICriticalSection *theCrit) { LeaveCriticalSection(theCrit);      }
-void gsiDeleteCriticalSection    (GSICriticalSection *theCrit) { DeleteCriticalSection(theCrit);     }
-
-gsi_u32 gsiHasThreadShutdown(GSIThreadID theThreadID) 
-{ 
-	DWORD result = WaitForSingleObject(theThreadID, 0); 
-	if (result == WAIT_ABANDONED || result == WAIT_OBJECT_0)
+gsi_u32 gsiHasThreadShutdown(GSIThreadID theThreadID)
+{
+	DWORD result = WaitForSingleObject(theThreadID, 0);
+	if(result == WAIT_ABANDONED || result == WAIT_OBJECT_0)
 		return 1; // thread is dead
 	else
 		return 0; // keep waiting
@@ -24,10 +22,10 @@ gsi_u32 gsiHasThreadShutdown(GSIThreadID theThreadID)
 GSISemaphoreID gsiCreateSemaphore(gsi_i32 theInitialCount, gsi_i32 theMaxCount, char* theName)
 {
 	GSISemaphoreID aSemaphore = CreateSemaphore(NULL, theInitialCount, theMaxCount, theName);
-	if (aSemaphore == NULL)
+	if(aSemaphore == NULL)
 	{
 		gsDebugFormat(GSIDebugCat_Common, GSIDebugType_Misc, GSIDebugLevel_WarmError,
-			"Failed to create semaphore\r\n");
+					  "Failed to create semaphore\r\n");
 	}
 	return aSemaphore;
 }
@@ -50,8 +48,7 @@ void gsiCloseSemaphore(GSISemaphoreID theSemaphore)
 	CloseHandle(theSemaphore);
 }
 
-
-int gsiStartThread(GSThreadFunc func, gsi_u32 theStackSize, void *arg, GSIThreadID * id)
+int gsiStartThread(GSThreadFunc func, gsi_u32 theStackSize, void* arg, GSIThreadID* id)
 {
 	HANDLE handle;
 	DWORD threadID;
@@ -69,8 +66,8 @@ int gsiStartThread(GSThreadFunc func, gsi_u32 theStackSize, void *arg, GSIThread
 
 void gsiCancelThread(GSIThreadID id)
 {
-	//TODO: is TerminateThread causing lost resources?
-	//should this be terminated with "failure" exit status?
+	// TODO: is TerminateThread causing lost resources?
+	// should this be terminated with "failure" exit status?
 	TerminateThread(id, 0);
 }
 
@@ -85,14 +82,12 @@ void gsiExitThread(GSIThreadID id)
 	// check exit code status to make sure nothing went wrong
 	GetExitCodeThread(id, &status);
 
-	if (status < 0)
+	if(status < 0)
 		gsDebugFormat(GSIDebugCat_Common, GSIDebugType_Misc, GSIDebugLevel_WarmError,
-					"Exiting thread failed, status = %d\r\n", status);
+					  "Exiting thread failed, status = %d\r\n", status);
 }
 
 void gsiCleanupThread(GSIThreadID id)
 {
 	GSI_UNUSED(id);
 }
-
-

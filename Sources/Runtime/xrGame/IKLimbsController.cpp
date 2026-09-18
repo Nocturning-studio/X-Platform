@@ -63,7 +63,7 @@ struct envc : private boost::noncopyable, public SEnumVerticesCallback
 		fvec3 lpos;
 		i_bind_transform.transform_tiny(lpos, p);
 		// fvec3 diff;diff.sub( lpos, pos );
-		if (fvec3().sub(lpos, start_pos).dotproduct(ax) > fvec3().sub(pos, start_pos).dotproduct(ax))
+		if(fvec3().sub(lpos, start_pos).dotproduct(ax) > fvec3().sub(pos, start_pos).dotproduct(ax))
 			pos.set(lpos);
 	}
 };
@@ -120,7 +120,7 @@ void CIKLimbsController::LimbUpdate(CIKLimb& L, u16 i)
 
 IC void update_blend(CBlend*& b)
 {
-	if (b && CBlend::eFREE_SLOT == b->blend)
+	if(b && CBlend::eFREE_SLOT == b->blend)
 		b = 0;
 }
 void CIKLimbsController::Calculate()
@@ -166,7 +166,7 @@ void CIKLimbsController::Destroy(CGameObject* O)
 
 	O->remove_visual_callback(IKVisualCallback);
 	xr_vector<CIKLimb>::iterator i = _bone_chains.begin(), e = _bone_chains.end();
-	for (; e != i; ++i)
+	for(; e != i; ++i)
 		i->Destroy();
 	_bone_chains.clear();
 }
@@ -174,7 +174,7 @@ void CIKLimbsController::Destroy(CGameObject* O)
 void _stdcall CIKLimbsController::IKVisualCallback(CKinematics* K)
 {
 #ifdef DEBUG
-	if (ph_dbg_draw_mask1.test(phDbgIKOff))
+	if(ph_dbg_draw_mask1.test(phDbgIKOff))
 		return;
 #endif
 

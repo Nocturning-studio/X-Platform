@@ -14,7 +14,7 @@ struct profiler
 
 	IC profiler::profiler(LPCSTR timer_id)
 	{
-		if (!add_profile_portion)
+		if(!add_profile_portion)
 			return;
 
 		m_timer_id = timer_id;
@@ -23,7 +23,7 @@ struct profiler
 
 	IC profiler::~profiler()
 	{
-		if (!add_profile_portion)
+		if(!add_profile_portion)
 			return;
 
 		u64 time = CPU::QPC();
@@ -44,7 +44,7 @@ xrCriticalSection::xrCriticalSection()
 
 xrCriticalSection::~xrCriticalSection()
 {
-	if (pmutex)
+	if(pmutex)
 	{
 		DeleteCriticalSection(pmutex);
 		xr_free(pmutex);
@@ -65,19 +65,19 @@ void xrCriticalSection::Enter()
 #endif // DEBUG
 	profiler temp(m_id);
 #endif // PROFILE_CRITICAL_SECTIONS
-	if (pmutex)
+	if(pmutex)
 		EnterCriticalSection(pmutex);
 }
 
 void xrCriticalSection::Leave()
 {
-	if (pmutex)
+	if(pmutex)
 		LeaveCriticalSection(pmutex);
 }
 
 BOOL xrCriticalSection::TryEnter()
 {
-	if (pmutex)
+	if(pmutex)
 		return TryEnterCriticalSection(pmutex);
 	return FALSE;
 }

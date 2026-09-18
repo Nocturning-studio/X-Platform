@@ -8,11 +8,11 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
+#define TEMPLATE_SPECIALIZATION \
 	template <typename _DataStorage, typename _dist_type, typename _index_type, typename _iteration_type>
 
-#define CLevelPathManager                                                                                              \
-	CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type,     \
+#define CLevelPathManager                                                                                          \
+	CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, \
 				 _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
@@ -66,17 +66,17 @@ IC _dist_type CLevelPathManager::estimate(const _index_type& node_index) const
 {
 	VERIFY(graph);
 	//		return					(std::sqrt((float)(m_sqr_distance_xz*float(_sqr(x3 - x1) + _sqr(z3 - z1)) +
-	//square_size_y*(float)_sqr(y3 - y1))));
+	// square_size_y*(float)_sqr(y3 - y1))));
 	return (2 * m_distance_xz * _dist_type(_abs(x3 - x1) + _abs(z3 - z1))); // + _abs(y3 - y1)*size_y);
-	//		int						x = _abs(x3 - x1);
-	//		int						z = _abs(z3 - z1);
-	//		return					(m_distance_xz*_dist_type(_min(x,z)*3 + 2*_abs(x - z)));
+																			//		int						x = _abs(x3 - x1);
+																			//		int						z = _abs(z3 - z1);
+																			//		return					(m_distance_xz*_dist_type(_min(x,z)*3 + 2*_abs(x - z)));
 }
 
 TEMPLATE_SPECIALIZATION
 IC bool CLevelPathManager::is_goal_reached(const _index_type& node_index)
 {
-	if (node_index == goal_node_index)
+	if(node_index == goal_node_index)
 		return (true);
 
 	best_node = graph->vertex(node_index);

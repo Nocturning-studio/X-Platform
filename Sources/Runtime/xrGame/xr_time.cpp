@@ -42,7 +42,7 @@ void xrTime::add(const xrTime& other)
 }
 void xrTime::sub(const xrTime& other)
 {
-	if (*this > other)
+	if(*this > other)
 		m_time -= other.m_time;
 	else
 		m_time = 0;
@@ -73,7 +73,7 @@ void xrTime::get(u32& y, u32& mo, u32& d, u32& h, u32& mi, u32& s, u32& ms)
 
 float xrTime::diffSec(const xrTime& other)
 {
-	if (*this > other)
+	if(*this > other)
 		return (m_time - other.m_time) / (float)sec2ms;
 	return ((other.m_time - m_time) / (float)sec2ms) * (-1.0f);
 }

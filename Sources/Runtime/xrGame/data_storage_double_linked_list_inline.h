@@ -8,8 +8,9 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION                                                                                        \
-	template <bool sorted> template <typename _data_storage, template <typename _T> class _vertex>
+#define TEMPLATE_SPECIALIZATION \
+	template <bool sorted>      \
+	template <typename _data_storage, template <typename _T> class _vertex>
 
 #define CDoubleLinkedList CDataStorageDoubleLinkedList<sorted>::CDataStorage<_data_storage, _vertex>
 
@@ -36,7 +37,7 @@ TEMPLATE_SPECIALIZATION
 IC void CDoubleLinkedList::add_opened(CGraphVertex& vertex)
 {
 	inherited_base::add_opened(vertex);
-	if (!sorted)
+	if(!sorted)
 	{
 		m_list_head->next()->prev() = &vertex;
 		vertex.next() = m_list_head->next();
@@ -45,8 +46,8 @@ IC void CDoubleLinkedList::add_opened(CGraphVertex& vertex)
 	}
 	else
 	{
-		for (CGraphVertex* i = m_list_head->next();; i = i->next())
-			if (i->f() >= vertex.f())
+		for(CGraphVertex* i = m_list_head->next();; i = i->next())
+			if(i->f() >= vertex.f())
 			{
 				vertex.next() = i;
 				vertex.prev() = i->prev();
@@ -62,16 +63,16 @@ IC void CDoubleLinkedList::decrease_opened(CGraphVertex& vertex, const _dist_typ
 {
 	VERIFY(!is_opened_empty());
 
-	if (!sorted)
+	if(!sorted)
 		return;
 
-	if (vertex.prev()->f() <= vertex.f())
+	if(vertex.prev()->f() <= vertex.f())
 		return;
 
 	vertex.prev()->next() = vertex.next();
 	vertex.next()->prev() = vertex.prev();
 
-	if (vertex.f() <= m_list_head->next()->f())
+	if(vertex.f() <= m_list_head->next()->f())
 	{
 		vertex.prev() = m_list_head;
 		vertex.next() = m_list_head->next();
@@ -80,10 +81,10 @@ IC void CDoubleLinkedList::decrease_opened(CGraphVertex& vertex, const _dist_typ
 	}
 	else
 	{
-		if (vertex.prev()->f() - vertex.f() < m_switch_factor * (vertex.f() - m_list_head->next()->f()))
-			for (CGraphVertex* i = vertex.prev()->prev();; i = i->prev())
+		if(vertex.prev()->f() - vertex.f() < m_switch_factor * (vertex.f() - m_list_head->next()->f()))
+			for(CGraphVertex* i = vertex.prev()->prev();; i = i->prev())
 			{
-				if (i->f() <= vertex.f())
+				if(i->f() <= vertex.f())
 				{
 					vertex.next() = i->next();
 					vertex.prev() = i;
@@ -93,8 +94,8 @@ IC void CDoubleLinkedList::decrease_opened(CGraphVertex& vertex, const _dist_typ
 				}
 			}
 		else
-			for (CGraphVertex* i = m_list_head->next();; i = i->next())
-				if (i->f() >= vertex.f())
+			for(CGraphVertex* i = m_list_head->next();; i = i->next())
+				if(i->f() >= vertex.f())
 				{
 					vertex.next() = i;
 					vertex.prev() = i->prev();
@@ -117,18 +118,18 @@ TEMPLATE_SPECIALIZATION
 IC typename CDoubleLinkedList::CGraphVertex& CDoubleLinkedList::get_best() const
 {
 	VERIFY(!is_opened_empty());
-	if (sorted)
+	if(sorted)
 		return (*m_list_head->next());
 
 	_dist_type fmin = m_max_distance;
-	for (CGraphVertex *i = m_list_head->next(), *best = 0; i; i = i->next())
-		if (i->f() < fmin)
+	for(CGraphVertex *i = m_list_head->next(), *best = 0; i; i = i->next())
+		if(i->f() < fmin)
 		{
 			fmin = i->f();
 			best = i;
 		}
 	VERIFY(best);
-	if (best->prev() != m_list_head)
+	if(best->prev() != m_list_head)
 	{
 		best->prev()->next() = best->next();
 		best->next()->prev() = best->prev();
@@ -143,7 +144,7 @@ IC typename CDoubleLinkedList::CGraphVertex& CDoubleLinkedList::get_best() const
 TEMPLATE_SPECIALIZATION
 IC void CDoubleLinkedList::set_switch_factor(const _dist_type _switch_factor)
 {
-	if (!sorted)
+	if(!sorted)
 		NODEFAULT;
 	m_switch_factor = _switch_factor;
 }

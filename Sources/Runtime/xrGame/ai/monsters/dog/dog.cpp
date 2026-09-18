@@ -115,7 +115,7 @@ void CAI_Dog::reinit()
 {
 	inherited::reinit();
 
-	if (CCustomMonster::use_simplified_visual())
+	if(CCustomMonster::use_simplified_visual())
 		return;
 
 	com_man().add_rotation_jump_data("1", "2", "3", "4", PI_DIV_2);
@@ -125,12 +125,12 @@ void CAI_Dog::reinit()
 
 void CAI_Dog::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
+	if((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE)
 	{
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
 	}
 
-	if ((spec_params & ASP_THREATEN) == ASP_THREATEN)
+	if((spec_params & ASP_THREATEN) == ASP_THREATEN)
 	{
 		anim().SetCurAnim(eAnimThreaten);
 	}
@@ -141,7 +141,7 @@ void CAI_Dog::debug_on_key(int key)
 {
 	CKinematicsAnimated* skel = smart_cast<CKinematicsAnimated*>(Visual());
 
-	switch (key)
+	switch(key)
 	{
 	case DIK_1:
 		Msg("Ohhhhhhhhhhhhhhh! Here it is!");

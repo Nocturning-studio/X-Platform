@@ -95,7 +95,7 @@ void CStatGraph::RenderBack()
 	int Num_H_LinesDwn = (grid.y < PNum_H_LinesUp) ? grid.y : PNum_H_LinesDwn;
 
 	pv_start = (FVF::TL0uv*)RenderBackend.Vertex.Lock(2 + 2 * grid.x + Num_H_LinesUp * 2 + Num_H_LinesDwn * 2,
-											   hGeomLine->vb_stride, dwOffset);
+													  hGeomLine->vb_stride, dwOffset);
 	pv = pv_start;
 	// base Coordinate Line
 	pv->set(lt.x, int(base_y), base_color);
@@ -105,14 +105,14 @@ void CStatGraph::RenderBack()
 	// grid
 	//    float grid_offs_x		= float(rb.x-lt.x)/float(grid.x+1);
 	//    float grid_offs_y		= float(rb.y-lt.y)/float(grid.y+1);
-	for (int g_x = 1; g_x <= grid.x; g_x++)
+	for(int g_x = 1; g_x <= grid.x; g_x++)
 	{
 		pv->set(int(lt.x + g_x * grid_step.x * elem_factor), lt.y, grid_color);
 		pv++;
 		pv->set(int(lt.x + g_x * grid_step.x * elem_factor), rb.y, grid_color);
 		pv++;
 	}
-	for (int g_y = 1; g_y <= Num_H_LinesDwn; g_y++)
+	for(int g_y = 1; g_y <= Num_H_LinesDwn; g_y++)
 	{
 		pv->set(lt.x, int(base_y + g_y * grid_step.y * elem_factor), grid_color);
 		pv++;
@@ -120,7 +120,7 @@ void CStatGraph::RenderBack()
 		pv++;
 	};
 
-	for (int g_y = 1; g_y <= Num_H_LinesUp; g_y++)
+	for(int g_y = 1; g_y <= Num_H_LinesUp; g_y++)
 	{
 		pv->set(lt.x, int(base_y - g_y * grid_step.y * elem_factor), grid_color);
 		pv++;
@@ -146,15 +146,15 @@ void CStatGraph::RenderBars(FVF::TL0uv** ppv, ElementsDeq* pelements)
 	float base_y = float(rb.y) + (mn * elem_factor);
 
 	float column_width = elem_offs;
-	if (column_width > 1)
+	if(column_width > 1)
 		column_width--;
-	for (ElementsDeqIt it = pelements->begin(); it != pelements->end(); it++)
+	for(ElementsDeqIt it = pelements->begin(); it != pelements->end(); it++)
 	{
 		float X = float(it - pelements->begin()) * elem_offs + lt.x;
 		float Y0 = base_y;
 		float Y1 = base_y - it->data * elem_factor;
 
-		if (Y1 > Y0)
+		if(Y1 > Y0)
 		{
 			(*ppv)->set(X, Y1, it->color);
 			(*ppv)++;
@@ -185,7 +185,7 @@ void CStatGraph::RenderLines(FVF::TL0uv** ppv, ElementsDeq* pelements)
 	float elem_factor = float(rb.y - lt.y) / float(mx - mn);
 	float base_y = float(rb.y) + (mn * elem_factor);
 
-	for (ElementsDeqIt it = pelements->begin() + 1; it != pelements->end() && it != pelements->end() + 1; it++)
+	for(ElementsDeqIt it = pelements->begin() + 1; it != pelements->end() && it != pelements->end() + 1; it++)
 	{
 		ElementsDeqIt it_prev = it - 1;
 		float X0 = float(it_prev - pelements->begin()) * elem_offs + lt.x;
@@ -205,7 +205,7 @@ void CStatGraph::RenderBarLines(FVF::TL0uv** ppv, ElementsDeq* pelements)
 	float elem_factor = float(rb.y - lt.y) / float(mx - mn);
 	float base_y = float(rb.y) + (mn * elem_factor);
 
-	for (ElementsDeqIt it = pelements->begin() + 1; it != pelements->end() && it != pelements->end() + 1; it++)
+	for(ElementsDeqIt it = pelements->begin() + 1; it != pelements->end() && it != pelements->end() + 1; it++)
 	{
 		ElementsDeqIt it_prev = it - 1;
 		float X0 = float(it_prev - pelements->begin()) * elem_offs + lt.x + elem_offs;
@@ -246,13 +246,14 @@ void CStatGraph::RenderMarkers(FVF::TL0uv** ppv, MarkersDeq* pmarkers)
 	float elem_factor = float(rb.y - lt.y) / float(mx - mn);
 	float base_y = float(rb.y) + (mn * elem_factor);
 
-	for (MarkersDeqIt it = pmarkers->begin(); it != pmarkers->end() && it != pmarkers->end() + 1; it++)
+	for(MarkersDeqIt it = pmarkers->begin(); it != pmarkers->end() && it != pmarkers->end() + 1; it++)
 	{
 		SMarker& CurMarker = *it;
 		float X0 = 0, Y0 = 0, X1 = 0, Y1 = 0;
-		switch (CurMarker.m_eStyle)
+		switch(CurMarker.m_eStyle)
 		{
-		case stVert: {
+		case stVert:
+		{
 			X0 = CurMarker.m_fPos * elem_offs + lt.x;
 			clamp(X0, float(lt.x), float(rb.x));
 			X1 = X0;
@@ -260,7 +261,8 @@ void CStatGraph::RenderMarkers(FVF::TL0uv** ppv, MarkersDeq* pmarkers)
 			Y1 = float(rb.y);
 		}
 		break;
-		case stHor: {
+		case stHor:
+		{
 			X0 = float(lt.x);
 			X1 = float(rb.x);
 			Y0 = base_y - CurMarker.m_fPos * elem_factor;
@@ -278,7 +280,7 @@ void CStatGraph::RenderMarkers(FVF::TL0uv** ppv, MarkersDeq* pmarkers)
 
 void CStatGraph::OnRender()
 {
-	//OPTICK_EVENT("CStatGraph::OnRender");
+	// OPTICK_EVENT("CStatGraph::OnRender");
 
 	RenderBackend.OnFrameEnd();
 
@@ -286,23 +288,27 @@ void CStatGraph::OnRender()
 
 	u32 TriElem = 0;
 	u32 LineElem = 0;
-	for (SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
+	for(SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
 	{
-		switch (it->style)
+		switch(it->style)
 		{
-		case stBar: {
+		case stBar:
+		{
 			TriElem += it->elements.size() * 4;
 		}
 		break;
-		case stCurve: {
+		case stCurve:
+		{
 			LineElem += it->elements.size() * 2;
 		}
 		break;
-		case stBarLine: {
+		case stBarLine:
+		{
 			LineElem += it->elements.size() * 4;
 		}
 		break;
-		case stPoint: {
+		case stPoint:
+		{
 			//				TriElem += it->elements.size()*4;
 		}
 		break;
@@ -315,15 +321,15 @@ void CStatGraph::OnRender()
 	FVF::TL0uv* pv_Line_start = NULL;
 	FVF::TL0uv* pv_Line;
 
-	if (TriElem)
+	if(TriElem)
 	{
 		pv_Tri_start = (FVF::TL0uv*)RenderBackend.Vertex.Lock(TriElem, hGeomTri->vb_stride, dwOffsetTri);
 		pv_Tri = pv_Tri_start;
 
 		pv_Tri = pv_Tri_start;
-		for (SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
+		for(SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
 		{
-			switch (it->style)
+			switch(it->style)
 			{
 			case stBar:
 				RenderBars(&pv_Tri, &(it->elements));
@@ -336,14 +342,14 @@ void CStatGraph::OnRender()
 		RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffsetTri, 0, dwCount, 0, dwCount / 2);
 	};
 
-	if (LineElem)
+	if(LineElem)
 	{
 		pv_Line_start = (FVF::TL0uv*)RenderBackend.Vertex.Lock(LineElem, hGeomLine->vb_stride, dwOffsetLine);
 		pv_Line = pv_Line_start;
 
-		for (SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
+		for(SubGraphVecIt it = subgraphs.begin(); it != subgraphs.end(); it++)
 		{
-			switch (it->style)
+			switch(it->style)
 			{
 			case stCurve:
 				RenderLines(&pv_Line, &(it->elements));
@@ -360,7 +366,7 @@ void CStatGraph::OnRender()
 		RenderBackend.Render(D3DPT_LINELIST, dwOffsetLine, dwCount / 2);
 	};
 
-	if (!m_Markers.empty())
+	if(!m_Markers.empty())
 	{
 		dwOffsetLine = 0;
 		LineElem = m_Markers.size() * 2;

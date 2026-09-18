@@ -29,10 +29,10 @@ void CRender::Calculate()
 	r_dtex_range = ps_r_detalization_distance * g_fSCREEN / (Device.dwWidth * Device.dwHeight);
 
 	// Detect camera-sector
-	if (!vLastCameraPos.similar(Engine.RenderView.Position, EPS_S))
+	if(!vLastCameraPos.similar(Engine.RenderView.Position, EPS_S))
 	{
 		CSector* pSector = (CSector*)detectSector(Engine.RenderView.Position);
-		if (0 == pSector)
+		if(0 == pSector)
 			pSector = pLastSector;
 		pLastSector = pSector;
 		vLastCameraPos.set(Engine.RenderView.Position);
@@ -63,12 +63,12 @@ void CRender::Calculate()
 	g_SpatialSpace->q_sphere(SceneGraph.m_packet.m_spatial_query_results, 0, STYPE_LIGHTSOURCE, Engine.RenderView.Position, EPS_L);
 
 	// Итерируемся по m_packet.m_spatial_query_results
-	for (u32 _it = 0; _it < SceneGraph.m_packet.m_spatial_query_results.size(); _it++)
+	for(u32 _it = 0; _it < SceneGraph.m_packet.m_spatial_query_results.size(); _it++)
 	{
 		ISpatial* spatial = SceneGraph.m_packet.m_spatial_query_results[_it];
 		spatial->spatial_updatesector();
 		CSector* sector = (CSector*)spatial->spatial.sector;
-		if (0 == sector)
+		if(0 == sector)
 			continue; // disassociated from S/P structure
 
 		VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);

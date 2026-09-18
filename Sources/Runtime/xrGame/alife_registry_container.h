@@ -12,7 +12,8 @@
 #include "alife_registry_container_composition.h"
 #include "alife_abstract_registry.h"
 
-template <typename _type, typename _base> struct CLinearRegistryType : public _base, public _type
+template <typename _type, typename _base>
+struct CLinearRegistryType : public _base, public _type
 {
 };
 
@@ -22,8 +23,10 @@ class CALifeRegistryContainer : public Loki::GenLinearHierarchy<registry_type_li
 	typedef registry_type_list TYPE_LIST;
 
   public:
-	template <typename T> IC T& operator()(const T*);
-	template <typename T> IC const T& operator()(const T*) const;
+	template <typename T>
+	IC T& operator()(const T*);
+	template <typename T>
+	IC const T& operator()(const T*) const;
 	virtual void load(IReader& file_stream);
 	virtual void save(IWriter& memory_stream);
 };
