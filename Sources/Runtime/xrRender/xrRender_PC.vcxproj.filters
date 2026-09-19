@@ -163,6 +163,9 @@
     <Filter Include="Core\Occlusion culling\SoftX occlusion culling">
       <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{1acabd85-122d-4133-b296-b437d83473ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

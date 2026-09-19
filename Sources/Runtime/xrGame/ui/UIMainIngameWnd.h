@@ -135,7 +135,7 @@ class CUIMainIngameWnd : public CUIWindow
 	void UpdateFlashingIcons();
 	void UpdateActiveItemInfo();
 
-	void SetAmmoIcon(const shared_str& seсt_name);
+	void SetAmmoIcon(const shared_str& sect_name);
 
 	// first - иконка, second - анимация
 	DEF_MAP(FlashingIcons, EFlashingIcons, CUIStatic*);
