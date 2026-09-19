@@ -174,7 +174,7 @@ ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float c
 	return pVisual->shader->E[id]._get();
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: EnqueueDynamic
 //  Назначение: Добавление динамического объекта в очередь рендеринга.
 //  Параметры:
@@ -182,7 +182,7 @@ ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float c
 //    object_center - Центр объекта в мировых координатах (для сортировки).
 //    ctx           - Текущий контекст обхода (матрицы, флаги, владелец).
 //    dest          - Целевой пакет данных (куда записывать результат).
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual || !pVisual->shader._get())
@@ -407,14 +407,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: EnqueueStatic
 //  Назначение: Добавление статического объекта в очередь рендеринга.
 //  Параметры:
 //    pVisual - Визуальный объект.
 //    ctx     - Контекст обхода (для статики важны флаги, но не матрица).
 //    dest    - Целевой пакет данных.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual || !pVisual->shader._get())
@@ -606,9 +606,9 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Optimization Data & Constants (Anonymous Namespace)
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 namespace
 {
 // Значения для разных уровней качества (Low, Med, High, Ultra)
@@ -696,9 +696,9 @@ IC int GetQualityIndex()
 }
 } // namespace
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  CSceneGraph Implementation
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 
 bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize, const SceneTraversalContext& ctx)
 {
@@ -755,14 +755,14 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	return true;
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: ProcessDynamicVisual
 //  Назначение: Обработка динамического объекта, который гарантированно видим (или проверка не требуется).
 //  Параметры:
 //    pVisual - Визуальный объект.
 //    ctx     - Контекст обхода (матрицы, флаги).
 //    dest    - Целевой пакет данных.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual)
@@ -894,23 +894,17 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: ProcessStaticVisual
 //  Назначение: Обработка статического объекта (часть уровня), который гарантированно видим.
 //  Параметры:
 //    pVisual - Визуальный объект.
 //    ctx     - Контекст обхода.
 //    dest    - Целевой пакет данных.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual)
-		return;
-
-	// Проверка на значимость
-	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
-	// Передаем ctx
-	if(!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
 	xr_vector<IRender_Visual*>::iterator I, E;
@@ -1045,7 +1039,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: add_Dynamic
 //  Назначение: Добавление динамического объекта с проверкой видимости (Frustum Culling).
 //  Параметры:
@@ -1053,7 +1047,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 //    planes  - Маска плоскостей фрустума (для оптимизации проверки дочерних объектов).
 //    ctx     - Контекст обхода (текущая матрица трансформации и флаги).
 //    dest    - Целевой пакет для записи (Thread-Local или Global).
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	// Трансформация позиции в мировые координаты
@@ -1070,7 +1064,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 	if(visibility_status == fcvNone)
 		return FALSE;
 
-	if(ctx.use_hom && !RenderImplementation.HOM.visible(pVisual->vis))
+	if(ctx.use_hom && !RenderImplementation.Scene.GetHOM().visible(pVisual->vis))
 		return FALSE;
 
 	// Проверка на значимость (Distance / Size Culling)
@@ -1203,7 +1197,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 	return TRUE;
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: add_Static
 //  Назначение: Добавление статического объекта с проверкой видимости (Frustum + HOM).
 //  Параметры:
@@ -1211,7 +1205,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 //    planes  - Маска плоскостей фрустума.
 //    ctx     - Контекст обхода.
 //    dest    - Целевой пакет.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	// Frustum Culling (Sphere + AABB Test)
@@ -1226,7 +1220,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 
 	// Occlusion Culling (HOM - Hierarchical Occlusion Maps)
 	// Пропускаем невидимые за стенами/холмами объекты
-	if(!RenderImplementation.HOM.visible(vis_data))
+	if(ctx.use_hom && !RenderImplementation.Scene.GetHOM().visible(vis_data))
 		return;
 
 	// Проверка на значимость (Distance / Size Culling)
@@ -1501,10 +1495,10 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  CSceneGraph::BuildScene
 //  Назначение: Обход пространства (секторов и порталов) и сбор геометрии в указанный пакет.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 
 // Shortcut (создание фрустума из матрицы)
 void CSceneGraph::BuildScene(CSector* _sector,

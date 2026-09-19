@@ -790,7 +790,7 @@
     <ClInclude Include="pure.h" />
     <ClInclude Include="pure_relcase.h" />
     <ClInclude Include="Rain.h" />
-    <ClInclude Include="Render.h" />
+    <ClInclude Include="IRender.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="R_Backend.h" />
@@ -981,7 +981,7 @@
     <ClCompile Include="pure.cpp" />
     <ClCompile Include="pure_relcase.cpp" />
     <ClCompile Include="Rain.cpp" />
-    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="IRender.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ResourceManager_Loader.cpp" />
     <ClCompile Include="ResourceManager_Reset.cpp" />

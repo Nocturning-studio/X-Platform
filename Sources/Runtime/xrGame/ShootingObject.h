@@ -7,7 +7,7 @@
 #pragma once
 
 #include "alife_space.h"
-#include "xrEngine/render.h"
+#include "xrEngine/IRender.h"
 #include "game_cl_single.h"
 
 class CCartridge;

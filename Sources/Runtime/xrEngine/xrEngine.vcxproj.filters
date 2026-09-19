@@ -234,7 +234,7 @@
     <ClInclude Include="IRenderDetailModel.h">
       <Filter>Interfaces\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h">
+    <ClInclude Include="IRender.h">
       <Filter>Interfaces\Render</Filter>
     </ClInclude>
     <ClInclude Include="ISpatial.h">
@@ -650,7 +650,7 @@
     <ClCompile Include="IRenderable.cpp">
       <Filter>Interfaces\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render.cpp">
+    <ClCompile Include="IRender.cpp">
       <Filter>Interfaces\Render</Filter>
     </ClCompile>
     <ClCompile Include="ISpatial.cpp">

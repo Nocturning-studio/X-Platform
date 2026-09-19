@@ -1,16 +1,23 @@
+////////////////////////////////////////////////////////////////////////////////
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "SceneGraph.h"
-#include "r_occlusion.h"
+#include "xrEngine\irender.h"
+#include "xrEngine\irenderable.h"
+#include "xrEngine\fmesh.h"
+
+#include "xrRender_console.h"
+
+#include "GPUOcclusion.h"
+#include "CPUOcclusion.h"
 
 #include "PSLibrary.h"
 
 #include "r_types.h"
 #include "r_rendertarget.h"
-#include "r_render_stages.h"
 
-#include "hom.h"
-#include "detailmanager.h"
 #include "modelpool.h"
 #include "wallmarksengine.h"
 
@@ -20,38 +27,48 @@
 #include "LightTrack.h"
 #include "r_sun_cascades.h"
 
-#include "xrEngine\irenderable.h"
-#include "xrEngine\fmesh.h"
-#include "xrRender_console.h"
-
-#include "SunOccluder.h"
-#include "CPUOcclusion.h"
 #include "EffectorsManager.h"
+#include "SceneGraph.h"
 
-struct MainSceneWorkItem
+#include "RenderScene.h"
+////////////////////////////////////////////////////////////////////////////////
+class CGlow : public IRender_Glow
 {
-	SceneGraphPacket packet;
+public:
+	bool bActive;
 
-	// Сохраняем матрицы, актуальные на момент сбора,
-	// чтобы Draw-поток мог их использовать, даже если Device уже ушел вперед
-	fmat4x4 view;
-	fmat4x4 projection;
-	fmat4x4 view_projection;
-
-	void Init()
+public:
+	CGlow() : bActive(false)
 	{
-		packet.InitResources();
 	}
-	void Destroy()
+	virtual void set_active(bool b)
 	{
-		packet.FreeResources();
+		bActive = b;
 	}
-	void Clear()
+	virtual bool get_active()
 	{
-		packet.Clear();
+		return bActive;
+	}
+	virtual void set_position(const fvec3& P)
+	{
+	}
+	virtual void set_direction(const fvec3& D)
+	{
+	}
+	virtual void set_radius(float R)
+	{
+	}
+	virtual void set_texture(LPCSTR name)
+	{
+	}
+	virtual void set_color(const Fcolor& C)
+	{
+	}
+	virtual void set_color(float r, float g, float b)
+	{
 	}
 };
-
+////////////////////////////////////////////////////////////////////////////////
 class CRender : public IRender_interface, public pureFrame
 {
   public:
@@ -94,7 +111,8 @@ class CRender : public IRender_interface, public pureFrame
 	} stats;
 
   public:
-	// Sector detection and visibility
+	CRenderScene Scene;
+
 	CSector* pLastSector;
 	fvec3 vLastCameraPos;
 	u32 uLastLTRACK;
@@ -102,13 +120,9 @@ class CRender : public IRender_interface, public pureFrame
 	xr_vector<IRender_Sector*> Sectors;
 	xrXRC Sectors_xrc;
 	CDB::MODEL* rmPortals;
-	CHOM HOM;
-	R_occlusion HWOCC;
+
+	GPUOcclusion HWOCC;
 	CPUOcclusion CPUOCC;
-
-	CSceneGraph SceneGraph;
-
-	CSunOccluder* m_SunOccluder;
 
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem> SWIs;
@@ -120,7 +134,6 @@ class CRender : public IRender_interface, public pureFrame
 	xr_vector<IRender_Visual*> Visuals;
 	CPSLibrary PSLibrary;
 
-	CDetailManager* Details;
 	CModelPool* Models;
 	CWallmarksEngine* Wallmarks;
 
@@ -128,25 +141,17 @@ class CRender : public IRender_interface, public pureFrame
 
 	CEffectorsManager* EffectorsManager;
 
-	CLight_DB Lights;
 	CLight_Compute_Transform_and_VIS LR;
-	xr_vector<light*> m_cpu_occ_pending_lights;
-	xr_vector<light*> Lights_LastFrame;
-	SMAP_Allocator LP_smap_pool;
-	light_Package LP_normal;
-	light_Package LP_pending;
 
 	u32 dwAccumulatorClearMark;
 	u32 dwLightMarkerID;
 
 	xr_vector<Fbox3, render_alloc<Fbox3>> main_coarse_structure;
 
-	shared_str c_sbase;
-	shared_str c_lmaterial;
 	float o_hemi;
 	float o_sun;
 
-	bool m_bFirstFrameAfterReset; // Determines weather the frame is the first after resetting device.
+	bool m_bFirstFrameAfterReset;
 
 	bool m_b_collect_visuals;
 
@@ -167,15 +172,14 @@ class CRender : public IRender_interface, public pureFrame
 		return m_sun_cascades_buffer[m_sun_read_ix];
 	}
 
-	MainSceneWorkItem m_scene_data;
+	SSceneVisibilityResult m_scene_visibility_data;
+	SSceneVisibilityResult m_spot_shadow_vis;
 
 	// Motion blur
 	fmat4x4 m_saved_viewproj;
 	fmat4x4 m_saved_invview;
 
   private:
-	xrCriticalSection resource_lock;
-
 	// Loading / Unloading
 	void LoadBuffers(CStreamReader* fs, BOOL _alternative);
 	void LoadVisuals(IReader* fs);
@@ -230,11 +234,6 @@ class CRender : public IRender_interface, public pureFrame
 
 	IC void apply_ao_lighting(const CROS_impl::AOCube& cube)
 	{
-		R_constant* C = &*RenderBackend.get_Constant(c_sbase);
-		if(0 == C)
-			return;
-		VERIFY(RC_dest_sampler == C->destination);
-		VERIFY(RC_sampler == C->type);
 		RenderBackend.set_Constant("ao_cube_pos_faces",
 								   cube[CROS_impl::CUBE_FACE_POS_X],
 								   cube[CROS_impl::CUBE_FACE_POS_Y],
@@ -260,25 +259,16 @@ class CRender : public IRender_interface, public pureFrame
 
 	virtual IDirect3DBaseTexture9* TextureLoad(LPCSTR fname, u32& msize) override;
 
-/**/
-#pragma todo(Deathman to Deathman : Переписать передачу здоровья в рендер)
+	/**/
+#pragma todo(Deathman to Deathman : Rewrite)
 	float m_actor_health;
-	virtual void set_actor_health(float health)
-	{
-		m_actor_health = health;
-	}
-	virtual float get_actor_health()
-	{
-		return m_actor_health;
-	}
+	virtual void set_actor_health(float health) { m_actor_health = health; }
+	virtual float get_actor_health() { return m_actor_health; }
 	/**/
 
 	// Information
 	virtual void Statistics(CGameFont* F) override;
-	virtual LPCSTR getShaderPath()
-	{
-		return "";
-	}
+	virtual LPCSTR getShaderPath() { return ""; }
 	virtual ref_shader getShader(int id) override;
 	virtual IRender_Sector* getSector(int id) override;
 	virtual IRender_Visual* getVisual(int id) override;
@@ -288,77 +278,35 @@ class CRender : public IRender_interface, public pureFrame
 	virtual IEffectorsManager* getEffectorsManager() override;
 
 	// Main
-	virtual void add_Occluder(Fbox2& bb_screenspace) override; // mask screen region as oclluded
-	virtual void add_Visual(IRender_Visual* V) override;	   // add visual leaf	(no culling performed at all)
-	virtual void add_Geometry(IRender_Visual* V) override;	   // add visual(s)	(all culling performed)
+#pragma fixme(Occluders) 
+	virtual void add_Occluder(Fbox2& bb_screenspace) override;							// mask screen region as oclluded
+	virtual void add_Visual(IRender_Visual* V) override { Scene.AddVisual(V); };		// add visual leaf	(no culling performed at all)
+	virtual void add_Geometry(IRender_Visual* V) override { Scene.AddGeometry(V); };	// add visual(s)	(all culling performed)
 
-	SceneTraversalContext m_TraversalContext;
-
-	virtual void set_Transform(fmat4x4* M)
-	{
-		if(CurrentRenderContext::context)
-			CurrentRenderContext::context->transform = M;
-		else
-			m_TraversalContext.transform = M;
-	}
-
-	virtual void set_HUD(BOOL V)
-	{
-		if(CurrentRenderContext::context)
-			CurrentRenderContext::context->is_hud_pass = V;
-		else
-			m_TraversalContext.is_hud_pass = V;
-	}
-
-	virtual BOOL get_HUD()
-	{
-		if(CurrentRenderContext::context)
-			return CurrentRenderContext::context->is_hud_pass;
-		return m_TraversalContext.is_hud_pass;
-	}
-
-	virtual void set_Invisible(BOOL V)
-	{
-		if(CurrentRenderContext::context)
-			CurrentRenderContext::context->is_invisible_mode = V;
-		else
-			m_TraversalContext.is_invisible_mode = V;
-	}
-
-	virtual void set_Frustum(CFrustum* O)
-	{
-		View = O;
-		if(CurrentRenderContext::context)
-			CurrentRenderContext::context->frustum = O;
-		else
-			m_TraversalContext.frustum = O;
-	}
-
-	virtual void set_Object(IRenderable* O)
-	{
-		if(CurrentRenderContext::context)
-			CurrentRenderContext::context->owner = O;
-		else
-			m_TraversalContext.owner = O;
-	}
+	virtual void set_Transform(fmat4x4* M) override { Scene.SetTransform(M); };
+	virtual void set_HUD(BOOL V) override { Scene.SetHUD(V); };
+	virtual BOOL get_HUD() override { return Scene.GetHUD(); };
+	virtual void set_Invisible(BOOL V) override { Scene.SetInvisible(V); };
+	virtual void set_Frustum(CFrustum* O) override { Scene.SetFrustum(O); };
+	virtual const CFrustum* get_Frustum() override { return Scene.GetFrustum(); };
+	virtual void set_Object(IRenderable* O) override { Scene.SetObject(O); };
 
 	// wallmarks
+#pragma todo(Move wallmarks to Scene)
 	virtual void add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V) override;
 	virtual void clear_static_wallmarks() override;
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) override;
 	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size) override;
 
-	//
 	virtual IBlender* blender_create(CLASS_ID cls) override;
 	virtual void blender_destroy(IBlender*&) override;
 
-	//
 	virtual IRender_ObjectSpecific* ros_create(IRenderable* parent) override;
 	virtual void ros_destroy(IRender_ObjectSpecific*&) override;
 
 	// Lighting
-	virtual IRender_Light* light_create() override;
-	virtual IRender_Glow* glow_create() override;
+	virtual IRender_Light* light_create() override { return Scene.CreateLight(); };
+	virtual IRender_Glow* glow_create() override { return xr_new<CGlow>(); };
 
 	// Models
 	virtual IRender_Visual* model_CreateParticles(LPCSTR name) override;
@@ -368,17 +316,14 @@ class CRender : public IRender_interface, public pureFrame
 	virtual IRender_Visual* model_Duplicate(IRender_Visual* V) override;
 	virtual void model_Delete(IRender_Visual*& V, BOOL bDiscard) override;
 	virtual void model_Delete(IRender_DetailModel*& F) override;
-	virtual void model_Logging(BOOL bEnable)
-	{
-		Models->Logging(bEnable);
-	}
+	virtual void model_Logging(BOOL bEnable) { Models->Logging(bEnable); }
 	virtual void models_Prefetch() override;
 	virtual void models_Clear(BOOL b_complete) override;
 
 	// Occlusion culling
-	virtual BOOL occ_visible(vis_data& V) override;
-	virtual BOOL occ_visible(Fbox& B) override;
-	virtual BOOL occ_visible(sPoly& P) override;
+	virtual BOOL occ_visible(vis_data& V) override { return Scene.IsVisible(V); };
+	virtual BOOL occ_visible(Fbox& B) override { return Scene.IsVisible(B); };
+	virtual BOOL occ_visible(sPoly& P) override { return Scene.IsVisible(P); };
 
 	// Main
 	void clear_gbuffer();
@@ -431,8 +376,7 @@ class CRender : public IRender_interface, public pureFrame
 	void render_effectors_pass_combine();
 	void render_effectors_pass_resolve_gamma();
 	void output_frame_to_screen();
-	bool need_render_sun();
-	void gather_visibility(fmat4x4& mCombined, SceneGraphPacket& dest);
+	void update_light_tracking(SceneGraphPacket& packet);
 	void MergeCulledLights(SceneGraphPacket& packet);
 	void calculate_scene_culling();
 	void render_lights(light_Package& LP);
@@ -441,8 +385,9 @@ class CRender : public IRender_interface, public pureFrame
 	void __stdcall schedule_cascades();
 	void wait_for_sun_task();
 	void swap_sun_buffers();
-	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx);
-	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx);
+	bool need_render_sun();
+	void prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
+	void gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_ambient_occlusion();
@@ -498,9 +443,7 @@ class CRender : public IRender_interface, public pureFrame
 	CShaderMacros FetchShaderMacros();
 
 	HMODULE hCompiler;
-
-  private:
-	FS_FileSet m_file_set;
 };
-
+////////////////////////////////////////////////////////////////////////////////
 extern CRender RenderImplementation;
+////////////////////////////////////////////////////////////////////////////////

@@ -6,7 +6,7 @@
 #ifdef _EDITOR
 #include "ui_toolscustom.h"
 #else
-#include "render.h"
+#include "IRender.h"
 #include "igame_level.h"
 #include "xr_area.h"
 #include "xr_object.h"
@@ -410,7 +410,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 		float radius = center.magnitude();
 		center.add(pos_trail);
 
-		if (::Render->ViewBase.testSphere_dirty(center, radius))
+		if (::Render->get_Frustum()->testSphere_dirty(center, radius))
 		{
 			auto& local_vec = local_render_buffers.local();
 			if (local_vec.empty())
@@ -661,7 +661,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 		}
 
 		// Render Culling
-		if(::Render->ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R))
+		if(::Render->get_Frustum()->testSphere_dirty(P->bounds.P, P->bounds.R))
 		{
 			float scale = P->time / PARTICLE_TIME;
 			m_scale.scale(scale, scale, scale);

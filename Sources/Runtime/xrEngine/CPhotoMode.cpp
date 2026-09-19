@@ -11,7 +11,7 @@
 #include "xr_ioconsole.h"
 #include "xr_input.h"
 #include "xr_object.h"
-#include "render.h"
+#include "IRender.h"
 #include "CustomHUD.h"
 #include "IGame_Persistent.h"
 //////////////////////////////////////////////////////////////////////

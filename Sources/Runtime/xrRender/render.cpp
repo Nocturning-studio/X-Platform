@@ -12,44 +12,6 @@
 //////////////////////////////////////////////////////////////////////////
 CRender RenderImplementation;
 //////////////////////////////////////////////////////////////////////////
-#pragma todo(NSDeathman to NSDeathman : Добавить поддержку Glow)
-class CGlow : public IRender_Glow
-{
-  public:
-	bool bActive;
-
-  public:
-	CGlow() : bActive(false)
-	{
-	}
-	virtual void set_active(bool b)
-	{
-		bActive = b;
-	}
-	virtual bool get_active()
-	{
-		return bActive;
-	}
-	virtual void set_position(const fvec3& P)
-	{
-	}
-	virtual void set_direction(const fvec3& D)
-	{
-	}
-	virtual void set_radius(float R)
-	{
-	}
-	virtual void set_texture(LPCSTR name)
-	{
-	}
-	virtual void set_color(const Fcolor& C)
-	{
-	}
-	virtual void set_color(float r, float g, float b)
-	{
-	}
-};
-//////////////////////////////////////////////////////////////////////////
 static class cl_sun_far : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
@@ -63,7 +25,7 @@ static class cl_sun_dir : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
+		light* sun = (light*)RenderImplementation.Scene.GetLights().sun_adapted._get();
 
 		fvec3 L_dir;
 		Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
@@ -93,7 +55,7 @@ static class cl_sun_color : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
+		light* sun = (light*)RenderImplementation.Scene.GetLights().sun_adapted._get();
 		RenderBackend.set_Constant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
 	}
 } binder_sun_color;
@@ -157,15 +119,14 @@ CShaderMacros CRender::FetchShaderMacros()
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CRender::CRender() : m_bFirstFrameAfterReset(false)
+CRender::CRender() : Scene(), m_bFirstFrameAfterReset(false)
 {
 	LPCSTR CompilerName = "D3DCompiler_43.dll";
 	Msg("Loading d3d compiler DLL: %s", CompilerName);
 	hCompiler = LoadLibrary(CompilerName);
 
 	if(!hCompiler)
-		make_string(
-			"Can't find 'D3DCompiler_43.dll'\nPlease install latest version of DirectX before running this program");
+		make_string("Can't find 'D3DCompiler_43.dll'\nPlease install latest version of DirectX before running this program");
 
 	m_actor_health = 1.0f;
 
@@ -186,10 +147,11 @@ void CRender::Initialize()
 {
 	Engine.Events.Frame.Add(this, REG_PRIORITY_HIGH + 0x12345678);
 
-	c_lmaterial = "L_material";
-	c_sbase = "s_base";
-
 	update_options();
+
+	Scene.Initialize();
+	Scene.CreateResources();
+
 	RenderTarget = xr_new<CRenderTarget>();
 
 	EffectorsManager = xr_new<CEffectorsManager>();
@@ -198,14 +160,12 @@ void CRender::Initialize()
 	PSLibrary.OnCreate();
 	HWOCC.occq_create(occq_size);
 
-	SceneGraph.m_traversal_marker = 0;
-
 	xrRender_apply_tf();
-	SceneGraph.m_packet.portal_traverser.CreateResources();
 
 	init_cacades();
 
-	m_scene_data.Init();
+	m_scene_visibility_data.InitResources();
+	m_spot_shadow_vis.InitResources();
 }
 
 void CRender::Create()
@@ -225,42 +185,31 @@ void CRender::Create()
 void CRender::Destroy()
 {
 	WaitForPendingTasks();
-	m_scene_data.Destroy();
+
+	m_scene_visibility_data.FreeResources();
+	m_spot_shadow_vis.FreeResources();
+
 	m_sun_cascades_buffer[0].Destroy();
 	m_sun_cascades_buffer[1].Destroy();
-	SceneGraph.m_packet.portal_traverser.DestroyResources();
+
+	Scene.Destroy();
+
 	HWOCC.occq_destroy();
+
 	xr_delete(Models);
 	xr_delete(RenderTarget);
 	PSLibrary.OnDestroy();
 	Engine.Events.Frame.Remove(this);
-	SceneGraph.destroy();
 	xr_delete(EffectorsManager);
 }
 
 void CRender::ResetBegin()
 {
-	WaitForPendingTasks();
-	// Update incremental shadowmap-visibility solver
-	// BUG-ID: 10646
-	{
-		u32 it = 0;
-		for(it = 0; it < Lights_LastFrame.size(); it++)
-		{
-			if(0 == Lights_LastFrame[it])
-				continue;
-			try
-			{
-				Lights_LastFrame[it]->get_smapvis().resetoccq();
-			}
-			catch(...)
-			{
-				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-			}
-		}
-		Lights_LastFrame.clear();
-	}
-
+	m_scene_visibility_data.FreeResources();
+	m_spot_shadow_vis.FreeResources();
+	m_sun_cascades_buffer[0].Destroy();
+	m_sun_cascades_buffer[1].Destroy();
+	Scene.OnResetBegin();
 	xr_delete(RenderTarget);
 	HWOCC.occq_destroy();
 }
@@ -279,6 +228,13 @@ void CRender::ResetEnd()
 	// Set this flag true to skip the first render frame,
 	// that some data is not ready in the first frame (for example device camera position)
 	m_bFirstFrameAfterReset = true;
+
+	Scene.OnResetEnd();
+
+	m_scene_visibility_data.InitResources();
+	m_spot_shadow_vis.InitResources();
+	m_sun_cascades_buffer[0].Init();
+	m_sun_cascades_buffer[1].Init();
 }
 
 void CRender::WaitForPendingTasks()
@@ -292,18 +248,14 @@ void CRender::OnFrame()
 	WaitForPendingTasks();
 	Models->DeleteQueue();
 	CPUOCC.Update();
-
-	if(Details && Details->dtFS)
-	{
-		Details->PrepareToCalc();
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(Details, &CDetailManager::MT_CALC));
-	}
+	Scene.OnFrame();
 
 	if(need_render_sun())
 	{
 		wait_for_sun_task();
 		swap_sun_buffers();
 		m_sun_gather_done.store(false);
+		//CRenderView rv_snapshot = Engine.RenderView;
 		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CRender::schedule_cascades));
 	}
 }
@@ -478,54 +430,9 @@ IEffectorsManager* CRender::getEffectorsManager()
 	return EffectorsManager;
 }
 
-IRender_Light* CRender::light_create()
-{
-	return Lights.Create();
-}
-
-IRender_Glow* CRender::glow_create()
-{
-	return xr_new<CGlow>();
-}
-
-BOOL CRender::occ_visible(vis_data& P)
-{
-	return HOM.visible(P);
-}
-
-BOOL CRender::occ_visible(sPoly& P)
-{
-	return HOM.visible(P);
-}
-
-BOOL CRender::occ_visible(Fbox& P)
-{
-	return HOM.visible(P);
-}
-
-void CRender::add_Visual(IRender_Visual* V)
-{
-	if(CurrentRenderContext::packet && CurrentRenderContext::context)
-		SceneGraph.ProcessDynamicVisual(V, *CurrentRenderContext::context, *CurrentRenderContext::packet);
-	else
-		SceneGraph.ProcessDynamicVisual(V, m_TraversalContext, SceneGraph.m_packet);
-}
-
-void CRender::add_Geometry(IRender_Visual* V)
-{
-	if(CurrentRenderContext::packet && CurrentRenderContext::context)
-	{
-		u32 mask = CurrentRenderContext::context->frustum->getMask();
-		SceneGraph.add_Static(V, mask, *CurrentRenderContext::context, *CurrentRenderContext::packet);
-	}
-	else
-	{
-		SceneGraph.add_Static(V, View->getMask(), m_TraversalContext, SceneGraph.m_packet);
-	}
-}
-
 void CRender::add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* verts)
 {
+#pragma todo(Вынести декали в класс сцены)
 	if(g_dedicated_server)
 		return;
 
@@ -548,12 +455,13 @@ void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 void CRender::add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size)
 {
 	PROFILE_FUNCTION();
-#pragma todo("FIXME")
+#pragma fixme(Декали на скелетах)
 	// Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
 void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
+#pragma todo(Добавить возможность установки доп окклюдеров)
 }
 
 void CRender::set_render_mode(int mode)

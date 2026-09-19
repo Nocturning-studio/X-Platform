@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "render.h"
+#include "IRender.h"
 
 IRender_interface::~IRender_interface() {};
 

@@ -4,6 +4,7 @@
 // #include "CameraManager.h"
 #include "xr_object_list.h"
 #include "xr_area.h"
+#include "CustomHUD.h"
 
 // refs
 class ENGINE_API CCameraManager;

@@ -22,7 +22,7 @@
 #include <process.h>
 #include "LogoWindow.h"
 #include "LevelLoadingScreen.h"
-#include "render.h"
+#include "IRender.h"
 #include "xrBind_PSGP.h"
 #include "EngineQuit.hpp"
 #include "SDL3/SDL.h"

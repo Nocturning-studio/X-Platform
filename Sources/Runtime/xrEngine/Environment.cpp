@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #ifndef _EDITOR
-#include "render.h"
+#include "IRender.h"
 #endif
 
 #include "Environment.h"

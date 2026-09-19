@@ -61,7 +61,7 @@ void IBlender::CreatePalette(xr_vector<IBlender*>& palette)
 	concurrency::parallel_sort(palette.begin(), palette.end(), p_sort);
 }
 
-#include "render.h"
+#include "IRender.h"
 IBlender* IBlender::Create(CLASS_ID cls)
 {
 	return ::Render->blender_create(cls);

@@ -435,7 +435,7 @@ void CWallmarksEngine::Render()
 		for(StaticWMVecIt w_it = slot->static_items.begin(); w_it != slot->static_items.end();)
 		{
 			static_wallmark* W = *w_it;
-			if(RenderImplementation.ViewBase.testSphere_dirty(W->bounds.P, W->bounds.R))
+			if(RenderImplementation.get_Frustum()->testSphere_dirty(W->bounds.P, W->bounds.R))
 			{
 				Engine.Statistic->RenderDUMP_WMS_Count++;
 				float dst = Engine.RenderView.Position.distance_to_sqr(W->bounds.P);
@@ -525,7 +525,7 @@ void CWallmarksEngine::Render()
 	lock.Leave(); // Physics may add wallmarks in parallel with rendering
 
 	// Level-wmarks
-	RenderImplementation.SceneGraph.Render(RenderImplementation.SceneGraph.m_packet, SceneGraphRenderType::Wallmarks);
+	RenderImplementation.Scene.Render(RenderImplementation.m_scene_visibility_data, SceneGraphRenderType::Wallmarks);
 	Engine.Statistic->RenderDUMP_WM.End();
 
 	// Projection

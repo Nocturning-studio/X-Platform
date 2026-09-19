@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ispatial.h"
-#include "render.h"
+#include "IRender.h"
 #include "xr_object.h"
 #include "PS_Instance.h"
 

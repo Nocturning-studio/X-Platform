@@ -7,9 +7,6 @@
     <Filter Include="Core">
       <UniqueIdentifier>{5c280dd5-08b2-48ed-a9ac-6f72cd172e0a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Occlusion culling">
-      <UniqueIdentifier>{e53c15a1-f72b-4265-9625-37e3e186d0f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Screenshots">
       <UniqueIdentifier>{7ab39932-870e-4d85-8b08-93d122f37ee0}</UniqueIdentifier>
     </Filter>
@@ -28,9 +25,6 @@
     <Filter Include="Render Console">
       <UniqueIdentifier>{25048830-d3aa-4387-b01b-a2a0cdbac8ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Occlusion culling\HOM Occlusion">
-      <UniqueIdentifier>{192e35d4-dc12-4e11-a00b-860e34665128}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render pipeline">
       <UniqueIdentifier>{a66da469-b2b7-41cc-9813-8abfcd08e1b9}</UniqueIdentifier>
     </Filter>
@@ -43,20 +37,11 @@
     <Filter Include="Render pipeline\Rendertargets">
       <UniqueIdentifier>{fec1153a-2d47-4773-b385-8ff1d008ed3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Details">
-      <UniqueIdentifier>{11542d84-a32a-4f97-bf85-4f546cc5a224}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Wallmarks">
-      <UniqueIdentifier>{007cc9e4-5b81-4324-a362-e25cbbd79777}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Models">
       <UniqueIdentifier>{a263f29c-0c06-4cad-90de-b322ee2f04e4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Models\Visuals">
       <UniqueIdentifier>{cc83a68c-2620-42ca-8e59-6eaf108f2a8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Lights">
-      <UniqueIdentifier>{268234e2-3527-4c36-97d3-c33940d436e7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Render pipeline\Render stages\Stages">
       <UniqueIdentifier>{41e0c0ec-bc21-4c56-876e-74866a9c1ba3}</UniqueIdentifier>
@@ -96,9 +81,6 @@
     </Filter>
     <Filter Include="Render pipeline\Render stages\Core">
       <UniqueIdentifier>{87a07ac8-8513-43f2-a079-ddc438035210}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Sun occluder">
-      <UniqueIdentifier>{6854b29c-9fbb-49e2-a0de-c54f4b158e4e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Reflections phase">
       <UniqueIdentifier>{db159c05-241d-450b-b59d-e222513d8751}</UniqueIdentifier>
@@ -151,20 +133,41 @@
     <Filter Include="Core\Effectors">
       <UniqueIdentifier>{7bf0db16-0f91-4a4d-92b7-4a9621cc3321}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Occlusion culling\Portal traverse system">
-      <UniqueIdentifier>{113a2b8e-7672-4fdf-89aa-c2bdb9a003dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Scene Graph">
-      <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes">
       <UniqueIdentifier>{27c3fc1c-ba18-4597-a09f-0d9e4b7ca8be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Occlusion culling\SoftX occlusion culling">
-      <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{1acabd85-122d-4133-b296-b437d83473ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Details">
+      <UniqueIdentifier>{11542d84-a32a-4f97-bf85-4f546cc5a224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Scene Graph">
+      <UniqueIdentifier>{4b70cd42-a15c-4cf4-a4ea-a369d7c7e543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Sun occluder">
+      <UniqueIdentifier>{6854b29c-9fbb-49e2-a0de-c54f4b158e4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Occlusion culling">
+      <UniqueIdentifier>{e53c15a1-f72b-4265-9625-37e3e186d0f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Occlusion culling\HOM Occlusion">
+      <UniqueIdentifier>{192e35d4-dc12-4e11-a00b-860e34665128}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Occlusion culling\Portal traverse system">
+      <UniqueIdentifier>{113a2b8e-7672-4fdf-89aa-c2bdb9a003dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Occlusion culling\SoftX occlusion culling">
+      <UniqueIdentifier>{0eddc58d-608c-41e8-aa7e-d26d9a7473a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Lights">
+      <UniqueIdentifier>{268234e2-3527-4c36-97d3-c33940d436e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Wallmarks">
+      <UniqueIdentifier>{007cc9e4-5b81-4324-a362-e25cbbd79777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Occlusion culling\GPU Occlusion">
+      <UniqueIdentifier>{d6e49b28-b759-4018-853a-205d1ddf0253}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -178,37 +181,37 @@
       <Filter>Core\Memory allocation</Filter>
     </ClInclude>
     <ClInclude Include="DetailFormat.h">
-      <Filter>Core\Details</Filter>
+      <Filter>Scene\Details</Filter>
     </ClInclude>
     <ClInclude Include="DetailManager.h">
-      <Filter>Core\Details</Filter>
+      <Filter>Scene\Details</Filter>
     </ClInclude>
     <ClInclude Include="DetailModel.h">
-      <Filter>Core\Details</Filter>
+      <Filter>Scene\Details</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="Light_DB.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="Light_Package.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="Light_Render_Direct.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="light_smapvis.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="LightTrack.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="SMAP_Allocator.h">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClInclude>
     <ClInclude Include="WallmarksEngine.h">
-      <Filter>Core\Wallmarks</Filter>
+      <Filter>Scene\Wallmarks</Filter>
     </ClInclude>
     <ClInclude Include="ModelPool.h">
       <Filter>Core\Models</Filter>
@@ -238,10 +241,10 @@
       <Filter>Core\Models\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="r_sector.h">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="HOM.h">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
+      <Filter>Occlusion culling\HOM Occlusion</Filter>
     </ClInclude>
     <ClInclude Include="Blender_frame_overlay.h">
       <Filter>Render pipeline\Render stages\Stages\Overlays stage</Filter>
@@ -251,9 +254,6 @@
     </ClInclude>
     <ClInclude Include="Blender_depth_of_field.h">
       <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Depth of field</Filter>
-    </ClInclude>
-    <ClInclude Include="r_occlusion.h">
-      <Filter>Core\Occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="PSLibrary.h">
       <Filter>Core\Particle library</Filter>
@@ -274,10 +274,10 @@
       <Filter>Render Console</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraph.h">
-      <Filter>Core\Scene Graph</Filter>
+      <Filter>Scene\Scene Graph</Filter>
     </ClInclude>
     <ClInclude Include="SceneGraphTypes.h">
-      <Filter>Core\Scene Graph</Filter>
+      <Filter>Scene\Scene Graph</Filter>
     </ClInclude>
     <ClInclude Include="r_rendertarget.h">
       <Filter>Render pipeline\Rendertargets</Filter>
@@ -295,7 +295,7 @@
       <Filter>Render pipeline\Render stages\Stages\Scene combine stage</Filter>
     </ClInclude>
     <ClInclude Include="SunOccluder.h">
-      <Filter>Core\Sun occluder</Filter>
+      <Filter>Scene\Sun occluder</Filter>
     </ClInclude>
     <ClInclude Include="Blender_hi_z.h">
       <Filter>Render pipeline\Render stages\Stages\Postprocess stages\HI-Z phase</Filter>
@@ -376,13 +376,13 @@
       <Filter>Core\Memory allocation</Filter>
     </ClInclude>
     <ClInclude Include="r_portal.h">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="r_portal_traverser.h">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClInclude>
     <ClInclude Include="CPUOcclusion.h">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="..\xrEngine\du_cone.h">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
@@ -394,16 +394,25 @@
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClInclude>
     <ClInclude Include="SoftXOcclusionCore.h">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="SoftXOcclusionMapBuilder.h">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="SoftXLightVolumeOcclusion.h">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="SoftXAABBOcclusion.h">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUOcclusion.h">
+      <Filter>Occlusion culling\GPU Occlusion</Filter>
+    </ClInclude>
+    <ClInclude Include="r_sun_cascades.h">
+      <Filter>Render pipeline\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -419,44 +428,44 @@
     <ClCompile Include="r_blenders.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="r_loader.cpp">
+    <ClCompile Include="render_level_loading.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="doug_lea_memory_allocator.c">
       <Filter>Core\Memory allocation</Filter>
     </ClCompile>
     <ClCompile Include="DetailManager.cpp">
-      <Filter>Core\Details</Filter>
+      <Filter>Scene\Details</Filter>
     </ClCompile>
     <ClCompile Include="DetailManager_VS.cpp">
-      <Filter>Core\Details</Filter>
+      <Filter>Scene\Details</Filter>
     </ClCompile>
     <ClCompile Include="DetailModel.cpp">
-      <Filter>Core\Details</Filter>
+      <Filter>Scene\Details</Filter>
     </ClCompile>
     <ClCompile Include="light.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="Light_DB.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="Light_Package.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="Light_Render_Direct.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="Light_Render_Direct_ComputeXFS.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="light_smapvis.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="LightTrack.cpp">
-      <Filter>Core\Lights</Filter>
+      <Filter>Scene\Lights</Filter>
     </ClCompile>
     <ClCompile Include="WallmarksEngine.cpp">
-      <Filter>Core\Wallmarks</Filter>
+      <Filter>Scene\Wallmarks</Filter>
     </ClCompile>
     <ClCompile Include="ModelPool.cpp">
       <Filter>Core\Models</Filter>
@@ -486,13 +495,13 @@
       <Filter>Core\Models\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="r_sector.cpp">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="r_portal_traverser.cpp">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="HOM.cpp">
-      <Filter>Core\Occlusion culling\HOM Occlusion</Filter>
+      <Filter>Occlusion culling\HOM Occlusion</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_gbuffer.cpp">
       <Filter>Render pipeline\Render stages\Stages\GBuffer stage</Filter>
@@ -521,9 +530,6 @@
     <ClCompile Include="r_render_stages_light_accumulator_spot.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
-    <ClCompile Include="r_occlusion.cpp">
-      <Filter>Core\Occlusion culling</Filter>
-    </ClCompile>
     <ClCompile Include="r_screenshot.cpp">
       <Filter>Core\Screenshots</Filter>
     </ClCompile>
@@ -549,10 +555,10 @@
       <Filter>Render Console</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraphBuild.cpp">
-      <Filter>Core\Scene Graph</Filter>
+      <Filter>Scene\Scene Graph</Filter>
     </ClCompile>
     <ClCompile Include="SceneGraphRender.cpp">
-      <Filter>Core\Scene Graph</Filter>
+      <Filter>Scene\Scene Graph</Filter>
     </ClCompile>
     <ClCompile Include="r_calculate.cpp">
       <Filter>Render pipeline\Core</Filter>
@@ -570,7 +576,7 @@
       <Filter>Render pipeline\Render stages\Core</Filter>
     </ClCompile>
     <ClCompile Include="SunOccluder.cpp">
-      <Filter>Core\Sun occluder</Filter>
+      <Filter>Scene\Sun occluder</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_hi_z.cpp">
       <Filter>Render pipeline\Render stages\Stages\Postprocess stages\HI-Z phase</Filter>
@@ -624,13 +630,13 @@
       <Filter>Core\Effectors</Filter>
     </ClCompile>
     <ClCompile Include="r_portal.cpp">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="r_sector_detect.cpp">
-      <Filter>Core\Occlusion culling\Portal traverse system</Filter>
+      <Filter>Occlusion culling\Portal traverse system</Filter>
     </ClCompile>
     <ClCompile Include="CPUOcclusion.cpp">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="..\xrEngine\du_cone.cpp">
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
@@ -648,16 +654,22 @@
       <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
     </ClCompile>
     <ClCompile Include="SoftXOcclusionCore.cpp">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="SoftXOcclusionMapBuilder.cpp">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="SoftXLightVolumeOcclusion.cpp">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="SoftXAABBOcclusion.cpp">
-      <Filter>Core\Occlusion culling\SoftX occlusion culling</Filter>
+      <Filter>Occlusion culling\SoftX occlusion culling</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUOcclusion.cpp">
+      <Filter>Occlusion culling\GPU Occlusion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,7 @@
 #include "xrEngine/defines.h"
 #include "xrEngine/fbasicvisual.h"
 #include "xrEngine/ParticleCustom.h"
-#include "xrEngine/render.h"
+#include "xrEngine/IRender.h"
 #include "xrEngine/IGame_Persistent.h"
 
 const fvec3 zero_vel = {0.f, 0.f, 0.f};

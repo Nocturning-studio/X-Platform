@@ -42,15 +42,15 @@ void light::TryToDeactivateLight()
 
 light::~light()
 {
-	for(int f = 0; f < 6; f++)
+	for (int f = 0; f < 6; f++)
 		xr_delete(omnipart[f]);
 
 	TryToDeactivateLight();
 
-	// remove from Lights_LastFrame
-	for(u32 it = 0; it < RenderImplementation.Lights_LastFrame.size(); it++)
-		if(this == RenderImplementation.Lights_LastFrame[it])
-			RenderImplementation.Lights_LastFrame[it] = 0;
+	xr_vector<light*>& lights_last_frame = RenderImplementation.Scene.GetLightsLastFrame();
+	for (u32 it = 0; it < lights_last_frame.size(); it++)
+		if (this == lights_last_frame[it])
+			lights_last_frame[it] = nullptr;
 
 	m_sectors.clear();
 }

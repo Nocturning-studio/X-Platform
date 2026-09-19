@@ -1,14 +1,8 @@
-#ifndef _RENDER_H_
-#define _RENDER_H_
-
+#pragma once
 #include "frustum.h"
 #include "vis_common.h"
 #include "IRenderDetailModel.h"
 #include "ShaderMacros.h"
-
-#ifdef _EDITOR
-#error you cant include this file in borland
-#endif
 
 // refs
 class ENGINE_API IRenderable;
@@ -174,10 +168,6 @@ class ENGINE_API IRender_interface
 	// options
 	s32 m_skinning;
 
-	// data
-	CFrustum ViewBase;
-	CFrustum* View;
-
   public:
 	// Loading / Unloading
 	virtual void Initialize() = 0;
@@ -189,6 +179,7 @@ class ENGINE_API IRender_interface
 	virtual void LevelLoad(IReader*) = 0;
 	virtual void LevelUnload() = 0;
 
+#pragma todo("Move to Game persistent or somewhere else")
 	virtual void set_actor_health(float health) = 0;
 	virtual float get_actor_health() = 0;
 
@@ -212,11 +203,8 @@ class ENGINE_API IRender_interface
 	virtual IEffectorsManager* getEffectorsManager() = 0;
 
 	// Main
-	IC void set_Frustum(CFrustum* O)
-	{
-		VERIFY(O);
-		View = O;
-	}
+	virtual void set_Frustum(CFrustum* O) = 0;
+	virtual const CFrustum* get_Frustum() = 0;
 	virtual void set_Transform(fmat4x4* M) = 0;
 	virtual void set_HUD(BOOL V) = 0;
 	virtual BOOL get_HUD() = 0;
@@ -279,5 +267,3 @@ class ENGINE_API IRender_interface
 };
 
 extern ENGINE_API IRender_interface* Render;
-
-#endif

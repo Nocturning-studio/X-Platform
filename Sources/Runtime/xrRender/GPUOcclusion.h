@@ -1,7 +1,8 @@
+////////////////////////////////////////////////////////////////////////////////
 #pragma once
-
+////////////////////////////////////////////////////////////////////////////////
 const u32 occq_size = 2 * 768; // 256	;	// queue for occlusion queries
-
+////////////////////////////////////////////////////////////////////////////////
 // must conform to following order of allocation/free
 // a(A), a(B), a(C), a(D), ....
 // f(A), f(B), f(C), f(D), ....
@@ -12,7 +13,7 @@ const u32 occq_size = 2 * 768; // 256	;	// queue for occlusion queries
 //	assumption:
 //		used queries number is much smaller than total count
 
-class R_occlusion
+class GPUOcclusion
 {
   private:
 	struct _Q
@@ -27,8 +28,8 @@ class R_occlusion
 	xr_vector<_Q> used;	 // id's are generated from this and it is cleared from back only
 	xr_vector<u32> fids; // free id's
   public:
-	R_occlusion();
-	~R_occlusion();
+	GPUOcclusion();
+	~GPUOcclusion();
 
 	IDirect3DQuery9* GetUsedQueryByID(u32 ID)
 	{
@@ -46,3 +47,4 @@ class R_occlusion
 	void occq_end(u32& ID);
 	u32 occq_get(u32& ID, bool bWait = true);
 };
+////////////////////////////////////////////////////////////////////////////////

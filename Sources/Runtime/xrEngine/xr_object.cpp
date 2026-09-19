@@ -3,7 +3,7 @@
 
 #include "xr_object.h"
 #include "xr_area.h"
-#include "render.h"
+#include "IRender.h"
 #include "xrLevel.h"
 #include "fbasicvisual.h"
 
