@@ -299,8 +299,8 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 		data->r(&pBone->obb, sizeof(Fobb));
 		visimask.set(u64(1) << ID, TRUE);
 	}
-	concurrency::parallel_sort(bone_map_N->begin(), bone_map_N->end(), pred_sort_N);
-	concurrency::parallel_sort(bone_map_P->begin(), bone_map_P->end(), pred_sort_P);
+	std::sort(bone_map_N->begin(), bone_map_N->end(), pred_sort_N);
+	std::sort(bone_map_P->begin(), bone_map_P->end(), pred_sort_P);
 
 	// Attach bones to their parents
 	iRoot = BI_NONE;

@@ -47,7 +47,7 @@ CPortalTraverser::SectorVisibility& CPortalTraverser::GetOrAddSectorData(CSector
 	return vis;
 }
 
-void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_pos, fmat4x4& xform, u32 options)
+void CPortalTraverser::Traverse(CSector* start, const CFrustum& frustum, const fvec3& view_pos, const fmat4x4& xform, u32 options)
 {
 	VERIFY(start);
 	Reset(); // Очистка перед запуском

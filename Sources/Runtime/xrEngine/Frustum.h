@@ -77,7 +77,7 @@ class ENGINE_API CFrustum
 	BOOL CreateFromClipPoly(fvec3* p, int count, fvec3& vBase,
 							CFrustum& clip); // returns 'false' if creation failed
 	void CreateFromPoints(fvec3* p, int count, fvec3& vBase);
-	void CreateFromMatrix(fmat4x4& M, u32 mask);
+	void CreateFromMatrix(const fmat4x4& M, u32 mask);
 	void CreateFromPortal(sPoly* P, fvec3& vPN, fvec3& vBase, fmat4x4& mFullTransform);
 	void CreateFromPlanes(Fplane* p, int count);
 
