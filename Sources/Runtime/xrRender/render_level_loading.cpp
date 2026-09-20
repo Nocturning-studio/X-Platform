@@ -38,13 +38,6 @@ void CRender::LevelLoad(IReader* fs)
 
 	g_pGamePersistent->LoadTitle("st_loading_components");
 
-	// Wallmarks — единственный визуальный эффект, которым владеет CRender.
-	// Details и SunOccluder уже созданы Scene::Initialize() — их НЕ создаём.
-	if (!g_dedicated_server)
-		Wallmarks = xr_new<CWallmarksEngine>();
-	else
-		Wallmarks = nullptr;
-
 	////////////////////////////////////////////////////////////////////////////////
 	//  ШЕЙДЕРЫ
 	////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +114,7 @@ void CRender::LevelLoad(IReader* fs)
 		CPUOCC.Load(Scene.GetHOM());
 		Scene.LoadDetails();
 		Scene.LoadSunOccluder();
+		Scene.LoadWallmarks();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -217,15 +211,6 @@ void CRender::LevelUnload()
 	xIB.clear();
 	nDC.clear();
 	xDC.clear();
-
-	////////////////////////////////////////////////////////////////////////////////
-	//  Wallmarks
-	////////////////////////////////////////////////////////////////////////////////
-	if (Wallmarks)
-	{
-		xr_delete(Wallmarks);
-		Wallmarks = nullptr;
-	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	//  Shaders

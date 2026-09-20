@@ -46,8 +46,7 @@ class CWallmarksEngine
   private:
 	void BuildMatrix(fmat4x4& dest, float invsz, const fvec3& from);
 	void RecurseTri(u32 T, fmat4x4& mView, static_wallmark& W);
-	void AddWallmark_internal(CDB::TRI* pTri, const fvec3* pVerts, const fvec3& contact_point, ref_shader hTexture,
-							  float sz);
+	void AddWallmark_internal(CDB::TRI* pTri, const fvec3* pVerts, const fvec3& contact_point, ref_shader hTexture, float sz);
 
 	static_wallmark* static_wm_allocate();
 	void static_wm_render(static_wallmark* W, FVF::LIT*& V);
@@ -59,11 +58,9 @@ class CWallmarksEngine
 	CWallmarksEngine();
 	~CWallmarksEngine();
 	// edit wallmarks
-	void AddStaticWallmark(CDB::TRI* pTri, const fvec3* pVerts, const fvec3& contact_point, ref_shader hTexture,
-						   float sz);
+	void AddStaticWallmark(CDB::TRI* pTri, const fvec3* pVerts, const fvec3& contact_point, ref_shader hTexture, float sz);
 	void AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
-	void AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start,
-							 const fvec3& dir, float size);
+	void AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size);
 
 	// render
 	void Render();

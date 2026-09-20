@@ -432,40 +432,6 @@ IEffectorsManager* CRender::getEffectorsManager()
 	return EffectorsManager;
 }
 
-void CRender::add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* verts)
-{
-#pragma todo(Вынести декали в класс сцены)
-	if(g_dedicated_server)
-		return;
-
-	if(T->suppress_wm)
-		return;
-	VERIFY2(_valid(P) && _valid(s) && T && verts && (s > EPS_L), "Invalid static wallmark params");
-	Wallmarks->AddStaticWallmark(T, verts, P, &*S, s);
-}
-
-void CRender::clear_static_wallmarks()
-{
-	Wallmarks->clear();
-}
-
-void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
-{
-	Wallmarks->AddSkeletonWallmark(wm);
-}
-
-void CRender::add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size)
-{
-	PROFILE_FUNCTION();
-#pragma fixme(Декали на скелетах)
-	// Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
-}
-
-void CRender::add_Occluder(Fbox2& bb_screenspace)
-{
-#pragma todo(Добавить возможность установки доп окклюдеров)
-}
-
 void CRender::set_render_mode(int mode)
 {
 	float ZMin = 0.0f;

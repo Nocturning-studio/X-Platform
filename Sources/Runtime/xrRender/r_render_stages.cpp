@@ -184,10 +184,10 @@ void CRender::render_gbuffer_secondary()
 	set_active_phase(PHASE_NORMAL);
 
 	// Wall marks
-	if (Wallmarks)
+	if (Scene.GetWallmarks())
 	{
 		render_wallmarks();
-		Wallmarks->Render(); // wallmarks has priority as normal geometry
+		Scene.RenderWallmarks(); // wallmarks has priority as normal geometry
 	}
 
 	if (psDeviceFlags.test(rsWireframe))

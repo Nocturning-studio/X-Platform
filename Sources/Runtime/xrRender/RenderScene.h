@@ -12,10 +12,10 @@
 #include "Light_DB.h"
 #include "Light_Package.h"
 #include "SMAP_Allocator.h"
+#include "wallmarksengine.h"
+#include <xrEngine/SkeletonCustom.h>
 ////////////////////////////////////////////////////////////////////////////////
 #undef GetObject
-////////////////////////////////////////////////////////////////////////////////
-
 ////////////////////////////////////////////////////////////////////////////////
 //  SSceneVisibilityRequest
 //  Полностью описывает, что и как считать. Не содержит владения.
@@ -125,6 +125,7 @@ class CRenderScene
 	void LoadHOM();
 	void LoadSunOccluder();
 	void LoadLights(IReader* fs);
+	void LoadWallmarks();
 
 	// =====================================================================
 	//  Геттеры
@@ -166,7 +167,7 @@ class CRenderScene
 	BOOL IsVisible(Fbox& P) { return m_hom.visible(P); }
 
 	// =====================================================================
-	//  Если нужно что-то создать или добавить
+	//  Если нужно что-то создать, получить или добавить
 	// =====================================================================
 	IRender_Light* CreateLight() { return m_lights.Create(); }
 
@@ -188,6 +189,17 @@ class CRenderScene
 	void SetObject(IRenderable* O) { GetActiveContext().owner = O; }
 	IRenderable* GetObject() const { return GetActiveContext().owner; }
 
+	CWallmarksEngine* GetWallmarks() { return m_wallmarks; }
+	const CWallmarksEngine* GetWallmarks() const { return m_wallmarks; }
+
+	// =====================================================================
+	//  Декали
+	// =====================================================================
+	void AddStaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V);
+	void AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
+	void AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size);
+	void ClearStaticWallmarks();
+
 	// =====================================================================
 	//  Куллинг
 	// =====================================================================
@@ -199,6 +211,7 @@ class CRenderScene
 	// =====================================================================
 	void Render(SSceneVisibilityResult& result, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
 	void RenderDetails(DetailsRenderMode mode, fmat4x4* cull_matrix = nullptr, const CFrustum* external_cull = nullptr);
+	void RenderWallmarks();
 	void RenderRaw(SceneGraphPacket& packet, SceneTraversalContext& ctx, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
 
   private:
@@ -215,6 +228,7 @@ class CRenderScene
 	CDetailManager* m_details = nullptr;
 	CHOM m_hom;
 	CSunOccluder* m_sun_occluder = nullptr;
+	CWallmarksEngine* m_wallmarks = nullptr;
 
 	SceneTraversalContext m_default_context;
 

@@ -135,7 +135,6 @@ class CRender : public IRender_interface, public pureFrame
 	CPSLibrary PSLibrary;
 
 	CModelPool* Models;
-	CWallmarksEngine* Wallmarks;
 
 	CRenderTarget* RenderTarget;
 
@@ -279,7 +278,7 @@ class CRender : public IRender_interface, public pureFrame
 
 	// Main
 #pragma fixme(Occluders) 
-	virtual void add_Occluder(Fbox2& bb_screenspace) override;							// mask screen region as oclluded
+	virtual void add_Occluder(Fbox2& bb_screenspace) override {};						// mask screen region as oclluded
 	virtual void add_Visual(IRender_Visual* V) override { Scene.AddVisual(V); };		// add visual leaf	(no culling performed at all)
 	virtual void add_Geometry(IRender_Visual* V) override { Scene.AddGeometry(V); };	// add visual(s)	(all culling performed)
 
@@ -292,11 +291,10 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void set_Object(IRenderable* O) override { Scene.SetObject(O); };
 
 	// wallmarks
-#pragma todo(Move wallmarks to Scene)
-	virtual void add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V) override;
-	virtual void clear_static_wallmarks() override;
-	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) override;
-	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size) override;
+	virtual void add_StaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V) override { Scene.AddStaticWallmark(S, P, s, T, V); };
+	virtual void clear_static_wallmarks() override { Scene.ClearStaticWallmarks(); };
+	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) override { Scene.AddSkeletonWallmark(wm); };;
+	virtual void add_SkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size) override { Scene.AddSkeletonWallmark(xf, obj, sh, start, dir, size); };
 
 	virtual IBlender* blender_create(CLASS_ID cls) override;
 	virtual void blender_destroy(IBlender*&) override;

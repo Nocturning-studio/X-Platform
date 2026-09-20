@@ -18,6 +18,10 @@ CRenderScene::~CRenderScene()
 void CRenderScene::Initialize()
 {
 	m_graph.m_traversal_marker = 0;
+	m_last_ltrack = 0;
+
+	if (g_dedicated_server)
+		return;
 
 	if(!m_details)
 		m_details = xr_new<CDetailManager>();
@@ -25,7 +29,8 @@ void CRenderScene::Initialize()
 	if(!m_sun_occluder)
 		m_sun_occluder = xr_new<CSunOccluder>();
 
-	m_last_ltrack = 0;
+	if (!m_wallmarks)
+		m_wallmarks = xr_new<CWallmarksEngine>();
 }
 
 void CRenderScene::Destroy()
@@ -35,10 +40,11 @@ void CRenderScene::Destroy()
 
 	DestroyResources();
 
-	if (m_details)
-		xr_delete(m_details);
+	xr_delete(m_details);
 
 	xr_delete(m_sun_occluder);
+
+	xr_delete(m_wallmarks);
 }
 
 void CRenderScene::CreateResources()
@@ -84,6 +90,8 @@ void CRenderScene::OnResetEnd()
 
 void CRenderScene::OnFrame()
 {
+	PROFILE_FUNCTION();
+
 	if (m_details && m_details->dtFS)
 	{
 		m_details->PrepareToCalc();
@@ -108,6 +116,9 @@ void CRenderScene::Unload()
 
 	if (m_sun_occluder)
 		m_sun_occluder->Unload();
+
+	if (m_wallmarks)
+		xr_delete(m_wallmarks);
 
 	m_hom.Unload();
 
@@ -134,6 +145,12 @@ void CRenderScene::LoadLights(IReader* fs)
 void CRenderScene::LoadHOM()
 {
 	m_hom.Load();
+}
+
+void CRenderScene::LoadWallmarks()
+{
+	if (!g_dedicated_server && !m_wallmarks)
+		m_wallmarks = xr_new<CWallmarksEngine>();
 }
 
 SceneTraversalContext& CRenderScene::GetActiveContext()
@@ -173,8 +190,36 @@ void CRenderScene::AddGeometry(IRender_Visual* V)
 		m_graph.add_Static(V, frustumMask, m_default_context, m_graph.m_packet);
 }
 
+void CRenderScene::AddStaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V)
+{
+	if (g_dedicated_server || !m_wallmarks)
+		return;
+	m_wallmarks->AddStaticWallmark(T, V, P, &*S, s);
+}
+
+void CRenderScene::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
+{
+	if (!g_dedicated_server && m_wallmarks)
+		m_wallmarks->AddSkeletonWallmark(wm);
+}
+
+void CRenderScene::AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_shader& sh, const fvec3& start, const fvec3& dir, float size)
+{
+	PROFILE_FUNCTION();
+#pragma fixme(Декали на скелетах)
+	// if (!g_dedicated_server && m_wallmarks) m_wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
+}
+
+void CRenderScene::ClearStaticWallmarks()
+{
+	if (!g_dedicated_server && m_wallmarks)
+		m_wallmarks->clear();
+}
+
 void CRenderScene::ComputeVisibility(const SSceneVisibilityRequest& req, SSceneVisibilityResult& out)
 {
+	PROFILE_FUNCTION();
+
 	out.Clear();
 
 	out.view = req.view;
@@ -188,6 +233,7 @@ void CRenderScene::ComputeVisibility(const SSceneVisibilityRequest& req, SSceneV
 
 void CRenderScene::ComputeVisibility(const SSceneVisibilityRequest& req, SceneGraphPacket& out_packet)
 {
+	PROFILE_FUNCTION();
 	SceneTraversalContext tmp_ctx;
 	ComputeVisibilityInternal(req, out_packet, tmp_ctx);
 }
@@ -250,6 +296,8 @@ void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req,
 
 void CRenderScene::CollectStaticGeometry(SceneGraphPacket& packet, const SceneTraversalContext& ctx)
 {
+	PROFILE_FUNCTION();
+
 	const auto& visible = packet.portal_traverser.GetVisibleSectors();
 
 	packet.visible_sectors_map.clear();
@@ -273,6 +321,8 @@ void CRenderScene::CollectStaticGeometry(SceneGraphPacket& packet, const SceneTr
 
 void CRenderScene::CollectDynamicGeometry(SceneGraphPacket& packet, const SceneTraversalContext& ctx)
 {
+	PROFILE_FUNCTION();
+
 	for (ISpatial* spatial : packet.m_spatial_query_results)
 	{
 		spatial->spatial_updatesector();
@@ -321,6 +371,8 @@ void CRenderScene::CollectDynamicGeometry(SceneGraphPacket& packet, const SceneT
 
 void CRenderScene::CollectLights(SceneGraphPacket& packet, const SceneTraversalContext& ctx)
 {
+	PROFILE_FUNCTION();
+
 	for (ISpatial* spatial : packet.m_spatial_query_results)
 	{
 		spatial->spatial_updatesector();
@@ -339,15 +391,25 @@ void CRenderScene::CollectLights(SceneGraphPacket& packet, const SceneTraversalC
 
 void CRenderScene::Render(SSceneVisibilityResult& result, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
 {
+	PROFILE_FUNCTION();
+
 	RenderRaw(result.packet, result.context, type, priority, clear, setup_zb);
 }
 
 void CRenderScene::RenderDetails(DetailsRenderMode mode, fmat4x4* cull_matrix, const CFrustum* external_cull)
 {
+	PROFILE_FUNCTION();
+
 	if (!m_details)
 		return;
 
 	m_details->Render(mode, cull_matrix, external_cull);
+}
+
+void CRenderScene::RenderWallmarks()
+{
+	if (m_wallmarks)
+		m_wallmarks->Render();
 }
 
 void CRenderScene::RenderRaw(SceneGraphPacket& packet, SceneTraversalContext& ctx, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)

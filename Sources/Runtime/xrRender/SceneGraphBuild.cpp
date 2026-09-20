@@ -1208,6 +1208,8 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 ////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
+	PROFILE_FUNCTION();
+
 	// Frustum Culling (Sphere + AABB Test)
 	// Для статики позиции вершин уже в мировом пространстве, трансформация не нужна (обычно Identity).
 	vis_data& vis_data = pVisual->vis;
