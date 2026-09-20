@@ -32,6 +32,21 @@ void COptickCapture::Destroy()
 };
 
 /*********************************************************************************
+Get saves path
+*********************************************************************************/
+xr_string COptickCapture::GetSavePath() const
+{
+	string_path capture_path;
+	FS.update_path(capture_path, "$app_data_root$", "");
+
+	strconcat(sizeof(capture_path), capture_path, capture_path, "optick_captures\\");
+
+	FS.create_dir(capture_path);
+
+	return capture_path;
+}
+
+/*********************************************************************************
 Base methods: Start, Stop, Save
 *********************************************************************************/
 void COptickCapture::StartCapturing()
@@ -98,12 +113,17 @@ void COptickCapture::SaveCapturedFrames()
 {
 	Msg("- Saving captured frames");
 
-	shared_str capture_path;
-	LPCSTR frames = m_frames_to_capture == 1 ? "frame" : "frames";
-	capture_path.sprintf("optick_capture_%d_%s.opt", m_frames_to_capture, frames);
+	LPCSTR frames = (m_frames_to_capture == 1) ? "frame" : "frames";
+
+	xr_string capture_path = GetSavePath();
+
+	string_path file_name;
+	sprintf(file_name, "optick_capture_%d_%s.opt", m_frames_to_capture, frames);
+
+	capture_path += file_name;
 
 	SaveCapture(capture_path.c_str());
-};
+}
 
 /*********************************************************************************
 Capturing in switcher mode:
@@ -146,10 +166,15 @@ void COptickCapture::SwitchToSaving()
 
 	Msg("- Saving %d frames", m_frames_to_capture);
 
-	shared_str capture_path;
-	LPCSTR frames = m_frames_to_capture == 1 ? "frame" : "frames";
-	capture_path.sprintf("optick_capture_%d_%s.opt", m_frames_to_capture, frames);
+	LPCSTR frames = (m_frames_to_capture == 1) ? "frame" : "frames";
+
+	xr_string capture_path = GetSavePath();
+
+	string_path file_name;
+	sprintf(file_name, "optick_capture_%d_%s.opt", m_frames_to_capture, frames);
+
+	capture_path += file_name;
 
 	SaveCapture(capture_path.c_str());
-};
+}
 ///////////////////////////////////////////////////////////////////////////////////

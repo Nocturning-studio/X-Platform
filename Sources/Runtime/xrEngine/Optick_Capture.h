@@ -30,6 +30,8 @@ class ENGINE_API COptickCapture
 	void SwitchProfiler();
 	void SwitchToCapturing();
 	void SwitchToSaving();
+
+	xr_string GetSavePath() const;
 };
 ///////////////////////////////////////////////////////////////////////////////////
 extern ENGINE_API COptickCapture OptickCapture;
