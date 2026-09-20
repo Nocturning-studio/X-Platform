@@ -473,11 +473,18 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 {
 	PROFILE_FUNCTION();
 
+#pragma todo("Переписать билборды на инстансинг")
+	return;
+
 	// Сбор LOD-ов в плоский список
-	if(_setup_zb)
-		packet.mapLOD.getLR(packet.lstLODs); // front-to-back (для Z-buffer)
-	else
-		packet.mapLOD.getRL(packet.lstLODs); // back-to-front (для цвета)
+	{
+		OPTICK_EVENT("Generate render packet");
+
+		if (_setup_zb)
+			packet.mapLOD.getLR(packet.lstLODs); // front-to-back (для Z-buffer)
+		else
+			packet.mapLOD.getRL(packet.lstLODs); // back-to-front (для цвета)
+	}
 
 	if(packet.lstLODs.empty())
 		return;
@@ -486,7 +493,11 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	FLOD* first_visual = (FLOD*)packet.lstLODs[0].pVisual;
 
 	u32 vb_offset;
-	FLOD::_hw* VertexBuffer = (FLOD::_hw*)RenderBackend.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
+	FLOD::_hw* VertexBuffer;
+	{
+		OPTICK_EVENT("Lock vertex buffer");
+		VertexBuffer = (FLOD::_hw*)RenderBackend.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
+	}
 
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
 	if(ssa_range < EPS_S)
@@ -496,70 +507,77 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	const fvec3 camera_pos = Engine.RenderView.Position;
 
 	// *** Генерация геометрии ***
-	concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i)
-							  {
-		FLOD::_hw* V = VertexBuffer + (i * 4);
-		SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
-		FLOD* lod_visual = (FLOD*)Node.pVisual;
+	{
+		OPTICK_EVENT("Generate geom");
 
-		// Вычисление Alpha
-		float ssa_diff = Node.screenSpaceArea - ssa_limit_b;
-		float scale = ssa_diff / ssa_range;
-		int alpha_int = iFloor((1.0f - scale) * 255.f);
-		u32 alpha_final = u32(clampr(alpha_int, 0, 255));
-
-		// Вычисление направления
-		fvec3 dir_to_camera, shift;
-		dir_to_camera.sub(lod_visual->vis.sphere.P, camera_pos).normalize();
-		shift.mul(dir_to_camera, -.5f * lod_visual->vis.sphere.R);
-
-		// Выбор лучших плоскостей
-		FLOD::_face* facets = lod_visual->facets;
-
-		svector<std::pair<float, u32>, 8> plane_selector;
-		for (u32 s = 0; s < 8; s++)
-			plane_selector.push_back(mk_pair(dir_to_camera.dotproduct(facets[s].N), s));
-
-		std::sort(plane_selector.begin(), plane_selector.end(), SortLodsByDotProduct);
-
-		float dot_best = plane_selector[plane_selector.size() - 1].first;
-		float dot_next = plane_selector[plane_selector.size() - 2].first;
-		float dot_next_2 = plane_selector[plane_selector.size() - 3].first;
-
-		u32 id_best = plane_selector[plane_selector.size() - 1].second;
-		u32 id_next = plane_selector[plane_selector.size() - 2].second;
-
-		// Интерполяция
-		float dot_a = dot_best, dot_b = dot_next, dot_c = dot_next_2;
-		float alpha_factor = 0.5f + 0.5f * (1 - (dot_b - dot_c) / (dot_a - dot_c));
-		int factor_int = iFloor(alpha_factor * 255.5f);
-		u32 factor_final = u32(clampr(factor_int, 0, 255));
-
-		// Заполнение буфера
-		FLOD::_face& FaceA = facets[id_best];
-		FLOD::_face& FaceB = facets[id_next];
-
-		static const int vertex_indices[4] = {3, 0, 2, 1};
-
-		for (u32 v_idx = 0; v_idx < 4; v_idx++)
+		concurrency::parallel_for(size_t(0), packet.lstLODs.size(), [&](size_t i)
 		{
-			int id = vertex_indices[v_idx];
-			V[v_idx].p0.add(FaceB.v[id].v, shift);
-			V[v_idx].p1.add(FaceA.v[id].v, shift);
-			V[v_idx].n0 = FaceB.N;
-			V[v_idx].n1 = FaceA.N;
-			V[v_idx].sun_af = color_rgba(FaceB.v[id].c_sun, FaceA.v[id].c_sun, alpha_final, factor_final);
-			V[v_idx].t0 = FaceB.v[id].t;
-			V[v_idx].t1 = FaceA.v[id].t;
-			V[v_idx].rgbh0 = FaceB.v[id].c_rgb_hemi;
-			V[v_idx].rgbh1 = FaceA.v[id].c_rgb_hemi;
-		} });
+				FLOD::_hw* V = VertexBuffer + (i * 4);
+				SceneGraphTypes::LodRenderNode& Node = packet.lstLODs[i];
+				FLOD* lod_visual = (FLOD*)Node.pVisual;
+
+				// Вычисление Alpha
+				float ssa_diff = Node.screenSpaceArea - ssa_limit_b;
+				float scale = ssa_diff / ssa_range;
+				int alpha_int = iFloor((1.0f - scale) * 255.f);
+				u32 alpha_final = u32(clampr(alpha_int, 0, 255));
+
+				// Вычисление направления
+				fvec3 dir_to_camera, shift;
+				dir_to_camera.sub(lod_visual->vis.sphere.P, camera_pos).normalize();
+				shift.mul(dir_to_camera, -.5f * lod_visual->vis.sphere.R);
+
+				// Выбор лучших плоскостей
+				FLOD::_face* facets = lod_visual->facets;
+
+				svector<std::pair<float, u32>, 8> plane_selector;
+				for (u32 s = 0; s < 8; s++)
+					plane_selector.push_back(mk_pair(dir_to_camera.dotproduct(facets[s].N), s));
+
+				std::sort(plane_selector.begin(), plane_selector.end(), SortLodsByDotProduct);
+
+				float dot_best = plane_selector[plane_selector.size() - 1].first;
+				float dot_next = plane_selector[plane_selector.size() - 2].first;
+				float dot_next_2 = plane_selector[plane_selector.size() - 3].first;
+
+				u32 id_best = plane_selector[plane_selector.size() - 1].second;
+				u32 id_next = plane_selector[plane_selector.size() - 2].second;
+
+				// Интерполяция
+				float dot_a = dot_best, dot_b = dot_next, dot_c = dot_next_2;
+				float alpha_factor = 0.5f + 0.5f * (1 - (dot_b - dot_c) / (dot_a - dot_c));
+				int factor_int = iFloor(alpha_factor * 255.5f);
+				u32 factor_final = u32(clampr(factor_int, 0, 255));
+
+				// Заполнение буфера
+				FLOD::_face& FaceA = facets[id_best];
+				FLOD::_face& FaceB = facets[id_next];
+
+				static const int vertex_indices[4] = { 3, 0, 2, 1 };
+
+				for (u32 v_idx = 0; v_idx < 4; v_idx++)
+				{
+					int id = vertex_indices[v_idx];
+					V[v_idx].p0.add(FaceB.v[id].v, shift);
+					V[v_idx].p1.add(FaceA.v[id].v, shift);
+					V[v_idx].n0 = FaceB.N;
+					V[v_idx].n1 = FaceA.N;
+					V[v_idx].sun_af = color_rgba(FaceB.v[id].c_sun, FaceA.v[id].c_sun, alpha_final, factor_final);
+					V[v_idx].t0 = FaceB.v[id].t;
+					V[v_idx].t1 = FaceA.v[id].t;
+					V[v_idx].rgbh0 = FaceB.v[id].c_rgb_hemi;
+					V[v_idx].rgbh1 = FaceA.v[id].c_rgb_hemi;
+				} 
+		});
+	}
 
 	RenderBackend.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
 	// *** Группировка по шейдерам ***
 	if(!packet.lstLODs.empty())
 	{
+		OPTICK_EVENT("Shaders sort");
+
 		ref_selement current_shader = packet.lstLODs[0].pVisual->shader->E[shader_id];
 		int current_count = 0;
 
@@ -584,23 +602,26 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	int current_lod_index = 0;
 	RenderBackend.set_transform_world(Fidentity);
 
-	for(u32 g = 0; g < packet.lstLODgroups.size(); g++)
 	{
-		int primitive_count = packet.lstLODgroups[g];
-
-		if(primitive_count > 0)
+		OPTICK_EVENT("Render");
+		for (u32 g = 0; g < packet.lstLODgroups.size(); g++)
 		{
-			// Используем packet.lstLODs
-			RenderBackend.set_Element(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
-			RenderBackend.set_Geometry(first_visual->geom);
+			int primitive_count = packet.lstLODgroups[g];
 
-			// Отрисовка батча (2 треугольника на 1 LOD)
-			RenderBackend.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);
+			if (primitive_count > 0)
+			{
+				// Используем packet.lstLODs
+				RenderBackend.set_Element(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
+				RenderBackend.set_Geometry(first_visual->geom);
 
-			RenderBackend.stat.r.s_flora_lods.add(4 * primitive_count);
+				// Отрисовка батча (2 треугольника на 1 LOD)
+				RenderBackend.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);
 
-			current_lod_index += primitive_count;
-			vb_offset += 4 * primitive_count;
+				RenderBackend.stat.r.s_flora_lods.add(4 * primitive_count);
+
+				current_lod_index += primitive_count;
+				vb_offset += 4 * primitive_count;
+			}
 		}
 	}
 

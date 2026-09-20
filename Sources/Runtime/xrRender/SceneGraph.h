@@ -102,16 +102,13 @@ struct SceneGraphPacket
 		m_visual_refs.clear();
 	}
 
-	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
 
 	SceneGraphPacket()
 	{
-		// Конструктор теперь просто зовет reset, ресурсы грузим явно
 		portal_traverser.Reset();
 	}
 
-	// Добавляем методы управления ресурсами
 	void InitResources()
 	{
 		portal_traverser.CreateResources();
@@ -275,11 +272,9 @@ class CurrentRenderContext
 ////////////////////////////////////////////////////////////////////////////////
 class CSceneGraph
 {
-  public: // Сделаем публичным для удобства доступа из CRender пока что
-	// 1. Thread-Safe Data Container
+  public:
 	SceneGraphPacket m_packet;
 
-	// 2. Worker Buffers (for Rendering/Sorting phase)
 	SceneGraphScratchPad m_scratch;
 
 	R_feedback* m_feedback_interface;
@@ -290,7 +285,7 @@ class CSceneGraph
 	std::atomic<u32> counter_D;
 	BOOL b_loaded;
 
-	friend class CRender; // CRender управляет контекстом и вызывает приватные методы
+	friend class CRender;
 
   public:
 	CSceneGraph();
