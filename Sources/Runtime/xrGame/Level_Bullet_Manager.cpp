@@ -437,7 +437,7 @@ void CBulletManager::CommitRenderSet() // @ the end of frame
 {
 	PROFILE_FUNCTION();
 	m_BulletsRendered = m_Bullets;
-	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CBulletManager::UpdateWorkload));
+	Engine.ThreadManager.AddParallelTask([this]() { UpdateWorkload(); });
 }
 void CBulletManager::CommitEvents() // @ the start of frame
 {

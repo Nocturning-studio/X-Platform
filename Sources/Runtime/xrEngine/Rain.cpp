@@ -522,7 +522,7 @@ void CEffect_Rain::OnFrame()
 		m_worker_dt = Engine.TimeManager.GetDeltaTime();
 
 		// 3. Добавляем задачу в ThreadManager
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CEffect_Rain::MT_CALC));
+		Engine.ThreadManager.AddParallelTask([this] { MT_CALC(); });
 	}
 	else
 	{

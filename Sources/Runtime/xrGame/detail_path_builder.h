@@ -21,6 +21,7 @@ class CDetailPathBuilder
 	CMovementManager* m_object;
 	const PATH* m_level_path;
 	u32 m_path_vertex_index;
+	CThreadManager::TaskID taskID;
 
   public:
 	IC CDetailPathBuilder(CMovementManager* object)
@@ -34,8 +35,8 @@ class CDetailPathBuilder
 		m_object->m_wait_for_distributed_computation = true;
 		m_level_path = &level_path;
 		m_path_vertex_index = path_vertex_index;
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process),
-											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+#pragma todo("Отвязать кадр от ожидания этой задачи")
+		taskID = Engine.ThreadManager.AddParallelTask([this]() { process(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 
 	void __stdcall process()
@@ -58,6 +59,6 @@ class CDetailPathBuilder
 		if(m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation = false;
 
-		Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CDetailPathBuilder::process));
+		Engine.ThreadManager.RemoveParallelTask(taskID);
 	}
 };

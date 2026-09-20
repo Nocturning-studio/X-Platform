@@ -180,11 +180,11 @@ void CParticlesObject::shedule_Update(u32 _dt)
 	u32 dt = Engine.TimeManager.GetGlobalTimeMs() - dwLastTime;
 	if(dt)
 	{
+#pragma FIXME("Починить параллельный апдейт партиклов")
 		if(0)
 		{ //.psDeviceFlags.test(mtParticles))	{    //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
 			mt_dt = dt;
-			Engine.ThreadManager.AddParallelTask(
-				CThreadManager::ParallelTask(this, &CParticlesObject::PerformAllTheWork_mt));
+			Engine.ThreadManager.AddParallelTask([this]() { PerformAllTheWork_mt(); });
 		}
 		else
 		{

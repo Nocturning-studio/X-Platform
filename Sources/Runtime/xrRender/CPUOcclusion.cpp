@@ -149,8 +149,7 @@ void CPUOcclusion::Update()
 	if(!m_core)
 		return;
 	WaitForBuildAndSwap();
-	CThreadManager::ParallelTask task = CThreadManager::ParallelTask(this, &CPUOcclusion::BuildDepthBuffer);
-	std::future<void> fut = Engine.ThreadManager.AddParallelTaskWithFuture(task, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::General);
+	std::future<void> fut = Engine.ThreadManager.AddParallelTaskWithFuture([this]() { BuildDepthBuffer(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::General);
 	m_core->SetBuildFuture(std::move(fut));
 }
 

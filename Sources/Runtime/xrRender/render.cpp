@@ -255,8 +255,7 @@ void CRender::OnFrame()
 		wait_for_sun_task();
 		swap_sun_buffers();
 		m_sun_gather_done.store(false);
-		//CRenderView rv_snapshot = Engine.RenderView;
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CRender::schedule_cascades));
+		Engine.ThreadManager.AddParallelTask([this]() { schedule_cascades(); });
 	}
 }
 

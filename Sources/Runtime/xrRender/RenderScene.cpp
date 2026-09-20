@@ -87,7 +87,7 @@ void CRenderScene::OnFrame()
 	if (m_details && m_details->dtFS)
 	{
 		m_details->PrepareToCalc();
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(m_details, &CDetailManager::MT_CALC));
+		Engine.ThreadManager.AddParallelTask([this]() { m_details->MT_CALC(); });
 	}
 }
 

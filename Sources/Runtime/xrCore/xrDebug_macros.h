@@ -166,16 +166,14 @@
 #define NOTE(x) __pragma(message(x))
 #define FILE_LINE __pragma(message(__FILE__LINE__))
 
-#define TODO(x) __pragma(message(__FILE__LINE__ "\n"                                                  \
+#define todo(x) __pragma(message(__FILE__LINE__ "\n"                                                  \
 												" ------------------------------------------------\n" \
 												"|  TODO :   " #x "\n"                                \
 												" -------------------------------------------------\n"))
-#define FIXME(x) __pragma(message(__FILE__LINE__ "\n"                                                  \
+#define fixme(x) __pragma(message(__FILE__LINE__ "\n"                                                  \
 												 " ------------------------------------------------\n" \
 												 "|  FIXME :  " #x "\n"                                \
 												 " -------------------------------------------------\n"))
-#define todo(x) __pragma(message(__FILE__LINE__ " TODO :   " #x "\n"))
-#define fixme(x) __pragma(message(__FILE__LINE__ " FIXME:   " #x "\n"))
 
 // ---------------------------------------------------------------------------
 // Compile-time assertion

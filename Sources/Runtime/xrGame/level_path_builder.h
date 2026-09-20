@@ -17,6 +17,7 @@ class CLevelPathBuilder
 	CMovementManager* m_object;
 	u32 m_start_vertex_id;
 	u32 m_dest_vertex_id;
+	CThreadManager::TaskID taskID;
 
   public:
 	IC CLevelPathBuilder(CMovementManager* object)
@@ -34,8 +35,9 @@ class CLevelPathBuilder
 		m_dest_vertex_id = dest_vertex_id;
 
 		m_object->m_wait_for_distributed_computation = true;
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CLevelPathBuilder::process),
-											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+
+#pragma todo("Отвязать кадр от ожидания этой задачи")
+		taskID = Engine.ThreadManager.AddParallelTask([this]() { process(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 
 	void __stdcall process()
@@ -56,6 +58,6 @@ class CLevelPathBuilder
 		if(m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation = false;
 
-		Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CLevelPathBuilder::process));
+		Engine.ThreadManager.RemoveParallelTask(taskID);
 	}
 };

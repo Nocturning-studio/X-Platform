@@ -30,6 +30,7 @@ class CALifeUpdateManager : public CALifeSwitchManager,
 	float m_update_monster_factor;
 	u32 m_objects_per_update;
 	bool m_changing_level;
+	CThreadManager::TaskID taskID;
 
   public:
 	void __stdcall update();

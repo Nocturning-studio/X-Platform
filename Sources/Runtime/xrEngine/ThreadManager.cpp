@@ -335,13 +335,14 @@ void CThreadManager::WaitForFrameEnd()
 	}
 }
 
-void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority priority, TaskType type)
+CThreadManager::TaskID CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority priority, TaskType type)
 {
 	TaskItem item;
+	item.Id = m_nextTaskId.fetch_add(1);
 	item.Delegate = delegate;
 	item.Priority = priority;
 
-	if(type == TaskType::AI)
+	if (type == TaskType::AI)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
 		m_tasksAI.push_back(item);
@@ -351,6 +352,8 @@ void CThreadManager::AddParallelTask(const ParallelTask& delegate, TaskPriority 
 		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
 		m_tasksGeneral.push_back(item);
 	}
+
+	return item.Id;
 }
 
 std::future<void> CThreadManager::AddParallelTaskWithFuture(const ParallelTask& delegate, TaskPriority priority, TaskType type)
@@ -359,11 +362,12 @@ std::future<void> CThreadManager::AddParallelTaskWithFuture(const ParallelTask& 
 	std::future<void> future = task->get_future();
 
 	TaskItem item;
+	item.Id = m_nextTaskId.fetch_add(1);
 	item.Delegate = delegate;
 	item.Priority = priority;
 	item.PackagedTask = task;
 
-	if(type == TaskType::AI)
+	if (type == TaskType::AI)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
 		m_tasksAI.push_back(item);
@@ -377,65 +381,33 @@ std::future<void> CThreadManager::AddParallelTaskWithFuture(const ParallelTask& 
 	return future;
 }
 
-void CThreadManager::RemoveParallelTask(const ParallelTask& delegate)
+void CThreadManager::RemoveParallelTask(TaskID id)
 {
-	// Удаляем из General
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
-		auto it = std::remove_if(m_tasksGeneral.begin(), m_tasksGeneral.end(), [&](const TaskItem& item)
-								 { return item.Delegate == delegate; });
-
-		if(it != m_tasksGeneral.end())
-			m_tasksGeneral.erase(it, m_tasksGeneral.end());
+		auto it = std::remove_if(m_tasksGeneral.begin(), m_tasksGeneral.end(),
+			[id](const TaskItem& item) { return item.Id == id; });
+		m_tasksGeneral.erase(it, m_tasksGeneral.end());
 	}
-
-	// Удаляем из AI
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
-		auto it = std::remove_if(m_tasksAI.begin(), m_tasksAI.end(), [&](const TaskItem& item)
-								 { return item.Delegate == delegate; });
-
-		if(it != m_tasksAI.end())
-			m_tasksAI.erase(it, m_tasksAI.end());
+		auto it = std::remove_if(m_tasksAI.begin(), m_tasksAI.end(),
+			[id](const TaskItem& item) { return item.Id == id; });
+		m_tasksAI.erase(it, m_tasksAI.end());
 	}
 }
 
-bool CThreadManager::HasParallelTask(const ParallelTask& delegate) const
+bool CThreadManager::HasParallelTask(TaskID id) const
 {
-	// Проверка General
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexGeneral);
-		for(const auto& item : m_tasksGeneral)
-		{
-			if(item.Delegate == delegate)
-				return true;
-		}
+		for (const auto& item : m_tasksGeneral)
+			if (item.Id == id) return true;
 	}
-
-	// Проверка AI
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexAI);
-		for(const auto& item : m_tasksAI)
-		{
-			if(item.Delegate == delegate)
-				return true;
-		}
+		for (const auto& item : m_tasksAI)
+			if (item.Id == id) return true;
 	}
-
 	return false;
-}
-
-void CThreadManager::EnterCritical()
-{
-	m_mutexGeneral.lock();
-}
-
-void CThreadManager::LeaveCritical()
-{
-	m_mutexGeneral.unlock();
-}
-
-bool CThreadManager::TryEnterCritical()
-{
-	return m_mutexGeneral.try_lock();
 }

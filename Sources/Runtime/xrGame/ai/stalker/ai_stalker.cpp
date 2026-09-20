@@ -514,21 +514,12 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 
 void CAI_Stalker::net_Destroy()
 {
+	Engine.ThreadManager.RemoveParallelTask(m_visibility_calculation_taskID);	
+	Engine.ThreadManager.RemoveParallelTask(m_objectHandlerTaskId);
+
 	inherited::net_Destroy();
 	CInventoryOwner::net_Destroy();
 	m_pPhysics_support->in_NetDestroy();
-
-	// 1. Создаем делегат
-	CThreadManager::ParallelTask taskDelegate = CThreadManager::ParallelTask(this, &CAI_Stalker::update_object_handler);
-
-	// 2. Удаляем через менеджер
-	Engine.ThreadManager.RemoveParallelTask(taskDelegate);
-
-#ifdef DEBUG
-	// 3. Проверяем через менеджер, что задачи больше нет
-	// Мы спрашиваем: "Есть ли задача?" и ожидаем FALSE.
-	VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
-#endif // DEBUG
 
 	xr_delete(m_ce_close);
 	xr_delete(m_ce_far);
@@ -715,15 +706,10 @@ void CAI_Stalker::UpdateCL()
 		// Проверяем глобальный конфиг многопоточности и готовность планировщика
 		if(CObjectHandler::planner().initialized())
 		{
-			// Создаем делегат
-			auto taskDelegate = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
-
 #ifdef DEBUG
-			// Проверяем через менеджер, что задачи еще нет в очереди
-			VERIFY(Engine.ThreadManager.HasParallelTask(taskDelegate) == false);
+			VERIFY(Engine.ThreadManager.HasParallelTask(m_objectHandlerTaskId) == false);
 #endif
-			// Добавляем задачу в пул потоков с ВЫСОКИМ приоритетом
-			Engine.ThreadManager.AddParallelTask(taskDelegate, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+			m_objectHandlerTaskId = Engine.ThreadManager.AddParallelTask([this]() { update_object_handler(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 		}
 		else
 		{
@@ -734,8 +720,7 @@ void CAI_Stalker::UpdateCL()
 		}
 
 		// Логика звуков (остается без изменений, выполняется в основном потоке)
-		if((movement().speed(character_physics_support()->movement()) > EPS_L) &&
-		   (eMovementTypeStand != movement().movement_type()) && (eMentalStateDanger == movement().mental_state()))
+		if((movement().speed(character_physics_support()->movement()) > EPS_L) && (eMovementTypeStand != movement().movement_type()) && (eMentalStateDanger == movement().mental_state()))
 		{
 			if((eBodyStateStand == movement().body_state()) && (eMovementTypeRun == movement().movement_type()))
 			{
@@ -798,6 +783,7 @@ CPHDestroyable* CAI_Stalker::ph_destroyable()
 }
 
 #include "xrGame/enemy_manager.h"
+#include <Runtime/xrGame/smart_cast.h>
 
 void CAI_Stalker::shedule_Update(u32 DT)
 {
@@ -903,8 +889,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			}
 		}
 
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility),
-											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+		m_visibility_calculation_taskID = Engine.ThreadManager.AddParallelTask([this]() { Exec_Visibility(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 
 		START_PROFILE("stalker/schedule_update/memory")
 

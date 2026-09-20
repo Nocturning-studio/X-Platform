@@ -60,6 +60,9 @@ class CCustomMonster : public CEntityAlive,
   private:
 	xr_vector<CLASS_ID> m_killer_clsids;
 
+	CThreadManager::TaskID m_sound_player_taskID;
+	CThreadManager::TaskID m_visibility_calculation_taskID;
+
   public:
 	// Eyes
 	fmat4x4 eye_matrix;
