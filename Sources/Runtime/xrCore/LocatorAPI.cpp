@@ -1710,3 +1710,28 @@ void CLocatorAPI::ProcessExternalArch()
 		ProcessArchive(full_mod_name, _path);
 	}
 }
+
+void CLocatorAPI::create_dir(LPCSTR path)
+{
+	if (!path || !path[0])
+		return;
+
+	string_path buffer;
+	strcpy(buffer, path);
+
+	for (char* p = buffer; *p; ++p)
+		if (*p == '/') *p = '\\';
+
+	size_t len = xr_strlen(buffer);
+
+	for (size_t i = 0; i < len; ++i)
+	{
+		if (buffer[i] == '\\' && i > 2)
+		{
+			buffer[i] = '\0';
+			CreateDirectoryA(buffer, nullptr);
+			buffer[i] = '\\';
+		}
+	}
+	CreateDirectoryA(buffer, nullptr);
+}
