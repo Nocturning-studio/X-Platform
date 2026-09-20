@@ -205,6 +205,8 @@ void CRender::Destroy()
 
 void CRender::ResetBegin()
 {
+	WaitForPendingTasks();
+
 	m_scene_visibility_data.FreeResources();
 	m_spot_shadow_vis.FreeResources();
 	m_sun_cascades_buffer[0].Destroy();
@@ -239,6 +241,7 @@ void CRender::ResetEnd()
 
 void CRender::WaitForPendingTasks()
 {
+	wait_for_sun_task();
 }
 
 void CRender::OnFrame()
