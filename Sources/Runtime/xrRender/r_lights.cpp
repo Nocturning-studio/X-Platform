@@ -148,21 +148,6 @@ void CRender::render_lights(light_Package& LP)
         {
             L->get_smapvis().begin();
 
-            // =============================================================
-            //  Формулируем запрос на сбор сцены с точки зрения источника.
-            //  Раньше здесь был прямой SceneGraph.BuildScene(...) с
-            //  SceneGraph.m_packet — теперь всё делегируется в Scene.
-            //
-            //  Особенности:
-            //   - view_projection  = combine (SV*P источника, используется
-            //                        порталами для SSA и для построения
-            //                        внутреннего фрустума в ComputeVisibility)
-            //   - camera_position  = позиция источника (для Traverse)
-            //   - frustum_override = nullptr → ComputeVisibility построит
-            //                        фрустум из combine сам
-            //   - use_hom = false  (HOM не имеет смысла для теней)
-            //   - только STATIC_GEOM | DYNAMIC_GEOM (теням не нужны LOD/HUD)
-            // =============================================================
             SSceneVisibilityRequest req;
             req.view = Engine.RenderView.View;
             req.projection = Engine.RenderView.Project;
@@ -175,7 +160,7 @@ void CRender::render_lights(light_Package& LP)
             req.use_feedback = false;
             req.frustum_override = nullptr;
             req.render_phase = CRender::PHASE_SHADOW_DEPTH;
-            req.gather_options = SSceneVisibilityRequest::STATIC_GEOM | SSceneVisibilityRequest::DYNAMIC_GEOM | SSceneVisibilityRequest::LOD_GEOM;
+            req.flags = SceneRenderPresets::Opaque;
             req.culling_bounds = nullptr;
 
             Scene.ComputeVisibility(req, m_spot_shadow_vis);
@@ -193,16 +178,8 @@ void CRender::render_lights(light_Package& LP)
                 RenderBackend.set_transform_view(L->TransformContext.ShadowContext.view);
                 RenderBackend.set_transform_project(L->TransformContext.ShadowContext.project);
 
-                Scene.Render(m_spot_shadow_vis, SceneGraphRenderType::Opaque, 0);
+                Scene.Render(m_spot_shadow_vis, SceneRenderPresets::Opaque);
                 L->TransformContext.ShadowContext.transluent = FALSE;
-
-                if (bSpecial)
-                {
-                    L->TransformContext.ShadowContext.transluent = TRUE;
-                    render_shadow_map_spot_transluent(L);
-                    Scene.Render(m_spot_shadow_vis, SceneGraphRenderType::Opaque, 1);
-                    Scene.Render(m_spot_shadow_vis, SceneGraphRenderType::Transparent);
-                }
             }
             else
             {

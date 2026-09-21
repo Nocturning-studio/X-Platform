@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
+#include "RenderSceneFlags.h"
 #include "SceneGraph.h"
 #include "DetailManager.h"
 #include "HOM.h"
@@ -36,22 +37,15 @@ struct SSceneVisibilityRequest
 	bool use_hom = true;
 	bool use_feedback = false;
 
-	enum EGatherOptions
-	{
-		STATIC_GEOM		= (1 << 0),
-		DYNAMIC_GEOM	= (1 << 1),
-		LOD_GEOM		= (1 << 2),
-		LIGHTS			= (1 << 3),
-		HUD				= (1 << 4),
-		WALLMARKS		= (1 << 5),
-	};
-	u32 gather_options = STATIC_GEOM | DYNAMIC_GEOM | LOD_GEOM | LIGHTS | HUD | WALLMARKS;
+	SceneRenderFlags flags = SceneRenderPresets::GatherMainView;
 
 	const CFrustum* frustum_override = nullptr;
 
 	u32 render_phase = 0;
 
 	xr_vector<Fbox3, render_alloc<Fbox3>>* culling_bounds = nullptr;
+
+	IC bool has(SceneRenderFlags f) const noexcept { return (static_cast<u32>(flags) & static_cast<u32>(f)) != 0u; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -209,10 +203,10 @@ class CRenderScene
 	// =====================================================================
 	//  Рендер
 	// =====================================================================
-	void Render(SSceneVisibilityResult& result, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
+	void Render(SSceneVisibilityResult& result, SceneRenderFlags flags, bool clear = true, bool setup_zb = true);
 	void RenderDetails(DetailsRenderMode mode, fmat4x4* cull_matrix = nullptr, const CFrustum* external_cull = nullptr);
 	void RenderWallmarks();
-	void RenderRaw(SceneGraphPacket& packet, SceneTraversalContext& ctx, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
+	void RenderRaw(SceneGraphPacket& packet, SceneTraversalContext& ctx, SceneRenderFlags flags, bool clear = true, bool setup_zb = true);
 
   private:
 	void ComputeVisibilityInternal(const SSceneVisibilityRequest& req, SceneGraphPacket& packet, SceneTraversalContext& ctx);

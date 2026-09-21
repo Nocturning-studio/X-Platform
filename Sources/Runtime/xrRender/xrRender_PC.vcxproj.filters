@@ -414,6 +414,9 @@
     <ClInclude Include="r_sun_cascades.h">
       <Filter>Render pipeline\Core</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSceneFlags.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

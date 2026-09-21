@@ -993,6 +993,7 @@
     <ClInclude Include="ParticleGroup.h" />
     <ClInclude Include="PSLibrary.h" />
     <ClInclude Include="RenderScene.h" />
+    <ClInclude Include="RenderSceneFlags.h" />
     <ClInclude Include="r_portal.h" />
     <ClInclude Include="r_portal_traverser.h" />
     <ClInclude Include="r_render_stages.h" />

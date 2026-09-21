@@ -528,7 +528,7 @@ void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& i
 	req.use_feedback = false;
 	req.frustum_override = &item.cull_frustum;
 	req.render_phase = CRender::PHASE_SHADOW_DEPTH;
-	req.gather_options = SSceneVisibilityRequest::STATIC_GEOM | SSceneVisibilityRequest::DYNAMIC_GEOM | SSceneVisibilityRequest::LOD_GEOM;
+	req.flags = SceneRenderPresets::Opaque;
 	req.culling_bounds = nullptr;
 
 	Scene.ComputeVisibility(req, item.vis_result);
@@ -565,7 +565,7 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		if (CSunOccluder* occ = Scene.GetSunOccluder())
 			occ->Render();
 
-		Scene.Render(item.vis_result, SceneGraphRenderType::Opaque);
+		Scene.Render(item.vis_result, SceneRenderPresets::Opaque);
 
 		if (g_pGameLevel)
 			g_pGameLevel->pHUD->Render_Actor_Shadow();

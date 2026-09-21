@@ -20,11 +20,19 @@ int CRender::translateSector(IRender_Sector* pSector)
 #endif // #ifdef DEBUG
 }
 
+static xrXRC& get_detect_sector_xrc()
+{
+	static thread_local xrXRC xrc;
+	return xrc;
+}
+
 IRender_Sector* CRender::detectSector(const fvec3& P)
 {
+	xrXRC& xrc = get_detect_sector_xrc();
+
 	IRender_Sector* S = NULL;
 	fvec3 dir;
-	Sectors_xrc.ray_options(CDB::OPT_ONLYNEAREST);
+	xrc.ray_options(CDB::OPT_ONLYNEAREST);
 
 	dir.set(0, -1, 0);
 	S = detectSector(P, dir);
@@ -38,15 +46,17 @@ IRender_Sector* CRender::detectSector(const fvec3& P)
 
 IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 {
+	xrXRC& xrc = get_detect_sector_xrc();
+
 	// Portals model
 	int id1 = -1;
 	float range1 = 500.f;
 	if(rmPortals)
 	{
-		Sectors_xrc.ray_query(rmPortals, P, dir, range1);
-		if(Sectors_xrc.r_count())
+		xrc.ray_query(rmPortals, P, dir, range1);
+		if(xrc.r_count())
 		{
-			CDB::RESULT* RP1 = Sectors_xrc.r_begin();
+			CDB::RESULT* RP1 = xrc.r_begin();
 			id1 = RP1->id;
 			range1 = RP1->range;
 		}
@@ -55,10 +65,10 @@ IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 	// Geometry model
 	int id2 = -1;
 	float range2 = range1;
-	Sectors_xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
-	if(Sectors_xrc.r_count())
+	xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
+	if(xrc.r_count())
 	{
-		CDB::RESULT* RP2 = Sectors_xrc.r_begin();
+		CDB::RESULT* RP2 = xrc.r_begin();
 		id2 = RP2->id;
 		range2 = RP2->range;
 	}

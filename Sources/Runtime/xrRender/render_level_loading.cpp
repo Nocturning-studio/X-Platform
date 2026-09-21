@@ -163,8 +163,6 @@ void CRender::LevelUnload()
 	if (!Scene.GetGraph().b_loaded)
 		return;
 
-	WaitForPendingTasks();
-
 	u32 I;
 
 	////////////////////////////////////////////////////////////////////////////////

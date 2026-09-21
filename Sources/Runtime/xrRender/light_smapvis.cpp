@@ -89,7 +89,7 @@ void smapvis::end()
             // Рендерим единственный визуал; RenderRaw поднимает TLS-скоуп,
             // чтобы вложенные вызовы (visual->Render → add_Visual и т.п.)
             // видели актуальные packet/context.
-            scene.RenderRaw(packet, ctx, SceneGraphRenderType::Opaque);
+            scene.RenderRaw(packet, ctx, SceneRenderPresets::Opaque);
 
             RenderImplementation.occq_end(testQ_id);
             testQ_frame = Engine.TimeManager.GetFrameCount() + 1; // get result on next frame

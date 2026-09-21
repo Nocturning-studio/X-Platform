@@ -92,8 +92,7 @@ IC void FillSprite_Line(FVF::LIT*& pv, const fvec3& pos, const fvec3& dir, float
 	pv++;
 }
 
-void CTracer::Render(FVF::LIT*& verts, const fvec3& pos, const fvec3& center, const fvec3& dir, float length,
-					 float width, u8 colorID)
+void CTracer::Render(FVF::LIT*& verts, const fvec3& pos, const fvec3& center, const fvec3& dir, float length, float width, u8 colorID)
 {
 	// OPTICK_EVENT("CTracer::Render");
 

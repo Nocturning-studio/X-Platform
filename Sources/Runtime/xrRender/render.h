@@ -118,7 +118,6 @@ class CRender : public IRender_interface, public pureFrame
 	u32 uLastLTRACK;
 	xr_vector<IRender_Portal*> Portals;
 	xr_vector<IRender_Sector*> Sectors;
-	xrXRC Sectors_xrc;
 	CDB::MODEL* rmPortals;
 
 	GPUOcclusion HWOCC;
@@ -389,8 +388,7 @@ class CRender : public IRender_interface, public pureFrame
 	void draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item);
 	void render_sun_cascades();
 	void render_ambient_occlusion();
-	void render_gbuffer_primary();
-	void render_gbuffer_secondary();
+	void render_gbuffer();
 	void render_stage_lights_culling();
 	void update_shadow_map_visibility();
 	void render_stage_forward();

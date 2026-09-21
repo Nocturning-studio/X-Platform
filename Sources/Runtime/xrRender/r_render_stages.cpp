@@ -11,8 +11,6 @@ void CRender::prepare_to_render()
 	m_need_render_sun = need_render_sun();
 
 	Scene.GetFrustumBase().CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-
-	Scene.ResetFrustum();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -90,18 +88,14 @@ void CRender::calculate_scene_culling()
 	req.render_phase = PHASE_NORMAL;
 	req.frustum_override = &Scene.GetFrustumBase();
 
-	if(has_sector)
+	if (has_sector)
 	{
-		req.gather_options = SSceneVisibilityRequest::STATIC_GEOM |
-							 SSceneVisibilityRequest::DYNAMIC_GEOM |
-							 SSceneVisibilityRequest::LOD_GEOM |
-							 SSceneVisibilityRequest::LIGHTS |
-							 SSceneVisibilityRequest::WALLMARKS;
-		req.culling_bounds = (m_need_render_sun) ? &main_coarse_structure : nullptr;
+		req.flags = SceneRenderPresets::GatherMainView;
+		req.culling_bounds = m_need_render_sun ? &main_coarse_structure : nullptr;
 	}
 	else
 	{
-		req.gather_options = SSceneVisibilityRequest::HUD;
+		req.flags = SceneRenderPresets::HUDOnly;
 		req.culling_bounds = nullptr;
 	}
 
@@ -141,59 +135,40 @@ bool CRender::need_render_sun()
 	return ps_r_lighting_flags.test(RFLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
 }
 
-void CRender::render_gbuffer_primary()
+void CRender::render_gbuffer()
 {
 	PROFILE_FUNCTION();
 
 	Engine.Statistic->RenderCALC_GBuffer.Begin();
 	RenderBackend.enable_anisotropy_filtering();
-
 	set_gbuffer();
 
 	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	Scene.Render(m_scene_visibility_data, SceneGraphRenderType::Opaque, 0);
+	RenderBackend.set_ZWriteEnable(TRUE);
+
+	Scene.Render(m_scene_visibility_data, SceneRenderPresets::Opaque, true, true);
 
 	if (Scene.GetDetails())
 		Scene.RenderDetails(DetailsRenderMode::Default);
 
-	if (psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-
-	RenderBackend.disable_anisotropy_filtering();
-	Engine.Statistic->RenderCALC_GBuffer.End();
-}
-
-void CRender::render_gbuffer_secondary()
-{
-	PROFILE_FUNCTION();
-
-	RenderBackend.enable_anisotropy_filtering();
-	set_gbuffer();
-
-	if (psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-
-	RenderBackend.set_ZWriteEnable(FALSE);
-
-	Scene.Render(m_scene_visibility_data, SceneGraphRenderType::LOD, 0, true, true);
-
 	set_active_phase(PHASE_HUD);
-	Scene.Render(m_scene_visibility_data, SceneGraphRenderType::HUD);
+	Scene.Render(m_scene_visibility_data, SceneRenderPresets::HUDOnly);
 	set_active_phase(PHASE_NORMAL);
 
-	// Wall marks
 	if (Scene.GetWallmarks())
 	{
+		RenderBackend.set_ZWriteEnable(FALSE);
 		render_wallmarks();
-		Scene.RenderWallmarks(); // wallmarks has priority as normal geometry
+		Scene.RenderWallmarks();
 	}
 
 	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
+	Engine.Statistic->RenderCALC_GBuffer.End();
 }
 
 void CRender::render_stage_forward()
@@ -210,9 +185,7 @@ void CRender::render_stage_forward()
 
 	set_active_phase(PHASE_NORMAL);
 
-	// Priority 1
-	Scene.Render(m_scene_visibility_data, SceneGraphRenderType::Opaque, 1);
-	Scene.Render(m_scene_visibility_data, SceneGraphRenderType::Transparent);
+	Scene.Render(m_scene_visibility_data, SceneRenderPresets::RenderForwardStage);
 
 	g_pGamePersistent->Environment().RenderThunderbolt();
 	g_pGamePersistent->Environment().RenderRain();
@@ -234,11 +207,7 @@ void CRender::render_scene_to_gbuffer()
 
 	clear_gbuffer();
 
-	//******* Main render :: PART-0	-- first
-	render_gbuffer_primary();
-
-	//******* Main render :: PART-1 (second)
-	render_gbuffer_secondary();
+	render_gbuffer();
 }
 
 void CRender::render_sun()

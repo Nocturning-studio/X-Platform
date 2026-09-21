@@ -20,6 +20,8 @@ void CRenderScene::Initialize()
 	m_graph.m_traversal_marker = 0;
 	m_last_ltrack = 0;
 
+	m_default_context.frustum = &m_frustum_base;
+
 	if (g_dedicated_server)
 		return;
 
@@ -248,11 +250,9 @@ void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req,
 	ctx.use_hom = req.use_hom;
 	ctx.use_feedback = req.use_feedback;
 	ctx.render_phase = req.render_phase;
-	ctx.is_hud_pass = (req.gather_options & SSceneVisibilityRequest::HUD) ? TRUE : FALSE;
+	ctx.is_hud_pass = FALSE;
 	ctx.is_invisible_mode = FALSE;
-	ctx.fetch_config.fetch_priority_0 = (req.gather_options & (SSceneVisibilityRequest::STATIC_GEOM | SSceneVisibilityRequest::DYNAMIC_GEOM)) != 0;
-	ctx.fetch_config.fetch_priority_1 = (req.gather_options & SSceneVisibilityRequest::LOD_GEOM) != 0;
-	ctx.fetch_config.fetch_wallmarks = (req.gather_options & SSceneVisibilityRequest::WALLMARKS) != 0;
+	ctx.fetch_flags = req.flags;
 	ctx.culling_bounds = req.culling_bounds;
 	ctx.frustum = req.frustum_override;
 	ctx.transform = &Fidentity;
@@ -282,13 +282,20 @@ void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req,
 
 	packet.portal_traverser.Traverse(req.start_sector, *ctx.frustum, traversal_cop, req.view_projection, traverse_flags);
 
-	if(req.gather_options & SSceneVisibilityRequest::STATIC_GEOM)
+	const auto& visible = packet.portal_traverser.GetVisibleSectors();
+	packet.visible_sectors_map.clear();
+	for (const auto& sec_vis : visible)
+		packet.visible_sectors_map[sec_vis.sector] = &sec_vis;
+
+	if (req.has(SceneRenderFlags::StaticGeomDeffered) || 
+		req.has(SceneRenderFlags::StaticGeomForward))
 		CollectStaticGeometry(packet, ctx);
 
-	if(req.gather_options & SSceneVisibilityRequest::DYNAMIC_GEOM)
+	if (req.has(SceneRenderFlags::DynamicGeomDeffered) ||
+		req.has(SceneRenderFlags::DynamicGeomForward))
 		CollectDynamicGeometry(packet, ctx);
 
-	if(req.gather_options & SSceneVisibilityRequest::LIGHTS)
+	if (req.has(SceneRenderFlags::Lights))
 		CollectLights(packet, ctx);
 
 	ctx.frustum = nullptr;
@@ -299,10 +306,6 @@ void CRenderScene::CollectStaticGeometry(SceneGraphPacket& packet, const SceneTr
 	PROFILE_FUNCTION();
 
 	const auto& visible = packet.portal_traverser.GetVisibleSectors();
-
-	packet.visible_sectors_map.clear();
-	for (const auto& sec_vis : visible)
-		packet.visible_sectors_map[sec_vis.sector] = &sec_vis;
 
 	for (const auto& sec_vis : visible)
 	{
@@ -389,11 +392,11 @@ void CRenderScene::CollectLights(SceneGraphPacket& packet, const SceneTraversalC
 	}
 }
 
-void CRenderScene::Render(SSceneVisibilityResult& result, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
+void CRenderScene::Render(SSceneVisibilityResult& result, SceneRenderFlags flags, bool clear, bool setup_zb)
 {
 	PROFILE_FUNCTION();
 
-	RenderRaw(result.packet, result.context, type, priority, clear, setup_zb);
+	RenderRaw(result.packet, result.context, flags, clear, setup_zb);
 }
 
 void CRenderScene::RenderDetails(DetailsRenderMode mode, fmat4x4* cull_matrix, const CFrustum* external_cull)
@@ -412,9 +415,10 @@ void CRenderScene::RenderWallmarks()
 		m_wallmarks->Render();
 }
 
-void CRenderScene::RenderRaw(SceneGraphPacket& packet, SceneTraversalContext& ctx, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
+void CRenderScene::RenderRaw(SceneGraphPacket& packet, SceneTraversalContext& ctx, SceneRenderFlags flags, bool clear, bool setup_zb)
 {
 	CurrentRenderContext::Scope tls_scope(packet, ctx);
-	m_graph.Render(packet, type, priority, clear, setup_zb);
+
+	m_graph.Render(packet, flags, clear, setup_zb);
 }
 ////////////////////////////////////////////////////////////////////////////////

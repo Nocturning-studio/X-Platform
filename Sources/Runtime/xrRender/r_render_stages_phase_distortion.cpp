@@ -14,7 +14,7 @@ void CRender::create_distortion_mask()
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
 
-	RenderImplementation.Scene.Render(RenderImplementation.m_scene_visibility_data, SceneGraphRenderType::Distortion);
+	RenderImplementation.Scene.Render(RenderImplementation.m_scene_visibility_data, SceneRenderFlags::Distortion);
 }
 
 void CRender::render_distortion()

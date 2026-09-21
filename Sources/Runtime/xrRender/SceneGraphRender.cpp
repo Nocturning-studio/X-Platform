@@ -2,7 +2,6 @@
 #include "SceneGraph.h"
 #include "flod.h"
 #include "render.h"
-
 #include <ppl.h>
 
 // Глобальные переменные настроек (внешние)
@@ -190,204 +189,192 @@ void SortTextureList(VecTypes& list, VecTypes& temp_list, MapTextures& textures_
 //  CSceneGraph Implementation
 ////////////////////////////////////////////////////////////////////////////////==================
 
-void CSceneGraph::Render(SceneGraphPacket& packet, SceneGraphRenderType type, u32 priority, bool clear, bool setup_zb)
+void CSceneGraph::Render(SceneGraphPacket& packet, SceneRenderFlags flags, bool clear, bool setup_zb)
 {
 	PROFILE_FUNCTION();
 
-#ifdef DEBUG
-	DebugCheckDuplicateVisuals(packet);
-#endif
+	if (has(flags, SceneRenderFlags::StaticGeomDeffered))
+		_RenderStatic(packet, 0, clear);
 
-	switch(type)
-	{
-	case SceneGraphRenderType::Opaque:
-		_RenderOpaque(packet, priority, clear);
-		break;
-	case SceneGraphRenderType::Transparent:
-		_RenderTranslucent(packet);
-		break;
-	case SceneGraphRenderType::HUD:
-		_RenderHUD(packet);
-		break;
-	case SceneGraphRenderType::LOD:
+	if (has(flags, SceneRenderFlags::DynamicGeomDeffered))
+		_RenderDynamic(packet, 0, clear);
+
+	if (has(flags, SceneRenderFlags::LODGeometry))
 		_RenderLODs(packet, setup_zb, clear);
-		break;
-	case SceneGraphRenderType::Emissive:
-		_RenderEmissive(packet);
-		break;
-	case SceneGraphRenderType::Wallmarks:
+
+	if (has(flags, SceneRenderFlags::Wallmarks))
 		_RenderWmarks(packet);
-		break;
-	case SceneGraphRenderType::Distortion:
+
+	if (has(flags, SceneRenderFlags::Emissive))
+		_RenderEmissive(packet);
+
+	if (has(flags, SceneRenderFlags::StaticGeomForward))
+		_RenderStatic(packet, 1, clear);
+
+	if (has(flags, SceneRenderFlags::DynamicGeomForward))
+		_RenderDynamic(packet, 1, clear);
+
+	if (has(flags, SceneRenderFlags::AlphaBlend))
+		_RenderTranslucent(packet);
+
+	if (has(flags, SceneRenderFlags::Distortion))
 		_RenderDistortion(packet);
-		break;
-	}
+
+	if (has(flags, SceneRenderFlags::HUD))
+		_RenderHUD(packet);
 }
 
 ////////////////////////////////////////////////////////////////////////////////==================
 //  CSceneGraph Rendering Implementation
 ////////////////////////////////////////////////////////////////////////////////==================
-
-void CSceneGraph::_RenderOpaque(SceneGraphPacket& packet, u32 _priority, bool _clear)
+void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _clear)
 {
 	PROFILE_FUNCTION();
-	Engine.Statistic->RenderDUMP.Begin();
 
-	// -------------------------------------------------------------------------
-	// PHASE 1: STATIC GEOMETRY (Level)
-	// -------------------------------------------------------------------------
+	RenderBackend.set_transform_world(Fidentity);
+
+	mapNormalVS& map_vs = packet.queue_static[_priority];
+
+	map_vs.getANY_P(m_scratch.nrmVS);
+
+	for (auto* node_vs : m_scratch.nrmVS)
 	{
-		OPTICK_EVENT("queue_static");
+		RenderBackend.set_Vertex_Shader(node_vs->key);
 
-		RenderBackend.set_transform_world(Fidentity);
+		mapNormalPS& map_ps = node_vs->val;
+		map_ps.screenSpaceArea = 0;
+		map_ps.getANY_P(m_scratch.nrmPS);
 
-		mapNormalVS& map_vs = packet.queue_static[_priority];
-
-		map_vs.getANY_P(m_scratch.nrmVS);
-
-		for(auto* node_vs : m_scratch.nrmVS)
+		for (auto* node_ps : m_scratch.nrmPS)
 		{
-			RenderBackend.set_Vertex_Shader(node_vs->key);
+			RenderBackend.set_Pixel_Shader(node_ps->key);
 
-			mapNormalPS& map_ps = node_vs->val;
-			map_ps.screenSpaceArea = 0;
-			map_ps.getANY_P(m_scratch.nrmPS);
+			mapNormalCS& map_cs = node_ps->val;
+			map_cs.screenSpaceArea = 0;
+			map_cs.getANY_P(m_scratch.nrmCS);
 
-			for(auto* node_ps : m_scratch.nrmPS)
+			for (auto* node_cs : m_scratch.nrmCS)
 			{
-				RenderBackend.set_Pixel_Shader(node_ps->key);
+				RenderBackend.set_Constants(node_cs->key);
 
-				mapNormalCS& map_cs = node_ps->val;
-				map_cs.screenSpaceArea = 0;
-				map_cs.getANY_P(m_scratch.nrmCS);
+				mapNormalStates& map_states = node_cs->val;
+				map_states.screenSpaceArea = 0;
+				map_states.getANY_P(m_scratch.nrmStates);
 
-				for(auto* node_cs : m_scratch.nrmCS)
+				for (auto* node_state : m_scratch.nrmStates)
 				{
-					RenderBackend.set_Constants(node_cs->key);
+					RenderBackend.set_States(node_state->key);
 
-					mapNormalStates& map_states = node_cs->val;
-					map_states.screenSpaceArea = 0;
-					map_states.getANY_P(m_scratch.nrmStates);
+					mapNormalTextures& map_tex = node_state->val;
+					map_tex.screenSpaceArea = 0;
 
-					for(auto* node_state : m_scratch.nrmStates)
+					SortTextureList(m_scratch.nrmTextures, m_scratch.nrmTexturesTemp, map_tex, TRUE);
+
+					for (auto* node_tex : m_scratch.nrmTextures)
 					{
-						RenderBackend.set_States(node_state->key);
+						RenderBackend.set_Textures(node_tex->key);
 
-						mapNormalTextures& map_tex = node_state->val;
-						map_tex.screenSpaceArea = 0;
+						mapNormalItems& items = node_tex->val;
+						items.screenSpaceArea = 0;
 
-						SortTextureList(m_scratch.nrmTextures, m_scratch.nrmTexturesTemp, map_tex, TRUE);
+						RenderStaticBatch(items);
 
-						for(auto* node_tex : m_scratch.nrmTextures)
-						{
-							RenderBackend.set_Textures(node_tex->key);
-
-							mapNormalItems& items = node_tex->val;
-							items.screenSpaceArea = 0;
-
-							RenderStaticBatch(items);
-
-							if(_clear)
-								items.clear();
-						}
-
-						m_scratch.nrmTextures.clear();
-						m_scratch.nrmTexturesTemp.clear();
-						if(_clear)
-							map_tex.clear();
+						if (_clear)
+							items.clear();
 					}
-					m_scratch.nrmStates.clear();
-					if(_clear)
-						map_states.clear();
-				}
-				m_scratch.nrmCS.clear();
-				if(_clear)
-					map_cs.clear();
-			}
-			m_scratch.nrmPS.clear();
-			if(_clear)
-				map_ps.clear();
-		}
-		m_scratch.nrmVS.clear();
-		if(_clear)
-			map_vs.clear();
-	}
 
-	// -------------------------------------------------------------------------
-	// PHASE 2: DYNAMIC GEOMETRY (NPCs, Physics)
-	// -------------------------------------------------------------------------
+					m_scratch.nrmTextures.clear();
+					m_scratch.nrmTexturesTemp.clear();
+					if (_clear)
+						map_tex.clear();
+				}
+				m_scratch.nrmStates.clear();
+				if (_clear)
+					map_states.clear();
+			}
+			m_scratch.nrmCS.clear();
+			if (_clear)
+				map_cs.clear();
+		}
+		m_scratch.nrmPS.clear();
+		if (_clear)
+			map_ps.clear();
+	}
+	m_scratch.nrmVS.clear();
+	if (_clear)
+		map_vs.clear();
+}
+
+void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _clear)
+{
+	PROFILE_FUNCTION();
+
+	mapMatrixVS& map_vs = packet.queue_dynamic[_priority];
+	map_vs.getANY_P(m_scratch.matVS);
+
+	for(auto* node_vs : m_scratch.matVS)
 	{
-		OPTICK_EVENT("queue_dynamic");
+		RenderBackend.set_Vertex_Shader(node_vs->key);
 
-		mapMatrixVS& map_vs = packet.queue_dynamic[_priority];
-		map_vs.getANY_P(m_scratch.matVS);
+		mapMatrixPS& map_ps = node_vs->val;
+		map_ps.screenSpaceArea = 0;
+		map_ps.getANY_P(m_scratch.matPS);
 
-		for(auto* node_vs : m_scratch.matVS)
+		for(auto* node_ps : m_scratch.matPS)
 		{
-			RenderBackend.set_Vertex_Shader(node_vs->key);
+			RenderBackend.set_Pixel_Shader(node_ps->key);
 
-			mapMatrixPS& map_ps = node_vs->val;
-			map_ps.screenSpaceArea = 0;
-			map_ps.getANY_P(m_scratch.matPS);
+			mapMatrixCS& map_cs = node_ps->val;
+			map_cs.screenSpaceArea = 0;
+			map_cs.getANY_P(m_scratch.matCS);
 
-			for(auto* node_ps : m_scratch.matPS)
+			for(auto* node_cs : m_scratch.matCS)
 			{
-				RenderBackend.set_Pixel_Shader(node_ps->key);
+				RenderBackend.set_Constants(node_cs->key);
 
-				mapMatrixCS& map_cs = node_ps->val;
-				map_cs.screenSpaceArea = 0;
-				map_cs.getANY_P(m_scratch.matCS);
+				mapMatrixStates& map_states = node_cs->val;
+				map_states.screenSpaceArea = 0;
+				map_states.getANY_P(m_scratch.matStates);
 
-				for(auto* node_cs : m_scratch.matCS)
+				for(auto* node_state : m_scratch.matStates)
 				{
-					RenderBackend.set_Constants(node_cs->key);
+					RenderBackend.set_States(node_state->key);
 
-					mapMatrixStates& map_states = node_cs->val;
-					map_states.screenSpaceArea = 0;
-					map_states.getANY_P(m_scratch.matStates);
+					mapMatrixTextures& map_tex = node_state->val;
+					map_tex.screenSpaceArea = 0;
 
-					for(auto* node_state : m_scratch.matStates)
+					SortTextureList(m_scratch.matTextures, m_scratch.matTexturesTemp, map_tex, TRUE);
+
+					for(auto* node_tex : m_scratch.matTextures)
 					{
-						RenderBackend.set_States(node_state->key);
+						RenderBackend.set_Textures(node_tex->key);
 
-						mapMatrixTextures& map_tex = node_state->val;
-						map_tex.screenSpaceArea = 0;
+						mapMatrixItems& items = node_tex->val;
+						items.screenSpaceArea = 0;
 
-						SortTextureList(m_scratch.matTextures, m_scratch.matTexturesTemp, map_tex, TRUE);
-
-						for(auto* node_tex : m_scratch.matTextures)
-						{
-							RenderBackend.set_Textures(node_tex->key);
-
-							mapMatrixItems& items = node_tex->val;
-							items.screenSpaceArea = 0;
-
-							RenderDynamicBatch(items);
-						}
-
-						m_scratch.matTextures.clear();
-						m_scratch.matTexturesTemp.clear();
-						if(_clear)
-							map_tex.clear();
+						RenderDynamicBatch(items);
 					}
-					m_scratch.matStates.clear();
-					if(_clear)
-						map_states.clear();
-				}
-				m_scratch.matCS.clear();
-				if(_clear)
-					map_cs.clear();
-			}
-			m_scratch.matPS.clear();
-			if(_clear)
-				map_ps.clear();
-		}
-		m_scratch.matVS.clear();
-		if(_clear)
-			map_vs.clear();
-	}
 
-	Engine.Statistic->RenderDUMP.End();
+					m_scratch.matTextures.clear();
+					m_scratch.matTexturesTemp.clear();
+					if(_clear)
+						map_tex.clear();
+				}
+				m_scratch.matStates.clear();
+				if(_clear)
+					map_states.clear();
+			}
+			m_scratch.matCS.clear();
+			if(_clear)
+				map_cs.clear();
+		}
+		m_scratch.matPS.clear();
+		if(_clear)
+			map_ps.clear();
+	}
+	m_scratch.matVS.clear();
+	if(_clear)
+		map_vs.clear();
 }
 
 void CSceneGraph::RenderFromCache(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet)
@@ -444,7 +431,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 void CSceneGraph::_RenderTranslucent(SceneGraphPacket& packet)
 {
 	PROFILE_FUNCTION();
-	packet.queue_transparent.traverseRL(RenderSortedNode);
+	packet.queue_transparent.traverseLR(RenderSortedNode);
 	packet.queue_transparent.clear();
 }
 
@@ -465,7 +452,7 @@ void CSceneGraph::_RenderWmarks(SceneGraphPacket& packet)
 void CSceneGraph::_RenderDistortion(SceneGraphPacket& packet)
 {
 	PROFILE_FUNCTION();
-	packet.queue_distortion.traverseRL(RenderSortedNode);
+	packet.queue_distortion.traverseLR(RenderSortedNode);
 	packet.queue_distortion.clear();
 }
 
