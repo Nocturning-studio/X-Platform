@@ -149,10 +149,8 @@ void CRender::render_lights(light_Package& LP)
             L->get_smapvis().begin();
 
             SSceneVisibilityRequest req;
-            req.view = Engine.RenderView.View;
-            req.projection = Engine.RenderView.Project;
-            req.view_projection = L->TransformContext.ShadowContext.combine;
-            req.camera_position = Engine.RenderView.Position;
+            req.render_view = Engine.RenderView;
+            req.render_view.ViewProjection = L->TransformContext.ShadowContext.combine;
             req.traversal_position = L->get_position();
             req.use_traversal_position = true;
             req.start_sector = (CSector*)L->spatial.sector;

@@ -241,7 +241,7 @@ void CRender::ResetEnd()
 
 void CRender::WaitForPendingTasks()
 {
-#pragma FIXME("");
+#pragma fixme("")
 	//wait_for_sun_task();
 }
 

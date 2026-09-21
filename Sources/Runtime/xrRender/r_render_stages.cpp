@@ -76,10 +76,7 @@ void CRender::calculate_scene_culling()
 	const bool has_sector = (pLastSector != nullptr);
 
 	SSceneVisibilityRequest req;
-	req.view = Engine.RenderView.View;
-	req.projection = Engine.RenderView.Project;
-	req.view_projection = Engine.RenderView.ViewProjection;
-	req.camera_position = Engine.RenderView.Position;
+	req.render_view = Engine.RenderView;
 	req.traversal_position = Engine.RenderView.Position;
 	req.use_traversal_position = true;
 	req.start_sector = pLastSector;

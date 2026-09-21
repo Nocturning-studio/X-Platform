@@ -224,10 +224,7 @@ void CRenderScene::ComputeVisibility(const SSceneVisibilityRequest& req, SSceneV
 
 	out.Clear();
 
-	out.view = req.view;
-	out.projection = req.projection;
-	out.view_projection = req.view_projection;
-	out.camera_position = req.camera_position;
+	out.render_view = req.render_view;
 	out.render_phase = req.render_phase;
 
 	ComputeVisibilityInternal(req, out.packet, out.context);
@@ -242,11 +239,7 @@ void CRenderScene::ComputeVisibility(const SSceneVisibilityRequest& req, SceneGr
 
 void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req, SceneGraphPacket& packet, SceneTraversalContext& ctx)
 {
-	ctx.RenderView.View = req.view;
-	ctx.RenderView.Project = req.projection;
-	ctx.RenderView.ViewProjection = req.view_projection;
-	ctx.RenderView.Position = req.camera_position;
-
+	ctx.RenderView = req.render_view;
 	ctx.use_hom = req.use_hom;
 	ctx.use_feedback = req.use_feedback;
 	ctx.render_phase = req.render_phase;
@@ -263,7 +256,7 @@ void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req,
 	CFrustum local_frustum;
 	if(!ctx.frustum)
 	{
-		local_frustum.CreateFromMatrix(req.view_projection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+		local_frustum.CreateFromMatrix(req.render_view.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 		ctx.frustum = &local_frustum;
 	}
 
@@ -278,9 +271,9 @@ void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req,
 	g_SpatialSpace->q_frustum(packet.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE | STYPE_LIGHTSOURCE, *ctx.frustum);
 
 	u32 traverse_flags = CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | (ctx.is_hud_pass ? FALSE : CPortalTraverser::VQ_FADE);
-	const fvec3 traversal_cop = req.use_traversal_position ? req.traversal_position : req.camera_position;
+	const fvec3 traversal_cop = req.use_traversal_position ? req.traversal_position : req.render_view.Position;
 
-	packet.portal_traverser.Traverse(req.start_sector, *ctx.frustum, traversal_cop, req.view_projection, traverse_flags);
+	packet.portal_traverser.Traverse(req.start_sector, *ctx.frustum, traversal_cop, req.render_view.ViewProjection, traverse_flags);
 
 	const auto& visible = packet.portal_traverser.GetVisibleSectors();
 	packet.visible_sectors_map.clear();

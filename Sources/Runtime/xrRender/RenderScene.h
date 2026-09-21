@@ -25,10 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 struct SSceneVisibilityRequest
 {
-	fmat4x4 view = Fidentity;
-	fmat4x4 projection = Fidentity;
-	fmat4x4 view_projection = Fidentity;
-	fvec3 camera_position = {0, 0, 0};
+	CRenderView render_view;
 	fvec3 traversal_position = { 0, 0, 0 };
 	bool  use_traversal_position = false;
 
@@ -58,10 +55,7 @@ struct SSceneVisibilityResult
 	SceneGraphPacket packet;
 	SceneTraversalContext context;
 
-	fmat4x4 view = Fidentity;
-	fmat4x4 projection = Fidentity;
-	fmat4x4 view_projection = Fidentity;
-	fvec3 camera_position = {0, 0, 0};
+	CRenderView render_view;
 	u32 render_phase = 0;
 
 	// Управляется вызывающим: выставить false перед постановкой в очередь

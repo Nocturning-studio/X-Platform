@@ -517,10 +517,8 @@ void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& i
 	PROFILE_FUNCTION();
 
 	SSceneVisibilityRequest req;
-	req.view = Engine.RenderView.View;
-	req.projection = Engine.RenderView.Project;
-	req.view_projection = item.cull_transform;
-	req.camera_position = Engine.RenderView.Position;
+	req.render_view = Engine.RenderView;
+	req.render_view.ViewProjection = item.cull_transform;
 	req.traversal_position = item.cull_COP;
 	req.use_traversal_position = true;
 	req.start_sector = item.cull_sector;
