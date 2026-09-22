@@ -5,31 +5,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <DXSDK/d3dx9.h>
+#include <d3dcompiler.h>
 #include <deque>
 #include <string>
 #include <vector>
 #include <unordered_set>
 ////////////////////////////////////////////////////////////////////////////////
-class ENGINE_API CShaderIncluder : public ID3DXInclude
+class ENGINE_API CShaderIncluder : public ID3DInclude
 {
   public:
 	CShaderIncluder();
 	~CShaderIncluder();
 
-	// Сбросить состояние для новой компиляции
 	void Reset();
-
-	// Дополнительный путь поиска, относительно $engine_shaders$.
-	// Trailing separator добавляется автоматически. Пустая строка = корень.
 	void AddSearchPath(LPCSTR path);
 
-	// Все файлы, успешно открытые в течение последней компиляции.
-	// Пути относительны $engine_shaders$, дедуплицированы, порядок — как они встречались.
 	const xr_vector<xr_string>& GetIncludedFiles() const { return m_included; }
 
-	// --- ID3DXInclude ---
-	HRESULT __stdcall Open(D3DXINCLUDE_TYPE type,
+	// --- ID3DInclude ---
+	HRESULT __stdcall Open(D3D_INCLUDE_TYPE type,
 						   LPCSTR pName,
 						   LPCVOID pParentData,
 						   LPCVOID* ppData,

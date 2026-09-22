@@ -5,8 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-struct ID3DXBuffer;
-struct ID3DXInclude;
+#include <d3dcommon.h>
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API CShaderProgram
 {
@@ -25,25 +24,20 @@ class ENGINE_API CShaderProgram
 	CShaderProgram(CShaderProgram&& other) noexcept;
 	CShaderProgram& operator=(CShaderProgram&& other) noexcept;
 
-	// Загрузить файл из "$engine_shaders$" и скомпилировать.
-	HRESULT CompileFromFile(IDirect3DDevice9* device, 
+	HRESULT CompileFromFile(IDirect3DDevice9* device,
 							Type type,
-							LPCSTR file, 
+							LPCSTR file,
 							LPCSTR entry);
 
-	// Скомпилировать из памяти
-	HRESULT CompileFromMemory(IDirect3DDevice9* device, 
+	HRESULT CompileFromMemory(IDirect3DDevice9* device,
 							  Type type,
-							  LPCSTR source, 
+							  LPCSTR source,
 							  UINT size,
-							  LPCSTR entry, 
+							  LPCSTR entry,
 							  LPCSTR debugName,
-							  ID3DXInclude* pInclude = nullptr);
+							  ID3DInclude* pInclude = nullptr);
 
-	// Полный сброс (байткод + D3D-объект).
 	void Release();
-
-	// Device lost / reset. Байткод сохраняется, D3D-объект пересоздаётся.
 	void OnDeviceLost();
 	HRESULT OnDeviceReset(IDirect3DDevice9* device);
 
@@ -56,7 +50,6 @@ class ENGINE_API CShaderProgram
 	LPCSTR GetEntry() const { return m_entry.c_str(); }
 	void* GetRawShader() const { return m_shader; }
 
-	// Привязка стейджа к устройству.
 	void Apply(IDirect3DDevice9* device) const;
 
   private:
@@ -65,7 +58,7 @@ class ENGINE_API CShaderProgram
 	Type m_type = Type::Vertex;
 	std::string m_sourceFile;
 	std::string m_entry = "main";
-	ID3DXBuffer* m_bytecode = nullptr;
+	ID3DBlob* m_bytecode = nullptr;
 	void* m_shader = nullptr; // IDirect3DVertexShader9* | IDirect3DPixelShader9*
 };
 ////////////////////////////////////////////////////////////////////////////////

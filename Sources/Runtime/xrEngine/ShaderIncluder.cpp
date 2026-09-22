@@ -68,7 +68,7 @@ void CShaderIncluder::AddSearchPath(LPCSTR path)
 	m_searchPaths.push_back(std::move(p));
 }
 
-HRESULT __stdcall CShaderIncluder::Open(D3DXINCLUDE_TYPE /*type*/,
+HRESULT __stdcall CShaderIncluder::Open(D3D_INCLUDE_TYPE /*type*/,
 										LPCSTR pName,
 										LPCVOID /*pParentData*/,
 										LPCVOID* ppData,
@@ -142,7 +142,6 @@ HRESULT __stdcall CShaderIncluder::Open(D3DXINCLUDE_TYPE /*type*/,
 
 HRESULT __stdcall CShaderIncluder::Close(LPCVOID /*pData*/)
 {
-	// Буферы живут до следующего Reset().
 	return S_OK;
 }
 
