@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Benchmark|Win32">
-      <Configuration>Benchmark</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Benchmark|x64">
-      <Configuration>Benchmark</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -31,22 +23,6 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release Master Gold|x64">
       <Configuration>Release Master Gold</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release profiling|Win32">
-      <Configuration>Release profiling</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release profiling|x64">
-      <Configuration>Release profiling</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_Demo|Win32">
-      <Configuration>Release_Demo</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_Demo|x64">
-      <Configuration>Release_Demo</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -1220,6 +1196,12 @@
     <ProjectReference Include="..\xrEngine\xrEngine.vcxproj">
       <Project>{2578c6d8-660d-48ae-9322-7422f8664f06}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
+      <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\xrRHI\xrRHI.vcxproj">
+      <Project>{a00d33cc-7f6c-4c7c-93e9-7e304c5d704f}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

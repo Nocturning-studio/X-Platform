@@ -10,7 +10,7 @@
 constexpr u16 RC_dest_pixel_bit = (1 << 0);
 constexpr u16 RC_dest_vertex_bit = (1 << 1);
 ////////////////////////////////////////////////////////////////////////////////
-class ENGINE_API CShaderConstantTable
+class XRRB_API CShaderConstantTable
 {
 public:
 	// Разобрать CTAB-секцию из байткода. destination — RC_dest_vertex / RC_dest_pixel.

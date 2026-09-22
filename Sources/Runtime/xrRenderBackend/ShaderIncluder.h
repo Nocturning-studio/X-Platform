@@ -11,7 +11,7 @@
 #include <vector>
 #include <unordered_set>
 ////////////////////////////////////////////////////////////////////////////////
-class ENGINE_API CShaderIncluder : public ID3DInclude
+class XRRB_API CShaderIncluder : public ID3DInclude
 {
   public:
 	CShaderIncluder();

@@ -11,6 +11,8 @@
 #else
 
 #include <xrCore/xrCore.h>
+#include <xrRHI/xrRHI.h>
+#include <xrRenderBackend/xrRenderBackend.h>
 
 #ifdef _DEBUG
 #define D3D_DEBUG_INFO
@@ -26,11 +28,7 @@
 // Our headers
 #include "Engine.h"
 #include "defines.h"
-#ifndef NO_XRLOG
-#include <xrCore/log.h>
-#endif
 #include "device.h"
-#include <xrCore/FS.h>
 
 #include "xrXRC.h"
 

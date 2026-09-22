@@ -3,7 +3,6 @@
 #include "R_Backend.h"
 #include "sh_texture.h"
 #include "r_constants.h"
-#include "ShaderPass.h" 
 
 // ----------------------------------------------------------------
 // Invalidate

@@ -1,5 +1,13 @@
 #pragma once
 
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
 #include "xrMath_common.h"
 #include "xrMath_types.h"
 #include "xrMath_constants.h"
