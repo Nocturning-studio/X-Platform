@@ -5,30 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "r_render_pipeline.h"
-#include <xrRenderBackend/xrRenderBackend.h>
 ////////////////////////////////////////////////////////////////////////////////
-void Test()
-{
-	CShaderPass pass;
-	pass.SetVertexShader("test.hlsl", "vs_main");
-	pass.SetPixelShader("test.hlsl", "ps_main");
-
-	if (!pass.IsValid())
-	{
-		if (!pass.Compile(RenderBackend.GetDevice()))
-		{
-			Msg("! pass failed to compile");
-			return;
-		}
-	}
-
-	if (!pass.SetVector("test_vec", fvec4{ 0.1f, 0.2f, 0.3f, 1.0f })) Msg("! test_vec not found in constant table");
-
-	RenderBackend.SetShaderPass(pass);
-
-	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, RenderBackend.GetBaseRT(), RenderBackend.GetBaseZB());
-}
-
 void CRender::RenderMenu()
 {
 	PROFILE_FUNCTION();
@@ -37,9 +14,6 @@ void CRender::RenderMenu()
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 	RenderBackend.set_ColorWriteEnable();
-
-	Test();
-	return;
 
 	// Main Render
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0], RenderBackend.GetBaseZB());
