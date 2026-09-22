@@ -186,8 +186,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="d3d9fwd.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="lib_io.h" />
+    <ClInclude Include="Shaders\ShaderAPI.h" />
+    <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Shaders\ShaderConstant.h" />
     <ClInclude Include="Shaders\ShaderConstantBuffer.h" />

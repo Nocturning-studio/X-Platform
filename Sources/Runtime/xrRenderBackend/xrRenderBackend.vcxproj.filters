@@ -5,12 +5,6 @@
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrRenderBackend.h" />
-    <ClInclude Include="framework.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="lib_io.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="Shaders\ShaderConstant.h">
       <Filter>Shaders</Filter>
     </ClInclude>
@@ -27,6 +21,16 @@
       <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\ShaderProgram.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRenderBackendAPI.h" />
+    <ClInclude Include="d3d9fwd.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ShaderAPI.h">
       <Filter>Shaders</Filter>
     </ClInclude>
   </ItemGroup>
