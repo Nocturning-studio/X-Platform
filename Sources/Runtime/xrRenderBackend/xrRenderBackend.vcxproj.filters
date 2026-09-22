@@ -1,24 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="ShaderConstant.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderConstantBuffer.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderConstantTable.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderIncluder.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderPass.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -29,28 +11,46 @@
     <ClInclude Include="lib_io.h">
       <Filter>Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\ShaderConstant.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ShaderConstantBuffer.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ShaderConstantTable.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ShaderIncluder.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ShaderPass.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ShaderProgram.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ShaderConstantBuffer.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderConstantTable.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderIncluder.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderPass.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders\ShaderConstantBuffer.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders\ShaderConstantTable.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders\ShaderIncluder.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders\ShaderPass.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders\ShaderProgram.cpp">
+      <Filter>Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
