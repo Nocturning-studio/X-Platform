@@ -6,6 +6,8 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include "ShaderProgram.h"
+#include "ShaderConstantTable.h"
+#include "ShaderConstantBuffer.h"
 ////////////////////////////////////////////////////////////////////////////////
 struct IDirect3DDevice9;
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,6 +23,16 @@ public:
 	// --- Конфигурация ---
 	void SetVertexShader(LPCSTR file, LPCSTR entry = "main");
 	void SetPixelShader(LPCSTR file, LPCSTR entry = "main");
+
+	bool SetFloat(LPCSTR name, float v) { return m_constantsBuffer.SetFloat(name, v, m_constants); }
+	bool SetVector(LPCSTR name, const fvec4& v) { return m_constantsBuffer.SetVector(name, v, m_constants); }
+	bool SetMatrix(LPCSTR name, const fmat4x4& m) { return m_constantsBuffer.SetMatrix(name, m, m_constants); }
+
+	void FlushConstants(IDirect3DDevice9* device) { m_constantsBuffer.Flush(device); }
+	void ResetConstants() { m_constantsBuffer.Reset(); }
+
+	const CShaderConstantTable& Constants() const { return m_constants; }
+	CShaderConstantBuffer& ConstantBuffer() { return m_constantsBuffer; }
 
 	LPCSTR GetVertexShaderFile()  const { return m_vsFile.c_str(); }
 	LPCSTR GetVertexShaderEntry() const { return m_vsEntry.c_str(); }
@@ -54,6 +66,9 @@ private:
 
 	CShaderProgram m_vs;
 	CShaderProgram m_ps;
+
+	CShaderConstantTable m_constants;
+	CShaderConstantBuffer m_constantsBuffer;
 
 	bool m_valid = false;
 };

@@ -804,7 +804,9 @@
     <ClInclude Include="R_Backend_Data_Streams.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCompile.h" />
-    <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="ShaderConstant.h" />
+    <ClInclude Include="ShaderConstantBuffer.h" />
+    <ClInclude Include="ShaderConstantTable.h" />
     <ClInclude Include="ShaderIncluder.h" />
     <ClInclude Include="ShaderMacros.h" />
     <ClInclude Include="ShaderPass.h" />
@@ -1007,7 +1009,8 @@
     <ClCompile Include="r_constants.cpp" />
     <ClCompile Include="R_Backend_Data_Streams.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="ShaderConstantBuffer.cpp" />
+    <ClCompile Include="ShaderConstantTable.cpp" />
     <ClCompile Include="ShaderIncluder.cpp" />
     <ClCompile Include="ShaderMacros.cpp" />
     <ClCompile Include="ShaderPass.cpp" />

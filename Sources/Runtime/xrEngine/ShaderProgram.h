@@ -43,6 +43,8 @@ class ENGINE_API CShaderProgram
 
 	bool IsValid() const { return m_shader != nullptr; }
 	bool HasBytecode() const { return m_bytecode != nullptr; }
+	const void* GetBytecodePointer() const { return m_bytecode ? m_bytecode->GetBufferPointer() : nullptr; }
+	UINT GetBytecodeSize() const { return m_bytecode ? static_cast<UINT>(m_bytecode->GetBufferSize()) : 0; }
 
 	Type GetType() const { return m_type; }
 	bool HasSourceFile() const { return !m_sourceFile.empty(); }

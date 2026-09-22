@@ -115,6 +115,8 @@ void CBackendResourceBinder::SetShaderPass(CRenderBackend& backend, CShaderPass*
 	SetVertexShader(backend, vs);
 	SetPixelShader(backend, ps);
 #endif
+
+	pass->FlushConstants(backend.GetDevice());
 }
 
 // ----------------------------------------------------------------

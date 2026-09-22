@@ -642,13 +642,19 @@
     <ClInclude Include="ShaderProgram.h">
       <Filter>Render backend\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>Render backend\Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="device.h">
       <Filter>Render backend</Filter>
     </ClInclude>
     <ClInclude Include="ShaderIncluder.h">
+      <Filter>Render backend\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderConstantTable.h">
+      <Filter>Render backend\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderConstant.h">
+      <Filter>Render backend\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderConstantBuffer.h">
       <Filter>Render backend\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1076,13 +1082,16 @@
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Render backend\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>Render backend\Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="device.cpp">
       <Filter>Render backend</Filter>
     </ClCompile>
     <ClCompile Include="ShaderIncluder.cpp">
+      <Filter>Render backend\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderConstantTable.cpp">
+      <Filter>Render backend\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderConstantBuffer.cpp">
       <Filter>Render backend\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
