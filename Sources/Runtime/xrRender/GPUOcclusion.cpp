@@ -1,23 +1,20 @@
+////////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
-#include ".\r_occlusion.h"
-
-R_occlusion::R_occlusion(void)
+#include "GPUOcclusion.h"
+////////////////////////////////////////////////////////////////////////////////
+GPUOcclusion::GPUOcclusion(void)
 {
-	////OPTICK_EVENT("R_occlusion::R_occlusion");
-
 	enabled = ps_render_flags.test(RFLAG_EXP_HW_OCC);
 }
 
-R_occlusion::~R_occlusion(void)
+GPUOcclusion::~GPUOcclusion(void)
 {
-	////OPTICK_EVENT("R_occlusion::~R_occlusion");
-
 	occq_destroy();
 }
 
-void R_occlusion::occq_create(u32 limit)
+void GPUOcclusion::occq_create(u32 limit)
 {
-	////OPTICK_EVENT("R_occlusion::occq_create");
+	PROFILE_FUNCTION();
 
 	pool.reserve(limit);
 	used.reserve(limit);
@@ -33,9 +30,9 @@ void R_occlusion::occq_create(u32 limit)
 	std::reverse(pool.begin(), pool.end());
 }
 
-void R_occlusion::occq_destroy()
+void GPUOcclusion::occq_destroy()
 {
-	////OPTICK_EVENT("R_occlusion::occq_destroy");
+	PROFILE_FUNCTION();
 
 	while(!used.empty())
 	{
@@ -69,15 +66,17 @@ void R_occlusion::occq_destroy()
 	fids.clear();
 }
 
-u32 R_occlusion::occq_begin(u32& ID)
+u32 GPUOcclusion::occq_begin(u32& ID)
 {
+	PROFILE_FUNCTION();
+
 	if(!enabled)
 		return 0;
 	RenderImplementation.stats.o_queries++;
 
 	if(pool.empty())
 	{
-		Msg("! R_occlusion::occq_begin: No available queries in pool");
+		Msg("! GPUOcclusion::occq_begin: No available queries in pool");
 		ID = 0xffffffff;
 		return 0;
 	}
@@ -104,7 +103,7 @@ u32 R_occlusion::occq_begin(u32& ID)
 	HRESULT hr = used[ID].Q->Issue(D3DISSUE_BEGIN);
 	if(FAILED(hr))
 	{
-		Msg("! R_occlusion::occq_begin: Failed to issue query [HR:0x%08X]", hr);
+		Msg("! GPUOcclusion::occq_begin: Failed to issue query [HR:0x%08X]", hr);
 		// Возвращаем запрос обратно в пул при ошибке
 		pool.push_back(used[ID]);
 		used[ID].Q = nullptr;
@@ -116,9 +115,9 @@ u32 R_occlusion::occq_begin(u32& ID)
 	return used[ID].order;
 }
 
-void R_occlusion::occq_end(u32& ID)
+void GPUOcclusion::occq_end(u32& ID)
 {
-	////OPTICK_EVENT("R_occlusion::occq_end");
+	PROFILE_FUNCTION();
 
 	if(!enabled || ID == 0xffffffff || ID >= used.size() || used[ID].Q == nullptr)
 		return;
@@ -126,18 +125,20 @@ void R_occlusion::occq_end(u32& ID)
 	HRESULT hr = used[ID].Q->Issue(D3DISSUE_END);
 	if(FAILED(hr))
 	{
-		Msg("! R_occlusion::occq_end: Failed to end query [ID:%u, HR:0x%08X]", ID, hr);
+		Msg("! GPUOcclusion::occq_end: Failed to end query [ID:%u, HR:0x%08X]", ID, hr);
 	}
 }
 
-u32 R_occlusion::occq_get(u32& ID, bool bWait)
+u32 GPUOcclusion::occq_get(u32& ID, bool bWait)
 {
+	PROFILE_FUNCTION();
+
 	if(!enabled)
 		return 0xffffffff;
 
 	if(ID >= used.size() || used[ID].Q == nullptr)
 	{
-		Msg("! R_occlusion::occq_get: Invalid ID or null query pointer [ID:%d, used.size:%d]", ID, used.size());
+		Msg("! GPUOcclusion::occq_get: Invalid ID or null query pointer [ID:%d, used.size:%d]", ID, used.size());
 		return 0xffffffff;
 	}
 
@@ -173,7 +174,7 @@ u32 R_occlusion::occq_get(u32& ID, bool bWait)
 			// Запрос ещё выполняется. Если висит слишком долго – принудительно сбрасываем.
 			if(frames_pending > 3) // более 3 кадров
 			{
-				Msg("! R_occlusion::occq_get: Query stuck for %d frames, forcing release", frames_pending);
+				Msg("! GPUOcclusion::occq_get: Query stuck for %d frames, forcing release", frames_pending);
 				hr = D3DERR_DEVICELOST; // имитируем потерю устройства, чтобы освободить
 				fragments = 0xffffffff;
 			}
@@ -208,3 +209,4 @@ u32 R_occlusion::occq_get(u32& ID, bool bWait)
 	ID = 0;
 	return fragments;
 }
+////////////////////////////////////////////////////////////////////////////////

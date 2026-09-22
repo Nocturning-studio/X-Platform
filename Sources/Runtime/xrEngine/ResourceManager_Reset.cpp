@@ -3,7 +3,7 @@
 
 #include "ResourceManager.h"
 #ifndef _EDITOR
-#include "Render.h"
+#include "IRender.h"
 #endif
 
 #pragma warning(push)

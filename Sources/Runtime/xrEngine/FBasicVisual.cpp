@@ -6,7 +6,7 @@
 #pragma hdrstop
 
 #ifndef _EDITOR
-#include "render.h"
+#include "IRender.h"
 #endif
 #include "fbasicvisual.h"
 #include "fmesh.h"

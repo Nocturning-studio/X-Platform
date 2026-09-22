@@ -37,7 +37,7 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	OPTICK_EVENT("accumulate_sun");
 
 	// *** assume accumulator setted up ***
-	light* sun = (light*)RenderImplementation.Lights.sun_adapted._get();
+	light* sun = (light*)RenderImplementation.Scene.GetLights().sun_adapted._get();
 
 	// Common constants (light-related)
 	fvec3 L_dir, L_clr;

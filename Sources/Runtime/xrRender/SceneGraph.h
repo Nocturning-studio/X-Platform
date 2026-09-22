@@ -2,43 +2,18 @@
 
 #include <unordered_map>
 
-#include "..\xrEngine\render.h"
+#include "..\xrEngine\IRender.h"
 #include "..\xrEngine\ispatial.h"
 #include "SceneGraphTypes.h"
 #include "r_sector.h"
 #include "r_portal.h"
 #include "r_portal_traverser.h"
 #include <xrEngine/FBasicVisual.h>
+#include "RenderSceneFlags.h"
 
 class CRender;
 class IRender_Visual;
 class light;
-
-// Enum для типов рендеринга графа
-enum class SceneGraphRenderType
-{
-	Opaque,		 // Обычная геометрия
-	Transparent, // Alpha
-	HUD,		 // Оружие и руки
-	LOD,		 // LODы деревьев
-	Emissive,	 // Светящиеся объекты
-	Wallmarks,	 // Следы
-	Distortion	 // Искажения
-};
-
-struct SceneGraphFetchConfig
-{
-	bool fetch_priority_0 : 1;
-	bool fetch_priority_1 : 1;
-	bool fetch_wallmarks : 1;
-
-	SceneGraphFetchConfig() : fetch_priority_0(true), fetch_priority_1(true), fetch_wallmarks(false)
-	{
-	}
-	SceneGraphFetchConfig(bool p0, bool p1, bool wm) : fetch_priority_0(p0), fetch_priority_1(p1), fetch_wallmarks(wm)
-	{
-	}
-};
 
 class R_feedback
 {
@@ -46,14 +21,14 @@ class R_feedback
 	virtual void rfeedback_static(IRender_Visual* V) = 0;
 };
 
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 //  Render Packet (Thread-Safe Data Buffer)
 //  Хранит только очереди отрисовки. Может быть локальным для потока.
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 struct SceneGraphPacket
 {
 	// Dynamic scene graph containers
-	SceneGraphTypes::mapNormal_T queue_static[2]; // [0] = priority 0, [1] = priority 1
+	SceneGraphTypes::mapNormal_T queue_static[2]; // [0] = deffered lighting, [1] = forward lighting
 	SceneGraphTypes::mapMatrix_T queue_dynamic[2];
 	SceneGraphTypes::mapSorted_T queue_transparent;
 	SceneGraphTypes::mapHUD_T queue_hud;
@@ -102,16 +77,13 @@ struct SceneGraphPacket
 		m_visual_refs.clear();
 	}
 
-	// Synchronization for parallel access (если используем один буфер на всех)
 	xrCriticalSection cs;
 
 	SceneGraphPacket()
 	{
-		// Конструктор теперь просто зовет reset, ресурсы грузим явно
 		portal_traverser.Reset();
 	}
 
-	// Добавляем методы управления ресурсами
 	void InitResources()
 	{
 		portal_traverser.CreateResources();
@@ -163,11 +135,11 @@ struct SceneGraphPacket
 	}
 };
 
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 //  Scratch Pad (Working Buffers)
 //  Используется только при рендеринге (сортировке/флаттенинге)
 //  Чтобы не переаллоцировать вектора каждый кадр.
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 struct SceneGraphScratchPad
 {
 	// Static Geometry Sorting Buffers
@@ -203,11 +175,11 @@ struct SceneGraphScratchPad
 	}
 };
 
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 //  Traversal Context
 //  Состояние, которое меняется в процессе обхода.
 //  В будущем это должно передаваться аргументом, а не лежать в классе.
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 struct SceneTraversalContext
 {
 	IRenderable* owner;
@@ -220,7 +192,7 @@ struct SceneTraversalContext
 	CRenderView RenderView;
 	bool use_hom;
 	bool use_feedback;
-	SceneGraphFetchConfig fetch_config;
+	SceneRenderFlags fetch_flags = SceneRenderPresets::GatherMainView;
 	xr_vector<Fbox3, render_alloc<Fbox3>>* culling_bounds;
 
 	SceneTraversalContext()
@@ -234,10 +206,13 @@ struct SceneTraversalContext
 		  RenderView(),
 		  use_hom(true),
 		  use_feedback(false),
-		  fetch_config(true, true, false),
+		  fetch_flags(),
 		  culling_bounds(nullptr)
 	{
 	}
+
+	IC bool has(SceneRenderFlags f) const noexcept { return (static_cast<u32>(fetch_flags) & static_cast<u32>(f)) != 0u; }
+	IC bool hasnt(SceneRenderFlags f) const noexcept { return (static_cast<u32>(fetch_flags) & static_cast<u32>(f)) == 0u; }
 };
 
 class CurrentRenderContext
@@ -270,16 +245,14 @@ class CurrentRenderContext
 	};
 };
 
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 //  CSceneGraph Class
-// =========================================================================
+////////////////////////////////////////////////////////////////////////////////
 class CSceneGraph
 {
-  public: // Сделаем публичным для удобства доступа из CRender пока что
-	// 1. Thread-Safe Data Container
+  public:
 	SceneGraphPacket m_packet;
 
-	// 2. Worker Buffers (for Rendering/Sorting phase)
 	SceneGraphScratchPad m_scratch;
 
 	R_feedback* m_feedback_interface;
@@ -290,7 +263,7 @@ class CSceneGraph
 	std::atomic<u32> counter_D;
 	BOOL b_loaded;
 
-	friend class CRender; // CRender управляет контекстом и вызывает приватные методы
+	friend class CRender;
 
   public:
 	CSceneGraph();
@@ -328,20 +301,17 @@ class CSceneGraph
 	void EnqueueDynamic(IRender_Visual* pVisual, fvec3& Center, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 	void EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest);
 
-	// === Traversal Logic ===
-	void BuildScene(CSector* _sector, CFrustum* _frustum, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest, const SceneTraversalContext& ctx);
-	void BuildScene(CSector* _sector, fmat4x4& mCombined, fvec3& _cop, BOOL _dynamic, BOOL _precise_portals, SceneGraphPacket& dest, const SceneTraversalContext& ctx);
-
 	// Helper
 	bool ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize, const SceneTraversalContext& ctx);
 
 	// === Rendering API ===
-	void Render(SceneGraphPacket& packet, SceneGraphRenderType type, u32 priority = 0, bool clear = true, bool setup_zb = true);
+	void Render(SceneGraphPacket& packet, SceneRenderFlags flags, bool clear = true, bool setup_zb = true);
 	void RenderFromCache(const SceneTraversalContext& initial_ctx, SceneGraphPacket& packet);
 
   private:
 	// Render implementations
-	void _RenderOpaque(SceneGraphPacket& packet, u32 priority, bool clear);
+	void _RenderStatic(SceneGraphPacket& packet, u32 prior, bool clear);
+	void _RenderDynamic(SceneGraphPacket& packet, u32 prior, bool clear);
 	void _RenderHUD(SceneGraphPacket& packet);
 	void _RenderTranslucent(SceneGraphPacket& packet);
 	void _RenderLODs(SceneGraphPacket& packet, bool setup_zb, bool clear);

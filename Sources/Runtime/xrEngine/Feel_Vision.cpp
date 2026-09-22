@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "feel_vision.h"
-#include "render.h"
+#include "IRender.h"
 #include "xr_object.h"
 #include "xr_collide_form.h"
 #include "igame_level.h"

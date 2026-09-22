@@ -4,7 +4,7 @@
 
 #include "ISpatial.h"
 #include "IGame_Persistent.h"
-#include "render.h"
+#include "IRender.h"
 #include "xr_object.h"
 
 int g_ErrorLineCount = 15;

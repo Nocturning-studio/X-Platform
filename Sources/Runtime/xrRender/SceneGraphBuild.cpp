@@ -174,7 +174,7 @@ ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float c
 	return pVisual->shader->E[id]._get();
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: EnqueueDynamic
 //  Назначение: Добавление динамического объекта в очередь рендеринга.
 //  Параметры:
@@ -182,7 +182,7 @@ ShaderElement* SelectShaderElementForDynamicVis(IRender_Visual* pVisual, float c
 //    object_center - Центр объекта в мировых координатах (для сортировки).
 //    ctx           - Текущий контекст обхода (матрицы, флаги, владелец).
 //    dest          - Целевой пакет данных (куда записывать результат).
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual || !pVisual->shader._get())
@@ -218,9 +218,9 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// Фильтрация по приоритету
 	// -------------------------------------------------------------------------
 	u32 priority = shader_element->flags.iPriority / 2;
-	if(priority == 0 && !ctx.fetch_config.fetch_priority_0)
+	if(priority == 0 && ctx.hasnt(SceneRenderFlags::DynamicGeomDeffered))
 		return;
-	if(priority == 1 && !ctx.fetch_config.fetch_priority_1)
+	if(priority == 1 && ctx.hasnt(SceneRenderFlags::DynamicGeomForward))
 		return;
 
 	if(priority > 1)
@@ -277,7 +277,7 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	}
 
 	// --- B. Transparent (Alpha Blending) ---
-	if(shader_element->flags.bStrictB2F)
+	if (shader_element->flags.bStrictB2F && ctx.has(SceneRenderFlags::AlphaBlend))
 	{
 		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
 		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -285,22 +285,19 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 		return;
 	}
 
-	if(ctx.render_phase == CRender::PHASE_NORMAL)
+	if(shader_element->flags.bEmissive && ctx.has(SceneRenderFlags::Emissive))
 	{
-		if(shader_element->flags.bEmissive)
-		{
-			auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
-			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-			node->val.se = pVisual->shader->E[4]._get();
-		}
+		auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
+		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		node->val.se = pVisual->shader->E[4]._get();
+	}
 
-		if(shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
-		{
-			auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
-			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-			node->val.se = shader_element;
-			return;
-		}
+	if (shader_element->flags.bWmark && ctx.has(SceneRenderFlags::Wallmarks))
+	{
+		auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
+		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		node->val.se = shader_element;
+		return;
 	}
 
 	// -------------------------------------------------------------------------
@@ -407,14 +404,14 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: EnqueueStatic
 //  Назначение: Добавление статического объекта в очередь рендеринга.
 //  Параметры:
 //    pVisual - Визуальный объект.
 //    ctx     - Контекст обхода (для статики важны флаги, но не матрица).
 //    dest    - Целевой пакет данных.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual || !pVisual->shader._get())
@@ -443,9 +440,9 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	// Фильтрация по приоритету
 	u32 priority = shader_element->flags.iPriority / 2;
-	if(priority == 0 && !ctx.fetch_config.fetch_priority_0)
+	if (priority == 0 && ctx.hasnt(SceneRenderFlags::StaticGeomDeffered))
 		return;
-	if(priority == 1 && !ctx.fetch_config.fetch_priority_1)
+	if (priority == 1 && ctx.hasnt(SceneRenderFlags::StaticGeomForward))
 		return;
 
 	if(priority > 1)
@@ -461,6 +458,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	CROS_impl::AOCube ao_cube = {};
 	if(ctx.render_phase == CRender::PHASE_NORMAL)
 	{
+#pragma todo("Добавить использование АО куба статиками")
 		ao_cube = RenderImplementation.compute_object_ao_cube(ctx.owner);
 		dest.m_visuals_static_visible.push_back(pVisual);
 
@@ -477,9 +475,7 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	}
 
 	// Маршрутизация
-
-	// --- Strict Sorting ---
-	if(shader_element->flags.bStrictB2F)
+	if (shader_element->flags.bStrictB2F && ctx.has(SceneRenderFlags::AlphaBlend))
 	{
 		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
 		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
@@ -487,22 +483,19 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		return;
 	}
 
-	if(ctx.render_phase == CRender::PHASE_NORMAL)
+	if(shader_element->flags.bEmissive && ctx.has(SceneRenderFlags::Emissive))
 	{
-		if(shader_element->flags.bEmissive)
-		{
-			auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
-			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-			node->val.se = pVisual->shader->E[4]._get();
-		}
+		auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
+		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		node->val.se = pVisual->shader->E[4]._get();
+	}
 
-		if(shader_element->flags.bWmark && ctx.fetch_config.fetch_wallmarks)
-		{
-			auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
-			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-			node->val.se = shader_element;
-			return;
-		}
+	if (shader_element->flags.bWmark && ctx.has(SceneRenderFlags::Wallmarks))
+	{
+		auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
+		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		node->val.se = shader_element;
+		return;
 	}
 
 	// Обратная связь (Feedback)
@@ -606,9 +599,9 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Optimization Data & Constants (Anonymous Namespace)
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 namespace
 {
 // Значения для разных уровней качества (Low, Med, High, Ultra)
@@ -696,9 +689,9 @@ IC int GetQualityIndex()
 }
 } // namespace
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  CSceneGraph Implementation
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 
 bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, bool ignore_optimize, const SceneTraversalContext& ctx)
 {
@@ -755,14 +748,14 @@ bool CSceneGraph::ShouldRenderVisual(IRender_Visual* pVisual, bool isStatic, boo
 	return true;
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: ProcessDynamicVisual
 //  Назначение: Обработка динамического объекта, который гарантированно видим (или проверка не требуется).
 //  Параметры:
 //    pVisual - Визуальный объект.
 //    ctx     - Контекст обхода (матрицы, флаги).
 //    dest    - Целевой пакет данных.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual)
@@ -894,23 +887,17 @@ void CSceneGraph::ProcessDynamicVisual(IRender_Visual* pVisual, const SceneTrave
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: ProcessStaticVisual
 //  Назначение: Обработка статического объекта (часть уровня), который гарантированно видим.
 //  Параметры:
 //    pVisual - Визуальный объект.
 //    ctx     - Контекст обхода.
 //    dest    - Целевой пакет данных.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	if(!pVisual)
-		return;
-
-	// Проверка на значимость
-	bool is_shadow_phase = (ctx.render_phase == CRender::PHASE_SHADOW_DEPTH);
-	// Передаем ctx
-	if(!ShouldRenderVisual(pVisual, true, is_shadow_phase, ctx))
 		return;
 
 	xr_vector<IRender_Visual*>::iterator I, E;
@@ -1045,7 +1032,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 	}
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: add_Dynamic
 //  Назначение: Добавление динамического объекта с проверкой видимости (Frustum Culling).
 //  Параметры:
@@ -1053,7 +1040,7 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 //    planes  - Маска плоскостей фрустума (для оптимизации проверки дочерних объектов).
 //    ctx     - Контекст обхода (текущая матрица трансформации и флаги).
 //    dest    - Целевой пакет для записи (Thread-Local или Global).
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
 	// Трансформация позиции в мировые координаты
@@ -1070,7 +1057,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 	if(visibility_status == fcvNone)
 		return FALSE;
 
-	if(ctx.use_hom && !RenderImplementation.HOM.visible(pVisual->vis))
+	if(ctx.use_hom && !RenderImplementation.Scene.GetHOM().visible(pVisual->vis))
 		return FALSE;
 
 	// Проверка на значимость (Distance / Size Culling)
@@ -1203,7 +1190,7 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 	return TRUE;
 }
 
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 //  Метод: add_Static
 //  Назначение: Добавление статического объекта с проверкой видимости (Frustum + HOM).
 //  Параметры:
@@ -1211,9 +1198,11 @@ BOOL CSceneGraph::add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTr
 //    planes  - Маска плоскостей фрустума.
 //    ctx     - Контекст обхода.
 //    dest    - Целевой пакет.
-// ===============================================================================================
+////////////////////////////////////////////////////////////////////////////////==================
 void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest)
 {
+	PROFILE_FUNCTION();
+
 	// Frustum Culling (Sphere + AABB Test)
 	// Для статики позиции вершин уже в мировом пространстве, трансформация не нужна (обычно Identity).
 	vis_data& vis_data = pVisual->vis;
@@ -1226,7 +1215,7 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 
 	// Occlusion Culling (HOM - Hierarchical Occlusion Maps)
 	// Пропускаем невидимые за стенами/холмами объекты
-	if(!RenderImplementation.HOM.visible(vis_data))
+	if(ctx.use_hom && !RenderImplementation.Scene.GetHOM().visible(vis_data))
 		return;
 
 	// Проверка на значимость (Distance / Size Culling)
@@ -1500,164 +1489,4 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 		}
 	}
 }
-
-// ===============================================================================================
-//  CSceneGraph::BuildScene
-//  Назначение: Обход пространства (секторов и порталов) и сбор геометрии в указанный пакет.
-// ===============================================================================================
-
-// Shortcut (создание фрустума из матрицы)
-void CSceneGraph::BuildScene(CSector* _sector,
-							 fmat4x4& mCombined,
-							 fvec3& _cop,
-							 BOOL _dynamic,
-							 BOOL _precise_portals,
-							 SceneGraphPacket& dest,
-							 const SceneTraversalContext& ctx)
-{
-	OPTICK_EVENT("BuildScene - shortcut");
-
-	CFrustum temp_frustum;
-	temp_frustum.CreateFromMatrix(mCombined, FRUSTUM_P_ALL);
-	BuildScene(_sector, &temp_frustum, mCombined, _cop, _dynamic, _precise_portals, dest, ctx);
-}
-
-// Main Implementation (Основная логика)
-void CSceneGraph::BuildScene(CSector* start_sector,
-							 CFrustum* view_frustum,
-							 fmat4x4& mCombined,
-							 fvec3& camera_pos,
-							 BOOL render_dynamic,
-							 BOOL precise_portals,
-							 SceneGraphPacket& dest,
-							 const SceneTraversalContext& ctx)
-{
-	OPTICK_EVENT("BuildScene - main");
-
-	VERIFY(start_sector);
-	VERIFY(view_frustum);
-
-	dest.Clear();
-
-	// -------------------------------------------------------------------------
-	// Подготовка локального контекста (TLS)
-	// -------------------------------------------------------------------------
-	SceneTraversalContext local_ctx = ctx;
-	local_ctx.frustum = view_frustum;
-	local_ctx.is_hud_pass = FALSE;
-	local_ctx.is_invisible_mode = FALSE;
-	local_ctx.owner = nullptr;
-	local_ctx.transform = &Fidentity;
-	local_ctx.traversal_marker_id = ++m_traversal_marker;
-
-	CurrentRenderContext::Scope tls_scope(dest, local_ctx);
-
-	// -------------------------------------------------------------------------
-	// Precise Portals (Внимание: Потенциально небезопасно в MT)
-	// -------------------------------------------------------------------------
-	// Если precise_portals=TRUE передается в параллельных потоках,
-	// запись в pPortal->bDualRender может вызвать гонку данных.
-	// Обычно для теней (cascades) это FALSE.
-	// Поле bDualRender удалено, так как оно нарушает потокобезопасность.
-	/*
-	if (precise_portals && RenderImplementation.rmPortals)
-	{
-		fvec3 box_radius;
-		box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
-		RenderImplementation.Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
-		RenderImplementation.Sectors_xrc.box_query(RenderImplementation.rmPortals, camera_pos, box_radius);
-
-		for (int K = 0; K < RenderImplementation.Sectors_xrc.r_count(); K++)
-		{
-			u32 portal_id =
-				RenderImplementation.rmPortals->get_tris()[RenderImplementation.Sectors_xrc.r_begin()[K].id].dummy;
-			CPortal* pPortal = (CPortal*)RenderImplementation.Portals[portal_id];
-			pPortal->bDualRender = TRUE;
-		}
-	}
-	*/
-
-	// -------------------------------------------------------------------------
-	// Обход порталов (Traverse)
-	// -------------------------------------------------------------------------
-	dest.portal_traverser.Traverse((CSector*)start_sector, *view_frustum, camera_pos, mCombined, 0);
-
-	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
-
-	dest.visible_sectors_map.clear();
-	for(const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
-	{
-		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
-	}
-
-	// -------------------------------------------------------------------------
-	// Сбор СТАТИКИ (Static Geometry)
-	// -------------------------------------------------------------------------
-	// Проходим по результатам обхода
-	for(const auto& sec_vis : visible_sectors)
-	{
-		CSector* sector = sec_vis.sector;
-		IRender_Visual* root_visual = sector->GetRootVisual();
-		add_Static(root_visual, view_frustum->getMask(), local_ctx, dest);
-	}
-
-	// Возвращаем общий фрустум в контекст
-	local_ctx.frustum = view_frustum;
-
-	// -------------------------------------------------------------------------
-	// Сбор ДИНАМИКИ (Dynamic Geometry)
-	// -------------------------------------------------------------------------
-	if(render_dynamic)
-	{
-		// Делаем запрос к пространственному дереву, используя ОБЩИЙ фрустум каскада
-		// Результат пишется в dest.m_spatial_query_results
-		g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *view_frustum);
-
-		for(u32 o_it = 0; o_it < dest.m_spatial_query_results.size(); o_it++)
-		{
-			ISpatial* spatial = dest.m_spatial_query_results[o_it];
-			CSector* sector = (CSector*)spatial->spatial.sector;
-
-			if(0 == sector)
-				continue;
-
-			// --- ПРОВЕРКА ВИДИМОСТИ СЕКТОРА ---
-			// Раньше мы проверяли маркер: if (sector->r_marker != ...)
-			// Теперь сектор не хранит маркер текущего прохода.
-			// Мы должны найти этот сектор в списке visible_sectors нашего траверсера.
-
-			auto it = dest.visible_sectors_map.find(sector);
-			if(it == dest.visible_sectors_map.end())
-				continue;
-
-			const auto* active_vis_data = it->second;
-			if(!active_vis_data)
-				continue;
-
-			// --- ПРОВЕРКА ПО ФРУСТУМАМ СЕКТОРА ---
-			// Берем фрустумы из найденной структуры данных
-			for(const auto& frustum : active_vis_data->frustums)
-			{
-				// Быстрый тест сферы с конкретным фрустумом
-				if(!frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
-					continue;
-
-				IRenderable* renderable = spatial->dcast_Renderable();
-				if(0 == renderable)
-					continue;
-
-				// Настраиваем контекст для отрисовки
-				local_ctx.frustum = &frustum;
-				local_ctx.owner = renderable;
-
-				// Вызываем рендер объекта.
-				// Благодаря TLS, внутри вызовется add_Visual, который запишет в 'dest'.
-				renderable->renderable_Render();
-
-				// Если объект прошел проверку хотя бы одного фрустума - мы его добавили.
-				// Прерываем цикл по фрустумам, чтобы не добавлять дубликаты.
-				break;
-			}
-		}
-	}
-}
+////////////////////////////////////////////////////////////////////////////////

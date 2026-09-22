@@ -11,7 +11,7 @@
 #pragma warning(default : 4995)
 
 #include "Engine.h"
-#include "Render.h"
+#include "IRender.h"
 #include "resourcemanager.h"
 #include "optick_include.h"
 #include "IGame_Persistent.h"

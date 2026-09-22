@@ -42,22 +42,14 @@ void OnApplicationExit()
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
-	__try
-	{
-		g_sLaunchOnExit_app[0] = NULL;
-		g_sLaunchOnExit_params[0] = NULL;
+	g_sLaunchOnExit_app[0] = NULL;
+	g_sLaunchOnExit_params[0] = NULL;
 
-		g_Engine = xr_new<CEngine>();
-		g_Engine->Run();
-		xr_delete(g_Engine);
+	g_Engine = xr_new<CEngine>();
+	g_Engine->Run();
+	xr_delete(g_Engine);
 
-		OnApplicationExit();
-	}
-	__except(stack_overflow_exception_filter(GetExceptionCode()))
-	{
-		_resetstkoflw();
-		FATAL("stack overflow");
-	}
+	OnApplicationExit();
 
 	OPTICK_SHUTDOWN();
 

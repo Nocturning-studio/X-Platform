@@ -55,7 +55,9 @@ class CSwitchPredicate
 };
 
 CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
-	: CALifeSwitchManager(server, section), CALifeSurgeManager(server, section), CALifeStorageManager(server, section),
+	: CALifeSwitchManager(server, section), 
+	  CALifeSurgeManager(server, section), 
+	  CALifeStorageManager(server, section),
 	  CALifeSimulatorBase(server, section)
 {
 	shedule.t_min = pSettings->r_s32(section, "schedule_min");
@@ -72,7 +74,7 @@ CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
 CALifeUpdateManager::~CALifeUpdateManager()
 {
 	shedule_unregister();
-	Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update));
+	Engine.ThreadManager.RemoveParallelTask(taskID);
 }
 
 float CALifeUpdateManager::shedule_Scale()
@@ -82,7 +84,7 @@ float CALifeUpdateManager::shedule_Scale()
 
 void CALifeUpdateManager::update_switch()
 {
-	// OPTICK_EVENT("CALifeUpdateManager::update_switch");
+	OPTICK_EVENT("CALifeUpdateManager::update_switch");
 
 	init_ef_storage();
 
@@ -94,7 +96,7 @@ void CALifeUpdateManager::update_switch()
 
 void CALifeUpdateManager::update_scheduled(bool init_ef)
 {
-	// OPTICK_EVENT("CALifeUpdateManager::update_scheduled");
+	OPTICK_EVENT("CALifeUpdateManager::update_scheduled");
 
 	if(init_ef)
 		init_ef_storage();
@@ -114,6 +116,8 @@ void CALifeUpdateManager::update()
 
 void CALifeUpdateManager::shedule_Update(u32 dt)
 {
+	PROFILE_FUNCTION();
+
 	ISheduled::shedule_Update(dt);
 
 	if(!initialized())
@@ -121,8 +125,8 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
 	if(!m_first_time)
 	{
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CALifeUpdateManager::update),
-											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+#pragma todo("Отвязать конец кадра от этой задачи")
+		taskID = Engine.ThreadManager.AddParallelTask([this]() { update(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 		return;
 	}
 

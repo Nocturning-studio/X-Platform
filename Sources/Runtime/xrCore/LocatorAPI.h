@@ -152,6 +152,8 @@ class XRCORE_API CLocatorAPI
 	BOOL can_modify_file(LPCSTR fname);
 	BOOL can_modify_file(LPCSTR path, LPCSTR name);
 
+	void create_dir(LPCSTR path);
+
 	BOOL dir_delete(LPCSTR path, LPCSTR nm, BOOL remove_files);
 	BOOL dir_delete(LPCSTR full_path, BOOL remove_files)
 	{

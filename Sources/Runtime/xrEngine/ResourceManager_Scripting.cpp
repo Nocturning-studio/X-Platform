@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "render.h"
+#include "IRender.h"
 #include "ResourceManager.h"
 #include "tss.h"
 #include "blender.h"

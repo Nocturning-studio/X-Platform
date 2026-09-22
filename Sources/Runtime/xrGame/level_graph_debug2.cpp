@@ -121,7 +121,7 @@ void CLevelGraph::draw_nodes()
 			continue;
 
 		float sr = header().cell_size();
-		if(::Render->ViewBase.testSphere_dirty(PC, sr))
+		if(::Render->get_Frustum()->testSphere_dirty(PC, sr))
 		{
 
 			u32 LL = ((b_light) ? iFloor(float(N.light()) / 15.f * 255.f) : iFloor(vertex_cover(I) / 4 * 255.f));

@@ -8,270 +8,108 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::prepare_to_render()
 {
-	// Configure
 	m_need_render_sun = need_render_sun();
 
-	ViewBase.CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	View = 0;
+	Scene.GetFrustumBase().CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 }
 
-void CRender::gather_visibility(fmat4x4& view_projection, SceneGraphPacket& dest)
+////////////////////////////////////////////////////////////////////////////////
+//  update_light_tracking
+//  Раз в кадр обновляет ROS для камеры + для одного renderable из выборки
+//  (round-robin). Это НЕ часть видимости — просто «размазанная» работа.
+//  Вызывается после ComputeVisibility, чтобы использовать уже готовую
+//  выборку m_spatial_query_results.
+////////////////////////////////////////////////////////////////////////////////
+void CRender::update_light_tracking(SceneGraphPacket& packet)
 {
-	PROFILE_FUNCTION();
-
-	// Сброс флагов контекста
-	m_TraversalContext.is_invisible_mode = FALSE;
-	m_TraversalContext.is_hud_pass = FALSE;
-
-	// Если текущий сектор не определен, рисуем только HUD и выходим.
-	if(!pLastSector)
-	{
-		set_Object(nullptr);
-		if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
-			g_pGameLevel->pHUD->Render_Last();
+	if(active_phase() != PHASE_NORMAL)
 		return;
-	}
 
-	// -------------------------------------------------------------------------
-	// Настройка контекста (TLS)
-	// -------------------------------------------------------------------------
-	// Получаем уникальный маркер обхода для текущего вызова
-	u32 current_marker = ++SceneGraph.m_traversal_marker;
-
-	m_TraversalContext.frustum = &ViewBase;
-	m_TraversalContext.traversal_marker_id = current_marker;
-	m_TraversalContext.transform = &Fidentity;
-	m_TraversalContext.render_phase = CRender::PHASE_NORMAL;
-
-	CurrentRenderContext::Scope tls_scope(dest, m_TraversalContext);
-
-	// -------------------------------------------------------------------------
-	// Spatial Query
-	// -------------------------------------------------------------------------
-	g_SpatialSpace->q_frustum(dest.m_spatial_query_results, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE | STYPE_LIGHTSOURCE, ViewBase);
-
-	// -------------------------------------------------------------------------
-	// Sorting
-	// -------------------------------------------------------------------------
-#if 0
-	const fvec3 camera_pos = m_TraversalContext.RenderView.Position;
-	auto sort_predicate = [camera_pos](ISpatial* a, ISpatial* b) {
-		float dist_a = a->spatial.sphere.P.distance_to_sqr(camera_pos);
-		float dist_b = b->spatial.sphere.P.distance_to_sqr(camera_pos);
-		return dist_a < dist_b;
-	};
-
-	if (!dest.m_spatial_query_results.empty())
-	{
-		std::sort(dest.m_spatial_query_results.begin(), dest.m_spatial_query_results.end(), sort_predicate);
-	}
-#endif
-
-	// -------------------------------------------------------------------------
-	// Light Tracking
-	// -------------------------------------------------------------------------
 	set_Object(nullptr);
-	if(active_phase() == PHASE_NORMAL)
+	uLastLTRACK++;
+
+	const size_t renderable_count = packet.m_spatial_query_results.size();
+	if(!renderable_count)
+		return;
+
+	const size_t light_track_id = uLastLTRACK % renderable_count;
+
+	if(CObject* current_entity = g_pGameLevel->CurrentViewEntity())
 	{
-		uLastLTRACK++;
-		// Используем результаты из dest
-		size_t renderable_count = dest.m_spatial_query_results.size();
-		size_t light_track_id = 0xffffffff;
-
-		if(renderable_count)
-			light_track_id = uLastLTRACK % renderable_count;
-
-		if(CObject* current_entity = g_pGameLevel->CurrentViewEntity())
-		{
-			if(CROS_impl* ros = (CROS_impl*)current_entity->ROS())
-				ros->update(current_entity);
-		}
-
-		if(renderable_count)
-		{
-			// Используем результаты из dest
-			if(IRenderable* renderable = dest.m_spatial_query_results[light_track_id]->dcast_Renderable())
-			{
-				if(CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
-					ros->update(renderable);
-			}
-		}
+		if(CROS_impl* ros = (CROS_impl*)current_entity->ROS())
+			ros->update(current_entity);
 	}
 
-	// -------------------------------------------------------------------------
-	// Portal Traversal (Траверсер внутри dest)
-	// -------------------------------------------------------------------------
-	// Используем траверсер, привязанный к конкретному пакету
-	dest.portal_traverser.Traverse(pLastSector, ViewBase, m_TraversalContext.RenderView.Position, view_projection, CPortalTraverser::VQ_HOM | CPortalTraverser::VQ_SSA | CPortalTraverser::VQ_FADE);
-
-	// -------------------------------------------------------------------------
-	// Static Geometry
-	// -------------------------------------------------------------------------
-	const auto& visible_sectors = dest.portal_traverser.GetVisibleSectors();
-
-	dest.visible_sectors_map.clear();
-	for(const auto& sec_vis : dest.portal_traverser.GetVisibleSectors())
+	if(IRenderable* renderable = packet.m_spatial_query_results[light_track_id]->dcast_Renderable())
 	{
-		dest.visible_sectors_map[sec_vis.sector] = &sec_vis;
+		if(CROS_impl* ros = (CROS_impl*)renderable->renderable_ROS())
+			ros->update(renderable);
 	}
-
-	for(const auto& sec_vis : visible_sectors)
-	{
-		CSector* sector = sec_vis.sector;
-		IRender_Visual* root_visual = sector->GetRootVisual();
-
-		for(const auto& frustum : sec_vis.frustums)
-		{
-			set_Frustum((CFrustum*)&frustum);
-			add_Geometry(root_visual);
-		}
-	}
-
-	// -------------------------------------------------------------------------
-	// Dynamic Geometry & Lights
-	// -------------------------------------------------------------------------
-	for(ISpatial* spatial : dest.m_spatial_query_results)
-	{
-		spatial->spatial_updatesector();
-		CSector* sector = (CSector*)spatial->spatial.sector;
-
-		// --- Источники света ---
-		if(spatial->spatial.type & STYPE_LIGHTSOURCE)
-		{
-			light* pLight = (light*)(spatial->dcast_Light());
-			VERIFY(pLight);
-
-			if(pLight->get_LOD() > EPS_L)
-			{
-				if(HOM.visible(pLight->get_homdata()))
-					dest.m_culled_lights.push_back(pLight);
-			}
-			continue;
-		}
-
-		// --- Динамика ---
-		if(!(spatial->spatial.type & STYPE_RENDERABLE))
-			continue;
-
-		IRenderable* renderable = spatial->dcast_Renderable();
-		if(!renderable)
-			continue;
-
-		auto it = dest.visible_sectors_map.find(sector);
-		if(it == dest.visible_sectors_map.end())
-			continue;
-
-		const CPortalTraverser::SectorVisibility* active_vis_data = it->second;
-
-		// Проверяем попадание объекта в подфрустумы сектора
-		bool bInFrustum = false;
-		for(const auto& frustum : active_vis_data->frustums)
-		{
-			if(frustum.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
-			{
-				bInFrustum = true;
-				break;
-			}
-		}
-		if(!bInFrustum)
-			continue;
-
-		// ФИЛЬТР HUD
-		if(!sector)
-		{
-			float dist_sq = spatial->spatial.sphere.P.distance_to_sqr(m_TraversalContext.RenderView.Position);
-			if(dist_sq < 2.25f)
-				continue;
-		}
-
-		// =====================================================================
-		// HOM OCCLUSION CULLING
-		// =====================================================================
-		vis_data& vis_orig = renderable->renderable.visual->vis;
-
-		vis_data vis_temp = vis_orig;
-		vis_temp.box.transform(renderable->renderable.transform);
-
-		BOOL bVisible = HOM.visible(vis_temp);
-
-		// Возвращаем обновленные тайминги обратно в оригинал
-		vis_orig.hom_frame = vis_temp.hom_frame;
-		vis_orig.hom_tested = vis_temp.hom_tested;
-
-		if(bVisible)
-			dest.m_culled_dynamics.push_back(renderable);
-	}
-
-	// Сброс контекста
-	m_TraversalContext.frustum = nullptr;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  MergeCulledLights
+//  Переносит light'ы, отобранные Scene.ComputeVisibility, в общий пул.
+////////////////////////////////////////////////////////////////////////////////
 void CRender::MergeCulledLights(SceneGraphPacket& packet)
 {
 	if(packet.m_culled_lights.empty())
 		return;
+
+	CLight_DB& lights = Scene.GetLights();
 	for(light* L : packet.m_culled_lights)
-		Lights.add_light(L);
+		lights.add_light(L);
 	packet.m_culled_lights.clear();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  calculate_scene_culling
+//
+//  1. Готовим запрос видимости (HUD-only или full).
+//  2. Scene.ComputeVisibility — spatial query + portal traverse + collect.
+//  3. Post: light tracking, dynamic instances, merge lights, HUD.
+////////////////////////////////////////////////////////////////////////////////
 void CRender::calculate_scene_culling()
 {
 	PROFILE_FUNCTION();
 
-	// Очищаем пакет перед новым сбором
-	m_scene_data.Clear();
+	const bool has_sector = (pLastSector != nullptr);
 
-	if(!pLastSector)
+	SSceneVisibilityRequest req;
+	req.render_view = Engine.RenderView;
+	req.traversal_position = Engine.RenderView.Position;
+	req.use_traversal_position = true;
+	req.start_sector = pLastSector;
+	req.use_hom = true;
+	req.use_feedback = false;
+	req.render_phase = PHASE_NORMAL;
+	req.frustum_override = &Scene.GetFrustumBase();
+
+	if (has_sector)
 	{
-		// Если сектор не определён, собираем только HUD
-		m_scene_data.view = Engine.RenderView.View;
-		m_scene_data.projection = Engine.RenderView.Project;
-		m_scene_data.view_projection = Engine.RenderView.ViewProjection;
-
-		{
-			SceneGraphFetchConfig hud_config(true, false, false);
-			m_TraversalContext.fetch_config = hud_config;
-			set_active_phase(PHASE_NORMAL);
-
-			CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
-			if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
-				g_pGameLevel->pHUD->Render_Last();
-		}
-
-		m_TraversalContext.fetch_config = SceneGraphFetchConfig(true, true, false);
-		return;
+		req.flags = SceneRenderPresets::GatherMainView;
+		req.culling_bounds = m_need_render_sun ? &main_coarse_structure : nullptr;
 	}
-
-	// Сохраняем матрицы
-	m_scene_data.view = Engine.RenderView.View;
-	m_scene_data.projection = Engine.RenderView.Project;
-	m_scene_data.view_projection = Engine.RenderView.ViewProjection;
-
-	// Конфигурация: собираем все приоритеты и декали
-	SceneGraphFetchConfig config;
-	config.fetch_priority_0 = true;
-	config.fetch_priority_1 = true;
-	config.fetch_wallmarks = true;
+	else
+	{
+		req.flags = SceneRenderPresets::HUDOnly;
+		req.culling_bounds = nullptr;
+	}
 
 	set_active_phase(PHASE_NORMAL);
 
-	m_TraversalContext.RenderView = Engine.RenderView;
-	m_TraversalContext.use_hom = true;
-	m_TraversalContext.use_feedback = false;
-	m_TraversalContext.fetch_config = SceneGraphFetchConfig(true, true, true);
-	m_TraversalContext.culling_bounds = (m_need_render_sun) ? &main_coarse_structure : nullptr;
+	Scene.ComputeVisibility(req, m_scene_visibility_data);
 
-	// Обход сцены
-	gather_visibility(m_scene_data.view_projection, m_scene_data.packet);
-	SceneGraph.PrepareDynamicInstances(m_scene_data.packet, m_TraversalContext);
-	MergeCulledLights(m_scene_data.packet);
-
-	// HUD тоже попадает в этот пакет
+	if(has_sector)
 	{
-		CurrentRenderContext::Scope tls_scope(m_scene_data.packet, m_TraversalContext);
-		if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
-			g_pGameLevel->pHUD->Render_Last();
+		update_light_tracking(m_scene_visibility_data.packet);
+		MergeCulledLights(m_scene_visibility_data.packet);
+	}
+
+	if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+	{
+		CurrentRenderContext::Scope tls_scope(m_scene_visibility_data.packet, m_scene_visibility_data.context);
+		g_pGameLevel->pHUD->Render_Last();
 	}
 }
 
@@ -283,122 +121,80 @@ IC float u_diffuse2s(float x, float y, float z)
 
 bool CRender::need_render_sun()
 {
-	if(!g_pGameLevel)
+	if (!g_pGameLevel)
 		return false;
 
-	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->get_color();
+	light* sun = (light*)Scene.GetLights().sun_adapted._get();
+	if (!sun)
+		return false;
+
+	Fcolor sun_color = sun->get_color();
 	return ps_r_lighting_flags.test(RFLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
 }
 
-void CRender::render_gbuffer_primary()
+void CRender::render_gbuffer()
 {
 	PROFILE_FUNCTION();
 
-	MainSceneWorkItem& readItem = m_scene_data;
-
 	Engine.Statistic->RenderCALC_GBuffer.Begin();
 	RenderBackend.enable_anisotropy_filtering();
-
 	set_gbuffer();
 
-	if(psDeviceFlags.test(rsWireframe))
+	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	SceneGraph.Render(readItem.packet, SceneGraphRenderType::Opaque, 0);
+	RenderBackend.set_ZWriteEnable(TRUE);
 
-	if(Details)
-		Details->Render(DetailsRenderMode::Default);
+	Scene.Render(m_scene_visibility_data, SceneRenderPresets::Opaque, true, true);
 
-	if(psDeviceFlags.test(rsWireframe))
+	if (Scene.GetDetails())
+		Scene.RenderDetails(DetailsRenderMode::Default);
+
+	set_active_phase(PHASE_HUD);
+	Scene.Render(m_scene_visibility_data, SceneRenderPresets::HUDOnly);
+	set_active_phase(PHASE_NORMAL);
+
+	if (Scene.GetWallmarks())
+	{
+		RenderBackend.set_ZWriteEnable(FALSE);
+		render_wallmarks();
+		Scene.RenderWallmarks();
+	}
+
+	if (psDeviceFlags.test(rsWireframe))
 		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	RenderBackend.disable_anisotropy_filtering();
 	Engine.Statistic->RenderCALC_GBuffer.End();
 }
 
-void CRender::render_gbuffer_secondary()
-{
-	PROFILE_FUNCTION();
-
-	MainSceneWorkItem& readItem = m_scene_data;
-
-	RenderBackend.enable_anisotropy_filtering();
-	set_gbuffer();
-
-	if(psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-
-	RenderBackend.set_ZWriteEnable(FALSE);
-
-	SceneGraph.Render(readItem.packet, SceneGraphRenderType::LOD, 0, true, true);
-
-	set_active_phase(PHASE_HUD);
-	SceneGraph.Render(readItem.packet, SceneGraphRenderType::HUD);
-	set_active_phase(PHASE_NORMAL);
-
-	if(psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-
-	RenderBackend.disable_anisotropy_filtering();
-}
-
 void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
-
-	// Берем данные из READ Item для Forward прохода
-	MainSceneWorkItem& currentReadItem = m_scene_data;
 
 	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
 	RenderBackend.set_Depth_Buffer(RenderBackend.GetBaseZB());
 	RenderBackend.set_CullMode(CULL_BACKFACE);
 	RenderBackend.set_Stencil(FALSE);
 
-	// ============================================
-	// PASS 1: Base Pass (Ambient + Texture + Hemi)
-	// ============================================
+	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.set_ZWriteEnable(TRUE);
+
+	set_active_phase(PHASE_NORMAL);
+
+	Scene.Render(m_scene_visibility_data, SceneRenderPresets::RenderForwardStage);
+
+	g_pGamePersistent->Environment().RenderThunderbolt();
+	g_pGamePersistent->Environment().RenderRain();
+
+	// Debug passes
+	if (ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
 	{
-		RenderBackend.set_ColorWriteEnable();
-		RenderBackend.set_ZWriteEnable(TRUE);
-
-		set_active_phase(PHASE_NORMAL);
-
-		// Рендерим собранное (Priority 1)
-		SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);
-		SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Transparent);
-
-		g_pGamePersistent->Environment().RenderThunderbolt();
-		g_pGamePersistent->Environment().RenderRain();
+		if (CSunOccluder* occ = Scene.GetSunOccluder())
+			occ->Render();
 	}
 
-	// ============================================
-	// PASS 3: Sun Light (Reuse)
-	// ============================================
-	/*
-	// Смена фазы
-	set_active_phase(PHASE_SUN_LIGHTING);
-
-	RenderBackend.set_ColorWriteEnable();
-	RenderBackend.SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-	RenderBackend.set_ZWriteEnable(FALSE);
-
-	SceneTraversalContext reuse_ctx = m_TraversalContext;
-	reuse_ctx.render_phase = PHASE_SUN_LIGHTING;
-
-	SceneGraph.RenderFromCache(reuse_ctx, currentReadItem.packet);
-
-	// DRAW
-	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Opaque, 1);
-	SceneGraph.Render(currentReadItem.packet, SceneGraphRenderType::Transparent);
-	*/
-
-	// ============================================
-	// PASS 4: Debug
-	// ============================================
-	if(ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
-		m_SunOccluder->Render();
-
-	if(ps_r_debug_flags.test(RFLAG_DRAW_HOM_OCCLUDERS))
+	if (ps_r_debug_flags.test(RFLAG_DRAW_HOM_OCCLUDERS))
 		CPUOCC.DrawDebug();
 }
 
@@ -408,18 +204,7 @@ void CRender::render_scene_to_gbuffer()
 
 	clear_gbuffer();
 
-	//******* Main render :: PART-0	-- first
-	render_gbuffer_primary();
-
-	//******* Main render :: PART-1 (second)
-	render_gbuffer_secondary();
-
-	// Wall marks
-	if(Wallmarks)
-	{
-		render_wallmarks();
-		Wallmarks->Render(); // wallmarks has priority as normal geometry
-	}
+	render_gbuffer();
 }
 
 void CRender::render_sun()
@@ -454,10 +239,10 @@ void CRender::render_lights()
 	set_light_accumulator();
 
 	// Lighting, non dependant on OCCQ
-	render_lights(LP_normal);
+	render_lights(Scene.GetNormalLights());
 
 	// Lighting, dependant on OCCQ
-	render_lights(LP_pending);
+	render_lights(Scene.GetPendingLights());
 
 	Engine.Statistic->RenderCALC_LIGHTS.End();
 }

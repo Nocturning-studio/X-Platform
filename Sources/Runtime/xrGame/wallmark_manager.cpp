@@ -79,13 +79,12 @@ void CWalmarkManager::PlaceWallmarks(const fvec3& start_pos)
 	//.	LPCSTR				sect				= pSettings->r_string(m_owner->cNameSect(), "wallmark_section");
 	Load("explosion_marks");
 
-	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CWalmarkManager::StartWorkflow));
+	Engine.ThreadManager.AddParallelTask([this]() { StartWorkflow(); });
 
 	StartWorkflow();
 }
 
-float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, float& pfTParam, fvec3& closest,
-			   fvec3& dir);
+float Distance(const fvec3& rkPoint, const fvec3 rkTri[3], float& pfSParam, float& pfTParam, fvec3& closest, fvec3& dir);
 
 void CWalmarkManager::StartWorkflow()
 {

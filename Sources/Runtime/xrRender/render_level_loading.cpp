@@ -1,3 +1,4 @@
+////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "render.h"
 #include "xrEngine/resourcemanager.h"
@@ -9,45 +10,26 @@
 #include <xrCore/stream_reader.h>
 #include "xrEngine/xr_ioconsole.h"
 #include "xrEngine/LevelLoadingScreen.h"
-
-#include <ppl.h>
-#include <future>
-#include <atomic>
-
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <malloc.h>
-#pragma warning(pop)
-
+////////////////////////////////////////////////////////////////////////////////
 struct ShaderRequest
 {
 	shared_str name;
 	shared_str textures;
 };
-
+////////////////////////////////////////////////////////////////////////////////
+//  LevelLoad
+////////////////////////////////////////////////////////////////////////////////
 void CRender::LevelLoad(IReader* fs)
 {
 	R_ASSERT(0 != g_pGameLevel);
-	R_ASSERT(!SceneGraph.b_loaded);
-
-	// Группа задач для Визуалов
-	concurrency::task_group tg_visuals;
-	std::atomic<int> active_tasks = 0;
-
-	// Хелпер
-	auto run_task = [&](concurrency::task_group& tg, auto func)
-	{
-		active_tasks++;
-		tg.run([func, &active_tasks]()
-			   {
-			func();
-			active_tasks--; });
-	};
+	R_ASSERT(!Scene.GetGraph().b_loaded);
 
 	Engine.LoadingScreen->Show();
 	Engine.ResourceManager->DeferredLoad(TRUE);
 
-	// RAM BUFFERING
+	////////////////////////////////////////////////////////////////////////////////
+	//  RAM BUFFERING
+	////////////////////////////////////////////////////////////////////////////////
 	fs->seek(0);
 	u32 level_size = fs->elapsed();
 	u8* level_data_ptr = (u8*)xr_malloc(level_size);
@@ -56,47 +38,32 @@ void CRender::LevelLoad(IReader* fs)
 
 	g_pGamePersistent->LoadTitle("st_loading_components");
 
-	// --- ОПТИМИЗАЦИЯ СЕРВЕРА: Пропускаем создание визуальных эффектов ---
-	if(!g_dedicated_server)
-	{
-		Wallmarks = xr_new<CWallmarksEngine>();
-		Details = xr_new<CDetailManager>();
-		m_SunOccluder = xr_new<CSunOccluder>();
-	}
-	else
-	{
-		Wallmarks = nullptr;
-		Details = nullptr;
-		m_SunOccluder = nullptr;
-	}
-	// ---------------------------------------------------------------------
-
-	// =================================================================================
-	// ШЕЙДЕРЫ (MAIN THREAD - СИНХРОННО)
-	// =================================================================================
+	////////////////////////////////////////////////////////////////////////////////
+	//  ШЕЙДЕРЫ
+	////////////////////////////////////////////////////////////////////////////////
 	g_pGamePersistent->LoadTitle("st_loading_shaders");
 	{
 		// RT шейдеры нужны только для картинки
-		if(!g_dedicated_server)
+		if (!g_dedicated_server)
 		{
 			Msg("* Compiling RenderTarget shaders...");
-			if(RenderTarget)
+			if (RenderTarget)
 				RenderTarget->CompileShaders();
 		}
 
 		IReader* chunk = mem_fs.open_chunk(fsL_SHADERS);
-		if(chunk)
+		if (chunk)
 		{
 			u32 count = chunk->r_u32();
 			Shaders.resize(count);
 
-			for(u32 i = 0; i < count; i++)
+			for (u32 i = 0; i < count; i++)
 			{
 				string512 n_sh, n_tlist;
 				LPCSTR n = LPCSTR(chunk->pointer());
 				chunk->skip_stringZ();
 
-				if(0 == n[0])
+				if (0 == n[0])
 					continue;
 
 				strcpy(n_sh, n);
@@ -110,7 +77,9 @@ void CRender::LevelLoad(IReader* fs)
 		}
 	}
 
-	// Геометрия
+	////////////////////////////////////////////////////////////////////////////////
+	//  ГЕОМЕТРИЯ
+	////////////////////////////////////////////////////////////////////////////////
 	{
 		g_pGamePersistent->LoadTitle("st_loading_geometry");
 
@@ -132,40 +101,25 @@ void CRender::LevelLoad(IReader* fs)
 
 	g_pGamePersistent->LoadTitle("st_loading_spatial_db");
 
-	// =================================================================================
-	// ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ОБЪЕКТОВ
-	// =================================================================================
-
-	// ЗАДАЧА A: Визуалы
-	// Загружаем даже на сервере, так как они нужны для RayPick'ов и определения хитбоксов
-	// в некоторых старых реализациях, а также для предотвращения пустых ссылок.
+	////////////////////////////////////////////////////////////////////////////////
+	//  ВИЗУАЛЫ
+	//  Синхронно — они нужны даже на server'е для ray-pick'ов.
+	////////////////////////////////////////////////////////////////////////////////
 	IReader local_fs(level_data_ptr, level_size);
 	LoadVisuals(&local_fs);
 
-	if(!g_dedicated_server)
+	if (!g_dedicated_server)
 	{
-		// ЗАДАЧА A: HOM (Hierarchical Occlusion Culling) - только для рендеринга
-		run_task(tg_visuals, [this]()
-				 { HOM.Load(); CPUOCC.Load(HOM); });
-
-		// ЗАДАЧА B: Детейлы (Трава)
-		run_task(tg_visuals, [this]()
-				 { Details->Load(); });
-
-		// ЗАДАЧА C: Sun Occluder
-		run_task(tg_visuals, [this]()
-				 { m_SunOccluder->Load(); });
+		Scene.LoadHOM(); 
+		CPUOCC.Load(Scene.GetHOM());
+		Scene.LoadDetails();
+		Scene.LoadSunOccluder();
+		Scene.LoadWallmarks();
 	}
 
-	// === ACTIVE WAIT ===
-	while(active_tasks > 0)
-	{
-		Engine.LoadingScreen->ForceRender();
-		Sleep(1);
-	}
-	tg_visuals.wait();
-
-	// Финализация (Main Thread)
+	////////////////////////////////////////////////////////////////////////////////
+	//  ФИНАЛИЗАЦИЯ
+	////////////////////////////////////////////////////////////////////////////////
 	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
 	{
 		IReader local_fs_sectors(level_data_ptr, level_size);
@@ -174,113 +128,99 @@ void CRender::LevelLoad(IReader* fs)
 
 	Engine.LoadingScreen->ForceRender();
 
+	////////////////////////////////////////////////////////////////////////////////
+	//  ИСТОЧНИКИ СВЕТА
+	////////////////////////////////////////////////////////////////////////////////
 	g_pGamePersistent->LoadTitle("st_loading_lights");
+	if (!g_dedicated_server)
 	{
-		if(!g_dedicated_server)
-		{
-			IReader local_fs_lights(level_data_ptr, level_size);
-			LoadLights(&local_fs_lights);
-		}
+		IReader local_fs_lights(level_data_ptr, level_size);
+		Scene.LoadLights(&local_fs_lights);
 	}
-	// ----------------------------------------------------------------------------
 
+	// -------------------------------------------------------------------------
 	xr_free(level_data_ptr);
 
-	// Очищаем списки через m_packet
-	SceneGraph.m_packet.lstLODs.clear();
-	SceneGraph.m_packet.lstLODgroups.clear();
-	SceneGraph.m_packet.mapLOD.clear();
+	// Сброс LOD-списков графа (Scene-owned данные).
+	{
+		SceneGraphPacket& packet = Scene.GetGraph().m_packet;
+		packet.lstLODs.clear();
+		packet.lstLODgroups.clear();
+		packet.mapLOD.clear();
+	}
 
-	SceneGraph.b_loaded = TRUE;
+	Scene.SetLoaded();
+	Scene.GetGraph().b_loaded = TRUE;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  LevelUnload
+////////////////////////////////////////////////////////////////////////////////
 void CRender::LevelUnload()
 {
-	if(0 == g_pGameLevel)
+	if (0 == g_pGameLevel)
 		return;
-	if(!SceneGraph.b_loaded)
+	if (!Scene.GetGraph().b_loaded)
 		return;
-
-	WaitForPendingTasks();
 
 	u32 I;
 
-	// HOM
-	g_pGamePersistent->LoadTitle("st_unloading_hom");
+	////////////////////////////////////////////////////////////////////////////////
+	//  HOM + CPUOCC
+	////////////////////////////////////////////////////////////////////////////////
 	CPUOCC.Unload();
-	HOM.Unload();
 
-	if(m_SunOccluder)
-	{
-		m_SunOccluder->Unload();
-		xr_delete(m_SunOccluder);
-	}
+	////////////////////////////////////////////////////////////////////////////////
+	//  Scene-owned level data
+	////////////////////////////////////////////////////////////////////////////////
+	Scene.Unload();
 
-	//*** Details
-	if(Details)
-	{
-		g_pGamePersistent->LoadTitle("st_unloading_details");
-		Details->Unload();
-		xr_delete(Details);
-	}
-	// ----------------------------------------------
-
-	//*** Sectors
-	g_pGamePersistent->LoadTitle("st_unloading_sectors_portals");
+	////////////////////////////////////////////////////////////////////////////////
+	//  Sectors / Portals
+	////////////////////////////////////////////////////////////////////////////////
 	xr_delete(rmPortals);
 	pLastSector = 0;
 	vLastCameraPos.set(0, 0, 0);
-	for(I = 0; I < Sectors.size(); I++)
+	for (I = 0; I < Sectors.size(); I++)
 		xr_delete(Sectors[I]);
 	Sectors.clear();
 	Portals.clear();
 
-	//*** Lights
-	g_pGamePersistent->LoadTitle("st_unloading_lights");
-	Lights.Unload();
-
-	//*** Visuals
-	g_pGamePersistent->LoadTitle("st_unloading_spatial_db");
-	for(I = 0; I < Visuals.size(); I++)
+	////////////////////////////////////////////////////////////////////////////////
+	//  Visuals
+	////////////////////////////////////////////////////////////////////////////////
+	for (I = 0; I < Visuals.size(); I++)
 	{
 		Visuals[I]->Release();
 		xr_delete(Visuals[I]);
 	}
 	Visuals.clear();
 
-	//*** VB/IB
-	g_pGamePersistent->LoadTitle("st_unloading_geometry");
-	for(I = 0; I < nVB.size(); I++)
-		_RELEASE(nVB[I]);
-	for(I = 0; I < xVB.size(); I++)
-		_RELEASE(xVB[I]);
+	////////////////////////////////////////////////////////////////////////////////
+	//  VB / IB
+	////////////////////////////////////////////////////////////////////////////////
+	for (I = 0; I < nVB.size(); I++) _RELEASE(nVB[I]);
+	for (I = 0; I < xVB.size(); I++) _RELEASE(xVB[I]);
 	nVB.clear();
 	xVB.clear();
-	for(I = 0; I < nIB.size(); I++)
-		_RELEASE(nIB[I]);
-	for(I = 0; I < xIB.size(); I++)
-		_RELEASE(xIB[I]);
+	for (I = 0; I < nIB.size(); I++) _RELEASE(nIB[I]);
+	for (I = 0; I < xIB.size(); I++) _RELEASE(xIB[I]);
 	nIB.clear();
 	xIB.clear();
 	nDC.clear();
 	xDC.clear();
 
-	//*** Components
-	g_pGamePersistent->LoadTitle("st_unloading_components");
-
-	// Details уже удален выше
-	if(Wallmarks)
-	{
-		xr_delete(Wallmarks);
-	}
-
-	//*** Shaders
-	g_pGamePersistent->LoadTitle("st_unloading_shaders");
+	////////////////////////////////////////////////////////////////////////////////
+	//  Shaders
+	////////////////////////////////////////////////////////////////////////////////
 	Shaders.clear_and_free();
 
-	SceneGraph.b_loaded = FALSE;
+	Scene.GetGraph().b_loaded = FALSE;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  LoadBuffers
+////////////////////////////////////////////////////////////////////////////////
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
 	R_ASSERT2(base_fs, "Could not load geometry. File not found.");
@@ -299,12 +239,11 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 		_DC.resize(count);
 		_VB.resize(count);
 
-		// Используем временный буфер для чтения
 		xr_vector<u8> temp_buffer;
 
-		for(u32 i = 0; i < count; i++)
+		for (u32 i = 0; i < count; i++)
 		{
-			// Читаем декларацию
+			// Декларация
 			u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
 			D3DVERTEXELEMENT9* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
 			fs->r(dcl, buffer_size);
@@ -314,21 +253,18 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			_DC[i].resize(dcl_len);
 			fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
 
-			// Читаем данные вершин
+			// Данные вершин
 			u32 vCount = fs->r_u32();
 			u32 vSize = D3DXGetDeclVertexSize(dcl, 0);
 			u32 byteSize = vCount * vSize;
 
 			Msg("* [Loading VB] %d verts, %d Kb", vCount, byteSize / 1024);
 
-			// Читаем в RAM
 			temp_buffer.resize(byteSize);
 			fs->r(temp_buffer.data(), byteSize);
 
-			// Создаем буфер
 			R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(byteSize, dwUsage, 0, D3DPOOL_DEFAULT, &_VB[i], 0));
 
-			// Копируем из RAM в VRAM
 			void* pData = 0;
 			R_CHK(_VB[i]->Lock(0, 0, (void**)&pData, 0));
 			CopyMemory(pData, temp_buffer.data(), byteSize);
@@ -345,17 +281,15 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
 		xr_vector<u8> temp_buffer;
 
-		for(u32 i = 0; i < count; i++)
+		for (u32 i = 0; i < count; i++)
 		{
 			u32 iCount = fs->r_u32();
 			u32 byteSize = iCount * 2;
 			Msg("* [Loading IB] %d indices, %d Kb", iCount, byteSize / 1024);
 
-			// ОПТИМИЗАЦИЯ: Читаем в RAM
 			temp_buffer.resize(byteSize);
 			fs->r(temp_buffer.data(), byteSize);
 
-			// Создаем и копируем
 			void* pData = 0;
 			R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(byteSize, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &_IB[i], 0));
 			R_CHK(_IB[i]->Lock(0, 0, (void**)&pData, 0));
@@ -366,6 +300,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  LoadVisuals
+////////////////////////////////////////////////////////////////////////////////
 void CRender::LoadVisuals(IReader* fs)
 {
 	IReader* chunk = 0;
@@ -374,10 +311,10 @@ void CRender::LoadVisuals(IReader* fs)
 	ogf_header H;
 
 	IReader* main_chunk = fs->open_chunk(fsL_VISUALS);
-	if(!main_chunk)
+	if (!main_chunk)
 		return;
 
-	while((chunk = main_chunk->open_chunk(index)) != 0)
+	while ((chunk = main_chunk->open_chunk(index)) != 0)
 	{
 		chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
 
@@ -391,11 +328,18 @@ void CRender::LoadVisuals(IReader* fs)
 	main_chunk->close();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  LoadLights
+//  Тонкая обёртка — весь load живёт в Scene.
+////////////////////////////////////////////////////////////////////////////////
 void CRender::LoadLights(IReader* fs)
 {
-	Lights.Load(fs);
+	Scene.LoadLights(fs);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  LoadSectors
+////////////////////////////////////////////////////////////////////////////////
 struct b_portal
 {
 	u16 sector_front;
@@ -405,20 +349,20 @@ struct b_portal
 
 void CRender::LoadSectors(IReader* fs)
 {
-	// allocate memory for portals
+	// Portals
 	u32 size = fs->find_chunk(fsL_PORTALS);
 	R_ASSERT(0 == size % sizeof(b_portal));
 	u32 count = size / sizeof(b_portal);
 	Portals.resize(count);
-	for(u32 c = 0; c < count; c++)
+	for (u32 c = 0; c < count; c++)
 		Portals[c] = xr_new<CPortal>();
 
-	// load sectors
+	// Sectors
 	IReader* S = fs->open_chunk(fsL_SECTORS);
-	for(u32 i = 0;; i++)
+	for (u32 i = 0;; i++)
 	{
 		IReader* P = S->open_chunk(i);
-		if(0 == P)
+		if (0 == P)
 			break;
 
 		CSector* __S = xr_new<CSector>();
@@ -429,24 +373,25 @@ void CRender::LoadSectors(IReader* fs)
 	}
 	S->close();
 
-	// load portals
-	if(count)
+	// Portal geometry + rmPortals
+	if (count)
 	{
 		CDB::Collector CL;
 		fs->find_chunk(fsL_PORTALS);
-		for(u32 i = 0; i < count; i++)
+		for (u32 i = 0; i < count; i++)
 		{
 			b_portal P;
 			fs->r(&P, sizeof(P));
 			CPortal* __P = (CPortal*)Portals[i];
 
-			__P->Setup(P.vertices.begin(), P.vertices.size(), (CSector*)getSector(P.sector_front),
-					   (CSector*)getSector(P.sector_back));
+			__P->Setup(P.vertices.begin(), P.vertices.size(),
+				(CSector*)getSector(P.sector_front),
+				(CSector*)getSector(P.sector_back));
 
-			for(u32 j = 2; j < P.vertices.size(); j++)
+			for (u32 j = 2; j < P.vertices.size(); j++)
 				CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
 		}
-		if(CL.getTS() < 2)
+		if (CL.getTS() < 2)
 		{
 			fvec3 v1, v2, v3;
 			v1.set(-20000.f, -20000.f, -20000.f);
@@ -455,7 +400,6 @@ void CRender::LoadSectors(IReader* fs)
 			CL.add_face_packed_D(v1, v2, v3, 0);
 		}
 
-		// build portal model
 		rmPortals = xr_new<CDB::MODEL>();
 		rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
 	}
@@ -467,10 +411,12 @@ void CRender::LoadSectors(IReader* fs)
 	pLastSector = 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  LoadSWIs
+////////////////////////////////////////////////////////////////////////////////
 void CRender::LoadSWIs(CStreamReader* base_fs)
 {
-	// allocate memory for portals
-	if(base_fs->find_chunk(fsL_SWIS))
+	if (base_fs->find_chunk(fsL_SWIS))
 	{
 		CStreamReader* fs = base_fs->open_chunk(fsL_SWIS);
 		u32 item_count = fs->r_u32();
@@ -478,13 +424,13 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 		xr_vector<FSlideWindowItem>::iterator it = SWIs.begin();
 		xr_vector<FSlideWindowItem>::iterator it_e = SWIs.end();
 
-		for(; it != it_e; ++it)
+		for (; it != it_e; ++it)
 			xr_free((*it).sw);
 
 		SWIs.clear_not_free();
 
 		SWIs.resize(item_count);
-		for(u32 c = 0; c < item_count; c++)
+		for (u32 c = 0; c < item_count; c++)
 		{
 			FSlideWindowItem& swi = SWIs[c];
 			swi.reserved[0] = fs->r_u32();
@@ -499,3 +445,4 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 		fs->close();
 	}
 }
+////////////////////////////////////////////////////////////////////////////////

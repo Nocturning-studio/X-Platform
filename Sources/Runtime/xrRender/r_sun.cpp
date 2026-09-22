@@ -339,54 +339,56 @@ void CRender::init_cacades()
 	m_sun_read_ix = 0;
 }
 
-void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& ctx)
+void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
-	light* sun = (light*)Lights.sun_adapted._get();
+	PROFILE_FUNCTION();
+
+	const CRenderView& RV = Engine.RenderView;
+
+	light* sun = (light*)Scene.GetLights().sun_adapted._get();
+	R_ASSERT(sun);
 
 	// Calculate view-frustum bounds in world space
 	fmat4x4 ex_project, ex_full, ex_full_inverse;
 	{
-		ex_project = ctx.RenderView.Project;
-		ex_full.mul(ex_project, ctx.RenderView.View);
+		ex_project = RV.Project;
+		ex_full.mul(ex_project, RV.View);
 		ex_full_inverse.invert_full(ex_full);
 	}
 
-	// Local variables for calculation
 	CFrustum cull_frustum;
 	xr_vector<Fplane> cull_planes;
 	fvec3 cull_COP;
-	CSector* cull_sector;
+	CSector* cull_sector = nullptr;
 	fmat4x4 cull_transform;
-
 	{
 		fmat4x4 fulltransform_inv = ex_full_inverse;
 
-		// Search for default sector (largest)
-		CSector* largest_sector = 0;
+		// Largest sector — это «корень» для traverser'а.
+		// Сектора — CRender-owned, поэтому доступ через Sectors.
 		float largest_sector_vol = 0;
-		for(u32 s = 0; s < Sectors.size(); s++)
+		for (u32 s = 0; s < Sectors.size(); s++)
 		{
 			CSector* S = (CSector*)Sectors[s];
 			IRender_Visual* V = S->root();
 			float vol = V->vis.box.getvolume();
-			if(vol > largest_sector_vol)
+			if (vol > largest_sector_vol)
 			{
 				largest_sector_vol = vol;
-				largest_sector = S;
+				cull_sector = S;
 			}
 		}
-		cull_sector = largest_sector;
 
-		// COP - 100 km away
-		cull_COP.mad(ctx.RenderView.Position, sun->get_direction(), -tweak_COP_initial_offs);
+		// COP на 1200 м позади камеры в сторону солнца
+		cull_COP.mad(RV.Position, sun->get_direction(), -tweak_COP_initial_offs);
 
-		// Create approximate ortho-transform
+		// Орто-трансформ солнца
 		fmat4x4 mdir_View, mdir_Project;
 		fvec3 L_dir, L_up, L_right, L_pos;
 		L_pos.set(sun->get_position());
 		L_dir.set(sun->get_direction()).normalize();
 		L_right.set(1, 0, 0);
-		if(_abs(L_right.dotproduct(L_dir)) > .99f)
+		if (_abs(L_right.dotproduct(L_dir)) > .99f)
 			L_right.set(0, 0, 1);
 		L_up.crossproduct(L_dir, L_right).normalize();
 		L_right.crossproduct(L_up, L_dir).normalize();
@@ -397,20 +399,17 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
 #else
 		typedef FixedConvexVolume<false> t_cuboid;
 #endif
-
 		t_cuboid light_cuboid;
 		{
-			// Initialize rays for this cascade
-			if(cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
+			if (cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
 			{
 				fvec3 near_p, edge_vec;
-				for(int p = 0; p < 4; p++)
+				for (int p = 0; p < 4; p++)
 				{
 					near_p = project(fulltransform_inv, corners[facetable[4][p]]);
 					edge_vec = project(fulltransform_inv, corners[facetable[5][p]]);
 					edge_vec.sub(near_p);
 					edge_vec.normalize();
-
 					light_cuboid.view_frustum_rays.push_back(Sun::Ray(near_p, edge_vec));
 				}
 			}
@@ -419,24 +418,24 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
 				light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
 			}
 
-			light_cuboid.view_ray.Position = ctx.RenderView.Position;
-			light_cuboid.view_ray.Direction = ctx.RenderView.Direction;
+			light_cuboid.view_ray.Position = RV.Position;
+			light_cuboid.view_ray.Direction = RV.Direction;
 			light_cuboid.light_ray.Position = L_pos;
 			light_cuboid.light_ray.Direction = L_dir;
 		}
 
 		Fplane light_top_plane;
 		light_top_plane.build_unit_normal(L_pos, L_dir);
-		float dist = light_top_plane.classify(ctx.RenderView.Position);
+		float dist = light_top_plane.classify(RV.Position);
 
 		float map_size = m_sun_cascades[cascade_ind].size;
 		mdir_Project.build_projection_ortho(map_size, map_size, 0.1f, dist + map_size);
 
-		float view_dim = float(RenderImplementation.o.smapsize);
-		fmat4x4 m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f,
-							  0.0f, -view_dim / 2.f, 0.0f, 0.0f,
-							  0.0f, 0.0f, 1.0f, 0.0f,
-							  view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
+		float view_dim = float(o.smapsize);
+		fmat4x4 m_viewport = { view_dim / 2.f,	0.0f,				0.0f, 0.0f,
+							   0.0f,			-view_dim / 2.f,	0.0f, 0.0f,
+							   0.0f,			0.0f,				1.0f, 0.0f,
+							   view_dim / 2.f,	view_dim / 2.f,		0.0f, 1.0f };
 
 		fmat4x4 m_viewport_inv;
 		m_viewport_inv.invert(m_viewport);
@@ -445,29 +444,20 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
 		fmat4x4 cull_transform_inv;
 		cull_transform_inv.invert(cull_transform);
 
-		for(int p = 0; p < 8; p++)
-		{
-			fvec3 xf = project(cull_transform_inv, corners[p]);
-			light_cuboid.light_cuboid_points[p] = xf;
-		}
+		for (int p = 0; p < 8; p++)
+			light_cuboid.light_cuboid_points[p] = project(cull_transform_inv, corners[p]);
 
-		for(int plane = 0; plane < 4; plane++)
-			for(int pt = 0; pt < 4; pt++)
-			{
-				int asd = facetable[plane][pt];
-				light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
-			}
+		for (int plane = 0; plane < 4; plane++)
+			for (int pt = 0; pt < 4; pt++)
+				light_cuboid.light_cuboid_polys[plane].points[pt] = facetable[plane][pt];
 
 		fvec3 lightXZshift;
 		light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size, m_sun_cascades[cascade_ind].reset_chain);
 
-		if(cascade_ind < m_sun_cascades.size() - 1)
+		if (cascade_ind < m_sun_cascades.size() - 1)
 			m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
-		fvec3 proj_view = ctx.RenderView.Direction;
-		proj_view.y = 0;
-		proj_view.normalize();
-
+		// Snap стабильности
 		fvec3 cam_shifted = L_pos;
 		cam_shifted.add(lightXZshift);
 
@@ -477,12 +467,11 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
 		cull_transform.mul(mdir_Project, mdir_View);
 		cull_transform_inv.invert(cull_transform);
 
-		// Create frustum for query
 		cull_frustum._clear();
-		for(u32 p = 0; p < cull_planes.size(); p++)
+		for (u32 p = 0; p < cull_planes.size(); p++)
 			cull_frustum._add(cull_planes[p]);
 
-		fvec3 cam_proj = ctx.RenderView.Position;
+		fvec3 cam_proj = RV.Position;
 		const float align_aim_step_coef = 4.f;
 		cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2,
 					 floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
@@ -523,34 +512,47 @@ void CRender::prepare_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, 
 	item.cull_COP = cull_COP;
 }
 
-void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item, const SceneTraversalContext& base_ctx)
+void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
-	SceneTraversalContext local_ctx = base_ctx;
-	local_ctx.frustum = &item.cull_frustum;
+	PROFILE_FUNCTION();
 
-	CurrentRenderContext::Scope tls_scope(item.packet, local_ctx);
+	SSceneVisibilityRequest req;
+	req.render_view = Engine.RenderView;
+	req.render_view.ViewProjection = item.cull_transform;
+	req.traversal_position = item.cull_COP;
+	req.use_traversal_position = true;
+	req.start_sector = item.cull_sector;
+	req.use_hom = false;
+	req.use_feedback = false;
+	req.frustum_override = &item.cull_frustum;
+	req.render_phase = CRender::PHASE_SHADOW_DEPTH;
+	req.flags = SceneRenderPresets::Opaque;
+	req.culling_bounds = nullptr;
 
-	SceneGraph.BuildScene(item.cull_sector, &item.cull_frustum, item.cull_transform, item.cull_COP, TRUE, FALSE, item.packet, local_ctx);
+	Scene.ComputeVisibility(req, item.vis_result);
 }
 
 void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 {
-	OPTICK_EVENT("Draw Cascade");
+	PROFILE_FUNCTION();
 
-	light* sun = (light*)Lights.sun_adapted._get();
+	light* sun = (light*)Scene.GetLights().sun_adapted._get();
+	R_ASSERT(sun);
 
 	sun->TransformContext.Sun.combine = item.cull_transform;
 	sun->TransformContext.Sun.minX = 0;
-	sun->TransformContext.Sun.maxX = RenderImplementation.o.smapsize;
+	sun->TransformContext.Sun.maxX = o.smapsize;
 	sun->TransformContext.Sun.minY = 0;
-	sun->TransformContext.Sun.maxY = RenderImplementation.o.smapsize;
+	sun->TransformContext.Sun.maxY = o.smapsize;
 
 	set_active_phase(PHASE_SHADOW_DEPTH);
 
-	bool bNormal = item.packet.queue_static[0].size() || item.packet.queue_dynamic[0].size();
-	bool bSpecial = item.packet.queue_static[1].size() || item.packet.queue_dynamic[1].size() || item.packet.queue_transparent.size();
+	SceneGraphPacket& packet = item.vis_result.packet;
 
-	if(bNormal || bSpecial)
+	const bool bNormal = packet.queue_static[0].size() || packet.queue_dynamic[0].size();
+	const bool bSpecial = packet.queue_static[1].size() || packet.queue_dynamic[1].size() || packet.queue_transparent.size();
+
+	if (bNormal || bSpecial)
 	{
 		render_shadow_map_sun(sun, cascade_ind);
 
@@ -558,51 +560,39 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		RenderBackend.set_transform_view(Fidentity);
 		RenderBackend.set_transform_project(sun->TransformContext.Sun.combine);
 
-		if(m_SunOccluder)
-			m_SunOccluder->Render();
+		if (CSunOccluder* occ = Scene.GetSunOccluder())
+			occ->Render();
 
-		SceneGraph.Render(item.packet, SceneGraphRenderType::Opaque);
+		Scene.Render(item.vis_result, SceneRenderPresets::Opaque);
 
-		if(g_pGameLevel)
+		if (g_pGameLevel)
 			g_pGameLevel->pHUD->Render_Actor_Shadow();
 
-		if(ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
-			Details->Render(DetailsRenderMode::DepthOnly, &item.cull_transform, &item.cull_frustum);
+		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
+			Scene.RenderDetails(DetailsRenderMode::DepthOnly,
+				&item.cull_transform,
+				&item.cull_frustum);
 
 		sun->TransformContext.Sun.transluent = FALSE;
 	}
 
 	set_light_accumulator();
-
-	accumulate_sun(cascade_ind,
-				   item.cull_transform,
-				   item.cull_transform);
+	accumulate_sun(cascade_ind, item.cull_transform, item.cull_transform);
 }
 
 void __stdcall CRender::schedule_cascades()
 {
+	PROFILE_FUNCTION();
+
 	SunCascadeBuffer& writeBuffer = GetSunWriteBuffer();
 	writeBuffer.Clear();
 
-	// Создаём контекст для фоновой сборки
-	SceneTraversalContext shadow_ctx;
-	shadow_ctx.RenderView = Engine.RenderView;
-	shadow_ctx.use_hom = false;
-	shadow_ctx.use_feedback = false;
-	shadow_ctx.fetch_config = SceneGraphFetchConfig(true, true, false);
-	shadow_ctx.culling_bounds = nullptr;
-	shadow_ctx.render_phase = CRender::PHASE_SHADOW_DEPTH;
-
-	for(u32 i = 0; i < m_sun_cascades.size(); ++i)
+	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
 	{
-		// Подготовка матриц каскадов
-		prepare_sun_cascade(i, *writeBuffer.items[i], shadow_ctx);
-
-		// Сборка сцены для каждого каскада
-		gather_scene_for_cascade(i, *writeBuffer.items[i], shadow_ctx);
+		prepare_sun_cascade(i, *writeBuffer.items[i]);
+		gather_scene_for_cascade(i, *writeBuffer.items[i]);
 	}
 
-	// Отмечаем завершение
 	{
 		std::lock_guard<std::mutex> lock(m_sun_gather_mutex);
 		m_sun_gather_done = true;
@@ -612,6 +602,8 @@ void __stdcall CRender::schedule_cascades()
 
 void CRender::wait_for_sun_task()
 {
+	PROFILE_FUNCTION();
+
 	std::unique_lock<std::mutex> lock(m_sun_gather_mutex);
 	m_sun_gather_cv.wait(lock, [this]
 						 { return m_sun_gather_done.load(); });

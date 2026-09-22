@@ -3,7 +3,7 @@
 
 #include "GameFont.h"
 #ifndef _EDITOR
-#include "Render.h"
+#include "IRender.h"
 #endif
 #ifdef _EDITOR
 unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const unsigned short int WideStrSize,

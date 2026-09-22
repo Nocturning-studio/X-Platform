@@ -128,6 +128,10 @@ class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_Phr
 	CCoverEvaluatorAmbush* m_ce_ambush;
 	CCoverEvaluatorBestByTime* m_ce_best_by_time;
 
+public:
+	CThreadManager::TaskID m_visibility_calculation_taskID = 0;
+	CThreadManager::TaskID m_objectHandlerTaskId = 0;
+
 	// physics support
   public:
 	CCharacterPhysicsSupport* m_pPhysics_support;

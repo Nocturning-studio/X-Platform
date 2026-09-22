@@ -10,7 +10,7 @@
 #pragma warning(default : 4995)
 
 #ifndef _EDITOR
-#include "Render.h"
+#include "IRender.h"
 #endif
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"

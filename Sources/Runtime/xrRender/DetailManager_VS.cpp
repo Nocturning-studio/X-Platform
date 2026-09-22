@@ -9,7 +9,7 @@
 #include "..\xrEngine\environment.h"
 #endif
 const int quant = 16384;
-// === ИЗМЕНЕНИЕ 1: Декларация вершин ===
+
 // Stream 0: Геометрия (Model)
 // Stream 1: Данные инстансов (Matrix + Color)
 static D3DVERTEXELEMENT9 dwDecl_Details[] = {
@@ -28,7 +28,7 @@ static D3DVERTEXELEMENT9 dwDecl_Details[] = {
 struct vertHW
 {
 	float x, y, z;
-	short u, v, t, mid; // mid больше не нужен по факту, но оставим для выравнивания или u/v packing
+	short u, v, t, mid;
 };
 #pragma pack(pop)
 short QC(float v)
@@ -41,13 +41,8 @@ short QC(float v)
 #pragma hdrstop
 #include "detailmanager.h"
 
-// ... (Оставляем начальные инклуды и структуры вершин без изменений) ...
-
 void CDetailManager::hw_Load()
 {
-	// Увеличиваем буфер. 128k * 64 байта = 8 МБ.
-	// Это гарантирует, что мы сможем отрисовать огромное количество травы
-	// без частых сбросов (DISCARD), что уберет "фризы" CPU.
 	hw_MaxInstances = 128 * 1024;
 	hw_BatchOffset = 0; // Сброс оффсета в начало
 	hw_CurrentVB = 0;
@@ -70,7 +65,6 @@ void CDetailManager::hw_Load()
 	R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(dwVerts * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &hw_VB, 0));
 	R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
 
-	// Create Instance VB (DYNAMIC !!!)
 	for(int i = 0; i < 3; ++i)
 	{
 		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData),
@@ -110,7 +104,7 @@ void CDetailManager::hw_Load()
 		R_CHK(hw_VB->Unlock());
 	}
 
-	// Заполнение индексов (без изменений)
+	// Заполнение индексов
 	{
 		u16* pI;
 		R_CHK(hw_IB->Lock(0, 0, (void**)(&pI), 0));
@@ -278,8 +272,7 @@ ref_selement CDetailManager::SelectShader(CDetail& Object, DetailsRenderMode mod
 	return Object.shader->E[id];
 }
 
-void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType,
-									EDetailShaderType shaderType)
+void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisibilityList visListType, EDetailShaderType shaderType)
 {
 	Engine.Statistic->RenderDUMP_DT_Count = 0;
 	vis_per_wave& list = m_visibles[m_vis_render_id][visListType];
@@ -408,8 +401,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 		RenderBackend.GetDevice()->SetStreamSourceFreq(1, D3DSTREAMSOURCE_INSTANCEDATA | 1);
 
 		u32 primCount = mb.object->number_indices / 3;
-		RenderBackend.Render(D3DPT_TRIANGLELIST, mb.vOffset, 0, mb.object->number_vertices,
-							 mb.iOffset, primCount);
+		RenderBackend.Render(D3DPT_TRIANGLELIST, mb.vOffset, 0, mb.object->number_vertices, mb.iOffset, primCount);
 
 		Engine.Statistic->RenderDUMP_DT_Count += mb.instanceCount;
 		RenderBackend.stat.r.s_details.add(mb.instanceCount * mb.object->number_vertices);

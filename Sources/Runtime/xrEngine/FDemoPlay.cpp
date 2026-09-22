@@ -4,7 +4,7 @@
 #include "fdemoplay.h"
 #include "xr_ioconsole.h"
 #include "motion.h"
-#include "Render.h"
+#include "IRender.h"
 #include "CameraManager.h"
 #include "demo_common.h"
 #include "gamefont.h"

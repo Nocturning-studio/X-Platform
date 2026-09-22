@@ -47,7 +47,7 @@ CPortalTraverser::SectorVisibility& CPortalTraverser::GetOrAddSectorData(CSector
 	return vis;
 }
 
-void CPortalTraverser::Traverse(CSector* start, CFrustum& frustum, fvec3& view_pos, fmat4x4& xform, u32 options)
+void CPortalTraverser::Traverse(CSector* start, const CFrustum& frustum, const fvec3& view_pos, const fmat4x4& xform, u32 options)
 {
 	VERIFY(start);
 	Reset(); // Очистка перед запуском
@@ -217,21 +217,21 @@ void CPortalTraverser::RecursiveTraverse(CSector* current_sector, const CFrustum
 					continue;
 
 				// HOM Culling (Быстрый тест по AABB сциссора)
-				if((m_options & VQ_HOM) && RenderImplementation.HOM.invisible(next_scissor, depth))
+				if((m_options & VQ_HOM) && RenderImplementation.Scene.GetHOM().invisible(next_scissor, depth))
 					continue;
 			}
 			else
 			{
 				// Если портал пересекает near plane, scissor не эффективен,
 				// проверяем полигон целиком через HOM (медленно)
-				if((m_options & VQ_HOM) && RenderImplementation.HOM.invisible(*clipped_poly))
+				if((m_options & VQ_HOM) && RenderImplementation.Scene.GetHOM().invisible(*clipped_poly))
 					continue;
 			}
 		}
 		else
 		{
 			// Если сциссора нет, проверяем просто полигон
-			if((m_options & VQ_HOM) && RenderImplementation.HOM.invisible(*clipped_poly))
+			if((m_options & VQ_HOM) && RenderImplementation.Scene.GetHOM().invisible(*clipped_poly))
 				continue;
 		}
 

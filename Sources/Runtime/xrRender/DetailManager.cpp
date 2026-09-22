@@ -199,7 +199,7 @@ void CDetailManager::UpdateVisibility()
 				continue;
 
 #ifndef _EDITOR
-			if(RenderImplementation.HOM.invisible(MS.vis))
+			if(RenderImplementation.Scene.GetHOM().invisible(MS.vis))
 				continue;
 #endif
 
@@ -219,7 +219,7 @@ void CDetailManager::UpdateVisibility()
 				}
 
 #ifndef _EDITOR
-				if(RenderImplementation.HOM.invisible(S.vis))
+				if(RenderImplementation.Scene.GetHOM().invisible(S.vis))
 					continue;
 #endif
 
@@ -346,7 +346,7 @@ void __stdcall CDetailManager::MT_CALC()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if(0 == RenderImplementation.Details)
+	if(0 == RenderImplementation.Scene.GetDetails())
 		return;
 	if(0 == dtFS)
 		return;

@@ -302,12 +302,10 @@ void CCustomMonster::shedule_Update(u32 DT)
 	if(g_Alive())
 	{
 #ifndef DEBUG
-		Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility),
-											 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+		m_visibility_calculation_taskID = Engine.ThreadManager.AddParallelTask([this]() { Exec_Visibility(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 #else  // DEBUG
 		if(!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-			Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility),
-												 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+			m_visibility_calculation_taskID = Engine.ThreadManager.AddParallelTask([this]() { Exec_Visibility(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 		else
 			Exec_Visibility();
 #endif // DEBUG
@@ -422,8 +420,7 @@ void CCustomMonster::UpdateCL()
 	}
 	*/
 
-	Engine.ThreadManager.AddParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::update_sound_player),
-										 CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
+	m_sound_player_taskID = Engine.ThreadManager.AddParallelTask([this]() { update_sound_player(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 
 	START_PROFILE("CustomMonster/client_update/network extrapolation")
 	if(NET.empty())
@@ -756,18 +753,15 @@ void CCustomMonster::OnEvent(NET_Packet& P, u16 type)
 
 void CCustomMonster::net_Destroy()
 {
-	// 1. СНАЧАЛА убираем задачи из параллельных потоков, чтобы они не обратились к битой памяти
-	Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::update_sound_player));
-	Engine.ThreadManager.RemoveParallelTask(CThreadManager::ParallelTask(this, &CCustomMonster::Exec_Visibility));
+	Engine.ThreadManager.RemoveParallelTask(m_sound_player_taskID);
+	Engine.ThreadManager.RemoveParallelTask(m_visibility_calculation_taskID);
 
-	// 2. Теперь безопасно вызываем родительские деструкторы
-	inherited::net_Destroy(); // Здесь, скорее всего, удаляется m_entity_condition
+	inherited::net_Destroy();
 	CScriptEntity::net_Destroy();
 
 	sound().unload();
 	movement().net_Destroy();
 
-	// Исправление проблемы с зависающей шкалой
 	Actor()->SetActorVisibility(ID(), 0.f);
 
 #ifdef DEBUG

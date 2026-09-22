@@ -588,8 +588,8 @@ class CCC_DetailQuality : public CCC_Token
 		}
 
 		// Обновляем кеш
-		if(RenderImplementation.Details)
-			RenderImplementation.Details->InvalidateCache();
+		if(RenderImplementation.Scene.GetDetails())
+			RenderImplementation.Scene.GetDetails()->InvalidateCache();
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////

@@ -11,7 +11,7 @@
 #include "SkeletonX.h"
 #include "fmesh.h"
 #ifndef _EDITOR
-#include "Render.h"
+#include "IRender.h"
 #endif
 int psSkeletonUpdate = 32;
 xrCriticalSection UCalc_Mutex
@@ -299,8 +299,8 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 		data->r(&pBone->obb, sizeof(Fobb));
 		visimask.set(u64(1) << ID, TRUE);
 	}
-	concurrency::parallel_sort(bone_map_N->begin(), bone_map_N->end(), pred_sort_N);
-	concurrency::parallel_sort(bone_map_P->begin(), bone_map_P->end(), pred_sort_P);
+	std::sort(bone_map_N->begin(), bone_map_N->end(), pred_sort_N);
+	std::sort(bone_map_P->begin(), bone_map_P->end(), pred_sort_P);
 
 	// Attach bones to their parents
 	iRoot = BI_NONE;
@@ -788,7 +788,7 @@ void CKinematics::CalculateWallmarks()
 			if(w < 1.f)
 			{
 				// append wm to WallmarkEngine
-				if(::Render->ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
+				if(::Render->get_Frustum()->testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
 					::Render->add_SkeletonWallmark(wm);
 			}
 			else

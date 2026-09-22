@@ -2,7 +2,7 @@
 // OLES
 #include "stdafx.h"
 #include "HitMarker.h"
-#include "xrEngine/render.h"
+#include "xrEngine/IRender.h"
 #include "xrEngine/LightAnimLibrary.h"
 #include "UIStaticItem.h"
 

@@ -8,7 +8,7 @@
 #include "FHierrarhyVisual.h"
 #include "fmesh.h"
 #ifndef _EDITOR
-#include "render.h"
+#include "IRender.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////

@@ -5,7 +5,7 @@
 #include "Engine.h"
 #include "std_classes.h"
 #include "customHUD.h"
-#include "render.h"
+#include "IRender.h"
 #include "gamefont.h"
 #include "xrLevel.h"
 #include "CameraManager.h"
@@ -39,13 +39,10 @@ IGame_Level::~IGame_Level()
 	xr_delete(pLevel);
 
 	// Render-level unload
-	g_pGamePersistent->LoadTitle("st_start_level_unloading");
 	Render->LevelUnload();
 
-	g_pGamePersistent->LoadTitle("st_unloading_env_mods");
 	g_pGamePersistent->Environment().mods_unload();
 
-	g_pGamePersistent->LoadTitle("st_unloading_weathers");
 	g_pGamePersistent->Environment().unload();
 
 	xr_delete(m_pCameras);

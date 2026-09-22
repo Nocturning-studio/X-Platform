@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 #include "Tracer.h"
-#include "xrEngine/render.h"
+#include "xrEngine/IRender.h"
 
 const u32 MAX_TRACERS = (1024 * 5);
 const float TRACER_SIZE = 0.13f;
@@ -92,12 +92,11 @@ IC void FillSprite_Line(FVF::LIT*& pv, const fvec3& pos, const fvec3& dir, float
 	pv++;
 }
 
-void CTracer::Render(FVF::LIT*& verts, const fvec3& pos, const fvec3& center, const fvec3& dir, float length,
-					 float width, u8 colorID)
+void CTracer::Render(FVF::LIT*& verts, const fvec3& pos, const fvec3& center, const fvec3& dir, float length, float width, u8 colorID)
 {
 	// OPTICK_EVENT("CTracer::Render");
 
-	if(::Render->ViewBase.testSphere_dirty((fvec3&)center, length * .5f))
+	if(::Render->get_Frustum()->testSphere_dirty((fvec3&)center, length * .5f))
 	{
 		if(colorID >= m_aColors.size())
 			colorID = 0;

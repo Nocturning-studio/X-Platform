@@ -1,4 +1,5 @@
 #pragma once
+#include "SceneGraph.h"
 
 class smapvis : public R_feedback
 {

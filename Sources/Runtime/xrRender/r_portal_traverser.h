@@ -75,7 +75,7 @@ class CPortalTraverser
 	void Reset();
 
 	// Основной метод запуска обхода
-	void Traverse(CSector* start, CFrustum& frustum, fvec3& view_pos, fmat4x4& xform, u32 options);
+	void Traverse(CSector* start, const CFrustum& frustum, const fvec3& view_pos, const fmat4x4& xform, u32 options);
 
 	// Доступ к результатам
 	const xr_vector<SectorVisibility>& GetVisibleSectors() const
