@@ -5,6 +5,7 @@ class R_transforms;
 struct STextureList;
 class CTexture;
 class R_constant_table;
+class CShaderPass;
 struct IDirect3DStateBlock9;
 struct IDirect3DPixelShader9;
 struct IDirect3DVertexShader9;
@@ -24,6 +25,8 @@ class ENGINE_API CBackendResourceBinder
 	// Shaders
 	void SetPixelShader(CRenderBackend& backend, IDirect3DPixelShader9* ps, LPCSTR name = nullptr);
 	void SetVertexShader(CRenderBackend& backend, IDirect3DVertexShader9* vs, LPCSTR name = nullptr);
+	void SetShaderPass(CRenderBackend& backend, CShaderPass* pass);
+	void SetShaderPass(CRenderBackend& backend, CShaderPass& pass) { SetShaderPass(backend, &pass); }
 
 	// Vertex declaration & buffers
 	void SetVertexDeclaration(CRenderBackend& backend, IDirect3DVertexDeclaration9* decl);

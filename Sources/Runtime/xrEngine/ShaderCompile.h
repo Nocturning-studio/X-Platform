@@ -282,7 +282,7 @@ class CShaderDependencyManager
 };
 
 //----------------------------------------------------------------
-class CShaderIncluder : public ID3DXInclude
+class CShaderIncluderLegacy : public ID3DXInclude
 {
   private:
 	u32 counter = 0;
@@ -642,7 +642,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 		}
 	}
 
-	CShaderIncluder Includer;
+	CShaderIncluderLegacy Includer;
 	ID3DXBuffer* pShaderBuf = NULL;
 	ID3DXBuffer* pErrorBuf = NULL;
 	ID3DXConstantTable* pConstants = NULL;

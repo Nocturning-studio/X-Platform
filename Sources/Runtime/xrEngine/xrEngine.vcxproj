@@ -804,7 +804,11 @@
     <ClInclude Include="R_Backend_Data_Streams.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCompile.h" />
+    <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="ShaderIncluder.h" />
     <ClInclude Include="ShaderMacros.h" />
+    <ClInclude Include="ShaderPass.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ShaderResourceTraits.h" />
     <ClInclude Include="Shader_xrLC.h" />
     <ClInclude Include="SH_Atomic.h" />
@@ -1003,7 +1007,11 @@
     <ClCompile Include="r_constants.cpp" />
     <ClCompile Include="R_Backend_Data_Streams.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="ShaderIncluder.cpp" />
     <ClCompile Include="ShaderMacros.cpp" />
+    <ClCompile Include="ShaderPass.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="SH_Atomic.cpp" />
     <ClCompile Include="SH_Texture.cpp" />
     <ClCompile Include="SkeletonAnimated.cpp" />

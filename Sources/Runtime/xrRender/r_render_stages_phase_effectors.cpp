@@ -201,12 +201,26 @@ void CRender::render_effectors_pass_combine()
 	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
+#include <xrEngine/ShaderPass.h>
+
 void CRender::render_effectors_pass_resolve_gamma()
 {
 	RenderBackend.set_CullMode(CULL_DISABLE);
 	RenderBackend.set_Stencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RESOLVE_GAMMA]);
+	CShaderPass pass;
+	pass.SetVertexShader("test.hlsl", "vs_main");
+	pass.SetPixelShader("test.hlsl", "ps_main");
+
+	if (!pass.Compile(RenderBackend.GetDevice()))
+	{
+		Msg("! pass failed to compile");
+		return;
+	}
+
+	RenderBackend.SetShaderPass(pass);
+
+	//RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RESOLVE_GAMMA]);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 

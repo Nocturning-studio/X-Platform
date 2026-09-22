@@ -3,6 +3,7 @@
 #include "R_Backend.h"
 #include "sh_texture.h"
 #include "r_constants.h"
+#include "ShaderPass.h" 
 
 // ----------------------------------------------------------------
 // Invalidate
@@ -88,6 +89,32 @@ void CBackendResourceBinder::D3D_SetVertexShader(IDirect3DDevice9Ex* device, IDi
 {
 	HRESULT hr = device->SetVertexShader(vs);
 	VERIFY(SUCCEEDED(hr));
+}
+
+// ----------------------------------------------------------------
+// Shader Pass
+// ----------------------------------------------------------------
+void CBackendResourceBinder::SetShaderPass(CRenderBackend& backend, CShaderPass* pass)
+{
+	if (!pass)
+	{
+		SetVertexShader(backend, nullptr, nullptr);
+		SetPixelShader(backend, nullptr, nullptr);
+		return;
+	}
+
+	IDirect3DVertexShader9* vs = pass->GetRawVertexShader();
+	IDirect3DPixelShader9* ps = pass->GetRawPixelShader();
+
+#ifdef DEBUG
+	LPCSTR vsName = vs ? pass->GetVertexShaderFile() : nullptr;
+	LPCSTR psName = ps ? pass->GetPixelShaderFile() : nullptr;
+	SetVertexShader(backend, vs, vsName);
+	SetPixelShader(backend, ps, psName);
+#else
+	SetVertexShader(backend, vs);
+	SetPixelShader(backend, ps);
+#endif
 }
 
 // ----------------------------------------------------------------

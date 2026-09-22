@@ -11,6 +11,8 @@
 #include "xrRHI/xrRHI.h"
 #include <DXSDK/d3dx9.h>
 
+class CShaderPass;
+
 const u32 CULL_BACKFACE = D3DCULL_CCW;
 const u32 CULL_FRONTFACE = D3DCULL_CW;
 const u32 CULL_DISABLE = D3DCULL_NONE;
@@ -215,6 +217,9 @@ class ENGINE_API CRenderBackend
 
 	IC void set_Shader(Shader* S, u32 pass = 0) { set_Element(S->E[0], pass); }
 	IC void set_Shader(ref_shader& S, u32 pass = 0) { set_Shader(&*S, pass); }
+
+	ICF void SetShaderPass(CShaderPass* pass) { m_resBinder.SetShaderPass(*this, pass); }
+	ICF void SetShaderPass(CShaderPass& pass) { m_resBinder.SetShaderPass(*this, pass); }
 
 	ICF void set_States(IDirect3DStateBlock9* _state) { m_resBinder.SetStates(*this, _state); }
 	ICF void set_States(ref_state& _state) { set_States(_state->state); }
