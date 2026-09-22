@@ -17,5 +17,3 @@
 #include <xrMath/xrMath.h>
 #include <xrCore/xrCore.h>
 #include <xrRHI/xrRHI.h>
-#include <xrEngine/defines.h>
-

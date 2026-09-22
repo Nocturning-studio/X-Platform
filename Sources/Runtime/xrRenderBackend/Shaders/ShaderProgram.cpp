@@ -6,6 +6,7 @@
 #include "pch.h"
 #include "ShaderProgram.h"
 #include "ShaderIncluder.h"
+#include <xrEngine/defines.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace
 {
