@@ -1,5 +1,3 @@
-#define RHI_BEGIN namespace xrRHI {
-#define RHI_END }
 #define XRRHI_API __declspec(dllexport)
 #define XRRHI_API __declspec(dllimport)
 #define DEPRECATED(x) [[deprecated(x)]]

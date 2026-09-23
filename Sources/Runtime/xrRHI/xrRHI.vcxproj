@@ -107,7 +107,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalIncludeDirectories>$(ProjectDir)Backends\DirectX9\</AdditionalIncludeDirectories>
       <CombineFilesOnlyFromTheSameFolder>true</CombineFilesOnlyFromTheSameFolder>
       <IncludeInUnityFile>false</IncludeInUnityFile>
@@ -131,7 +131,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalIncludeDirectories>$(ProjectDir)Backends\DirectX9\</AdditionalIncludeDirectories>
       <CombineFilesOnlyFromTheSameFolder>true</CombineFilesOnlyFromTheSameFolder>
       <IncludeInUnityFile>false</IncludeInUnityFile>
@@ -165,7 +165,7 @@
       <CombineFilesOnlyFromTheSameFolder>true</CombineFilesOnlyFromTheSameFolder>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -188,7 +188,7 @@
       <CombineFilesOnlyFromTheSameFolder>true</CombineFilesOnlyFromTheSameFolder>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -207,7 +207,6 @@
     <ClInclude Include="xrRHI.h" />
     <ClInclude Include="xrRHI_BackendInterface.h" />
     <ClInclude Include="xrRHI_Caps.h" />
-    <ClInclude Include="xrRHI_ConstantBuffer.h" />
     <ClInclude Include="xrRHI_Debug.h" />
     <ClInclude Include="xrRHI_Handles.h" />
     <ClInclude Include="xrRHI_Internal.h" />
@@ -217,8 +216,6 @@
     <ClCompile Include="Backends\DirectX9\xrBackendDX9.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Caps.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Internal.cpp" />
-    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Sampler.cpp" />
-    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Shader.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Texture.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="xrRHI_BackendFabric.cpp" />

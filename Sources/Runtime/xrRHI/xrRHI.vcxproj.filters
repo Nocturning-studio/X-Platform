@@ -46,9 +46,6 @@
     <ClInclude Include="xrRHI_Caps.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="xrRHI_ConstantBuffer.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrRHI_BackendInterface.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -69,16 +66,10 @@
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Internal.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
-    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Sampler.cpp">
-      <Filter>Backends Implementation\DirectX9</Filter>
-    </ClCompile>
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Texture.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Caps.cpp">
-      <Filter>Backends Implementation\DirectX9</Filter>
-    </ClCompile>
-    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Shader.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
     <ClCompile Include="xrRHI_BackendFabric.cpp">

@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "xrBackendDX9.h"
 
-RHI_BEGIN
-
-TextureHandle CRenderBackendDX9::AllocTextureHandle(DX9Texture* tex)
+RHI_TextureHandle CRenderBackendDX9::AllocRHI_TextureHandle(DX9Texture* tex)
 {
 	u32 index;
 	if(!m_FreeTextureIndices.empty())
@@ -17,24 +15,24 @@ TextureHandle CRenderBackendDX9::AllocTextureHandle(DX9Texture* tex)
 		index = static_cast<u32>(m_Textures.size());
 		m_Textures.push_back(tex);
 	}
-	return TextureHandle{index};
+	return RHI_TextureHandle{index};
 }
 
-DX9Texture* CRenderBackendDX9::GetTexture(TextureHandle handle)
+DX9Texture* CRenderBackendDX9::GetTexture(RHI_TextureHandle handle)
 {
 	if(!handle.IsValid() || handle.id >= m_Textures.size())
 		return nullptr;
 	return m_Textures[handle.id];
 }
 
-void CRenderBackendDX9::FreeTextureHandle(TextureHandle handle)
+void CRenderBackendDX9::FreeRHI_TextureHandle(RHI_TextureHandle handle)
 {
 	if(!handle.IsValid() || handle.id >= m_Textures.size())
 		return;
 	DX9Texture* tex = m_Textures[handle.id];
 	if(!tex)
 	{
-		Print("! [DX9] Double free of TextureHandle(id=%u) detected, ignoring.", handle.id);
+		Print("! [DX9] Double free of RHI_TextureHandle(id=%u) detected, ignoring.", handle.id);
 		return;
 	}
 	delete tex;
@@ -42,22 +40,22 @@ void CRenderBackendDX9::FreeTextureHandle(TextureHandle handle)
 	m_FreeTextureIndices.push(handle.id);
 }
 
-TextureHandle CRenderBackendDX9::CreateTexture(const TextureDesc& desc, const void* initialData)
+RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, const void* initialData)
 {
 	if(!m_pDevice)
-		return TextureHandle{};
+		return RHI_TextureHandle{};
 
 	if(desc.width == 0 || desc.height == 0)
 	{
 		Print("! [DX9] CreateTexture: invalid dimensions (%ux%u)", desc.width, desc.height);
-		return TextureHandle{};
+		return RHI_TextureHandle{};
 	}
 
 	D3DFORMAT d3dFmt = RHIToD3DFormat(desc.format);
 	if(d3dFmt == D3DFMT_UNKNOWN)
 	{
 		Print("! [DX9] CreateTexture: unsupported format %d", (int)desc.format);
-		return TextureHandle{};
+		return RHI_TextureHandle{};
 	}
 
 	DWORD usage = 0;
@@ -85,7 +83,7 @@ TextureHandle CRenderBackendDX9::CreateTexture(const TextureDesc& desc, const vo
 		{
 			delete impl;
 			Print("! [DX9] CreateCubeTexture failed (0x%08x) for format %d", hr, (int)desc.format);
-			return TextureHandle{};
+			return RHI_TextureHandle{};
 		}
 		impl->texCube = cubeTex;
 	}
@@ -99,7 +97,7 @@ TextureHandle CRenderBackendDX9::CreateTexture(const TextureDesc& desc, const vo
 		{
 			delete impl;
 			Print("! [DX9] CreateTexture failed (0x%08x) for format %d", hr, (int)desc.format);
-			return TextureHandle{};
+			return RHI_TextureHandle{};
 		}
 		impl->tex2D = tex2D;
 
@@ -147,10 +145,10 @@ TextureHandle CRenderBackendDX9::CreateTexture(const TextureDesc& desc, const vo
 		}
 	}
 
-	return AllocTextureHandle(impl);
+	return AllocRHI_TextureHandle(impl);
 }
 
-void CRenderBackendDX9::DestroyTexture(TextureHandle handle)
+void CRenderBackendDX9::DestroyTexture(RHI_TextureHandle handle)
 {
 	DX9Texture* impl = GetTexture(handle);
 	if(!impl)
@@ -164,41 +162,7 @@ void CRenderBackendDX9::DestroyTexture(TextureHandle handle)
 		impl->texCube->Release();
 	if(impl->surface)
 		impl->surface->Release();
-	FreeTextureHandle(handle);
-}
-
-void CRenderBackendDX9::SetTexture(u32 slot, TextureHandle texture, SamplerHandle sampler)
-{
-	if(!m_pDevice)
-		return;
-
-	if(sampler.IsValid())
-	{
-		DX9Sampler* samp = GetSampler(sampler);
-		if(samp)
-		{
-			ApplySampler(slot, samp->desc);
-		}
-		else
-		{
-			ApplyDefaultSampler(slot);
-		}
-	}
-	else
-	{
-		ApplyDefaultSampler(slot);
-	}
-
-	IDirect3DBaseTexture9* d3dTex = nullptr;
-	if(texture.IsValid())
-	{
-		DX9Texture* tex = GetTexture(texture);
-		if(tex)
-		{
-			d3dTex = tex->tex2D;
-		}
-	}
-	m_pDevice->SetTexture(slot, d3dTex);
+	FreeRHI_TextureHandle(handle);
 }
 
 bool CRenderBackendDX9::CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, bool isDepthStencil, bool isCube)
@@ -231,7 +195,7 @@ bool CRenderBackendDX9::CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, 
 	return SUCCEEDED(hr);
 }
 
-void* CRenderBackendDX9::GetTextureNativeHandle(TextureHandle handle)
+void* CRenderBackendDX9::GetTextureNativeHandle(RHI_TextureHandle handle)
 {
 	DX9Texture* tex = GetTexture(handle);
 	if(!tex)
@@ -239,7 +203,7 @@ void* CRenderBackendDX9::GetTextureNativeHandle(TextureHandle handle)
 	return tex->tex2D ? (void*)tex->tex2D : (void*)tex->texCube;
 }
 
-bool CRenderBackendDX9::GetCubeMapFaceNative(TextureHandle handle, u32 face, u32 level, void** outSurface)
+bool CRenderBackendDX9::GetCubeMapFaceNative(RHI_TextureHandle handle, u32 face, u32 level, void** outSurface)
 {
 	if(!outSurface)
 		return false;
@@ -254,5 +218,3 @@ bool CRenderBackendDX9::GetCubeMapFaceNative(TextureHandle handle, u32 face, u32
 	*outSurface = surf;
 	return true;
 }
-
-RHI_END

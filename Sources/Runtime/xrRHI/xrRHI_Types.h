@@ -3,11 +3,10 @@
 #include "framework.h"
 #include "xrRHI_Internal.h"
 
-RHI_BEGIN
 // =========================================================================
 // API
 // =========================================================================
-enum class BackendType : u32
+enum class RHI_BackendType : u32
 {
 	DirectX9 = 0, // Direct3D9Ex
 	DirectX11,	  // Direct3D11 (для будущего)
@@ -189,7 +188,7 @@ struct RHI_Rect
 	s32 bottom;
 };
 
-struct TextureDesc
+struct RHI_TextureDesc
 {
 	u32 width;
 	u32 height;
@@ -201,76 +200,6 @@ struct TextureDesc
 	bool isCubeMap;
 };
 
-struct SamplerDesc
-{
-	RHI_Filter minFilter;
-	RHI_Filter magFilter;
-	RHI_Filter mipFilter;
-	RHI_TextureAddress addressU;
-	RHI_TextureAddress addressV;
-	RHI_TextureAddress addressW;
-	float mipLODBias;
-	u32 maxAnisotropy;
-	fvec4 borderColor;
-};
-
-enum class ShaderType : u32
-{
-	Vertex = 0,
-	Pixel = 1
-};
-
-enum class ConstantType : u8
-{
-	Float = 0,
-	Int = 1,
-	Bool = 2,
-	Sampler = 99
-};
-
-enum class ConstantClass : u8
-{
-	Scalar = 0,
-	Vector,
-	MatrixRows_2x4,
-	MatrixRows_3x4,
-	MatrixRows_4x4,
-	MatrixColumns_2x4,
-	MatrixColumns_3x4,
-	MatrixColumns_4x4,
-	Struct,
-	Object,
-	Unknown
-};
-
-struct ConstantDesc
-{
-	std::string name;
-	ConstantType type;
-	ConstantClass cls;
-	u16 registerIndex; // номер регистра в DX9-терминах (слот)
-	u16 registerCount; // сколько регистров занимает
-	u32 bufferOffset;  // смещение в байтах внутри ConstantBuffer (вычисляется)
-	u32 sizeInBytes;   // размер данных (обычно registerCount * 16)
-};
-
-struct ShaderConstantLayout
-{
-	struct Field
-	{
-		std::string name;
-		u32 offset;		   // смещение в байтах от начала буфера
-		u32 size;		   // размер в байтах
-		ConstantType type; // Float, Int, Bool
-		ConstantClass cls; // Scalar, Vector, MatrixRows_4x4...
-		u16 registerIndex; // для отладки
-		u16 registerCount;
-	};
-	std::vector<Field> fields;
-	u32 totalSize = 0;	  // общий размер буфера в байтах (выровнен)
-	u32 registerBase = 0; // c0
-};
-
 // =========================================================================
 // Параметры SwapChain (Presentation Params)
 // =========================================================================
@@ -280,7 +209,7 @@ enum class RHI_SwapEffect : u32
 	Flip,		 // Для DXGI / Vulkan (Flip Model)
 };
 
-struct RHIPresentationParams
+struct RHI_PresentationParams
 {
 	u32 BackBufferWidth = 0;
 	u32 BackBufferHeight = 0;
@@ -295,5 +224,3 @@ struct RHIPresentationParams
 	u32 MultisampleQuality = 0;
 	bool EnableAutoDepthStencil = true; // Создавать ли автоматический Depth/Stencil буфер
 };
-
-RHI_END

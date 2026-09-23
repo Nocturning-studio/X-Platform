@@ -100,10 +100,10 @@ class ENGINE_API CResourceManager
 	R_constant_table* _CreateConstantTable(R_constant_table& C);
 	void _DeleteConstantTable(const R_constant_table* C);
 
-	CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
+	CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels = 1);
 	void _DeleteRT(const CRT* RT);
 
-	CRTC* _CreateRTC(LPCSTR Name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
+	CRTC* _CreateRTC(LPCSTR Name, u32 size, RHI_Format f, u32 levels = 1);
 	void _DeleteRTC(const CRTC* RT);
 
 	SPass* _CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T);

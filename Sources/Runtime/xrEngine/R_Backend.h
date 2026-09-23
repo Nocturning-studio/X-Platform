@@ -55,7 +55,7 @@ class ENGINE_API CRenderBackend
 	IDirect3DSurface9* m_pBaseZB;
 	D3DPRESENT_PARAMETERS m_DevPP;
 
-	xrRHI::IRenderBackend* m_pRHI;
+	IRenderBackend* m_pRHI;
 	HINSTANCE m_hRHI_DLL;
 
 	// Dynamic streams (will be refactored later)
@@ -108,7 +108,7 @@ class ENGINE_API CRenderBackend
 	DEPRECATED IDirect3D9Ex* GetD3D() const { return m_pD3D; }
 	IDirect3DSurface9* GetBaseRT() const { return m_pBaseRT; }
 	IDirect3DSurface9* GetBaseZB() const { return m_pBaseZB; }
-	xrRHI::IRenderBackend* GetRHI() const { return m_pRHI; }
+	IRenderBackend* GetRHI() const { return m_pRHI; }
 
 	// Initialization
 	void Create(HWND hWnd);
@@ -369,7 +369,7 @@ class ENGINE_API CRenderBackend
 
 extern ENGINE_API CRenderBackend RenderBackend;
 
-inline xrRHI::IRenderBackend* RHI()
+inline IRenderBackend* RHI()
 {
 	return RenderBackend.GetRHI();
 }

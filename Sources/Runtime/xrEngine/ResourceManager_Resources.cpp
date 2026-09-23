@@ -154,7 +154,7 @@ void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels)
+CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
 	R_ASSERT(Name && Name[0] && w && h);
 
@@ -193,7 +193,7 @@ void CResourceManager::_DeleteRT(const CRT* RT)
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 //--------------------------------------------------------------------------------------------------------------
-CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, xrRHI::RHI_Format f, u32 levels)
+CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 {
 	R_ASSERT(Name && Name[0] && size);
 

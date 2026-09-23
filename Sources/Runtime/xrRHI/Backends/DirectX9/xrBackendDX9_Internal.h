@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../../xrRHI.h"
+#include <xrRHI/xrRHI.h>
 
 #include <d3d9.h>
 #include <DXSDK/d3dx9.h>
-
-RHI_BEGIN
 
 struct DX9Texture
 {
@@ -19,46 +17,9 @@ struct DX9Texture
 	bool isDepthStencil = false;
 };
 
-struct DX9Sampler
-{
-	SamplerDesc desc;
-};
-
-struct DX9Shader
-{
-	union
-	{
-		IDirect3DVertexShader9* vs = nullptr;
-		IDirect3DPixelShader9* ps;
-	};
-	ShaderType type;
-	std::vector<u8> bytecode;
-
-	void Release()
-	{
-		if(type == ShaderType::Vertex && vs)
-		{
-			vs->Release();
-			vs = nullptr;
-		}
-		if(type == ShaderType::Pixel && ps)
-		{
-			ps->Release();
-			ps = nullptr;
-		}
-	}
-};
-
-struct DX9ConstantBuffer
-{
-	std::vector<float> data;
-};
-
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);
 D3DTEXTUREADDRESS RHIAddressToD3D(RHI_TextureAddress addr);
 D3DTEXTUREFILTERTYPE RHIFilterToD3D(RHI_Filter f);
 size_t GetPixelSize(RHI_Format fmt);
 
 RHI_Format D3DFormatToRHI(D3DFORMAT fmt);
-
-RHI_END

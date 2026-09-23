@@ -1,11 +1,5 @@
 #pragma once
 
-#define RHI_BEGIN   \
-	namespace xrRHI \
-	{
-
-#define RHI_END }
-
 #ifdef XRRHI_EXPORTS
 #define XRRHI_API __declspec(dllexport)
 #else

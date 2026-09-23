@@ -3,8 +3,6 @@
 #include "framework.h"
 #include "xrRHI_Internal.h"
 
-RHI_BEGIN
-
 struct RHIDeviceCaps
 {
 	// ---- Идентификация адаптера ----
@@ -53,5 +51,3 @@ struct RHIDeviceCaps
 	bool SupportsPureDevice = false;
 	bool SupportsNonPow2Textures = false;
 };
-
-RHI_END

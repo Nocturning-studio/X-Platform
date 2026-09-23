@@ -3,60 +3,56 @@
 #include "framework.h"
 #include "xrRHI_Internal.h"
 
-RHI_BEGIN
-
 constexpr u32 InvalidHandleId = 0xFFFFFFFF;
 
-struct TextureHandle
+struct RHI_TextureHandle
 {
 	u32 id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
 	}
-	bool operator==(const TextureHandle& other) const
+	bool operator==(const RHI_TextureHandle& other) const
 	{
 		return id == other.id;
 	}
 };
 
-struct SamplerHandle
+struct RHI_SamplerHandle
 {
 	u32 id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
 	}
-	bool operator==(const SamplerHandle& other) const
+	bool operator==(const RHI_SamplerHandle& other) const
 	{
 		return id == other.id;
 	}
 };
 
-struct ShaderHandle
+struct RHI_ShaderHandle
 {
 	u32 id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
 	}
-	bool operator==(const ShaderHandle& other) const
+	bool operator==(const RHI_ShaderHandle& other) const
 	{
 		return id == other.id;
 	}
 };
 
-struct ConstantBufferHandle
+struct RHI_ConstantBufferHandle
 {
 	u32 id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
 	}
-	bool operator==(const ConstantBufferHandle& other) const
+	bool operator==(const RHI_ConstantBufferHandle& other) const
 	{
 		return id == other.id;
 	}
 };
-
-RHI_END

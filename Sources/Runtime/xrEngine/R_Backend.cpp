@@ -121,7 +121,7 @@ void CRenderBackend::Create(HWND m_hWnd)
 		return;
 	}
 
-	typedef xrRHI::IRenderBackend* (*CreateBackendFunc)(xrRHI::BackendType);
+	typedef IRenderBackend* (*CreateBackendFunc)(RHI_BackendType);
 	CreateBackendFunc createBackend = (CreateBackendFunc)GetProcAddress(m_hRHI_DLL, "CreateRenderBackend");
 	if(!createBackend)
 	{
@@ -132,7 +132,7 @@ void CRenderBackend::Create(HWND m_hWnd)
 		return;
 	}
 
-	xrRHI::BackendType desiredType = xrRHI::BackendType::DirectX9;
+	RHI_BackendType desiredType = RHI_BackendType::DirectX9;
 	m_pRHI = createBackend(desiredType);
 	if(!m_pRHI)
 	{
@@ -165,16 +165,16 @@ void CRenderBackend::Create(HWND m_hWnd)
 	LONG clientW = rcClient.right - rcClient.left;
 	LONG clientH = rcClient.bottom - rcClient.top;
 
-	xrRHI::RHIPresentationParams params;
+	RHI_PresentationParams params;
 	params.BackBufferWidth = clientW;
 	params.BackBufferHeight = clientH;
 	params.Windowed = bWindowed;
-	params.BackBufferFormat = xrRHI::RHI_Format::RGBA8_UNORM;
-	params.DepthStencilFormat = xrRHI::RHI_Format::D24_UNORM_S8_UINT;
+	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
+	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
 	params.BackBufferCount = 2;
 	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
 	params.FullscreenRefreshHz = refreshHz;
-	params.SwapEffect = xrRHI::RHI_SwapEffect::Discard;
+	params.SwapEffect = RHI_SwapEffect::Discard;
 	params.EnableAutoDepthStencil = true;
 
 	if(!m_pRHI->CreateDevice(m_hWnd, params))
@@ -284,16 +284,16 @@ void CRenderBackend::Reset()
 	LONG clientW = rcClient.right - rcClient.left;
 	LONG clientH = rcClient.bottom - rcClient.top;
 
-	xrRHI::RHIPresentationParams params;
+	RHI_PresentationParams params;
 	params.BackBufferWidth = clientW;
 	params.BackBufferHeight = clientH;
 	params.Windowed = bWindowed;
-	params.BackBufferFormat = xrRHI::RHI_Format::RGBA8_UNORM;
-	params.DepthStencilFormat = xrRHI::RHI_Format::D24_UNORM_S8_UINT;
+	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
+	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
 	params.BackBufferCount = 1;
 	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
 	params.FullscreenRefreshHz = refreshHz;
-	params.SwapEffect = xrRHI::RHI_SwapEffect::Discard;
+	params.SwapEffect = RHI_SwapEffect::Discard;
 	params.EnableAutoDepthStencil = true;
 
 	if(!m_pRHI->Reset(params))
