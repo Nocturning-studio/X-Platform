@@ -189,6 +189,7 @@
     <ClInclude Include="d3d9fwd.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Shaders\ShaderAPI.h" />
+    <ClInclude Include="States\StateCache.h" />
     <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Shaders\ShaderConstant.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="Shaders\ShaderIncluder.cpp" />
     <ClCompile Include="Shaders\ShaderPass.cpp" />
     <ClCompile Include="Shaders\ShaderProgram.cpp" />
+    <ClCompile Include="States\StateCache.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">

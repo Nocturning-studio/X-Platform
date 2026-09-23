@@ -615,9 +615,6 @@
     <ClInclude Include="R_Backend_RenderTarget.h">
       <Filter>Render backend\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="R_Backend_StateCache.h">
-      <Filter>Render backend\Backend</Filter>
-    </ClInclude>
     <ClInclude Include="R_Backend_ResourceBinder.h">
       <Filter>Render backend\Backend</Filter>
     </ClInclude>
@@ -1039,9 +1036,6 @@
     </ClCompile>
     <ClCompile Include="xrSkin2W.cpp">
       <Filter>xrBind PSGP</Filter>
-    </ClCompile>
-    <ClCompile Include="R_Backend_StateCache.cpp">
-      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_ResourceBinder.cpp">
       <Filter>Render backend\Backend</Filter>

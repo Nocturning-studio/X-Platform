@@ -33,6 +33,9 @@
     <ClInclude Include="Shaders\ShaderAPI.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="States\StateCache.h">
+      <Filter>States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -56,6 +59,9 @@
     <ClCompile Include="Shaders\ShaderProgram.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="States\StateCache.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -63,6 +69,9 @@
     </Filter>
     <Filter Include="Kernel">
       <UniqueIdentifier>{9ab4b5a3-b0ec-413f-9789-bf32f83c0004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="States">
+      <UniqueIdentifier>{2e237a42-d93e-4166-84a0-60c18f3abeb2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

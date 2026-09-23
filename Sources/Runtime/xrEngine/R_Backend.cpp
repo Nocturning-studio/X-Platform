@@ -8,7 +8,7 @@
 
 ENGINE_API extern int psAnisotropic;
 
-ENGINE_API CRenderBackend RenderBackend;
+ENGINE_API CRenderBackendFacade RenderBackend;
 
 xr_token* vid_mode_token = NULL;
 
@@ -96,7 +96,7 @@ static void fill_vid_mode_list()
 	}
 }
 
-CRenderBackend::CRenderBackend()
+CRenderBackendFacade::CRenderBackendFacade()
 	: m_pD3D(NULL), m_pDevice(NULL), m_pBaseRT(NULL), m_pBaseZB(NULL),
 	  m_pRHI(nullptr), m_hRHI_DLL(NULL), QuadIB(NULL), old_QuadIB(NULL)
 {
@@ -104,12 +104,12 @@ CRenderBackend::CRenderBackend()
 	Invalidate();
 }
 
-CRenderBackend::~CRenderBackend()
+CRenderBackendFacade::~CRenderBackendFacade()
 {
 	Destroy();
 }
 
-void CRenderBackend::Create(HWND m_hWnd)
+void CRenderBackendFacade::Create(HWND m_hWnd)
 {
 	m_hRHI_DLL = LoadLibrary("xrRHI.dll");
 	if(!m_hRHI_DLL)
@@ -228,7 +228,7 @@ void CRenderBackend::Create(HWND m_hWnd)
 	Msg("* RHI backend initialized successfully.");
 }
 
-void CRenderBackend::Destroy()
+void CRenderBackendFacade::Destroy()
 {
 	if(m_pRHI)
 	{
@@ -252,7 +252,7 @@ void CRenderBackend::Destroy()
 #endif
 }
 
-void CRenderBackend::Reset()
+void CRenderBackendFacade::Reset()
 {
 	_RELEASE(m_pBaseZB);
 	_RELEASE(m_pBaseRT);
@@ -328,7 +328,7 @@ void CRenderBackend::Reset()
 	m_DevPP.FullScreen_RefreshRateInHz = refreshHz;
 }
 
-bool CRenderBackend::NeedReset()
+bool CRenderBackendFacade::NeedReset()
 {
 	HRESULT _hr = RenderBackend.GetDevice()->TestCooperativeLevel();
 	if(FAILED(_hr) && D3DERR_DEVICENOTRESET == _hr)
@@ -337,7 +337,7 @@ bool CRenderBackend::NeedReset()
 		return false;
 }
 
-void CRenderBackend::SelectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
+void CRenderBackendFacade::SelectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 {
 #ifdef DEDICATED_SERVER
 	dwWidth = 32;
@@ -348,7 +348,7 @@ void CRenderBackend::SelectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowe
 #endif
 }
 
-u32 CRenderBackend::SelectPresentInterval()
+u32 CRenderBackendFacade::SelectPresentInterval()
 {
 #ifdef DEDICATED_SERVER
 	return D3DPRESENT_INTERVAL_IMMEDIATE;
@@ -359,7 +359,7 @@ u32 CRenderBackend::SelectPresentInterval()
 #endif
 }
 
-void CRenderBackend::CreateQuadIB()
+void CRenderBackendFacade::CreateQuadIB()
 {
 	const u32 dwTriCount = 4 * 1024;
 	const u32 dwIdxCount = dwTriCount * 2 * 3;
@@ -386,7 +386,7 @@ void CRenderBackend::CreateQuadIB()
 	R_CHK(QuadIB->Unlock());
 }
 
-void CRenderBackend::OnDeviceCreate()
+void CRenderBackendFacade::OnDeviceCreate()
 {
 	CreateQuadIB();
 	Vertex.Create();
@@ -396,7 +396,7 @@ void CRenderBackend::OnDeviceCreate()
 	m_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
 }
 
-void CRenderBackend::OnDeviceDestroy()
+void CRenderBackendFacade::OnDeviceDestroy()
 {
 	Index.Destroy();
 	Vertex.Destroy();
@@ -404,19 +404,19 @@ void CRenderBackend::OnDeviceDestroy()
 	_RELEASE(QuadIB);
 }
 
-void CRenderBackend::ResetBegin()
+void CRenderBackendFacade::ResetBegin()
 {
 	m_constantMgr.ForceDirty();
-	m_stateCache.Invalidate(*this);
+	m_stateCache.Invalidate();
 	m_resBinder.Invalidate(*this);
 }
 
-void CRenderBackend::ResetEnd()
+void CRenderBackendFacade::ResetEnd()
 {
 	m_constantMgr.ResetDirty();
 }
 
-void CRenderBackend::DeleteResources()
+void CRenderBackendFacade::DeleteResources()
 {
 	m_viewport.destroy();
 }
@@ -424,107 +424,107 @@ void CRenderBackend::DeleteResources()
 // ---------------------------------------------------------------------------
 // State cache delegations
 // ---------------------------------------------------------------------------
-void CRenderBackend::SaveRenderState()
+void CRenderBackendFacade::SaveRenderState()
 {
 	m_stateCache.SaveRenderState(GetDevice());
 }
 
-void CRenderBackend::RestoreRenderState()
+void CRenderBackendFacade::RestoreRenderState()
 {
-	m_stateCache.RestoreRenderState(GetDevice(), *this);
+	m_stateCache.RestoreRenderState(GetDevice());
 }
 
-void CRenderBackend::SetBlend(BOOL enable, D3DBLEND src, D3DBLEND dest)
+void CRenderBackendFacade::SetBlend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 {
 	m_stateCache.SetBlend(GetDevice(), enable, src, dest);
 }
 
-void CRenderBackend::SetBlendAlpha()
+void CRenderBackendFacade::SetBlendAlpha()
 {
 	SetBlend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 }
 
-void CRenderBackend::SetBlendAdd()
+void CRenderBackendFacade::SetBlendAdd()
 {
 	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 }
 
-void CRenderBackend::SetBlendMultiply()
+void CRenderBackendFacade::SetBlendMultiply()
 {
 	SetBlend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
 }
 
-void CRenderBackend::SetBlendDefault()
+void CRenderBackendFacade::SetBlendDefault()
 {
 	SetBlend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
 }
 
-void CRenderBackend::SetBlendSubstract()
+void CRenderBackendFacade::SetBlendSubstract()
 {
 	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 	SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
 }
 
-void CRenderBackend::SetBlendScreen()
+void CRenderBackendFacade::SetBlendScreen()
 {
 	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
 }
 
-void CRenderBackend::SetBlendLightAdd()
+void CRenderBackendFacade::SetBlendLightAdd()
 {
 	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 }
 
-void CRenderBackend::SetBlendColorAdd()
+void CRenderBackendFacade::SetBlendColorAdd()
 {
 	SetBlend(TRUE, D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
 }
 
-void CRenderBackend::SetBlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
+void CRenderBackendFacade::SetBlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
 {
 	m_stateCache.SetBlendEx(GetDevice(), enable, src, dest, op);
 }
 
-BOOL CRenderBackend::GetBlendState() const
+BOOL CRenderBackendFacade::GetBlendState() const
 {
 	return m_stateCache.GetBlendEnable();
 }
 
-D3DBLEND CRenderBackend::GetSrcBlend() const
+D3DBLEND CRenderBackendFacade::GetSrcBlend() const
 {
 	return m_stateCache.GetSrcBlend();
 }
 
-D3DBLEND CRenderBackend::GetDstBlend() const
+D3DBLEND CRenderBackendFacade::GetDstBlend() const
 {
 	return m_stateCache.GetDstBlend();
 }
 
-void CRenderBackend::EnableAnisotropyFiltering()
+void CRenderBackendFacade::EnableAnisotropyFiltering()
 {
 	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
-void CRenderBackend::DisableAnisotropyFiltering()
+void CRenderBackendFacade::DisableAnisotropyFiltering()
 {
 	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }
 
-void CRenderBackend::SetAnisotropyFiltering(int max_anisothropy)
+void CRenderBackendFacade::SetAnisotropyFiltering(int max_anisothropy)
 {
 	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
 }
 
-void CRenderBackend::Invalidate()
+void CRenderBackendFacade::Invalidate()
 {
-	m_stateCache.Invalidate(*this);
+	m_stateCache.Invalidate();
 	m_resBinder.Invalidate(*this);
 }
 
-void CRenderBackend::OnFrameBegin()
+void CRenderBackendFacade::OnFrameBegin()
 {
 #ifndef DEDICATED_SERVER
 	std::memset(&stat, 0, sizeof(stat));
@@ -535,7 +535,7 @@ void CRenderBackend::OnFrameBegin()
 #endif
 }
 
-void CRenderBackend::OnFrameEnd()
+void CRenderBackendFacade::OnFrameEnd()
 {
 #ifndef DEDICATED_SERVER
 	RHI()->OnFrameEnd();
@@ -543,7 +543,7 @@ void CRenderBackend::OnFrameEnd()
 #endif
 }
 
-void CRenderBackend::Present()
+void CRenderBackendFacade::Present()
 {
 	PROFILE_FUNCTION();
 
@@ -552,19 +552,19 @@ void CRenderBackend::Present()
 
 #ifndef DEDICATED_SERVER
 
-void CRenderBackend::SetTextures(STextureList* _T)
+void CRenderBackendFacade::SetTextures(STextureList* _T)
 {
 	m_resBinder.SetTextures(*this, _T);
 }
 #else
 
-void CRenderBackend::SetTextures(STextureList* _T)
+void CRenderBackendFacade::SetTextures(STextureList* _T)
 {
 }
 
 #endif
 
-void CRenderBackend::SetRenderTarget(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+void CRenderBackendFacade::SetRenderTarget(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
 	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
 
@@ -586,7 +586,7 @@ void CRenderBackend::SetRenderTarget(const ref_rt& rt_1, const ref_rt& rt_2, con
 		RenderBackend.SetRenderTargetSurface(NULL, 3);
 }
 
-void CRenderBackend::SetRenderTarget(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
+void CRenderBackendFacade::SetRenderTarget(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
 {
 	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
 
@@ -608,19 +608,19 @@ void CRenderBackend::SetRenderTarget(u32 W, u32 H, IDirect3DSurface9* rt_1, IDir
 		RenderBackend.SetRenderTargetSurface(NULL, 3);
 }
 
-void CRenderBackend::SetDepthBuffer(IDirect3DSurface9* zb)
+void CRenderBackendFacade::SetDepthBuffer(IDirect3DSurface9* zb)
 {
 	RenderBackend.SetDepthBufferSurface(zb);
 }
 
-void CRenderBackend::ClearDepthBuffer(IDirect3DSurface9* zb)
+void CRenderBackendFacade::ClearDepthBuffer(IDirect3DSurface9* zb)
 {
 	RenderBackend.SetDepthBuffer(zb);
 	CHK_DX(RenderBackend.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
 }
 
 // 2D texgen (texture adjustment matrix)
-void CRenderBackend::ComputeTexgenScreen(fmat4x4& m_Texgen)
+void CRenderBackendFacade::ComputeTexgenScreen(fmat4x4& m_Texgen)
 {
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
@@ -633,7 +633,7 @@ void CRenderBackend::ComputeTexgenScreen(fmat4x4& m_Texgen)
 	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
 }
 
-void CRenderBackend::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32& vOffset)
+void CRenderBackendFacade::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32& vOffset)
 {
 	// Constants
 	u32 Color = color_rgba(0, 0, 0, 255);
@@ -672,54 +672,54 @@ void CRenderBackend::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32& vOffs
 	RenderBackend.SetGeometry(geometry);
 }
 
-void CRenderBackend::SetViewportGeom(u32 w, u32 h, u32& vOffset)
+void CRenderBackendFacade::SetViewportGeom(u32 w, u32 h, u32& vOffset)
 {
 	SetViewportGeom(w, h, m_viewport, vOffset);
 }
 
-void CRenderBackend::SetViewportGeom(ref_geom geometry, u32& vOffset)
+void CRenderBackendFacade::SetViewportGeom(ref_geom geometry, u32& vOffset)
 {
 	u32 w = Device.dwWidth;
 	u32 h = Device.dwHeight;
 	SetViewportGeom(w, h, geometry, vOffset);
 }
 
-void CRenderBackend::SetViewportGeom(u32& vOffset)
+void CRenderBackendFacade::SetViewportGeom(u32& vOffset)
 {
 	u32 w = Device.dwWidth;
 	u32 h = Device.dwHeight;
 	SetViewportGeom(w, h, m_viewport, vOffset);
 }
 
-void CRenderBackend::RenderViewportGeom(u32 w, u32 h)
+void CRenderBackendFacade::RenderViewportGeom(u32 w, u32 h)
 {
 	u32 vOffset;
 	SetViewportGeom(w, h, m_viewport, vOffset);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
 }
 
-void CRenderBackend::RenderViewportSurface()
+void CRenderBackendFacade::RenderViewportSurface()
 {
 	u32 Offset = 0;
 	SetViewportGeom(Offset);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
-void CRenderBackend::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
+void CRenderBackendFacade::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
 {
 	SetRenderTarget(rt_1);
 	SetDepthBuffer(zb);
 	RenderViewportGeom(rt_1->dwWidth, rt_1->dwHeight);
 }
 
-void CRenderBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
+void CRenderBackendFacade::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
 {
 	SetRenderTarget(w, h, rt_1);
 	SetDepthBuffer(zb);
 	RenderViewportGeom(w, h);
 }
 
-void CRenderBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
+void CRenderBackendFacade::RenderViewportSurface(IDirect3DSurface9* rt_1)
 {
 	D3DSURFACE_DESC desc;
 	HRESULT hr = rt_1->GetDesc(&desc);
@@ -732,25 +732,25 @@ void CRenderBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
 	RenderViewportGeom(desc.Width, desc.Height);
 }
 
-void CRenderBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+void CRenderBackendFacade::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
 	SetRenderTarget(rt_1, rt_2, rt_3, rt_4);
 	SetDepthBuffer(NULL);
 	RenderViewportGeom(w, h);
 }
 
-void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
+void CRenderBackendFacade::RenderToMipLevel(ref_rt target, u32 mip_level)
 {
 	if(!target || !target->valid())
 	{
-		Msg("!CRenderBackend::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
+		Msg("!CRenderBackendFacade::RenderToMipLevel -  Texture is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
 		return;
 	}
 
 	IDirect3DSurface9* mip_surface = target->get_surface_level(mip_level);
 	if(!mip_surface)
 	{
-		Msg("!CRenderBackend::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
+		Msg("!CRenderBackendFacade::RenderToMipLevel -  mip level is not present! (Name %s, level %d)", target->cName.c_str(), mip_level);
 		return;
 	}
 
@@ -769,7 +769,7 @@ void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
 	mip_surface->Release();
 }
 
-void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass)
+void CRenderBackendFacade::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass)
 {
 	if(!target || !target->valid())
 		return;
@@ -797,7 +797,7 @@ void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElemen
 }
 
 // Генерация mip-цепочки
-void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
+void CRenderBackendFacade::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass)
 {
 	if(!source || !mip_chain || !source->valid() || !mip_chain->valid())
 		return;
@@ -822,7 +822,7 @@ void CRenderBackend::GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderEle
 }
 
 // Копирование содержимого из одного ref_rt в другой
-void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
+void CRenderBackendFacade::CopyViewportSurface(ref_rt source, ref_rt destination)
 {
 	if(!source || !destination || !source->valid() || !destination->valid())
 	{
@@ -854,7 +854,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination)
 }
 
 // Версия с указанием фильтра
-void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackendFacade::CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination || !source->valid() || !destination->valid())
 		return;
@@ -872,7 +872,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, ref_rt destination, D3DT
 }
 
 // Версия с указанием конкретных областей
-void CRenderBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackendFacade::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination || !source->valid() || !destination->valid())
 		return;
@@ -886,7 +886,7 @@ void CRenderBackend::CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt de
 	RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
-void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
+void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
 {
 	if(!source || !destination)
 	{
@@ -919,7 +919,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 }
 
 // Версия с фильтром
-void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination)
 		return;
@@ -935,7 +935,7 @@ void CRenderBackend::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* d
 }
 
 // Версия с указанием областей
-void CRenderBackend::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
+void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter)
 {
 	if(!source || !destination)
 		return;

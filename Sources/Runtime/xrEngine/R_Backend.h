@@ -1,7 +1,6 @@
 #pragma once
 
 #include "xr_engine_common.h"
-#include "R_Backend_StateCache.h"
 #include "R_Backend_ResourceBinder.h"
 #include "R_Backend_ConstantManager.h"
 #include "R_Backend_Data_Streams.h"
@@ -45,7 +44,7 @@ struct R_statistics
 	R_statistics_element s_dynamic_2B;
 };
 
-class ENGINE_API CRenderBackend
+class ENGINE_API CRenderBackendFacade
 {
   public:
 	// D3D / RHI
@@ -71,7 +70,7 @@ class ENGINE_API CRenderBackend
 	ref_geom m_viewport;
 
 	CConstantManager m_constantMgr;
-	CBackendStateCache m_stateCache;
+	CStateCache m_stateCache;
 	CBackendResourceBinder m_resBinder;
 
   private:
@@ -100,8 +99,8 @@ class ENGINE_API CRenderBackend
 	} stat;
 
   public:
-	CRenderBackend();
-	~CRenderBackend();
+	CRenderBackendFacade();
+	~CRenderBackendFacade();
 
 	// Device access
 	DEPRECATED IDirect3DDevice9Ex* GetDevice() const { return m_pDevice; }
@@ -140,11 +139,11 @@ class ENGINE_API CRenderBackend
 	// --- Pipeline state (delegated to m_stateCache) ---
 	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0)
 	{
-		m_stateCache.SetRenderTarget(*this, RT, ID);
+		m_stateCache.SetRenderTarget(GetDevice(), RT, ID);
 	}
 	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB)
 	{
-		m_stateCache.SetDepthStencil(*this, ZB);
+		m_stateCache.SetDepthStencil(GetDevice(), ZB);
 	}
 	IC void SetStencil(u32 _enable, u32 _func = D3DCMP_ALWAYS, u32 _ref = 0x00, u32 _mask = 0x00,
 						u32 _writemask = 0x00, u32 _fail = D3DSTENCILOP_KEEP, u32 _pass = D3DSTENCILOP_KEEP,
@@ -254,32 +253,32 @@ class ENGINE_API CRenderBackend
 		return ctable ? ctable->get(n) : 0;
 	}
 
-	ICF void CRenderBackend::SetConstant(R_constant* Const, const fmat4x4& A)
+	ICF void CRenderBackendFacade::SetConstant(R_constant* Const, const fmat4x4& A)
 	{
 		if(Const)
 			m_constantMgr.SetConstant(Const, A);
 	}
-	ICF void CRenderBackend::SetConstant(R_constant* Const, const fvec4& A)
+	ICF void CRenderBackendFacade::SetConstant(R_constant* Const, const fvec4& A)
 	{
 		if(Const)
 			m_constantMgr.SetConstant(Const, A);
 	}
-	ICF void CRenderBackend::SetConstant(R_constant* Const, float x, float y = 0.0f, float z = 0.0f, float w = 0.0f)
+	ICF void CRenderBackendFacade::SetConstant(R_constant* Const, float x, float y = 0.0f, float z = 0.0f, float w = 0.0f)
 	{
 		if(Const)
 			m_constantMgr.SetConstant(Const, x, y, z, w);
 	}
-	ICF void CRenderBackend::SetArrayConstant(R_constant* Const, u32 e, const fmat4x4& A)
+	ICF void CRenderBackendFacade::SetArrayConstant(R_constant* Const, u32 e, const fmat4x4& A)
 	{
 		if(Const)
 			m_constantMgr.SetArrayConstant(Const, e, A);
 	}
-	ICF void CRenderBackend::SetArrayConstant(R_constant* Const, u32 e, const fvec4& A)
+	ICF void CRenderBackendFacade::SetArrayConstant(R_constant* Const, u32 e, const fvec4& A)
 	{
 		if(Const)
 			m_constantMgr.SetArrayConstant(Const, e, A);
 	}
-	ICF void CRenderBackend::SetArrayConstant(R_constant* Const, u32 e, float x, float y, float z, float w)
+	ICF void CRenderBackendFacade::SetArrayConstant(R_constant* Const, u32 e, float x, float y, float z, float w)
 	{
 		if(Const)
 			m_constantMgr.SetArrayConstant(Const, e, x, y, z, w);
@@ -366,7 +365,7 @@ class ENGINE_API CRenderBackend
 	ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
 };
 
-extern ENGINE_API CRenderBackend RenderBackend;
+extern ENGINE_API CRenderBackendFacade RenderBackend;
 
 inline IRenderBackend* RHI()
 {
