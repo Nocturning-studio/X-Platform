@@ -68,7 +68,7 @@ void CUIStaticItem::Render()
 	VERIFY(g_bRendering);
 	// установить обязательно перед вызовом CustomItem::Render() !!!
 	VERIFY(hShader);
-	RenderBackend.set_Shader(hShader);
+	RenderBackend.SetShader(hShader);
 	if(alpha_ref != -1)
 		RenderBackend.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
@@ -106,7 +106,7 @@ void CUIStaticItem::Render()
 	Frect clip_rect = {iPos.x, iPos.y, iPos.x + iVisRect.x2 * iTileX + iRemX, iPos.y + iVisRect.y2 * iTileY + iRemY};
 	UI()->PushScissor(clip_rect);
 	// set geom
-	RenderBackend.set_Geometry(hGeom_fan);
+	RenderBackend.SetGeometry(hGeom_fan);
 	if(p_cnt != 0)
 		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
 	if(alpha_ref != -1)
@@ -121,7 +121,7 @@ void CUIStaticItem::Render(float angle)
 	VERIFY(g_bRendering);
 	// установить обязательно перед вызовом CustomItem::Render() !!!
 	VERIFY(hShader);
-	RenderBackend.set_Shader(hShader);
+	RenderBackend.SetShader(hShader);
 	if(alpha_ref != -1)
 		RenderBackend.SetRenderState(D3DRS_ALPHAREF, alpha_ref);
 	// convert&set pos
@@ -136,7 +136,7 @@ void CUIStaticItem::Render(float angle)
 	// unlock VB and Render it as triangle LIST
 	std::ptrdiff_t p_cnt = pv - start_pv;
 	RenderBackend.Vertex.Unlock(u32(p_cnt), hGeom_fan.stride());
-	RenderBackend.set_Geometry(hGeom_fan);
+	RenderBackend.SetGeometry(hGeom_fan);
 	if(p_cnt > 2)
 		RenderBackend.Render(D3DPT_TRIANGLEFAN, vOffset, u32(p_cnt - 2));
 	if(alpha_ref != -1)

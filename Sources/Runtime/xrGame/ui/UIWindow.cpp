@@ -56,7 +56,7 @@ void draw_rect(Frect& r, u32 color)
 		dbg_draw_sh.create("hud\\default", "ui\\ui_pop_up_active_back");
 		dbg_draw_gm.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
 	}
-	RenderBackend.set_Shader(dbg_draw_sh);
+	RenderBackend.SetShader(dbg_draw_sh);
 	u32 vOffset;
 	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(5, dbg_draw_gm.stride(), vOffset);
 
@@ -72,7 +72,7 @@ void draw_rect(Frect& r, u32 color)
 	++pv;
 
 	RenderBackend.Vertex.Unlock(5, dbg_draw_gm.stride());
-	RenderBackend.set_Geometry(dbg_draw_gm);
+	RenderBackend.SetGeometry(dbg_draw_gm);
 	RenderBackend.Render(D3DPT_LINESTRIP, vOffset, 4);
 }
 void draw_wnds_rects()

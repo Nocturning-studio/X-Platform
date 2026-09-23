@@ -18,40 +18,40 @@ void CRender::accumulate_point_lights(light* L)
 
 	// Transforms
 	L->transform_calc();
-	RenderBackend.set_transform_world(L->get_transform());
-	RenderBackend.set_transform_view(Engine.RenderView.View);
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.SetTransformWorld(L->get_transform());
+	RenderBackend.SetTransformView(Engine.RenderView.View);
+	RenderBackend.SetTransformProject(Engine.RenderView.Project);
 	enable_scissor(L);
 
 	// *****************************	Mask by stencil		*************************************
 	// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 	// *** thus can cope without stencil clear with 127 lights
 	// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-	RenderBackend.set_Element(RenderTarget->s_accum_mask->E[SE_MASK_POINT]); // masker
-	RenderBackend.set_ColorWriteEnable(FALSE);
+	RenderBackend.SetShaderElement(RenderTarget->s_accum_mask->E[SE_MASK_POINT]); // masker
+	RenderBackend.SetColorWriteEnable(FALSE);
 
 	// backfaces: if (stencil>=1 && zfail)	stencil = light_id
-	RenderBackend.set_CullMode(CULL_FRONTFACE);
-	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+	RenderBackend.SetCullMode(CULL_FRONTFACE);
+	RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume(L);
 
 	// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
-	RenderBackend.set_CullMode(CULL_BACKFACE);
-	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+	RenderBackend.SetCullMode(CULL_BACKFACE);
+	RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume(L);
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RenderBackend.set_ColorWriteEnable();
-	RenderBackend.set_CullMode(CULL_FRONTFACE); // back
+	RenderBackend.SetColorWriteEnable();
+	RenderBackend.SetCullMode(CULL_FRONTFACE); // back
 	/*
-	if (bIntersect)	RenderBackend.set_CullMode		(CULL_FRONTFACE);		// back
-	else			RenderBackend.set_CullMode		(CULL_BACKFACE);		// front
+	if (bIntersect)	RenderBackend.SetCullMode		(CULL_FRONTFACE);		// back
+	else			RenderBackend.SetCullMode		(CULL_BACKFACE);		// front
 	*/
 
 	// 2D texgens
 	fmat4x4 m_Texgen;
-	RenderBackend.u_compute_texgen_screen(m_Texgen);
+	RenderBackend.ComputeTexgenScreen(m_Texgen);
 
 	// Draw volume with projective texgen
 	{
@@ -72,15 +72,15 @@ void CRender::accumulate_point_lights(light* L)
 			_id = SE_L_UNSHADOWED;
 			// m_Shadow				= m_Lmap;
 		}
-		RenderBackend.set_Element(shader->E[_id]);
+		RenderBackend.SetShaderElement(shader->E[_id]);
 
 		// Constants
-		RenderBackend.set_Constant("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, 1 / (L_R * L_R));
-		RenderBackend.set_Constant("Ldynamic_color", sRgbToLinear(L_clr.x), sRgbToLinear(L_clr.y), sRgbToLinear(L_clr.z));
-		RenderBackend.set_Constant("m_texgen", m_Texgen);
+		RenderBackend.SetConstant("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, 1 / (L_R * L_R));
+		RenderBackend.SetConstant("Ldynamic_color", sRgbToLinear(L_clr.x), sRgbToLinear(L_clr.y), sRgbToLinear(L_clr.z));
+		RenderBackend.SetConstant("m_texgen", m_Texgen);
 
 		// Render if (stencil >= light_id && z-pass)
-		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP);
+		RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP);
 		draw_volume(L);
 	}
 

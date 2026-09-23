@@ -136,8 +136,8 @@ class ENGINE_API CResourceManager
 	void OnDeviceCreate(LPCSTR name);
 	void OnDeviceDestroy(BOOL bKeepTextures);
 
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 
 	// Creation/Destroying
 	Shader* Create(LPCSTR s_shader = 0, LPCSTR s_textures = 0);

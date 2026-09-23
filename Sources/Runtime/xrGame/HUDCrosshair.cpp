@@ -115,8 +115,8 @@ void CHUDCrosshair::OnRender()
 	// render
 	RenderBackend.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
 
-	RenderBackend.set_Shader(hShader);
-	RenderBackend.set_Geometry(hGeomLine);
+	RenderBackend.SetShader(hShader);
+	RenderBackend.SetGeometry(hGeomLine);
 	RenderBackend.Render(D3DPT_LINELIST, dwOffset, dwCount / 2);
 
 	if(!fsimilar(target_radius, radius))

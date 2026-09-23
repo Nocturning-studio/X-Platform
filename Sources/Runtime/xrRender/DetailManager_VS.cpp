@@ -224,14 +224,14 @@ void CDetailManager::Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix, const 
 	// 2. Настройка глобального состояния рендера
 	Engine.Statistic->RenderDUMP_DT_Render.Begin();
 	{
-		RenderBackend.set_CullMode(CULL_DISABLE);
-		RenderBackend.set_transform_world(Fidentity);
-		RenderBackend.set_Geometry(hw_Geom);
+		RenderBackend.SetCullMode(CULL_DISABLE);
+		RenderBackend.SetTransformWorld(Fidentity);
+		RenderBackend.SetGeometry(hw_Geom);
 
 		// 3. Запуск проходов
 		ExecuteRenderPasses(ctx);
 
-		RenderBackend.set_CullMode(CULL_BACKFACE);
+		RenderBackend.SetCullMode(CULL_BACKFACE);
 	}
 	Engine.Statistic->RenderDUMP_DT_Render.End();
 }
@@ -392,7 +392,7 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 	for(u32 i = 0; i < visibleModels.size(); i++)
 	{
 		ModelBatch& mb = visibleModels[i];
-		RenderBackend.set_Element(mb.shader);
+		RenderBackend.SetShaderElement(mb.shader);
 
 		// Установка stream source с нужным смещением
 		u32 offsetInBytes = mb.instanceOffset * sizeof(InstanceData);

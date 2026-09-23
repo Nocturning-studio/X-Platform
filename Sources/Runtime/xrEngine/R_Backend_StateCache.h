@@ -31,7 +31,7 @@ class ENGINE_API CBackendStateCache
 	IC void SetColorWriteEnable(IDirect3DDevice9Ex* device, u32 mask);
 
 	// Depth write & culling
-	IC void SetZWriteEnable(IDirect3DDevice9Ex* device, bool enable);
+	IC void SetDepthWriteEnable(IDirect3DDevice9Ex* device, bool enable);
 	IC void SetCullMode(IDirect3DDevice9Ex* device, u32 mode);
 
 	IC void SetRawRenderState(IDirect3DDevice9Ex* device, D3DRENDERSTATETYPE State, DWORD Value);

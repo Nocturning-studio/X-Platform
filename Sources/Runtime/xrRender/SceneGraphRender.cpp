@@ -62,7 +62,7 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 
 	for(const auto& node : batch)
 	{
-		RenderBackend.set_transform_world(node.transform);
+		RenderBackend.SetTransformWorld(node.transform);
 		RenderImplementation.apply_ao_lighting(node.ao_cube);
 
 		node.pVisual->Render(CalculateLODFactor(node.screenSpaceArea, node.pVisual->vis.sphere.R));
@@ -77,8 +77,8 @@ static void __fastcall RenderSortedNode(SceneGraphTypes::mapSorted_Node* node)
 	IRender_Visual* pVisual = node->val.pVisual;
 	VERIFY(pVisual && pVisual->shader._get());
 
-	RenderBackend.set_Element(node->val.se);
-	RenderBackend.set_transform_world(node->val.transform);
+	RenderBackend.SetShaderElement(node->val.se);
+	RenderBackend.SetTransformWorld(node->val.transform);
 	RenderImplementation.apply_ao_lighting(node->val.ao_cube);
 
 	pVisual->Render(CalculateLODFactor(node->key, pVisual->vis.sphere.R));
@@ -231,7 +231,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 {
 	PROFILE_FUNCTION();
 
-	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.SetTransformWorld(Fidentity);
 
 	mapNormalVS& map_vs = packet.queue_static[_priority];
 
@@ -239,7 +239,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 	for (auto* node_vs : m_scratch.nrmVS)
 	{
-		RenderBackend.set_Vertex_Shader(node_vs->key);
+		RenderBackend.SetVertexShader(node_vs->key);
 
 		mapNormalPS& map_ps = node_vs->val;
 		map_ps.screenSpaceArea = 0;
@@ -247,7 +247,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 		for (auto* node_ps : m_scratch.nrmPS)
 		{
-			RenderBackend.set_Pixel_Shader(node_ps->key);
+			RenderBackend.SetPixelShader(node_ps->key);
 
 			mapNormalCS& map_cs = node_ps->val;
 			map_cs.screenSpaceArea = 0;
@@ -255,7 +255,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 			for (auto* node_cs : m_scratch.nrmCS)
 			{
-				RenderBackend.set_Constants(node_cs->key);
+				RenderBackend.SetConstants(node_cs->key);
 
 				mapNormalStates& map_states = node_cs->val;
 				map_states.screenSpaceArea = 0;
@@ -263,7 +263,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 				for (auto* node_state : m_scratch.nrmStates)
 				{
-					RenderBackend.set_States(node_state->key);
+					RenderBackend.SetStates(node_state->key);
 
 					mapNormalTextures& map_tex = node_state->val;
 					map_tex.screenSpaceArea = 0;
@@ -272,7 +272,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 					for (auto* node_tex : m_scratch.nrmTextures)
 					{
-						RenderBackend.set_Textures(node_tex->key);
+						RenderBackend.SetTextures(node_tex->key);
 
 						mapNormalItems& items = node_tex->val;
 						items.screenSpaceArea = 0;
@@ -314,7 +314,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 	for(auto* node_vs : m_scratch.matVS)
 	{
-		RenderBackend.set_Vertex_Shader(node_vs->key);
+		RenderBackend.SetVertexShader(node_vs->key);
 
 		mapMatrixPS& map_ps = node_vs->val;
 		map_ps.screenSpaceArea = 0;
@@ -322,7 +322,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 		for(auto* node_ps : m_scratch.matPS)
 		{
-			RenderBackend.set_Pixel_Shader(node_ps->key);
+			RenderBackend.SetPixelShader(node_ps->key);
 
 			mapMatrixCS& map_cs = node_ps->val;
 			map_cs.screenSpaceArea = 0;
@@ -330,7 +330,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 			for(auto* node_cs : m_scratch.matCS)
 			{
-				RenderBackend.set_Constants(node_cs->key);
+				RenderBackend.SetConstants(node_cs->key);
 
 				mapMatrixStates& map_states = node_cs->val;
 				map_states.screenSpaceArea = 0;
@@ -338,7 +338,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 				for(auto* node_state : m_scratch.matStates)
 				{
-					RenderBackend.set_States(node_state->key);
+					RenderBackend.SetStates(node_state->key);
 
 					mapMatrixTextures& map_tex = node_state->val;
 					map_tex.screenSpaceArea = 0;
@@ -347,7 +347,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 					for(auto* node_tex : m_scratch.matTextures)
 					{
-						RenderBackend.set_Textures(node_tex->key);
+						RenderBackend.SetTextures(node_tex->key);
 
 						mapMatrixItems& items = node_tex->val;
 						items.screenSpaceArea = 0;
@@ -414,7 +414,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 											   g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.SetTransformProject(Engine.RenderView.Project);
 
 	// Render
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
@@ -425,7 +425,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	// Restore Projection
 	Engine.RenderView.Project = ProjectOld;
 	Engine.RenderView.ViewProjection = ViewProjectOld;
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.SetTransformProject(Engine.RenderView.Project);
 }
 
 void CSceneGraph::_RenderTranslucent(SceneGraphPacket& packet)
@@ -587,7 +587,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	// *** RENDER ***
 	int current_lod_index = 0;
-	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.SetTransformWorld(Fidentity);
 
 	{
 		OPTICK_EVENT("Render");
@@ -598,8 +598,8 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 			if (primitive_count > 0)
 			{
 				// Используем packet.lstLODs
-				RenderBackend.set_Element(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
-				RenderBackend.set_Geometry(first_visual->geom);
+				RenderBackend.SetShaderElement(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
+				RenderBackend.SetGeometry(first_visual->geom);
 
 				// Отрисовка батча (2 треугольника на 1 LOD)
 				RenderBackend.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);

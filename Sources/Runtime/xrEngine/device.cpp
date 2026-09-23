@@ -244,15 +244,15 @@ void CRenderDevice::Reset()
 
 	ShowCursor(TRUE);
 
-	RenderBackend.reset_begin();
-	Engine.ResourceManager->reset_begin();
+	RenderBackend.ResetBegin();
+	Engine.ResourceManager->ResetBegin();
 	Memory.mem_compact();
 	RenderBackend.Reset();
 	dwWidth = Engine.WindowManager.GetWidth();
 	dwHeight = Engine.WindowManager.GetHeight();
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
-	Engine.ResourceManager->reset_end();
+	Engine.ResourceManager->ResetEnd();
 
 	if(g_pGamePersistent)
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
@@ -262,7 +262,7 @@ void CRenderDevice::Reset()
 #endif
 
 	Engine.Events.DeviceReset.Process(rp_DeviceReset);
-	RenderBackend.reset_end();
+	RenderBackend.ResetEnd();
 
 	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 	if(b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
@@ -287,5 +287,5 @@ void CRenderDevice::SetNearer(BOOL enabled)
 		m_bNearer = FALSE;
 		Engine.RenderView.Project._43 += EPS_L;
 	}
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.SetTransformProject(Engine.RenderView.Project);
 }

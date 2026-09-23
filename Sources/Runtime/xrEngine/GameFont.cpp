@@ -178,12 +178,12 @@ void CGameFont::OnRender()
 {
 	VERIFY(g_bRendering);
 	if(pShader)
-		RenderBackend.set_Shader(pShader);
+		RenderBackend.SetShader(pShader);
 
 	if(!(uFlags & fsValid))
 	{
 		// БЫЛО: (Требует FFP)
-		// CTexture* T = RenderBackend.get_ActiveTexture(0);
+		// CTexture* T = RenderBackend.GetActiveTexture(0);
 		// vTS.set((int)T->get_Width(), (int)T->get_Height());
 
 		// СТАЛО: (Используем наш сохраненный ресурс)
@@ -309,7 +309,7 @@ void CGameFont::OnRender()
 		RenderBackend.Vertex.Unlock(vCount, pGeom.stride());
 		if(vCount)
 		{
-			RenderBackend.set_Geometry(pGeom);
+			RenderBackend.SetGeometry(pGeom);
 			RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
 		}
 	}

@@ -402,15 +402,15 @@ void CParticleEffect::Render(float)
 			RenderBackend.Vertex.Unlock(dwCount, geom->vb_stride);
 			if(dwCount)
 			{
-				RenderBackend.set_transform_world(Fidentity);
-				RenderBackend.set_Geometry(geom);
+				RenderBackend.SetTransformWorld(Fidentity);
+				RenderBackend.SetGeometry(geom);
 
 				//              u32 cm					= RenderBackend.get_CullMode();
-				RenderBackend.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling)
+				RenderBackend.SetCullMode(m_Def->m_Flags.is(CPEDef::dfCulling)
 											   ? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_BACKFACE : CULL_FRONTFACE)
 											   : CULL_DISABLE);
 				RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-				RenderBackend.set_CullMode(CULL_BACKFACE);
+				RenderBackend.SetCullMode(CULL_BACKFACE);
 			}
 		}
 	}

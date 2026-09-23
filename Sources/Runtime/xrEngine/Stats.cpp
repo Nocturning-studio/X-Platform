@@ -545,9 +545,9 @@ void CStats::OnRender()
 			const CSound_stats_ext::SItem& item = *_I;
 			if(item._3D)
 			{
-				RenderBackend.set_transform_world(Fidentity);
-				RenderBackend.set_Shader(Device.m_SelectionShader);
-				RenderBackend.set_Constant("tfactor", 1, 1, 1, 1);
+				RenderBackend.SetTransformWorld(Fidentity);
+				RenderBackend.SetShader(Device.m_SelectionShader);
+				RenderBackend.SetConstant("tfactor", 1, 1, 1, 1);
 				DU.DrawCross(item.params.position, 0.5f, 0xFF0000FF, true);
 				if(g_stats_flags.is(st_sound_min_dist))
 					DU.DrawSphere(Fidentity, item.params.position, item.params.min_distance, 0x400000FF, 0xFF0000FF,

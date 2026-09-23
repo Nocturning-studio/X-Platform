@@ -11,7 +11,7 @@
 #include <ppl.h>
 #pragma warning(pop)
 
-void CResourceManager::reset_begin()
+void CResourceManager::ResetBegin()
 {
 	// destroy everything, renderer may use
 	Render->ResetBegin();
@@ -24,16 +24,16 @@ void CResourceManager::reset_begin()
 
 		// destroy RTs
 		for(map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
-			rt_it->second->reset_begin();
+			rt_it->second->ResetBegin();
 		for(map_RTCIt rtc_it = m_rtargets_c.begin(); rtc_it != m_rtargets_c.end(); rtc_it++)
-			rtc_it->second->reset_begin();
+			rtc_it->second->ResetBegin();
 	}
 
 	// destroy DStreams
 	RenderBackend.old_QuadIB = RenderBackend.QuadIB;
 	_RELEASE(RenderBackend.QuadIB);
-	RenderBackend.Index.reset_begin();
-	RenderBackend.Vertex.reset_begin();
+	RenderBackend.Index.ResetBegin();
+	RenderBackend.Vertex.ResetBegin();
 
 	// DeferredUnload();
 }
@@ -47,11 +47,11 @@ bool cmp_rtc(const CRTC* A, const CRTC* B)
 	return A->_order < B->_order;
 }
 
-void CResourceManager::reset_end()
+void CResourceManager::ResetEnd()
 {
 	// create RDStreams
-	RenderBackend.Vertex.reset_end();
-	RenderBackend.Index.reset_end();
+	RenderBackend.Vertex.ResetEnd();
+	RenderBackend.Index.ResetEnd();
 	Evict();
 	RenderBackend.CreateQuadIB();
 

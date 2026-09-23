@@ -3,8 +3,8 @@
 void CRender::clear_shadow_map_spot()
 {
 	/*
-	if (RenderImplementation.b_HW_smap)		set_Render_Target_Surface	(rt_smap_surf, NULL, NULL, NULL, rt_smap_d_depth->pRT);
-	else								set_Render_Target_Surface	(rt_smap_surf, NULL, NULL, NULL, rt_smap_d_ZB);
+	if (RenderImplementation.b_HW_smap)		SetRenderTarget	(rt_smap_surf, NULL, NULL, NULL, rt_smap_d_depth->pRT);
+	else								SetRenderTarget	(rt_smap_surf, NULL, NULL, NULL, rt_smap_d_ZB);
 	CHK_DX								(RenderBackend.GetDevice()->Clear( 0L, NULL, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
 	*/
 }
@@ -12,26 +12,26 @@ void CRender::clear_shadow_map_spot()
 void CRender::render_shadow_map_spot(light* L)
 {
 	// Targets + viewport
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_smap_surf);
-	RenderBackend.set_Depth_Buffer(RenderTarget->rt_smap_depth->pRT);
+	RenderBackend.SetRenderTarget(RenderTarget->rt_smap_surf);
+	RenderBackend.SetDepthBuffer(RenderTarget->rt_smap_depth->pRT);
 
 	D3DVIEWPORT9 VP = {L->TransformContext.ShadowContext.posX, L->TransformContext.ShadowContext.posY, L->TransformContext.ShadowContext.size, L->TransformContext.ShadowContext.size, 0, 1};
 	CHK_DX(RenderBackend.GetDevice()->SetViewport(&VP));
 
 	// Misc	- draw only front-faces
-	RenderBackend.set_CullMode(CULL_BACKFACE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_BACKFACE);
+	RenderBackend.SetStencil(FALSE);
 	// no transparency
 #pragma todo("can optimize for multi-lights covering more than say 50%...")
 
-	RenderBackend.set_ColorWriteEnable(FALSE);
+	RenderBackend.SetColorWriteEnable(FALSE);
 	CHK_DX(RenderBackend.GetDevice()->Clear(0L, NULL, D3DCLEAR_ZBUFFER, 0xffffffff, 1.0f, 0L));
 }
 
 void CRender::render_shadow_map_spot_transluent(light* L)
 {
 	// VERIFY(RenderImplementation.o.Tshadows);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetColorWriteEnable();
 	if(IRender_Light::OMNIPART == L->LightFlags.type)
 	{
 		// omni-part
@@ -44,7 +44,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		ref_shader shader = L->get_shader_spot();
 		if(!shader)
 			shader = RenderTarget->s_accum_spot;
-		RenderBackend.set_Element(shader->E[SE_L_FILL]);
+		RenderBackend.SetShaderElement(shader->E[SE_L_FILL]);
 
 		// Fill vertex buffer
 		fvec2 p0, p1;
@@ -67,7 +67,7 @@ void CRender::render_shadow_map_spot_transluent(light* L)
 		pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
 		pv++;
 		RenderBackend.Vertex.Unlock(4, RenderBackend.m_viewport->vb_stride);
-		RenderBackend.set_Geometry(RenderBackend.m_viewport);
+		RenderBackend.SetGeometry(RenderBackend.m_viewport);
 
 		// draw
 		RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

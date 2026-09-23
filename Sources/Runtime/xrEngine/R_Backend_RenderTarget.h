@@ -24,8 +24,8 @@ class ENGINE_API CRT : public xr_resource_named
 
 	void create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels = 1);
 	void destroy();
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 	IC BOOL valid()
 	{
 		return !!pTexture;
@@ -121,8 +121,8 @@ class ENGINE_API CRTC : public xr_resource_named
 
 	void create(LPCSTR name, u32 size, RHI_Format f, u32 levels = 1);
 	void destroy();
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 	IC BOOL valid()
 	{
 		return !pTexture;

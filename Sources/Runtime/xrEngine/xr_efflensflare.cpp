@@ -501,14 +501,14 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 	}
 	RenderBackend.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
 
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_Geometry(hGeom);
+	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackend.SetGeometry(hGeom);
 	for(u32 i = 0; i < _2render.size(); i++)
 	{
 		if(_2render[i])
 		{
 			u32 vBase = i * 4 + VS_Offset;
-			RenderBackend.set_Shader(_2render[i]);
+			RenderBackend.SetShader(_2render[i]);
 			RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, 4, 0, 2);
 		}
 	}

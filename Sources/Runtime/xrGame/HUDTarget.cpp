@@ -293,8 +293,8 @@ void CHUDTarget::Render()
 
 				// unlock VB and Render it as triangle LIST
 				RenderBackend.Vertex.Unlock(4,hGeom.stride());
-				RenderBackend.set_Shader	(hShader);
-				RenderBackend.set_Geometry	(hGeom);
+				RenderBackend.SetShader	(hShader);
+				RenderBackend.SetGeometry	(hGeom);
 				RenderBackend.Render		(D3DPT_TRIANGLELIST,vOffset,0,4,0,2);
 		*/
 	}

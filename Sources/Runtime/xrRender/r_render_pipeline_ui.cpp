@@ -11,9 +11,9 @@ void CRender::RenderMenu()
 	PROFILE_FUNCTION();
 
 	// Globals
-	RenderBackend.set_CullMode(CULL_BACKFACE);
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetCullMode(CULL_BACKFACE);
+	RenderBackend.SetStencil(FALSE);
+	RenderBackend.SetColorWriteEnable();
 
 	// Main Render
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0], RenderBackend.GetBaseZB());
@@ -25,11 +25,11 @@ void CRender::RenderMenu()
 	g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
 
 	// Apply distortion
-	RenderBackend.set_Shader(RenderTarget->s_menu_distortion);
+	RenderBackend.SetShader(RenderTarget->s_menu_distortion);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], RenderBackend.GetBaseZB());
 
 	// Resolve gamma and actual display
-	RenderBackend.set_Shader(RenderTarget->s_menu_gamma);
+	RenderBackend.SetShader(RenderTarget->s_menu_gamma);
 	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, RenderBackend.GetBaseRT(), RenderBackend.GetBaseZB());
 }
 ////////////////////////////////////////////////////////////////////////////////

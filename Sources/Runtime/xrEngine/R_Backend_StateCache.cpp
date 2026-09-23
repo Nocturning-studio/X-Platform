@@ -168,7 +168,7 @@ void CBackendStateCache::SetColorWriteEnable(IDirect3DDevice9Ex* device, u32 mas
 // ---------------------------------------------------------------------------
 // Depth write & culling
 // ---------------------------------------------------------------------------
-void CBackendStateCache::SetZWriteEnable(IDirect3DDevice9Ex* device, bool enable)
+void CBackendStateCache::SetDepthWriteEnable(IDirect3DDevice9Ex* device, bool enable)
 {
 	u32 bEnable = enable ? 1 : 0;
 	if(m_zWriteEnable != bEnable)

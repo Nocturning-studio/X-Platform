@@ -143,12 +143,12 @@ void CRT::destroy()
 	_RELEASE(pSurface);
 }
 
-void CRT::reset_begin()
+void CRT::ResetBegin()
 {
 	destroy();
 }
 
-void CRT::reset_end()
+void CRT::ResetEnd()
 {
 	create(*cName, dwWidth, dwHeight, fmt);
 }
@@ -269,12 +269,12 @@ void CRTC::destroy()
 	_RELEASE(pSurface);
 }
 
-void CRTC::reset_begin()
+void CRTC::ResetBegin()
 {
 	destroy();
 }
 
-void CRTC::reset_end()
+void CRTC::ResetEnd()
 {
 	create(*cName, dwSize, fmt);
 }

@@ -55,7 +55,7 @@ class cl_InvView : public R_constant_setup
 	{
 		fmat4x4 mInvV = fmat4x4().invert(RenderBackend.transforms.m_View);
 
-		RenderBackend.set_Constant(C, mInvV);
+		RenderBackend.SetConstant(C, mInvV);
 	}
 };
 static cl_InvView binder_InvView;
@@ -75,7 +75,7 @@ class cl_texgen : public R_constant_setup
 
 		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_WorldViewProject);
 
-		RenderBackend.set_Constant(C, mTexgen);
+		RenderBackend.SetConstant(C, mTexgen);
 	}
 };
 static cl_texgen binder_texgen;
@@ -95,7 +95,7 @@ class cl_VPtexgen : public R_constant_setup
 
 		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_ViewProject);
 
-		RenderBackend.set_Constant(C, mTexgen);
+		RenderBackend.SetConstant(C, mTexgen);
 	}
 };
 static cl_VPtexgen binder_VPtexgen;
@@ -113,7 +113,7 @@ class cl_fog_params : public R_constant_setup
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z),
 					   desc->fog_density);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_fog_params binder_fog_params;
@@ -130,7 +130,7 @@ class cl_fog_color : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z), 0);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_fog_color binder_fog_color;
@@ -146,7 +146,7 @@ static class cl_fog_density final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_density, 0, 0, 0);
 		}
-		RenderBackend.set_Constant(C, FogDensity);
+		RenderBackend.SetConstant(C, FogDensity);
 	}
 } binder_fog_density;
 
@@ -161,7 +161,7 @@ static class cl_fog_sky_influence final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_sky_influence, 0, 0, 0);
 		}
-		RenderBackend.set_Constant(C, FogDensity);
+		RenderBackend.SetConstant(C, FogDensity);
 	}
 } binder_fog_sky_influence;
 
@@ -176,7 +176,7 @@ static class cl_vertical_fog_density final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			VerticalFogDensity.set(desc->vertical_fog_density, 0, 0, 0);
 		}
-		RenderBackend.set_Constant(C, VerticalFogDensity);
+		RenderBackend.SetConstant(C, VerticalFogDensity);
 	}
 } binder_vertical_fog_density;
 
@@ -191,7 +191,7 @@ static class cl_vertical_fog_height final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			VerticalFogHeight.set(desc->vertical_fog_height, 0, 0, 0);
 		}
-		RenderBackend.set_Constant(C, VerticalFogHeight);
+		RenderBackend.SetConstant(C, VerticalFogHeight);
 	}
 } binder_vertical_fog_height;
 
@@ -201,7 +201,7 @@ static class cl_rain_density : public R_constant_setup
 	{
 		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E->rain_density;
-		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
+		RenderBackend.SetConstant(C, fValue, fValue, fValue, 0);
 	}
 } binder_rain_density;
 
@@ -211,7 +211,7 @@ static class cl_water_intensity : public R_constant_setup
 	{
 		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E->m_fWaterIntensity;
-		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
+		RenderBackend.SetConstant(C, fValue, fValue, fValue, 0);
 	}
 } binder_water_intensity;
 
@@ -221,7 +221,7 @@ static class cl_pos_decompress_params : public R_constant_setup
 	{
 		float VertTan = -1.0f * tanf(deg2rad(Engine.RenderView.Fov / 2.0f));
 		float HorzTan = -VertTan / Engine.RenderView.Aspect;
-		RenderBackend.set_Constant(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
+		RenderBackend.SetConstant(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
 	}
 } binder_pos_decompress_params;
 
@@ -231,7 +231,7 @@ class cl_times : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float t = Engine.TimeManager.GetGlobalTimeFixed();
-		RenderBackend.set_Constant(C, t, t * 10, t / 10, std::sin(t));
+		RenderBackend.SetConstant(C, t, t * 10, t / 10, std::sin(t));
 	}
 };
 static cl_times binder_times;
@@ -242,7 +242,7 @@ class cl_eye_P : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		fvec3& V = Engine.RenderView.Position;
-		RenderBackend.set_Constant(C, V.x, V.y, V.z, 1);
+		RenderBackend.SetConstant(C, V.x, V.y, V.z, 1);
 	}
 };
 static cl_eye_P binder_eye_P;
@@ -253,7 +253,7 @@ class cl_eye_D : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		fvec3& V = Engine.RenderView.Direction;
-		RenderBackend.set_Constant(C, V.x, V.y, V.z, 0);
+		RenderBackend.SetConstant(C, V.x, V.y, V.z, 0);
 	}
 };
 static cl_eye_D binder_eye_D;
@@ -270,7 +270,7 @@ class cl_sun0_color : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->sun_color.x), sRgbToLinear(desc->sun_color.y), sRgbToLinear(desc->sun_color.z), 0);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_sun0_color binder_sun0_color;
@@ -282,7 +282,7 @@ static class cl_env_color : public R_constant_setup
 		CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
 		fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS, sRgbToLinear(envdesc->hemi_color.y) * 2 + EPS,
 						sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
-		RenderBackend.set_Constant(C, envclr);
+		RenderBackend.SetConstant(C, envclr);
 	}
 } binder_env_color;
 
@@ -297,7 +297,7 @@ class cl_sun0_dir_w : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc->sun_dir.x, desc->sun_dir.y, desc->sun_dir.z, 0);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_sun0_dir_w binder_sun0_dir_w;
@@ -315,7 +315,7 @@ class cl_sun0_dir_e : public R_constant_setup
 			D.normalize();
 			result.set(D.x, D.y, D.z, 0);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_sun0_dir_e binder_sun0_dir_e;
@@ -332,7 +332,7 @@ class cl_amb_color : public R_constant_setup
 			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->ambient.x), sRgbToLinear(desc->ambient.y), sRgbToLinear(desc->ambient.z), desc->weight);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_amb_color binder_amb_color;
@@ -348,7 +348,7 @@ class cl_ambient_brightness : public R_constant_setup
 			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc->ambient_brightness, 0, 0, 0);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_ambient_brightness binder_ambient_brightness;
@@ -364,7 +364,7 @@ class cl_hemi_color : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->hemi_color.x), sRgbToLinear(desc->hemi_color.y), sRgbToLinear(desc->hemi_color.z), desc->hemi_color.w);
 		}
-		RenderBackend.set_Constant(C, result);
+		RenderBackend.SetConstant(C, result);
 	}
 };
 static cl_hemi_color binder_hemi_color;
@@ -373,7 +373,7 @@ static class cl_screen_res : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
+		RenderBackend.SetConstant(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
 	}
 } binder_screen_res;
 
@@ -382,7 +382,7 @@ class cl_wind_params : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
-		RenderBackend.set_Constant(C, desc->wind_direction3D.x, desc->wind_direction3D.y, desc->wind_direction3D.z, desc->wind_gusting);
+		RenderBackend.SetConstant(C, desc->wind_direction3D.x, desc->wind_direction3D.y, desc->wind_direction3D.z, desc->wind_gusting);
 	}
 };
 static cl_wind_params binder_wind_params;
@@ -393,7 +393,7 @@ class cl_wind_turbulence : public R_constant_setup
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 
-		RenderBackend.set_Constant(C, desc->wind_turbulence, desc->wind_turbulence, desc->wind_anim_time, desc->wind_strength);
+		RenderBackend.SetConstant(C, desc->wind_turbulence, desc->wind_turbulence, desc->wind_anim_time, desc->wind_strength);
 	}
 };
 static cl_wind_turbulence binder_wind_turbulence;
@@ -402,70 +402,70 @@ static cl_wind_turbulence binder_wind_turbulence;
 void CBlender_Compile::SetMapping()
 {
 	// matrices
-	set_Constant("m_World", &binder_World);
-	set_Constant("m_View", &binder_View);
-	set_Constant("m_invView", &binder_InvView);
-	set_Constant("m_Project", &binder_Project);
-	set_Constant("m_WorldView", &binder_WorldView);
-	set_Constant("m_ViewProject", &binder_ViewProject);
-	set_Constant("m_WorldViewProject", &binder_WorldViewProject);
+	SetConstant("m_World", &binder_World);
+	SetConstant("m_View", &binder_View);
+	SetConstant("m_invView", &binder_InvView);
+	SetConstant("m_Project", &binder_Project);
+	SetConstant("m_WorldView", &binder_WorldView);
+	SetConstant("m_ViewProject", &binder_ViewProject);
+	SetConstant("m_WorldViewProject", &binder_WorldViewProject);
 
-	set_Constant("m_transform_v", &tree_binder_m_transform_v);
-	set_Constant("m_transform", &tree_binder_m_transform);
-	set_Constant("consts", &tree_binder_consts);
-	set_Constant("c_scale", &tree_binder_c_scale);
-	set_Constant("c_bias", &tree_binder_c_bias);
-	set_Constant("c_sun", &tree_binder_c_sun);
-	set_Constant("wind_params", &binder_wind_params);
-	set_Constant("wind_turbulence", &binder_wind_turbulence);
+	SetConstant("m_transform_v", &tree_binder_m_transform_v);
+	SetConstant("m_transform", &tree_binder_m_transform);
+	SetConstant("consts", &tree_binder_consts);
+	SetConstant("c_scale", &tree_binder_c_scale);
+	SetConstant("c_bias", &tree_binder_c_bias);
+	SetConstant("c_sun", &tree_binder_c_sun);
+	SetConstant("wind_params", &binder_wind_params);
+	SetConstant("wind_turbulence", &binder_wind_turbulence);
 
 	//	Igor	temp solution for the texgen functionality in the shader
-	set_Constant("m_texgen", &binder_texgen);
-	set_Constant("mVPTexgen", &binder_VPtexgen);
+	SetConstant("m_texgen", &binder_texgen);
+	SetConstant("mVPTexgen", &binder_VPtexgen);
 
 #ifndef _EDITOR
 	// fog-params
-	set_Constant("fog_params", &binder_fog_params);
-	set_Constant("fog_color", &binder_fog_color);
-	set_Constant("fog_density", &binder_fog_density);
-	set_Constant("fog_sky_influence", &binder_fog_sky_influence);
-	set_Constant("vertical_fog_density", &binder_vertical_fog_density);
-	set_Constant("vertical_fog_height", &binder_vertical_fog_height);
+	SetConstant("fog_params", &binder_fog_params);
+	SetConstant("fog_color", &binder_fog_color);
+	SetConstant("fog_density", &binder_fog_density);
+	SetConstant("fog_sky_influence", &binder_fog_sky_influence);
+	SetConstant("vertical_fog_density", &binder_vertical_fog_density);
+	SetConstant("vertical_fog_height", &binder_vertical_fog_height);
 #endif
 
-	set_Constant("water_intensity", &binder_water_intensity);
-	set_Constant("rain_density", &binder_rain_density);
+	SetConstant("water_intensity", &binder_water_intensity);
+	SetConstant("rain_density", &binder_rain_density);
 
-	set_Constant("pos_decompression_params", &binder_pos_decompress_params);
+	SetConstant("pos_decompression_params", &binder_pos_decompress_params);
 
 	// env-params
-	set_Constant("env_color", &binder_env_color);
+	SetConstant("env_color", &binder_env_color);
 
 	// time
-	set_Constant("timers", &binder_times);
+	SetConstant("timers", &binder_times);
 
 	// eye-params
-	set_Constant("eye_position", &binder_eye_P);
-	set_Constant("eye_direction", &binder_eye_D);
+	SetConstant("eye_position", &binder_eye_P);
+	SetConstant("eye_direction", &binder_eye_D);
 
 #ifndef _EDITOR
 	// global-lighting (env params)
-	set_Constant("L_sun_color", &binder_sun0_color);
-	set_Constant("L_sun_dir_w", &binder_sun0_dir_w);
-	set_Constant("L_hemi_color", &binder_hemi_color);
-	set_Constant("L_ambient", &binder_amb_color);
-	set_Constant("ambient_brightness", &binder_ambient_brightness);
+	SetConstant("L_sun_color", &binder_sun0_color);
+	SetConstant("L_sun_dir_w", &binder_sun0_dir_w);
+	SetConstant("L_hemi_color", &binder_hemi_color);
+	SetConstant("L_ambient", &binder_amb_color);
+	SetConstant("ambient_brightness", &binder_ambient_brightness);
 #endif
 
-	set_Constant("screen_res", &binder_screen_res);
+	SetConstant("screen_res", &binder_screen_res);
 
 	if(bDetail && bDetail_Diffuse && detail_scaler)
-		set_Constant("dt_params", detail_scaler);
+		SetConstant("dt_params", detail_scaler);
 
 	// other common
 	for(u32 it = 0; it < Engine.ResourceManager->v_constant_setup.size(); it++)
 	{
 		std::pair<shared_str, R_constant_setup*> cs = Engine.ResourceManager->v_constant_setup[it];
-		set_Constant(*cs.first, cs.second);
+		SetConstant(*cs.first, cs.second);
 	}
 }

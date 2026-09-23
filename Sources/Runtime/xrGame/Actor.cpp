@@ -1439,9 +1439,9 @@ void CActor::RenderIndicator(fvec3 dpos, float r1, float r2, ref_shader IndShade
 	dwCount = u32(pv - pv_start);
 	RenderBackend.Vertex.Unlock(dwCount, hFriendlyIndicator->vb_stride);
 
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_Shader(IndShader);
-	RenderBackend.set_Geometry(hFriendlyIndicator);
+	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackend.SetShader(IndShader);
+	RenderBackend.SetGeometry(hFriendlyIndicator);
 	RenderBackend.Render(D3DPT_TRIANGLESTRIP, dwOffset, 0, dwCount, 0, 2);
 };
 

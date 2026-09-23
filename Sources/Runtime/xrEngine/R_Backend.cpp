@@ -150,8 +150,8 @@ void CRenderBackend::Create(HWND m_hWnd)
 #endif
 
 	u32 width, height;
-	selectResolution(width, height, bWindowed);
-	u32 presentInterval = selectPresentInterval();
+	SelectResolution(width, height, bWindowed);
+	u32 presentInterval = SelectPresentInterval();
 	u32 refreshHz = D3DPRESENT_RATE_DEFAULT;
 
 	CWindowManager& wm = Engine.WindowManager;
@@ -267,8 +267,8 @@ void CRenderBackend::Reset()
 #endif
 
 	u32 width, height;
-	selectResolution(width, height, bWindowed);
-	u32 presentInterval = selectPresentInterval();
+	SelectResolution(width, height, bWindowed);
+	u32 presentInterval = SelectPresentInterval();
 	u32 refreshHz = D3DPRESENT_RATE_DEFAULT;
 
 	CWindowManager& wm = Engine.WindowManager;
@@ -337,7 +337,7 @@ bool CRenderBackend::NeedReset()
 		return false;
 }
 
-void CRenderBackend::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
+void CRenderBackend::SelectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 {
 #ifdef DEDICATED_SERVER
 	dwWidth = 32;
@@ -348,7 +348,7 @@ void CRenderBackend::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowe
 #endif
 }
 
-u32 CRenderBackend::selectPresentInterval()
+u32 CRenderBackend::SelectPresentInterval()
 {
 #ifdef DEDICATED_SERVER
 	return D3DPRESENT_INTERVAL_IMMEDIATE;
@@ -404,14 +404,14 @@ void CRenderBackend::OnDeviceDestroy()
 	_RELEASE(QuadIB);
 }
 
-void CRenderBackend::reset_begin()
+void CRenderBackend::ResetBegin()
 {
 	m_constantMgr.ForceDirty();
 	m_stateCache.Invalidate(*this);
 	m_resBinder.Invalidate(*this);
 }
 
-void CRenderBackend::reset_end()
+void CRenderBackend::ResetEnd()
 {
 	m_constantMgr.ResetDirty();
 }
@@ -434,85 +434,85 @@ void CRenderBackend::RestoreRenderState()
 	m_stateCache.RestoreRenderState(GetDevice(), *this);
 }
 
-void CRenderBackend::set_Blend(BOOL enable, D3DBLEND src, D3DBLEND dest)
+void CRenderBackend::SetBlend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 {
 	m_stateCache.SetBlend(GetDevice(), enable, src, dest);
 }
 
-void CRenderBackend::set_Blend_Alpha()
+void CRenderBackend::SetBlendAlpha()
 {
-	set_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+	SetBlend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 }
 
-void CRenderBackend::set_Blend_Add()
+void CRenderBackend::SetBlendAdd()
 {
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 }
 
-void CRenderBackend::set_Blend_Multiply()
+void CRenderBackend::SetBlendMultiply()
 {
-	set_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
+	SetBlend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
 }
 
-void CRenderBackend::set_Blend_Default()
+void CRenderBackend::SetBlendDefault()
 {
-	set_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
+	SetBlend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO);
 }
 
-void CRenderBackend::set_Blend_Subtract()
+void CRenderBackend::SetBlendSubstract()
 {
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 	SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
 }
 
-void CRenderBackend::set_Blend_Screen()
+void CRenderBackend::SetBlendScreen()
 {
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
+	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
 }
 
-void CRenderBackend::set_Blend_LightAdd()
+void CRenderBackend::SetBlendLightAdd()
 {
-	set_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	SetBlend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
 }
 
-void CRenderBackend::set_Blend_ColorAdd()
+void CRenderBackend::SetBlendColorAdd()
 {
-	set_Blend(TRUE, D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
+	SetBlend(TRUE, D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
 }
 
-void CRenderBackend::set_BlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
+void CRenderBackend::SetBlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
 {
 	m_stateCache.SetBlendEx(GetDevice(), enable, src, dest, op);
 }
 
-BOOL CRenderBackend::get_BlendState() const
+BOOL CRenderBackend::GetBlendState() const
 {
 	return m_stateCache.GetBlendEnable();
 }
 
-D3DBLEND CRenderBackend::get_SrcBlend() const
+D3DBLEND CRenderBackend::GetSrcBlend() const
 {
 	return m_stateCache.GetSrcBlend();
 }
 
-D3DBLEND CRenderBackend::get_DstBlend() const
+D3DBLEND CRenderBackend::GetDstBlend() const
 {
 	return m_stateCache.GetDstBlend();
 }
 
-void CRenderBackend::enable_anisotropy_filtering()
+void CRenderBackend::EnableAnisotropyFiltering()
 {
 	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
 }
 
-void CRenderBackend::disable_anisotropy_filtering()
+void CRenderBackend::DisableAnisotropyFiltering()
 {
 	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
 }
 
-void CRenderBackend::set_anisotropy_filtering(int max_anisothropy)
+void CRenderBackend::SetAnisotropyFiltering(int max_anisothropy)
 {
 	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
 		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
@@ -530,7 +530,7 @@ void CRenderBackend::OnFrameBegin()
 	std::memset(&stat, 0, sizeof(stat));
 	Vertex.Flush();
 	Index.Flush();
-	set_Stencil(FALSE);
+	SetStencil(FALSE);
 	RHI()->OnFrameBegin();
 #endif
 }
@@ -552,75 +552,75 @@ void CRenderBackend::Present()
 
 #ifndef DEDICATED_SERVER
 
-void CRenderBackend::set_Textures(STextureList* _T)
+void CRenderBackend::SetTextures(STextureList* _T)
 {
 	m_resBinder.SetTextures(*this, _T);
 }
 #else
 
-void CRenderBackend::set_Textures(STextureList* _T)
+void CRenderBackend::SetTextures(STextureList* _T)
 {
 }
 
 #endif
 
-void CRenderBackend::set_Render_Target_Surface(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
+void CRenderBackend::SetRenderTarget(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
 	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
 
-	RenderBackend.setRenderTarget(rt_1->pRT, 0);
+	RenderBackend.SetRenderTargetSurface(rt_1->pRT, 0);
 
 	if(rt_2)
-		RenderBackend.setRenderTarget(rt_2->pRT, 1);
+		RenderBackend.SetRenderTargetSurface(rt_2->pRT, 1);
 	else
-		RenderBackend.setRenderTarget(NULL, 1);
+		RenderBackend.SetRenderTargetSurface(NULL, 1);
 
 	if(rt_3)
-		RenderBackend.setRenderTarget(rt_3->pRT, 2);
+		RenderBackend.SetRenderTargetSurface(rt_3->pRT, 2);
 	else
-		RenderBackend.setRenderTarget(NULL, 2);
+		RenderBackend.SetRenderTargetSurface(NULL, 2);
 
 	if(rt_4)
-		RenderBackend.setRenderTarget(rt_4->pRT, 3);
+		RenderBackend.SetRenderTargetSurface(rt_4->pRT, 3);
 	else
-		RenderBackend.setRenderTarget(NULL, 3);
+		RenderBackend.SetRenderTargetSurface(NULL, 3);
 }
 
-void CRenderBackend::set_Render_Target_Surface(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
+void CRenderBackend::SetRenderTarget(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
 {
 	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
 
-	RenderBackend.setRenderTarget(rt_1, 0);
+	RenderBackend.SetRenderTargetSurface(rt_1, 0);
 
 	if(rt_2)
-		RenderBackend.setRenderTarget(rt_2, 1);
+		RenderBackend.SetRenderTargetSurface(rt_2, 1);
 	else
-		RenderBackend.setRenderTarget(NULL, 1);
+		RenderBackend.SetRenderTargetSurface(NULL, 1);
 
 	if(rt_3)
-		RenderBackend.setRenderTarget(rt_3, 2);
+		RenderBackend.SetRenderTargetSurface(rt_3, 2);
 	else
-		RenderBackend.setRenderTarget(NULL, 2);
+		RenderBackend.SetRenderTargetSurface(NULL, 2);
 
 	if(rt_4)
-		RenderBackend.setRenderTarget(rt_4, 3);
+		RenderBackend.SetRenderTargetSurface(rt_4, 3);
 	else
-		RenderBackend.setRenderTarget(NULL, 3);
+		RenderBackend.SetRenderTargetSurface(NULL, 3);
 }
 
-void CRenderBackend::set_Depth_Buffer(IDirect3DSurface9* zb)
+void CRenderBackend::SetDepthBuffer(IDirect3DSurface9* zb)
 {
-	RenderBackend.setDepthBuffer(zb);
+	RenderBackend.SetDepthBufferSurface(zb);
 }
 
-void CRenderBackend::clear_Depth_Buffer(IDirect3DSurface9* zb)
+void CRenderBackend::ClearDepthBuffer(IDirect3DSurface9* zb)
 {
-	RenderBackend.setDepthBuffer(zb);
+	RenderBackend.SetDepthBuffer(zb);
 	CHK_DX(RenderBackend.GetDevice()->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0x0, 1.0f, 0L));
 }
 
 // 2D texgen (texture adjustment matrix)
-void CRenderBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
+void CRenderBackend::ComputeTexgenScreen(fmat4x4& m_Texgen)
 {
 	float _w = float(Device.dwWidth);
 	float _h = float(Device.dwHeight);
@@ -633,7 +633,7 @@ void CRenderBackend::u_compute_texgen_screen(fmat4x4& m_Texgen)
 	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
 }
 
-void CRenderBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32& vOffset)
+void CRenderBackend::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32& vOffset)
 {
 	// Constants
 	u32 Color = color_rgba(0, 0, 0, 255);
@@ -669,54 +669,54 @@ void CRenderBackend::set_viewport_geometry(u32 w, u32 h, ref_geom geometry, u32&
 	RenderBackend.Vertex.Unlock(4, geometry->vb_stride);
 
 	// Set geometry
-	RenderBackend.set_Geometry(geometry);
+	RenderBackend.SetGeometry(geometry);
 }
 
-void CRenderBackend::set_viewport_geometry(u32 w, u32 h, u32& vOffset)
+void CRenderBackend::SetViewportGeom(u32 w, u32 h, u32& vOffset)
 {
-	set_viewport_geometry(w, h, m_viewport, vOffset);
+	SetViewportGeom(w, h, m_viewport, vOffset);
 }
 
-void CRenderBackend::set_viewport_geometry(ref_geom geometry, u32& vOffset)
-{
-	u32 w = Device.dwWidth;
-	u32 h = Device.dwHeight;
-	set_viewport_geometry(w, h, geometry, vOffset);
-}
-
-void CRenderBackend::set_viewport_geometry(u32& vOffset)
+void CRenderBackend::SetViewportGeom(ref_geom geometry, u32& vOffset)
 {
 	u32 w = Device.dwWidth;
 	u32 h = Device.dwHeight;
-	set_viewport_geometry(w, h, m_viewport, vOffset);
+	SetViewportGeom(w, h, geometry, vOffset);
 }
 
-void CRenderBackend::render_viewport_geometry(u32 w, u32 h)
+void CRenderBackend::SetViewportGeom(u32& vOffset)
+{
+	u32 w = Device.dwWidth;
+	u32 h = Device.dwHeight;
+	SetViewportGeom(w, h, m_viewport, vOffset);
+}
+
+void CRenderBackend::RenderViewportGeom(u32 w, u32 h)
 {
 	u32 vOffset;
-	set_viewport_geometry(w, h, m_viewport, vOffset);
+	SetViewportGeom(w, h, m_viewport, vOffset);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
 }
 
 void CRenderBackend::RenderViewportSurface()
 {
 	u32 Offset = 0;
-	set_viewport_geometry(Offset);
+	SetViewportGeom(Offset);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
 void CRenderBackend::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
 {
-	set_Render_Target_Surface(rt_1);
-	set_Depth_Buffer(zb);
-	render_viewport_geometry(rt_1->dwWidth, rt_1->dwHeight);
+	SetRenderTarget(rt_1);
+	SetDepthBuffer(zb);
+	RenderViewportGeom(rt_1->dwWidth, rt_1->dwHeight);
 }
 
 void CRenderBackend::RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* rt_1, IDirect3DSurface9* zb)
 {
-	set_Render_Target_Surface(w, h, rt_1);
-	set_Depth_Buffer(zb);
-	render_viewport_geometry(w, h);
+	SetRenderTarget(w, h, rt_1);
+	SetDepthBuffer(zb);
+	RenderViewportGeom(w, h);
 }
 
 void CRenderBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
@@ -727,16 +727,16 @@ void CRenderBackend::RenderViewportSurface(IDirect3DSurface9* rt_1)
 	if(FAILED(hr))
 		return;
 
-	set_Render_Target_Surface(desc.Width, desc.Height, rt_1);
-	set_Depth_Buffer(NULL);
-	render_viewport_geometry(desc.Width, desc.Height);
+	SetRenderTarget(desc.Width, desc.Height, rt_1);
+	SetDepthBuffer(NULL);
+	RenderViewportGeom(desc.Width, desc.Height);
 }
 
 void CRenderBackend::RenderViewportSurface(u32 w, u32 h, const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {
-	set_Render_Target_Surface(rt_1, rt_2, rt_3, rt_4);
-	set_Depth_Buffer(NULL);
-	render_viewport_geometry(w, h);
+	SetRenderTarget(rt_1, rt_2, rt_3, rt_4);
+	SetDepthBuffer(NULL);
+	RenderViewportGeom(w, h);
 }
 
 void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level)
@@ -785,7 +785,7 @@ void CRenderBackend::RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElemen
 	SaveRenderState();
 
 	// Устанавливаем шейдер
-	set_Element(shader, pass);
+	SetShaderElement(shader, pass);
 
 	// Рендерим
 	RenderViewportSurface(width, height, mip_surface);

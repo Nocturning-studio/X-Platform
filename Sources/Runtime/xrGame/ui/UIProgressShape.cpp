@@ -64,8 +64,8 @@ void CUIProgressShape::Draw()
 
 	ref_shader sh = m_pTexture->GetShader();
 	ref_geom gm = GetUIGeom();
-	RenderBackend.set_Shader(sh);
-	CTexture* T = RenderBackend.get_ActiveTexture(0);
+	RenderBackend.SetShader(sh);
+	CTexture* T = RenderBackend.GetActiveTexture(0);
 	fvec2 tsize;
 	tsize.set(float(T->get_Width()), float(T->get_Height()));
 
@@ -149,13 +149,13 @@ void CUIProgressShape::Draw()
 	}
 
 	RenderBackend.Vertex.Unlock(m_sectorCount * 3, gm.stride());
-	RenderBackend.set_Geometry(gm);
+	RenderBackend.SetGeometry(gm);
 
 	//	if(!m_bClockwise)
-	//		RenderBackend.set_CullMode			(CULL_DISABLE);
+	//		RenderBackend.SetCullMode			(CULL_DISABLE);
 
 	RenderBackend.Render(D3DPT_TRIANGLELIST, offset, m_sectorCount);
 
 	//	if(!m_bClockwise)
-	//		RenderBackend.set_CullMode			(CULL_BACKFACE);
+	//		RenderBackend.SetCullMode			(CULL_BACKFACE);
 }

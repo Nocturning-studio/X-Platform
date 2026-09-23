@@ -162,10 +162,10 @@ void CPUOcclusion::DrawDebug()
 	if(!m_loaded)
 		return;
 
-	RenderBackend.set_Geometry(m_geom);
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_Shader(m_shader);
-	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.SetGeometry(m_geom);
+	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackend.SetShader(m_shader);
+	RenderBackend.SetCullMode(CULL_DISABLE);
 
 	const u32 primCount = m_indexCount / 3;
 	RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, primCount);
