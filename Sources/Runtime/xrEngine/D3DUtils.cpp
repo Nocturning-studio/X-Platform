@@ -49,14 +49,14 @@ static fvec3 boxvert[boxvertcount];
 #define DU_DRAW_RS RenderBackend.dbg_SetRS
 #define DU_DRAW_SH_C(sh, c)                                                                                 \
 	{                                                                                                       \
-		RenderBackend.set_Shader(sh);                                                                       \
-		RenderBackend.set_Constant("tfactor", float(color_get_R(c)) / 255.f, float(color_get_G(c)) / 255.f, \
+		RenderBackend.SetShader(sh);                                                                       \
+		RenderBackend.SetConstant("tfactor", float(color_get_R(c)) / 255.f, float(color_get_G(c)) / 255.f, \
 								   float(color_get_B(c)) / 255.f, float(color_get_A(c)) / 255.f);           \
 	}
 #define DU_DRAW_SH(sh)                                     \
 	{                                                      \
-		RenderBackend.set_Shader(sh);                      \
-		RenderBackend.set_Constant("tfactor", 1, 1, 1, 1); \
+		RenderBackend.SetShader(sh);                      \
+		RenderBackend.SetConstant("tfactor", 1, 1, 1, 1); \
 	}
 #endif
 
@@ -381,7 +381,7 @@ void CDrawUtilities::DrawDirectionalLight(const fvec3& p, const fvec3& d, float 
 
 void CDrawUtilities::DrawPointLight(const fvec3& p, float radius, u32 c)
 {
-	RenderBackend.set_transform_world(Fidentity);
+	RenderBackend.SetTransformWorld(Fidentity);
 	DrawCross(p, radius, radius, radius, radius, radius, radius, c, true);
 }
 
@@ -859,7 +859,7 @@ void CDrawUtilities::DrawOBB(const fmat4x4& parent, const Fobb& box, u32 clr_s, 
 	S.scale(box.m_halfsize.x * 2.f, box.m_halfsize.y * 2.f, box.m_halfsize.z * 2.f);
 	X.mul_43(R, S);
 	R.mul_43(parent, X);
-	RenderBackend.set_transform_world(R);
+	RenderBackend.SetTransformWorld(R);
 	DrawIdentBox(true, true, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -871,7 +871,7 @@ void CDrawUtilities::DrawAABB(const fmat4x4& parent, const fvec3& center, const 
 	S.scale(size.x * 2.f, size.y * 2.f, size.z * 2.f);
 	S.translate_over(center);
 	R.mul_43(parent, S);
-	RenderBackend.set_transform_world(R);
+	RenderBackend.SetTransformWorld(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
 }
 
@@ -882,7 +882,7 @@ void CDrawUtilities::DrawAABB(const fvec3& p0, const fvec3& p1, u32 clr_s, u32 c
 	C.set((p1.x + p0.x) * 0.5f, (p1.y + p0.y) * 0.5f, (p1.z + p0.z) * 0.5f);
 	R.scale(_abs(p1.x - p0.x), _abs(p1.y - p0.y), _abs(p1.z - p0.z));
 	R.translate_over(C);
-	RenderBackend.set_transform_world(R);
+	RenderBackend.SetTransformWorld(R);
 	DrawIdentBox(bSolid, bWire, clr_s, clr_w);
 }
 
@@ -893,7 +893,7 @@ void CDrawUtilities::DrawSphere(const fmat4x4& parent, const fvec3& center, floa
 	B.scale(radius, radius, radius);
 	B.translate_over(center);
 	B.mulA_43(parent);
-	RenderBackend.set_transform_world(B);
+	RenderBackend.SetTransformWorld(B);
 	DrawIdentSphere(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1005,7 +1005,7 @@ void CDrawUtilities::DrawCylinder(const fmat4x4& parent, const fvec3& center, co
 	fmat4x4 xf;
 	xf.mul(mR, mScale);
 	xf.mulA_43(parent);
-	RenderBackend.set_transform_world(xf);
+	RenderBackend.SetTransformWorld(xf);
 	DrawIdentCylinder(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1042,7 +1042,7 @@ void CDrawUtilities::DrawCone(const fmat4x4& parent, const fvec3& apex, const fv
 	fmat4x4 xf;
 	xf.mul(mR, mScale);
 	xf.mulA_43(parent);
-	RenderBackend.set_transform_world(xf);
+	RenderBackend.SetTransformWorld(xf);
 	DrawIdentCone(bSolid, bWire, clr_s, clr_w);
 }
 //----------------------------------------------------
@@ -1397,7 +1397,7 @@ void CDrawUtilities::DrawGrid()
 	// Render it as triangle list
 	fmat4x4 ddd;
 	ddd.identity();
-	RenderBackend.set_transform_world(ddd);
+	RenderBackend.SetTransformWorld(ddd);
 	DU_DRAW_SH(Device.m_WireShader);
 	DU_DRAW_DP(D3DPT_LINELIST, vs_L, vBase, m_GridPoints.size() / 2);
 }

@@ -7,6 +7,7 @@
 #include "pure.h"
 #include <mutex>
 #include <atomic>
+#include <queue>
 #include <future>
 #include <thread>
 #include <array>
@@ -72,6 +73,18 @@ class ENGINE_API CThreadManager
 	};
 
   private:
+	struct BackgroundItem
+	{
+		TaskID Id;
+		ParallelTask Delegate;
+		TaskPriority Priority;
+
+		bool operator<(const BackgroundItem& other) const
+		{
+			return (u32)Priority < (u32)other.Priority;
+		}
+	};
+
 	xr_vector<TaskItem> m_tasksGeneral;
 	xr_vector<TaskItem> m_tasksAI;
 
@@ -96,6 +109,13 @@ class ENGINE_API CThreadManager
 
 	std::array<std::thread::id, MAX_WORKERS> m_workerThreadIds;
 
+	std::priority_queue<BackgroundItem> m_backgroundQueue;
+	std::mutex                          m_backgroundMutex;
+	std::condition_variable             m_backgroundCV;
+	std::thread                         m_backgroundThread;
+
+	void BackgroundThreadProc();
+
 	bool IsWorkerThread() const;
 	static void WorkerThreadProc(void* context);
 
@@ -113,8 +133,8 @@ class ENGINE_API CThreadManager
 	void Destroy();
 
 	TaskID AddParallelTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal, TaskType type = TaskType::General);
-
 	std::future<void> AddParallelTaskWithFuture(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Normal, TaskType type = TaskType::General);
+	TaskID AddBackgroundTask(const ParallelTask& delegate, TaskPriority priority = TaskPriority::Background);
 
 	void RemoveParallelTask(TaskID id);
 	bool HasParallelTask(TaskID id) const;

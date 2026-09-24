@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------
 // Invalidate
 // ----------------------------------------------------------------
-void CBackendResourceBinder::Invalidate(CRenderBackend& /*backend*/)
+void CBackendResourceBinder::Invalidate(CRenderBackendFacade& /*backend*/)
 {
 	m_state = nullptr;
 	m_ps = nullptr;
@@ -33,7 +33,7 @@ void CBackendResourceBinder::Invalidate(CRenderBackend& /*backend*/)
 // ----------------------------------------------------------------
 // State block
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetStates(CRenderBackend& backend, IDirect3DStateBlock9* state)
+void CBackendResourceBinder::SetStates(CRenderBackendFacade& backend, IDirect3DStateBlock9* state)
 {
 	if(m_state != state)
 	{
@@ -49,7 +49,7 @@ void CBackendResourceBinder::SetStates(CRenderBackend& backend, IDirect3DStateBl
 // ----------------------------------------------------------------
 // Pixel Shader
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetPixelShader(CRenderBackend& backend, IDirect3DPixelShader9* ps, LPCSTR name)
+void CBackendResourceBinder::SetPixelShader(CRenderBackendFacade& backend, IDirect3DPixelShader9* ps, LPCSTR name)
 {
 	if(m_ps != ps)
 	{
@@ -71,7 +71,7 @@ void CBackendResourceBinder::D3D_SetPixelShader(IDirect3DDevice9Ex* device, IDir
 // ----------------------------------------------------------------
 // Vertex Shader
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetVertexShader(CRenderBackend& backend, IDirect3DVertexShader9* vs, LPCSTR name)
+void CBackendResourceBinder::SetVertexShader(CRenderBackendFacade& backend, IDirect3DVertexShader9* vs, LPCSTR name)
 {
 	if(m_vs != vs)
 	{
@@ -91,9 +91,37 @@ void CBackendResourceBinder::D3D_SetVertexShader(IDirect3DDevice9Ex* device, IDi
 }
 
 // ----------------------------------------------------------------
+// Shader Pass
+// ----------------------------------------------------------------
+void CBackendResourceBinder::SetShaderPass(CRenderBackendFacade& backend, CShaderPass* pass)
+{
+	if (!pass)
+	{
+		SetVertexShader(backend, nullptr, nullptr);
+		SetPixelShader(backend, nullptr, nullptr);
+		return;
+	}
+
+	IDirect3DVertexShader9* vs = pass->GetRawVertexShader();
+	IDirect3DPixelShader9* ps = pass->GetRawPixelShader();
+
+#ifdef DEBUG
+	LPCSTR vsName = vs ? pass->GetVertexShaderFile() : nullptr;
+	LPCSTR psName = ps ? pass->GetPixelShaderFile() : nullptr;
+	SetVertexShader(backend, vs, vsName);
+	SetPixelShader(backend, ps, psName);
+#else
+	SetVertexShader(backend, vs);
+	SetPixelShader(backend, ps);
+#endif
+
+	pass->FlushConstants(backend.GetDevice());
+}
+
+// ----------------------------------------------------------------
 // Vertex Declaration
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetVertexDeclaration(CRenderBackend& backend, IDirect3DVertexDeclaration9* decl)
+void CBackendResourceBinder::SetVertexDeclaration(CRenderBackendFacade& backend, IDirect3DVertexDeclaration9* decl)
 {
 	if(m_decl != decl)
 	{
@@ -114,7 +142,7 @@ void CBackendResourceBinder::D3D_SetVertexDeclaration(IDirect3DDevice9Ex* device
 // ----------------------------------------------------------------
 // Vertex Buffer
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetVertexBuffer(CRenderBackend& backend, IDirect3DVertexBuffer9* vb, u32 stride)
+void CBackendResourceBinder::SetVertexBuffer(CRenderBackendFacade& backend, IDirect3DVertexBuffer9* vb, u32 stride)
 {
 	if(m_vb != vb || m_vbStride != stride)
 	{
@@ -136,7 +164,7 @@ void CBackendResourceBinder::D3D_SetStreamSource(IDirect3DDevice9Ex* device, u32
 // ----------------------------------------------------------------
 // Index Buffer
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetIndexBuffer(CRenderBackend& backend, IDirect3DIndexBuffer9* ib)
+void CBackendResourceBinder::SetIndexBuffer(CRenderBackendFacade& backend, IDirect3DIndexBuffer9* ib)
 {
 	if(m_ib != ib)
 	{
@@ -157,7 +185,7 @@ void CBackendResourceBinder::D3D_SetIndices(IDirect3DDevice9Ex* device, IDirect3
 // ----------------------------------------------------------------
 // Constant Table (with handler processing)
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetConstantTable(CRenderBackend& backend, R_constant_table* ctable, R_transforms& transforms)
+void CBackendResourceBinder::SetConstantTable(CRenderBackendFacade& backend, R_constant_table* ctable, R_transforms& transforms)
 {
 	if(m_ctable == ctable)
 		return;
@@ -182,7 +210,7 @@ void CBackendResourceBinder::SetConstantTable(CRenderBackend& backend, R_constan
 // ----------------------------------------------------------------
 // Textures
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetTextures(CRenderBackend& backend, STextureList* T)
+void CBackendResourceBinder::SetTextures(CRenderBackendFacade& backend, STextureList* T)
 {
 	if(m_T == T)
 		return;

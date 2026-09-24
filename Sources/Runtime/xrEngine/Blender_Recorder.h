@@ -234,7 +234,7 @@ class ENGINE_API CBlender_Compile
 		strcpy_s(pass_ps_entry, entry);
 	}
 
-	void set_Constant(LPCSTR name, R_constant_setup* s);
+	void SetConstant(LPCSTR name, R_constant_setup* s);
 	u32 set_Sampler(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide = false, u32 address = D3DTADDRESS_WRAP,
 					u32 fmin = D3DTEXF_LINEAR, u32 fmip = D3DTEXF_LINEAR, u32 fmag = D3DTEXF_LINEAR, bool b_srgb = true);
 	u32 set_Sampler(LPCSTR name, shared_str texture, bool b_ps1x_ProjectiveDivide = false, u32 address = D3DTADDRESS_WRAP,

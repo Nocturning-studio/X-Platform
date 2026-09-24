@@ -438,7 +438,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 	Frect r;
 	r.set(0.0f, 0.0f, float(Device.dwWidth), ky * float(Device.dwHeight));
 
-	RenderBackend.set_Shader(m_hShader_back);
+	RenderBackend.SetShader(m_hShader_back);
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
 	const u32 max_verts = 6 + 12 + (VIEW_TIPS_COUNT + 1) * 6 + 12;
 
@@ -458,7 +458,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 		VERIFY(u32(p_cnt) <= max_verts);
 
 		RenderBackend.Vertex.Unlock(u32(p_cnt), m_hGeom_con.stride());
-		RenderBackend.set_Geometry(m_hGeom_con);
+		RenderBackend.SetGeometry(m_hGeom_con);
 
 		primCount = (u32)(p_cnt / 3);
 

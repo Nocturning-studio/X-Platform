@@ -195,7 +195,7 @@ u32 CLevelLoadingScreen::CalcProgressColor(u32 idx, u32 total, int stage, int ma
 
 void CLevelLoadingScreen::DrawInternal()
 {
-	RenderBackend.setRenderTarget(RenderBackend.GetBaseRT(), 0);
+	RenderBackend.SetRenderTargetSurface(RenderBackend.GetBaseRT(), 0);
 	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1, 0);
 
 	// Draw logo
@@ -211,8 +211,8 @@ void CLevelLoadingScreen::DrawInternal()
 	fvec2 k;
 	k.set(float(_w) / bw, float(_h) / bh);
 
-	RenderBackend.set_Shader(sh_progress);
-	CTexture* T = RenderBackend.get_ActiveTexture(0);
+	RenderBackend.SetShader(sh_progress);
+	CTexture* T = RenderBackend.GetActiveTexture(0);
 	fvec2 tsz;
 	tsz.set((float)T->get_Width(), (float)T->get_Height());
 	Frect back_text_coords;
@@ -246,7 +246,7 @@ void CLevelLoadingScreen::DrawInternal()
 	pv++;
 	RenderBackend.Vertex.Unlock(4, ll_hGeom.stride());
 
-	RenderBackend.set_Geometry(ll_hGeom);
+	RenderBackend.SetGeometry(ll_hGeom);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 	// progress bar
@@ -284,7 +284,7 @@ void CLevelLoadingScreen::DrawInternal()
 	VERIFY(u32(pv - _pv) == 2 * (v_cnt + 1));
 	RenderBackend.Vertex.Unlock(2 * (v_cnt + 1), ll_hGeom2.stride());
 
-	RenderBackend.set_Geometry(ll_hGeom2);
+	RenderBackend.SetGeometry(ll_hGeom2);
 	RenderBackend.Render(D3DPT_TRIANGLESTRIP, Offset, 2 * v_cnt);
 
 	// Draw title
@@ -316,8 +316,8 @@ void CLevelLoadingScreen::DrawInternal()
 		pv++;
 		RenderBackend.Vertex.Unlock(4, ll_hGeom.stride());
 
-		RenderBackend.set_Shader(hLevelLogo);
-		RenderBackend.set_Geometry(ll_hGeom);
+		RenderBackend.SetShader(hLevelLogo);
+		RenderBackend.SetGeometry(ll_hGeom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
 }

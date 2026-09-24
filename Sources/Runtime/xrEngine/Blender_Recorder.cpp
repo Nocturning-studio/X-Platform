@@ -251,7 +251,7 @@ void CBlender_Compile::commit_Pass()
 	SetMapping();
 }
 
-void CBlender_Compile::set_Constant(LPCSTR name, R_constant_setup* s)
+void CBlender_Compile::SetConstant(LPCSTR name, R_constant_setup* s)
 {
 	R_ASSERT(s);
 	ref_constant C = ctable.get(name);

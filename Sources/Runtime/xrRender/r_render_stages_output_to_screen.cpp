@@ -8,9 +8,9 @@ void CRender::output_frame_to_screen()
 {
 	////OPTICK_EVENT("CRender::output_frame_to_screen");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_Element(RenderTarget->s_output_to_screen->E[0]);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
+	RenderBackend.SetShaderElement(RenderTarget->s_output_to_screen->E[0]);
 	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, RenderBackend.GetBaseRT(), RenderBackend.GetBaseZB());
 }
 ///////////////////////////////////////////////////////////////////////////////////

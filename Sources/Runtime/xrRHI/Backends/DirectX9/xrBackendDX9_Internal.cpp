@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "xrBackendDX9.h"
 
-RHI_BEGIN
-
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt)
 {
 	switch(fmt)
@@ -207,5 +205,3 @@ size_t GetPixelSize(RHI_Format fmt)
 		return 0;
 	}
 }
-
-RHI_END

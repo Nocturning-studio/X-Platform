@@ -4,203 +4,247 @@
 #include "..\xrEngine\XR_IOConsole.h"
 #include <xrCore/build_identificator.h>
 
-IC u32 convert(float c)
+namespace
 {
-	u32 C = iFloor(c);
-	if(C > 255)
-		C = 255;
-	return C;
-}
-IC void MouseRayFromPoint(fvec3& direction, int x, int y, fmat4x4& m_CamMat)
-{
-	int halfwidth = Device.dwWidth / 2;
-	int halfheight = Device.dwHeight / 2;
+    std::atomic<bool> g_screenshotInProcess{ false };
 
-	ivec2 point2;
-	point2.set(x - halfwidth, halfheight - y);
+    struct ScreenshotGuard
+    {
+        bool acquired = false;
 
-	float size_y = VIEWPORT_NEAR * tanf(deg2rad(60.f) * 0.5f);
-	float size_x = size_y / (Device.fHeight_2 / Device.fWidth_2);
+        ScreenshotGuard()
+        {
+            bool expected = false;
+            acquired = g_screenshotInProcess.compare_exchange_strong(expected, true, std::memory_order_acq_rel);
+        }
 
-	float r_pt = float(point2.x) * size_x / (float)halfwidth;
-	float u_pt = float(point2.y) * size_y / (float)halfheight;
+        ScreenshotGuard(ScreenshotGuard&& other) noexcept : acquired(other.acquired)
+        {
+            other.acquired = false;
+        }
 
-	direction.mul(m_CamMat.k, VIEWPORT_NEAR);
-	direction.mad(direction, m_CamMat.j, u_pt);
-	direction.mad(direction, m_CamMat.i, r_pt);
-	direction.normalize();
+        ScreenshotGuard(const ScreenshotGuard&) = delete;
+        ScreenshotGuard& operator=(const ScreenshotGuard&) = delete;
+        ScreenshotGuard& operator=(ScreenshotGuard&&) = delete;
+
+        ~ScreenshotGuard()
+        {
+            if (acquired)
+                g_screenshotInProcess.store(false, std::memory_order_release);
+        }
+    };
 }
 
 void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 {
-	if(!Device.b_is_Ready)
-		return;
+    if (!Device.b_is_Ready)
+        return;
 
-	R_CHK(RenderBackend.GetDevice()->GetRenderTargetData(RenderBackend.GetBaseRT(), RenderTarget->surf_screenshot_normal));
+    ScreenshotGuard guard;
+    if (!guard.acquired)
+    {
+        Msg("* Screenshot: previous one is still being saved, skipping");
+        return;
+    }
 
-	D3DLOCKED_RECT rect;
-	R_CHK(RenderTarget->surf_screenshot_normal->LockRect(&rect, 0, D3DLOCK_NOSYSLOCK));
+    // Захват — обязательно на рендер-потоке (device call).
+    IDirect3DSurface9* shot = RenderBackend.CaptureBackBuffer();
+    if (!shot)
+    {
+        Msg("! Screenshot: failed to capture backbuffer");
+        return;
+    }
 
-	u32* pPixel = (u32*)rect.pBits;
-	u32* pEnd = pPixel + (Device.dwWidth * Device.dwHeight);
+    string64  t_stemp;
+    string_path file_name;
 
-	for(; pPixel != pEnd; pPixel++)
-	{
-		u32 p = *pPixel;
-		*pPixel = color_xrgb(color_get_R(p), color_get_G(p), color_get_B(p));
-	}
+    switch (mode)
+    {
+        case IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE:
+        {
+            std::string save_path = name ? name : "";
+            static constexpr u32 GAMESAVE_THUMB_SIZE = 128;
 
-	R_CHK(RenderTarget->surf_screenshot_normal->UnlockRect());
+            D3DSURFACE_DESC shotDesc;
+            shot->GetDesc(&shotDesc);
 
-	string64 t_stemp;
-	string_path file_name;
+            IDirect3DSurface9* thumb = nullptr;
+            HRESULT hr = RenderBackend.GetDevice()->CreateOffscreenPlainSurface(GAMESAVE_THUMB_SIZE, 
+                                                                                GAMESAVE_THUMB_SIZE, 
+                                                                                shotDesc.Format, 
+                                                                                D3DPOOL_SYSTEMMEM, 
+                                                                                &thumb, 
+                                                                                nullptr);
 
-	switch(mode)
-	{
-	case IRender_interface::SM_FOR_GAMESAVE:
-	{
-		R_CHK(D3DXLoadSurfaceFromSurface(RenderTarget->surf_screenshot_gamesave, NULL, NULL,
-										 RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
+            if (FAILED(hr) || !thumb)
+            {
+                Msg("! Screenshot[gamesave]: failed to create %ux%u thumbnail surface (0x%08x)",
+                    GAMESAVE_THUMB_SIZE, GAMESAVE_THUMB_SIZE, hr);
+                _RELEASE(shot);
+                return;
+            }
 
-		ID3DXBuffer* saved = 0;
-		R_CHK(D3DXSaveTextureToFileInMemory(&saved, D3DXIFF_DDS, RenderTarget->tex_screenshot_gamesave, NULL));
+            RenderBackend.BlitSurface(thumb, shot);
 
-		IWriter* fs = FS.w_open(name);
+            auto guardPtr = std::make_shared<ScreenshotGuard>(std::move(guard));
+            Engine.ThreadManager.AddBackgroundTask([shot, thumb, guardPtr, save_path]() mutable
+            {
+                ID3DXBuffer* saved = nullptr;
+                RenderBackend.SaveSurfaceToMemory(&saved, D3DXIFF_DDS, thumb);
+                if (saved)
+                {
+                    IWriter* fs = FS.w_open(save_path.c_str());
+                    if (fs)
+                    {
+                        fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                        FS.w_close(fs);
+                    }
+                    else
+                    {
+                        Msg("! Screenshot: failed to open '%s'", save_path.c_str());
+                    }
+                    _RELEASE(saved);
+                }
+                _RELEASE(thumb);
+                _RELEASE(shot);
+            });
+            return;
+        }
 
-		if(fs)
-		{
-			fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
-			FS.w_close(fs);
-		}
+        case IRender_interface::ScreenshotMode::SM_NORMAL:
+        {
+            if (!name)
+            {
+    #ifdef BENCHMARK_BUILD
+                sprintf_s(file_name, sizeof(file_name),
+                    "X-Ray Benchmark (time - %s) (%s)",
+                    timestamp(t_stemp), g_pGameLevel->name().c_str());
+    #else
+                sprintf_s(file_name, sizeof(file_name),
+                    "X-Ray Engine (build id - %d) (user - %s) (time - %s) (%s)",
+                    GlobalBuildInfo.ID, Core.UserName, timestamp(t_stemp),
+                    (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
+    #endif
+            }
+            else
+            {
+                strcpy(file_name, name);
+            }
+            strconcat(sizeof(file_name), file_name, file_name, ".png");
 
-		_RELEASE(saved);
+            std::string fname = file_name;
+            auto guardPtr = std::make_shared<ScreenshotGuard>(std::move(guard));
+            Engine.ThreadManager.AddBackgroundTask([shot, guardPtr, fname]() mutable
+            {
+                ID3DXBuffer* saved = nullptr;
+                RenderBackend.SaveSurfaceToMemory(&saved, D3DXIFF_PNG, shot);
+                if (saved)
+                {
+                    IWriter* fs = FS.w_open("$screenshots$", fname.c_str());
+                    if (fs)
+                    {
+                        fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                        FS.w_close(fs);
+                    }
+                    else
+                    {
+                        Msg("! Screenshot: failed to open '$screenshots$/%s'", fname.c_str());
+                    }
+                    _RELEASE(saved);
+                }
+                _RELEASE(shot);
+            });
+            return;
+        }
 
-		return;
-	}
-	break;
-	case IRender_interface::SM_NORMAL:
-	{
-		if(!name)
-		{
-#ifdef BENCHMARK_BUILD
-			sprintf_s(file_name, sizeof(file_name), "X-Ray Benchmark (time - %s) (%s)", timestamp(t_stemp), g_pGameLevel->name().c_str());
-#else
-			sprintf_s(file_name, sizeof(file_name), "X-Ray Engine (build id - %d) (user - %s) (time - %s) (%s)", GlobalBuildInfo.ID, Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
-#endif
-		}
-		else
-		{
-			strcpy(file_name, name);
-		}
+        case IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP:
+        {
+            if (!g_pGameLevel)
+            {
+                Msg("! Can't capture level map, level does no loaded");
+                _RELEASE(shot);
+                return;
+            }
 
-		ID3DXBuffer* saved = 0;
+            sprintf_s(file_name, sizeof(string_path), "level_map_%s_%s.dds",
+                g_pGameLevel->name().c_str(), timestamp(t_stemp));
 
-		bool UsePngFormat = true;
+            // D3D-ресурсы создаём на рендер-потоке. Всё остальное — в воркере.
+            IDirect3DTexture9* texture = nullptr;
+            RenderBackend.CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, nullptr);
+            IDirect3DSurface9* surface = RenderBackend.GetSurfaceLevel(texture, 0);
 
-		if(UsePngFormat)
-		{
-			strconcat(sizeof(file_name), file_name, file_name, ".png");
-			R_CHK(D3DXSaveSurfaceToFileInMemory(&saved, D3DXIFF_PNG, RenderTarget->surf_screenshot_normal, NULL, NULL));
-		}
-		else
-		{
-			strconcat(sizeof(file_name), file_name, file_name, ".jpg");
-			R_CHK(D3DXSaveSurfaceToFileInMemory(&saved, D3DXIFF_JPG, RenderTarget->surf_screenshot_normal, NULL, NULL));
-		}
+            std::string fname = file_name;
 
-		IWriter* fs = FS.w_open("$screenshots$", file_name);
-		R_ASSERT(fs);
+            auto guardPtr = std::make_shared<ScreenshotGuard>(std::move(guard));
+            Engine.ThreadManager.AddBackgroundTask([shot, texture, surface, fname, guardPtr]() mutable
+            {
+                // DXT1-компрессия + запись DDS — это и есть основная работа.
+                RenderBackend.BlitSurface(surface, shot);
 
-		fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
-		FS.w_close(fs);
+                ID3DXBuffer* saved = nullptr;
+                RenderBackend.SaveSurfaceToMemory(&saved, D3DXIFF_DDS, surface);
+                if (saved)
+                {
+                    IWriter* fs = FS.w_open("$screenshots$", fname.c_str());
+                    if (fs)
+                    {
+                        fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                        FS.w_close(fs);
+                    }
+                    else
+                    {
+                        Msg("! Screenshot: failed to open '$screenshots$/%s'", fname.c_str());
+                    }
+                    _RELEASE(saved);
+                }
+                _RELEASE(surface);
+                _RELEASE(texture);
+                _RELEASE(shot);
+            });
+            return;
+        }
 
-		_RELEASE(saved);
+        case IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP:
+        {
+            u32 face_size = ps_r_cubemap_size / 4;
 
-		return;
-	}
-	break;
-	case IRender_interface::SM_FOR_LEVELMAP:
-	{
-		if(!g_pGameLevel)
-		{
-			Msg("! Can't capture level map, level does no loaded");
-			return;
-		}
+            static IDirect3DCubeTexture9* cubemap = nullptr;
+            static IDirect3DSurface9* surface[6] = { nullptr };
 
-		sprintf_s(file_name, sizeof(string_path), "level_map_%s_%s.dds", g_pGameLevel->name().c_str(), timestamp(t_stemp));
+            u32 id = (int)name[0] - (int)'1';
 
-		IDirect3DTexture9* texture;
-		R_CHK(RenderBackend.GetDevice()->CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, NULL));
+            if (id == 0)
+                RenderBackend.CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, nullptr);
 
-		IDirect3DSurface9* surface;
-		R_CHK(texture->GetSurfaceLevel(0, &surface));
+            D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)id;
+            surface[id] = RenderBackend.GetCubeMapSurface(cubemap, face, 0);
+            RenderBackend.BlitSurface(surface[id], shot);
 
-		R_CHK(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
+            if (id == 5)
+            {
+                sprintf_s(file_name, sizeof(string_path), "cubemap_%s_%s.dds", Core.UserName, timestamp(t_stemp));
 
-		ID3DXBuffer* saved = 0;
-		R_CHK(D3DXSaveSurfaceToFileInMemory(&saved, D3DXIFF_DDS, surface, NULL, NULL));
+                ID3DXBuffer* saved = nullptr;
+                RenderBackend.SaveTextureToMemory(&saved, D3DXIFF_DDS, cubemap);
 
-		IWriter* fs = FS.w_open("$screenshots$", file_name);
-		R_ASSERT(fs);
+                IWriter* fs = FS.w_open("$cubemaps$", file_name);
+                if (fs)
+                {
+                    fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
+                    FS.w_close(fs);
+                }
+                _RELEASE(saved);
 
-		fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
-		FS.w_close(fs);
+                for (int i = 0; i < 6; ++i)
+                    _RELEASE(surface[i]);
+                _RELEASE(cubemap);
+            }
 
-		_RELEASE(surface);
-		_RELEASE(texture);
+            _RELEASE(shot);
+            return;
+        }
+    }
 
-		_RELEASE(saved);
-
-		return;
-	}
-	break;
-	case IRender_interface::SM_FOR_CUBEMAP:
-	{
-		u32 face_size = ps_r_cubemap_size / 4;
-
-		static IDirect3DCubeTexture9* cubemap = NULL;
-		static IDirect3DSurface9* surface[6] = {NULL};
-
-		u32 id = (int)name[0] - (int)'1';
-
-		// begin
-		if(id == 0)
-		{
-			RenderBackend.GetDevice()->CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, NULL);
-		}
-
-		D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)id;
-		cubemap->GetCubeMapSurface(face, 0, &surface[id]);
-		R_CHK(D3DXLoadSurfaceFromSurface(surface[id], NULL, NULL, RenderTarget->surf_screenshot_normal, NULL, NULL, D3DX_DEFAULT, NULL));
-
-		// end
-		if(id == 5)
-		{
-			sprintf_s(file_name, sizeof(string_path), "cubemap_%s_%s.dds", Core.UserName, timestamp(t_stemp));
-
-			ID3DXBuffer* saved = 0;
-			D3DXSaveTextureToFileInMemory(&saved, D3DXIFF_DDS, cubemap, NULL);
-
-			IWriter* fs = FS.w_open("$cubemaps$", file_name);
-			R_ASSERT(fs);
-
-			fs->w(saved->GetBufferPointer(), saved->GetBufferSize());
-			FS.w_close(fs);
-
-			_RELEASE(saved);
-
-			_RELEASE(surface[0]);
-			_RELEASE(surface[1]);
-			_RELEASE(surface[2]);
-			_RELEASE(surface[3]);
-			_RELEASE(surface[4]);
-			_RELEASE(surface[5]);
-
-			_RELEASE(cubemap);
-		}
-
-		return;
-	}
-	break;
-	}
+    _RELEASE(shot);
 }

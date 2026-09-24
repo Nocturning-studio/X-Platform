@@ -797,7 +797,6 @@
     <ClInclude Include="R_Backend_ConstantManager.h" />
     <ClInclude Include="R_Backend_RenderTarget.h" />
     <ClInclude Include="R_Backend_ResourceBinder.h" />
-    <ClInclude Include="R_Backend_StateCache.h" />
     <ClInclude Include="R_Backend_transform.h" />
     <ClInclude Include="R_Backend_tree.h" />
     <ClInclude Include="r_constants.h" />
@@ -992,7 +991,6 @@
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_RenderTarget.cpp" />
     <ClCompile Include="R_Backend_ResourceBinder.cpp" />
-    <ClCompile Include="R_Backend_StateCache.cpp" />
     <ClCompile Include="R_Backend_transform.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
@@ -1100,6 +1098,9 @@
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
+      <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrRHI\xrRHI.vcxproj">
       <Project>{a00d33cc-7f6c-4c7c-93e9-7e304c5d704f}</Project>

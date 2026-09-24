@@ -110,7 +110,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, fvec3& P, fvec3& D, fvec3&
 	ProjDirs[2].sub(sPts[2], COP);
 	ProjDirs[3].sub(sPts[3], COP);
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
 	RenderBackend.SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 
 	fvec3 _F[4];
@@ -123,7 +123,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, fvec3& P, fvec3& D, fvec3&
 	u32 CL = color_rgba(255, 0, 0, 255);
 	fmat4x4& M = Fidentity;
 	ref_shader l_tShaderReference = Level().ObjectSpace.dbgGetShader();
-	RenderBackend.set_Shader(l_tShaderReference);
+	RenderBackend.SetShader(l_tShaderReference);
 	//	RenderBackend.dbg_DrawTRI	(M,COP,_F[0],_F[1],CT);
 	//	RenderBackend.dbg_DrawTRI	(M,COP,_F[1],_F[2],CT);
 	//	RenderBackend.dbg_DrawTRI	(M,COP,_F[2],_F[3],CT);
@@ -138,7 +138,7 @@ void dbg_draw_frustum(float FOV, float _FAR, float A, fvec3& P, fvec3& D, fvec3&
 	Level().debug_renderer().draw_line(M, _F[2], _F[3], CL);
 	Level().debug_renderer().draw_line(M, _F[3], _F[0], CL);
 
-	RenderBackend.set_CullMode(CULL_BACKFACE);
+	RenderBackend.SetCullMode(CULL_BACKFACE);
 	RenderBackend.SetRenderState(D3DRS_AMBIENT, 0);
 }
 #endif

@@ -142,9 +142,9 @@ void CEnvironment::RenderSky()
 	RenderBackend.Vertex.Unlock(12, sh_2geom.stride());
 
 	// Устанавливаем состояние рендера
-	RenderBackend.set_transform_world(mSky);
-	RenderBackend.set_Geometry(sh_2geom);
-	RenderBackend.set_Shader(sh_2sky);
+	RenderBackend.SetTransformWorld(mSky);
+	RenderBackend.SetGeometry(sh_2geom);
+	RenderBackend.SetShader(sh_2sky);
 
 	// Рендерим скайбокс
 	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);

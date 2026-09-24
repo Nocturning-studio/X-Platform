@@ -4,8 +4,6 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 
-RHI_BEGIN
-
 CRenderBackendDX9::CRenderBackendDX9() : m_pD3D(nullptr), m_pDevice(nullptr), m_hWnd(nullptr)
 {
 	ZeroMemory(&m_PP, sizeof(m_PP));
@@ -20,19 +18,16 @@ CRenderBackendDX9::~CRenderBackendDX9()
 
 D3DFORMAT CRenderBackendDX9::SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const
 {
-	if(SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL,
-										   D3DRTYPE_SURFACE, D3DFMT_D24S8)))
+	if(SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24S8)))
 		return D3DFMT_D24S8;
-	if(SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL,
-										   D3DRTYPE_SURFACE, D3DFMT_D24X8)))
+	if(SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24X8)))
 		return D3DFMT_D24X8;
-	if(SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL,
-										   D3DRTYPE_SURFACE, D3DFMT_D16)))
+	if(SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, backBufferFmt, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D16)))
 		return D3DFMT_D16;
 	return D3DFMT_UNKNOWN;
 }
 
-bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(const RHIPresentationParams& params,
+bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params,
 																			D3DFORMAT& outBackBufferFmt,
 																			D3DFORMAT& outDepthStencilFmt)
 {
@@ -73,7 +68,7 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 	return true;
 }
 
-void CRenderBackendDX9::FillPresentParams(const RHIPresentationParams& params, D3DFORMAT backBufferFmt,
+void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt,
 										  D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz)
 {
 	ZeroMemory(&m_PP, sizeof(m_PP));
@@ -135,7 +130,7 @@ DWORD CRenderBackendDX9::SelectVertexProcessing()
 	return vertexProcessing;
 }
 
-bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHIPresentationParams& params)
+bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& params)
 {
 	m_hWnd = hWnd;
 
@@ -181,13 +176,11 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHIPresentationParams& par
 		pModeEx = &ModeEx;
 	}
 
-	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing | D3DCREATE_MULTITHREADED,
-								&m_PP, pModeEx, &m_pDevice);
+	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing | D3DCREATE_MULTITHREADED, &m_PP, pModeEx, &m_pDevice);
 	if(FAILED(hr))
 	{
 		Print("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
-		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx,
-									&m_pDevice);
+		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx, &m_pDevice);
 		if(FAILED(hr))
 		{
 			Print("! [DX9] Second attempt failed (0x%08x)", hr);
@@ -199,8 +192,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHIPresentationParams& par
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight,
-		  params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
+	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
 	return true;
 }
 
@@ -234,49 +226,9 @@ void CRenderBackendDX9::ReleaseAllResources()
 	m_Textures.clear();
 	while(!m_FreeTextureIndices.empty())
 		m_FreeTextureIndices.pop();
-
-	for(size_t i = 0; i < m_Samplers.size(); ++i)
-	{
-		DX9Sampler* samp = m_Samplers[i];
-		if(samp)
-		{
-			delete samp;
-			m_Samplers[i] = nullptr;
-		}
-	}
-	m_Samplers.clear();
-	while(!m_FreeSamplerIndices.empty())
-		m_FreeSamplerIndices.pop();
-
-	for(size_t i = 0; i < m_Shaders.size(); ++i)
-	{
-		DX9Shader* shader = m_Shaders[i];
-		if(shader)
-		{
-			shader->Release();
-			delete shader;
-			m_Shaders[i] = nullptr;
-		}
-	}
-	m_Shaders.clear();
-	while(!m_FreeShaderIndices.empty())
-		m_FreeShaderIndices.pop();
-
-	for(size_t i = 0; i < m_ConstantBuffers.size(); ++i)
-	{
-		DX9ConstantBuffer* cb = m_ConstantBuffers[i];
-		if(cb)
-		{
-			delete cb;
-			m_ConstantBuffers[i] = nullptr;
-		}
-	}
-	m_ConstantBuffers.clear();
-	while(!m_FreeConstantBufferIndices.empty())
-		m_FreeConstantBufferIndices.pop();
 }
 
-bool CRenderBackendDX9::Reset(const RHIPresentationParams& params)
+bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 {
 	if(!m_pDevice)
 		return false;
@@ -302,22 +254,10 @@ bool CRenderBackendDX9::Reset(const RHIPresentationParams& params)
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	for(size_t i = 0; i < m_Shaders.size(); ++i)
-	{
-		DX9Shader* shader = m_Shaders[i];
-		if(!shader)
-			continue;
-
-		shader->Release();
-
-		if(shader->type == ShaderType::Vertex)
-			m_pDevice->CreateVertexShader(reinterpret_cast<const DWORD*>(shader->bytecode.data()), &shader->vs);
-		else if(shader->type == ShaderType::Pixel)
-			m_pDevice->CreatePixelShader(reinterpret_cast<const DWORD*>(shader->bytecode.data()), &shader->ps);
-	}
-
-	Print("* [DX9] Device reset successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight,
-		  params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
+	Print("* [DX9] Device reset successfully: %dx%d %s, interval=%d", params.BackBufferWidth, 
+																	  params.BackBufferHeight, 
+																	  params.Windowed ? "windowed" : "fullscreen", 
+																	  params.SyncInterval);
 	return true;
 }
 
@@ -354,8 +294,7 @@ void CRenderBackendDX9::Clear(u32 clearFlags, const fvec4 color, float depth, u8
 	m_pDevice->Clear(0, nullptr, d3dFlags, d3dColor, depth, stencil);
 }
 
-void CRenderBackendDX9::GetAvailableResolutions(RHI_Format format,
-												std::vector<std::pair<u32, u32>>& outResolutions) const
+void CRenderBackendDX9::GetAvailableResolutions(RHI_Format format, std::vector<std::pair<u32, u32>>& outResolutions) const
 {
 	outResolutions.clear();
 	if(!m_pD3D)
@@ -386,5 +325,3 @@ RHI_Format CRenderBackendDX9::GetBackBufferFormat() const
 {
 	return D3DFormatToRHI(m_BackBufferFmt);
 }
-
-RHI_END

@@ -1,10 +1,11 @@
 #pragma once
 
-class CRenderBackend;
+class CRenderBackendFacade;
 class R_transforms;
 struct STextureList;
 class CTexture;
 class R_constant_table;
+class CShaderPass;
 struct IDirect3DStateBlock9;
 struct IDirect3DPixelShader9;
 struct IDirect3DVertexShader9;
@@ -16,26 +17,28 @@ struct IDirect3DDevice9Ex;
 class ENGINE_API CBackendResourceBinder
 {
   public:
-	void Invalidate(CRenderBackend& backend);
+	void Invalidate(CRenderBackendFacade& backend);
 
 	// State block
-	void SetStates(CRenderBackend& backend, IDirect3DStateBlock9* state);
+	void SetStates(CRenderBackendFacade& backend, IDirect3DStateBlock9* state);
 
 	// Shaders
-	void SetPixelShader(CRenderBackend& backend, IDirect3DPixelShader9* ps, LPCSTR name = nullptr);
-	void SetVertexShader(CRenderBackend& backend, IDirect3DVertexShader9* vs, LPCSTR name = nullptr);
+	void SetPixelShader(CRenderBackendFacade& backend, IDirect3DPixelShader9* ps, LPCSTR name = nullptr);
+	void SetVertexShader(CRenderBackendFacade& backend, IDirect3DVertexShader9* vs, LPCSTR name = nullptr);
+	void SetShaderPass(CRenderBackendFacade& backend, CShaderPass* pass);
+	void SetShaderPass(CRenderBackendFacade& backend, CShaderPass& pass) { SetShaderPass(backend, &pass); }
 
 	// Vertex declaration & buffers
-	void SetVertexDeclaration(CRenderBackend& backend, IDirect3DVertexDeclaration9* decl);
-	void SetVertexBuffer(CRenderBackend& backend, IDirect3DVertexBuffer9* vb, u32 stride);
-	void SetIndexBuffer(CRenderBackend& backend, IDirect3DIndexBuffer9* ib);
+	void SetVertexDeclaration(CRenderBackendFacade& backend, IDirect3DVertexDeclaration9* decl);
+	void SetVertexBuffer(CRenderBackendFacade& backend, IDirect3DVertexBuffer9* vb, u32 stride);
+	void SetIndexBuffer(CRenderBackendFacade& backend, IDirect3DIndexBuffer9* ib);
 
 	// Constant table (with handler setup)
-	void SetConstantTable(CRenderBackend& backend, R_constant_table* ctable, R_transforms& transforms);
+	void SetConstantTable(CRenderBackendFacade& backend, R_constant_table* ctable, R_transforms& transforms);
 	IC R_constant_table* GetConstantTable() const { return m_ctable; }
 
 	// Textures
-	void SetTextures(CRenderBackend& backend, STextureList* T);
+	void SetTextures(CRenderBackendFacade& backend, STextureList* T);
 
 	// Helper for active texture
 	CTexture* GetActiveTexture(u32 stage) const;

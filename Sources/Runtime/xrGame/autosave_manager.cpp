@@ -80,7 +80,7 @@ void CAutosaveManager::shedule_Update(u32 dt)
 	strcat_s(temp, sizeof(temp), ".dds");
 	FS.update_path(S1, "$game_saves$", temp);
 
-	MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
+	MainMenu()->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, S1);
 
 	SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("autosave", true);
 	s->m_endTime = Engine.TimeManager.GetGlobalTime() + 3.0f; // 3sec

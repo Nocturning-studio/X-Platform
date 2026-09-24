@@ -49,29 +49,29 @@ struct TL_2c3uv
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::render_effectors_pass_generate_radiation_noise()
 {
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
 	float w = float(Device.dwWidth);
 	float h = float(Device.dwHeight);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
-	RenderBackend.set_Constant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 1);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
+	RenderBackend.SetConstant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 1);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Radiation_Noise[0]);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
-	RenderBackend.set_Constant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 0.66f);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
+	RenderBackend.SetConstant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 0.66f);
 	RenderBackend.RenderViewportSurface(w * 0.5f, h * 0.5f, RenderTarget->rt_Radiation_Noise[1]);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
-	RenderBackend.set_Constant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 0.33f);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_RADIATION]);
+	RenderBackend.SetConstant("noise_intesity", RenderImplementation.EffectorsManager->get_radiation_intensity(), 0.33f);
 	RenderBackend.RenderViewportSurface(w * 0.25f, h * 0.25f, RenderTarget->rt_Radiation_Noise[2]);
 }
 
 void CRender::render_effectors_pass_color_blind_filter()
 {
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
 	fvec3 RedMatrix;
 	fvec3 GreenMatrix;
@@ -126,25 +126,25 @@ void CRender::render_effectors_pass_color_blind_filter()
 		break;
 	}
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_COLOR_BLIND_FILTER], 0);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_COLOR_BLIND_FILTER], 0);
 
-	RenderBackend.set_Constant("red_matrix", RedMatrix.x, RedMatrix.y, RedMatrix.z);
-	RenderBackend.set_Constant("green_matrix", GreenMatrix.x, GreenMatrix.y, GreenMatrix.z);
-	RenderBackend.set_Constant("blue_matrix", BlueMatrix.x, BlueMatrix.y, BlueMatrix.z);
+	RenderBackend.SetConstant("red_matrix", RedMatrix.x, RedMatrix.y, RedMatrix.z);
+	RenderBackend.SetConstant("green_matrix", GreenMatrix.x, GreenMatrix.y, GreenMatrix.z);
+	RenderBackend.SetConstant("blue_matrix", BlueMatrix.x, BlueMatrix.y, BlueMatrix.z);
 
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_COLOR_BLIND_FILTER], 1);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_COLOR_BLIND_FILTER], 1);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 
 void CRender::render_effectors_pass_combine()
 {
 	// combination/postprocess
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
-	RenderBackend.set_Depth_Buffer(NULL);
+	RenderBackend.SetRenderTarget(RenderTarget->rt_Generic[1]);
+	RenderBackend.SetDepthBuffer(NULL);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_COMBINE]);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_COMBINE]);
 
 	int gblend = clampr(iFloor((1 - RenderImplementation.EffectorsManager->get_gray()) * 255.f), 0, 255);
 	int nblend = clampr(iFloor((1 - RenderImplementation.EffectorsManager->get_noise()) * 255.f), 0, 255);
@@ -179,45 +179,45 @@ void CRender::render_effectors_pass_combine()
 	RenderBackend.Vertex.Unlock(4, RenderTarget->g_effectors.stride());
 
 	// Actual rendering
-	RenderBackend.set_Constant("c_colormap",
+	RenderBackend.SetConstant("c_colormap",
 							   RenderImplementation.EffectorsManager->get_cm_imfluence(),
 							   RenderImplementation.EffectorsManager->get_cm_interpolate());
 
-	RenderBackend.set_Constant("c_brightness",
+	RenderBackend.SetConstant("c_brightness",
 							   color_get_R(p_brightness) / 255.f,
 							   color_get_G(p_brightness) / 255.f,
 							   color_get_B(p_brightness) / 255.f,
 							   RenderImplementation.EffectorsManager->get_noise());
 
-	RenderBackend.set_Constant("night_vision_enabled", NightVisionEnabled);
+	RenderBackend.SetConstant("night_vision_enabled", NightVisionEnabled);
 
-	RenderBackend.set_Constant("actor_health", get_actor_health());
+	RenderBackend.SetConstant("actor_health", get_actor_health());
 
 	CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
-	RenderBackend.set_Constant("vignette_power", E->m_VignettePower);
+	RenderBackend.SetConstant("vignette_power", E->m_VignettePower);
 
-	RenderBackend.set_Geometry(RenderTarget->g_effectors);
+	RenderBackend.SetGeometry(RenderTarget->g_effectors);
 
 	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
 void CRender::render_effectors_pass_resolve_gamma()
 {
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_RESOLVE_GAMMA]);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_RESOLVE_GAMMA]);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 
 void CRender::render_effectors_pass_lut()
 {
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_effectors->E[SE_PASS_LUT], 0);
+	RenderBackend.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_LUT], 0);
 	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
-	RenderBackend.set_Constant("c_lut_params", envdesc->weight, 0, 0, 0);
+	RenderBackend.SetConstant("c_lut_params", envdesc->weight, 0, 0, 0);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////

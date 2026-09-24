@@ -193,9 +193,6 @@
     <Filter Include="Engine\Thread manager">
       <UniqueIdentifier>{104b3242-87ef-4020-b2f8-46f9b18684f2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Camera view">
-      <UniqueIdentifier>{63460ad0-eae8-45c6-b91e-973f5bf1ca88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\Shaders\Resource Manager">
       <UniqueIdentifier>{7deb06de-3c1f-44a8-98c7-3cb9155ef1ec}</UniqueIdentifier>
     </Filter>
@@ -205,8 +202,14 @@
     <Filter Include="xrBind PSGP">
       <UniqueIdentifier>{9e9e5c50-5961-4cb8-a665-2b7c7524ad52}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Backend">
+    <Filter Include="Render backend">
+      <UniqueIdentifier>{c536409b-68d3-4129-a779-69ad4a9c94f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render backend\Backend">
       <UniqueIdentifier>{46f64113-4784-45bf-95a7-45b35faf9df8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render backend\Camera view">
+      <UniqueIdentifier>{63460ad0-eae8-45c6-b91e-973f5bf1ca88}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -368,9 +371,6 @@
     </ClInclude>
     <ClInclude Include="MbHelpers.h">
       <Filter>Render\Font output</Filter>
-    </ClInclude>
-    <ClInclude Include="device.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
     </ClInclude>
     <ClInclude Include="StatGraph.h">
       <Filter>Render\Execution &amp; 3D</Filter>
@@ -544,16 +544,16 @@
       <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FVF.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_Data_Streams.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_transform.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="Environment_wind.h">
       <Filter>Game API\Environment</Filter>
@@ -601,7 +601,7 @@
       <Filter>Engine\Thread manager</Filter>
     </ClInclude>
     <ClInclude Include="RenderView.h">
-      <Filter>Render\Camera view</Filter>
+      <Filter>Render backend\Camera view</Filter>
     </ClInclude>
     <ClInclude Include="Blender.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
@@ -613,25 +613,25 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_RenderTarget.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="R_Backend_StateCache.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_ResourceBinder.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_ConstantManager.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="xr_engine_common.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_tree.h">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="EngineQuit.hpp">
       <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="device.h">
+      <Filter>Render backend</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -787,9 +787,6 @@
     </ClCompile>
     <ClCompile Include="MbHelpers.cpp">
       <Filter>Render\Font output</Filter>
-    </ClCompile>
-    <ClCompile Include="device.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="StatGraph.cpp">
       <Filter>Render\Execution &amp; 3D</Filter>
@@ -960,16 +957,16 @@
       <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_Data_Streams.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_DBG.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_transform.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="Environment_wind.cpp">
       <Filter>Game API\Environment</Filter>
@@ -1017,7 +1014,7 @@
       <Filter>Engine\Thread manager</Filter>
     </ClCompile>
     <ClCompile Include="RenderView.cpp">
-      <Filter>Render\Camera view</Filter>
+      <Filter>Render backend\Camera view</Filter>
     </ClCompile>
     <ClCompile Include="Blender.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
@@ -1029,7 +1026,7 @@
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_RenderTarget.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="xrBind_PSGP.cpp">
       <Filter>xrBind PSGP</Filter>
@@ -1040,20 +1037,20 @@
     <ClCompile Include="xrSkin2W.cpp">
       <Filter>xrBind PSGP</Filter>
     </ClCompile>
-    <ClCompile Include="R_Backend_StateCache.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
-    </ClCompile>
     <ClCompile Include="R_Backend_ResourceBinder.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_ConstantManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_tree.cpp">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="EngineQuit.cpp">
       <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="device.cpp">
+      <Filter>Render backend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1076,7 +1073,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="R_Backend.inl">
-      <Filter>Render\Execution &amp; 3D\Backend</Filter>
+      <Filter>Render backend\Backend</Filter>
     </None>
     <None Include="cpp.hint" />
   </ItemGroup>

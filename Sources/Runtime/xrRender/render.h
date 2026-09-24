@@ -232,11 +232,11 @@ class CRender : public IRender_interface, public pureFrame
 
 	IC void apply_ao_lighting(const CROS_impl::AOCube& cube)
 	{
-		RenderBackend.set_Constant("ao_cube_pos_faces",
+		RenderBackend.SetConstant("ao_cube_pos_faces",
 								   cube[CROS_impl::CUBE_FACE_POS_X],
 								   cube[CROS_impl::CUBE_FACE_POS_Y],
 								   cube[CROS_impl::CUBE_FACE_POS_Z]);
-		RenderBackend.set_Constant("ao_cube_neg_faces",
+		RenderBackend.SetConstant("ao_cube_neg_faces",
 								   cube[CROS_impl::CUBE_FACE_NEG_X],
 								   cube[CROS_impl::CUBE_FACE_NEG_Y],
 								   cube[CROS_impl::CUBE_FACE_NEG_Z]);
@@ -327,10 +327,8 @@ class CRender : public IRender_interface, public pureFrame
 	void set_gbuffer();
 	void render_wallmarks();
 	void render_shadow_map_sun(light* L, u32 sub_phase);
-	void render_shadow_map_sun_transluent(light* L, u32 sub_phase);
 	void clear_shadow_map_spot();
 	void render_shadow_map_spot(light* L);
-	void render_shadow_map_spot_transluent(light* L);
 	void set_light_accumulator();
 	BOOL enable_scissor(light* L); // true if intersects near plane
 	float hclip(float v, float dim);
@@ -402,7 +400,7 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void Calculate() override;
 	void prepare_to_render();
 	virtual void Render() override;
-	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) override;
+	virtual void Screenshot(ScreenshotMode mode = ScreenshotMode::SM_NORMAL, LPCSTR name = 0) override;
 	virtual void OnFrame() override;
 
 	virtual u32 memory_usage()

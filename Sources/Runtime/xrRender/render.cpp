@@ -17,7 +17,7 @@ static class cl_sun_far : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float fValue = ps_r_sun_far;
-		RenderBackend.set_Constant(C, fValue, fValue, fValue, 0);
+		RenderBackend.SetConstant(C, fValue, fValue, fValue, 0);
 	}
 } binder_sun_far;
 //////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ static class cl_sun_dir : public R_constant_setup
 		Engine.RenderView.View.transform_dir(L_dir, sun->get_direction());
 		L_dir.normalize();
 
-		RenderBackend.set_Constant(C, L_dir.x, L_dir.y, L_dir.z, 0);
+		RenderBackend.SetConstant(C, L_dir.x, L_dir.y, L_dir.z, 0);
 	}
 } binder_sun_dir;
 //////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ static class cl_sun_normal_bias : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant(C, ps_r_sun_depth_normal_bias, 0, 0, 0);
+		RenderBackend.SetConstant(C, ps_r_sun_depth_normal_bias, 0, 0, 0);
 	}
 } binder_sun_normal_bias;
 //////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ static class cl_sun_directional_bias : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant(C, ps_r_sun_depth_directional_bias, 0, 0, 0);
+		RenderBackend.SetConstant(C, ps_r_sun_depth_directional_bias, 0, 0, 0);
 	}
 } binder_sun_directional_bias;
 //////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ static class cl_sun_color : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		light* sun = (light*)RenderImplementation.Scene.GetLights().sun_adapted._get();
-		RenderBackend.set_Constant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
+		RenderBackend.SetConstant(C, sRgbToLinear(sun->get_color().r), sRgbToLinear(sun->get_color().g), sRgbToLinear(sun->get_color().b), 0);
 	}
 } binder_sun_color;
 //////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ static class cl_debug_reserved : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant("debug_reserved", ps_r_debug_reserved_0, ps_r_debug_reserved_1, ps_r_debug_reserved_2, ps_r_debug_reserved_3);
+		RenderBackend.SetConstant("debug_reserved", ps_r_debug_reserved_0, ps_r_debug_reserved_1, ps_r_debug_reserved_2, ps_r_debug_reserved_3);
 	}
 } binder_debug_reserved;
 //////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ static class cl_ao_brightness : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.set_Constant("ao_brightness", ps_r_ao_brightness);
+		RenderBackend.SetConstant("ao_brightness", ps_r_ao_brightness);
 	}
 } binder_ao_brightness;
 //////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ static class cl_is_hud_render_phase : public R_constant_setup
 		if(RenderImplementation.active_phase() == CRender::PHASE_HUD)
 			is_hud_render_phase = 1;
 
-		RenderBackend.set_Constant("is_hud_render_phase", (float)is_hud_render_phase, 0.0f, 0.0f, 0.0f);
+		RenderBackend.SetConstant("is_hud_render_phase", (float)is_hud_render_phase, 0.0f, 0.0f, 0.0f);
 	}
 } binder_is_hud_render_phase;
 //////////////////////////////////////////////////////////////////////////
@@ -456,7 +456,7 @@ void CRender::set_render_mode(int mode)
 
 	IRender_Target* T = getTarget();
 	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), ZMin, ZMax};
-	CHK_DX(RenderBackend.GetDevice()->SetViewport(&VP));
+	RenderBackend.SetViewport(VP);
 }
 
 #include "..\xrEngine\GameFont.h"
@@ -467,8 +467,7 @@ void CRender::Statistics(CGameFont* _F)
 	F.OutNext(" **** LT:%2d,LV:%2d **** ", stats.l_total, stats.l_visible);
 	stats.l_visible = 0;
 	F.OutNext("    S(%2d)   | (%2d)NS   ", stats.l_shadowed, stats.l_unshadowed);
-	F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used,
-			  stats.s_finalclip);
+	F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used, stats.s_finalclip);
 	stats.s_used = 0;
 	stats.s_merged = 0;
 	stats.s_finalclip = 0;

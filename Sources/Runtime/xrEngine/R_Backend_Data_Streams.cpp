@@ -81,12 +81,12 @@ void VertexStream::Unlock(u32 Count, u32 Stride)
 	pVB->Unlock();
 }
 
-void VertexStream::reset_begin()
+void VertexStream::ResetBegin()
 {
 	old_pVB = pVB;
 	Destroy();
 }
-void VertexStream::reset_end()
+void VertexStream::ResetEnd()
 {
 	Create();
 }
@@ -145,12 +145,12 @@ void IndexStream::Unlock(u32 RealCount)
 	pIB->Unlock();
 }
 
-void IndexStream::reset_begin()
+void IndexStream::ResetBegin()
 {
 	old_pIB = pIB;
 	Destroy();
 }
-void IndexStream::reset_end()
+void IndexStream::ResetEnd()
 {
 	Create();
 }

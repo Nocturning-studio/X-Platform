@@ -5,8 +5,6 @@
 #include "ResourceManager.h"
 #include "xrRHI/xrRHI_Types.h"
 
-using namespace xrRHI;
-
 // Хелпер для определения Usage
 static bool IsDepthStencilFormat(RHI_Format fmt)
 {
@@ -61,8 +59,8 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	dwHeight = h;
 	fmt = f;
 
-	xrRHI::IRenderBackend* RHI = ::RHI();
-	const xrRHI::RHIDeviceCaps& caps = RHI->GetDeviceCaps();
+	IRenderBackend* RHI = ::RHI();
+	const RHIDeviceCaps& caps = RHI->GetDeviceCaps();
 
 	if(!btwIsPow2(w) || !btwIsPow2(h))
 	{
@@ -91,7 +89,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 		return;
 	}
 
-	xrRHI::TextureDesc desc;
+	RHI_TextureDesc desc;
 	desc.width = w;
 	desc.height = h;
 	desc.depth = 1;
@@ -102,7 +100,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	desc.isCubeMap = false;
 
 	Engine.ResourceManager->Evict();
-	xrRHI::TextureHandle handle = RHI->CreateTexture(desc);
+	RHI_TextureHandle handle = RHI->CreateTexture(desc);
 	if(!handle.IsValid())
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d via RHI!", Name, w, h, levels);
@@ -145,12 +143,12 @@ void CRT::destroy()
 	_RELEASE(pSurface);
 }
 
-void CRT::reset_begin()
+void CRT::ResetBegin()
 {
 	destroy();
 }
 
-void CRT::reset_end()
+void CRT::ResetEnd()
 {
 	create(*cName, dwWidth, dwHeight, fmt);
 }
@@ -193,8 +191,8 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	dwSize = size;
 	fmt = f;
 
-	xrRHI::IRenderBackend* RHI = ::RHI();
-	const xrRHI::RHIDeviceCaps& caps = RHI->GetDeviceCaps();
+	IRenderBackend* RHI = ::RHI();
+	const RHIDeviceCaps& caps = RHI->GetDeviceCaps();
 
 	if(size > caps.MaxTextureWidth || size > caps.MaxTextureHeight)
 	{
@@ -209,7 +207,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 		return;
 	}
 
-	xrRHI::TextureDesc desc;
+	RHI_TextureDesc desc;
 	desc.width = size;
 	desc.height = size;
 	desc.depth = 1;
@@ -220,7 +218,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	desc.isCubeMap = true;
 
 	Engine.ResourceManager->Evict();
-	xrRHI::TextureHandle handle = RHI->CreateTexture(desc);
+	RHI_TextureHandle handle = RHI->CreateTexture(desc);
 	if(!handle.IsValid())
 	{
 		Msg("!Failed to create RTc(%s) via RHI", Name);
@@ -271,12 +269,12 @@ void CRTC::destroy()
 	_RELEASE(pSurface);
 }
 
-void CRTC::reset_begin()
+void CRTC::ResetBegin()
 {
 	destroy();
 }
 
-void CRTC::reset_end()
+void CRTC::ResetEnd()
 {
 	create(*cName, dwSize, fmt);
 }

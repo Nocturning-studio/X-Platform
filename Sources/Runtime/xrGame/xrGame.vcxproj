@@ -14875,6 +14875,9 @@
     <ProjectReference Include="..\xrGameSpy\xrGameSpy.vcxproj">
       <Project>{5535f6b4-7ae6-4b66-8aea-cc31c14d7ab7}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
+      <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

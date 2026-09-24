@@ -111,7 +111,7 @@ void FLOD::Render(float LOD)
 	RenderBackend.Vertex.Unlock			(4,geom->vb_stride);
 
 	// Draw IT
-	RenderBackend.set_Geometry		(geom);
+	RenderBackend.SetGeometry		(geom);
 	RenderBackend.Render			(D3DPT_TRIANGLEFAN,vOffset,2);
 	*/
 }

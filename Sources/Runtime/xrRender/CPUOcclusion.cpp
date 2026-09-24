@@ -102,7 +102,7 @@ void CPUOcclusion::Load(const CHOM& hom)
 	// D3D9 отладка
 	{
 		const u32 vbSize = m_vertexCount * sizeof(fvec3);
-		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(vbSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, nullptr));
+		RenderBackend.CreateVertexBuffer(vbSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, nullptr);
 		fvec3* pData = nullptr;
 		R_CHK(m_VB->Lock(0, 0, (void**)&pData, 0));
 		std::memcpy(pData, vertices.data(), vbSize);
@@ -110,16 +110,18 @@ void CPUOcclusion::Load(const CHOM& hom)
 	}
 	{
 		const u32 ibSize = m_indexCount * sizeof(u16);
-		R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(ibSize, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, nullptr));
+		RenderBackend.CreateIndexBuffer(ibSize, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, nullptr);
 		u16* pData = nullptr;
 		R_CHK(m_IB->Lock(0, 0, (void**)&pData, 0));
 		std::memcpy(pData, indices.data(), ibSize);
 		R_CHK(m_IB->Unlock());
 	}
 
-	static D3DVERTEXELEMENT9 dwDecl[] = {
+	static D3DVERTEXELEMENT9 dwDecl[] = 
+	{
 		{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		D3DDECL_END()};
+		D3DDECL_END()
+	};
 	m_geom.create(dwDecl, m_VB, m_IB);
 	m_shader.create("sun_occluder");
 
@@ -162,10 +164,10 @@ void CPUOcclusion::DrawDebug()
 	if(!m_loaded)
 		return;
 
-	RenderBackend.set_Geometry(m_geom);
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_Shader(m_shader);
-	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.SetGeometry(m_geom);
+	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackend.SetShader(m_shader);
+	RenderBackend.SetCullMode(CULL_DISABLE);
 
 	const u32 primCount = m_indexCount / 3;
 	RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, primCount);

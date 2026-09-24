@@ -19,16 +19,16 @@ void CRender::render_screen_overlays()
 	if(ps_r_overlay_flags.test(RFLAG_CINEMA_BORDERS))
 		CinemaBordersEnabled = 1;
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_frame_overlay->E[SE_OVERLAYS_MAIN]);
-	RenderBackend.set_Constant("enabled_overlays", (float)GridEnabled, (float)CinemaBordersEnabled, 0, 0);
+	RenderBackend.SetShaderElement(RenderTarget->s_frame_overlay->E[SE_OVERLAYS_MAIN]);
+	RenderBackend.SetConstant("enabled_overlays", (float)GridEnabled, (float)CinemaBordersEnabled, 0, 0);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 
 	if(ps_r_overlay_flags.test(RFLAG_WATERMARK))
 	{
-		RenderBackend.set_Element(RenderTarget->s_frame_overlay->E[SE_OVERLAYS_WATERMARK]);
+		RenderBackend.SetShaderElement(RenderTarget->s_frame_overlay->E[SE_OVERLAYS_WATERMARK]);
 		RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 	}
 }

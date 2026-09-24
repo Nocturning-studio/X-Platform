@@ -536,7 +536,7 @@ class CCC_ALifeSave : public IConsole_Command
 #ifdef DEBUG
 		timer.Start();
 #endif
-		MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
+		MainMenu()->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, S1);
 
 #ifdef DEBUG
 		Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);

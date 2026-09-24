@@ -50,26 +50,26 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	if(SE_SUN_NEAR == sub_phase)
 	{
 		set_light_accumulator();
-		RenderBackend.set_CullMode(CULL_DISABLE);
+		RenderBackend.SetCullMode(CULL_DISABLE);
 
 		// Use backend's viewport geometry setup
 		u32 Offset = 0;
-		RenderBackend.set_viewport_geometry(Offset);
+		RenderBackend.SetViewportGeom(Offset);
 
 		// Setup shader
-		RenderBackend.set_Element(RenderTarget->s_accum_mask->E[SE_MASK_DIRECT]);
-		RenderBackend.set_Constant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+		RenderBackend.SetShaderElement(RenderTarget->s_accum_mask->E[SE_MASK_DIRECT]);
+		RenderBackend.SetConstant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 
 		// Stencil masking
-		RenderBackend.set_ColorWriteEnable(FALSE);
-		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		RenderBackend.SetColorWriteEnable(FALSE);
+		RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
 
 	// Setup lighting pass
 	set_light_accumulator();
-	RenderBackend.set_CullMode(CULL_BACKFACE);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetCullMode(CULL_BACKFACE);
+	RenderBackend.SetColorWriteEnable();
 
 	// Texture adjustment matrix
 	float fTexelOffs = (0.5f / float(RenderImplementation.o.smapsize));
@@ -140,7 +140,7 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 	RenderBackend.transforms.set_World(m_Texgen);
 	RenderBackend.transforms.set_View(Engine.RenderView.View);
 	RenderBackend.transforms.set_Project(Engine.RenderView.Project);
-	RenderBackend.u_compute_texgen_screen(m_Texgen);
+	RenderBackend.ComputeTexgenScreen(m_Texgen);
 
 	// Setup geometry using backend
 	u32 i_offset, v_offset;
@@ -170,15 +170,15 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 		RenderBackend.Vertex.Unlock(ver_count, RenderTarget->g_cuboid.stride());
 	}
 
-	RenderBackend.set_Geometry(RenderTarget->g_cuboid);
+	RenderBackend.SetGeometry(RenderTarget->g_cuboid);
 
 	// Setup shader and constants
-	RenderBackend.set_Element(RenderTarget->s_accum_direct_cascade->E[sub_phase]);
-	RenderBackend.set_Constant("m_bias", NormalBias, DirectionalBias);
-	RenderBackend.set_Constant("m_texgen", m_Texgen);
-	RenderBackend.set_Constant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
-	RenderBackend.set_Constant("Ldynamic_color", sRgbToLinear(L_clr.x), sRgbToLinear(L_clr.y), sRgbToLinear(L_clr.z));
-	RenderBackend.set_Constant("m_shadow", m_shadow);
+	RenderBackend.SetShaderElement(RenderTarget->s_accum_direct_cascade->E[sub_phase]);
+	RenderBackend.SetConstant("m_bias", NormalBias, DirectionalBias);
+	RenderBackend.SetConstant("m_texgen", m_Texgen);
+	RenderBackend.SetConstant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+	RenderBackend.SetConstant("Ldynamic_color", sRgbToLinear(L_clr.x), sRgbToLinear(L_clr.y), sRgbToLinear(L_clr.z));
+	RenderBackend.SetConstant("m_shadow", m_shadow);
 
 	// Setup depth testing
 	if((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
@@ -190,9 +190,9 @@ void CRender::accumulate_sun(u32 sub_phase, fmat4x4& transform, fmat4x4& transfo
 
 	// Setup stencil
 	if(SE_SUN_NEAR == sub_phase || sub_phase == SE_SUN_MIDDLE)
-		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0xFE, D3DSTENCILOP_KEEP, D3DSTENCILOP_ZERO, D3DSTENCILOP_KEEP);
+		RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0xFE, D3DSTENCILOP_KEEP, D3DSTENCILOP_ZERO, D3DSTENCILOP_KEEP);
 	else
-		RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
+		RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
 
 	// Render
 	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, 8, i_offset, 16);
@@ -220,10 +220,10 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 		bVolumetricSunTextureCleared = false;
 
 	// Убираем ВСЕ ограничения для объемного света
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Depth_Buffer(NULL);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetStencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetDepthBuffer(NULL);
+	RenderBackend.SetColorWriteEnable();
 
 	switch(sub_phase)
 	{
@@ -238,17 +238,17 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 		break;
 	}
 
-	RenderBackend.set_Element(RenderTarget->s_accum_direct_cascade->E[sub_phase]);
+	RenderBackend.SetShaderElement(RenderTarget->s_accum_direct_cascade->E[sub_phase]);
 
 	// Pass necessary constants
 	float Weight = RenderTarget->rt_Volumetric_Sun->dwWidth;
 	float Height = RenderTarget->rt_Volumetric_Sun->dwHeight;
 
 	float sun_shafts_intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity;
-	RenderBackend.set_Constant("image_resolution", Weight, Height, 1.0f / Weight, 1.0f / Height);
-	RenderBackend.set_Constant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
-	RenderBackend.set_Constant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
-	RenderBackend.set_Constant("m_shadow", m_shadow);
+	RenderBackend.SetConstant("image_resolution", Weight, Height, 1.0f / Weight, 1.0f / Height);
+	RenderBackend.SetConstant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
+	RenderBackend.SetConstant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+	RenderBackend.SetConstant("m_shadow", m_shadow);
 
 	RenderBackend.RenderViewportSurface(Weight, Height, RenderTarget->rt_Volumetric_Sun);
 }

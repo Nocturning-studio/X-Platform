@@ -433,7 +433,7 @@ void CMainMenu::OnFrame()
 	if(m_Flags.test(flGameSaveScreenshot) && Engine.TimeManager.GetFrameCount() > m_screenshotFrame)
 	{
 		m_Flags.set(flGameSaveScreenshot, FALSE);
-		::Render->Screenshot(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
+		::Render->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, m_screenshot_name);
 
 		if(g_pGameLevel && m_Flags.test(flActive))
 		{
@@ -458,7 +458,7 @@ void CMainMenu::OnDeviceCreate()
 
 void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 {
-	if(mode != IRender_interface::SM_FOR_GAMESAVE)
+	if(mode != IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)
 	{
 		::Render->Screenshot(mode, name);
 	}

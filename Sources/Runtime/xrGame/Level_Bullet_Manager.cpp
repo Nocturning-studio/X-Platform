@@ -347,7 +347,7 @@ void CBulletManager::Render()
 		extern FvectorVec g_hit[];
 		FvectorIt it;
 		u32 C[3] = {0xffff0000, 0xff00ff00, 0xff0000ff};
-		RenderBackend.set_transform_world(Fidentity);
+		RenderBackend.SetTransformWorld(Fidentity);
 		for(int i = 0; i < 3; ++i)
 			for(it = g_hit[i].begin(); it != g_hit[i].end(); ++it)
 			{
@@ -424,12 +424,12 @@ void CBulletManager::Render()
 
 	if(vCount)
 	{
-		RenderBackend.set_CullMode(CULL_DISABLE);
-		RenderBackend.set_transform_world(Fidentity);
-		RenderBackend.set_Shader(tracers.sh_Tracer);
-		RenderBackend.set_Geometry(tracers.sh_Geom);
+		RenderBackend.SetCullMode(CULL_DISABLE);
+		RenderBackend.SetTransformWorld(Fidentity);
+		RenderBackend.SetShader(tracers.sh_Tracer);
+		RenderBackend.SetGeometry(tracers.sh_Geom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
-		RenderBackend.set_CullMode(CULL_BACKFACE);
+		RenderBackend.SetCullMode(CULL_BACKFACE);
 	}
 }
 

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "xrBackendDX9.h"
 
-RHI_BEGIN
-
 XRRHI_API std::string DecodeShaderVersion(u32 version)
 {
 	if(version == 0)
@@ -86,5 +84,3 @@ const RHIDeviceCaps& CRenderBackendDX9::GetDeviceCaps() const
 {
 	return m_DeviceCaps;
 }
-
-RHI_END

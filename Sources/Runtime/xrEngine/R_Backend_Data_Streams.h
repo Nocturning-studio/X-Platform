@@ -40,8 +40,8 @@ class ENGINE_API VertexStream
   public:
 	void Create();
 	void Destroy();
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 
 	IC IDirect3DVertexBuffer9* Buffer()
 	{
@@ -93,8 +93,8 @@ class ENGINE_API IndexStream
   public:
 	void Create();
 	void Destroy();
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 
 	IC IDirect3DIndexBuffer9* Buffer()
 	{

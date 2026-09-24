@@ -360,13 +360,13 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 	RenderBackend.Vertex.Unlock(w_count, hGeom->vb_stride);
 	if(w_count)
 	{
-		RenderBackend.set_Shader(shader);
-		RenderBackend.set_Geometry(hGeom);
+		RenderBackend.SetShader(shader);
+		RenderBackend.SetGeometry(hGeom);
 		if(bSuppressCull)
-			RenderBackend.set_CullMode(CULL_DISABLE);
+			RenderBackend.SetCullMode(CULL_DISABLE);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, w_offset, w_count / 3);
 		if(bSuppressCull)
-			RenderBackend.set_CullMode(CULL_BACKFACE);
+			RenderBackend.SetCullMode(CULL_BACKFACE);
 		Engine.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
 }
@@ -377,14 +377,14 @@ void CWallmarksEngine::Render()
 	// Projection and transform
 	float _43 = Engine.RenderView.Project._43;
 	Engine.RenderView.Project._43 -= ps_r_WallmarkSHIFT;
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackend.SetTransformProject(Engine.RenderView.Project);
 
 	fmat4x4 mSavedView = Engine.RenderView.View;
 	fvec3 mViewPos;
 	mViewPos.mad(Engine.RenderView.Position, Engine.RenderView.Direction, ps_r_WallmarkSHIFT_V);
 	Engine.RenderView.View.build_camera_dir(mViewPos, Engine.RenderView.Direction, Engine.RenderView.Top);
-	RenderBackend.set_transform_view(Engine.RenderView.View);
+	RenderBackend.SetTransformView(Engine.RenderView.View);
 
 	Engine.Statistic->RenderDUMP_WM.Begin();
 	Engine.Statistic->RenderDUMP_WMS_Count = 0;
@@ -501,6 +501,6 @@ void CWallmarksEngine::Render()
 	// Projection
 	Engine.RenderView.View = mSavedView;
 	Engine.RenderView.Project._43 = _43;
-	RenderBackend.set_transform_view(Engine.RenderView.View);
-	RenderBackend.set_transform_project(Engine.RenderView.Project);
+	RenderBackend.SetTransformView(Engine.RenderView.View);
+	RenderBackend.SetTransformProject(Engine.RenderView.Project);
 }

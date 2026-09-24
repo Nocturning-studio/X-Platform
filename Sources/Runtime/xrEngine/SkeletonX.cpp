@@ -61,8 +61,8 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	{
 		fmat4x4 W;
 		W.mul_43(RenderBackend.transforms.m_World, Parent->LL_GetTransform_R(u16(RMS_boneid)));
-		RenderBackend.set_transform_world(W);
-		RenderBackend.set_Geometry(hGeom);
+		RenderBackend.SetTransformWorld(W);
+		RenderBackend.SetGeometry(hGeom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
 		RenderBackend.stat.r.s_dynamic_inst.add(vCount);
 	}
@@ -71,19 +71,19 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	case RM_SKINNING_2B:
 	{
 		// transfer matrices
-		ref_constant array = RenderBackend.get_Constant(s_bones_array_const);
+		ref_constant array = RenderBackend.GetConstant(s_bones_array_const);
 		u32 count = RMS_bonecount;
 		for(u32 mid = 0; mid < count; mid++)
 		{
 			fmat4x4& M = Parent->LL_GetTransform_R(u16(mid));
 			u32 id = mid * 3;
-			RenderBackend.set_Array_Constant(&*array, id + 0, M._11, M._21, M._31, M._41);
-			RenderBackend.set_Array_Constant(&*array, id + 1, M._12, M._22, M._32, M._42);
-			RenderBackend.set_Array_Constant(&*array, id + 2, M._13, M._23, M._33, M._43);
+			RenderBackend.SetArrayConstant(&*array, id + 0, M._11, M._21, M._31, M._41);
+			RenderBackend.SetArrayConstant(&*array, id + 1, M._12, M._22, M._32, M._42);
+			RenderBackend.SetArrayConstant(&*array, id + 2, M._13, M._23, M._33, M._43);
 		}
 
 		// render
-		RenderBackend.set_Geometry(hGeom);
+		RenderBackend.SetGeometry(hGeom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
 		if(RM_SKINNING_1B == RenderMode)
 			RenderBackend.stat.r.s_dynamic_1B.add(vCount);
@@ -126,7 +126,7 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
 		_VS.Unlock(vCount, hGeom->vb_stride);
 	}
 
-	RenderBackend.set_Geometry(hGeom);
+	RenderBackend.SetGeometry(hGeom);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
 }
 

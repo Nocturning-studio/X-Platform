@@ -172,9 +172,9 @@ void CRender::render_lights(light_Package& LP)
             {
                 stats.s_merged++;
                 render_shadow_map_spot(L);
-                RenderBackend.set_transform_world(Fidentity);
-                RenderBackend.set_transform_view(L->TransformContext.ShadowContext.view);
-                RenderBackend.set_transform_project(L->TransformContext.ShadowContext.project);
+                RenderBackend.SetTransformWorld(Fidentity);
+                RenderBackend.SetTransformView(L->TransformContext.ShadowContext.view);
+                RenderBackend.SetTransformProject(L->TransformContext.ShadowContext.project);
 
                 Scene.Render(m_spot_shadow_vis, SceneRenderPresets::Opaque);
                 L->TransformContext.ShadowContext.transluent = FALSE;

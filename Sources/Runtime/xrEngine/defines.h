@@ -1,5 +1,6 @@
 #ifndef DefinesH
 #define DefinesH
+#include "xr_engine_common.h"
 
 #ifdef DEBUG
 ENGINE_API extern BOOL bDebug;

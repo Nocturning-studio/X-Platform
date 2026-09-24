@@ -749,8 +749,8 @@ void CUICellContainer::Draw()
 	if(p_cnt != 0)
 	{
 		// draw grid
-		RenderBackend.set_Shader(hShader);
-		RenderBackend.set_Geometry(hGeom);
+		RenderBackend.SetShader(hShader);
+		RenderBackend.SetGeometry(hGeom);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
 	}
 

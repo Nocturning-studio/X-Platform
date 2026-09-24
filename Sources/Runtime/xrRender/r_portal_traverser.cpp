@@ -326,17 +326,17 @@ void CPortalTraverser::RenderFade()
 	RenderBackend.Vertex.Unlock(poly_count * 3, m_geom_fade.stride());
 
 	// 7. Отрисовка
-	RenderBackend.set_transform_world(Fidentity);
-	RenderBackend.set_Shader(m_shader_fade);
-	RenderBackend.set_Geometry(m_geom_fade);
+	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackend.SetShader(m_shader_fade);
+	RenderBackend.SetGeometry(m_geom_fade);
 
 	// Отключаем отсечение задних граней, чтобы "туман" был виден с любой стороны портала
-	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
 
 	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, poly_count);
 
 	// Восстанавливаем Cull Mode
-	RenderBackend.set_CullMode(CULL_BACKFACE);
+	RenderBackend.SetCullMode(CULL_BACKFACE);
 
 	// 8. Очистка списка (данные устаревают каждый кадр)
 	m_fade_portals.clear();

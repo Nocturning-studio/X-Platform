@@ -1,25 +1,25 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-void CRenderBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
+void CRenderBackendFacade::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
-	RenderBackend.set_Geometry(geom);
+	RenderBackend.SetGeometry(geom);
 	RenderBackend.Render(pt, vBase, pc);
 }
 
-void CRenderBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
+void CRenderBackendFacade::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	RenderBackend.set_Geometry(geom);
+	RenderBackend.SetGeometry(geom);
 	RenderBackend.Render(pt, baseV, startV, countV, startI, PC);
 }
 
-void CRenderBackend::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
+void CRenderBackendFacade::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 	OnFrameEnd();
 	CHK_DX(RenderBackend.GetDevice()->SetFVF(FVF::F_L));
 	CHK_DX(RenderBackend.GetDevice()->DrawIndexedPrimitiveUP(PrimType, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
 }
-void CRenderBackend::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int pcnt)
+void CRenderBackendFacade::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int pcnt)
 {
 	OnFrameEnd();
 	CHK_DX(RenderBackend.GetDevice()->SetFVF(FVF::F_L));
@@ -27,7 +27,7 @@ void CRenderBackend::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int pcn
 }
 
 #define RGBA_GETALPHA(rgb) ((rgb) >> 24)
-void CRenderBackend::dbg_DrawOBB(fmat4x4& Transform, fvec3& half_dim, u32 Color)
+void CRenderBackendFacade::dbg_DrawOBB(fmat4x4& Transform, fvec3& half_dim, u32 Color)
 {
 
 	fmat4x4 mL2W_Transform, mScaleTransform;
@@ -46,10 +46,10 @@ void CRenderBackend::dbg_DrawOBB(fmat4x4& Transform, fvec3& half_dim, u32 Color)
 	aabb[7].set(+1, -1, +1, Color); // 7
 
 	u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
-	set_transform_world(mL2W_Transform);
+	SetTransformWorld(mL2W_Transform);
 	dbg_Draw(D3DPT_LINELIST, aabb, 8, aabb_id, 12);
 }
-IC void CRenderBackend::dbg_DrawAABB(fvec3& Translation, float sx, float sy, float sz, u32 Color)
+IC void CRenderBackendFacade::dbg_DrawAABB(fvec3& Translation, float sx, float sy, float sz, u32 Color)
 {
 	fvec3 half_dim;
 	half_dim.set(sx, sy, sz);
@@ -57,7 +57,7 @@ IC void CRenderBackend::dbg_DrawAABB(fvec3& Translation, float sx, float sy, flo
 	TM.translate(Translation);
 	dbg_DrawOBB(TM, half_dim, Color);
 }
-void CRenderBackend::dbg_DrawTRI(fmat4x4& Transform, fvec3& p1, fvec3& p2, fvec3& p3, u32 Color)
+void CRenderBackendFacade::dbg_DrawTRI(fmat4x4& Transform, fvec3& p1, fvec3& p2, fvec3& p3, u32 Color)
 {
 	FVF::L tri[3];
 	tri[0].p = p1;
@@ -67,10 +67,10 @@ void CRenderBackend::dbg_DrawTRI(fmat4x4& Transform, fvec3& p1, fvec3& p2, fvec3
 	tri[2].p = p3;
 	tri[2].color = Color;
 
-	set_transform_world(Transform);
+	SetTransformWorld(Transform);
 	dbg_Draw(D3DPT_TRIANGLESTRIP, tri, 1);
 }
-void CRenderBackend::dbg_DrawLINE(fmat4x4& Transform, fvec3& p1, fvec3& p2, u32 Color)
+void CRenderBackendFacade::dbg_DrawLINE(fmat4x4& Transform, fvec3& p1, fvec3& p2, u32 Color)
 {
 	FVF::L line[2];
 	line[0].p = p1;
@@ -78,10 +78,10 @@ void CRenderBackend::dbg_DrawLINE(fmat4x4& Transform, fvec3& p1, fvec3& p2, u32 
 	line[1].p = p2;
 	line[1].color = Color;
 
-	set_transform_world(Transform);
+	SetTransformWorld(Transform);
 	dbg_Draw(D3DPT_LINELIST, line, 1);
 }
-void CRenderBackend::dbg_DrawEllipse(fmat4x4& Transform, u32 Color)
+void CRenderBackendFacade::dbg_DrawEllipse(fmat4x4& Transform, u32 Color)
 {
 	float gVertices[] = {
 		0.0000f, 0.0000f, 1.0000f, 0.0000f, 0.3827f, 0.9239f, -0.1464f, 0.3536f, 0.9239f, -0.2706f, 0.2706f,
@@ -157,7 +157,7 @@ void CRenderBackend::dbg_DrawEllipse(fmat4x4& Transform, u32 Color)
 		verts[i].set(gVertices[k], gVertices[k + 1], gVertices[k + 2], Color);
 	}
 
-	set_transform_world(Transform);
+	SetTransformWorld(Transform);
 	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces, 224);
 	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);

@@ -351,10 +351,10 @@ class CCC_tf_MipBias : public CCC_Float
   public:
 	void apply()
 	{
-		if(0 == RenderBackend.GetDevice())
+		if (0 == RenderBackend.GetDevice())
 			return;
-		for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-			CHK_DX(RenderBackend.GetDevice()->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value)));
+		for (u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+			RenderBackend.SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD)value));
 	}
 
 	CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -0.5f, +0.5f) {};
@@ -380,7 +380,7 @@ class CCC_Screenshot : public IConsole_Command
 		name[0] = 0;
 		sscanf(args, "%s", name);
 		LPCSTR image = xr_strlen(name) ? name : 0;
-		::Render->Screenshot(IRender_interface::SM_NORMAL, image);
+		::Render->Screenshot(IRender_interface::ScreenshotMode::SM_NORMAL, image);
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +603,7 @@ class CCC_tf_Aniso : public CCC_Integer
 		int val = *value;
 		clamp(val, 2, 16);
 
-		RenderBackend.set_anisotropy_filtering(val);
+		RenderBackend.SetAnisotropyFiltering(val);
 	}
 	CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 2, 16) {};
 	virtual void Execute(LPCSTR args)

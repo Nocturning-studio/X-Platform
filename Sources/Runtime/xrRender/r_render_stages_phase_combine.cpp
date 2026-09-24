@@ -8,12 +8,12 @@ void CRender::combine_additional_postprocess()
 {
 	////OPTICK_EVENT("CRender::combine_additional_postprocess");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
-	RenderBackend.set_Constant("cas_params", ps_cas_contrast, ps_cas_sharpening, 0, 0);
-	RenderBackend.set_Constant("bloom_parameters", ps_r_bloom_threshold,
+	RenderBackend.SetShaderElement(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
+	RenderBackend.SetConstant("cas_params", ps_cas_contrast, ps_cas_sharpening, 0, 0);
+	RenderBackend.SetConstant("bloom_parameters", ps_r_bloom_threshold,
 							   ps_r_bloom_brightness,
 							   ps_r_bloom_blades_threshold,
 							   ps_r_bloom_blades_brightness);
@@ -24,12 +24,12 @@ void CRender::combine_sun_shafts()
 {
 	OPTICK_EVENT("CRender::combine_sun_shafts");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
+	RenderBackend.SetShaderElement(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
 	float sun_shafts_intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity;
-	RenderBackend.set_Constant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
+	RenderBackend.SetConstant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -37,11 +37,11 @@ void CRender::render_skybox()
 {
 	OPTICK_EVENT("CRender::render_skybox");
 
-	RenderBackend.set_Render_Target_Surface(RenderTarget->rt_Generic[1]);
-	RenderBackend.set_Depth_Buffer(NULL);
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetRenderTarget(RenderTarget->rt_Generic[1]);
+	RenderBackend.SetDepthBuffer(NULL);
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
+	RenderBackend.SetColorWriteEnable();
 
 	// Draw full-screen quad textured with our scene image draw skybox
 	RenderBackend.SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -53,17 +53,17 @@ void CRender::precombine_scene()
 {
 	OPTICK_EVENT("CRender::combine_additional_postprocess");
 
-	RenderBackend.set_CullMode(CULL_DISABLE);
-	RenderBackend.set_Stencil(FALSE);
-	RenderBackend.set_ColorWriteEnable();
+	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackend.SetStencil(FALSE);
+	RenderBackend.SetColorWriteEnable();
 
 	float additional_ambient = 0.0f;
 
 	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
 		additional_ambient = 0.5f;
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
-	RenderBackend.set_Constant("additional_ambient", additional_ambient);
+	RenderBackend.SetShaderElement(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
+	RenderBackend.SetConstant("additional_ambient", additional_ambient);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -109,18 +109,18 @@ void CRender::combine_scene_lighting()
 		_RELEASE(e1);
 	}
 
-	RenderBackend.set_Element(RenderTarget->s_combine->E[SE_COMBINE_SCENE]);
-	RenderBackend.set_Constant("additional_ambient", additional_ambient);
-	RenderBackend.set_Constant("debug_mode", ps_r_debug_render);
-	RenderBackend.set_Constant("ambient_color", ambclr);
-	RenderBackend.set_Constant("env_color", envclr);
-	RenderBackend.set_CullMode(CULL_DISABLE);
+	RenderBackend.SetShaderElement(RenderTarget->s_combine->E[SE_COMBINE_SCENE]);
+	RenderBackend.SetConstant("additional_ambient", additional_ambient);
+	RenderBackend.SetConstant("debug_mode", ps_r_debug_render);
+	RenderBackend.SetConstant("ambient_color", ambclr);
+	RenderBackend.SetConstant("env_color", envclr);
+	RenderBackend.SetCullMode(CULL_DISABLE);
 	// stencil should be >= 1, we don't touch sky pixels
-	RenderBackend.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], RenderBackend.GetBaseZB());
 	//
 	// #ifdef DEBUG
-	//	RenderBackend.set_CullMode(CULL_BACKFACE);
+	//	RenderBackend.SetCullMode(CULL_BACKFACE);
 	//	static xr_vector<Fplane> saved_dbg_planes;
 	//	if (bDebug)
 	//		saved_dbg_planes = dbg_planes;

@@ -62,7 +62,7 @@ void CStatGraph::RenderBack()
 	// render
 	dwCount = u32(pv - pv_start);
 	RenderBackend.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
-	RenderBackend.set_Geometry(hGeomTri);
+	RenderBackend.SetGeometry(hGeomTri);
 	RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
 
 	// draw rect
@@ -82,7 +82,7 @@ void CStatGraph::RenderBack()
 	// render
 	dwCount = u32(pv - pv_start);
 	RenderBackend.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
-	RenderBackend.set_Geometry(hGeomLine);
+	RenderBackend.SetGeometry(hGeomLine);
 	RenderBackend.Render(D3DPT_LINESTRIP, dwOffset, 4);
 
 	// draw grid
@@ -135,7 +135,7 @@ void CStatGraph::RenderBack()
 
 	dwCount = u32(pv - pv_start);
 	RenderBackend.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
-	RenderBackend.set_Geometry(hGeomLine);
+	RenderBackend.SetGeometry(hGeomLine);
 	RenderBackend.Render(D3DPT_LINELIST, dwOffset, dwCount / 2);
 };
 
@@ -338,7 +338,7 @@ void CStatGraph::OnRender()
 		};
 		dwCount = u32(pv_Tri - pv_Tri_start);
 		RenderBackend.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
-		RenderBackend.set_Geometry(hGeomTri);
+		RenderBackend.SetGeometry(hGeomTri);
 		RenderBackend.Render(D3DPT_TRIANGLELIST, dwOffsetTri, 0, dwCount, 0, dwCount / 2);
 	};
 
@@ -362,7 +362,7 @@ void CStatGraph::OnRender()
 
 		dwCount = u32(pv_Line - pv_Line_start);
 		RenderBackend.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
-		RenderBackend.set_Geometry(hGeomLine);
+		RenderBackend.SetGeometry(hGeomLine);
 		RenderBackend.Render(D3DPT_LINELIST, dwOffsetLine, dwCount / 2);
 	};
 
@@ -378,7 +378,7 @@ void CStatGraph::OnRender()
 
 		dwCount = u32(pv_Line - pv_Line_start);
 		RenderBackend.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
-		RenderBackend.set_Geometry(hGeomLine);
+		RenderBackend.SetGeometry(hGeomLine);
 		RenderBackend.Render(D3DPT_LINELIST, dwOffsetLine, dwCount / 2);
 	}
 };

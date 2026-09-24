@@ -413,8 +413,7 @@ void CDemoPlay::SaveBenchmarkResults()
 	W->w_string("======================================================================");
 	sprintf(tmp, " BENCHMARK REPORT: %s", demo_file_name);
 	W->w_string(tmp);
-	sprintf(tmp, " Date: %02d.%02d.%04d Time: %02d:%02d:%02d", now->tm_mday, now->tm_mon + 1, now->tm_year + 1900,
-			now->tm_hour, now->tm_min, now->tm_sec);
+	sprintf(tmp, " Date: %02d.%02d.%04d Time: %02d:%02d:%02d", now->tm_mday, now->tm_mon + 1, now->tm_year + 1900, now->tm_hour, now->tm_min, now->tm_sec);
 	W->w_string(tmp);
 	W->w_string("======================================================================");
 	W->w_string("");
@@ -422,7 +421,7 @@ void CDemoPlay::SaveBenchmarkResults()
 	// Инфо о системе
 	W->w_string("[ System Information ]");
 	// GPU
-	sprintf(tmp, " GPU: %s", RHI()->GetDeviceCaps().Description.c_str());
+	sprintf(tmp, " GPU: %s", RenderBackend.GetDeviceCaps().Description.c_str());
 	W->w_string(tmp);
 	// CPU - В движке X-Ray обычно доступно через CPU::ID.cpu_name или аналог,
 	// но если его нет под рукой, оставим GPU.
@@ -511,7 +510,7 @@ void CDemoPlay::PrintSummaryBenchmarkStatistic()
 	Engine.FontManager.GetSystemFont()->OutNext("FPS Minimal: %f", fFPS_min);
 
 	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(255, 255, 255, 255));
-	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", RHI()->GetDeviceCaps().Description.c_str());
+	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", RenderBackend.GetDeviceCaps().Description.c_str());
 
 	if(Engine.TimeManager.GetGlobalTimeMs() > uTimeToScreenShot)
 		Engine.FontManager.GetSystemFont()->OutNext("Results saved to screenshots and log folder");
@@ -603,6 +602,6 @@ void CDemoPlay::ShowPerFrameStatistic()
 	Engine.FontManager.GetSystemFont()->OutNext("FPS Minimal: %.2f", fFPS_min);
 
 	Engine.FontManager.GetSystemFont()->SetColor(color_rgba(200, 200, 200, 255));
-	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", RHI()->GetDeviceCaps().Description.c_str());
+	Engine.FontManager.GetSystemFont()->OutNext("GPU: %s", RenderBackend.GetDeviceCaps().Description.c_str());
 }
 //////////////////////////////////////////////////////////////////////

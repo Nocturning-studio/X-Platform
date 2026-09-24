@@ -1,14 +1,12 @@
 #include "pch.h"
 #include "xrRHI_Debug.h"
 
-RHI_BEGIN
 XRRHI_API const char* WinErrorToString(long code)
 {
 	static char buffer[1024];
 
 	DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-	DWORD result = FormatMessageA(flags, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer,
-								  sizeof(buffer), nullptr);
+	DWORD result = FormatMessageA(flags, nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, sizeof(buffer), nullptr);
 
 	if(result == 0)
 		return "Unknown error";
@@ -35,4 +33,3 @@ XRRHI_API void __cdecl Print(const char* format, ...)
 		printf("%s\n", buf);
 	}
 }
-RHI_END

@@ -282,7 +282,7 @@ class CShaderDependencyManager
 };
 
 //----------------------------------------------------------------
-class CShaderIncluder : public ID3DXInclude
+class CShaderIncluderLegacy : public ID3DXInclude
 {
   private:
 	u32 counter = 0;
@@ -439,7 +439,7 @@ T* CResourceManager::CreateShader(const char* _name, const char* _entry, CShader
 
 	const char* type = ShaderTypeTraits<T>::GetShaderType();
 	string32 c_target;
-	sprintf_s(c_target, sizeof c_target, "%s_%u_%u", type, RHI()->GetDeviceCaps().PixelShaderMajor, RHI()->GetDeviceCaps().PixelShaderMinor);
+	sprintf_s(c_target, sizeof c_target, "%s_%u_%u", type, RenderBackend.GetDeviceCaps().PixelShaderMajor, RenderBackend.GetDeviceCaps().PixelShaderMinor);
 
 	HRESULT _hr = CompileShader(_name, ext, (LPCSTR)file->pointer(), file->length(), c_target, actual_entry, macros, (T*&)sh);
 
@@ -642,7 +642,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 		}
 	}
 
-	CShaderIncluder Includer;
+	CShaderIncluderLegacy Includer;
 	ID3DXBuffer* pShaderBuf = NULL;
 	ID3DXBuffer* pErrorBuf = NULL;
 	ID3DXConstantTable* pConstants = NULL;

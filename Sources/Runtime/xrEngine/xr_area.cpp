@@ -198,7 +198,7 @@ void CObjectSpace::dbgRender()
 {
 	R_ASSERT(bDebug);
 
-	RenderBackend.set_Shader(sh_debug);
+	RenderBackend.SetShader(sh_debug);
 	for(u32 i = 0; i < q_debug.boxes.size(); i++)
 	{
 		Fobb& obb = q_debug.boxes[i];

@@ -14,7 +14,7 @@ class ENGINE_API CRT : public xr_resource_named
 
 	u32 dwWidth;
 	u32 dwHeight;
-	xrRHI::RHI_Format fmt;
+	RHI_Format fmt;
 	D3DFORMAT d3dfmt;
 
 	u64 _order;
@@ -22,10 +22,10 @@ class ENGINE_API CRT : public xr_resource_named
 	CRT();
 	~CRT();
 
-	void create(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
+	void create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels = 1);
 	void destroy();
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 	IC BOOL valid()
 	{
 		return !!pTexture;
@@ -94,7 +94,7 @@ class ENGINE_API CRT : public xr_resource_named
 
 struct ENGINE_API resptrcode_crt : public resptr_base<CRT>
 {
-	void create(LPCSTR Name, u32 w, u32 h, xrRHI::RHI_Format f, u32 levels = 1);
+	void create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels = 1);
 	void destroy()
 	{
 		_set(NULL);
@@ -111,7 +111,7 @@ class ENGINE_API CRTC : public xr_resource_named
 	ref_texture pTexture;
 
 	u32 dwSize;
-	xrRHI::RHI_Format fmt;
+	RHI_Format fmt;
 	D3DFORMAT d3dfmt;
 
 	u64 _order;
@@ -119,10 +119,10 @@ class ENGINE_API CRTC : public xr_resource_named
 	CRTC();
 	~CRTC();
 
-	void create(LPCSTR name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
+	void create(LPCSTR name, u32 size, RHI_Format f, u32 levels = 1);
 	void destroy();
-	void reset_begin();
-	void reset_end();
+	void ResetBegin();
+	void ResetEnd();
 	IC BOOL valid()
 	{
 		return !pTexture;
@@ -184,7 +184,7 @@ class ENGINE_API CRTC : public xr_resource_named
 
 struct ENGINE_API resptrcode_crtc : public resptr_base<CRTC>
 {
-	void create(LPCSTR Name, u32 size, xrRHI::RHI_Format f, u32 levels = 1);
+	void create(LPCSTR Name, u32 size, RHI_Format f, u32 levels = 1);
 	void destroy()
 	{
 		_set(NULL);

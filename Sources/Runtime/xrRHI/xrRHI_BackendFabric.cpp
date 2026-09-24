@@ -4,12 +4,12 @@
 
 extern "C"
 {
-	XRRHI_API xrRHI::IRenderBackend* CreateRenderBackend(xrRHI::BackendType type)
+	XRRHI_API IRenderBackend* CreateRenderBackend(RHI_BackendType type)
 	{
 		switch(type)
 		{
-		case xrRHI::BackendType::DirectX9:
-			return new xrRHI::CRenderBackendDX9();
+		case RHI_BackendType::DirectX9:
+			return new CRenderBackendDX9();
 		default:
 			return nullptr;
 		}
