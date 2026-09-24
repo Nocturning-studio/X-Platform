@@ -176,13 +176,11 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 		pModeEx = &ModeEx;
 	}
 
-	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing | D3DCREATE_MULTITHREADED,
-								&m_PP, pModeEx, &m_pDevice);
+	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing | D3DCREATE_MULTITHREADED, &m_PP, pModeEx, &m_pDevice);
 	if(FAILED(hr))
 	{
 		Print("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
-		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx,
-									&m_pDevice);
+		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx, &m_pDevice);
 		if(FAILED(hr))
 		{
 			Print("! [DX9] Second attempt failed (0x%08x)", hr);
@@ -194,8 +192,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight,
-		  params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
+	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
 	return true;
 }
 

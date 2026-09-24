@@ -7,23 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::clear_gbuffer()
 {
-	RenderBackend.SetRenderTarget(RenderTarget->rt_GBuffer[0],
-											RenderTarget->rt_GBuffer[1],
-											RenderTarget->rt_GBuffer[2]);
-
+	RenderBackend.SetRenderTarget(RenderTarget->rt_GBuffer[0], RenderTarget->rt_GBuffer[1], RenderTarget->rt_GBuffer[2]);
 	RenderBackend.SetDepthBuffer(RenderBackend.GetBaseZB());
-
-	CHK_DX(RenderBackend.GetDevice()->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+	RenderBackend.Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L);
 }
 
 void CRender::set_gbuffer()
 {
-	////OPTICK_EVENT("CRenderTarget::set_gbuffer");
-
-	RenderBackend.SetRenderTarget(RenderTarget->rt_GBuffer[0],
-											RenderTarget->rt_GBuffer[1],
-											RenderTarget->rt_GBuffer[2]);
-
+	RenderBackend.SetRenderTarget(RenderTarget->rt_GBuffer[0], RenderTarget->rt_GBuffer[1], RenderTarget->rt_GBuffer[2]);
 	RenderBackend.SetDepthBuffer(RenderBackend.GetBaseZB());
 
 	// Stencil - write 0x1 at pixel pos

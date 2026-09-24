@@ -456,7 +456,7 @@ void CRender::set_render_mode(int mode)
 
 	IRender_Target* T = getTarget();
 	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), ZMin, ZMax};
-	CHK_DX(RenderBackend.GetDevice()->SetViewport(&VP));
+	RenderBackend.SetViewport(VP);
 }
 
 #include "..\xrEngine\GameFont.h"
@@ -467,8 +467,7 @@ void CRender::Statistics(CGameFont* _F)
 	F.OutNext(" **** LT:%2d,LV:%2d **** ", stats.l_total, stats.l_visible);
 	stats.l_visible = 0;
 	F.OutNext("    S(%2d)   | (%2d)NS   ", stats.l_shadowed, stats.l_unshadowed);
-	F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used,
-			  stats.s_finalclip);
+	F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used, stats.s_finalclip);
 	stats.s_used = 0;
 	stats.s_merged = 0;
 	stats.s_finalclip = 0;

@@ -20,6 +20,8 @@ const u32 CLEAR_RENDERTARGET = D3DCLEAR_TARGET;
 const u32 CLEAR_ZBUFFER = D3DCLEAR_ZBUFFER;
 const u32 CLEAR_STENCIL = D3DCLEAR_STENCIL;
 
+const u32 ALLOW_COLOR_WRITE = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA;
+
 struct R_statistics_element
 {
 	u32 verts, dips;
@@ -42,6 +44,29 @@ struct R_statistics
 	R_statistics_element s_dynamic_inst;
 	R_statistics_element s_dynamic_1B;
 	R_statistics_element s_dynamic_2B;
+};
+
+class ENGINE_API CSurfaceLock
+{
+	IDirect3DSurface9* m_pSurface = nullptr;
+	D3DLOCKED_RECT     m_Rect{};
+public:
+	CSurfaceLock(IDirect3DSurface9* pSurface, DWORD Flags = D3DLOCK_NOSYSLOCK) : m_pSurface(pSurface)
+	{
+		if (m_pSurface)
+			R_CHK(m_pSurface->LockRect(&m_Rect, nullptr, Flags));
+	}
+	~CSurfaceLock()
+	{
+		if (m_pSurface)
+			m_pSurface->UnlockRect();
+	}
+	CSurfaceLock(const CSurfaceLock&) = delete;
+	CSurfaceLock& operator=(const CSurfaceLock&) = delete;
+
+	bool Valid() const { return m_pSurface != nullptr; }
+	u32* Bits()  const { return static_cast<u32*>(m_Rect.pBits); }
+	u32  Pitch() const { return static_cast<u32>(m_Rect.Pitch); }
 };
 
 class ENGINE_API CRenderBackendFacade
@@ -102,12 +127,24 @@ class ENGINE_API CRenderBackendFacade
 	CRenderBackendFacade();
 	~CRenderBackendFacade();
 
+	// Device & frame
+	void CreateQuadIB();
+	void OnFrameBegin();
+	void Present();
+	void OnFrameEnd();
+	void OnDeviceCreate();
+	void OnDeviceDestroy();
+	void DeleteResources();
+	void ResetBegin();
+	void ResetEnd();
+
 	// Device access
 	DEPRECATED IDirect3DDevice9Ex* GetDevice() const { return m_pDevice; }
 	DEPRECATED IDirect3D9Ex* GetD3D() const { return m_pD3D; }
 	IDirect3DSurface9* GetBaseRT() const { return m_pBaseRT; }
 	IDirect3DSurface9* GetBaseZB() const { return m_pBaseZB; }
 	IRenderBackend* GetRHI() const { return m_pRHI; }
+	const RHIDeviceCaps& GetDeviceCaps() const { return m_pRHI->GetDeviceCaps(); }
 
 	// Initialization
 	void Create(HWND hWnd);
@@ -123,10 +160,7 @@ class ENGINE_API CRenderBackendFacade
 	void RestoreRenderState();
 
 	// Active texture info
-	IC CTexture* GetActiveTexture(u32 stage)
-	{
-		return m_resBinder.GetActiveTexture(stage);
-	}
+	IC CTexture* GetActiveTexture(u32 stage) { return m_resBinder.GetActiveTexture(stage); }
 
 	// Transform API (implementations remain in R_Backend_Runtime.h or .cpp)
 	IC void SetTransformWorld(const fmat4x4& M);
@@ -137,39 +171,29 @@ class ENGINE_API CRenderBackendFacade
 	IC const fmat4x4& GetTransformProject();
 
 	// --- Pipeline state (delegated to m_stateCache) ---
-	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0)
-	{
-		m_stateCache.SetRenderTarget(GetDevice(), RT, ID);
-	}
-	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB)
-	{
-		m_stateCache.SetDepthStencil(GetDevice(), ZB);
-	}
-	IC void SetStencil(u32 _enable, u32 _func = D3DCMP_ALWAYS, u32 _ref = 0x00, u32 _mask = 0x00,
-						u32 _writemask = 0x00, u32 _fail = D3DSTENCILOP_KEEP, u32 _pass = D3DSTENCILOP_KEEP,
-						u32 _zfail = D3DSTENCILOP_KEEP)
+	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0) { m_stateCache.SetRenderTarget(GetDevice(), RT, ID); }
+	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB) { m_stateCache.SetDepthStencil(GetDevice(), ZB); }
+	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable(GetDevice(), _mask); }
+	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(GetDevice(), state); }
+	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode(GetDevice(), _mode); }
+	IC void SetScissor(Irect* rect = NULL) { m_stateCache.SetScissor(GetDevice(), (const RECT*)rect); }
+
+	ICF void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value) { m_stateCache.SetRawRenderState(GetDevice(), State, Value); }
+	IC void SetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value) { CHK_DX(m_pDevice->SetSamplerState(Sampler, Type, Value)); }
+	IC void GetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD* Value) { CHK_DX(m_pDevice->GetSamplerState(Sampler, Type, Value)); }
+	IC void SetViewport(const D3DVIEWPORT9& VP) { CHK_DX(m_pDevice->SetViewport(&VP)); }
+	IC void GetViewport(D3DVIEWPORT9* VP) { CHK_DX(m_pDevice->GetViewport(VP)); }
+
+	IC void SetStencil(u32 _enable, 
+					u32 _func = D3DCMP_ALWAYS, 
+					u32 _ref = 0x00, 
+					u32 _mask = 0x00, 
+					u32 _writemask = 0x00, 
+					u32 _fail = D3DSTENCILOP_KEEP, 
+					u32 _pass = D3DSTENCILOP_KEEP, 
+					u32 _zfail = D3DSTENCILOP_KEEP)
 	{
 		m_stateCache.SetStencil(GetDevice(), _enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
-	}
-	IC void SetColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA)
-	{
-		m_stateCache.SetColorWriteEnable(GetDevice(), _mask);
-	}
-	IC void SetDepthWriteEnable(bool state)
-	{
-		m_stateCache.SetDepthWriteEnable(GetDevice(), state);
-	}
-	IC void SetCullMode(u32 _mode)
-	{
-		m_stateCache.SetCullMode(GetDevice(), _mode);
-	}
-	IC void SetScissor(Irect* rect = NULL)
-	{
-		m_stateCache.SetScissor(GetDevice(), (const RECT*)rect);
-	}
-	ICF void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
-	{
-		m_stateCache.SetRawRenderState(GetDevice(), State, Value);
 	}
 
 	// Blend helpers (delegated)
@@ -193,10 +217,103 @@ class ENGINE_API CRenderBackendFacade
 	void SetAnisotropyFiltering(int max_anisothropy);
 
 	// --- Resource binding (delegated to m_resBinder) ---
-	IC void SetConstants(R_constant_table* C)
+	IC void CreateVertexBuffer(u32 Length, 
+							   u32 Usage, 
+							   u32 FVF, 
+							   D3DPOOL Pool, 
+							   IDirect3DVertexBuffer9** ppVB, 
+							   HANDLE* pSharedHandle = NULL)
 	{
-		m_resBinder.SetConstantTable(*this, C, transforms);
+		R_CHK(m_pDevice->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVB, pSharedHandle));
 	}
+	IC void CreateIndexBuffer(u32 Length, 
+							  u32 Usage, 
+							  D3DFORMAT Format, 
+							  D3DPOOL Pool, 
+							  IDirect3DIndexBuffer9** ppIB, 
+							  HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateIndexBuffer(Length, Usage, Format, Pool, ppIB, pSharedHandle));
+	}
+
+	IC void CreateTexture(u32 Width, 
+						  u32 Height, 
+						  u32 Levels, 
+						  DWORD Usage, 
+						  D3DFORMAT Format, 
+						  D3DPOOL Pool, 
+						  IDirect3DTexture9** ppTexture, 
+						  HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle));
+	}
+	IC void CreateCubeTexture(u32 EdgeLength, 
+							  u32 Levels, 
+							  DWORD Usage, 
+							  D3DFORMAT Format, 
+							  D3DPOOL Pool, 
+							  IDirect3DCubeTexture9** ppCubeTexture, 
+							  HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture, pSharedHandle));
+	}
+
+	IC void GetRenderTargetData(IDirect3DSurface9* pRenderTarget, IDirect3DSurface9* pDestSurface);
+
+	IC IDirect3DSurface9* GetSurfaceLevel(IDirect3DTexture9* pTex, u32 Level)
+	{
+		IDirect3DSurface9* pSurf = nullptr;
+		R_CHK(pTex->GetSurfaceLevel(Level, &pSurf));
+		return pSurf;
+	}
+	IC IDirect3DSurface9* GetCubeMapSurface(IDirect3DCubeTexture9* pTex, D3DCUBEMAP_FACES Face, u32 Level)
+	{
+		IDirect3DSurface9* pSurf = nullptr;
+		R_CHK(pTex->GetCubeMapSurface(Face, Level, &pSurf));
+		return pSurf;
+	}
+
+	// --- Blit with format conversion (D3DX under the hood because StretchRect
+	//     cannot convert to compressed / extended formats and cannot read from
+	//     D3DPOOL_SYSTEMMEM sources) ---
+	IC void BlitSurface(IDirect3DSurface9* pDst, IDirect3DSurface9* pSrc)
+	{
+		R_CHK(D3DXLoadSurfaceFromSurface(pDst, nullptr, nullptr,
+										 pSrc, nullptr, nullptr,
+										 D3DX_DEFAULT, NULL));
+	}
+
+	// --- Serialization to memory (for FS write-out) ---
+	IC void SaveSurfaceToMemory(ID3DXBuffer** ppOut, D3DXIMAGE_FILEFORMAT Format, IDirect3DSurface9* pSurf)
+	{
+		R_CHK(D3DXSaveSurfaceToFileInMemory(ppOut, Format, pSurf, nullptr, nullptr));
+	}
+	IC void SaveTextureToMemory(ID3DXBuffer** ppOut, D3DXIMAGE_FILEFORMAT Format, IDirect3DBaseTexture9* pTex)
+	{
+		R_CHK(D3DXSaveTextureToFileInMemory(ppOut, Format, pTex, nullptr));
+	}
+
+	IDirect3DSurface9* CaptureBackBuffer();
+
+	// --- Pixel-level post-processing for screenshots ---
+	// Единственная причина, по которой нужен LockRect: после GetRenderTargetData
+	// альфа-канал в системной поверхности неопределён. Приводим его к 0xFF.
+	void MakeOpaque(IDirect3DSurface9* pSurface, u32 Width, u32 Height)
+	{
+		CSurfaceLock lock(pSurface);
+		if (!lock.Valid())
+			return;
+
+		u32* pPixel = lock.Bits();
+		u32* pEnd = pPixel + (Width * Height);
+		for (; pPixel != pEnd; ++pPixel)
+		{
+			u32 p = *pPixel;
+			*pPixel = color_xrgb(color_get_R(p), color_get_G(p), color_get_B(p));
+		}
+	}
+
+	IC void SetConstants(R_constant_table* C) { m_resBinder.SetConstantTable(*this, C, transforms); }
 	IC void SetConstants(ref_ctable& CTable) { SetConstants(&*CTable); }
 
 	void SetTextures(STextureList* T);
@@ -307,17 +424,6 @@ class ENGINE_API CRenderBackendFacade
 	ICF void Apply(u32 countV, u32 PC);
 	ICF void Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 	ICF void Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
-
-	// Device & frame
-	void CreateQuadIB();
-	void OnFrameBegin();
-	void Present();
-	void OnFrameEnd();
-	void OnDeviceCreate();
-	void OnDeviceDestroy();
-	void DeleteResources();
-	void ResetBegin();
-	void ResetEnd();
 
 	// Debug (temporary direct D3D calls, will be moved to CDebugRenderer)
 	void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);

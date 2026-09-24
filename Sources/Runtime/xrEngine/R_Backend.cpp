@@ -200,6 +200,9 @@ void CRenderBackendFacade::Create(HWND m_hWnd)
 	m_pBaseRT->GetDesc(&desc);
 	Msg("* Backbuffer real size: %dx%d", desc.Width, desc.Height);
 
+	Device.dwWidth = desc.Width;
+	Device.dwHeight = desc.Height;
+
 	D3DVIEWPORT9 vp;
 	vp.X = 0;
 	vp.Y = 0;
@@ -308,6 +311,9 @@ void CRenderBackendFacade::Reset()
 	D3DSURFACE_DESC desc;
 	m_pBaseRT->GetDesc(&desc);
 	Msg("* Backbuffer real size: %dx%d", desc.Width, desc.Height);
+
+	Device.dwWidth = desc.Width;
+	Device.dwHeight = desc.Height;
 
 	D3DVIEWPORT9 vp;
 	vp.X = 0;
@@ -502,20 +508,20 @@ D3DBLEND CRenderBackendFacade::GetDstBlend() const
 
 void CRenderBackendFacade::EnableAnisotropyFiltering()
 {
-	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic));
+	for(u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+		SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic);
 }
 
 void CRenderBackendFacade::DisableAnisotropyFiltering()
 {
-	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1));
+	for(u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+		SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1);
 }
 
 void CRenderBackendFacade::SetAnisotropyFiltering(int max_anisothropy)
 {
-	for(u32 i = 0; i < RHI()->GetDeviceCaps().MaxSimultaneousTextures; i++)
-		CHK_DX(m_pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy));
+	for(u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+		SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy);
 }
 
 void CRenderBackendFacade::Invalidate()
@@ -941,4 +947,50 @@ void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, RECT src_rect,
 		return;
 
 	RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+}
+
+
+void CRenderBackendFacade::GetRenderTargetData(IDirect3DSurface9* pRenderTarget, IDirect3DSurface9* pDestSurface)
+{
+	D3DSURFACE_DESC srcDesc{}, dstDesc{};
+	if (SUCCEEDED(pRenderTarget->GetDesc(&srcDesc)) && SUCCEEDED(pDestSurface->GetDesc(&dstDesc)))
+	{
+		if (srcDesc.Width != dstDesc.Width || srcDesc.Height != dstDesc.Height)
+			Msg("! GetRenderTargetData: size mismatch src=%ux%u dst=%ux%u", srcDesc.Width, srcDesc.Height, dstDesc.Width, dstDesc.Height);
+		if (dstDesc.Pool != D3DPOOL_SYSTEMMEM && dstDesc.Pool != D3DPOOL_SCRATCH)
+			Msg("! GetRenderTargetData: dst pool must be SYSTEMMEM/SCRATCH (got %d)", (int)dstDesc.Pool);
+		if (srcDesc.Format != dstDesc.Format)
+			Msg("* GetRenderTargetData: format differs src=%d dst=%d", (int)srcDesc.Format, (int)dstDesc.Format);
+	}
+	R_CHK(m_pDevice->GetRenderTargetData(pRenderTarget, pDestSurface));
+}
+
+IDirect3DSurface9* CRenderBackendFacade::CaptureBackBuffer()
+{
+	IDirect3DSurface9* pBackBuffer = nullptr;
+	R_CHK(m_pDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer));
+
+	D3DSURFACE_DESC desc;
+	R_CHK(pBackBuffer->GetDesc(&desc));
+
+	IDirect3DSurface9* pDest = nullptr;
+	HRESULT hr = m_pDevice->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pDest, nullptr);
+	if (FAILED(hr))
+	{
+		Msg("! CaptureBackBuffer: CreateOffscreenPlainSurface failed (0x%08x) for %ux%u fmt=%d", hr, desc.Width, desc.Height, (int)desc.Format);
+		_RELEASE(pBackBuffer);
+		return nullptr;
+	}
+
+	hr = m_pDevice->GetRenderTargetData(pBackBuffer, pDest);
+	if (FAILED(hr))
+	{
+		Msg("! CaptureBackBuffer: GetRenderTargetData failed (0x%08x)", hr);
+		_RELEASE(pDest);
+		_RELEASE(pBackBuffer);
+		return nullptr;
+	}
+
+	_RELEASE(pBackBuffer);
+	return pDest;
 }

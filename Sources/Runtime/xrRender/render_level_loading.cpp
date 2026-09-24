@@ -263,7 +263,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			temp_buffer.resize(byteSize);
 			fs->r(temp_buffer.data(), byteSize);
 
-			R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(byteSize, dwUsage, 0, D3DPOOL_DEFAULT, &_VB[i], 0));
+			RenderBackend.CreateVertexBuffer(byteSize, dwUsage, 0, D3DPOOL_DEFAULT, &_VB[i], 0);
 
 			void* pData = 0;
 			R_CHK(_VB[i]->Lock(0, 0, (void**)&pData, 0));
@@ -291,7 +291,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 			fs->r(temp_buffer.data(), byteSize);
 
 			void* pData = 0;
-			R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(byteSize, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &_IB[i], 0));
+			RenderBackend.CreateIndexBuffer(byteSize, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &_IB[i], 0);
 			R_CHK(_IB[i]->Lock(0, 0, (void**)&pData, 0));
 			CopyMemory(pData, temp_buffer.data(), byteSize);
 			_IB[i]->Unlock();

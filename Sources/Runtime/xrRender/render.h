@@ -327,10 +327,8 @@ class CRender : public IRender_interface, public pureFrame
 	void set_gbuffer();
 	void render_wallmarks();
 	void render_shadow_map_sun(light* L, u32 sub_phase);
-	void render_shadow_map_sun_transluent(light* L, u32 sub_phase);
 	void clear_shadow_map_spot();
 	void render_shadow_map_spot(light* L);
-	void render_shadow_map_spot_transluent(light* L);
 	void set_light_accumulator();
 	BOOL enable_scissor(light* L); // true if intersects near plane
 	float hclip(float v, float dim);

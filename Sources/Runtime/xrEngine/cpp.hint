@@ -1,0 +1,10 @@
+// Файлы указаний помогают среде IDE Visual Studio интерпретировать идентификаторы Visual C++
+// (например, имена функций и макросов).
+// Дополнительные сведения: https://go.microsoft.com/fwlink/?linkid=865984
+#define IC
+#define CHK_DX(expr) do { static bool ignore_always = false; HRESULT hr = expr; if(!ignore_always && FAILED(hr)) ::Debug.error(hr, #expr, DEBUG_INFO, ignore_always); } while(0)
+#define CHK_DX(expr) ((void)(expr))
+#define NULL
+#define NULL ((void*)0)
+#define NULL ((void *)0)
+#define ICF

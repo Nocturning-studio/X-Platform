@@ -29,7 +29,6 @@ void CRenderTarget::create_textures()
 	Msg("Creating render target textures");
 
 	// SCREENSHOT
-	R_CHK(RenderBackend.GetDevice()->CreateOffscreenPlainSurface(dwWidth, dwHeight, D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &surf_screenshot_normal, NULL));
 	R_CHK(RenderBackend.GetDevice()->CreateTexture(128, 128, 1, NULL, D3DFMT_DXT5, D3DPOOL_SYSTEMMEM, &tex_screenshot_gamesave, NULL));
 	R_CHK(tex_screenshot_gamesave->GetSurfaceLevel(0, &surf_screenshot_gamesave));
 
@@ -161,8 +160,6 @@ void CRenderTarget::delete_textures()
 
 	Msg("Destroying render target textures");
 
-	// Освобождение обычных COM-поверхностей и текстур
-	_RELEASE(surf_screenshot_normal);
 	_RELEASE(surf_screenshot_gamesave);
 	_RELEASE(tex_screenshot_gamesave);
 
