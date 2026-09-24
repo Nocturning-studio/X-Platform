@@ -199,10 +199,10 @@ void CPhotoMode::MakeCubeMapFace(fvec3& D, fvec3& N)
 	case 5:
 		N.set(cmNorm[m_Stage]);
 		D.set(cmDir[m_Stage]);
-		Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
+		Render->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
 		break;
 	case 6:
-		Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
+		Render->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
 		N.set(m_Camera.j);
 		D.set(m_Camera.k);
 		m_bMakeCubeMap = FALSE;

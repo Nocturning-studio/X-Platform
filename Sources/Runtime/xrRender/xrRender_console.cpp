@@ -380,7 +380,7 @@ class CCC_Screenshot : public IConsole_Command
 		name[0] = 0;
 		sscanf(args, "%s", name);
 		LPCSTR image = xr_strlen(name) ? name : 0;
-		::Render->Screenshot(IRender_interface::SM_NORMAL, image);
+		::Render->Screenshot(IRender_interface::ScreenshotMode::SM_NORMAL, image);
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////

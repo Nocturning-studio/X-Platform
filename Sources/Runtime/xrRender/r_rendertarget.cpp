@@ -28,10 +28,6 @@ void CRenderTarget::create_textures()
 {
 	Msg("Creating render target textures");
 
-	// SCREENSHOT
-	R_CHK(RenderBackend.GetDevice()->CreateTexture(128, 128, 1, NULL, D3DFMT_DXT5, D3DPOOL_SYSTEMMEM, &tex_screenshot_gamesave, NULL));
-	R_CHK(tex_screenshot_gamesave->GetSurfaceLevel(0, &surf_screenshot_gamesave));
-
 	// G-Buffer
 	rt_GBuffer[0].create(r_RT_GBuffer_1, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
 	rt_GBuffer[1].create(r_RT_GBuffer_2, dwWidth, dwHeight, RHI_Format::RGBA8_UNORM);
@@ -159,9 +155,6 @@ void CRenderTarget::delete_textures()
 		return;
 
 	Msg("Destroying render target textures");
-
-	_RELEASE(surf_screenshot_gamesave);
-	_RELEASE(tex_screenshot_gamesave);
 
 	// G-Buffer
 	for(int i = 0; i < 4; ++i)

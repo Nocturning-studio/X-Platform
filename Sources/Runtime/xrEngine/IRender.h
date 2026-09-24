@@ -148,7 +148,7 @@ class ENGINE_API IEffectorsManager
 class ENGINE_API IRender_interface
 {
   public:
-	enum ScreenshotMode
+	enum class ScreenshotMode : u32
 	{
 		SM_NORMAL = 0,		 // jpeg\png,	name ignored
 		SM_FOR_CUBEMAP = 1,	 // tga,		name used as postfix
@@ -250,7 +250,7 @@ class ENGINE_API IRender_interface
 	// Main
 	virtual void Calculate() = 0;
 	virtual void Render() = 0;
-	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) = 0;
+	virtual void Screenshot(ScreenshotMode mode = ScreenshotMode::SM_NORMAL, LPCSTR name = 0) = 0;
 
 	virtual bool is_dynamic_sun_enabled() = 0;
 

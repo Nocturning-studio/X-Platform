@@ -400,7 +400,7 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void Calculate() override;
 	void prepare_to_render();
 	virtual void Render() override;
-	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) override;
+	virtual void Screenshot(ScreenshotMode mode = ScreenshotMode::SM_NORMAL, LPCSTR name = 0) override;
 	virtual void OnFrame() override;
 
 	virtual u32 memory_usage()

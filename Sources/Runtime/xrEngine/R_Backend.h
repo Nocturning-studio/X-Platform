@@ -98,6 +98,8 @@ class ENGINE_API CRenderBackendFacade
 	CStateCache m_stateCache;
 	CBackendResourceBinder m_resBinder;
 
+	mutable std::recursive_mutex m_d3dxMutex;
+
   private:
 	void Invalidate();
 
@@ -278,6 +280,7 @@ class ENGINE_API CRenderBackendFacade
 	//     D3DPOOL_SYSTEMMEM sources) ---
 	IC void BlitSurface(IDirect3DSurface9* pDst, IDirect3DSurface9* pSrc)
 	{
+		std::lock_guard<std::recursive_mutex> lk(m_d3dxMutex);
 		R_CHK(D3DXLoadSurfaceFromSurface(pDst, nullptr, nullptr,
 										 pSrc, nullptr, nullptr,
 										 D3DX_DEFAULT, NULL));
@@ -286,32 +289,16 @@ class ENGINE_API CRenderBackendFacade
 	// --- Serialization to memory (for FS write-out) ---
 	IC void SaveSurfaceToMemory(ID3DXBuffer** ppOut, D3DXIMAGE_FILEFORMAT Format, IDirect3DSurface9* pSurf)
 	{
+		std::lock_guard<std::recursive_mutex> lk(m_d3dxMutex);
 		R_CHK(D3DXSaveSurfaceToFileInMemory(ppOut, Format, pSurf, nullptr, nullptr));
 	}
 	IC void SaveTextureToMemory(ID3DXBuffer** ppOut, D3DXIMAGE_FILEFORMAT Format, IDirect3DBaseTexture9* pTex)
 	{
+		std::lock_guard<std::recursive_mutex> lk(m_d3dxMutex);
 		R_CHK(D3DXSaveTextureToFileInMemory(ppOut, Format, pTex, nullptr));
 	}
 
 	IDirect3DSurface9* CaptureBackBuffer();
-
-	// --- Pixel-level post-processing for screenshots ---
-	// Единственная причина, по которой нужен LockRect: после GetRenderTargetData
-	// альфа-канал в системной поверхности неопределён. Приводим его к 0xFF.
-	void MakeOpaque(IDirect3DSurface9* pSurface, u32 Width, u32 Height)
-	{
-		CSurfaceLock lock(pSurface);
-		if (!lock.Valid())
-			return;
-
-		u32* pPixel = lock.Bits();
-		u32* pEnd = pPixel + (Width * Height);
-		for (; pPixel != pEnd; ++pPixel)
-		{
-			u32 p = *pPixel;
-			*pPixel = color_xrgb(color_get_R(p), color_get_G(p), color_get_B(p));
-		}
-	}
 
 	IC void SetConstants(R_constant_table* C) { m_resBinder.SetConstantTable(*this, C, transforms); }
 	IC void SetConstants(ref_ctable& CTable) { SetConstants(&*CTable); }

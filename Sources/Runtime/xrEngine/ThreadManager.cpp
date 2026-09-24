@@ -120,6 +120,14 @@ void CThreadManager::Initialize()
 		m_workerThreadIds[i] = ctx.Thread.get_id();
 	}
 
+	m_backgroundThread = std::thread([this]()
+	{
+		OPTICK_THREAD("X-RAY Background");
+		SetThreadName("X-RAY Background");
+		InitializeThread();
+		BackgroundThreadProc();
+	});
+
 	OPTICK_THREAD("X-RAY Primary Thread");
 	m_isInitialized = true;
 }
@@ -156,6 +164,14 @@ void CThreadManager::Destroy()
 		ctx.ShouldWake = false;
 		ctx.FrameCompleted = false;
 	}
+
+	{
+		std::lock_guard<std::mutex> lock(m_backgroundMutex);
+		m_backgroundCV.notify_all();
+	}
+
+	if (m_backgroundThread.joinable())
+		m_backgroundThread.join();
 
 	m_tasksGeneral.clear();
 	m_tasksAI.clear();
@@ -271,6 +287,43 @@ void CThreadManager::WorkerThreadProc(void* context)
 	}
 }
 
+void CThreadManager::BackgroundThreadProc()
+{
+	while (true)
+	{
+		BackgroundItem item;
+		{
+			std::unique_lock<std::mutex> lock(m_backgroundMutex);
+			m_backgroundCV.wait(lock, [this]
+				{
+					return m_shouldExit.load() || !m_backgroundQueue.empty();
+				});
+
+			if (m_backgroundQueue.empty())
+			{
+				if (m_shouldExit.load())
+					return;
+				continue;
+			}
+
+			item = m_backgroundQueue.top();
+			m_backgroundQueue.pop();
+		}
+
+		if (item.Delegate)
+		{
+			try
+			{
+				item.Delegate();
+			}
+			catch (...)
+			{
+				Msg("! CThreadManager: background task %llu threw an exception", (unsigned long long)item.Id);
+			}
+		}
+	}
+}
+
 void CThreadManager::SignalFrameStart()
 {
 	// Сбрасываем атомарные счетчики
@@ -379,6 +432,22 @@ std::future<void> CThreadManager::AddParallelTaskWithFuture(const ParallelTask& 
 	}
 
 	return future;
+}
+
+CThreadManager::TaskID CThreadManager::AddBackgroundTask(const ParallelTask& delegate, TaskPriority priority)
+{
+	BackgroundItem item;
+	item.Id = m_nextTaskId.fetch_add(1);
+	item.Delegate = delegate;
+	item.Priority = priority;
+
+	{
+		std::lock_guard<std::mutex> lock(m_backgroundMutex);
+		m_backgroundQueue.push(item);
+	}
+	m_backgroundCV.notify_one();
+
+	return item.Id;
 }
 
 void CThreadManager::RemoveParallelTask(TaskID id)
