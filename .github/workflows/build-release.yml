@@ -38,6 +38,41 @@ jobs:
     - name: Build Release (Win32)
       run: msbuild Engine\xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142 /m
 
+    - name: Read version from file
+      if: github.event_name == 'push'
+      shell: pwsh
+      run: |
+        $versionFile = "Engine/version.txt"
+        if (-not (Test-Path $versionFile)) {
+          Write-Error "Version file '$versionFile' not found in repository root"
+          exit 1
+        }
+
+        $version = (Get-Content $versionFile -Raw).Trim()
+        if ([string]::IsNullOrWhiteSpace($version)) {
+          Write-Error "Version file is empty"
+          exit 1
+        }
+
+        # Убираем возможный префикс 'v' для дальнейшей обработки
+        $versionClean = $version -replace '^v', ''
+
+        Write-Output "VERSION=$versionClean" >> $env:GITHUB_ENV
+        Write-Output "TAG=v$versionClean" >> $env:GITHUB_ENV
+        Write-Host "Release version: $versionClean (tag: v$versionClean)"
+
+    - name: Check if tag already exists
+      if: github.event_name == 'push'
+      shell: pwsh
+      run: |
+        $tag = "${{ env.TAG }}"
+        git fetch --tags --quiet
+        $existing = git tag -l $tag
+        if ($existing) {
+          Write-Error "Tag '$tag' already exists. Bump version in version.txt before pushing to stable."
+          exit 1
+        }
+
     - name: Prepare release package
       if: github.event_name == 'push'
       shell: pwsh
@@ -45,7 +80,6 @@ jobs:
         $staging = "staging"
         New-Item -ItemType Directory -Force -Path $staging | Out-Null
 
-        # Копируем нужные директории с сохранением структуры
         if (Test-Path "Engine\Binaries") {
           New-Item -ItemType Directory -Force -Path "$staging\Engine" | Out-Null
           Copy-Item -Recurse -Force "Engine\Binaries" "$staging\Engine\Binaries"
@@ -66,26 +100,23 @@ jobs:
           Write-Error "game_filesystem.ltx not found"; exit 1
         }
 
-        # Формируем имя архива: используем короткий SHA коммита
-        $shortSha = "${{ github.sha }}".Substring(0, 7)
-        $zipName = "release-$shortSha.zip"
+        $zipName = "release-${{ env.VERSION }}.zip"
         Compress-Archive -Path "$staging\*" -DestinationPath $zipName -Force
         Write-Output "ZIP_NAME=$zipName" >> $env:GITHUB_ENV
-        Write-Output "SHORT_SHA=$shortSha" >> $env:GITHUB_ENV
 
     - name: Upload artifact
       if: github.event_name == 'push'
       uses: actions/upload-artifact@v4
       with:
-        name: release-package
+        name: release-package-${{ env.VERSION }}
         path: ${{ env.ZIP_NAME }}
 
     - name: Create Release
       if: github.event_name == 'push'
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: build-${{ env.SHORT_SHA }}
-        name: Build ${{ env.SHORT_SHA }}
+        tag_name: ${{ env.TAG }}
+        name: Release ${{ env.VERSION }}
         files: ${{ env.ZIP_NAME }}
         generate_release_notes: true
         draft: false
