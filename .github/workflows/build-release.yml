@@ -1,0 +1,94 @@
+name: Build with MSBuild
+
+on:
+  push:
+    branches: [ stable ]
+  pull_request:
+    branches: [ stable ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install MSVC v142 toolset
+      run: |
+        $vsInstaller = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
+        & $vsInstaller modify `
+          --installPath "C:\Program Files\Microsoft Visual Studio\2026\Enterprise" `
+          --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 `
+          --quiet --norestart
+      shell: powershell
+
+    - name: Restore NuGet packages
+      run: msbuild Engine\xrEngine.sln /t:Restore /p:Configuration=Release /p:Platform=Win32
+
+    - name: Build Debug (Win32)
+      run: msbuild Engine\xrEngine.sln /p:Configuration=Debug /p:Platform=Win32 /p:PlatformToolset=v142 /m
+
+    - name: Build Release (Win32)
+      run: msbuild Engine\xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142 /m
+
+    - name: Prepare release package
+      if: github.event_name == 'push'
+      shell: pwsh
+      run: |
+        $staging = "staging"
+        New-Item -ItemType Directory -Force -Path $staging | Out-Null
+
+        # Копируем нужные директории с сохранением структуры
+        if (Test-Path "Engine\Binaries") {
+          New-Item -ItemType Directory -Force -Path "$staging\Engine" | Out-Null
+          Copy-Item -Recurse -Force "Engine\Binaries" "$staging\Engine\Binaries"
+        } else {
+          Write-Error "Engine\Binaries not found"; exit 1
+        }
+
+        if (Test-Path "Engine\Shaders") {
+          New-Item -ItemType Directory -Force -Path "$staging\Engine" | Out-Null
+          Copy-Item -Recurse -Force "Engine\Shaders" "$staging\Engine\Shaders"
+        } else {
+          Write-Error "Engine\Shaders not found"; exit 1
+        }
+
+        if (Test-Path "game_filesystem.ltx") {
+          Copy-Item -Force "game_filesystem.ltx" "$staging\game_filesystem.ltx"
+        } else {
+          Write-Error "game_filesystem.ltx not found"; exit 1
+        }
+
+        # Формируем имя архива: используем короткий SHA коммита
+        $shortSha = "${{ github.sha }}".Substring(0, 7)
+        $zipName = "release-$shortSha.zip"
+        Compress-Archive -Path "$staging\*" -DestinationPath $zipName -Force
+        Write-Output "ZIP_NAME=$zipName" >> $env:GITHUB_ENV
+        Write-Output "SHORT_SHA=$shortSha" >> $env:GITHUB_ENV
+
+    - name: Upload artifact
+      if: github.event_name == 'push'
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-package
+        path: ${{ env.ZIP_NAME }}
+
+    - name: Create Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: build-${{ env.SHORT_SHA }}
+        name: Build ${{ env.SHORT_SHA }}
+        files: ${{ env.ZIP_NAME }}
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
