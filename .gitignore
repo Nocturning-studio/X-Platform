@@ -12,11 +12,14 @@
 *.bak
 
 # Build results
-[Bb]uild/
+[Ee]ngine/[Bb]uild/
+[Ee]ngine/[Bb]inaries/
 
 # X-Ray specific
 [Gg]amedata/
 [Aa]ppdata/
+[Dd]esign/
+[Aa]rchives/
 
 # Visual studio specific
 .vs/

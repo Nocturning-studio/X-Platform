@@ -180,7 +180,7 @@
       <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrEngine.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
+      <Command>call "$(SolutionDir)\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -234,7 +234,7 @@
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
+      <Command>call "$(SolutionDir)\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -298,7 +298,7 @@
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
+      <Command>call "$(SolutionDir)\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|Win32'">
@@ -363,7 +363,7 @@
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)\Scripts\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
+      <Command>call "$(SolutionDir)\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

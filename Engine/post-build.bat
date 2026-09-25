@@ -53,16 +53,5 @@ if exist "%THIRDPARTY_BIN%\*.dll" (
     echo   WARNING: Third-Party DLL folder not found: "%THIRDPARTY_BIN%"
 )
 
-:: --------------------------------------------------
-:: Копируем game_filesystem.ltx в корень игры
-:: --------------------------------------------------
-set "CONFIG_FILE=%SOLUTIONDIR%\Config\game_filesystem.ltx"
-if exist "%CONFIG_FILE%" (
-    echo   Copying game_filesystem.ltx to "%GAMEROOT%"
-    copy /Y "%CONFIG_FILE%" "%GAMEROOT%"
-) else (
-    echo   WARNING: game_filesystem.ltx not found at "%CONFIG_FILE%"
-)
-
 echo Deployment finished.
 exit /b 0

@@ -13,8 +13,8 @@
         <ThirdPartyLib>$(ThirdPartyDir)\libraries\$(PlatformShortName)\</ThirdPartyLib>
         <ThirdPartyInclude>$(ThirdPartyDir)\include\</ThirdPartyInclude>
 	<xrBuildDir>$(xrRoot)Build\</xrBuildDir>
-	<xrBuildBinDir>$(xrBuildDir)\Binaries\</xrBuildBinDir>
-	<xrBuildSymDir>$(xrBuildDir)\Binaries\</xrBuildSymDir>
+	<xrBuildBinDir>$(xrRoot)\Binaries\</xrBuildBinDir>
+	<xrBuildSymDir>$(xrRoot)\Binaries\</xrBuildSymDir>
 	<xrBuildIntDir>$(xrBuildDir)\Intermediate\</xrBuildIntDir>
 	<xrBuildLibDir>$(xrBuildDir)\Libraries\</xrBuildLibDir>
     </PropertyGroup>
