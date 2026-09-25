@@ -32,9 +32,6 @@ jobs:
     - name: Restore NuGet packages
       run: msbuild Engine\xrEngine.sln /t:Restore /p:Configuration=Release /p:Platform=Win32
 
-    - name: Build Debug (Win32)
-      run: msbuild Engine\xrEngine.sln /p:Configuration=Debug /p:Platform=Win32 /p:PlatformToolset=v142 /m
-
     - name: Build Release (Win32)
       run: msbuild Engine\xrEngine.sln /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142 /m
 
