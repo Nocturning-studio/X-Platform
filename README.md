@@ -23,13 +23,11 @@ X-Platform/
 │   └── user_game_settings.ltx
 ├── Archives/                 ← Папка с .db* архивами игры
 ├── Gamedata/                 ← Папка с незапакованными ресурсами вашего мода
-└── Engine/
-    ├── Scripts/              ← Скприты для сборки (Билд эвенты)
-    ├── Config/               ← Конфиги движка (Не игры)
-    ├── Binaries/
+├── Engine/
+└── Binaries/
     │   └── ($PlatformShortName)/
-    │       └── xrEngine.exe
-    ├── Shaders/
+    │       └── xrEngine.exe    ← Исполняемый файл движка
+    ├── Shaders/                ← Шейдеры (для того чтобы не привязывать их к конкретным модам)
     └── Sources/
         ├── Runtime/            ← основной код движка (xrCore, xrMath, xrEngine, xrRender и т.д.)
         ├── Third-Party/        ← сторонние библиотеки (ODE, SoftX, PresenceAudio и т.п.)
@@ -54,12 +52,17 @@ X-Platform/
 - Скачайте gamedata из репозитория проектов для данного движка (https://github.com/Nocturning-studio/X-Projects)
 - Положите содержимое репозитория выше в папку gamedata и положите ее в корневую папку с игрой
 - Создайте папку Archives в той же папке где и Gamеdata и положите в нее .db* архивы игры
-- Перейдите в Engine/Binaries/($PlatformShortName)/xrEngine.exe и запустите (Игра сама найдет корневую директорию игры по файлу game_filesystem.ltx)
+- Перейдите в Engine/Binaries/($PlatformShortName)/xrEngine.exe и запустите
 
 # Минимальные системные требования
-- Процессор: Intel Core I5 2400
+- Процессор: Intel Core i5 2400 или AMD FX 4300
 - ОЗУ: 4GB
 - Видеокарта: GTX750Ti
+
+  # Рекомендуемые системные требования
+- Процессор: Intel Core i5 8400 или Ryzen 5 1600
+- ОЗУ: 4GB
+- Видеокарта: RX580
 
 <img width="3500" height="1876" alt="Splash screen1" src="https://github.com/user-attachments/assets/f4f2b12e-a019-405c-bc74-4fd0d5eff0da" />
 <img width="1920" height="1040" alt="image" src="https://github.com/user-attachments/assets/d0c1971e-03fe-4d52-b9fe-de876cab8c84" />
