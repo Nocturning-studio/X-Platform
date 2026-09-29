@@ -4,8 +4,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "xrRHI_Internal.h"
-////////////////////////////////////////////////////////////////////////////////
-XRRHI_API const char* WinErrorToString(long code);
-XRRHI_API void __cdecl Print(const char* format, ...);
+#if defined(_MSC_VER)
+#define DEPRECATED __declspec(deprecated("This function/field is deprecated. Use new backend instead."))
+#elif defined(__GNUC__) || defined(__clang__)
+#define DEPRECATED __attribute__((deprecated("This function/field is deprecated. Use new backend instead.")))
+#else
+#define DEPRECATED
+#endif
 ////////////////////////////////////////////////////////////////////////////////

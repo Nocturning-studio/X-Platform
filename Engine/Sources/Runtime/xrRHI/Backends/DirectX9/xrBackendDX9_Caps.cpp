@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "xrBackendDX9.h"
 ////////////////////////////////////////////////////////////////////////////////
-XRRHI_API std::string DecodeShaderVersion(u32 version)
+XRRHI_API std::string DecodeShaderVersion(uint32_t version)
 {
 	if(version == 0)
 		return "None";

@@ -4,9 +4,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "framework.h"
-#include "xrRHI_Internal.h"
-#include "xrRHI_Debug.h"
+#include "xrRHI_API.h"
+#include "xrRHI_Macros.h"
 #include "xrRHI_Types.h"
 #include "xrRHI_Caps.h"
 #include "xrRHI_Handles.h"

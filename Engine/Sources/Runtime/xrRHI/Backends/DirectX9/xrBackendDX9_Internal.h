@@ -4,18 +4,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <d3d9.h>
-#include <DXSDK/d3dx9.h>
-#include <xrRHI/xrRHI.h>
-////////////////////////////////////////////////////////////////////////////////
 struct DX9Texture
 {
 	IDirect3DTexture9* tex2D = nullptr;
 	IDirect3DCubeTexture9* texCube = nullptr;
 	IDirect3DSurface9* surface = nullptr;
 	RHI_Format format = RHI_Format::Unknown;
-	u32 width = 0;
-	u32 height = 0;
+	uint32_t width = 0;
+	uint32_t height = 0;
 	bool isRenderTarget = false;
 	bool isDepthStencil = false;
 };

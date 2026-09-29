@@ -4,8 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "framework.h"
-#include "xrRHI_Internal.h"
+#include "xrRHI_API.h"
 ////////////////////////////////////////////////////////////////////////////////
 class XRRHI_API IRenderBackend
 {
@@ -25,17 +24,17 @@ class XRRHI_API IRenderBackend
 
 	virtual const RHIDeviceCaps& GetDeviceCaps() const = 0;
 
-	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<u32, u32>>& outResolutions) const = 0;
+	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const = 0;
 
 	virtual RHI_Format GetBackBufferFormat() const = 0;
 
-	virtual void Clear(u32 clearFlags, const fvec4 color, float depth, u8 stencil) = 0;
+	virtual void Clear(uint32_t clearFlags, const fvec4 color, float depth, uint8_t stencil) = 0;
 
 	virtual RHI_TextureHandle CreateTexture(const RHI_TextureDesc& desc, const void* initialData = nullptr) = 0;
 	virtual void DestroyTexture(RHI_TextureHandle handle) = 0;
 	virtual bool CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, bool isDepthStencil, bool isCube = false) = 0;
 	virtual void* GetTextureNativeHandle(RHI_TextureHandle handle) = 0;
-	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, u32 face, u32 level, void** outSurface) = 0;
+	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus

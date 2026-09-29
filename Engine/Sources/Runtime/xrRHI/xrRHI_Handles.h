@@ -4,14 +4,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "framework.h"
-#include "xrRHI_Internal.h"
-////////////////////////////////////////////////////////////////////////////////
-constexpr u32 InvalidHandleId = 0xFFFFFFFF;
+constexpr uint32_t InvalidHandleId = 0xFFFFFFFF;
 
 struct RHI_TextureHandle
 {
-	u32 id = InvalidHandleId;
+	uint32_t id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
@@ -24,7 +21,7 @@ struct RHI_TextureHandle
 
 struct RHI_SamplerHandle
 {
-	u32 id = InvalidHandleId;
+	uint32_t id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
@@ -37,7 +34,7 @@ struct RHI_SamplerHandle
 
 struct RHI_ShaderHandle
 {
-	u32 id = InvalidHandleId;
+	uint32_t id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;
@@ -50,7 +47,7 @@ struct RHI_ShaderHandle
 
 struct RHI_ConstantBufferHandle
 {
-	u32 id = InvalidHandleId;
+	uint32_t id = InvalidHandleId;
 	bool IsValid() const
 	{
 		return id != InvalidHandleId;

@@ -4,13 +4,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "framework.h"
-#include "xrRHI_Internal.h"
-////////////////////////////////////////////////////////////////////////////////
 // =========================================================================
 // API
 // =========================================================================
-enum class RHI_BackendType : u32
+enum class RHI_BackendType : uint32_t
 {
 	DirectX9 = 0, // Direct3D9Ex
 	DirectX11,	  // Direct3D11 (для будущего)
@@ -22,7 +19,7 @@ enum class RHI_BackendType : u32
 // =========================================================================
 // Форматы данных (Resources)
 // =========================================================================
-enum class RHI_Format : u32
+enum class RHI_Format : uint32_t
 {
 	Unknown = 0,
 	NULLRT,
@@ -59,7 +56,7 @@ enum class RHI_Format : u32
 // =========================================================================
 // Топология (Input Assembly)
 // =========================================================================
-enum class RHI_Topology : u32
+enum class RHI_Topology : uint32_t
 {
 	PointList = 1, // D3DPT_POINTLIST
 	LineList,	   // D3DPT_LINELIST
@@ -72,14 +69,14 @@ enum class RHI_Topology : u32
 // =========================================================================
 // Растеризация (Rasterizer State)
 // =========================================================================
-enum class RHI_CullMode : u32
+enum class RHI_CullMode : uint32_t
 {
 	None = 1,		 // D3DCULL_NONE
 	Clockwise,		 // D3DCULL_CW
 	CounterClockwise // D3DCULL_CCW
 };
 
-enum class RHI_FillMode : u32
+enum class RHI_FillMode : uint32_t
 {
 	Point = 1, // D3DFILL_POINT
 	Wireframe, // D3DFILL_WIREFRAME
@@ -89,7 +86,7 @@ enum class RHI_FillMode : u32
 // =========================================================================
 // Тест глубины и трафарета (Depth Stencil State)
 // =========================================================================
-enum class RHI_CmpFunc : u32
+enum class RHI_CmpFunc : uint32_t
 {
 	Never = 1,	  // D3DCMP_NEVER
 	Less,		  // D3DCMP_LESS
@@ -101,7 +98,7 @@ enum class RHI_CmpFunc : u32
 	Always		  // D3DCMP_ALWAYS
 };
 
-enum class RHI_StencilOp : u32
+enum class RHI_StencilOp : uint32_t
 {
 	Keep = 1, // D3DSTENCILOP_KEEP
 	Zero,	  // D3DSTENCILOP_ZERO
@@ -116,7 +113,7 @@ enum class RHI_StencilOp : u32
 // =========================================================================
 // Смешивание цветов (Blend State)
 // =========================================================================
-enum class RHI_Blend : u32
+enum class RHI_Blend : uint32_t
 {
 	Zero = 1,	  // D3DBLEND_ZERO
 	One,		  // D3DBLEND_ONE
@@ -131,7 +128,7 @@ enum class RHI_Blend : u32
 	SrcAlphaSat	  // D3DBLEND_SRCALPHASAT
 };
 
-enum class RHI_BlendOp : u32
+enum class RHI_BlendOp : uint32_t
 {
 	Add = 1,	 // D3DBLENDOP_ADD
 	Subtract,	 // D3DBLENDOP_SUBTRACT
@@ -143,7 +140,7 @@ enum class RHI_BlendOp : u32
 // =========================================================================
 // Текстурирование и Семплеры (Samplers)
 // =========================================================================
-enum class RHI_TextureAddress : u32
+enum class RHI_TextureAddress : uint32_t
 {
 	Wrap = 1,  // D3DTADDRESS_WRAP
 	Mirror,	   // D3DTADDRESS_MIRROR
@@ -152,7 +149,7 @@ enum class RHI_TextureAddress : u32
 	MirrorOnce // D3DTADDRESS_MIRRORONCE
 };
 
-enum class RHI_Filter : u32
+enum class RHI_Filter : uint32_t
 {
 	None = 0,	   // D3DTEXF_NONE
 	Point,		   // D3DTEXF_POINT
@@ -165,7 +162,7 @@ enum class RHI_Filter : u32
 // =========================================================================
 // Вспомогательные флаги
 // =========================================================================
-enum RHI_ClearFlags : u32
+enum RHI_ClearFlags : uint32_t
 {
 	RHI_CLEAR_TARGET = 0x00000001L,	 // D3DCLEAR_TARGET
 	RHI_CLEAR_ZBUFFER = 0x00000002L, // D3DCLEAR_ZBUFFER
@@ -175,10 +172,10 @@ enum RHI_ClearFlags : u32
 // Описание вьюпорта
 struct RHI_Viewport
 {
-	u32 X;
-	u32 Y;
-	u32 Width;
-	u32 Height;
+	uint32_t X;
+	uint32_t Y;
+	uint32_t Width;
+	uint32_t Height;
 	float MinZ;
 	float MaxZ;
 };
@@ -194,10 +191,10 @@ struct RHI_Rect
 
 struct RHI_TextureDesc
 {
-	u32 width;
-	u32 height;
-	u32 depth;
-	u32 mipLevels;
+	uint32_t width;
+	uint32_t height;
+	uint32_t depth;
+	uint32_t mipLevels;
 	RHI_Format format;
 	bool isRenderTarget;
 	bool isDepthStencil;
@@ -207,7 +204,7 @@ struct RHI_TextureDesc
 // =========================================================================
 // Параметры SwapChain (Presentation Params)
 // =========================================================================
-enum class RHI_SwapEffect : u32
+enum class RHI_SwapEffect : uint32_t
 {
 	Discard = 0, // D3DSWAPEFFECT_DISCARD / VK_SWAPCHAIN_CREATE_MODE_*
 	Flip,		 // Для DXGI / Vulkan (Flip Model)
@@ -215,17 +212,17 @@ enum class RHI_SwapEffect : u32
 
 struct RHI_PresentationParams
 {
-	u32 BackBufferWidth = 0;
-	u32 BackBufferHeight = 0;
+	uint32_t BackBufferWidth = 0;
+	uint32_t BackBufferHeight = 0;
 	bool Windowed = true;
 	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;		   // Базовый формат бэкбуфера
 	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT; // Формат для авто-буфера глубины
-	u32 BackBufferCount = 2;									   // Количество буферов в своп-цепи (1-3)
-	u32 SyncInterval = 1;										   // 0 - немедленно, 1 - вертикальная синхронизация
-	u32 FullscreenRefreshHz = 60;								   // Частота обновления (для полноэкранного режима)
+	uint32_t BackBufferCount = 2;									   // Количество буферов в своп-цепи (1-3)
+	uint32_t SyncInterval = 1;										   // 0 - немедленно, 1 - вертикальная синхронизация
+	uint32_t FullscreenRefreshHz = 60;								   // Частота обновления (для полноэкранного режима)
 	RHI_SwapEffect SwapEffect = RHI_SwapEffect::Discard;
-	u32 MultisampleCount = 1; // Количество сэмплов (1 = MSAA выключен)
-	u32 MultisampleQuality = 0;
+	uint32_t MultisampleCount = 1; // Количество сэмплов (1 = MSAA выключен)
+	uint32_t MultisampleQuality = 0;
 	bool EnableAutoDepthStencil = true; // Создавать ли автоматический Depth/Stencil буфер
 };
 ////////////////////////////////////////////////////////////////////////////////

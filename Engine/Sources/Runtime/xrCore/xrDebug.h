@@ -41,7 +41,8 @@ IC std::string __cdecl make_string(LPCSTR format, ...)
 	va_list args;
 	va_start(args, format);
 	char temp[4096];
-	vsprintf(temp, format, args);
+	int result = _vsnprintf_s(temp, sizeof(temp), sizeof(temp) - 1, format, args);
+	va_end(args);
 	return temp;
 }
 

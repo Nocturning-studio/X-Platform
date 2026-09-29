@@ -4,51 +4,48 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "framework.h"
-#include "xrRHI_Internal.h"
-////////////////////////////////////////////////////////////////////////////////
 struct RHIDeviceCaps
 {
 	// ---- Идентификация адаптера ----
-	u32 VendorId = 0;
-	u32 DeviceId = 0;
+	uint32_t VendorId = 0;
+	uint32_t DeviceId = 0;
 	std::string Description; // например "AMD Radeon RX 6800"
 
 	// ---- Текущий режим рабочего стола (при создании устройства) ----
-	u32 DisplayWidth = 0;
-	u32 DisplayHeight = 0;
-	u32 DisplayRefreshRate = 0;
+	uint32_t DisplayWidth = 0;
+	uint32_t DisplayHeight = 0;
+	uint32_t DisplayRefreshRate = 0;
 	RHI_Format DisplayFormat = RHI_Format::Unknown;
 
 	// ---- Максимальные размеры ресурсов ----
-	u32 MaxTextureWidth = 0;
-	u32 MaxTextureHeight = 0;
-	u32 MaxVolumeExtent = 0;
+	uint32_t MaxTextureWidth = 0;
+	uint32_t MaxTextureHeight = 0;
+	uint32_t MaxVolumeExtent = 0;
 
 	// ---- MRT ----
-	u32 MaxSimultaneousRTs = 0;
+	uint32_t MaxSimultaneousRTs = 0;
 
 	// ---- Шейдеры ----
 	bool HasVertexShader = false;
 	bool HasPixelShader = false;
-	u32 VertexShaderMajor = 0;
-	u32 VertexShaderMinor = 0;
-	u32 PixelShaderMajor = 0;
-	u32 PixelShaderMinor = 0;
-	u32 MaxVertexShaderConst = 0;
+	uint32_t VertexShaderMajor = 0;
+	uint32_t VertexShaderMinor = 0;
+	uint32_t PixelShaderMajor = 0;
+	uint32_t PixelShaderMinor = 0;
+	uint32_t MaxVertexShaderConst = 0;
 
-	u32 VertexCacheMethod = 0;
-	u32 VertexCacheSize = 16;
+	uint32_t VertexCacheMethod = 0;
+	uint32_t VertexCacheSize = 16;
 
 	// ---- Depth/Stencil ----
 	bool HasDepthStencil = false;
 
 	// ---- Фильтрация ----
-	u32 MaxAnisotropy = 1;
+	uint32_t MaxAnisotropy = 1;
 
 	// ---- Текстурные стадии ----
-	u32 MaxTextureBlendStages = 0;
-	u32 MaxSimultaneousTextures = 0;
+	uint32_t MaxTextureBlendStages = 0;
+	uint32_t MaxSimultaneousTextures = 0;
 
 	// ---- Аппаратные возможности ----
 	bool HardwareTnL = false;

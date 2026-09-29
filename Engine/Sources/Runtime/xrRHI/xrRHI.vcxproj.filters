@@ -22,12 +22,6 @@
     <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="xrRHI_Internal.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="xrRHI_Debug.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrRHI.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -49,6 +43,12 @@
     <ClInclude Include="xrRHI_BackendInterface.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="xrRHI_API.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_Macros.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -56,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="xrRHI_Debug.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Backends\DirectX9\xrBackendDX9.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>

@@ -40,7 +40,7 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 		outBackBufferFmt = RHIToD3DFormat(params.BackBufferFormat);
 		if(outBackBufferFmt == D3DFMT_UNKNOWN)
 		{
-			Print("! [DX9] Unsupported backbuffer format %d, falling back", (int)params.BackBufferFormat);
+			Msg("! [DX9] Unsupported backbuffer format %d, falling back", (int)params.BackBufferFormat);
 			outBackBufferFmt = m_BackBufferFmt;
 		}
 	}
@@ -56,7 +56,7 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 		{
 			outDepthStencilFmt = RHIToD3DFormat(params.DepthStencilFormat);
 			if(outDepthStencilFmt == D3DFMT_UNKNOWN)
-				Print("! [DX9] Unsupported depth/stencil format %d, trying auto select",
+				Msg("! [DX9] Unsupported depth/stencil format %d, trying auto select",
 					  (int)params.DepthStencilFormat);
 		}
 		if(outDepthStencilFmt == D3DFMT_UNKNOWN)
@@ -64,7 +64,7 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 
 		if(outDepthStencilFmt == D3DFMT_UNKNOWN)
 		{
-			Print("! [DX9] No suitable depth-stencil format found");
+			Msg("! [DX9] No suitable depth-stencil format found");
 			return false;
 		}
 	}
@@ -91,7 +91,7 @@ void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params, 
 	case RHI_SwapEffect::Discard:
 	default:
 		if(params.SwapEffect != RHI_SwapEffect::Discard)
-			Print("! [DX9] Swap effect not supported, falling back to Discard");
+			Msg("! [DX9] Swap effect not supported, falling back to Discard");
 		m_PP.SwapEffect = D3DSWAPEFFECT_DISCARD;
 		break;
 	}
@@ -141,13 +141,13 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	HRESULT hr = Direct3DCreate9Ex(D3D_SDK_VERSION, &m_pD3D);
 	if(FAILED(hr) || !m_pD3D)
 	{
-		Print("! [DX9] Direct3DCreate9Ex failed (0x%08x)", hr);
+		Msg("! [DX9] Direct3DCreate9Ex failed (0x%08x)", hr);
 		return false;
 	}
 
 	D3DADAPTER_IDENTIFIER9 adapterID;
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &adapterID);
-	Print("* [DX9] GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
+	Msg("* [DX9] GPU [vendor:%X]-[device:%X]: %s", adapterID.VendorId, adapterID.DeviceId, adapterID.Description);
 
 	D3DDISPLAYMODE d3ddm;
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
@@ -183,11 +183,11 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing | D3DCREATE_MULTITHREADED, &m_PP, pModeEx, &m_pDevice);
 	if(FAILED(hr))
 	{
-		Print("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
+		Msg("! [DX9] CreateDeviceEx failed (0x%08x), trying without MULTITHREADED", hr);
 		hr = m_pD3D->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, vertexProcessing, &m_PP, pModeEx, &m_pDevice);
 		if(FAILED(hr))
 		{
-			Print("! [DX9] Second attempt failed (0x%08x)", hr);
+			Msg("! [DX9] Second attempt failed (0x%08x)", hr);
 			return false;
 		}
 	}
@@ -196,7 +196,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
+	Msg("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
 	return true;
 }
 
@@ -250,7 +250,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	HRESULT hr = m_pDevice->Reset(&m_PP);
 	if(FAILED(hr))
 	{
-		Print("! [DX9] Reset failed (0x%08x)", hr);
+		Msg("! [DX9] Reset failed (0x%08x)", hr);
 		return false;
 	}
 
@@ -258,7 +258,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	Print("* [DX9] Device reset successfully: %dx%d %s, interval=%d", params.BackBufferWidth, 
+	Msg("* [DX9] Device reset successfully: %dx%d %s, interval=%d", params.BackBufferWidth, 
 																	  params.BackBufferHeight, 
 																	  params.Windowed ? "windowed" : "fullscreen", 
 																	  params.SyncInterval);
@@ -281,7 +281,7 @@ void CRenderBackendDX9::OnFrameEnd()
 	m_pDevice->EndScene();
 }
 
-void CRenderBackendDX9::Clear(u32 clearFlags, const fvec4 color, float depth, u8 stencil)
+void CRenderBackendDX9::Clear(uint32_t clearFlags, const fvec4 color, float depth, uint8_t stencil)
 {
 	if(!m_pDevice)
 		return;
@@ -298,7 +298,7 @@ void CRenderBackendDX9::Clear(u32 clearFlags, const fvec4 color, float depth, u8
 	m_pDevice->Clear(0, nullptr, d3dFlags, d3dColor, depth, stencil);
 }
 
-void CRenderBackendDX9::GetAvailableResolutions(RHI_Format format, std::vector<std::pair<u32, u32>>& outResolutions) const
+void CRenderBackendDX9::GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const
 {
 	outResolutions.clear();
 	if(!m_pD3D)

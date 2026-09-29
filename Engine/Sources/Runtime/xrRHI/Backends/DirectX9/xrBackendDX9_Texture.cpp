@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 RHI_TextureHandle CRenderBackendDX9::AllocRHI_TextureHandle(DX9Texture* tex)
 {
-	u32 index;
+	uint32_t index;
 	if(!m_FreeTextureIndices.empty())
 	{
 		index = m_FreeTextureIndices.top();
@@ -16,7 +16,7 @@ RHI_TextureHandle CRenderBackendDX9::AllocRHI_TextureHandle(DX9Texture* tex)
 	}
 	else
 	{
-		index = static_cast<u32>(m_Textures.size());
+		index = static_cast<uint32_t>(m_Textures.size());
 		m_Textures.push_back(tex);
 	}
 	return RHI_TextureHandle{index};
@@ -36,7 +36,7 @@ void CRenderBackendDX9::FreeRHI_TextureHandle(RHI_TextureHandle handle)
 	DX9Texture* tex = m_Textures[handle.id];
 	if(!tex)
 	{
-		Print("! [DX9] Double free of RHI_TextureHandle(id=%u) detected, ignoring.", handle.id);
+		Msg("! [DX9] Double free of RHI_TextureHandle(id=%u) detected, ignoring.", handle.id);
 		return;
 	}
 	delete tex;
@@ -51,14 +51,14 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 
 	if(desc.width == 0 || desc.height == 0)
 	{
-		Print("! [DX9] CreateTexture: invalid dimensions (%ux%u)", desc.width, desc.height);
+		Msg("! [DX9] CreateTexture: invalid dimensions (%ux%u)", desc.width, desc.height);
 		return RHI_TextureHandle{};
 	}
 
 	D3DFORMAT d3dFmt = RHIToD3DFormat(desc.format);
 	if(d3dFmt == D3DFMT_UNKNOWN)
 	{
-		Print("! [DX9] CreateTexture: unsupported format %d", (int)desc.format);
+		Msg("! [DX9] CreateTexture: unsupported format %d", (int)desc.format);
 		return RHI_TextureHandle{};
 	}
 
@@ -86,7 +86,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		if(FAILED(hr))
 		{
 			delete impl;
-			Print("! [DX9] CreateCubeTexture failed (0x%08x) for format %d", hr, (int)desc.format);
+			Msg("! [DX9] CreateCubeTexture failed (0x%08x) for format %d", hr, (int)desc.format);
 			return RHI_TextureHandle{};
 		}
 		impl->texCube = cubeTex;
@@ -100,7 +100,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		if(FAILED(hr))
 		{
 			delete impl;
-			Print("! [DX9] CreateTexture failed (0x%08x) for format %d", hr, (int)desc.format);
+			Msg("! [DX9] CreateTexture failed (0x%08x) for format %d", hr, (int)desc.format);
 			return RHI_TextureHandle{};
 		}
 		impl->tex2D = tex2D;
@@ -123,7 +123,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 						BYTE* dst = static_cast<BYTE*>(locked.pBits);
 						size_t rowSize = desc.width * pixelSize;
 
-						for(u32 y = 0; y < desc.height; ++y)
+						for(uint32_t y = 0; y < desc.height; ++y)
 						{
 							memcpy(dst, src, rowSize);
 							src += rowSize;
@@ -133,18 +133,18 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 
 						hr = m_pDevice->UpdateTexture(sysTex, tex2D);
 						if(FAILED(hr))
-							Print("! [DX9] UpdateTexture failed (0x%08x)", hr);
+							Msg("! [DX9] UpdateTexture failed (0x%08x)", hr);
 					}
 					sysTex->Release();
 				}
 				else
 				{
-					Print("! [DX9] Failed to create system memory texture for initial data");
+					Msg("! [DX9] Failed to create system memory texture for initial data");
 				}
 			}
 			else
 			{
-				Print("! [DX9] Unknown pixel size for format %d, cannot upload initial data", (int)desc.format);
+				Msg("! [DX9] Unknown pixel size for format %d, cannot upload initial data", (int)desc.format);
 			}
 		}
 	}
@@ -157,7 +157,7 @@ void CRenderBackendDX9::DestroyTexture(RHI_TextureHandle handle)
 	DX9Texture* impl = GetTexture(handle);
 	if(!impl)
 	{
-		Print("! [DX9] DestroyTexture: invalid or already destroyed handle (id=%u).", handle.id);
+		Msg("! [DX9] DestroyTexture: invalid or already destroyed handle (id=%u).", handle.id);
 		return;
 	}
 	if(impl->tex2D)
@@ -180,7 +180,7 @@ bool CRenderBackendDX9::CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, 
 	D3DFORMAT d3dFmt = RHIToD3DFormat(fmt);
 	if(d3dFmt == D3DFMT_UNKNOWN)
 	{
-		Print("! [DX9] CheckFormatSupport: unknown RHI format %d", (int)fmt);
+		Msg("! [DX9] CheckFormatSupport: unknown RHI format %d", (int)fmt);
 		return false;
 	}
 
@@ -207,7 +207,7 @@ void* CRenderBackendDX9::GetTextureNativeHandle(RHI_TextureHandle handle)
 	return tex->tex2D ? (void*)tex->tex2D : (void*)tex->texCube;
 }
 
-bool CRenderBackendDX9::GetCubeMapFaceNative(RHI_TextureHandle handle, u32 face, u32 level, void** outSurface)
+bool CRenderBackendDX9::GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface)
 {
 	if(!outSurface)
 		return false;
