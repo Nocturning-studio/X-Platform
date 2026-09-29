@@ -2,7 +2,7 @@
 // Created: 06.08.2023
 // Modified: 2025
 // Author: NSDeathman
-// Nocturning studio for NS Platform X
+// Nocturning studio for X-Platform
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "material_helper.xrh"
 #include "material_components.xrh"

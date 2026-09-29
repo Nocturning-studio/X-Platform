@@ -52,7 +52,7 @@
 //	I'm seeing are so small they might be statistical noise. So it MIGHT be faster - no promises.
 
 // X-Ray Engine implementation to StalkerDWM by Mihan323
-// Ported to Shader Model 3.0 and integration to NS Platform X by NSDeathman
+// Ported to Shader Model 3.0 and integration to X-Platform by NSDeathman
 float3 CAS(sampler2D tex_color, float2 tc, float contrast, float sharpening)
 {
 	// fetch a 3x3 neighborhood around the pixel 'e',

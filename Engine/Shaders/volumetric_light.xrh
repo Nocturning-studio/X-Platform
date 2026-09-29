@@ -2,7 +2,7 @@
 // Created: 03.11.2024
 // Authors: Igor Lobanchikov, NSDeathman
 // Code by GSC Gameworld
-// Nocturning studio for NS Platform X
+// Nocturning studio for X-Platform
 ///////////////////////////////////////////////////////////////////////////////////
 #include "common.xrh"
 #include "shadow_filtering.xrh"
