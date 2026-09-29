@@ -17,30 +17,30 @@ CStateCache::~CStateCache()
 
 void CStateCache::Invalidate()
 {
-    for (u32 i = 0; i < 4; ++i)
+    for (uint32_t i = 0; i < 4; ++i)
         m_pRT[i] = nullptr;
     m_pZB = nullptr;
 
-    m_bBlend = u32(-1);
-    m_srcBlend = (D3DBLEND)u32(-1);
-    m_dstBlend = (D3DBLEND)u32(-1);
-    m_blendOp = (D3DBLENDOP)u32(-1);
+    m_bBlend = uint32_t(-1);
+    m_srcBlend = (D3DBLEND)uint32_t(-1);
+    m_dstBlend = (D3DBLEND)uint32_t(-1);
+    m_blendOp = (D3DBLENDOP)uint32_t(-1);
 
-    m_stencilEnable = u32(-1);
-    m_stencilFunc = u32(-1);
-    m_stencilRef = u32(-1);
-    m_stencilMask = u32(-1);
-    m_stencilWriteMask = u32(-1);
-    m_stencilFail = u32(-1);
-    m_stencilPass = u32(-1);
-    m_stencilZFail = u32(-1);
+    m_stencilEnable = uint32_t(-1);
+    m_stencilFunc = uint32_t(-1);
+    m_stencilRef = uint32_t(-1);
+    m_stencilMask = uint32_t(-1);
+    m_stencilWriteMask = uint32_t(-1);
+    m_stencilFail = uint32_t(-1);
+    m_stencilPass = uint32_t(-1);
+    m_stencilZFail = uint32_t(-1);
 
-    m_colorWriteMask = u32(-1);
-    m_cullMode = u32(-1);
-    m_zWriteEnable = u32(-1);
+    m_colorWriteMask = uint32_t(-1);
+    m_cullMode = uint32_t(-1);
+    m_zWriteEnable = uint32_t(-1);
 }
 
-bool CStateCache::SetRenderTarget(IDirect3DDevice9Ex* device, IDirect3DSurface9* RT, u32 idx)
+bool CStateCache::SetRenderTarget(IDirect3DDevice9Ex* device, IDirect3DSurface9* RT, uint32_t idx)
 {
     if (m_pRT[idx] != RT)
     {
@@ -89,7 +89,7 @@ bool CStateCache::SetBlend(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src
 
 bool CStateCache::SetBlendEx(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst, D3DBLENDOP op)
 {
-    const u32 bEnable = enable ? 1u : 0u;
+    const uint32_t bEnable = enable ? 1u : 0u;
     if (m_bBlend == bEnable && m_srcBlend == src && m_dstBlend == dst && m_blendOp == op)
         return false;
 
@@ -109,7 +109,7 @@ bool CStateCache::SetBlendEx(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND s
     return true;
 }
 
-void CStateCache::SetStencil(IDirect3DDevice9Ex* device, u32 enable, u32 func, u32 ref, u32 mask, u32 writemask, u32 fail, u32 pass, u32 zfail)
+void CStateCache::SetStencil(IDirect3DDevice9Ex* device, uint32_t enable, uint32_t func, uint32_t ref, uint32_t mask, uint32_t writemask, uint32_t fail, uint32_t pass, uint32_t zfail)
 {
     if (m_stencilEnable != enable)
     {
@@ -137,7 +137,7 @@ void CStateCache::SetStencil(IDirect3DDevice9Ex* device, u32 enable, u32 func, u
 #undef UPDATE_STENCIL_STATE
 }
 
-bool CStateCache::SetColorWriteEnable(IDirect3DDevice9Ex* device, u32 mask)
+bool CStateCache::SetColorWriteEnable(IDirect3DDevice9Ex* device, uint32_t mask)
 {
     if (m_colorWriteMask == mask)
         return false;
@@ -152,7 +152,7 @@ bool CStateCache::SetColorWriteEnable(IDirect3DDevice9Ex* device, u32 mask)
 
 bool CStateCache::SetDepthWriteEnable(IDirect3DDevice9Ex* device, bool enable)
 {
-    const u32 bEnable = enable ? 1u : 0u;
+    const uint32_t bEnable = enable ? 1u : 0u;
     if (m_zWriteEnable == bEnable)
         return false;
 
@@ -161,7 +161,7 @@ bool CStateCache::SetDepthWriteEnable(IDirect3DDevice9Ex* device, bool enable)
     return true;
 }
 
-bool CStateCache::SetCullMode(IDirect3DDevice9Ex* device, u32 mode)
+bool CStateCache::SetCullMode(IDirect3DDevice9Ex* device, uint32_t mode)
 {
     if (m_cullMode == mode)
         return false;
@@ -210,7 +210,7 @@ void CStateCache::D3D_SetRenderState(IDirect3DDevice9Ex* device, D3DRENDERSTATET
     VERIFY(SUCCEEDED(hr));
 }
 
-void CStateCache::D3D_SetRenderTarget(IDirect3DDevice9Ex* device, u32 idx, IDirect3DSurface9* surf)
+void CStateCache::D3D_SetRenderTarget(IDirect3DDevice9Ex* device, uint32_t idx, IDirect3DSurface9* surf)
 {
     HRESULT hr = device->SetRenderTarget(idx, surf);
     VERIFY(SUCCEEDED(hr));

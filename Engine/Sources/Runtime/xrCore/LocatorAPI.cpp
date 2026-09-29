@@ -599,7 +599,7 @@ bool CLocatorAPI::Recurse(const char* path)
 	return true;
 }
 
-void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
+void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname, BOOL unpack_archives)
 {
 	char _delimiter = '|'; // разделитель полей в строках конфига
 	if(m_Flags.is(flReady))
@@ -679,7 +679,8 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 	// Регистрируем найденный корень как $fs_root$
 	append_path("$fs_root$", current_dir, "", FALSE);
 
-	ProcessGameArchives();
+	if(unpack_archives)
+		ProcessGameArchives();
 
 	// ====================================================================
 	// Дополнительные пути, не зависящие от конфигурации

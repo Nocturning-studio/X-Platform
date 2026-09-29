@@ -18,7 +18,7 @@ XRCORE_API xrCore Core;
 
 static u32 init_counter = 0;
 
-void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
+void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb, BOOL init_fs, LPCSTR fs_fname, BOOL unpack_archives)
 {
 	strcpy_s(ApplicationName, _ApplicationName);
 	strcpy_s(ApplicationNameLog, _ApplicationNameLog);
@@ -97,7 +97,7 @@ void xrCore::Initialize(LPCSTR _ApplicationName, LPCSTR _ApplicationNameLog, Log
 			flags |= CLocatorAPI::flDumpFileActivity;
 #endif
 #endif
-		FS._initialize(flags, 0, fs_fname);
+		FS._initialize(flags, 0, fs_fname, unpack_archives);
 
 		EFS._initialize();
 #ifdef DEBUG

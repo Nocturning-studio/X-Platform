@@ -4,16 +4,16 @@
 // Nocturning studio for NS Platform X
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
+#include "ShaderConstant.h"
 #include "ShaderConstantBuffer.h"
 #include "ShaderConstantTable.h"
 ////////////////////////////////////////////////////////////////////////////////
 namespace
 {
-// Нижние 2 бита — те же, что в старой системе.
 // destination & 1 → пиксельный стейдж
 // destination & 2 → вершинный стейдж
-constexpr u16 RC_dest_pixel = (1 << 0);
-constexpr u16 RC_dest_vertex = (1 << 1);
+constexpr uint16_t RC_dest_pixel = (1 << 0);
+constexpr uint16_t RC_dest_vertex = (1 << 1);
 } // namespace
 
 void CShaderConstantBuffer::Reset()
@@ -28,7 +28,7 @@ void CShaderConstantBuffer::Reset()
 	m_psDirtyHi = 0;
 }
 
-void CShaderConstantBuffer::MarkDirty(bool pixel, u32 lo, u32 hi)
+void CShaderConstantBuffer::MarkDirty(bool pixel, uint32_t lo, uint32_t hi)
 {
 	if(pixel)
 	{
@@ -50,18 +50,18 @@ void CShaderConstantBuffer::MarkDirty(bool pixel, u32 lo, u32 hi)
 
 bool CShaderConstantBuffer::SetFloat(LPCSTR name, float v, const CShaderConstantTable& table)
 {
-	const CShaderConstant* c = table.Find(name);
+	const CShaderConstantEntry* c = table.FindConstant(name);
 	if(!c)
 		return false;
 
 	const fvec4 val{v, 0.0f, 0.0f, 0.0f};
 
-	if(c->vsRegister != u32(-1))
+	if(c->vsRegister != uint32_t(-1))
 	{
 		m_vsData[c->vsRegister] = val;
 		MarkDirty(false, c->vsRegister, c->vsRegister + 1);
 	}
-	if(c->psRegister != u32(-1))
+	if(c->psRegister != uint32_t(-1))
 	{
 		m_psData[c->psRegister] = val;
 		MarkDirty(true, c->psRegister, c->psRegister + 1);
@@ -71,16 +71,16 @@ bool CShaderConstantBuffer::SetFloat(LPCSTR name, float v, const CShaderConstant
 
 bool CShaderConstantBuffer::SetVector(LPCSTR name, const fvec4& v, const CShaderConstantTable& table)
 {
-	const CShaderConstant* c = table.Find(name);
+	const CShaderConstantEntry* c = table.FindConstant(name);
 	if(!c)
 		return false;
 
-	if(c->vsRegister != u32(-1))
+	if(c->vsRegister != uint32_t(-1))
 	{
 		m_vsData[c->vsRegister] = v;
 		MarkDirty(false, c->vsRegister, c->vsRegister + 1);
 	}
-	if(c->psRegister != u32(-1))
+	if(c->psRegister != uint32_t(-1))
 	{
 		m_psData[c->psRegister] = v;
 		MarkDirty(true, c->psRegister, c->psRegister + 1);
@@ -90,14 +90,14 @@ bool CShaderConstantBuffer::SetVector(LPCSTR name, const fvec4& v, const CShader
 
 bool CShaderConstantBuffer::SetMatrix(LPCSTR name, const fmat4x4& m, const CShaderConstantTable& table)
 {
-	const CShaderConstant* c = table.Find(name);
+	const CShaderConstantEntry* c = table.FindConstant(name);
 	if(!c)
 		return false;
 
 	// Раскладка под D3DCOMPILE_PACK_MATRIX_ROW_MAJOR:
 	// строки матрицы раскладываются в последовательные float4-регистры,
-	// но записываются в транспонированном виде (как в старом CConstantManager).
-	auto write = [&](fvec4* dst, u32 reg)
+	// но записываются в транспонированном виде
+	auto write = [&](fvec4* dst, uint32_t reg)
 	{
 		switch(c->cls)
 		{
@@ -121,29 +121,29 @@ bool CShaderConstantBuffer::SetMatrix(LPCSTR name, const fmat4x4& m, const CShad
 		}
 	};
 
-	if(c->vsRegister != u32(-1))
+	if(c->vsRegister != uint32_t(-1))
 	{
-		const u32 n = write(m_vsData, c->vsRegister);
+		const uint32_t n = write(m_vsData, c->vsRegister);
 		if(n)
 			MarkDirty(false, c->vsRegister, c->vsRegister + n);
 	}
-	if(c->psRegister != u32(-1))
+	if(c->psRegister != uint32_t(-1))
 	{
-		const u32 n = write(m_psData, c->psRegister);
+		const uint32_t n = write(m_psData, c->psRegister);
 		if(n)
 			MarkDirty(true, c->psRegister, c->psRegister + n);
 	}
 	return true;
 }
 
-bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, u32 index, const fmat4x4& m, const CShaderConstantTable& table)
+bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, uint32_t index, const fmat4x4& m, const CShaderConstantTable& table)
 {
-	const CShaderConstant* c = table.Find(name);
+	const CShaderConstantEntry* c = table.FindConstant(name);
 	if(!c)
 		return false;
 
 	// Шаг между элементами массива — размер одного элемента.
-	u32 stride = 0;
+	uint32_t stride = 0;
 	switch(c->cls)
 	{
 	case EConstantClass::Matrix2x4:
@@ -159,7 +159,7 @@ bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, u32 index, const fmat4x4
 		return false;
 	}
 
-	auto write = [&](fvec4* dst, u32 reg)
+	auto write = [&](fvec4* dst, uint32_t reg)
 	{
 		dst[reg + 0].set(m._11, m._21, m._31, m._41);
 		dst[reg + 1].set(m._12, m._22, m._32, m._42);
@@ -169,29 +169,29 @@ bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, u32 index, const fmat4x4
 			dst[reg + 3].set(m._14, m._24, m._34, m._44);
 	};
 
-	if(c->vsRegister != u32(-1))
+	if(c->vsRegister != uint32_t(-1))
 	{
-		const u32 reg = c->vsRegister + index * stride;
+		const uint32_t reg = c->vsRegister + index * stride;
 		write(m_vsData, reg);
 		MarkDirty(false, reg, reg + stride);
 	}
-	if(c->psRegister != u32(-1))
+	if(c->psRegister != uint32_t(-1))
 	{
-		const u32 reg = c->psRegister + index * stride;
+		const uint32_t reg = c->psRegister + index * stride;
 		write(m_psData, reg);
 		MarkDirty(true, reg, reg + stride);
 	}
 	return true;
 }
 
-void CShaderConstantBuffer::Flush(IDirect3DDevice9* device)
+void CShaderConstantBuffer::Flush(IDirect3DDevice9Ex* device)
 {
 	if(!device)
 		return;
 
 	if(m_vsDirty && m_vsDirtyLo < m_vsDirtyHi)
 	{
-		const u32 count = m_vsDirtyHi - m_vsDirtyLo;
+		const uint32_t count = m_vsDirtyHi - m_vsDirtyLo;
 		CHK_DX(device->SetVertexShaderConstantF(m_vsDirtyLo,
 												reinterpret_cast<const float*>(&m_vsData[m_vsDirtyLo]),
 												count));
@@ -202,7 +202,7 @@ void CShaderConstantBuffer::Flush(IDirect3DDevice9* device)
 
 	if(m_psDirty && m_psDirtyLo < m_psDirtyHi)
 	{
-		const u32 count = m_psDirtyHi - m_psDirtyLo;
+		const uint32_t count = m_psDirtyHi - m_psDirtyLo;
 		CHK_DX(device->SetPixelShaderConstantF(m_psDirtyLo,
 											   reinterpret_cast<const float*>(&m_psData[m_psDirtyLo]),
 											   count));

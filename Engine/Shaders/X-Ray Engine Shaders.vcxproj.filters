@@ -935,4 +935,7 @@
       <Filter>Deffered rendering pipeline\Ambient occlusion stage</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="test\test.hlsl" />
+  </ItemGroup>
 </Project>

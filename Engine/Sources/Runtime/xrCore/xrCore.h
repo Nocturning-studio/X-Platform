@@ -219,7 +219,7 @@ class XRCORE_API xrCore
 	string512 Params;
 
   public:
-	void Initialize(LPCSTR ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb = 0, BOOL init_fs = TRUE, LPCSTR fs_fname = 0);
+	void Initialize(LPCSTR ApplicationName, LPCSTR _ApplicationNameLog, LogCallback cb = 0, BOOL init_fs = TRUE, LPCSTR fs_fname = 0, BOOL unpack_archives = TRUE);
 	void Destroy();
 };
 extern XRCORE_API xrCore Core;

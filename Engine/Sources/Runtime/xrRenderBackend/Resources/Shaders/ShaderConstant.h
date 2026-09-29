@@ -5,7 +5,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-enum class EConstantRegister : u16
+#include <stdint.h>
+////////////////////////////////////////////////////////////////////////////////
+enum class EConstantRegister : uint16_t
 {
 	Float4 = 0,
 	Int4 = 1,
@@ -14,7 +16,7 @@ enum class EConstantRegister : u16
 	Unknown = 0xFFFF,
 };
 
-enum class EConstantClass : u16
+enum class EConstantClass : uint16_t
 {
 	Scalar = 0,		// 1 float4
 	Vector = 1,		// 1 float4
@@ -26,7 +28,7 @@ enum class EConstantClass : u16
 	Unknown = 0xFFFF,
 };
 
-enum class EConstantType : u16
+enum class EConstantType : uint16_t
 {
 	Void = 0,
 	Bool = 1,
@@ -37,7 +39,14 @@ enum class EConstantType : u16
 	Unknown = 0xFFFF,
 };
 
-struct CShaderConstant
+struct CShaderSamplerEntry
+{
+	xr_string name;
+	uint32_t dx9Stage = uint32_t(-1);      // 0-15 для PS, 257+ для VS
+	EConstantType type = EConstantType::Unknown; // 2D / Cube / 3D / ...
+};
+
+struct CShaderConstantEntry
 {
 	xr_string name;
 	EConstantRegister registerSet = EConstantRegister::Unknown;
@@ -45,10 +54,10 @@ struct CShaderConstant
 	EConstantType type = EConstantType::Unknown;
 
 	// Индекс регистра в каждом стейдже (UINT_MAX = не используется в этом стейдже).
-	u32 vsRegister = u32(-1);
-	u32 psRegister = u32(-1);
+	uint32_t vsRegister = uint32_t(-1);
+	uint32_t psRegister = uint32_t(-1);
 
 	// Сколько float4-регистров занимает (обычно 1..4).
-	u16 registerCount = 0;
+	uint16_t registerCount = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////

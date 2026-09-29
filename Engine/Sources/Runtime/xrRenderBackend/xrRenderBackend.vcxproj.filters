@@ -5,24 +5,6 @@
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrRenderBackend.h" />
-    <ClInclude Include="Shaders\ShaderConstant.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\ShaderConstantBuffer.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\ShaderConstantTable.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\ShaderIncluder.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\ShaderPass.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\ShaderProgram.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -30,11 +12,85 @@
     <ClInclude Include="d3d9fwd.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="Shaders\ShaderAPI.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="States\StateCache.h">
       <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\ResourceManager.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\ResourceState.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\SharedResource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRenderBackendMacros.h" />
+    <ClInclude Include="RenderBackend.h" />
+    <ClInclude Include="Resources\Textures\D3D9Texture.h">
+      <Filter>Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Textures\Surface.h">
+      <Filter>Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Textures\Texture.h">
+      <Filter>Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Textures\TextureDesc.h">
+      <Filter>Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Textures\TextureFormat.h">
+      <Filter>Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\DeviceResource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\VertexLayout.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\BufferDesc.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\Buffer.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\VertexDeclaration.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\Geometry.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\D3D9Buffer.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Geometry\D3D9VertexDeclaration.h">
+      <Filter>Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderConstant.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderConstantBuffer.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderConstantTable.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderIncluder.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderPass.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderProgram.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderSampler.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Shaders\ShaderSamplerBinding.h">
+      <Filter>Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Textures\D3D9TextureFormat.h">
+      <Filter>Resources\Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -44,34 +100,65 @@
     <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="Shaders\ShaderConstantBuffer.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Shaders\ShaderConstantTable.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Shaders\ShaderIncluder.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Shaders\ShaderPass.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Shaders\ShaderProgram.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="States\StateCache.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="Resources\ResourceManager.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderBackend.cpp" />
+    <ClCompile Include="Resources\Textures\D3D9Texture.cpp">
+      <Filter>Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Geometry\Geometry.cpp">
+      <Filter>Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Geometry\D3D9Buffer.cpp">
+      <Filter>Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Geometry\D3D9VertexDeclaration.cpp">
+      <Filter>Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Shaders\ShaderConstantBuffer.cpp">
+      <Filter>Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Shaders\ShaderConstantTable.cpp">
+      <Filter>Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Shaders\ShaderIncluder.cpp">
+      <Filter>Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Shaders\ShaderPass.cpp">
+      <Filter>Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Shaders\ShaderProgram.cpp">
+      <Filter>Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Shaders\ShaderSampler.cpp">
+      <Filter>Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Textures\D3D9TextureFormat.cpp">
+      <Filter>Resources\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{d3888c7c-0173-43b4-9f68-5576abfa16ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Kernel">
       <UniqueIdentifier>{9ab4b5a3-b0ec-413f-9789-bf32f83c0004}</UniqueIdentifier>
     </Filter>
     <Filter Include="States">
       <UniqueIdentifier>{2e237a42-d93e-4166-84a0-60c18f3abeb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{7d118cd4-b2e7-4c90-91c3-9b8f33dcbae1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Textures">
+      <UniqueIdentifier>{e2aa0e0b-3315-4c44-b555-03bcfe3b89fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Geometry">
+      <UniqueIdentifier>{493c9911-76b0-43c1-b90d-60eabfd0f35a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Shaders">
+      <UniqueIdentifier>{f8e9268e-5881-47a6-ae0c-1969e52c95c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

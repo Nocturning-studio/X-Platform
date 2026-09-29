@@ -6,3 +6,4 @@
 #  define XRRB_API __declspec(dllimport)
 #endif
 
+#include "xrRenderBackendMacros.h"

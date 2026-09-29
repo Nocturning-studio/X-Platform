@@ -15,7 +15,7 @@ class XRRB_API CStateCache
 
 	void Invalidate();
 
-	bool SetRenderTarget(IDirect3DDevice9Ex* device, IDirect3DSurface9* RT, u32 idx);
+	bool SetRenderTarget(IDirect3DDevice9Ex* device, IDirect3DSurface9* RT, uint32_t idx);
 	bool SetDepthStencil(IDirect3DDevice9Ex* device, IDirect3DSurface9* ZB);
 
 	void SetViewport(IDirect3DDevice9Ex* device, const D3DVIEWPORT9& vp);
@@ -24,12 +24,12 @@ class XRRB_API CStateCache
 	bool SetBlend(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst);
 	bool SetBlendEx(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst, D3DBLENDOP op);
 
-	void SetStencil(IDirect3DDevice9Ex* device, u32 enable, u32 func, u32 ref, u32 mask, u32 writemask, u32 fail, u32 pass, u32 zfail);
+	void SetStencil(IDirect3DDevice9Ex* device, uint32_t enable, uint32_t func, uint32_t ref, uint32_t mask, uint32_t writemask, uint32_t fail, uint32_t pass, uint32_t zfail);
 
-	bool SetColorWriteEnable(IDirect3DDevice9Ex* device, u32 mask);
+	bool SetColorWriteEnable(IDirect3DDevice9Ex* device, uint32_t mask);
 
 	bool SetDepthWriteEnable(IDirect3DDevice9Ex* device, bool enable);
-	bool SetCullMode(IDirect3DDevice9Ex* device, u32 mode);
+	bool SetCullMode(IDirect3DDevice9Ex* device, uint32_t mode);
 
 	void SetRawRenderState(IDirect3DDevice9Ex* device, D3DRENDERSTATETYPE state, DWORD value);
 
@@ -39,29 +39,29 @@ class XRRB_API CStateCache
 	BOOL GetBlendEnable() const { return m_bBlend != 0; }
 	D3DBLEND GetSrcBlend() const { return m_srcBlend; }
 	D3DBLEND GetDstBlend() const { return m_dstBlend; }
-	u32 GetCullMode() const { return m_cullMode; }
+	uint32_t GetCullMode() const { return m_cullMode; }
 
   private:
 	IDirect3DSurface9* m_pRT[4] = {};
 	IDirect3DSurface9* m_pZB = nullptr;
 
-	u32 m_bBlend = u32(-1);
-	D3DBLEND m_srcBlend = (D3DBLEND)u32(-1);
-	D3DBLEND m_dstBlend = (D3DBLEND)u32(-1);
-	D3DBLENDOP m_blendOp = (D3DBLENDOP)u32(-1);
+	uint32_t m_bBlend = uint32_t(-1);
+	D3DBLEND m_srcBlend = (D3DBLEND)uint32_t(-1);
+	D3DBLEND m_dstBlend = (D3DBLEND)uint32_t(-1);
+	D3DBLENDOP m_blendOp = (D3DBLENDOP)uint32_t(-1);
 
-	u32 m_stencilEnable = 0;
-	u32 m_stencilFunc = 0;
-	u32 m_stencilRef = 0;
-	u32 m_stencilMask = 0;
-	u32 m_stencilWriteMask = 0;
-	u32 m_stencilFail = 0;
-	u32 m_stencilPass = 0;
-	u32 m_stencilZFail = 0;
+	uint32_t m_stencilEnable = 0;
+	uint32_t m_stencilFunc = 0;
+	uint32_t m_stencilRef = 0;
+	uint32_t m_stencilMask = 0;
+	uint32_t m_stencilWriteMask = 0;
+	uint32_t m_stencilFail = 0;
+	uint32_t m_stencilPass = 0;
+	uint32_t m_stencilZFail = 0;
 
-	u32 m_colorWriteMask = u32(-1);
-	u32 m_cullMode = u32(-1);
-	u32 m_zWriteEnable = u32(-1);
+	uint32_t m_colorWriteMask = uint32_t(-1);
+	uint32_t m_cullMode = uint32_t(-1);
+	uint32_t m_zWriteEnable = uint32_t(-1);
 
 	struct SavedState
 	{
@@ -71,7 +71,7 @@ class XRRB_API CStateCache
 	} m_savedState;
 
 	void D3D_SetRenderState(IDirect3DDevice9Ex* device, D3DRENDERSTATETYPE state, DWORD value);
-	void D3D_SetRenderTarget(IDirect3DDevice9Ex* device, u32 idx, IDirect3DSurface9* surf);
+	void D3D_SetRenderTarget(IDirect3DDevice9Ex* device, uint32_t idx, IDirect3DSurface9* surf);
 	void D3D_SetDepthStencil(IDirect3DDevice9Ex* device, IDirect3DSurface9* zb);
 };
 ////////////////////////////////////////////////////////////////////////////////

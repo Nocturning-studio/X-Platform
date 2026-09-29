@@ -6,10 +6,12 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include "ShaderProgram.h"
+#include "ShaderSampler.h"
+#include "ShaderSamplerBinding.h"
 #include "ShaderConstantTable.h"
 #include "ShaderConstantBuffer.h"
 ////////////////////////////////////////////////////////////////////////////////
-struct IDirect3DDevice9;
+class CRenderBackend;
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CShaderPass
 {
@@ -24,11 +26,18 @@ public:
 	void SetVertexShader(LPCSTR file, LPCSTR entry = "main");
 	void SetPixelShader(LPCSTR file, LPCSTR entry = "main");
 
-	bool SetFloat(LPCSTR name, float v) { return m_constantsBuffer.SetFloat(name, v, m_constants); }
-	bool SetVector(LPCSTR name, const fvec4& v) { return m_constantsBuffer.SetVector(name, v, m_constants); }
-	bool SetMatrix(LPCSTR name, const fmat4x4& m) { return m_constantsBuffer.SetMatrix(name, m, m_constants); }
+	bool SetConstant(LPCSTR name, float v) { return m_constantsBuffer.SetFloat(name, v, m_constants); }
+	bool SetConstant(LPCSTR name, const fvec4& v) { return m_constantsBuffer.SetVector(name, v, m_constants); }
+	bool SetConstant(LPCSTR name, const fmat4x4& m) { return m_constantsBuffer.SetMatrix(name, m, m_constants); }
 
-	void FlushConstants(IDirect3DDevice9* device) { m_constantsBuffer.Flush(device); }
+	bool SetTexture(LPCSTR samplerName, const ref_texture& tex);
+	bool SetSamplerDesc(LPCSTR samplerName, const CSamplerDesc& desc);
+
+	const xr_vector<CShaderSamplerBinding>& Samplers() const { return m_samplers; }
+	const CShaderSamplerBinding* FindSampler(LPCSTR name) const;
+	void ApplySamplers(CRenderBackend& backend) const;
+
+	void FlushConstants(CRenderBackend& backend) const;
 	void ResetConstants() { m_constantsBuffer.Reset(); }
 
 	const CShaderConstantTable& Constants() const { return m_constants; }
@@ -40,16 +49,16 @@ public:
 	LPCSTR GetPixelShaderEntry()  const { return m_psEntry.c_str(); }
 
 	// --- Компиляция ---
-	BOOL Compile(IDirect3DDevice9* device);
+	BOOL Compile(CRenderBackend& backend);
 	void Invalidate() { m_valid = false; }
 	bool IsValid()    const { return m_valid; }
 
 	// --- Рендеринг ---
-	void Apply(IDirect3DDevice9* device) const;
+	void Apply(CRenderBackend& backend);
 
 	// --- Device lost / reset ---
 	void OnDeviceLost();
-	BOOL OnDeviceReset(IDirect3DDevice9* device);
+	BOOL OnDeviceReset(CRenderBackend& backend);
 
 	// Диагностика
 	const CShaderProgram& GetVertexProgram() const { return m_vs; }
@@ -69,6 +78,8 @@ private:
 
 	CShaderConstantTable m_constants;
 	CShaderConstantBuffer m_constantsBuffer;
+
+	xr_vector<CShaderSamplerBinding> m_samplers;
 
 	bool m_valid = false;
 };

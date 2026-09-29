@@ -1,0 +1,35 @@
+////////////////////////////////////////////////////////////////////////////////
+// Created: 29.09.2026
+// Author: NSDeathman
+// Nocturning studio for NS Platform X
+////////////////////////////////////////////////////////////////////////////////
+#pragma once
+////////////////////////////////////////////////////////////////////////////////
+enum class ETextureFormat : uint32_t
+{
+	Unknown = 0,
+
+	// Color
+	R8G8B8A8_UNORM,
+	R8G8B8A8_UNORM_SRGB,
+	B8G8R8A8_UNORM,
+	B8G8R8A8_UNORM_SRGB,
+	R10G10B10A2_UNORM,
+	R16G16B16A16_FLOAT,
+	R16G16B16A16_UNORM,
+	R32G32B32A32_FLOAT,
+	R32_FLOAT,
+	R16_FLOAT,
+	R8_UNORM,
+
+	// Depth/Stencil
+	D24_UNORM_S8_UINT,
+	D32_FLOAT,
+	D16_UNORM,
+
+	// Compressed
+	BC1_UNORM,
+	BC3_UNORM,
+	BC5_UNORM,
+};
+////////////////////////////////////////////////////////////////////////////////

@@ -116,7 +116,7 @@ class XRCORE_API CLocatorAPI
   public:
 	CLocatorAPI();
 	~CLocatorAPI();
-	void _initialize(u32 flags, LPCSTR target_folder = 0, LPCSTR fs_name = 0);
+	void _initialize(u32 flags, LPCSTR target_folder = 0, LPCSTR fs_name = 0, BOOL unpack_archives = TRUE);
 	void _destroy();
 
 	void rescan_path(LPCSTR full_path, BOOL bRecurse);

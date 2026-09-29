@@ -434,6 +434,9 @@
   <ItemGroup>
     <ClCompile Include="ambient_occlusion_stage_pass_hbao_plus.xrps" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="test\test.hlsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
