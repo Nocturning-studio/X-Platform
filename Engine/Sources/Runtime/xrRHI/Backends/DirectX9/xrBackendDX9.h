@@ -9,9 +9,6 @@
 #include <xrRHI/xrRHI.h>
 #include "xrBackendDX9_Internal.h"
 ////////////////////////////////////////////////////////////////////////////////
-#pragma warning(push)
-#pragma warning(disable : 4251)
-////////////////////////////////////////////////////////////////////////////////
 class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 {
   public:
@@ -42,6 +39,11 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual void* GetTextureNativeHandle(RHI_TextureHandle handle) override;
 	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) override;
 
+	virtual void SetBlendState(const RHI_BlendState& state) override;
+	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) override;
+	virtual void SetRasterizerState(const RHI_RasterizerState& state) override;
+	virtual void InvalidateStateCache() override;
+
   private:
 	IDirect3D9Ex* m_pD3D;
 	IDirect3DDevice9Ex* m_pDevice;
@@ -56,6 +58,14 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	std::vector<DX9Texture*> m_Textures;
 	std::stack<uint32_t> m_FreeTextureIndices;
 
+	RHI_BlendState        m_blendCache{};
+	RHI_DepthStencilState m_depthCache{};
+	RHI_RasterizerState   m_rasterCache{};
+
+	bool m_blendCacheValid = false;
+	bool m_depthCacheValid = false;
+	bool m_rasterCacheValid = false;
+
 	void CacheDeviceCapsFromD3D();
 
 	RHI_TextureHandle AllocRHI_TextureHandle(DX9Texture* tex);
@@ -69,9 +79,5 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params, D3DFORMAT& outBackBufferFmt, D3DFORMAT& outDepthStencilFmt);
 
 	void FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt, D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz);
-
-	DWORD SelectVertexProcessing();
 };
-////////////////////////////////////////////////////////////////////////////////
-#pragma warning(pop)
 ////////////////////////////////////////////////////////////////////////////////

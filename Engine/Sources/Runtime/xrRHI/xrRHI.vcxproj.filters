@@ -49,6 +49,9 @@
     <ClInclude Include="xrRHI_Macros.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="xrRHI_States.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -71,6 +74,9 @@
     </ClCompile>
     <ClCompile Include="xrRHI_BackendFabric.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_States.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

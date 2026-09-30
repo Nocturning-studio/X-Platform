@@ -94,8 +94,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	else
 	{
 		IDirect3DTexture9* tex2D = nullptr;
-		hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels, usage, d3dFmt, D3DPOOL_DEFAULT, &tex2D,
-									  nullptr);
+		hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels, usage, d3dFmt, D3DPOOL_DEFAULT, &tex2D, nullptr);
 
 		if(FAILED(hr))
 		{

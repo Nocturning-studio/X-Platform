@@ -35,6 +35,11 @@ class XRRHI_API IRenderBackend
 	virtual bool CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, bool isDepthStencil, bool isCube = false) = 0;
 	virtual void* GetTextureNativeHandle(RHI_TextureHandle handle) = 0;
 	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) = 0;
+
+	virtual void SetBlendState(const RHI_BlendState& state) = 0;
+	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) = 0;
+	virtual void SetRasterizerState(const RHI_RasterizerState& state) = 0;
+	virtual void InvalidateStateCache() = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus

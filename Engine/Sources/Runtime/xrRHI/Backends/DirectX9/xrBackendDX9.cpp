@@ -117,23 +117,6 @@ void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params, 
 	m_PP.PresentationInterval = (params.SyncInterval == 0) ? D3DPRESENT_INTERVAL_IMMEDIATE : D3DPRESENT_INTERVAL_ONE;
 }
 
-DWORD CRenderBackendDX9::SelectVertexProcessing()
-{
-	DWORD vertexProcessing = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-	D3DCAPS9 caps;
-	if(m_pD3D && SUCCEEDED(m_pD3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &caps)))
-	{
-		if(caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-		{
-			if(caps.DevCaps & D3DDEVCAPS_PUREDEVICE)
-				vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE;
-			else
-				vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING;
-		}
-	}
-	return vertexProcessing;
-}
-
 bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& params)
 {
 	m_hWnd = hWnd;
@@ -164,7 +147,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	UINT refreshHz = params.FullscreenRefreshHz ? params.FullscreenRefreshHz : m_DesktopRefreshRate;
 	FillPresentParams(params, backBufferFmt, depthStencilFmt, refreshHz);
 
-	DWORD vertexProcessing = SelectVertexProcessing();
+	DWORD vertexProcessing = D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_PUREDEVICE;
 
 	D3DDISPLAYMODEEX ModeEx;
 	D3DDISPLAYMODEEX* pModeEx = nullptr;
@@ -196,12 +179,15 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
+	InvalidateStateCache();
+
 	Msg("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
 	return true;
 }
 
 void CRenderBackendDX9::DestroyDevice()
 {
+	InvalidateStateCache();
 	if(m_pDevice)
 		m_pDevice->Release();
 	if(m_pD3D)
@@ -257,6 +243,8 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &m_AdapterID);
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
+
+	InvalidateStateCache();
 
 	Msg("* [DX9] Device reset successfully: %dx%d %s, interval=%d", params.BackBufferWidth, 
 																	  params.BackBufferHeight, 
