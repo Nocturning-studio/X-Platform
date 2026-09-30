@@ -145,7 +145,7 @@ void CResourceManager::OnFrameEnd()
 
 void CResourceManager::CollectGarbage()
 {
-	for (auto it = m_tracked.begin(); it != m_tracked.end(); )
+	for (auto it = m_tracked.rbegin(); it != m_tracked.rend(); )
 	{
 		STrackedResource& tr = *it;
 
@@ -167,7 +167,8 @@ void CResourceManager::CollectGarbage()
 		if (elapsed >= kDeferredFrameCount)
 		{
 			xr_delete(tr.ptr);
-			it = m_tracked.erase(it);
+			it = xr_vector<STrackedResource>::reverse_iterator(
+				m_tracked.erase(std::next(it).base()));
 		}
 		else
 		{
