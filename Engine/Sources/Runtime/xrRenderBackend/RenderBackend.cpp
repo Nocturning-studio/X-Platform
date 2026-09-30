@@ -7,6 +7,18 @@
 #include "RenderBackend.h"
 #include <xrRHI/xrRHI.h>
 ////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	// 0xAARRGGBB -> fvec4
+	inline fvec4 ARGBToFvec4(uint32_t c)
+	{
+		const float inv = 1.0f / 255.0f;
+		return fvec4{ ((c >> 16) & 0xFF) * inv,
+					  ((c >> 8) & 0xFF) * inv,
+					  (c & 0xFF) * inv,
+					  ((c >> 24) & 0xFF) * inv };
+	}
+} // namespace
 
 CRenderBackend::CRenderBackend() = default;
 
@@ -51,11 +63,9 @@ bool CRenderBackend::LoadRHIModule(RHI_BackendType type)
 	return true;
 }
 
-bool CRenderBackend::CreateDevice(HWND hWnd,
-	RHI_BackendType backendType,
-	const RHI_PresentationParams & params)
+bool CRenderBackend::CreateDevice(HWND hWnd, RHI_BackendType backendType, const RHI_PresentationParams& params)
 {
-	if (m_pDevice)
+	if (m_pRHI)
 	{
 		Msg("! [RenderBackend] CreateDevice: device already created");
 		return false;
@@ -74,45 +84,24 @@ bool CRenderBackend::CreateDevice(HWND hWnd,
 		return false;
 	}
 
-	// Кешируем D3D-указатели.
-	m_pD3D = static_cast<IDirect3D9Ex*>(m_pRHI->GetD3DHandle());
-	m_pDevice = static_cast<IDirect3DDevice9Ex*>(m_pRHI->GetDeviceHandle());
+	m_presentParams = params;
+	m_presentParams.BackBufferWidth = m_pRHI->GetBackBufferWidth();
+	m_presentParams.BackBufferHeight = m_pRHI->GetBackBufferHeight();
 
-	if (!m_pDevice)
-	{
-		Msg("! [RenderBackend] RHI returned null device handle");
-		DestroyDevice();
-		return false;
-	}
+	m_resources.SetDevice(GetDevice());
+	m_resources.OnDeviceReset(GetDevice());
 
-	if (!AcquireBackBuffers())
-	{
-		DestroyDevice();
-		return false;
-	}
-
-	ApplyPresentParamsFromRHI(params);
-	SetupDefaultViewport();
-
-	// Сообщаем ресурсам про device.
-	m_resources.SetDevice(m_pDevice);
-	m_resources.OnDeviceReset(m_pDevice);
-
-	D3DSURFACE_DESC desc{};
-	m_pBaseRT->GetDesc(&desc);
-	Msg("* [RenderBackend] Device created: %ux%u", desc.Width, desc.Height);
+	Msg("* [RenderBackend] Device created: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 	return true;
 }
 
 void CRenderBackend::DestroyDevice()
 {
-	if (!m_pRHI && !m_hRHI && !m_pDevice)
+	if (!m_pRHI && !m_hRHI)
 		return;
 
-	// Порядок: сначала подсистемы, затем сам RHI.
 	m_resources.OnDeviceLost();
 	m_states.Invalidate();
-	ReleaseBackBuffers();
 
 	if (m_pRHI)
 	{
@@ -126,20 +115,14 @@ void CRenderBackend::DestroyDevice()
 		m_hRHI = nullptr;
 	}
 
-	m_pD3D = nullptr;
-	m_pDevice = nullptr;
 	m_inScene = false;
-
-	ZeroMemory(&m_DevPP, sizeof(m_DevPP));
+	ZeroMemory(&m_presentParams, sizeof(m_presentParams));
 }
 
-bool CRenderBackend::ResetDevice(const RHI_PresentationParams & params)
+bool CRenderBackend::ResetDevice(const RHI_PresentationParams& params)
 {
-	if (!m_pRHI || !m_pRHI->GetDeviceHandle())
+	if (!m_pRHI)
 		return false;
-
-	// Отпускаем backbuffer/zb ДО Reset — иначе D3D9 откажет.
-	ReleaseBackBuffers();
 
 	if (!m_pRHI->Reset(params))
 	{
@@ -147,50 +130,41 @@ bool CRenderBackend::ResetDevice(const RHI_PresentationParams & params)
 		return false;
 	}
 
-	// Device-хэндлы после reset могут отличаться — перечитываем.
-	m_pD3D = static_cast<IDirect3D9Ex*>(m_pRHI->GetD3DHandle());
-	m_pDevice = static_cast<IDirect3DDevice9Ex*>(m_pRHI->GetDeviceHandle());
-	if (!m_pDevice)
-		return false;
+	m_presentParams = params;
+	m_presentParams.BackBufferWidth = m_pRHI->GetBackBufferWidth();
+	m_presentParams.BackBufferHeight = m_pRHI->GetBackBufferHeight();
 
-	if (!AcquireBackBuffers())
-		return false;
+	m_resources.SetDevice(GetDevice());
+	m_resources.OnDeviceReset(GetDevice());
 
-	ApplyPresentParamsFromRHI(params);
-	SetupDefaultViewport();
-
-	m_resources.SetDevice(m_pDevice);
-	m_resources.OnDeviceReset(m_pDevice);
-
+	Msg("* [RenderBackend] Device reset: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 	return true;
 }
 
 bool CRenderBackend::NeedReset() const
 {
-	if (!m_pDevice)
+	if (!m_pRHI)
 		return false;
-	return m_pDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET;
+	return m_pRHI->CheckDeviceStatus() == RHI_DeviceStatus::NeedReset;
 }
 
 void CRenderBackend::BeginFrame()
 {
-	if (!m_pDevice || m_inScene)
+	if (!m_pRHI || m_inScene)
 		return;
 
 	m_resources.OnFrameBegin();
-	if (m_pRHI)
-		m_pRHI->OnFrameBegin();
+	m_pRHI->OnFrameBegin();
 
 	m_inScene = true;
 }
 
 void CRenderBackend::EndFrame()
 {
-	if (!m_pDevice || !m_inScene)
+	if (!m_pRHI || !m_inScene)
 		return;
 
-	if (m_pRHI)
-		m_pRHI->OnFrameEnd();
+	m_pRHI->OnFrameEnd();
 
 	m_resources.OnFrameEnd();
 	m_inScene = false;
@@ -204,7 +178,7 @@ void CRenderBackend::Present()
 
 void CRenderBackend::OnDeviceLost()
 {
-	if (!m_pDevice)
+	if (!m_pRHI)
 		return;
 
 	m_resources.OnDeviceLost();
@@ -217,24 +191,32 @@ bool CRenderBackend::OnDeviceReset()
 	if (!m_pRHI)
 		return false;
 
-	m_pD3D = static_cast<IDirect3D9Ex*>(m_pRHI->GetD3DHandle());
-	m_pDevice = static_cast<IDirect3DDevice9Ex*>(m_pRHI->GetDeviceHandle());
-	if (!m_pDevice)
-		return false;
-
-	if (!AcquireBackBuffers())
-		return false;
-
-	SetupDefaultViewport();
-	m_resources.SetDevice(m_pDevice);
-	m_resources.OnDeviceReset(m_pDevice);
+	m_resources.SetDevice(GetDevice());
+	m_resources.OnDeviceReset(GetDevice());
 	return true;
+}
+
+IDirect3DDevice9Ex* CRenderBackend::GetDevice() const
+{
+	if (!m_pRHI)
+		return nullptr;
+	return static_cast<IDirect3DDevice9Ex*>(m_pRHI->GetDeviceHandle());
 }
 
 const RHIDeviceCaps& CRenderBackend::GetDeviceCaps() const
 {
 	static RHIDeviceCaps s_empty{};
 	return m_pRHI ? m_pRHI->GetDeviceCaps() : s_empty;
+}
+
+uint32_t CRenderBackend::GetBackBufferWidth() const
+{
+	return m_pRHI ? m_pRHI->GetBackBufferWidth() : 0;
+}
+
+uint32_t CRenderBackend::GetBackBufferHeight() const
+{
+	return m_pRHI ? m_pRHI->GetBackBufferHeight() : 0;
 }
 
 void CRenderBackend::SetShaderPass(CShaderPass* pass)
@@ -245,12 +227,16 @@ void CRenderBackend::SetShaderPass(CShaderPass* pass)
 		return;
 	}
 
-	if (m_pDevice)
+	if (m_pRHI)
 	{
-		m_pDevice->SetVertexShader(nullptr);
-		m_pDevice->SetPixelShader(nullptr);
-		for (uint32_t i = 0; i < 16; ++i)
-			m_pDevice->SetTexture(i, nullptr);
+		IDirect3DDevice9Ex* device = GetDevice();
+		if (device)
+		{
+			device->SetVertexShader(nullptr);
+			device->SetPixelShader(nullptr);
+			for (u32 i = 0; i < 16; ++i)
+				device->SetTexture(i, nullptr);
+		}
 	}
 }
 
@@ -264,10 +250,12 @@ ref_texture CRenderBackend::CreateDepthStencil(uint32_t w, uint32_t h, ETextureF
 	return m_resources.CreateDepthStencil(w, h, fmt);
 }
 
-void CRenderBackend::Clear(uint32_t flags, D3DCOLOR color, float z, uint32_t stencil)
+void CRenderBackend::Clear(uint32_t flags, uint32_t colorARGB, float z, uint32_t stencil)
 {
-	if (!m_pDevice) return;
-	m_pDevice->Clear(0, nullptr, flags, color, z, stencil);
+	if (!m_pRHI)
+		return;
+
+	m_pRHI->Clear(flags, ARGBToFvec4(colorARGB), z, static_cast<u8>(stencil));
 }
 
 ref_vertexdecl CRenderBackend::CreateVertexDeclaration(const CVertexLayoutDesc& layout)
@@ -292,78 +280,24 @@ ref_geometry CRenderBackend::CreateGeometry()
 
 void CRenderBackend::BindGeometry(const ref_geometry& g)
 {
-	if (g._get() && m_pDevice)
-		g->Bind(m_pDevice);
+	if (g._get())
+	{
+		IDirect3DDevice9Ex* device = GetDevice();
+		if (device)
+			g->Bind(device);
+	}
 }
 
 void CRenderBackend::DrawGeometry(const ref_geometry& g)
 {
-	if (!g._get() || !m_pDevice)
+	if (!g._get())
 		return;
 
-	// В D3D9 топология — параметр Draw*, поэтому Bind+Draw идут одним куском.
-	// В DX11/12 здесь дополнительно нужно выставить primitive topology в IA-стейт.
-	g->Bind(m_pDevice);
-	g->Draw(m_pDevice);
-}
+	IDirect3DDevice9Ex* device = GetDevice();
+	if (!device)
+		return;
 
-// ---------------------------------------------------------------------------
-
-bool CRenderBackend::AcquireBackBuffers()
-{
-	ReleaseBackBuffers();
-	if (!m_pDevice) return false;
-
-	if (FAILED(m_pDevice->GetRenderTarget(0, &m_pBaseRT)))
-	{
-		Msg("! [RenderBackend] GetRenderTarget(0) failed");
-		return false;
-	}
-	if (FAILED(m_pDevice->GetDepthStencilSurface(&m_pBaseZB)))
-	{
-		Msg("! [RenderBackend] GetDepthStencilSurface failed");
-		RELEASE(m_pBaseRT);
-		return false;
-	}
-	return true;
-}
-
-void CRenderBackend::ReleaseBackBuffers()
-{
-	RELEASE(m_pBaseZB);
-	RELEASE(m_pBaseRT);
-}
-
-void CRenderBackend::ApplyPresentParamsFromRHI(const RHI_PresentationParams & params)
-{
-	D3DSURFACE_DESC desc{};
-	if (m_pBaseRT)
-		m_pBaseRT->GetDesc(&desc);
-
-	m_DevPP.BackBufferWidth = desc.Width;
-	m_DevPP.BackBufferHeight = desc.Height;
-	m_DevPP.BackBufferFormat = D3DFMT_X8R8G8B8;
-	m_DevPP.Windowed = params.Windowed;
-	m_DevPP.PresentationInterval = (params.SyncInterval == 0)
-		? D3DPRESENT_INTERVAL_IMMEDIATE
-		: D3DPRESENT_INTERVAL_DEFAULT;
-	m_DevPP.BackBufferCount = params.BackBufferCount;
-	m_DevPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	m_DevPP.FullScreen_RefreshRateInHz = params.FullscreenRefreshHz;
-}
-
-void CRenderBackend::SetupDefaultViewport()
-{
-	if (!m_pDevice || !m_pBaseRT) return;
-
-	D3DSURFACE_DESC desc{};
-	m_pBaseRT->GetDesc(&desc);
-
-	D3DVIEWPORT9 vp{};
-	vp.X = 0; vp.Y = 0;
-	vp.Width = desc.Width;
-	vp.Height = desc.Height;
-	vp.MinZ = 0.0f; vp.MaxZ = 1.0f;
-	m_pDevice->SetViewport(&vp);
+	g->Bind(device);
+	g->Draw(device);
 }
 ////////////////////////////////////////////////////////////////////////////////

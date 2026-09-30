@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
+#include <xrRHI/xrRHI.h>
 #include "xrRenderBackendAPI.h"
 #include "States/StateCache.h"
 #include "Resources/Textures/Texture.h"
@@ -45,14 +46,12 @@ class XRRB_API CRenderBackend
 
 	// --- Device access ---
 	IRenderBackend* GetRHI() const { return m_pRHI; }
-	IDirect3D9Ex* GetD3D() const { return m_pD3D; }
-	IDirect3DDevice9Ex* GetDevice() const { return m_pDevice; }
-	IDirect3DSurface9* GetBaseRT() const { return m_pBaseRT; }
-	IDirect3DSurface9* GetBaseZB() const { return m_pBaseZB; }
-	const D3DPRESENT_PARAMETERS& GetPresentParams() const { return m_DevPP; }
-
+	DEPRECATED IDirect3DDevice9Ex* GetDevice() const;
 	const RHIDeviceCaps& GetDeviceCaps() const;
-	bool IsReady() const { return m_pDevice != nullptr; }
+	const RHI_PresentationParams& GetPresentParams() const { return m_presentParams; }
+	bool IsReady() const { return m_pRHI != nullptr; }
+	uint32_t GetBackBufferWidth()  const;
+	uint32_t GetBackBufferHeight() const;
 
 	// --- Subsystems ---
 	CResourceManager& Resources() { return m_resources; }
@@ -66,7 +65,7 @@ class XRRB_API CRenderBackend
 
 	ref_texture CreateRenderTarget(uint32_t w, uint32_t h, ETextureFormat fmt, uint32_t mips = 1);
 	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, ETextureFormat fmt = ETextureFormat::D24_UNORM_S8_UINT);
-	void Clear(uint32_t flags, D3DCOLOR color = 0, float z = 1.0f, uint32_t stencil = 0);
+	void Clear(uint32_t flags, uint32_t colorARGB = 0, float z = 1.0f, uint32_t stencil = 0);
 
 	ref_vertexdecl CreateVertexDeclaration(const CVertexLayoutDesc& layout);
 	ref_vertexbuffer CreateVertexBuffer(const CVertexBufferDesc& desc, const void* data = nullptr);
@@ -78,21 +77,13 @@ class XRRB_API CRenderBackend
 
   private:
 	bool LoadRHIModule(RHI_BackendType type);
-	bool AcquireBackBuffers();
-	void ReleaseBackBuffers();
-	void ApplyPresentParamsFromRHI(const RHI_PresentationParams& params);
-	void SetupDefaultViewport();
 
   private:
 	// RHI
 	HMODULE m_hRHI = nullptr;
 	IRenderBackend* m_pRHI = nullptr;
 
-	IDirect3D9Ex* m_pD3D = nullptr;
-	IDirect3DDevice9Ex* m_pDevice = nullptr;
-	IDirect3DSurface9* m_pBaseRT = nullptr;
-	IDirect3DSurface9* m_pBaseZB = nullptr;
-	D3DPRESENT_PARAMETERS m_DevPP{};
+	RHI_PresentationParams m_presentParams{};
 
 	CResourceManager m_resources;
 	CStateCache m_states;

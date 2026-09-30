@@ -178,7 +178,7 @@ void CBackendTest::Frame()
 
 	m_backend.BeginFrame();
 
-	m_backend.Clear(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0xFF102030, 1.0f, 0);
+	m_backend.Clear(RHI_CLEAR_TARGET | RHI_CLEAR_ZBUFFER | RHI_CLEAR_STENCIL, 0xFF102030, 1.0f, 0);
 
 	if(m_shaderReady && m_triangle._get())
 	{

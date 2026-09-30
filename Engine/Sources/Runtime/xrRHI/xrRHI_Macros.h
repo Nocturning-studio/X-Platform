@@ -4,10 +4,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#if defined(_MSC_VER)
-#define DEPRECATED __declspec(deprecated("This function/field is deprecated. Use new backend instead."))
-#elif defined(__GNUC__) || defined(__clang__)
-#define DEPRECATED __attribute__((deprecated("This function/field is deprecated. Use new backend instead.")))
+#if 0// defined(_MSC_VER)
+#define DEPRECATED [[deprecated]]
 #else
 #define DEPRECATED
 #endif
