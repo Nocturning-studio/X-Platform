@@ -109,6 +109,16 @@ namespace
 
 } // namespace
 
+void CRenderBackendDX9::InvalidateStateCache()
+{
+	m_blendCacheValid = false;
+	m_depthCacheValid = false;
+	m_rasterCacheValid = false;
+	m_viewportCacheValid = false;
+	m_scissorCacheValid = false;
+	m_scissorEnabled = false;
+}
+
 void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)
 {
 	if (!m_pDevice)
@@ -290,10 +300,101 @@ void CRenderBackendDX9::SetRasterizerState(const RHI_RasterizerState& s)
 	m_rasterCacheValid = true;
 }
 
-void CRenderBackendDX9::InvalidateStateCache()
+void CRenderBackendDX9::SetViewport(const RHI_Viewport& vp)
 {
-	m_blendCacheValid = false;
-	m_depthCacheValid = false;
-	m_rasterCacheValid = false;
+	if (!m_pDevice)
+		return;
+
+	if (m_viewportCacheValid && m_viewportCache == vp)
+		return;
+
+	D3DVIEWPORT9 d3dvp{};
+	d3dvp.X = vp.X;
+	d3dvp.Y = vp.Y;
+	d3dvp.Width = vp.Width;
+	d3dvp.Height = vp.Height;
+	d3dvp.MinZ = vp.MinZ;
+	d3dvp.MaxZ = vp.MaxZ;
+
+	const HRESULT hr = m_pDevice->SetViewport(&d3dvp);
+	if (FAILED(hr))
+	{
+		Msg("! [DX9] SetViewport failed (0x%08x)", hr);
+		return;
+	}
+
+	m_viewportCache = vp;
+	m_viewportCacheValid = true;
+}
+
+void CRenderBackendDX9::SetScissorRect(const RHI_Rect* rect)
+{
+	if (!m_pDevice)
+		return;
+
+	// nullptr — выключить scissor.
+	if (!rect)
+	{
+		if (!m_scissorEnabled)
+			return;
+
+		m_pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+		m_scissorEnabled = false;
+		m_scissorCacheValid = false;
+		return;
+	}
+
+	if (m_scissorCacheValid && m_scissorEnabled && m_scissorCache == *rect)
+		return;
+
+	if (!m_scissorEnabled)
+	{
+		m_pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
+		m_scissorEnabled = true;
+	}
+
+	RECT d3drect{};
+	d3drect.left = rect->left;
+	d3drect.top = rect->top;
+	d3drect.right = rect->right;
+	d3drect.bottom = rect->bottom;
+
+	const HRESULT hr = m_pDevice->SetScissorRect(&d3drect);
+	if (FAILED(hr))
+	{
+		Msg("! [DX9] SetScissorRect failed (0x%08x)", hr);
+		return;
+	}
+
+	m_scissorCache = *rect;
+	m_scissorCacheValid = true;
+}
+
+void CRenderBackendDX9::CacheBackBufferDimensions()
+{
+	m_backBufferWidth = 0;
+	m_backBufferHeight = 0;
+
+	if (!m_pDevice)
+		return;
+
+	IDirect3DSurface9* bb = nullptr;
+	if (FAILED(m_pDevice->GetRenderTarget(0, &bb)) || !bb)
+	{
+		Msg("! [DX9] CacheBackBufferDimensions: GetRenderTarget(0) failed");
+		return;
+	}
+
+	D3DSURFACE_DESC desc{};
+	if (SUCCEEDED(bb->GetDesc(&desc)))
+	{
+		m_backBufferWidth = desc.Width;
+		m_backBufferHeight = desc.Height;
+	}
+	bb->Release();
+
+	// Также подчищаем кэш состояния — размеры могли поменяться,
+	// и старый viewport/scissor теперь невалиден.
+	InvalidateStateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////

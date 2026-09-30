@@ -10,10 +10,7 @@
 enum class RHI_BackendType : uint32_t
 {
 	DirectX9 = 0, // Direct3D9Ex
-	DirectX11,	  // Direct3D11 (для будущего)
 	DirectX12,	  // Direct3D12
-	Vulkan,		  // Vulkan
-	OpenGL,		  // OpenGL / OpenGL ES
 };
 
 // =========================================================================
@@ -172,21 +169,33 @@ enum RHI_ClearFlags : uint32_t
 // Описание вьюпорта
 struct RHI_Viewport
 {
-	uint32_t X;
-	uint32_t Y;
-	uint32_t Width;
-	uint32_t Height;
-	float MinZ;
-	float MaxZ;
+	u32   X = 0;
+	u32   Y = 0;
+	u32   Width = 0;
+	u32   Height = 0;
+	float MinZ = 0.0f;
+	float MaxZ = 1.0f;
+
+	constexpr bool operator==(const RHI_Viewport& o) const noexcept
+	{
+		return X == o.X && Y == o.Y && Width == o.Width && Height == o.Height && MinZ == o.MinZ && MaxZ == o.MaxZ;
+	}
+	constexpr bool operator!=(const RHI_Viewport& o) const noexcept { return !(*this == o); }
 };
 
 // Описание прямоугольника (Scissor Rect)
 struct RHI_Rect
 {
-	s32 left;
-	s32 top;
-	s32 right;
-	s32 bottom;
+	s32 left = 0;
+	s32 top = 0;
+	s32 right = 0;
+	s32 bottom = 0;
+
+	constexpr bool operator==(const RHI_Rect& o) const noexcept
+	{
+		return left == o.left && top == o.top && right == o.right && bottom == o.bottom;
+	}
+	constexpr bool operator!=(const RHI_Rect& o) const noexcept { return !(*this == o); }
 };
 
 struct RHI_TextureDesc

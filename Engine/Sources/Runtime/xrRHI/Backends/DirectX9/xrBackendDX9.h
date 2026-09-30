@@ -31,7 +31,12 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 
 	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const override;
 
+	virtual u32 GetBackBufferWidth() const override { return m_backBufferWidth; }
+	virtual u32 GetBackBufferHeight() const override { return m_backBufferHeight; }
 	virtual RHI_Format GetBackBufferFormat() const override;
+
+	virtual void SetViewport(const RHI_Viewport& vp) override;
+	virtual void SetScissorRect(const RHI_Rect* rect) override;
 
 	RHI_TextureHandle CreateTexture(const RHI_TextureDesc& desc, const void* initialData = nullptr) override;
 	void DestroyTexture(RHI_TextureHandle handle) override;
@@ -51,6 +56,8 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	RHIDeviceCaps m_DeviceCaps;
 	D3DADAPTER_IDENTIFIER9 m_AdapterID;
 	D3DDISPLAYMODE m_DesktopMode;
+	u32 m_backBufferWidth = 0;
+	u32 m_backBufferHeight = 0;
 	D3DFORMAT m_BackBufferFmt;
 	HWND m_hWnd;
 	UINT m_DesktopRefreshRate = 60;
@@ -58,26 +65,31 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	std::vector<DX9Texture*> m_Textures;
 	std::stack<uint32_t> m_FreeTextureIndices;
 
-	RHI_BlendState        m_blendCache{};
+	RHI_BlendState m_blendCache{};
 	RHI_DepthStencilState m_depthCache{};
-	RHI_RasterizerState   m_rasterCache{};
+	RHI_RasterizerState m_rasterCache{};
 
 	bool m_blendCacheValid = false;
 	bool m_depthCacheValid = false;
 	bool m_rasterCacheValid = false;
 
+	RHI_Viewport m_viewportCache{};
+	bool m_viewportCacheValid = false;
+
+	RHI_Rect m_scissorCache{};
+	bool m_scissorCacheValid = false;
+	bool m_scissorEnabled = false;
+
+	void FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt, D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz);
 	void CacheDeviceCapsFromD3D();
+	void CacheBackBufferDimensions();
+	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params, D3DFORMAT& outBackBufferFmt, D3DFORMAT& outDepthStencilFmt);
+	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
 
 	RHI_TextureHandle AllocRHI_TextureHandle(DX9Texture* tex);
 	DX9Texture* GetTexture(RHI_TextureHandle handle);
 	void FreeRHI_TextureHandle(RHI_TextureHandle handle);
 
 	void ReleaseAllResources();
-
-	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
-
-	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params, D3DFORMAT& outBackBufferFmt, D3DFORMAT& outDepthStencilFmt);
-
-	void FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt, D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz);
 };
 ////////////////////////////////////////////////////////////////////////////////

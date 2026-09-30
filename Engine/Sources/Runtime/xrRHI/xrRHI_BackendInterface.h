@@ -26,7 +26,12 @@ class XRRHI_API IRenderBackend
 
 	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const = 0;
 
+	virtual u32 GetBackBufferWidth()  const = 0;
+	virtual u32 GetBackBufferHeight() const = 0;
 	virtual RHI_Format GetBackBufferFormat() const = 0;
+
+	virtual void SetViewport(const RHI_Viewport& vp) = 0;
+	virtual void SetScissorRect(const RHI_Rect* rect) = 0;
 
 	virtual void Clear(uint32_t clearFlags, const fvec4 color, float depth, uint8_t stencil) = 0;
 

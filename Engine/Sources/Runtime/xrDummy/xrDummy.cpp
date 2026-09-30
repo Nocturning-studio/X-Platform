@@ -98,7 +98,7 @@ bool CBackendTest::Init(HINSTANCE hInst, int width, int height)
 	if(!CreateTriangle())
 		return false;
 
-	Msg("* [Test] Init OK — %ux%u", width, height);
+	Msg("* [Test] Init OK - %ux%u", width, height);
 	return true;
 }
 

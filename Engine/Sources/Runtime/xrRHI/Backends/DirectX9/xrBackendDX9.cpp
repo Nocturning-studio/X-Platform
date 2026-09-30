@@ -72,8 +72,10 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 	return true;
 }
 
-void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt,
-										  D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz)
+void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params, 
+										  D3DFORMAT backBufferFmt, 
+										  D3DFORMAT depthStencilFmt, 
+										  UINT fullscreenRefreshHz)
 {
 	ZeroMemory(&m_PP, sizeof(m_PP));
 	m_PP.BackBufferWidth = params.BackBufferWidth;
@@ -175,19 +177,21 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 		}
 	}
 
+	CacheBackBufferDimensions();
+
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &m_AdapterID);
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	InvalidateStateCache();
-
-	Msg("* [DX9] Device created successfully: %dx%d %s, interval=%d", params.BackBufferWidth, params.BackBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
+	Msg("* [DX9] Device created successfully: %dx%d %s, interval=%d", m_backBufferWidth, m_backBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
 	return true;
 }
 
 void CRenderBackendDX9::DestroyDevice()
 {
 	InvalidateStateCache();
+	m_backBufferWidth = 0;
+	m_backBufferHeight = 0;
 	if(m_pDevice)
 		m_pDevice->Release();
 	if(m_pD3D)
@@ -240,16 +244,16 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 		return false;
 	}
 
+	CacheBackBufferDimensions();
+
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &m_AdapterID);
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	InvalidateStateCache();
-
-	Msg("* [DX9] Device reset successfully: %dx%d %s, interval=%d", params.BackBufferWidth, 
-																	  params.BackBufferHeight, 
-																	  params.Windowed ? "windowed" : "fullscreen", 
-																	  params.SyncInterval);
+	Msg("* [DX9] Device reset successfully: %dx%d %s, interval=%d", m_backBufferWidth, 
+																	m_backBufferHeight, 
+																	params.Windowed ? "windowed" : "fullscreen", 
+																	params.SyncInterval);
 	return true;
 }
 
