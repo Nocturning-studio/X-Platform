@@ -234,4 +234,24 @@ struct RHI_PresentationParams
 	uint32_t MultisampleQuality = 0;
 	bool EnableAutoDepthStencil = true; // Создавать ли автоматический Depth/Stencil буфер
 };
+
+// =========================================================================
+// Состояние устройства
+// =========================================================================
+//
+// D3D9: TestCooperativeLevel() возвращает три разных кода, что и даёт три
+//       состояния. D3D9Ex: тот же принцип (плюс D3DERR_DEVICEREMOVED).
+// D3D12: OK | Lost — device loss определяется через GetDeviceRemovedReason()
+//       и HRESULT от Present/ExecuteCommandLists. Промежуточного состояния
+//       "нужен reset" там нет - сразу Lost с последующим полным пересозданием.
+//
+// =========================================================================
+enum class RHI_DeviceStatus : u32
+{
+	OK = 0,     // Устройство работает нормально.
+	NeedReset,  // Устройство потеряно, но может быть восстановлено через Reset().
+				// D3D9: D3DERR_DEVICENOTRESET.
+	Lost,       // Устройство потеряно безвозвратно. Требуется DestroyDevice + CreateDevice.
+				// D3D9: D3DERR_DEVICELOST. D3D12: device removed.
+};
 ////////////////////////////////////////////////////////////////////////////////

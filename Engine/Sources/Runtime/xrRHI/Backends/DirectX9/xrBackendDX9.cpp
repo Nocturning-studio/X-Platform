@@ -257,6 +257,35 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	return true;
 }
 
+RHI_DeviceStatus CRenderBackendDX9::CheckDeviceStatus() const
+{
+	if (!m_pDevice)
+		return RHI_DeviceStatus::Lost;
+
+	const HRESULT hr = m_pDevice->TestCooperativeLevel();
+
+	switch (hr)
+	{
+	case D3D_OK:
+		return RHI_DeviceStatus::OK;
+
+	case D3DERR_DEVICENOTRESET:
+		// Устройство потеряно, но может быть восстановлено через Reset().
+		// Классический случай: fullscreen alt-tab, смена разрешения монитора.
+		return RHI_DeviceStatus::NeedReset;
+
+	case D3DERR_DEVICELOST:
+		// Устройство потеряно безвозвратно или ещё не готово к reset.
+		// D3D9 часто мигает между LOST и NOTRESET несколько кадров —
+		// движок должен просто подождать.
+		return RHI_DeviceStatus::Lost;
+
+	default:
+		Msg("! [DX9] TestCooperativeLevel returned unexpected 0x%08x", hr);
+		return RHI_DeviceStatus::Lost;
+	}
+}
+
 void CRenderBackendDX9::Present()
 {
 	if(m_pDevice)

@@ -14,6 +14,7 @@ class XRRHI_API IRenderBackend
 	virtual bool CreateDevice(HWND hWnd, const RHI_PresentationParams& params) = 0;
 	virtual void DestroyDevice() = 0;
 	virtual bool Reset(const RHI_PresentationParams& params) = 0;
+	virtual RHI_DeviceStatus CheckDeviceStatus() const = 0;
 	virtual void Present() = 0;
 
 	virtual void OnFrameBegin() = 0;

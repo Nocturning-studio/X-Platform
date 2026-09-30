@@ -18,6 +18,7 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual bool CreateDevice(HWND hWnd, const RHI_PresentationParams& params) override;
 	virtual void DestroyDevice() override;
 	virtual bool Reset(const RHI_PresentationParams& params) override;
+	virtual RHI_DeviceStatus CheckDeviceStatus() const override;
 	virtual void Present() override;
 
 	virtual void OnFrameBegin() override;
