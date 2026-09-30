@@ -13,23 +13,29 @@
 #include <xrRenderBackend/xrRenderBackend.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-struct STestVertex
+struct STriangleVertex
 {
 	float x, y, z;
 	float r, g, b, a;
 };
 
+struct SQuadVertex
+{
+	float x, y, z;
+	float u, v;
+};
+
 class CBackendTest
 {
-public:
+  public:
 	bool Init(HINSTANCE hInst, int width, int height);
 	void Frame();
 	void Shutdown();
 
-private:
+  private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		if (msg == WM_DESTROY)
+		if(msg == WM_DESTROY)
 		{
 			PostQuitMessage(0);
 			return 0;
@@ -38,25 +44,32 @@ private:
 	}
 
 	bool CreateOffscreenTargets();
-	void DestroyOffscreenTargets();
+	bool CreateTriangleGeometry();
+	bool CreateQuadGeometry();
 
-	void DrawScene(IRenderBackend& rhi);
+	void DrawPass1_Offscreen(IRenderBackend& rhi);
+	void DrawPass2_Display(IRenderBackend& rhi);
 
 	HWND m_hWnd = nullptr;
 	CRenderBackend m_backend;
 
-	ref_geometry m_triangle;
-	CShaderPass m_shader;
-	bool m_shaderReady = false;
-
-	// --- Offscreen render targets (RHI-native) ---
-	// Хэндлы текстуры + view'ов. Хранятся раздельно: DestroyRTV/DSV должны
-	// вызываться ДО DestroyTexture — иначе surface из D3DPOOL_DEFAULT
-	// останется висеть и не даст освободить текстуру.
-	RHI_TextureHandle    m_offscreenColorTex{};
-	RHI_TextureHandle    m_offscreenDepthTex{};
+	// --- Offscreen render targets ---
+	// Текстуры держим как ref_texture — так их можно передать в CShaderPass.
+	// RTV/DSV создаются отдельно и живут до тех пор, пока мы их не уничтожим.
+	ref_texture m_offscreenColor;
+	ref_texture m_offscreenDepth;
 	RHI_RenderTargetView m_offscreenRTV{};
 	RHI_DepthStencilView m_offscreenDSV{};
+
+	// --- Pass 1: colored triangle into offscreen ---
+	ref_geometry m_triangle;
+	CShaderPass m_passOffscreen;
+	bool m_passOffscreenReady = false;
+
+	// --- Pass 2: full-screen quad sampling offscreen texture ---
+	ref_geometry m_quad;
+	CShaderPass m_passDisplay;
+	bool m_passDisplayReady = false;
 
 	static constexpr uint32_t kOffscreenSize = 512;
 };
@@ -73,15 +86,14 @@ bool CBackendTest::Init(HINSTANCE hInst, int width, int height)
 	wc.lpszClassName = "xrDummy";
 	RegisterClassA(&wc);
 
-	RECT rc{ 0, 0, width, height };
+	RECT rc{0, 0, width, height};
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-	m_hWnd = CreateWindowA(
-		"xrDummy", "X-Ray Test",
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-		rc.right - rc.left, rc.bottom - rc.top,
-		nullptr, nullptr, hInst, nullptr);
-	if (!m_hWnd)
+	m_hWnd = CreateWindowA("xrDummy", "X-Ray Test",
+						   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+						   rc.right - rc.left, rc.bottom - rc.top,
+						   nullptr, nullptr, hInst, nullptr);
+	if(!m_hWnd)
 		return false;
 
 	ShowWindow(m_hWnd, SW_SHOW);
@@ -96,60 +108,33 @@ bool CBackendTest::Init(HINSTANCE hInst, int width, int height)
 
 	R_ASSERT2(m_backend.CreateDevice(m_hWnd, RHI_BackendType::DirectX9Ex, params), "! [Test] CreateDevice failed");
 
-	// --- шейдеры ---
-	m_shader.SetVertexShader("test\\test.hlsl", "vs_main");
-	m_shader.SetPixelShader("test\\test.hlsl", "ps_main");
-	R_ASSERT2(m_shader.Compile(m_backend), "! [Test] shader compile failed");
-	m_shaderReady = true;
-
 	// --- offscreen render targets ---
 	R_ASSERT2(CreateOffscreenTargets(), "! [Test] CreateOffscreenTargets failed");
 
-	// --- геометрия ---
-	const STestVertex verts[] =
+	// --- Pass 1: цветной треугольник ---
+	m_passOffscreen.SetVertexShader("test\\test.hlsl", "vs_main");
+	m_passOffscreen.SetPixelShader("test\\test.hlsl", "ps_main");
+	R_ASSERT2(m_passOffscreen.Compile(m_backend), "! [Test] pass 1 compile failed");
+	m_passOffscreenReady = true;
+
+	R_ASSERT2(CreateTriangleGeometry(), "! [Test] triangle geometry failed");
+
+	// --- Pass 2: показ offscreen-текстуры ---
+	m_passDisplay.SetVertexShader("test\\test.hlsl", "vs_quad");
+	m_passDisplay.SetPixelShader("test\\test.hlsl", "ps_texture");
+	R_ASSERT2(m_passDisplay.Compile(m_backend), "! [Test] pass 2 compile failed");
+	m_passDisplayReady = true;
+
+	R_ASSERT2(CreateQuadGeometry(), "! [Test] quad geometry failed");
+
+	if(!m_passDisplay.SetTexture("s_tex", m_offscreenColor))
 	{
-		{0.0f,  0.6f, 0.5f, 1, 0, 0, 1},
-		{0.5f, -0.4f, 0.5f, 0, 1, 0, 1},
-		{-0.5f, -0.4f, 0.5f, 0, 0, 1, 1},
-	};
-	const uint16_t indices[] = { 0, 1, 2 };
+		Msg("! [Test] Failed to bind offscreen texture to display pass "
+			"(sampler 's_tex' not found in compiled shader)");
+		return false;
+	}
 
-	CVertexBufferDesc vbDesc{};
-	vbDesc.sizeBytes = sizeof(verts);
-	vbDesc.stride = sizeof(STestVertex);
-	vbDesc.usage = BufferUsage_Immutable;
-	vbDesc.debugName = "test.triangle.vb";
-	ref_vertexbuffer vb = m_backend.CreateVertexBuffer(vbDesc, verts);
-	R_ASSERT2(vb, "! [Test] CreateVertexBuffer failed");
-
-	CIndexBufferDesc ibDesc{};
-	ibDesc.sizeBytes = sizeof(indices);
-	ibDesc.format = EIndexFormat::UInt16;
-	ibDesc.usage = BufferUsage_Immutable;
-	ibDesc.debugName = "test.triangle.ib";
-	ref_indexbuffer ib = m_backend.CreateIndexBuffer(ibDesc, indices);
-	R_ASSERT2(ib, "! [Test] CreateIndexBuffer failed");
-
-	// vertex layout: POSITION.xyz + COLOR.rgba
-	CVertexLayoutDesc layout;
-	layout.elements.push_back({ 0, offsetof(STestVertex, x),
-							   EVertexElementType::Float3, EVertexElementSemantic::Position,
-							   0, EVertexInputRate::PerVertex, 0 });
-	layout.elements.push_back({ 0, offsetof(STestVertex, r),
-							   EVertexElementType::Float4, EVertexElementSemantic::Color,
-							   0, EVertexInputRate::PerVertex, 0 });
-	ref_vertexdecl vdecl = m_backend.CreateVertexDeclaration(layout);
-	R_ASSERT2(vdecl, "! [Test] CreateVertexDeclaration failed");
-
-	m_triangle = m_backend.CreateGeometry();
-	R_ASSERT2(m_triangle, "! [Test] CreateGeometry failed");
-	m_triangle->SetVertexDeclaration(vdecl);
-	m_triangle->SetVertexBuffer(0, vb, 0, 0);
-	m_triangle->SetIndexBuffer(ib);
-	m_triangle->SetTopology(EPrimitiveTopology::TriangleList);
-
-	Msg("* [Test] Init OK - %ux%u (vb=%u B, ib=%u idx)",
-		width, height, vbDesc.sizeBytes, (uint32_t)(sizeof(indices) / sizeof(indices[0])));
+	Msg("* [Test] Init OK - %ux%u (offscreen=%ux%u)", width, height, kOffscreenSize, kOffscreenSize);
 	return true;
 }
 
@@ -158,158 +143,206 @@ bool CBackendTest::Init(HINSTANCE hInst, int width, int height)
 bool CBackendTest::CreateOffscreenTargets()
 {
 	IRenderBackend* rhi = m_backend.GetRHI();
-	if (!rhi)
+	if(!rhi)
 	{
 		Msg("! [Test] CreateOffscreenTargets: RHI is null");
 		return false;
 	}
 
-	// --- Color RT ---
-	RHI_TextureDesc colorDesc{};
-	colorDesc.width = kOffscreenSize;
-	colorDesc.height = kOffscreenSize;
-	colorDesc.depth = 1;
-	colorDesc.mipLevels = 1;
-	colorDesc = RHI_TextureDesc::RenderTarget(kOffscreenSize, kOffscreenSize, RHI_Format::RGBA8_UNORM);
-
-	m_offscreenColorTex = rhi->CreateTexture(colorDesc);
-	if (!m_offscreenColorTex.IsValid())
+	m_offscreenColor = m_backend.CreateRenderTarget(kOffscreenSize, kOffscreenSize, RHI_Format::RGBA8_UNORM);
+	if(!m_offscreenColor)
 	{
-		Msg("! [Test] CreateTexture (offscreen color) failed");
+		Msg("! [Test] CreateRenderTarget (offscreen color) failed");
 		return false;
 	}
 
-	m_offscreenRTV = rhi->CreateRTV(m_offscreenColorTex);
-	if (!m_offscreenRTV.IsValid())
+	m_offscreenDepth = m_backend.CreateDepthStencil(kOffscreenSize, kOffscreenSize, RHI_Format::D24_UNORM_S8_UINT);
+	if(!m_offscreenDepth)
+	{
+		Msg("! [Test] CreateDepthStencil (offscreen depth) failed");
+		return false;
+	}
+
+	m_offscreenRTV = m_offscreenColor->CreateRTV();
+	if(!m_offscreenRTV.IsValid())
 	{
 		Msg("! [Test] CreateRTV failed");
 		return false;
 	}
 
-	// --- Depth/stencil ---
-	RHI_TextureDesc depthDesc{};
-	depthDesc.width = kOffscreenSize;
-	depthDesc.height = kOffscreenSize;
-	depthDesc.depth = 1;
-	depthDesc.mipLevels = 1;
-	depthDesc = RHI_TextureDesc::DepthStencil(kOffscreenSize, kOffscreenSize, RHI_Format::D24_UNORM_S8_UINT);
-
-	m_offscreenDepthTex = rhi->CreateTexture(depthDesc);
-	if (!m_offscreenDepthTex.IsValid())
-	{
-		Msg("! [Test] CreateTexture (offscreen depth) failed");
-		return false;
-	}
-
-	m_offscreenDSV = rhi->CreateDSV(m_offscreenDepthTex);
-	if (!m_offscreenDSV.IsValid())
+	m_offscreenDSV = m_offscreenDepth->CreateDSV();
+	if(!m_offscreenDSV.IsValid())
 	{
 		Msg("! [Test] CreateDSV failed");
 		return false;
 	}
 
-	Msg("* [Test] Offscreen targets ready: %ux%u color=%u depth=%u rtv=%u dsv=%u",
-		kOffscreenSize, kOffscreenSize,
-		m_offscreenColorTex.id, m_offscreenDepthTex.id,
-		m_offscreenRTV.id, m_offscreenDSV.id);
+	Msg("* [Test] Offscreen targets ready: %ux%u rtv=%u dsv=%u", kOffscreenSize, kOffscreenSize, m_offscreenRTV.id, m_offscreenDSV.id);
 	return true;
-}
-
-void CBackendTest::DestroyOffscreenTargets()
-{
-	IRenderBackend* rhi = m_backend.GetRHI();
-	if (!rhi)
-		return;
-
-	// ВАЖНЫЙ ПОРЯДОК: сначала views, потом текстуры.
-	//
-	// В D3D9 поверхность, полученная через GetSurfaceLevel, держит ref на
-	// родительскую текстуру. DestroyRTV/DSV делают Release на surface — и
-	// только после этого текстура сможет реально освободиться в
-	// DestroyTexture.
-	if (m_offscreenRTV.IsValid())
-		rhi->DestroyRTV(m_offscreenRTV);
-	if (m_offscreenDSV.IsValid())
-		rhi->DestroyDSV(m_offscreenDSV);
-
-	if (m_offscreenColorTex.IsValid())
-		rhi->DestroyTexture(m_offscreenColorTex);
-	if (m_offscreenDepthTex.IsValid())
-		rhi->DestroyTexture(m_offscreenDepthTex);
-
-	m_offscreenRTV = {};
-	m_offscreenDSV = {};
-	m_offscreenColorTex = {};
-	m_offscreenDepthTex = {};
 }
 
 //------------------------------------------------------------------------------
 
-void CBackendTest::DrawScene(IRenderBackend& rhi)
+bool CBackendTest::CreateTriangleGeometry()
 {
-	if (!m_shaderReady || !m_triangle._get())
-		return;
+	const STriangleVertex verts[] =
+		{
+			{0.0f, 0.6f, 0.5f, 1, 0, 0, 1},
+			{0.5f, -0.4f, 0.5f, 0, 1, 0, 1},
+			{-0.5f, -0.4f, 0.5f, 0, 0, 1, 1},
+		};
+	const uint16_t indices[] = {0, 1, 2};
 
-	m_shader.Apply(m_backend);
-	m_shader.ApplySamplers(m_backend);
-	m_backend.DrawGeometry(m_triangle);
+	CVertexBufferDesc vbDesc{};
+	vbDesc.sizeBytes = sizeof(verts);
+	vbDesc.stride = sizeof(STriangleVertex);
+	vbDesc.usage = BufferUsage_Immutable;
+	vbDesc.debugName = "test.triangle.vb";
+	ref_vertexbuffer vb = m_backend.CreateVertexBuffer(vbDesc, verts);
+	if(!vb)
+		return false;
+
+	CIndexBufferDesc ibDesc{};
+	ibDesc.sizeBytes = sizeof(indices);
+	ibDesc.format = EIndexFormat::UInt16;
+	ibDesc.usage = BufferUsage_Immutable;
+	ibDesc.debugName = "test.triangle.ib";
+	ref_indexbuffer ib = m_backend.CreateIndexBuffer(ibDesc, indices);
+	if(!ib)
+		return false;
+
+	CVertexLayoutDesc layout;
+	layout.elements.push_back({0, offsetof(STriangleVertex, x),
+							   EVertexElementType::Float3, EVertexElementSemantic::Position,
+							   0, EVertexInputRate::PerVertex, 0});
+	layout.elements.push_back({0, offsetof(STriangleVertex, r),
+							   EVertexElementType::Float4, EVertexElementSemantic::Color,
+							   0, EVertexInputRate::PerVertex, 0});
+	ref_vertexdecl vdecl = m_backend.CreateVertexDeclaration(layout);
+	if(!vdecl)
+		return false;
+
+	m_triangle = m_backend.CreateGeometry();
+	if(!m_triangle)
+		return false;
+	m_triangle->SetVertexDeclaration(vdecl);
+	m_triangle->SetVertexBuffer(0, vb, 0, 0);
+	m_triangle->SetIndexBuffer(ib);
+	m_triangle->SetTopology(EPrimitiveTopology::TriangleList);
+	return true;
+}
+
+bool CBackendTest::CreateQuadGeometry()
+{
+	// Full-screen quad в NDC. V-координата перевёрнута, чтобы (0,0) в текстуре
+	// попадало в верхний-левый угол экрана. В D3D9 render target имеет origin
+	// в верхнем-левом углу, но NDC — снизу-вверх.
+	const SQuadVertex verts[] =
+		{
+			{-1.0f, -1.0f, 0.5f, 0.0f, 1.0f}, // bottom-left
+			{-1.0f, 1.0f, 0.5f, 0.0f, 0.0f},  // top-left
+			{1.0f, 1.0f, 0.5f, 1.0f, 0.0f},	  // top-right
+			{1.0f, -1.0f, 0.5f, 1.0f, 1.0f},  // bottom-right
+		};
+	const uint16_t indices[] = {0, 1, 2, 0, 2, 3};
+
+	CVertexBufferDesc vbDesc{};
+	vbDesc.sizeBytes = sizeof(verts);
+	vbDesc.stride = sizeof(SQuadVertex);
+	vbDesc.usage = BufferUsage_Immutable;
+	vbDesc.debugName = "test.quad.vb";
+	ref_vertexbuffer vb = m_backend.CreateVertexBuffer(vbDesc, verts);
+	if(!vb)
+		return false;
+
+	CIndexBufferDesc ibDesc{};
+	ibDesc.sizeBytes = sizeof(indices);
+	ibDesc.format = EIndexFormat::UInt16;
+	ibDesc.usage = BufferUsage_Immutable;
+	ibDesc.debugName = "test.quad.ib";
+	ref_indexbuffer ib = m_backend.CreateIndexBuffer(ibDesc, indices);
+	if(!ib)
+		return false;
+
+	CVertexLayoutDesc layout;
+	layout.elements.push_back({0, offsetof(SQuadVertex, x),
+							   EVertexElementType::Float3, EVertexElementSemantic::Position,
+							   0, EVertexInputRate::PerVertex, 0});
+	layout.elements.push_back({0, offsetof(SQuadVertex, u),
+							   EVertexElementType::Float2, EVertexElementSemantic::TexCoord,
+							   0, EVertexInputRate::PerVertex, 0});
+	ref_vertexdecl vdecl = m_backend.CreateVertexDeclaration(layout);
+	if(!vdecl)
+		return false;
+
+	m_quad = m_backend.CreateGeometry();
+	if(!m_quad)
+		return false;
+	m_quad->SetVertexDeclaration(vdecl);
+	m_quad->SetVertexBuffer(0, vb, 0, 0);
+	m_quad->SetIndexBuffer(ib);
+	m_quad->SetTopology(EPrimitiveTopology::TriangleList);
+	return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CBackendTest::DrawPass1_Offscreen(IRenderBackend& rhi)
+{
+	RHI_RenderTargetView rtvs[1] = {m_offscreenRTV};
+	rhi.SetRenderTargets(rtvs, 1, m_offscreenDSV);
+
+	RHI_Viewport vp{0, 0, kOffscreenSize, kOffscreenSize, 0.0f, 1.0f};
+	rhi.SetViewport(vp);
+
+	rhi.ClearRenderTarget(m_offscreenRTV, fvec4{0.10f, 0.15f, 0.30f, 1.0f});
+	rhi.ClearDepthStencil(m_offscreenDSV, 1.0f, 0);
+
+	if(m_passOffscreenReady && m_triangle._get())
+	{
+		m_passOffscreen.Apply(m_backend);
+		m_passOffscreen.ApplySamplers(m_backend);
+		m_backend.DrawGeometry(m_triangle);
+	}
+}
+
+void CBackendTest::DrawPass2_Display(IRenderBackend& rhi)
+{
+	const RHI_RenderTargetView bb = rhi.GetBackBufferRTV();
+	const RHI_DepthStencilView ds = rhi.GetBackBufferDSV();
+
+	RHI_RenderTargetView rtvs[1] = {bb};
+	rhi.SetRenderTargets(rtvs, 1, ds);
+
+	RHI_Viewport vp{0, 0, rhi.GetBackBufferWidth(), rhi.GetBackBufferHeight(), 0.0f, 1.0f};
+	rhi.SetViewport(vp);
+
+	rhi.ClearRenderTarget(bb, fvec4{0.05f, 0.05f, 0.05f, 1.0f});
+	rhi.ClearDepthStencil(ds, 1.0f, 0);
+
+	if(m_passDisplayReady && m_quad._get())
+	{
+		m_passDisplay.Apply(m_backend);
+		m_passDisplay.ApplySamplers(m_backend); // bind offscreen texture → s_tex
+		m_backend.DrawGeometry(m_quad);
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void CBackendTest::Frame()
 {
-	// --- device lost ---
-	if (!m_backend.IsReady())
+	if(!m_backend.IsReady())
 		return;
 
 	IRenderBackend* rhi = m_backend.GetRHI();
-	if (!rhi)
+	if(!rhi)
 		return;
 
 	m_backend.BeginFrame();
 
-	// ============================================================
-	// Pass 1: offscreen
-	// ============================================================
-	// Рендерим в 512x512 offscreen RT. Результат сейчас никто не видит —
-	// привязки текстур к шейдеру в RHI пока нет. Но API-путь полностью
-	// прогоняется: SetRenderTargets, SetViewport, Clear*, Draw.
-	{
-		RHI_RenderTargetView rtvs[1] = { m_offscreenRTV };
-		rhi->SetRenderTargets(rtvs, 1, m_offscreenDSV);
-
-		RHI_Viewport vp{ 0, 0, kOffscreenSize, kOffscreenSize, 0.0f, 1.0f };
-		rhi->SetViewport(vp);
-
-		// Явная очистка конкретных targets — не зависит от того, что сейчас
-		// привязано. Небольшой красный оттенок, чтобы в отладчике было
-		// понятно, какой из pass'ов дал какую картинку.
-		rhi->ClearRenderTarget(m_offscreenRTV, fvec4{ 0.35f, 0.10f, 0.10f, 1.0f });
-		rhi->ClearDepthStencil(m_offscreenDSV, 1.0f, 0);
-
-		DrawScene(*rhi);
-	}
-
-	// ============================================================
-	// Pass 2: back buffer
-	// ============================================================
-	{
-		const RHI_RenderTargetView bb = rhi->GetBackBufferRTV();
-		const RHI_DepthStencilView ds = rhi->GetBackBufferDSV();
-
-		RHI_RenderTargetView rtvs[1] = { bb };
-		rhi->SetRenderTargets(rtvs, 1, ds);
-
-		RHI_Viewport vp{ 0, 0, rhi->GetBackBufferWidth(), rhi->GetBackBufferHeight(), 0.0f, 1.0f };
-		rhi->SetViewport(vp);
-
-		// Тут используем CRenderBackend::Clear — он чистит «текущий привязанный»
-		// target. Просто чтобы показать: оба пути дают одинаковый результат.
-		m_backend.Clear(RHI_CLEAR_TARGET | RHI_CLEAR_ZBUFFER | RHI_CLEAR_STENCIL, 0xFF102030, 1.0f, 0);
-
-		DrawScene(*rhi);
-	}
+	DrawPass1_Offscreen(*rhi);
+	DrawPass2_Display(*rhi);
 
 	m_backend.EndFrame();
 	m_backend.Present();
@@ -319,11 +352,30 @@ void CBackendTest::Frame()
 
 void CBackendTest::Shutdown()
 {
-	m_shader.Release();
+	IRenderBackend* rhi = m_backend.GetRHI();
+
+	m_passOffscreen.Release();
+	m_passDisplay.Release();
+
+	if(rhi)
+	{
+		if(m_offscreenRTV.IsValid())
+			rhi->DestroyRTV(m_offscreenRTV);
+		if(m_offscreenDSV.IsValid())
+			rhi->DestroyDSV(m_offscreenDSV);
+	}
+	m_offscreenRTV = {};
+	m_offscreenDSV = {};
+
+	m_quad.Clear();
 	m_triangle.Clear();
+
+	m_offscreenColor.Clear();
+	m_offscreenDepth.Clear();
+
 	m_backend.DestroyDevice();
 
-	if (m_hWnd)
+	if(m_hWnd)
 	{
 		DestroyWindow(m_hWnd);
 		m_hWnd = nullptr;
@@ -336,7 +388,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	Core.Initialize("X-Ray Dummy", "dummy", (LogCallback)0, TRUE, "game_filesystem.ltx", FALSE);
 
 	CBackendTest test;
-	if (!test.Init(hInst, 1280, 720))
+	if(!test.Init(hInst, 1280, 720))
 	{
 		test.Shutdown();
 		return 1;
@@ -344,11 +396,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 
 	MSG msg{};
 	bool running = true;
-	while (running)
+	while(running)
 	{
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
-			if (msg.message == WM_QUIT)
+			if(msg.message == WM_QUIT)
 			{
 				running = false;
 				break;
@@ -356,7 +408,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		if (running)
+		if(running)
 			test.Frame();
 	}
 
