@@ -170,10 +170,7 @@ bool CBackendTest::CreateOffscreenTargets()
 	colorDesc.height = kOffscreenSize;
 	colorDesc.depth = 1;
 	colorDesc.mipLevels = 1;
-	colorDesc.format = RHI_Format::RGBA8_UNORM;
-	colorDesc.isRenderTarget = true;
-	colorDesc.isDepthStencil = false;
-	colorDesc.isCubeMap = false;
+	colorDesc = RHI_TextureDesc::RenderTarget(kOffscreenSize, kOffscreenSize, RHI_Format::RGBA8_UNORM);
 
 	m_offscreenColorTex = rhi->CreateTexture(colorDesc);
 	if (!m_offscreenColorTex.IsValid())
@@ -195,10 +192,7 @@ bool CBackendTest::CreateOffscreenTargets()
 	depthDesc.height = kOffscreenSize;
 	depthDesc.depth = 1;
 	depthDesc.mipLevels = 1;
-	depthDesc.format = RHI_Format::D24_UNORM_S8_UINT;
-	depthDesc.isRenderTarget = false;
-	depthDesc.isDepthStencil = true;
-	depthDesc.isCubeMap = false;
+	depthDesc = RHI_TextureDesc::DepthStencil(kOffscreenSize, kOffscreenSize, RHI_Format::D24_UNORM_S8_UINT);
 
 	m_offscreenDepthTex = rhi->CreateTexture(depthDesc);
 	if (!m_offscreenDepthTex.IsValid())

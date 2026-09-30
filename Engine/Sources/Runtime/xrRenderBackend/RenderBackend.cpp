@@ -227,12 +227,12 @@ void CRenderBackend::SetShaderPass(CShaderPass* pass)
 	}
 }
 
-ref_texture CRenderBackend::CreateRenderTarget(uint32_t w, uint32_t h, ETextureFormat fmt, uint32_t mips)
+ref_texture CRenderBackend::CreateRenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips)
 {
 	return m_resources.CreateRenderTarget(w, h, fmt, mips);
 }
 
-ref_texture CRenderBackend::CreateDepthStencil(uint32_t w, uint32_t h, ETextureFormat fmt)
+ref_texture CRenderBackend::CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt)
 {
 	return m_resources.CreateDepthStencil(w, h, fmt);
 }

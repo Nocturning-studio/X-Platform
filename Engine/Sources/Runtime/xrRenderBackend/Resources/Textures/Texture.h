@@ -7,8 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <xrRenderBackend/Resources/SharedResource.h>
 #include <xrRenderBackend/Resources/ResourceState.h>
-#include "TextureDesc.h"
-#include "Surface.h"
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CTexture : public CSharedResource
 {
@@ -19,9 +17,9 @@ class XRRB_API CTexture : public CSharedResource
 	CTexture(const CTexture&) = delete;
 	CTexture& operator=(const CTexture&) = delete;
 
-	bool Create(IRenderBackend& rhi, const CTextureDesc& desc);
+	bool Create(IRenderBackend& rhi, const RHI_TextureDesc& desc);
 
-	const CTextureDesc& GetDesc() const { return m_desc; }
+	const RHI_TextureDesc& GetDesc() const { return m_desc; }
 
 	RHI_TextureHandle GetRHIHandle() const { return m_rhiHandle; }
 
@@ -35,7 +33,7 @@ class XRRB_API CTexture : public CSharedResource
   private:
 	void DestroyRHI();
 
-	CTextureDesc m_desc;
+	RHI_TextureDesc m_desc;
 	IRenderBackend* m_rhi = nullptr;
 	RHI_TextureHandle m_rhiHandle{};
 };

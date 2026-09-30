@@ -9,38 +9,72 @@ D3DFORMAT RHIToD3DFormat(RHI_Format fmt)
 {
 	switch(fmt)
 	{
+		// --- Color 8-bit ---
 	case RHI_Format::RGBA8_UNORM:
+	case RHI_Format::RGBA8_UNORM_SRGB: // sRGB — это sampler state, формат тот же
 		return D3DFMT_A8R8G8B8;
 	case RHI_Format::A8_UNORM:
 		return D3DFMT_A8;
 	case RHI_Format::R8_UNORM:
 		return D3DFMT_L8;
+
+		// --- Color 10-bit ---
+	case RHI_Format::R10G10B10A2_UNORM:
+		return D3DFMT_A2B10G10R10;
+
+		// --- Color half-float ---
 	case RHI_Format::RGBA16_FLOAT:
 		return D3DFMT_A16B16G16R16F;
 	case RHI_Format::RG16_FLOAT:
 		return D3DFMT_G16R16F;
 	case RHI_Format::R16_FLOAT:
 		return D3DFMT_R16F;
+
+		// --- Color 16-bit UNORM ---
+	case RHI_Format::R16G16B16A16_UNORM:
+		return D3DFMT_A16B16G16R16;
+
+		// --- Color 32-bit float ---
+	case RHI_Format::R32G32B32A32_FLOAT:
+		return D3DFMT_A32B32G32R32F;
+	case RHI_Format::R32_FLOAT:
+		return D3DFMT_R32F;
+
+		// --- Depth/Stencil ---
 	case RHI_Format::D16_UNORM:
 		return D3DFMT_D16;
 	case RHI_Format::D24_UNORM_S8_UINT:
 		return D3DFMT_D24S8;
 	case RHI_Format::D32_FLOAT:
 		return D3DFMT_D32F_LOCKABLE;
+
+		// --- Legacy D3D9-specific ---
 	case RHI_Format::D15S1:
 		return D3DFMT_D15S1;
 	case RHI_Format::D24X8:
 		return D3DFMT_D24X8;
 	case RHI_Format::D32_LOCKABLE:
 		return D3DFMT_D32;
+
+		// --- Vendor-specific ---
 	case RHI_Format::D24S8_Shadow:
 		return (D3DFORMAT)MAKEFOURCC('I', 'N', 'T', 'Z');
 	case RHI_Format::D16_Shadow:
 		return (D3DFORMAT)MAKEFOURCC('D', 'F', '1', '6');
 	case RHI_Format::D24X4S4:
 		return D3DFMT_D24X4S4;
+
+		// --- Compressed ---
+	case RHI_Format::BC1_UNORM:
+		return D3DFMT_DXT1;
+	case RHI_Format::BC3_UNORM:
+		return D3DFMT_DXT5;
+	case RHI_Format::BC5_UNORM:
+		return (D3DFORMAT)MAKEFOURCC('A', 'T', 'I', '2');
+
 	case RHI_Format::NULLRT:
 		return (D3DFORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
+
 	default:
 		return D3DFMT_UNKNOWN;
 	}
@@ -50,103 +84,75 @@ RHI_Format D3DFormatToRHI(D3DFORMAT fmt)
 {
 	switch(fmt)
 	{
-	// Стандартные форматы бэкбуфера/текстур
+		// --- Color 8-bit ---
 	case D3DFMT_A8R8G8B8:
-		return RHI_Format::RGBA8_UNORM;
 	case D3DFMT_X8R8G8B8:
 		return RHI_Format::RGBA8_UNORM;
-	case D3DFMT_R5G6B5:
-		return RHI_Format::Unknown;
-	case D3DFMT_X1R5G5B5:
-		return RHI_Format::Unknown;
-	case D3DFMT_A1R5G5B5:
-		return RHI_Format::Unknown;
-	case D3DFMT_A4R4G4B4:
-		return RHI_Format::Unknown;
-	case D3DFMT_R3G3B2:
-		return RHI_Format::Unknown;
+	case D3DFMT_A8B8G8R8:
+	case D3DFMT_X8B8G8R8:
+		return RHI_Format::RGBA8_UNORM;
 	case D3DFMT_A8:
 		return RHI_Format::A8_UNORM;
-	case D3DFMT_A8R3G3B2:
-		return RHI_Format::Unknown;
-	case D3DFMT_X4R4G4B4:
-		return RHI_Format::Unknown;
+	case D3DFMT_L8:
+		return RHI_Format::R8_UNORM;
+
+		// --- Color 10-bit ---
 	case D3DFMT_A2B10G10R10:
-		return RHI_Format::Unknown;
-	case D3DFMT_A8B8G8R8:
-		return RHI_Format::Unknown;
-	case D3DFMT_G16R16:
-		return RHI_Format::RG16_FLOAT;
-	case D3DFMT_A16B16G16R16:
-		return RHI_Format::RGBA16_FLOAT;
+	case D3DFMT_A2R10G10B10:
+		return RHI_Format::R10G10B10A2_UNORM;
+
+		// --- Color half-float ---
 	case D3DFMT_A16B16G16R16F:
 		return RHI_Format::RGBA16_FLOAT;
 	case D3DFMT_G16R16F:
 		return RHI_Format::RG16_FLOAT;
 	case D3DFMT_R16F:
 		return RHI_Format::R16_FLOAT;
-	case D3DFMT_R32F:
-		return RHI_Format::Unknown;
+
+		// --- Color 16-bit UNORM ---
+	case D3DFMT_A16B16G16R16:
+		return RHI_Format::R16G16B16A16_UNORM;
+	case D3DFMT_G16R16:
+		return RHI_Format::RG16_FLOAT; // ближайшее
+
+	// --- Color 32-bit float ---
 	case D3DFMT_A32B32G32R32F:
-		return RHI_Format::Unknown;
+		return RHI_Format::R32G32B32A32_FLOAT;
+	case D3DFMT_R32F:
+		return RHI_Format::R32_FLOAT;
 
-	// Luminance/Alpha (устаревшие)
-	case D3DFMT_L8:
-		return RHI_Format::R8_UNORM;
-	case D3DFMT_A8L8:
-		return RHI_Format::Unknown;
-	case D3DFMT_A4L4:
-		return RHI_Format::Unknown;
-
-	// Depth/Stencil
+		// --- Depth/Stencil ---
 	case D3DFMT_D16:
 		return RHI_Format::D16_UNORM;
 	case D3DFMT_D24S8:
 		return RHI_Format::D24_UNORM_S8_UINT;
-	case D3DFMT_D24X8:
-		return RHI_Format::D24X8;
-	case D3DFMT_D24X4S4:
-		return RHI_Format::D24X4S4;
-	case D3DFMT_D32:
-		return RHI_Format::D32_LOCKABLE;
 	case D3DFMT_D32F_LOCKABLE:
 		return RHI_Format::D32_FLOAT;
+
 	case D3DFMT_D15S1:
 		return RHI_Format::D15S1;
-	case D3DFMT_D16_LOCKABLE:
-		return RHI_Format::Unknown;
+	case D3DFMT_D24X8:
+		return RHI_Format::D24X8;
+	case D3DFMT_D32:
+		return RHI_Format::D32_LOCKABLE;
+	case D3DFMT_D24X4S4:
+		return RHI_Format::D24X4S4;
 
-	// FourCC форматы (теневые карты)
+		// --- Vendor-specific ---
 	case MAKEFOURCC('I', 'N', 'T', 'Z'):
 		return RHI_Format::D24S8_Shadow;
 	case MAKEFOURCC('D', 'F', '1', '6'):
 		return RHI_Format::D16_Shadow;
-	case MAKEFOURCC('D', 'F', '2', '4'):
-		return RHI_Format::Unknown;
 
-	// Сжатые форматы
+		// --- Compressed ---
 	case D3DFMT_DXT1:
-		return RHI_Format::Unknown;
-	case D3DFMT_DXT2:
-		return RHI_Format::Unknown;
-	case D3DFMT_DXT3:
-		return RHI_Format::Unknown;
-	case D3DFMT_DXT4:
-		return RHI_Format::Unknown;
+		return RHI_Format::BC1_UNORM;
 	case D3DFMT_DXT5:
-		return RHI_Format::Unknown;
+		return RHI_Format::BC3_UNORM;
 
-	// Прочие
-	case D3DFMT_UYVY:
-		return RHI_Format::Unknown;
-	case D3DFMT_YUY2:
-		return RHI_Format::Unknown;
-	case D3DFMT_MULTI2_ARGB8:
-		return RHI_Format::Unknown;
-
-	// Неизвестный формат
-	case D3DFMT_UNKNOWN:
 	default:
+		if((DWORD)fmt == MAKEFOURCC('A', 'T', 'I', '2'))
+			return RHI_Format::BC5_UNORM;
 		return RHI_Format::Unknown;
 	}
 }
@@ -194,17 +200,25 @@ size_t GetPixelSize(RHI_Format fmt)
 	switch(fmt)
 	{
 	case RHI_Format::RGBA8_UNORM:
+	case RHI_Format::RGBA8_UNORM_SRGB:
+	case RHI_Format::R10G10B10A2_UNORM:
+	case RHI_Format::R32_FLOAT:
 		return 4;
 	case RHI_Format::A8_UNORM:
-		return 1;
 	case RHI_Format::R8_UNORM:
 		return 1;
+
 	case RHI_Format::RGBA16_FLOAT:
+	case RHI_Format::R16G16B16A16_UNORM:
 		return 8;
 	case RHI_Format::RG16_FLOAT:
 		return 4;
 	case RHI_Format::R16_FLOAT:
 		return 2;
+
+	case RHI_Format::R32G32B32A32_FLOAT:
+		return 16;
+
 	default:
 		return 0;
 	}

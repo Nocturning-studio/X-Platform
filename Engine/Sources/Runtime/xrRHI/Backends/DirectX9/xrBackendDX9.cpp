@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "xrBackendDX9.h"
 ////////////////////////////////////////////////////////////////////////////////
+#pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,6 +211,8 @@ void CRenderBackendDX9::ReleaseAllResources()
 		{
 			if(tex->tex2D)
 				tex->tex2D->Release();
+			if (tex->tex3D)
+				tex->tex3D->Release();
 			if(tex->texCube)
 				tex->texCube->Release();
 			if(tex->surface)

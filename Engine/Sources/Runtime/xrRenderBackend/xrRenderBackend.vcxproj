@@ -215,10 +215,7 @@
     <ClInclude Include="Resources\Shaders\ShaderSampler.h" />
     <ClInclude Include="Resources\Shaders\ShaderSamplerBinding.h" />
     <ClInclude Include="Resources\SharedResource.h" />
-    <ClInclude Include="Resources\Textures\Surface.h" />
     <ClInclude Include="Resources\Textures\Texture.h" />
-    <ClInclude Include="Resources\Textures\TextureDesc.h" />
-    <ClInclude Include="Resources\Textures\TextureFormat.h" />
     <ClInclude Include="States\StateCache.h" />
     <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="pch.h" />

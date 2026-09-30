@@ -16,22 +16,15 @@ CResourceManager::~CResourceManager()
 
 void CResourceManager::DestroyAll()
 {
-	for (auto& tr : m_tracked)
+	for (auto it = m_tracked.rbegin(); it != m_tracked.rend(); ++it)
 	{
-		if (!tr.ptr)
-			continue;
-
-		if (tr.ptr->RefCount() > 0)
-		{
-			Msg("! [ResourceManager] DestroyAll: resource has %u live refs — leak?",
-				tr.ptr->RefCount());
-		}
-		xr_delete(tr.ptr);
+		if (it->ptr)
+			xr_delete(it->ptr);
 	}
 	m_tracked.clear();
 }
 
-ref_texture CResourceManager::CreateTexture(const CTextureDesc& desc)
+ref_texture CResourceManager::CreateTexture(const RHI_TextureDesc& desc)
 {
 	if (!m_rhi)
 	{
@@ -50,14 +43,14 @@ ref_texture CResourceManager::CreateTexture(const CTextureDesc& desc)
 	return ref_texture(tex);
 }
 
-ref_texture CResourceManager::CreateRenderTarget(uint32_t w, uint32_t h, ETextureFormat fmt, uint32_t mips)
+ref_texture CResourceManager::CreateRenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips)
 {
-	return CreateTexture(CTextureDesc::RenderTarget(w, h, fmt, mips));
+	return CreateTexture(RHI_TextureDesc::RenderTarget(w, h, fmt, mips));
 }
 
-ref_texture CResourceManager::CreateDepthStencil(uint32_t w, uint32_t h, ETextureFormat fmt)
+ref_texture CResourceManager::CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt)
 {
-	return CreateTexture(CTextureDesc::DepthStencil(w, h, fmt));
+	return CreateTexture(RHI_TextureDesc::DepthStencil(w, h, fmt));
 }
 
 ref_vertexdecl CResourceManager::CreateVertexDeclaration(const CVertexLayoutDesc& layout)

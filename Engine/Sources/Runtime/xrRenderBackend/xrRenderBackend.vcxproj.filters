@@ -26,16 +26,7 @@
     </ClInclude>
     <ClInclude Include="xrRenderBackendMacros.h" />
     <ClInclude Include="RenderBackend.h" />
-    <ClInclude Include="Resources\Textures\Surface.h">
-      <Filter>Resources\Textures</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Textures\Texture.h">
-      <Filter>Resources\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\Textures\TextureDesc.h">
-      <Filter>Resources\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\Textures\TextureFormat.h">
       <Filter>Resources\Textures</Filter>
     </ClInclude>
     <ClInclude Include="Resources\Geometry\VertexLayout.h">

@@ -21,33 +21,50 @@ enum class RHI_Format : uint32_t
 	Unknown = 0,
 	NULLRT,
 
-	// --- Color Formats ---
-	RGBA8_UNORM, // D3DFMT_A8R8G8B8
-	A8_UNORM,	 // D3DFMT_A8 (или L8 в зависимости от контекста)
-	R8_UNORM,	 // D3DFMT_L8
+	// --- Color: 8-bit ---
+	RGBA8_UNORM,	  // D3DFMT_A8R8G8B8
+	RGBA8_UNORM_SRGB, // D3DFMT_A8R8G8B8 + D3DSAMP_SRGBTEXTURE (в D3D12 — отдельный формат)
+	A8_UNORM,		  // D3DFMT_A8
+	R8_UNORM,		  // D3DFMT_L8
 
+	// --- Color: 10/16-bit packed ---
+	R10G10B10A2_UNORM, // D3DFMT_A2B10G10R10
+
+	// --- Color: half-float ---
 	RGBA16_FLOAT, // D3DFMT_A16B16G16R16F
 	RG16_FLOAT,	  // D3DFMT_G16R16F
 	R16_FLOAT,	  // D3DFMT_R16F
 
-	// --- Depth/Stencil Formats ---
+	// --- Color: 16-bit UNORM ---
+	R16G16B16A16_UNORM, // D3DFMT_A16B16G16R16
+
+	// --- Color: 32-bit float ---
+	R32G32B32A32_FLOAT, // D3DFMT_A32B32G32R32F
+	R32_FLOAT,			// D3DFMT_R32F
+
+	// --- Depth/Stencil ---
 	D16_UNORM,		   // D3DFMT_D16
 	D24_UNORM_S8_UINT, // D3DFMT_D24S8
 	D32_FLOAT,		   // D3DFMT_D32F_LOCKABLE
 
-	// Legacy / Specific D3D9 Formats
+	// --- Legacy D3D9-specific ---
 	D15S1,		  // D3DFMT_D15S1
 	D24X8,		  // D3DFMT_D24X8
-	D32_LOCKABLE, // D3DFMT_D32 (Integer)
+	D32_LOCKABLE, // D3DFMT_D32
 
-	// Vendor Specific
+	// --- Vendor-specific (shadow maps) ---
 	D24S8_Shadow, // INTZ
 	D16_Shadow,	  // DF16
 	D24X4S4,	  // D3DFMT_D24X4S4
 
-	// --- Index Buffers ---
+	// --- Compressed ---
+	BC1_UNORM, // D3DFMT_DXT1
+	BC3_UNORM, // D3DFMT_DXT5
+	BC5_UNORM, // ATI2 / 3Dc
+
+	// --- Index buffers ---
 	Index16,
-	Index32
+	Index32,
 };
 
 // =========================================================================
@@ -169,10 +186,10 @@ enum RHI_ClearFlags : uint32_t
 // Описание вьюпорта
 struct RHI_Viewport
 {
-	u32   X = 0;
-	u32   Y = 0;
-	u32   Width = 0;
-	u32   Height = 0;
+	u32 X = 0;
+	u32 Y = 0;
+	u32 Width = 0;
+	u32 Height = 0;
 	float MinZ = 0.0f;
 	float MaxZ = 1.0f;
 
@@ -198,16 +215,88 @@ struct RHI_Rect
 	constexpr bool operator!=(const RHI_Rect& o) const noexcept { return !(*this == o); }
 };
 
+enum class RHI_TextureDim : uint8_t
+{
+	Tex1D,
+	Tex2D,
+	Tex3D,
+	Cube,
+};
+
+enum RHI_TextureUsage : uint32_t
+{
+	RHI_TexUsage_None = 0,
+	RHI_TexUsage_ShaderResource = 1u << 0,
+	RHI_TexUsage_RenderTarget = 1u << 1,
+	RHI_TexUsage_DepthStencil = 1u << 2,
+	RHI_TexUsage_Unordered = 1u << 3,
+	RHI_TexUsage_CPUReadable = 1u << 4,
+	RHI_TexUsage_CPUWritable = 1u << 5,
+	RHI_TexUsage_GenerateMips = 1u << 6,
+};
+
 struct RHI_TextureDesc
 {
-	uint32_t width;
-	uint32_t height;
-	uint32_t depth;
-	uint32_t mipLevels;
-	RHI_Format format;
-	bool isRenderTarget;
-	bool isDepthStencil;
-	bool isCubeMap;
+	RHI_TextureDim dim = RHI_TextureDim::Tex2D;
+	uint32_t width = 1;
+	uint32_t height = 1;
+	uint32_t depth = 1;
+	uint32_t mipLevels = 1; // 0 = full chain
+	uint32_t arraySize = 1;
+	uint32_t sampleCount = 1; // 1 = no MSAA (D3D9: не поддерживается)
+	uint32_t sampleQuality = 0;
+	RHI_Format format = RHI_Format::RGBA8_UNORM;
+	uint32_t usage = RHI_TexUsage_ShaderResource;
+
+	const char* debugName = nullptr;
+
+	bool IsRenderTarget() const { return (usage & RHI_TexUsage_RenderTarget) != 0; }
+	bool IsDepthStencil() const { return (usage & RHI_TexUsage_DepthStencil) != 0; }
+	bool IsCubeMap() const { return dim == RHI_TextureDim::Cube; }
+
+	static RHI_TextureDesc RenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips = 1)
+	{
+		RHI_TextureDesc d;
+		d.width = w;
+		d.height = h;
+		d.mipLevels = mips;
+		d.format = fmt;
+		d.usage = RHI_TexUsage_RenderTarget | RHI_TexUsage_ShaderResource;
+		return d;
+	}
+
+	static RHI_TextureDesc DepthStencil(uint32_t w, uint32_t h, RHI_Format fmt = RHI_Format::D24_UNORM_S8_UINT)
+	{
+		RHI_TextureDesc d;
+		d.width = w;
+		d.height = h;
+		d.format = fmt;
+		d.usage = RHI_TexUsage_DepthStencil;
+		return d;
+	}
+
+	static RHI_TextureDesc Color2D(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips = 1)
+	{
+		RHI_TextureDesc d;
+		d.width = w;
+		d.height = h;
+		d.mipLevels = mips;
+		d.format = fmt;
+		d.usage = RHI_TexUsage_ShaderResource;
+		return d;
+	}
+
+	static RHI_TextureDesc Cube(uint32_t edge, RHI_Format fmt, uint32_t mips = 1)
+	{
+		RHI_TextureDesc d;
+		d.dim = RHI_TextureDim::Cube;
+		d.width = edge;
+		d.height = edge;
+		d.mipLevels = mips;
+		d.format = fmt;
+		d.usage = RHI_TexUsage_ShaderResource;
+		return d;
+	}
 };
 
 // =========================================================================
@@ -226,9 +315,9 @@ struct RHI_PresentationParams
 	bool Windowed = true;
 	RHI_Format BackBufferFormat = RHI_Format::RGBA8_UNORM;		   // Базовый формат бэкбуфера
 	RHI_Format DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT; // Формат для авто-буфера глубины
-	uint32_t BackBufferCount = 2;									   // Количество буферов в своп-цепи (1-3)
-	uint32_t SyncInterval = 1;										   // 0 - немедленно, 1 - вертикальная синхронизация
-	uint32_t FullscreenRefreshHz = 60;								   // Частота обновления (для полноэкранного режима)
+	uint32_t BackBufferCount = 2;								   // Количество буферов в своп-цепи (1-3)
+	uint32_t SyncInterval = 1;									   // 0 - немедленно, 1 - вертикальная синхронизация
+	uint32_t FullscreenRefreshHz = 60;							   // Частота обновления (для полноэкранного режима)
 	RHI_SwapEffect SwapEffect = RHI_SwapEffect::Discard;
 	uint32_t MultisampleCount = 1; // Количество сэмплов (1 = MSAA выключен)
 	uint32_t MultisampleQuality = 0;
@@ -248,10 +337,10 @@ struct RHI_PresentationParams
 // =========================================================================
 enum class RHI_DeviceStatus : u32
 {
-	OK = 0,     // Устройство работает нормально.
-	NeedReset,  // Устройство потеряно, но может быть восстановлено через Reset().
-				// D3D9: D3DERR_DEVICENOTRESET.
-	Lost,       // Устройство потеряно безвозвратно. Требуется DestroyDevice + CreateDevice.
-				// D3D9: D3DERR_DEVICELOST. D3D12: device removed.
+	OK = 0,	   // Устройство работает нормально.
+	NeedReset, // Устройство потеряно, но может быть восстановлено через Reset().
+			   // D3D9: D3DERR_DEVICENOTRESET.
+	Lost,	   // Устройство потеряно безвозвратно. Требуется DestroyDevice + CreateDevice.
+		  // D3D9: D3DERR_DEVICELOST. D3D12: device removed.
 };
 ////////////////////////////////////////////////////////////////////////////////

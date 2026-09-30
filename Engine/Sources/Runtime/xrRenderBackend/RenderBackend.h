@@ -62,8 +62,8 @@ class XRRB_API CRenderBackend
 	void SetShaderPass(CShaderPass* pass);
 	void SetShaderPass(CShaderPass& pass) { SetShaderPass(&pass); }
 
-	ref_texture CreateRenderTarget(uint32_t w, uint32_t h, ETextureFormat fmt, uint32_t mips = 1);
-	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, ETextureFormat fmt = ETextureFormat::D24_UNORM_S8_UINT);
+	ref_texture CreateRenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips = 1);
+	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt = RHI_Format::D24_UNORM_S8_UINT);
 	void Clear(uint32_t flags, uint32_t colorARGB = 0, float z = 1.0f, uint32_t stencil = 0);
 
 	ref_vertexdecl CreateVertexDeclaration(const CVertexLayoutDesc& layout);

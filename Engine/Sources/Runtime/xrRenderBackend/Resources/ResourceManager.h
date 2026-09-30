@@ -6,7 +6,6 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include "SharedResource.h"
-#include "Textures/TextureDesc.h"
 #include "Textures/Texture.h"
 #include "Geometry/Geometry.h"
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,9 +19,9 @@ class XRRB_API CResourceManager
 	IRenderBackend* GetRHI() const { return m_rhi; }
 
 	// --- Создание ---
-	ref_texture CreateTexture(const CTextureDesc& desc);
-	ref_texture CreateRenderTarget(uint32_t w, uint32_t h, ETextureFormat fmt, uint32_t mips = 1);
-	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, ETextureFormat fmt = ETextureFormat::D24_UNORM_S8_UINT);
+	ref_texture CreateTexture(const RHI_TextureDesc& desc);
+	ref_texture CreateRenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips = 1);
+	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt = RHI_Format::D24_UNORM_S8_UINT);
 
 	// --- Геометрия ---
 	ref_vertexdecl CreateVertexDeclaration(const CVertexLayoutDesc& layout);

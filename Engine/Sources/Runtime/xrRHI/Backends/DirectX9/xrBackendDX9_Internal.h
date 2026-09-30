@@ -8,12 +8,29 @@ struct DX9Texture
 {
 	IDirect3DTexture9* tex2D = nullptr;
 	IDirect3DCubeTexture9* texCube = nullptr;
+	IDirect3DVolumeTexture9* tex3D = nullptr;
 	IDirect3DSurface9* surface = nullptr;
+
 	RHI_Format format = RHI_Format::Unknown;
+	RHI_TextureDim dim = RHI_TextureDim::Tex2D;
 	uint32_t width = 0;
 	uint32_t height = 0;
+	uint32_t depth = 1;
+	uint32_t mipLevels = 1;
+	uint32_t arraySize = 1;
+	uint32_t sampleCount = 1;
+	uint32_t usage = RHI_TexUsage_None;
+
 	bool isRenderTarget = false;
 	bool isDepthStencil = false;
+
+	IDirect3DBaseTexture9* GetBase() const
+	{
+		if(tex2D) return tex2D;
+		if(texCube) return texCube;
+		if(tex3D) return tex3D;
+		return nullptr;
+	}
 };
 
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);
