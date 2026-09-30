@@ -425,6 +425,7 @@ void CRenderBackendDX9::CacheBackBufferDimensions()
 	// После Reset D3D9 сбрасывает render states — кэш состояний невалиден.
 	// InvalidateStateCache() выставляет valid=false, но getters всё равно
 	// вернут "дефолтные" значения, соответствующие D3D9-дефолтам.
+	RefreshBackBufferRTVs();
 	InvalidateStateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////

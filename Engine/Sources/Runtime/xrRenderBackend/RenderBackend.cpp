@@ -101,7 +101,6 @@ void CRenderBackend::DestroyDevice()
 		return;
 
 	m_resources.OnDeviceLost();
-	m_states.Invalidate();
 
 	if (m_pRHI)
 	{
@@ -182,7 +181,6 @@ void CRenderBackend::OnDeviceLost()
 		return;
 
 	m_resources.OnDeviceLost();
-	m_states.Invalidate();
 	m_inScene = false;
 }
 

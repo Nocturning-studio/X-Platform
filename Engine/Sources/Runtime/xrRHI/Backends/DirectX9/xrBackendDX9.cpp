@@ -189,6 +189,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 
 void CRenderBackendDX9::DestroyDevice()
 {
+	ReleaseAllRTVDSV();
 	InvalidateStateCache();
 	m_backBufferWidth = 0;
 	m_backBufferHeight = 0;

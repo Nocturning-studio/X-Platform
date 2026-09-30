@@ -206,6 +206,7 @@
   <ItemGroup>
     <ClInclude Include="Backends\DirectX9\xrBackendDX9.h" />
     <ClInclude Include="Backends\DirectX9\xrBackendDX9_Internal.h" />
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_RT.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_States.cpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />

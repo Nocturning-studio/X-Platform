@@ -78,6 +78,9 @@
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_States.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_RT.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint">

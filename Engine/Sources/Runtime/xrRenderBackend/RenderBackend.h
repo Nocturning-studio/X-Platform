@@ -46,7 +46,7 @@ class XRRB_API CRenderBackend
 
 	// --- Device access ---
 	IRenderBackend* GetRHI() const { return m_pRHI; }
-	DEPRECATED IDirect3DDevice9Ex* GetDevice() const;
+	DX_DEPRECATED IDirect3DDevice9Ex* GetDevice() const;
 	const RHIDeviceCaps& GetDeviceCaps() const;
 	const RHI_PresentationParams& GetPresentParams() const { return m_presentParams; }
 	bool IsReady() const { return m_pRHI != nullptr; }

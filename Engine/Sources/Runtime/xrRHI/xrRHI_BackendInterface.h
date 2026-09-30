@@ -31,6 +31,16 @@ class XRRHI_API IRenderBackend
 	virtual u32 GetBackBufferHeight() const = 0;
 	virtual RHI_Format GetBackBufferFormat() const = 0;
 
+	virtual RHI_RenderTargetView CreateRTV(RHI_TextureHandle tex, u32 mip = 0, u32 face = 0) = 0;
+	virtual RHI_DepthStencilView CreateDSV(RHI_TextureHandle tex, u32 mip = 0, u32 face = 0) = 0;
+	virtual RHI_RenderTargetView GetBackBufferRTV() const = 0;
+	virtual RHI_DepthStencilView GetBackBufferDSV() const = 0;
+	virtual void DestroyRTV(RHI_RenderTargetView rtv) = 0;
+	virtual void DestroyDSV(RHI_DepthStencilView dsv) = 0;
+
+	virtual void SetRenderTargets(const RHI_RenderTargetView* rtvs, uint32_t count, RHI_DepthStencilView dsv) = 0;
+	virtual void ClearRenderTarget(RHI_RenderTargetView rtv, const fvec4& color) = 0;
+	virtual void ClearDepthStencil(RHI_DepthStencilView dsv, float depth, u8 stencil) = 0;
 	virtual void Clear(uint32_t clearFlags, const fvec4 color, float depth, uint8_t stencil) = 0;
 
 	virtual RHI_TextureHandle CreateTexture(const RHI_TextureDesc& desc, const void* initialData = nullptr) = 0;

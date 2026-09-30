@@ -5,19 +5,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <d3d9.h>
-////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CStateCache
 {
   public:
-	CStateCache();
-	~CStateCache();
+	CStateCache() = default;
+	~CStateCache() = default;
 
-	void Invalidate();
+	CStateCache(const CStateCache&) = delete;
+	CStateCache& operator=(const CStateCache&) = delete;
 
 	// =====================================================================
-	// RHI-native
+	// RHI-native — прямые форвардеры
 	// =====================================================================
+
 	void SetBlendState(IRenderBackend& rhi, const RHI_BlendState& state) { rhi.SetBlendState(state); }
 	void SetDepthStencilState(IRenderBackend& rhi, const RHI_DepthStencilState& state) { rhi.SetDepthStencilState(state); }
 	void SetRasterizerState(IRenderBackend& rhi, const RHI_RasterizerState& state) { rhi.SetRasterizerState(state); }
@@ -25,8 +25,26 @@ class XRRB_API CStateCache
 	void SetViewport(IRenderBackend& rhi, const RHI_Viewport& vp) { rhi.SetViewport(vp); }
 	void SetScissor(IRenderBackend& rhi, const RHI_Rect* rect) { rhi.SetScissorRect(rect); }
 
+	void SetRenderTargets(IRenderBackend& rhi,
+						  const RHI_RenderTargetView* rtvs,
+						  uint32_t count,
+						  RHI_DepthStencilView dsv)
+	{
+		rhi.SetRenderTargets(rtvs, count, dsv);
+	}
+
+	void ClearRenderTarget(IRenderBackend& rhi, RHI_RenderTargetView rtv, const fvec4& color)
+	{
+		rhi.ClearRenderTarget(rtv, color);
+	}
+
+	void ClearDepthStencil(IRenderBackend& rhi, RHI_DepthStencilView dsv, float depth, uint8_t stencil)
+	{
+		rhi.ClearDepthStencil(dsv, depth, stencil);
+	}
+
 	// =====================================================================
-	// Convenience
+	// Convenience — меняют одно поле поверх текущего состояния
 	// =====================================================================
 
 	void SetBlend(IRenderBackend& rhi, bool enable, RHI_Blend src, RHI_Blend dst);
@@ -50,28 +68,5 @@ class XRRB_API CStateCache
 	RHI_Blend GetSrcBlend(const IRenderBackend& rhi) const { return rhi.GetBlendState().srcColor; }
 	RHI_Blend GetDstBlend(const IRenderBackend& rhi) const { return rhi.GetBlendState().dstColor; }
 	RHI_CullMode GetCullMode(const IRenderBackend& rhi) const { return rhi.GetRasterizerState().cullMode; }
-
-	// =====================================================================
-	// RT / DSV — legacy
-	// =====================================================================
-	bool SetRenderTargetLegacy(IDirect3DDevice9Ex* device, IDirect3DSurface9* RT, u32 idx);
-	bool SetDepthStencilLegacy(IDirect3DDevice9Ex* device, IDirect3DSurface9* ZB);
-
-	void SaveRenderState(IDirect3DDevice9Ex* device);
-	void RestoreRenderState(IDirect3DDevice9Ex* device);
-
-  private:
-	IDirect3DSurface9* m_pRT[4] = {};
-	IDirect3DSurface9* m_pZB = nullptr;
-
-	struct SavedState
-	{
-		IDirect3DSurface9* rt[4] = {};
-		IDirect3DSurface9* zb = nullptr;
-		RHI_Viewport viewport{};
-	} m_savedState;
-
-	void D3D_SetRenderTarget(IDirect3DDevice9Ex* device, u32 idx, IDirect3DSurface9* surf);
-	void D3D_SetDepthStencil(IDirect3DDevice9Ex* device, IDirect3DSurface9* zb);
 };
 ////////////////////////////////////////////////////////////////////////////////

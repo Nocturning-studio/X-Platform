@@ -24,10 +24,21 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual void OnFrameBegin() override;
 	virtual void OnFrameEnd() override;
 
-	DEPRECATED virtual void* GetDeviceHandle() override { return m_pDevice; }
-	DEPRECATED virtual void* GetD3DHandle() override { return m_pD3D; }
+	DX_DEPRECATED virtual void* GetDeviceHandle() override { return m_pDevice; }
+	DX_DEPRECATED virtual void* GetD3DHandle() override { return m_pD3D; }
 
 	virtual const RHIDeviceCaps& GetDeviceCaps() const override;
+
+	virtual RHI_RenderTargetView CreateRTV(RHI_TextureHandle tex, u32 mip = 0, u32 face = 0) override;
+	virtual RHI_DepthStencilView CreateDSV(RHI_TextureHandle tex, u32 mip = 0, u32 face = 0) override;
+	virtual RHI_RenderTargetView GetBackBufferRTV() const override;
+	virtual RHI_DepthStencilView GetBackBufferDSV() const override;
+	virtual void DestroyRTV(RHI_RenderTargetView rtv) override;
+	virtual void DestroyDSV(RHI_DepthStencilView dsv) override;
+
+	virtual void SetRenderTargets(const RHI_RenderTargetView* rtvs, uint32_t count, RHI_DepthStencilView dsv) override;
+	virtual void ClearRenderTarget(RHI_RenderTargetView rtv, const fvec4& color) override;
+	virtual void ClearDepthStencil(RHI_DepthStencilView dsv, float depth, u8 stencil) override;
 	virtual void Clear(uint32_t clearFlags, const fvec4 color, float depth, uint8_t stencil) override;
 
 	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const override;
@@ -98,5 +109,39 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	void FreeRHI_TextureHandle(RHI_TextureHandle handle);
 
 	void ReleaseAllResources();
+
+	struct SDX9SurfaceSlot
+	{
+		IDirect3DSurface9* surface = nullptr;
+	};
+
+	std::vector<SDX9SurfaceSlot> m_rtvSlots;
+	std::vector<SDX9SurfaceSlot> m_dsvSlots;
+	std::stack<uint32_t> m_freeRTVSlots;
+	std::stack<uint32_t> m_freeDSVSlots;
+
+	RHI_RenderTargetView m_backBufferRTV{};
+	RHI_DepthStencilView m_backBufferDSV{};
+
+	// Кэш последних привязанных RT/DS. Нужен для дедупликации вызовов
+	// SetRenderTarget/SetDepthStencilSurface.
+	IDirect3DSurface9* m_currentRTASurfaces[4] = {};
+	IDirect3DSurface9* m_currentDSSurface = nullptr;
+
+	// --- RTV/DSV helpers ---
+	uint32_t AllocRTVSlot(IDirect3DSurface9* surf);
+	uint32_t AllocDSVSlot(IDirect3DSurface9* surf);
+	void FreeRTVSlot(uint32_t id);
+	void FreeDSVSlot(uint32_t id);
+
+	IDirect3DSurface9* ResolveRTASurface(RHI_RenderTargetView rtv) const;
+	IDirect3DSurface9* ResolveDSSurface(RHI_DepthStencilView dsv) const;
+
+	IDirect3DSurface9* GetTextureSurfaceForRT(DX9Texture* tex, uint32_t mip, uint32_t face) const;
+
+	void RefreshBackBufferRTVs();
+	void ReleaseAllRTVDSV();
+	void InvalidateRenderTargetCache();
+	void InvalidateUserRTVDSVOnReset();
 };
 ////////////////////////////////////////////////////////////////////////////////

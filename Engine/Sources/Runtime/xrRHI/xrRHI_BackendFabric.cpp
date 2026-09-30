@@ -12,7 +12,7 @@ extern "C"
 	{
 		switch(type)
 		{
-		case RHI_BackendType::DirectX9:
+		case RHI_BackendType::DirectX9Ex:
 			return new CRenderBackendDX9();
 		default:
 			return nullptr;
