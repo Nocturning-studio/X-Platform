@@ -40,8 +40,7 @@ class XRRB_API CRenderBackend
 	void Present();
 	bool IsInScene() const { return m_inScene; }
 
-	// --- Device lost / reset ---
-	void OnDeviceLost();
+	// --- Device reset ---
 	bool OnDeviceReset();
 
 	// --- Device access ---

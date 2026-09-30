@@ -62,6 +62,8 @@ class XRRHI_API IRenderBackend
 	virtual bool GetScissorRect(RHI_Rect& out) const = 0;
 
 	virtual void InvalidateStateCache() = 0;
+
+	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus

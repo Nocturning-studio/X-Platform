@@ -51,13 +51,13 @@ public:
 	// --- Компиляция ---
 	BOOL Compile(CRenderBackend& backend);
 	void Invalidate() { m_valid = false; }
-	bool IsValid()    const { return m_valid; }
+	bool IsValid() const { return m_valid; }
+	void Release();
 
 	// --- Рендеринг ---
 	void Apply(CRenderBackend& backend);
 
-	// --- Device lost / reset ---
-	void OnDeviceLost();
+	// --- Device reset ---
 	BOOL OnDeviceReset(CRenderBackend& backend);
 
 	// Диагностика

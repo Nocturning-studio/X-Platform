@@ -221,4 +221,28 @@ bool CRenderBackendDX9::GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t 
 	*outSurface = surf;
 	return true;
 }
+
+void CRenderBackendDX9::SetShaderResource(uint32_t slot, RHI_TextureHandle tex)
+{
+	if (!m_pDevice)
+		return;
+
+	// D3D9 stage: PS uses raw 0..15, VS uses D3DVERTEXTEXTURESAMPLER0 + 0..3.
+	DWORD stage = (slot < 16) ? slot : (D3DVERTEXTEXTURESAMPLER0 + (slot - 16));
+
+	IDirect3DBaseTexture9* native = nullptr;
+	if (tex.IsValid())
+	{
+		DX9Texture* t = GetTexture(tex);
+		if (t)
+		{
+			if (t->tex2D)         
+				native = t->tex2D;
+			else if (t->texCube) 
+				native = t->texCube;
+		}
+	}
+
+	m_pDevice->SetTexture(stage, native);
+}
 ////////////////////////////////////////////////////////////////////////////////

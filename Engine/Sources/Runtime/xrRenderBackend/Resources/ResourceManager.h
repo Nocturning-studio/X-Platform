@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include "DeviceResource.h"
+#include "SharedResource.h"
 #include "Textures/TextureDesc.h"
 #include "Textures/Texture.h"
 #include "Geometry/Geometry.h"
@@ -16,8 +16,8 @@ class XRRB_API CResourceManager
 	CResourceManager() = default;
 	~CResourceManager();
 
-	void SetDevice(IDirect3DDevice9Ex* device) { m_device = device; }
-	IDirect3DDevice9Ex* GetDevice() const { return m_device; }
+	void SetRHI(IRenderBackend* rhi) { m_rhi = rhi; }
+	IRenderBackend* GetRHI() const { return m_rhi; }
 
 	// --- Создание ---
 	ref_texture CreateTexture(const CTextureDesc& desc);
@@ -34,25 +34,24 @@ class XRRB_API CResourceManager
 	void OnFrameBegin();
 	void OnFrameEnd();
 
-	// --- Device lost / reset ---
-	void OnDeviceLost();
-	void OnDeviceReset(IDirect3DDevice9Ex* device);
+	// --- Уничтожение всех ресурсов ---
+	void DestroyAll();
 
 	// --- Диагностика ---
 	uint32_t GetTrackedCount() const { return (uint32_t)m_tracked.size(); }
 	uint32_t GetPendingDeleteCount() const;
 
   private:
-	void RegisterResource(CDeviceResource* res);
+	void RegisterResource(CSharedResource* res);
 	void CollectGarbage();
 
   private:
-	IDirect3DDevice9Ex* m_device = nullptr;
+	IRenderBackend* m_rhi = nullptr;
 
 	struct STrackedResource
 	{
-		CDeviceResource* ptr = nullptr;
-		u32 frameReleased = u32(-1);
+		CSharedResource* ptr = nullptr;
+		uint32_t frameReleased = uint32_t(-1);
 	};
 
 	xr_vector<STrackedResource> m_tracked;

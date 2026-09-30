@@ -110,19 +110,6 @@ void CD3D9VertexBuffer::Bind(IDirect3DDevice9Ex* device, u32 stream, u32 offset)
 	device->SetStreamSource(stream, m_vb, offset, m_desc.stride);
 }
 
-void CD3D9VertexBuffer::OnDeviceLost()
-{
-	if(m_pool == D3DPOOL_DEFAULT)
-		RELEASE(m_vb);
-}
-
-HRESULT CD3D9VertexBuffer::OnDeviceReset(IDirect3DDevice9Ex* device)
-{
-	if(m_vb)
-		return S_OK;
-	return Create(device, m_desc);
-}
-
 // ---------------------------------------------------------------------------
 // CD3D9IndexBuffer
 // ---------------------------------------------------------------------------
@@ -196,18 +183,5 @@ void CD3D9IndexBuffer::Bind(IDirect3DDevice9Ex* device) const
 {
 	if(device)
 		device->SetIndices(m_ib);
-}
-
-void CD3D9IndexBuffer::OnDeviceLost()
-{
-	if(m_pool == D3DPOOL_DEFAULT)
-		RELEASE(m_ib);
-}
-
-HRESULT CD3D9IndexBuffer::OnDeviceReset(IDirect3DDevice9Ex* device)
-{
-	if(m_ib)
-		return S_OK;
-	return Create(device, m_desc);
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -81,9 +81,9 @@ CShaderProgram& CShaderProgram::operator=(CShaderProgram&& other) noexcept
 
 void CShaderProgram::Release()
 {
-	if(m_shader)
+	if (m_shader)
 	{
-		if(m_type == Type::Vertex)
+		if (m_type == Type::Vertex)
 			static_cast<IDirect3DVertexShader9*>(m_shader)->Release();
 		else
 			static_cast<IDirect3DPixelShader9*>(m_shader)->Release();
@@ -93,6 +93,7 @@ void CShaderProgram::Release()
 	_RELEASE(m_bytecode);
 	m_sourceFile.clear();
 	m_entry = "main";
+	m_type = Type::Vertex;
 }
 
 HRESULT CShaderProgram::CreateShaderObject(IDirect3DDevice9* device)
@@ -190,18 +191,6 @@ HRESULT CShaderProgram::CompileFromMemory(IDirect3DDevice9* device,
 
 	_RELEASE(errors);
 	return CreateShaderObject(device);
-}
-
-void CShaderProgram::OnDeviceLost()
-{
-	if(m_shader)
-	{
-		if(m_type == Type::Vertex)
-			static_cast<IDirect3DVertexShader9*>(m_shader)->Release();
-		else
-			static_cast<IDirect3DPixelShader9*>(m_shader)->Release();
-		m_shader = nullptr;
-	}
 }
 
 HRESULT CShaderProgram::OnDeviceReset(IDirect3DDevice9* device)

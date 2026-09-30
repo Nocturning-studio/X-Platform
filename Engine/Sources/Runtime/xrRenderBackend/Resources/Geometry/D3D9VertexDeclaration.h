@@ -17,9 +17,6 @@ class XRRB_API CD3D9VertexDeclaration : public CVertexDeclaration
 
 	void Bind(IDirect3DDevice9Ex* device) const override;
 
-	void OnDeviceLost() override;
-	HRESULT OnDeviceReset(IDirect3DDevice9Ex* device) override;
-
 	IDirect3DVertexDeclaration9* GetD3D9Declaration() const { return m_decl; }
 
   private:

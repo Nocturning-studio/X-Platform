@@ -38,7 +38,6 @@ class XRRB_API CShaderProgram
 							  ID3DInclude* pInclude = nullptr);
 
 	void Release();
-	void OnDeviceLost();
 	HRESULT OnDeviceReset(IDirect3DDevice9* device);
 
 	bool IsValid() const { return m_shader != nullptr; }

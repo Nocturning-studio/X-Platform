@@ -5,39 +5,40 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <xrRenderBackend/Resources/DeviceResource.h>
+#include <xrRenderBackend/Resources/SharedResource.h>
 #include <xrRenderBackend/Resources/ResourceState.h>
 #include "TextureDesc.h"
 #include "Surface.h"
 ////////////////////////////////////////////////////////////////////////////////
-class XRRB_API CTexture : public CDeviceResource
+class XRRB_API CTexture : public CSharedResource
 {
   public:
-	virtual ~CTexture() = default;
+	CTexture() = default;
+	~CTexture() override;
+
+	CTexture(const CTexture&) = delete;
+	CTexture& operator=(const CTexture&) = delete;
+
+	bool Create(IRenderBackend& rhi, const CTextureDesc& desc);
 
 	const CTextureDesc& GetDesc() const { return m_desc; }
 
-	virtual IDirect3DBaseTexture9* GetD3D9Texture() const = 0;
-	virtual IDirect3DSurface9* GetD3D9Surface(uint32_t mip, uint32_t face) const = 0;
+	RHI_TextureHandle GetRHIHandle() const { return m_rhiHandle; }
 
-	// virtual ID3D12Resource* GetNativeResource() const = 0;
-	// virtual uint32_t GetSRVSlot() const = 0;
+	RHI_RenderTargetView CreateRTV(uint32_t mip = 0, uint32_t face = 0) const;
+	RHI_DepthStencilView CreateDSV(uint32_t mip = 0, uint32_t face = 0) const;
 
-	virtual void Bind(IDirect3DDevice9Ex* device, uint32_t slot) const = 0;
-	virtual void Transition(EResourceState /*state*/) {}
+	void Bind(IRenderBackend& rhi, uint32_t slot) const;
 
-	virtual CSurface CreateRenderTargetView(uint32_t mip = 0, uint32_t face = 0) const = 0;
-	virtual CSurface CreateDepthStencilView(uint32_t mip = 0, uint32_t face = 0) const = 0;
+	void Transition(EResourceState /*state*/) {}
 
-	// --- Device lost / reset ---
-	virtual void OnDeviceLost() = 0;
-	virtual HRESULT OnDeviceReset(IDirect3DDevice9Ex* device) = 0;
+  private:
+	void DestroyRHI();
 
-  protected:
 	CTextureDesc m_desc;
+	IRenderBackend* m_rhi = nullptr;
+	RHI_TextureHandle m_rhiHandle{};
 };
-
 ////////////////////////////////////////////////////////////////////////////////
-class CTexture;
 using ref_texture = CSharedPtr<CTexture>;
 ////////////////////////////////////////////////////////////////////////////////

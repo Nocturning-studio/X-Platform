@@ -111,8 +111,12 @@ bool CShaderPass::SetSamplerDesc(LPCSTR samplerName, const CSamplerDesc& desc)
 
 void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 {
+	DX_DEPRECATED
+
 	IDirect3DDevice9Ex* device = backend.GetDevice();
 	if (!device) return;
+
+	IRenderBackend* rhi = backend.GetRHI();
 
 	for (const auto& b : m_samplers)
 	{
@@ -120,8 +124,8 @@ void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 			continue;
 
 		CTexture* tex = b.texture._get();
-		if (tex)
-			tex->Bind(device, b.dx9Stage);
+		if (tex && rhi)
+			tex->Bind(*rhi, b.dx9Stage);
 		else
 			device->SetTexture(b.dx9Stage, nullptr);
 
@@ -142,13 +146,6 @@ void CShaderPass::Apply(CRenderBackend& backend)
 	m_constantsBuffer.Flush(device);
 }
 
-void CShaderPass::OnDeviceLost()
-{
-	m_vs.OnDeviceLost();
-	m_ps.OnDeviceLost();
-	m_valid = false;
-}
-
 BOOL CShaderPass::OnDeviceReset(CRenderBackend& backend)
 {
 	IDirect3DDevice9Ex* device = backend.GetDevice();
@@ -161,5 +158,12 @@ BOOL CShaderPass::OnDeviceReset(CRenderBackend& backend)
 
 	m_valid = true;
 	return TRUE;
+}
+
+void CShaderPass::Release()
+{
+	m_vs.Release();
+	m_ps.Release();
+	m_valid = false;
 }
 ////////////////////////////////////////////////////////////////////////////////

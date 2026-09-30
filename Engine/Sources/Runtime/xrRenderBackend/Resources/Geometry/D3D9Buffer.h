@@ -21,14 +21,11 @@ class XRRB_API CD3D9VertexBuffer : public CVertexBuffer
 
 	void Bind(IDirect3DDevice9Ex* device, uint32_t stream, uint32_t offset) const override;
 
-	void OnDeviceLost() override;
-	HRESULT OnDeviceReset(IDirect3DDevice9Ex* device) override;
-
 	IDirect3DVertexBuffer9* GetD3D9Buffer() const { return m_vb; }
 
   private:
 	IDirect3DVertexBuffer9* m_vb = nullptr;
-	D3DPOOL m_pool = D3DPOOL_MANAGED;
+	D3DPOOL m_pool = D3DPOOL_DEFAULT;
 	bool m_locked = false;
 };
 
@@ -47,14 +44,11 @@ class XRRB_API CD3D9IndexBuffer : public CIndexBuffer
 
 	void Bind(IDirect3DDevice9Ex* device) const override;
 
-	void OnDeviceLost() override;
-	HRESULT OnDeviceReset(IDirect3DDevice9Ex* device) override;
-
 	IDirect3DIndexBuffer9* GetD3D9Buffer() const { return m_ib; }
 
   private:
 	IDirect3DIndexBuffer9* m_ib = nullptr;
-	D3DPOOL m_pool = D3DPOOL_MANAGED;
+	D3DPOOL m_pool = D3DPOOL_DEFAULT;
 	bool m_locked = false;
 };
 ////////////////////////////////////////////////////////////////////////////////

@@ -197,7 +197,6 @@
     <ClInclude Include="d3d9fwd.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="RenderBackend.h" />
-    <ClInclude Include="Resources\DeviceResource.h" />
     <ClInclude Include="Resources\Geometry\Buffer.h" />
     <ClInclude Include="Resources\Geometry\BufferDesc.h" />
     <ClInclude Include="Resources\Geometry\D3D9Buffer.h" />
@@ -216,12 +215,10 @@
     <ClInclude Include="Resources\Shaders\ShaderSampler.h" />
     <ClInclude Include="Resources\Shaders\ShaderSamplerBinding.h" />
     <ClInclude Include="Resources\SharedResource.h" />
-    <ClInclude Include="Resources\Textures\D3D9Texture.h" />
     <ClInclude Include="Resources\Textures\Surface.h" />
     <ClInclude Include="Resources\Textures\Texture.h" />
     <ClInclude Include="Resources\Textures\TextureDesc.h" />
     <ClInclude Include="Resources\Textures\TextureFormat.h" />
-    <ClInclude Include="Resources\Textures\D3D9TextureFormat.h" />
     <ClInclude Include="States\StateCache.h" />
     <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="pch.h" />
@@ -247,8 +244,7 @@
     <ClCompile Include="Resources\Shaders\ShaderPass.cpp" />
     <ClCompile Include="Resources\Shaders\ShaderProgram.cpp" />
     <ClCompile Include="Resources\Shaders\ShaderSampler.cpp" />
-    <ClCompile Include="Resources\Textures\D3D9Texture.cpp" />
-    <ClCompile Include="Resources\Textures\D3D9TextureFormat.cpp" />
+    <ClCompile Include="Resources\Textures\Texture.cpp" />
     <ClCompile Include="States\StateCache.cpp" />
   </ItemGroup>
   <ItemGroup>

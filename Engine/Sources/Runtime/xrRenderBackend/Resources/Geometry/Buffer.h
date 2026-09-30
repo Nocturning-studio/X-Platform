@@ -5,11 +5,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <xrRenderBackend/Resources/DeviceResource.h>
+#include <xrRenderBackend/Resources/SharedResource.h>
 #include "BufferDesc.h"
 ////////////////////////////////////////////////////////////////////////////////
 
-class XRRB_API CVertexBuffer : public CDeviceResource
+class XRRB_API CVertexBuffer : public CSharedResource
 {
   public:
 	virtual ~CVertexBuffer() = default;
@@ -31,7 +31,7 @@ using ref_vertexbuffer = CSharedPtr<CVertexBuffer>;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class XRRB_API CIndexBuffer : public CDeviceResource
+class XRRB_API CIndexBuffer : public CSharedResource
 {
   public:
 	virtual ~CIndexBuffer() = default;

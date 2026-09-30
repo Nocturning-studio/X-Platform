@@ -88,8 +88,7 @@ bool CRenderBackend::CreateDevice(HWND hWnd, RHI_BackendType backendType, const 
 	m_presentParams.BackBufferWidth = m_pRHI->GetBackBufferWidth();
 	m_presentParams.BackBufferHeight = m_pRHI->GetBackBufferHeight();
 
-	m_resources.SetDevice(GetDevice());
-	m_resources.OnDeviceReset(GetDevice());
+	m_resources.SetRHI(m_pRHI);
 
 	Msg("* [RenderBackend] Device created: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 	return true;
@@ -100,7 +99,8 @@ void CRenderBackend::DestroyDevice()
 	if (!m_pRHI && !m_hRHI)
 		return;
 
-	m_resources.OnDeviceLost();
+	m_resources.DestroyAll();
+	m_resources.SetRHI(nullptr);
 
 	if (m_pRHI)
 	{
@@ -133,8 +133,7 @@ bool CRenderBackend::ResetDevice(const RHI_PresentationParams& params)
 	m_presentParams.BackBufferWidth = m_pRHI->GetBackBufferWidth();
 	m_presentParams.BackBufferHeight = m_pRHI->GetBackBufferHeight();
 
-	m_resources.SetDevice(GetDevice());
-	m_resources.OnDeviceReset(GetDevice());
+	m_resources.SetRHI(m_pRHI);
 
 	Msg("* [RenderBackend] Device reset: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 	return true;
@@ -175,22 +174,12 @@ void CRenderBackend::Present()
 		m_pRHI->Present();
 }
 
-void CRenderBackend::OnDeviceLost()
-{
-	if (!m_pRHI)
-		return;
-
-	m_resources.OnDeviceLost();
-	m_inScene = false;
-}
-
 bool CRenderBackend::OnDeviceReset()
 {
 	if (!m_pRHI)
 		return false;
 
-	m_resources.SetDevice(GetDevice());
-	m_resources.OnDeviceReset(GetDevice());
+	m_resources.SetRHI(m_pRHI);
 	return true;
 }
 

@@ -26,9 +26,6 @@
     </ClInclude>
     <ClInclude Include="xrRenderBackendMacros.h" />
     <ClInclude Include="RenderBackend.h" />
-    <ClInclude Include="Resources\Textures\D3D9Texture.h">
-      <Filter>Resources\Textures</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Textures\Surface.h">
       <Filter>Resources\Textures</Filter>
     </ClInclude>
@@ -40,9 +37,6 @@
     </ClInclude>
     <ClInclude Include="Resources\Textures\TextureFormat.h">
       <Filter>Resources\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\DeviceResource.h">
-      <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="Resources\Geometry\VertexLayout.h">
       <Filter>Resources\Geometry</Filter>
@@ -89,9 +83,6 @@
     <ClInclude Include="Resources\Shaders\ShaderSamplerBinding.h">
       <Filter>Resources\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Textures\D3D9TextureFormat.h">
-      <Filter>Resources\Textures</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -107,9 +98,6 @@
       <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="RenderBackend.cpp" />
-    <ClCompile Include="Resources\Textures\D3D9Texture.cpp">
-      <Filter>Resources\Textures</Filter>
-    </ClCompile>
     <ClCompile Include="Resources\Geometry\Geometry.cpp">
       <Filter>Resources\Geometry</Filter>
     </ClCompile>
@@ -137,7 +125,7 @@
     <ClCompile Include="Resources\Shaders\ShaderSampler.cpp">
       <Filter>Resources\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\Textures\D3D9TextureFormat.cpp">
+    <ClCompile Include="Resources\Textures\Texture.cpp">
       <Filter>Resources\Textures</Filter>
     </ClCompile>
   </ItemGroup>

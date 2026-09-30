@@ -267,16 +267,7 @@ void CBackendTest::Frame()
 {
 	// --- device lost ---
 	if (!m_backend.IsReady())
-	{
-		if (!m_backend.NeedReset())
-			return;
-
-		Msg("* [Test] device lost -> need reset");
-		m_backend.OnDeviceLost();
-		m_shader.OnDeviceLost();
-		m_shaderReady = false;
 		return;
-	}
 
 	IRenderBackend* rhi = m_backend.GetRHI();
 	if (!rhi)
@@ -334,15 +325,8 @@ void CBackendTest::Frame()
 
 void CBackendTest::Shutdown()
 {
-	// Освобождаем offscreen ресурсы до разрушения устройства.
-	DestroyOffscreenTargets();
-
-	// Даём менеджеру ресурсов «догнать» отложенные удаления.
-	for (int i = 0; i < 3; ++i)
-		m_backend.Resources().OnFrameEnd();
-
+	m_shader.Release();
 	m_triangle.Clear();
-	m_shader.OnDeviceLost();
 	m_backend.DestroyDevice();
 
 	if (m_hWnd)

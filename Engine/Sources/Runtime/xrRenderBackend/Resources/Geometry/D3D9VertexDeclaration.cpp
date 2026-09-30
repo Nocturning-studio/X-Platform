@@ -113,15 +113,4 @@ void CD3D9VertexDeclaration::Bind(IDirect3DDevice9Ex* device) const
 		device->SetVertexDeclaration(m_decl);
 }
 
-void CD3D9VertexDeclaration::OnDeviceLost()
-{
-	RELEASE(m_decl);
-}
-
-HRESULT CD3D9VertexDeclaration::OnDeviceReset(IDirect3DDevice9Ex* device)
-{
-	if(m_decl)
-		return S_OK;
-	return Create(device, m_layout);
-}
 ////////////////////////////////////////////////////////////////////////////////

@@ -5,35 +5,48 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "ResourceManager.h"
-#include "Textures/D3D9Texture.h"
 #include "Geometry/D3D9Buffer.h"
 #include "Geometry/D3D9VertexDeclaration.h"
 ////////////////////////////////////////////////////////////////////////////////
 
 CResourceManager::~CResourceManager()
 {
+	DestroyAll();
+}
+
+void CResourceManager::DestroyAll()
+{
 	for (auto& tr : m_tracked)
+	{
+		if (!tr.ptr)
+			continue;
+
+		if (tr.ptr->RefCount() > 0)
+		{
+			Msg("! [ResourceManager] DestroyAll: resource has %u live refs — leak?",
+				tr.ptr->RefCount());
+		}
 		xr_delete(tr.ptr);
+	}
 	m_tracked.clear();
 }
 
 ref_texture CResourceManager::CreateTexture(const CTextureDesc& desc)
 {
-	if (!m_device)
+	if (!m_rhi)
 	{
-		Msg("! [ResourceManager] CreateTexture: device is null");
+		Msg("! [ResourceManager] CreateTexture: RHI is null");
 		return ref_texture();
 	}
 
-	auto* tex = xr_new<CD3D9Texture>();
-	if (FAILED(tex->Create(m_device, desc)))
+	auto* tex = xr_new<CTexture>();
+	if (!tex->Create(*m_rhi, desc))
 	{
 		xr_delete(tex);
 		return ref_texture();
 	}
 
 	RegisterResource(tex);
-
 	return ref_texture(tex);
 }
 
@@ -49,10 +62,13 @@ ref_texture CResourceManager::CreateDepthStencil(uint32_t w, uint32_t h, ETextur
 
 ref_vertexdecl CResourceManager::CreateVertexDeclaration(const CVertexLayoutDesc& layout)
 {
-	if (!m_device) { Msg("! [ResourceManager] CreateVertexDeclaration: device is null"); return {}; }
+	DX_DEPRECATED
+
+	if (!m_rhi) { Msg("! [ResourceManager] CreateVertexDeclaration: RHI is null"); return {}; }
 
 	auto* d = xr_new<CD3D9VertexDeclaration>();
-	if (FAILED(d->Create(m_device, layout))) { xr_delete(d); return {}; }
+	IDirect3DDevice9Ex* device = static_cast<IDirect3DDevice9Ex*>(m_rhi->GetDeviceHandle());
+	if (FAILED(d->Create(device, layout))) { xr_delete(d); return {}; }
 
 	RegisterResource(d);
 	return ref_vertexdecl(d);
@@ -60,14 +76,17 @@ ref_vertexdecl CResourceManager::CreateVertexDeclaration(const CVertexLayoutDesc
 
 ref_vertexbuffer CResourceManager::CreateVertexBuffer(const CVertexBufferDesc& desc, const void* initialData)
 {
-	if (!m_device) 
-	{ 
-		R_ASSERT2(false, "! [ResourceManager] CreateVertexBuffer: device is null");
-		return {}; 
+	DX_DEPRECATED
+
+	if (!m_rhi)
+	{
+		R_ASSERT2(false, "! [ResourceManager] CreateVertexBuffer: RHI is null");
+		return {};
 	}
 
 	auto* vb = xr_new<CD3D9VertexBuffer>();
-	if (FAILED(vb->Create(m_device, desc))) 
+	IDirect3DDevice9Ex* device = static_cast<IDirect3DDevice9Ex*>(m_rhi->GetDeviceHandle());
+	if (FAILED(vb->Create(device, desc)))
 	{
 		R_ASSERT2(false, "! [ResourceManager] Failed to create vertex buffer");
 		xr_delete(vb); return {};
@@ -76,14 +95,8 @@ ref_vertexbuffer CResourceManager::CreateVertexBuffer(const CVertexBufferDesc& d
 	if (initialData)
 	{
 		void* p = vb->Lock(0, 0, 0);
-		if (p) 
-		{ 
-			memcpy(p, initialData, desc.sizeBytes); vb->Unlock(); 
-		}
-		else 
-		{ 
-			R_ASSERT2(false, "! [ResourceManager] CreateVertexBuffer: initial upload failed");
-		}
+		if (p) { memcpy(p, initialData, desc.sizeBytes); vb->Unlock(); }
+		else { R_ASSERT2(false, "! [ResourceManager] CreateVertexBuffer: initial upload failed"); }
 	}
 
 	RegisterResource(vb);
@@ -92,10 +105,13 @@ ref_vertexbuffer CResourceManager::CreateVertexBuffer(const CVertexBufferDesc& d
 
 ref_indexbuffer CResourceManager::CreateIndexBuffer(const CIndexBufferDesc& desc, const void* initialData)
 {
-	if (!m_device) { Msg("! [ResourceManager] CreateIndexBuffer: device is null"); return {}; }
+	DX_DEPRECATED
+
+	if (!m_rhi) { Msg("! [ResourceManager] CreateIndexBuffer: RHI is null"); return {}; }
 
 	auto* ib = xr_new<CD3D9IndexBuffer>();
-	if (FAILED(ib->Create(m_device, desc))) { xr_delete(ib); return {}; }
+	IDirect3DDevice9Ex* device = static_cast<IDirect3DDevice9Ex*>(m_rhi->GetDeviceHandle());
+	if (FAILED(ib->Create(device, desc))) { xr_delete(ib); return {}; }
 
 	if (initialData)
 	{
@@ -110,12 +126,12 @@ ref_indexbuffer CResourceManager::CreateIndexBuffer(const CIndexBufferDesc& desc
 
 ref_geometry CResourceManager::CreateGeometry()
 {
-	// CGeometry — CPU-сайд хэндл, не владеет GPU-ресурсами напрямую,
-	// поэтому в m_tracked его не кладём. Его буферы/декларация трекаются отдельно.
-	return ref_geometry(xr_new<CGeometry>());
+	auto* g = xr_new<CGeometry>();
+	RegisterResource(g);
+	return ref_geometry(g);
 }
 
-void CResourceManager::RegisterResource(CDeviceResource* res)
+void CResourceManager::RegisterResource(CSharedResource* res)
 {
 	if (!res) return;
 	STrackedResource tr;
@@ -174,18 +190,5 @@ uint32_t CResourceManager::GetPendingDeleteCount() const
 		if (tr.ptr->RefCount() == 0)
 			++n;
 	return n;
-}
-
-void CResourceManager::OnDeviceLost()
-{
-	for (auto& tr : m_tracked)
-		tr.ptr->OnDeviceLost();
-}
-
-void CResourceManager::OnDeviceReset(IDirect3DDevice9Ex* device)
-{
-	m_device = device;
-	for (auto& tr : m_tracked)
-		tr.ptr->OnDeviceReset(device);
 }
 ////////////////////////////////////////////////////////////////////////////////
