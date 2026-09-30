@@ -36,9 +36,6 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual u32 GetBackBufferHeight() const override { return m_backBufferHeight; }
 	virtual RHI_Format GetBackBufferFormat() const override;
 
-	virtual void SetViewport(const RHI_Viewport& vp) override;
-	virtual void SetScissorRect(const RHI_Rect* rect) override;
-
 	RHI_TextureHandle CreateTexture(const RHI_TextureDesc& desc, const void* initialData = nullptr) override;
 	void DestroyTexture(RHI_TextureHandle handle) override;
 	virtual bool CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, bool isDepthStencil, bool isCube = false) override;
@@ -46,8 +43,17 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) override;
 
 	virtual void SetBlendState(const RHI_BlendState& state) override;
+	virtual const RHI_BlendState& GetBlendState() const override { return m_blendCache; }
 	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) override;
+	virtual const RHI_DepthStencilState& GetDepthStencilState() const override { return m_depthCache; }
 	virtual void SetRasterizerState(const RHI_RasterizerState& state) override;
+	virtual const RHI_RasterizerState& GetRasterizerState() const override { return m_rasterCache; }
+
+	virtual void SetViewport(const RHI_Viewport& vp) override;
+	virtual RHI_Viewport GetViewport() const override;
+	virtual void SetScissorRect(const RHI_Rect* rect) override;
+	virtual bool GetScissorRect(RHI_Rect& out) const override;
+
 	virtual void InvalidateStateCache() override;
 
   private:

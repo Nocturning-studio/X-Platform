@@ -27,12 +27,9 @@ class XRRHI_API IRenderBackend
 
 	virtual void GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const = 0;
 
-	virtual u32 GetBackBufferWidth()  const = 0;
+	virtual u32 GetBackBufferWidth() const = 0;
 	virtual u32 GetBackBufferHeight() const = 0;
 	virtual RHI_Format GetBackBufferFormat() const = 0;
-
-	virtual void SetViewport(const RHI_Viewport& vp) = 0;
-	virtual void SetScissorRect(const RHI_Rect* rect) = 0;
 
 	virtual void Clear(uint32_t clearFlags, const fvec4 color, float depth, uint8_t stencil) = 0;
 
@@ -43,8 +40,17 @@ class XRRHI_API IRenderBackend
 	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) = 0;
 
 	virtual void SetBlendState(const RHI_BlendState& state) = 0;
+	virtual const RHI_BlendState& GetBlendState() const = 0;
 	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) = 0;
+	virtual const RHI_DepthStencilState& GetDepthStencilState() const = 0;
 	virtual void SetRasterizerState(const RHI_RasterizerState& state) = 0;
+	virtual const RHI_RasterizerState& GetRasterizerState() const = 0;
+
+	virtual void SetViewport(const RHI_Viewport& vp) = 0;
+	virtual void SetScissorRect(const RHI_Rect* rect) = 0;
+	virtual RHI_Viewport GetViewport() const = 0;
+	virtual bool GetScissorRect(RHI_Rect& out) const = 0;
+
 	virtual void InvalidateStateCache() = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////

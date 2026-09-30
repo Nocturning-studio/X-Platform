@@ -111,9 +111,14 @@ namespace
 
 void CRenderBackendDX9::InvalidateStateCache()
 {
+	m_blendCache = RHI_BlendState{};
+	m_depthCache = RHI_DepthStencilState{};
+	m_rasterCache = RHI_RasterizerState{};
+
 	m_blendCacheValid = false;
 	m_depthCacheValid = false;
 	m_rasterCacheValid = false;
+
 	m_viewportCacheValid = false;
 	m_scissorCacheValid = false;
 	m_scissorEnabled = false;
@@ -327,6 +332,11 @@ void CRenderBackendDX9::SetViewport(const RHI_Viewport& vp)
 	m_viewportCacheValid = true;
 }
 
+RHI_Viewport CRenderBackendDX9::GetViewport() const
+{
+	return m_viewportCacheValid ? m_viewportCache : RHI_Viewport{};
+}
+
 void CRenderBackendDX9::SetScissorRect(const RHI_Rect* rect)
 {
 	if (!m_pDevice)
@@ -370,6 +380,14 @@ void CRenderBackendDX9::SetScissorRect(const RHI_Rect* rect)
 	m_scissorCacheValid = true;
 }
 
+bool CRenderBackendDX9::GetScissorRect(RHI_Rect& out) const
+{
+	if (!m_scissorEnabled || !m_scissorCacheValid)
+		return false;
+	out = m_scissorCache;
+	return true;
+}
+
 void CRenderBackendDX9::CacheBackBufferDimensions()
 {
 	m_backBufferWidth = 0;
@@ -393,8 +411,20 @@ void CRenderBackendDX9::CacheBackBufferDimensions()
 	}
 	bb->Release();
 
-	// Также подчищаем кэш состояния — размеры могли поменяться,
-	// и старый viewport/scissor теперь невалиден.
+	// D3D9 выставляет viewport по размеру back buffer'а при создании/reset
+	// устройства. Синхронизируем кэш, чтобы getter сразу возвращал корректное
+	// значение (иначе первый GetCurrentViewport() вернёт 0x0).
+	m_viewportCache.X = 0;
+	m_viewportCache.Y = 0;
+	m_viewportCache.Width = m_backBufferWidth;
+	m_viewportCache.Height = m_backBufferHeight;
+	m_viewportCache.MinZ = 0.0f;
+	m_viewportCache.MaxZ = 1.0f;
+	m_viewportCacheValid = true;
+
+	// После Reset D3D9 сбрасывает render states — кэш состояний невалиден.
+	// InvalidateStateCache() выставляет valid=false, но getters всё равно
+	// вернут "дефолтные" значения, соответствующие D3D9-дефолтам.
 	InvalidateStateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////

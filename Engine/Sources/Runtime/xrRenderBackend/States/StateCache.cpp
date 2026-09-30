@@ -8,217 +8,160 @@
 ////////////////////////////////////////////////////////////////////////////////
 CStateCache::CStateCache()
 {
-    Invalidate();
+	Invalidate();
 }
 
-CStateCache::~CStateCache()
-{
-}
+CStateCache::~CStateCache() = default;
 
 void CStateCache::Invalidate()
 {
-    for (uint32_t i = 0; i < 4; ++i)
-        m_pRT[i] = nullptr;
-    m_pZB = nullptr;
-
-    m_bBlend = uint32_t(-1);
-    m_srcBlend = (D3DBLEND)uint32_t(-1);
-    m_dstBlend = (D3DBLEND)uint32_t(-1);
-    m_blendOp = (D3DBLENDOP)uint32_t(-1);
-
-    m_stencilEnable = uint32_t(-1);
-    m_stencilFunc = uint32_t(-1);
-    m_stencilRef = uint32_t(-1);
-    m_stencilMask = uint32_t(-1);
-    m_stencilWriteMask = uint32_t(-1);
-    m_stencilFail = uint32_t(-1);
-    m_stencilPass = uint32_t(-1);
-    m_stencilZFail = uint32_t(-1);
-
-    m_colorWriteMask = uint32_t(-1);
-    m_cullMode = uint32_t(-1);
-    m_zWriteEnable = uint32_t(-1);
+	// Сбрасываем только legacy RT/DSV. State-кэш живёт в бэкенде и
+	// инвалидируется отдельно (backend сам вызывает InvalidateStateCache()
+	// на CreateDevice/Reset/DestroyDevice).
+	for (auto*& s : m_pRT) s = nullptr;
+	m_pZB = nullptr;
 }
 
-bool CStateCache::SetRenderTarget(IDirect3DDevice9Ex* device, IDirect3DSurface9* RT, uint32_t idx)
+////////////////////////////////////////////////////////////////////////////////
+// Convenience
+////////////////////////////////////////////////////////////////////////////////
+
+void CStateCache::SetBlend(IRenderBackend & rhi, bool enable, RHI_Blend src, RHI_Blend dst)
 {
-    if (m_pRT[idx] != RT)
-    {
-        m_pRT[idx] = RT;
-        D3D_SetRenderTarget(device, idx, RT);
-        return true;
-    }
-    return false;
+	SetBlendEx(rhi, enable, src, dst, RHI_BlendOp::Add);
 }
 
-bool CStateCache::SetDepthStencil(IDirect3DDevice9Ex* device, IDirect3DSurface9* ZB)
+void CStateCache::SetBlendEx(IRenderBackend & rhi, bool enable, RHI_Blend src, RHI_Blend dst, RHI_BlendOp op)
 {
-    if (m_pZB != ZB)
-    {
-        m_pZB = ZB;
-        D3D_SetDepthStencil(device, ZB);
-        return true;
-    }
-    return false;
+	// Копируем — backend возвращает const& на свой кэш, а мы собираемся
+	// его же и перезаписать через SetBlendState.
+	RHI_BlendState s = rhi.GetBlendState();
+	s.enable = enable;
+	s.srcColor = src;
+	s.dstColor = dst;
+	s.opColor = op;
+	rhi.SetBlendState(s);
 }
 
-void CStateCache::SetViewport(IDirect3DDevice9Ex* device, const D3DVIEWPORT9& vp)
+void CStateCache::SetStencil(IRenderBackend & rhi,
+							 bool enable,
+							 RHI_CmpFunc func,
+							 uint8_t ref, uint8_t mask, uint8_t writemask,
+							 RHI_StencilOp fail, RHI_StencilOp pass, RHI_StencilOp zfail)
 {
-    HRESULT hr = device->SetViewport(&vp);
-    VERIFY(SUCCEEDED(hr));
+	RHI_DepthStencilState s = rhi.GetDepthStencilState();
+	s.stencilEnable = enable;
+	s.stencilFunc = func;
+	s.stencilRef = ref;
+	s.stencilReadMask = mask;
+	s.stencilWriteMask = writemask;
+	s.stencilFailOp = fail;
+	s.stencilPassOp = pass;
+	s.stencilDepthFailOp = zfail;
+	rhi.SetDepthStencilState(s);
 }
 
-void CStateCache::SetScissor(IDirect3DDevice9Ex* device, const RECT* rect)
+void CStateCache::SetColorWriteEnable(IRenderBackend & rhi, u8 mask)
 {
-    if (rect)
-    {
-        D3D_SetRenderState(device, D3DRS_SCISSORTESTENABLE, TRUE);
-        HRESULT hr = device->SetScissorRect(rect);
-        VERIFY(SUCCEEDED(hr));
-    }
-    else
-    {
-        D3D_SetRenderState(device, D3DRS_SCISSORTESTENABLE, FALSE);
-    }
+	RHI_BlendState s = rhi.GetBlendState();
+	s.writeMask = mask;
+	rhi.SetBlendState(s);
 }
 
-bool CStateCache::SetBlend(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst)
+void CStateCache::SetDepthWriteEnable(IRenderBackend & rhi, bool enable)
 {
-    return SetBlendEx(device, enable, src, dst, D3DBLENDOP_ADD);
+	RHI_DepthStencilState s = rhi.GetDepthStencilState();
+	s.depthWriteEnable = enable;
+	rhi.SetDepthStencilState(s);
 }
 
-bool CStateCache::SetBlendEx(IDirect3DDevice9Ex* device, BOOL enable, D3DBLEND src, D3DBLEND dst, D3DBLENDOP op)
+void CStateCache::SetCullMode(IRenderBackend & rhi, RHI_CullMode mode)
 {
-    const uint32_t bEnable = enable ? 1u : 0u;
-    if (m_bBlend == bEnable && m_srcBlend == src && m_dstBlend == dst && m_blendOp == op)
-        return false;
-
-    m_bBlend = bEnable;
-    m_srcBlend = src;
-    m_dstBlend = dst;
-    m_blendOp = op;
-
-    D3D_SetRenderState(device, D3DRS_ALPHABLENDENABLE, bEnable);
-    if (bEnable)
-    {
-        D3D_SetRenderState(device, D3DRS_SRCBLEND, src);
-        D3D_SetRenderState(device, D3DRS_DESTBLEND, dst);
-        D3D_SetRenderState(device, D3DRS_BLENDOP, op);
-        D3D_SetRenderState(device, D3DRS_ALPHATESTENABLE, FALSE);
-    }
-    return true;
+	RHI_RasterizerState s = rhi.GetRasterizerState();
+	s.cullMode = mode;
+	rhi.SetRasterizerState(s);
 }
 
-void CStateCache::SetStencil(IDirect3DDevice9Ex* device, uint32_t enable, uint32_t func, uint32_t ref, uint32_t mask, uint32_t writemask, uint32_t fail, uint32_t pass, uint32_t zfail)
+////////////////////////////////////////////////////////////////////////////////
+// Legacy RT / DSV
+////////////////////////////////////////////////////////////////////////////////
+
+bool CStateCache::SetRenderTargetLegacy(IDirect3DDevice9Ex * device, IDirect3DSurface9 * RT, u32 idx)
 {
-    if (m_stencilEnable != enable)
-    {
-        m_stencilEnable = enable;
-        D3D_SetRenderState(device, D3DRS_STENCILENABLE, enable);
-        if (!enable)
-            return;
-    }
+	if (idx >= 4) return false;
+	if (m_pRT[idx] == RT) return false;
 
-#define UPDATE_STENCIL_STATE(member, d3drs, value)  \
-    if (member != (value))                          \
-    {                                               \
-        member = (value);                           \
-        D3D_SetRenderState(device, d3drs, (value)); \
-    }
-
-    UPDATE_STENCIL_STATE(m_stencilFunc, D3DRS_STENCILFUNC, func);
-    UPDATE_STENCIL_STATE(m_stencilRef, D3DRS_STENCILREF, ref);
-    UPDATE_STENCIL_STATE(m_stencilMask, D3DRS_STENCILMASK, mask);
-    UPDATE_STENCIL_STATE(m_stencilWriteMask, D3DRS_STENCILWRITEMASK, writemask);
-    UPDATE_STENCIL_STATE(m_stencilFail, D3DRS_STENCILFAIL, fail);
-    UPDATE_STENCIL_STATE(m_stencilPass, D3DRS_STENCILPASS, pass);
-    UPDATE_STENCIL_STATE(m_stencilZFail, D3DRS_STENCILZFAIL, zfail);
-
-#undef UPDATE_STENCIL_STATE
+	m_pRT[idx] = RT;
+	D3D_SetRenderTarget(device, idx, RT);
+	return true;
 }
 
-bool CStateCache::SetColorWriteEnable(IDirect3DDevice9Ex* device, uint32_t mask)
+bool CStateCache::SetDepthStencilLegacy(IDirect3DDevice9Ex * device, IDirect3DSurface9 * ZB)
 {
-    if (m_colorWriteMask == mask)
-        return false;
+	if (m_pZB == ZB) return false;
 
-    m_colorWriteMask = mask;
-    D3D_SetRenderState(device, D3DRS_COLORWRITEENABLE, mask);
-    D3D_SetRenderState(device, D3DRS_COLORWRITEENABLE1, mask);
-    D3D_SetRenderState(device, D3DRS_COLORWRITEENABLE2, mask);
-    D3D_SetRenderState(device, D3DRS_COLORWRITEENABLE3, mask);
-    return true;
+	m_pZB = ZB;
+	D3D_SetDepthStencil(device, ZB);
+	return true;
 }
 
-bool CStateCache::SetDepthWriteEnable(IDirect3DDevice9Ex* device, bool enable)
+void CStateCache::SaveRenderState(IDirect3DDevice9Ex * device)
 {
-    const uint32_t bEnable = enable ? 1u : 0u;
-    if (m_zWriteEnable == bEnable)
-        return false;
+	if (!device) return;
 
-    m_zWriteEnable = bEnable;
-    D3D_SetRenderState(device, D3DRS_ZWRITEENABLE, bEnable);
-    return true;
+	for (int i = 0; i < 4; ++i)
+		device->GetRenderTarget(i, &m_savedState.rt[i]);
+	device->GetDepthStencilSurface(&m_savedState.zb);
+
+	D3DVIEWPORT9 vp{};
+	device->GetViewport(&vp);
+	m_savedState.viewport.X = vp.X;
+	m_savedState.viewport.Y = vp.Y;
+	m_savedState.viewport.Width = vp.Width;
+	m_savedState.viewport.Height = vp.Height;
+	m_savedState.viewport.MinZ = vp.MinZ;
+	m_savedState.viewport.MaxZ = vp.MaxZ;
 }
 
-bool CStateCache::SetCullMode(IDirect3DDevice9Ex* device, uint32_t mode)
+void CStateCache::RestoreRenderState(IDirect3DDevice9Ex * device)
 {
-    if (m_cullMode == mode)
-        return false;
+	if (!device) return;
 
-    m_cullMode = mode;
-    D3D_SetRenderState(device, D3DRS_CULLMODE, mode);
-    return true;
+	for (int i = 0; i < 4; ++i)
+	{
+		if (m_savedState.rt[i])
+		{
+			SetRenderTargetLegacy(device, m_savedState.rt[i], i);
+			m_savedState.rt[i]->Release();
+			m_savedState.rt[i] = nullptr;
+		}
+	}
+	if (m_savedState.zb)
+	{
+		SetDepthStencilLegacy(device, m_savedState.zb);
+		m_savedState.zb->Release();
+		m_savedState.zb = nullptr;
+	}
+
+	D3DVIEWPORT9 vp{};
+	vp.X = m_savedState.viewport.X;
+	vp.Y = m_savedState.viewport.Y;
+	vp.Width = m_savedState.viewport.Width;
+	vp.Height = m_savedState.viewport.Height;
+	vp.MinZ = m_savedState.viewport.MinZ;
+	vp.MaxZ = m_savedState.viewport.MaxZ;
+	device->SetViewport(&vp);
 }
 
-void CStateCache::SaveRenderState(IDirect3DDevice9Ex* device)
+void CStateCache::D3D_SetRenderTarget(IDirect3DDevice9Ex * device, u32 idx, IDirect3DSurface9 * surf)
 {
-    for (int i = 0; i < 4; ++i)
-        device->GetRenderTarget(i, &m_savedState.rt[i]);
-    device->GetDepthStencilSurface(&m_savedState.zb);
-    device->GetViewport(&m_savedState.viewport);
+	if (!device) return;
+	device->SetRenderTarget(idx, surf);
 }
 
-void CStateCache::RestoreRenderState(IDirect3DDevice9Ex* device)
+void CStateCache::D3D_SetDepthStencil(IDirect3DDevice9Ex * device, IDirect3DSurface9 * zb)
 {
-    for (int i = 0; i < 4; ++i)
-    {
-        if (m_savedState.rt[i])
-        {
-            SetRenderTarget(device, m_savedState.rt[i], i);
-            m_savedState.rt[i]->Release();
-            m_savedState.rt[i] = nullptr;
-        }
-    }
-    if (m_savedState.zb)
-    {
-        SetDepthStencil(device, m_savedState.zb);
-        m_savedState.zb->Release();
-        m_savedState.zb = nullptr;
-    }
-    SetViewport(device, m_savedState.viewport);
-}
-
-void CStateCache::SetRawRenderState(IDirect3DDevice9Ex* device, D3DRENDERSTATETYPE State, DWORD Value)
-{
-    D3D_SetRenderState(device, State, Value);
-}
-
-void CStateCache::D3D_SetRenderState(IDirect3DDevice9Ex* device, D3DRENDERSTATETYPE state, DWORD value)
-{
-    HRESULT hr = device->SetRenderState(state, value);
-    VERIFY(SUCCEEDED(hr));
-}
-
-void CStateCache::D3D_SetRenderTarget(IDirect3DDevice9Ex* device, uint32_t idx, IDirect3DSurface9* surf)
-{
-    HRESULT hr = device->SetRenderTarget(idx, surf);
-    VERIFY(SUCCEEDED(hr));
-}
-
-void CStateCache::D3D_SetDepthStencil(IDirect3DDevice9Ex* device, IDirect3DSurface9* zb)
-{
-    HRESULT hr = device->SetDepthStencilSurface(zb);
-    VERIFY(SUCCEEDED(hr));
+	if (!device) return;
+	device->SetDepthStencilSurface(zb);
 }
 ////////////////////////////////////////////////////////////////////////////////
