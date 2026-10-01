@@ -57,15 +57,9 @@ public:
 	// --- Рендеринг ---
 	void Apply(CRenderBackend& backend);
 
-	// --- Device reset ---
-	BOOL OnDeviceReset(CRenderBackend& backend);
-
 	// Диагностика
 	const CShaderProgram& GetVertexProgram() const { return m_vs; }
 	const CShaderProgram& GetPixelProgram()  const { return m_ps; }
-
-	IDirect3DVertexShader9* GetRawVertexShader() const { return static_cast<IDirect3DVertexShader9*>(m_vs.GetRawShader()); };
-	IDirect3DPixelShader9* GetRawPixelShader() const { return static_cast<IDirect3DPixelShader9*>(m_ps.GetRawShader()); };
 
 private:
 	xr_string m_vsFile;

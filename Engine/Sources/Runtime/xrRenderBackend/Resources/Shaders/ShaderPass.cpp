@@ -26,16 +26,17 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	m_valid = false;
 
 	IDirect3DDevice9Ex* device = backend.GetDevice();
-	if (!device)
+	IRenderBackend* rhi = backend.GetRHI();
+	if (!device || !rhi)
 	{
-		Msg("! [ShaderPass] Compile: backend has no device");
+		Msg("! [ShaderPass] Compile: backend is not ready");
 		return FALSE;
 	}
 
 	// Vertex
 	if (!m_vsFile.empty())
 	{
-		const HRESULT hr = m_vs.CompileFromFile(device, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str());
+		const HRESULT hr = m_vs.CompileFromFile(*rhi, device, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str());
 		if (FAILED(hr))
 			return FALSE;
 	}
@@ -47,7 +48,7 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	// Pixel
 	if (!m_psFile.empty())
 	{
-		const HRESULT hr = m_ps.CompileFromFile(device, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str());
+		const HRESULT hr = m_ps.CompileFromFile(*rhi, device, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str());
 		if (FAILED(hr))
 			return FALSE;
 	}
@@ -56,7 +57,6 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 		m_ps.Release();
 	}
 
-	// Собираем таблицу констант из обоих стейджей.
 	m_constants.Clear();
 
 	CShaderConstantTable vsTable, psTable;
@@ -77,7 +77,6 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 		m_samplers.push_back(std::move(b));
 	}
 
-	// Данные буфера от старого шейдера больше не актуальны.
 	m_constantsBuffer.Reset();
 
 	m_valid = true;
@@ -111,12 +110,11 @@ bool CShaderPass::SetSamplerDesc(LPCSTR samplerName, const CSamplerDesc& desc)
 
 void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 {
-	DX_DEPRECATED
+	IRenderBackend* rhi = backend.GetRHI();
+	if (!rhi)
+		return;
 
 	IDirect3DDevice9Ex* device = backend.GetDevice();
-	if (!device) return;
-
-	IRenderBackend* rhi = backend.GetRHI();
 
 	for (const auto& b : m_samplers)
 	{
@@ -124,40 +122,30 @@ void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 			continue;
 
 		CTexture* tex = b.texture._get();
-		if (tex && rhi)
+		if (tex)
 			tex->Bind(*rhi, b.dx9Stage);
 		else
-			device->SetTexture(b.dx9Stage, nullptr);
+			rhi->SetShaderResource(b.dx9Stage, RHI_TextureHandle{});
 
-		ApplySamplerDesc(device, b.dx9Stage, b.desc);
+		if (device)
+			ApplySamplerDesc(device, b.dx9Stage, b.desc);
 	}
 }
 
 void CShaderPass::Apply(CRenderBackend& backend)
 {
-	IDirect3DDevice9Ex* device = backend.GetDevice();
-	if (!device) return;
+	IRenderBackend* rhi = backend.GetRHI();
+	if (!rhi)
+		return;
 
-	m_vs.Apply(device);
-	m_ps.Apply(device);
+	m_vs.Apply(*rhi);
+	m_ps.Apply(*rhi);
 
 	ApplySamplers(backend);
 
-	m_constantsBuffer.Flush(device);
-}
-
-BOOL CShaderPass::OnDeviceReset(CRenderBackend& backend)
-{
 	IDirect3DDevice9Ex* device = backend.GetDevice();
-	if (!device) return FALSE;
-
-	if (!m_vsFile.empty() && FAILED(m_vs.OnDeviceReset(device)))
-		return FALSE;
-	if (!m_psFile.empty() && FAILED(m_ps.OnDeviceReset(device)))
-		return FALSE;
-
-	m_valid = true;
-	return TRUE;
+	if (device)
+		m_constantsBuffer.Flush(device);
 }
 
 void CShaderPass::Release()

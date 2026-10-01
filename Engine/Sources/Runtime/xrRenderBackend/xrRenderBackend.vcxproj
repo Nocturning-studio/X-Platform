@@ -195,7 +195,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="d3d9fwd.h" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="RenderBackend.h" />
     <ClInclude Include="Resources\Geometry\Buffer.h" />
     <ClInclude Include="Resources\Geometry\Geometry.h" />

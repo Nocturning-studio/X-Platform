@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
+#include <xrRHI/xrRHI.h>
 #include <d3dcommon.h>
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CShaderProgram
@@ -24,12 +25,14 @@ class XRRB_API CShaderProgram
 	CShaderProgram(CShaderProgram&& other) noexcept;
 	CShaderProgram& operator=(CShaderProgram&& other) noexcept;
 
-	HRESULT CompileFromFile(IDirect3DDevice9* device,
+	HRESULT CompileFromFile(IRenderBackend& rhi,
+							IDirect3DDevice9* device,
 							Type type,
 							LPCSTR file,
 							LPCSTR entry);
 
-	HRESULT CompileFromMemory(IDirect3DDevice9* device,
+	HRESULT CompileFromMemory(IRenderBackend& rhi,
+							  IDirect3DDevice9* device,
 							  Type type,
 							  LPCSTR source,
 							  UINT size,
@@ -38,28 +41,29 @@ class XRRB_API CShaderProgram
 							  ID3DInclude* pInclude = nullptr);
 
 	void Release();
-	HRESULT OnDeviceReset(IDirect3DDevice9* device);
 
-	bool IsValid() const { return m_shader != nullptr; }
-	bool HasBytecode() const { return m_bytecode != nullptr; }
-	const void* GetBytecodePointer() const { return m_bytecode ? m_bytecode->GetBufferPointer() : nullptr; }
-	UINT GetBytecodeSize() const { return m_bytecode ? static_cast<UINT>(m_bytecode->GetBufferSize()) : 0; }
+	bool IsValid() const { return m_rhiHandle.IsValid(); }
+	bool HasBytecode() const;
+	const void* GetBytecodePointer() const;
+	UINT GetBytecodeSize() const;
 
 	Type GetType() const { return m_type; }
 	bool HasSourceFile() const { return !m_sourceFile.empty(); }
 	LPCSTR GetSourceFile() const { return m_sourceFile.c_str(); }
 	LPCSTR GetEntry() const { return m_entry.c_str(); }
-	void* GetRawShader() const { return m_shader; }
 
-	void Apply(IDirect3DDevice9* device) const;
+	RHI_ShaderHandle GetRHIHandle() const { return m_rhiHandle; }
+
+	void Apply(IRenderBackend& rhi) const;
 
   private:
-	HRESULT CreateShaderObject(IDirect3DDevice9* device);
+	HRESULT CreateShaderObject(IRenderBackend& rhi);
 
 	Type m_type = Type::Vertex;
 	std::string m_sourceFile;
 	std::string m_entry = "main";
 	ID3DBlob* m_bytecode = nullptr;
-	void* m_shader = nullptr; // IDirect3DVertexShader9* | IDirect3DPixelShader9*
+	RHI_ShaderHandle m_rhiHandle{};
+	IRenderBackend* m_rhi = nullptr;
 };
 ////////////////////////////////////////////////////////////////////////////////

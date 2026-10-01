@@ -214,17 +214,14 @@ void CRenderBackend::SetShaderPass(CShaderPass* pass)
 		return;
 	}
 
-	if (m_pRHI)
-	{
-		IDirect3DDevice9Ex* device = GetDevice();
-		if (device)
-		{
-			device->SetVertexShader(nullptr);
-			device->SetPixelShader(nullptr);
-			for (u32 i = 0; i < 16; ++i)
-				device->SetTexture(i, nullptr);
-		}
-	}
+	if (!m_pRHI)
+		return;
+
+	m_pRHI->SetVertexShader(RHI_ShaderHandle{});
+	m_pRHI->SetPixelShader(RHI_ShaderHandle{});
+
+	for (u32 i = 0; i < 16; ++i)
+		m_pRHI->SetShaderResource(i, RHI_TextureHandle{});
 }
 
 ref_texture CRenderBackend::CreateRenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips)

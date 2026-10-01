@@ -5,9 +5,6 @@
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrRenderBackend.h" />
-    <ClInclude Include="framework.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="d3d9fwd.h">
       <Filter>Kernel</Filter>
