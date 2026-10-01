@@ -5,8 +5,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "ResourceManager.h"
-#include "Geometry/D3D9Buffer.h"
-#include "Geometry/D3D9VertexDeclaration.h"
 ////////////////////////////////////////////////////////////////////////////////
 
 CResourceManager::~CResourceManager()
@@ -53,65 +51,42 @@ ref_texture CResourceManager::CreateDepthStencil(uint32_t w, uint32_t h, RHI_For
 	return CreateTexture(RHI_TextureDesc::DepthStencil(w, h, fmt));
 }
 
-ref_vertexdecl CResourceManager::CreateVertexDeclaration(const CVertexLayoutDesc& layout)
+ref_vertexdecl CResourceManager::CreateVertexDeclaration(const RHI_InputLayoutDesc& layout)
 {
-	DX_DEPRECATED
-
 	if (!m_rhi) { Msg("! [ResourceManager] CreateVertexDeclaration: RHI is null"); return {}; }
 
-	auto* d = xr_new<CD3D9VertexDeclaration>();
-	IDirect3DDevice9Ex* device = static_cast<IDirect3DDevice9Ex*>(m_rhi->GetDeviceHandle());
-	if (FAILED(d->Create(device, layout))) { xr_delete(d); return {}; }
+	auto* d = xr_new<CVertexDeclaration>();
+	if (!d->Create(*m_rhi, layout)) { xr_delete(d); return {}; }
 
 	RegisterResource(d);
 	return ref_vertexdecl(d);
 }
 
-ref_vertexbuffer CResourceManager::CreateVertexBuffer(const CVertexBufferDesc& desc, const void* initialData)
+ref_vertexbuffer CResourceManager::CreateVertexBuffer(const RHI_BufferDesc& desc, const void* initialData)
 {
-	DX_DEPRECATED
-
 	if (!m_rhi)
 	{
-		R_ASSERT2(false, "! [ResourceManager] CreateVertexBuffer: RHI is null");
+		R_ERROR("! [ResourceManager] CreateVertexBuffer: RHI is null");
 		return {};
 	}
 
-	auto* vb = xr_new<CD3D9VertexBuffer>();
-	IDirect3DDevice9Ex* device = static_cast<IDirect3DDevice9Ex*>(m_rhi->GetDeviceHandle());
-	if (FAILED(vb->Create(device, desc)))
+	auto* vb = xr_new<CVertexBuffer>();
+	if (!vb->Create(*m_rhi, desc, initialData))
 	{
-		R_ASSERT2(false, "! [ResourceManager] Failed to create vertex buffer");
+		R_ERROR("! [ResourceManager] Failed to create vertex buffer");
 		xr_delete(vb); return {};
-	}
-
-	if (initialData)
-	{
-		void* p = vb->Lock(0, 0, 0);
-		if (p) { memcpy(p, initialData, desc.sizeBytes); vb->Unlock(); }
-		else { R_ASSERT2(false, "! [ResourceManager] CreateVertexBuffer: initial upload failed"); }
 	}
 
 	RegisterResource(vb);
 	return ref_vertexbuffer(vb);
 }
 
-ref_indexbuffer CResourceManager::CreateIndexBuffer(const CIndexBufferDesc& desc, const void* initialData)
+ref_indexbuffer CResourceManager::CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData)
 {
-	DX_DEPRECATED
-
 	if (!m_rhi) { Msg("! [ResourceManager] CreateIndexBuffer: RHI is null"); return {}; }
 
-	auto* ib = xr_new<CD3D9IndexBuffer>();
-	IDirect3DDevice9Ex* device = static_cast<IDirect3DDevice9Ex*>(m_rhi->GetDeviceHandle());
-	if (FAILED(ib->Create(device, desc))) { xr_delete(ib); return {}; }
-
-	if (initialData)
-	{
-		void* p = ib->Lock(0, 0, 0);
-		if (p) { memcpy(p, initialData, desc.sizeBytes); ib->Unlock(); }
-		else { Msg("! [ResourceManager] CreateIndexBuffer: initial upload failed"); }
-	}
+	auto* ib = xr_new<CIndexBuffer>();
+	if (!ib->Create(*m_rhi, desc, initialData)) { xr_delete(ib); return {}; }
 
 	RegisterResource(ib);
 	return ref_indexbuffer(ib);

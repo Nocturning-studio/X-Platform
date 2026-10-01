@@ -29,12 +29,6 @@
     <ClInclude Include="Resources\Textures\Texture.h">
       <Filter>Resources\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Geometry\VertexLayout.h">
-      <Filter>Resources\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\Geometry\BufferDesc.h">
-      <Filter>Resources\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Geometry\Buffer.h">
       <Filter>Resources\Geometry</Filter>
     </ClInclude>
@@ -42,12 +36,6 @@
       <Filter>Resources\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Resources\Geometry\Geometry.h">
-      <Filter>Resources\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\Geometry\D3D9Buffer.h">
-      <Filter>Resources\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\Geometry\D3D9VertexDeclaration.h">
       <Filter>Resources\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Resources\Shaders\ShaderConstant.h">
@@ -92,12 +80,6 @@
     <ClCompile Include="Resources\Geometry\Geometry.cpp">
       <Filter>Resources\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\Geometry\D3D9Buffer.cpp">
-      <Filter>Resources\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Resources\Geometry\D3D9VertexDeclaration.cpp">
-      <Filter>Resources\Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="Resources\Shaders\ShaderConstantBuffer.cpp">
       <Filter>Resources\Shaders</Filter>
     </ClCompile>
@@ -118,6 +100,12 @@
     </ClCompile>
     <ClCompile Include="Resources\Textures\Texture.cpp">
       <Filter>Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Geometry\Buffer.cpp">
+      <Filter>Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Geometry\VertexDeclaration.cpp">
+      <Filter>Resources\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

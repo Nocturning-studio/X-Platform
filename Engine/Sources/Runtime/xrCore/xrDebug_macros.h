@@ -47,6 +47,25 @@
 	} while(0)
 
 // ---------------------------------------------------------------------------
+// ERROR – безусловный краш
+// ---------------------------------------------------------------------------
+#define R_ERROR(msg)                                               \
+	do                                                             \
+	{                                                              \
+		static bool ignore_always = false;                         \
+		if(!ignore_always)                                         \
+			::Debug.fail("error", msg, DEBUG_INFO, ignore_always); \
+	} while(0)
+
+#define R_ERRORF(...)                                                                   \
+	do                                                                                  \
+	{                                                                                   \
+		static bool ignore_always = false;                                              \
+		if(!ignore_always)                                                              \
+			::Debug.fail("error", make_string(__VA_ARGS__), DEBUG_INFO, ignore_always); \
+	} while(0)
+
+// ---------------------------------------------------------------------------
 // R_CHK – проверка HRESULT
 // ---------------------------------------------------------------------------
 #define R_CHK(expr)                                              \

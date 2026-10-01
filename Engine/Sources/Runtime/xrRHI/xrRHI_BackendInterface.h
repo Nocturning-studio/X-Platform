@@ -49,6 +49,21 @@ class XRRHI_API IRenderBackend
 	virtual void* GetTextureNativeHandle(RHI_TextureHandle handle) = 0;
 	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) = 0;
 
+	virtual RHI_BufferHandle CreateVertexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr) = 0;
+	virtual RHI_BufferHandle CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr) = 0;
+	virtual void DestroyBuffer(RHI_BufferHandle handle) = 0;
+
+	virtual void* LockBuffer(RHI_BufferHandle handle, uint32_t offset, uint32_t size, uint32_t flags) = 0;
+	virtual void  UnlockBuffer(RHI_BufferHandle handle) = 0;
+
+	virtual RHI_InputLayoutHandle CreateInputLayout(const RHI_InputLayoutDesc& desc) = 0;
+	virtual void DestroyInputLayout(RHI_InputLayoutHandle handle) = 0;
+
+	virtual void SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb, uint32_t offset, uint32_t stride) = 0;
+	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) = 0;
+	virtual void SetInputLayout(RHI_InputLayoutHandle layout) = 0;
+	virtual void SetPrimitiveTopology(RHI_Topology topology) = 0;
+
 	virtual void SetBlendState(const RHI_BlendState& state) = 0;
 	virtual const RHI_BlendState& GetBlendState() const = 0;
 	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) = 0;
@@ -64,6 +79,9 @@ class XRRHI_API IRenderBackend
 	virtual void InvalidateStateCache() = 0;
 
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) = 0;
+
+	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) = 0;
+	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus

@@ -342,7 +342,7 @@ void CUISkinSelectorWnd::SetVisibleForBtn(ESKINMENU_BTN btn, bool state)
 		this->m_pBtnAutoSelect->SetVisible(state);
 		break;
 	default:
-		R_ASSERT2(false, "invalid btn ID");
+		R_ERROR("invalid btn ID");
 	}
 }
 

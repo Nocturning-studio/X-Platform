@@ -601,7 +601,7 @@ void CServerList::UpdateServerInList(ServerInfo* pServerInfo, int index)
 		}
 	}
 
-	R_ASSERT2(false, "CServerList::UpdateServerInList - invalid index");
+	R_ERROR("CServerList::UpdateServerInList - invalid index");
 };
 
 void CServerList::UpdateServerInList(ServerInfo* pServerInfo, CUIListItemServer* pItem)

@@ -1397,7 +1397,7 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 			if(!unique_set.insert(v).second)
 			{
 				Msg("[DUPLICATE] visual 0x%p in %s", v, context);
-				R_ASSERT2(false, "Duplicate visual detected in render packet");
+				R_ERROR("Duplicate visual detected in render packet");
 			}
 		}
 	};
@@ -1464,7 +1464,7 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 			if(!unique_set.insert(v).second)
 			{
 				Msg("[DUPLICATE] visual 0x%p in %s", v, context);
-				R_ASSERT2(false, "Duplicate visual detected in render packet");
+				R_ERROR("Duplicate visual detected in render packet");
 			}
 		}
 	};
@@ -1484,7 +1484,7 @@ void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 			if(!unique_set.insert(v).second)
 			{
 				Msg("[DUPLICATE] visual 0x%p in LOD map", v);
-				R_ASSERT2(false, "Duplicate visual detected in render packet");
+				R_ERROR("Duplicate visual detected in render packet");
 			}
 		}
 	}

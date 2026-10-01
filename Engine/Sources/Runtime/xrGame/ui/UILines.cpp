@@ -163,7 +163,7 @@ void CUILines::ParseText()
 
 	Reset();
 	if(!m_text.empty() && NULL == m_pFont)
-		R_ASSERT2(false, "can't parse text without font");
+		R_ERROR("can't parse text without font");
 
 	CUILine* line = NULL;
 	if(uFlags.test(flColoringMode))

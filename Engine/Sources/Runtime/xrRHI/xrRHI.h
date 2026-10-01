@@ -10,5 +10,7 @@
 #include "xrRHI_States.h"
 #include "xrRHI_Caps.h"
 #include "xrRHI_Handles.h"
+#include "xrRHI_Buffers.h"
+#include "xrRHI_InputLayout.h"
 #include "xrRHI_BackendInterface.h"
 ////////////////////////////////////////////////////////////////////////////////

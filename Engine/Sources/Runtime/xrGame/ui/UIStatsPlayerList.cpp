@@ -190,7 +190,7 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path)
 	else if(2 == m_CurTeam)
 		logo->InitTexture(pSettings->r_string("team_logo_small", "team2"));
 	else
-		R_ASSERT2(false, "invalid team");
+		R_ERROR("invalid team");
 
 	S_ELEMENT t;
 	CUIXmlInit::InitFont(xml_doc, strconcat(sizeof(_path), _path, path, ":team_header:text_format"), 0, t.c, t.f);

@@ -292,7 +292,7 @@ bool CUILine::GetWord(Word& w, const xr_string& text, int begin) const
 
 #ifdef DEBUG
 	if(npos != first && (npos == last || npos == lastsp))
-		R_ASSERT2(false, "CUILine::InitPos -- impossible match");
+		R_ERROR("CUILine::InitPos -- impossible match");
 #endif
 
 	return true;
@@ -421,7 +421,7 @@ const CUILine* CUILine::CutWord(CGameFont* pFont, float length)
 		}
 	}
 
-	R_ASSERT2(false, "meaningless call of CUILine::CutWord() ):");
+	R_ERROR("meaningless call of CUILine::CutWord() ):");
 
 	return m_tmpLine;
 }

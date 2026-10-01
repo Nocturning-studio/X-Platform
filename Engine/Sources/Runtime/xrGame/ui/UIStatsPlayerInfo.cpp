@@ -143,7 +143,7 @@ const char* CUIStatsPlayerInfo::GetInfoByID(const char* id)
 			strcpy(ans, "");
 	}
 	else
-		R_ASSERT2(false, "invalid info ID");
+		R_ERROR("invalid info ID");
 
 	return ans;
 }

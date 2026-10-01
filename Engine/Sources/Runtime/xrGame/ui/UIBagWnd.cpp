@@ -553,7 +553,7 @@ bool CUIBagWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	switch(GetMenuLevel())
 	{
 	case mlRoot:
-		R_ASSERT2(false, "error: CUIBagWnd on level <mlRoot> can't handle keyboard");
+		R_ERROR("error: CUIBagWnd on level <mlRoot> can't handle keyboard");
 		break;
 	case mlBoxes:
 
@@ -778,7 +778,7 @@ void CUIBagWnd::OnBackClick()
 	switch(GetMenuLevel())
 	{
 	case mlRoot:
-		R_ASSERT2(false, "error: CUIBagWnd on level <mlRoot> can't handle OnBackClick");
+		R_ERROR("error: CUIBagWnd on level <mlRoot> can't handle OnBackClick");
 		break;
 	case mlBoxes:
 		ShowSectionEx(-1);

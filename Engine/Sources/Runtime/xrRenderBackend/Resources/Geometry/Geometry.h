@@ -5,25 +5,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
+#include <xrRHI/xrRHI.h>
+#include <xrRenderBackend/Resources/SharedResource.h>
 #include "Buffer.h"
 #include "VertexDeclaration.h"
 ////////////////////////////////////////////////////////////////////////////////
-
-enum class EPrimitiveTopology : uint32_t
-{
-	PointList = 1,
-	LineList,
-	LineStrip,
-	TriangleList,
-	TriangleStrip,
-	// PatchList_* зарезервировано под тесселяцию в DX11/12.
-};
-
-// API-агностичный handle геометрии. Хранит ссылки на уже созданные
-// device-ресурсы (буферы, декларацию) и топологию.
 class XRRB_API CGeometry : public CSharedResource
 {
-  public:
+public:
 	CGeometry() = default;
 	~CGeometry() override = default;
 
@@ -36,12 +25,13 @@ class XRRB_API CGeometry : public CSharedResource
 	{
 		ref_vertexbuffer buffer;
 		uint32_t offset = 0;
-		uint32_t instanceStepRate = 0; // 0 = per-vertex, >0 = per-instance
+		uint32_t instanceStepRate = 0;
 	};
 
-	void SetVertexBuffer(uint32_t stream, const ref_vertexbuffer& vb, uint32_t offset = 0, uint32_t instanceStepRate = 0)
+	void SetVertexBuffer(uint32_t stream, const ref_vertexbuffer& vb,
+		uint32_t offset = 0, uint32_t instanceStepRate = 0)
 	{
-		if(stream >= m_streams.size())
+		if (stream >= m_streams.size())
 			m_streams.resize(stream + 1);
 		m_streams[stream].buffer = vb;
 		m_streams[stream].offset = offset;
@@ -64,27 +54,26 @@ class XRRB_API CGeometry : public CSharedResource
 	const ref_indexbuffer& GetIndexBuffer() const { return m_ib; }
 
 	// --- Topology ---
-	void SetTopology(EPrimitiveTopology t) { m_topology = t; }
-	EPrimitiveTopology GetTopology() const { return m_topology; }
+	void SetTopology(RHI_Topology t) { m_topology = t; }
+	RHI_Topology GetTopology() const { return m_topology; }
 
 	// --- Stats ---
 	uint32_t GetIndexCount() const { return m_ib ? m_ib->GetIndexCount() : 0; }
-	uint32_t GetVertexCount() const;	   // по stream 0
-	uint32_t GetPrimitiveCount() const; // по топологии и count
+	uint32_t GetVertexCount() const; // по stream 0
 
 	// --- Binding / Drawing ---
-	// Устанавливает декларацию, все потоки и индексный буфер в текущий контекст.
-	void Bind(IDirect3DDevice9Ex* device) const;
+	// Устанавливает декларацию, все потоки, индексный буфер и топологию.
+	void Bind(IRenderBackend& rhi) const;
 
-	// Удобный хелпер. В D3D9 топология передаётся именно здесь (нет topology state).
-	// В DX11/12 бекенд сам применит топологию по GetTopology().
-	void Draw(IDirect3DDevice9Ex* device) const;
+	// Вызывает Draw/DrawIndexed. В D3D9 топология уже была применена
+	// внутри Bind через SetPrimitiveTopology.
+	void Draw(IRenderBackend& rhi) const;
 
-  private:
+private:
 	xr_vector<SStreamBinding> m_streams;
 	ref_indexbuffer m_ib;
 	ref_vertexdecl m_vdecl;
-	EPrimitiveTopology m_topology = EPrimitiveTopology::TriangleList;
+	RHI_Topology m_topology = RHI_Topology::TriangleList;
 };
 using ref_geometry = CSharedPtr<CGeometry>;
 ////////////////////////////////////////////////////////////////////////////////

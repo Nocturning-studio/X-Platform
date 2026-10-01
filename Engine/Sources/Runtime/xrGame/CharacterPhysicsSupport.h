@@ -179,7 +179,7 @@ class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 	/////////////////////////////////////////////////////////////////
 	CCharacterPhysicsSupport& operator=(CCharacterPhysicsSupport& /**asup/**/)
 	{
-		R_ASSERT2(false, "Can not assign it");
+		R_ERROR("Can not assign it");
 	}
 	CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity);
 	virtual ~CCharacterPhysicsSupport();

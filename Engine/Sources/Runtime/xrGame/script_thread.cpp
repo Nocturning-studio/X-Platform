@@ -124,7 +124,7 @@ CScriptThread::~CScriptThread()
 bool CScriptThread::update()
 {
 	if(!m_active)
-		R_ASSERT2(false, "Cannot resume dead Lua thread!");
+		R_ERROR("Cannot resume dead Lua thread!");
 
 	try
 	{

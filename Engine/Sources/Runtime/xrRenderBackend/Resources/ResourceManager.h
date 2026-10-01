@@ -24,9 +24,9 @@ class XRRB_API CResourceManager
 	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt = RHI_Format::D24_UNORM_S8_UINT);
 
 	// --- Геометрия ---
-	ref_vertexdecl CreateVertexDeclaration(const CVertexLayoutDesc& layout);
-	ref_vertexbuffer CreateVertexBuffer(const CVertexBufferDesc& desc, const void* initialData = nullptr);
-	ref_indexbuffer CreateIndexBuffer(const CIndexBufferDesc& desc, const void* initialData = nullptr);
+	ref_vertexdecl CreateVertexDeclaration(const RHI_InputLayoutDesc& layout);
+	ref_vertexbuffer CreateVertexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr);
+	ref_indexbuffer CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr);
 	ref_geometry CreateGeometry();
 
 	// --- Кадровый цикл ---

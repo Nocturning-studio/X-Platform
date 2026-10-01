@@ -190,6 +190,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 
 void CRenderBackendDX9::DestroyDevice()
 {
+	ReleaseAllResources();
 	ReleaseAllRTVDSV();
 	InvalidateStateCache();
 	m_backBufferWidth = 0;
@@ -204,26 +205,57 @@ void CRenderBackendDX9::DestroyDevice()
 
 void CRenderBackendDX9::ReleaseAllResources()
 {
-	for(size_t i = 0; i < m_Textures.size(); ++i)
+	// --- Textures ---
+	for (size_t i = 0; i < m_Textures.size(); ++i)
 	{
 		DX9Texture* tex = m_Textures[i];
-		if(tex)
+		if (tex)
 		{
-			if(tex->tex2D)
-				tex->tex2D->Release();
-			if (tex->tex3D)
-				tex->tex3D->Release();
-			if(tex->texCube)
-				tex->texCube->Release();
-			if(tex->surface)
-				tex->surface->Release();
+			if (tex->tex2D)   tex->tex2D->Release();
+			if (tex->tex3D)   tex->tex3D->Release();
+			if (tex->texCube) tex->texCube->Release();
+			if (tex->surface) tex->surface->Release();
 			delete tex;
 			m_Textures[i] = nullptr;
 		}
 	}
 	m_Textures.clear();
-	while(!m_FreeTextureIndices.empty())
+	while (!m_FreeTextureIndices.empty())
 		m_FreeTextureIndices.pop();
+
+	// --- Buffers ---
+	for (size_t i = 0; i < m_buffers.size(); ++i)
+	{
+		DX9Buffer* buf = m_buffers[i];
+		if (buf)
+		{
+			if (buf->vb) buf->vb->Release();
+			if (buf->ib) buf->ib->Release();
+			delete buf;
+			m_buffers[i] = nullptr;
+		}
+	}
+	m_buffers.clear();
+	while (!m_freeBufferIndices.empty())
+		m_freeBufferIndices.pop();
+
+	// --- Input layouts ---
+	for (size_t i = 0; i < m_inputLayouts.size(); ++i)
+	{
+		DX9InputLayout* lay = m_inputLayouts[i];
+		if (lay)
+		{
+			if (lay->decl) lay->decl->Release();
+			delete lay;
+			m_inputLayouts[i] = nullptr;
+		}
+	}
+	m_inputLayouts.clear();
+	while (!m_freeInputLayoutIndices.empty())
+		m_freeInputLayoutIndices.pop();
+
+	// --- Cached state ---
+	InvalidateGeometryCache();
 }
 
 bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)

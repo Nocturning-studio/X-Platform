@@ -75,19 +75,15 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	}
 
 	DWORD usage = 0;
-	D3DPOOL pool = D3DPOOL_MANAGED;
+	D3DPOOL pool = D3DPOOL_DEFAULT;
 
 	if (desc.usage & RHI_TexUsage_RenderTarget) usage |= D3DUSAGE_RENDERTARGET;
 	if (desc.usage & RHI_TexUsage_DepthStencil) usage |= D3DUSAGE_DEPTHSTENCIL;
 	if (desc.usage & RHI_TexUsage_GenerateMips) usage |= D3DUSAGE_AUTOGENMIPMAP;
 
-	// RT/DS обязаны быть в DEFAULT pool (D3D9 не даёт иначе).
-	if (usage & (D3DUSAGE_RENDERTARGET | D3DUSAGE_DEPTHSTENCIL))
-		pool = D3DPOOL_DEFAULT;
-	else if (desc.usage & (RHI_TexUsage_CPUReadable | RHI_TexUsage_CPUWritable))
-		pool = D3DPOOL_MANAGED;
-	else
-		pool = D3DPOOL_DEFAULT; // с initialData через staging
+	if (desc.usage & (RHI_TexUsage_CPUReadable | RHI_TexUsage_CPUWritable))
+		R_ERRORF("! [DX9] CreateTexture: CPUReadable/CPUWritable flags are ignored in D3D9Ex " 
+				 "(texture '%s'). Use staging workflow instead.", desc.debugName ? desc.debugName : "<unnamed>");
 
 	// mipLevels == 0 => полная цепочка
 	UINT mips = (desc.mipLevels == 0) ? 0 : desc.mipLevels;

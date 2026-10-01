@@ -245,17 +245,17 @@ void CRenderBackend::Clear(uint32_t flags, uint32_t colorARGB, float z, uint32_t
 	m_pRHI->Clear(flags, ARGBToFvec4(colorARGB), z, static_cast<u8>(stencil));
 }
 
-ref_vertexdecl CRenderBackend::CreateVertexDeclaration(const CVertexLayoutDesc& layout)
+ref_vertexdecl CRenderBackend::CreateVertexDeclaration(const RHI_InputLayoutDesc& layout)
 {
 	return m_resources.CreateVertexDeclaration(layout);
 }
 
-ref_vertexbuffer CRenderBackend::CreateVertexBuffer(const CVertexBufferDesc& desc, const void* data)
+ref_vertexbuffer CRenderBackend::CreateVertexBuffer(const RHI_BufferDesc& desc, const void* data)
 {
 	return m_resources.CreateVertexBuffer(desc, data);
 }
 
-ref_indexbuffer CRenderBackend::CreateIndexBuffer(const CIndexBufferDesc& desc, const void* data)
+ref_indexbuffer CRenderBackend::CreateIndexBuffer(const RHI_BufferDesc& desc, const void* data)
 {
 	return m_resources.CreateIndexBuffer(desc, data);
 }
@@ -267,24 +267,15 @@ ref_geometry CRenderBackend::CreateGeometry()
 
 void CRenderBackend::BindGeometry(const ref_geometry& g)
 {
-	if (g._get())
-	{
-		IDirect3DDevice9Ex* device = GetDevice();
-		if (device)
-			g->Bind(device);
-	}
+	if (g._get() && m_pRHI)
+		g->Bind(*m_pRHI);
 }
 
 void CRenderBackend::DrawGeometry(const ref_geometry& g)
 {
-	if (!g._get())
+	if (!g._get() || !m_pRHI)
 		return;
-
-	IDirect3DDevice9Ex* device = GetDevice();
-	if (!device)
-		return;
-
-	g->Bind(device);
-	g->Draw(device);
+	g->Bind(*m_pRHI);
+	g->Draw(*m_pRHI);
 }
 ////////////////////////////////////////////////////////////////////////////////

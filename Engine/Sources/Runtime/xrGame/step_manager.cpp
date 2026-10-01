@@ -249,7 +249,7 @@ void CStepManager::reload_foot_bones()
 	else
 	{
 		if(!pSettings->line_exist(*m_object->cNameSect(), "foot_bones"))
-			R_ASSERT2(false, "section [foot_bones] not found in monster user_data");
+			R_ERROR("section [foot_bones] not found in monster user_data");
 		load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(), "foot_bones")));
 	}
 

@@ -542,7 +542,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const fvec2& star
 					Msg("CLevelGraph::create_straight_path : Loop became infinite (%d,[%f][%f][%f],[%f][%f][%f])",
 						start_vertex_id, VPUSH(v3d(start_point)), VPUSH(v3d(finish_point)));
 					FlushLog();
-					R_ASSERT2(false, "Loop became infinite :-( call Dima and SAVE YOUR LOG!");
+					R_ERROR("Loop became infinite :-( call Dima and SAVE YOUR LOG!");
 				}
 #endif
 				break;

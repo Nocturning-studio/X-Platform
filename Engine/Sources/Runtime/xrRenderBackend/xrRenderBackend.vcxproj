@@ -198,12 +198,8 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="RenderBackend.h" />
     <ClInclude Include="Resources\Geometry\Buffer.h" />
-    <ClInclude Include="Resources\Geometry\BufferDesc.h" />
-    <ClInclude Include="Resources\Geometry\D3D9Buffer.h" />
-    <ClInclude Include="Resources\Geometry\D3D9VertexDeclaration.h" />
     <ClInclude Include="Resources\Geometry\Geometry.h" />
     <ClInclude Include="Resources\Geometry\VertexDeclaration.h" />
-    <ClInclude Include="Resources\Geometry\VertexLayout.h" />
     <ClInclude Include="Resources\ResourceManager.h" />
     <ClInclude Include="Resources\ResourceState.h" />
     <ClInclude Include="Resources\Shaders\ShaderConstant.h" />
@@ -231,9 +227,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RenderBackend.cpp" />
-    <ClCompile Include="Resources\Geometry\D3D9Buffer.cpp" />
-    <ClCompile Include="Resources\Geometry\D3D9VertexDeclaration.cpp" />
+    <ClCompile Include="Resources\Geometry\Buffer.cpp" />
     <ClCompile Include="Resources\Geometry\Geometry.cpp" />
+    <ClCompile Include="Resources\Geometry\VertexDeclaration.cpp" />
     <ClCompile Include="Resources\ResourceManager.cpp" />
     <ClCompile Include="Resources\Shaders\ShaderConstantBuffer.cpp" />
     <ClCompile Include="Resources\Shaders\ShaderConstantTable.cpp" />

@@ -26,11 +26,31 @@ struct DX9Texture
 
 	IDirect3DBaseTexture9* GetBase() const
 	{
-		if(tex2D) return tex2D;
-		if(texCube) return texCube;
-		if(tex3D) return tex3D;
+		if(tex2D)
+			return tex2D;
+		if(texCube)
+			return texCube;
+		if(tex3D)
+			return tex3D;
 		return nullptr;
 	}
+};
+
+struct DX9Buffer
+{
+	IDirect3DVertexBuffer9* vb = nullptr;
+	IDirect3DIndexBuffer9* ib = nullptr;
+
+	RHI_BufferDesc desc{};
+	D3DPOOL pool = D3DPOOL_DEFAULT;
+	bool locked = false;
+	bool isIndex = false;
+};
+
+struct DX9InputLayout
+{
+	IDirect3DVertexDeclaration9* decl = nullptr;
+	RHI_InputLayoutDesc desc;
 };
 
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);

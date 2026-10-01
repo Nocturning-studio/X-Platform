@@ -6,100 +6,44 @@
 #include "pch.h"
 #include "Geometry.h"
 ////////////////////////////////////////////////////////////////////////////////
-
-namespace
-{
-D3DPRIMITIVETYPE ToD3DPrimitive(EPrimitiveTopology t)
-{
-	switch(t)
-	{
-	case EPrimitiveTopology::PointList:
-		return D3DPT_POINTLIST;
-	case EPrimitiveTopology::LineList:
-		return D3DPT_LINELIST;
-	case EPrimitiveTopology::LineStrip:
-		return D3DPT_LINESTRIP;
-	case EPrimitiveTopology::TriangleList:
-		return D3DPT_TRIANGLELIST;
-	case EPrimitiveTopology::TriangleStrip:
-		return D3DPT_TRIANGLESTRIP;
-	default:
-		return D3DPT_TRIANGLELIST;
-	}
-}
-} // namespace
-
 uint32_t CGeometry::GetVertexCount() const
 {
-	if(m_streams.empty() || !m_streams[0].buffer)
+	if (m_streams.empty() || !m_streams[0].buffer)
 		return 0;
 	const uint32_t stride = m_streams[0].buffer->GetStride();
-	if(stride == 0)
+	if (stride == 0)
 		return 0;
 	return m_streams[0].buffer->GetSizeBytes() / stride;
 }
 
-uint32_t CGeometry::GetPrimitiveCount() const
+void CGeometry::Bind(IRenderBackend& rhi) const
 {
-	const uint32_t n = m_ib ? GetIndexCount() : GetVertexCount();
-	switch(m_topology)
-	{
-	case EPrimitiveTopology::PointList:
-		return n;
-	case EPrimitiveTopology::LineList:
-		return n / 2;
-	case EPrimitiveTopology::LineStrip:
-		return (n >= 2) ? (n - 1) : 0;
-	case EPrimitiveTopology::TriangleList:
-		return n / 3;
-	case EPrimitiveTopology::TriangleStrip:
-		return (n >= 3) ? (n - 2) : 0;
-	default:
-		return 0;
-	}
-}
+	// 1. Input layout (в D3D12 будет no-op — лэйаут войдёт в PSO).
+	if (m_vdecl)
+		m_vdecl->Bind(rhi);
 
-void CGeometry::Bind(IDirect3DDevice9Ex* device) const
-{
-	if(!device)
-		return;
-
-	if(m_vdecl)
-		m_vdecl->Bind(device);
-
-	for(uint32_t s = 0; s < (uint32_t)m_streams.size(); ++s)
+	// 2. Vertex streams.
+	for (uint32_t s = 0; s < (uint32_t)m_streams.size(); ++s)
 	{
 		const SStreamBinding& sb = m_streams[s];
-		if(!sb.buffer)
+		if (!sb.buffer)
 			continue;
-
-		sb.buffer->Bind(device, s, sb.offset);
-
-		// D3D9-инстансинг делается через SetStreamSourceFreq
-		// if (sb.instanceStepRate > 0)
-		//     device->SetStreamSourceFreq(s, D3DSTREAMSOURCE_INSTANCEDATA | sb.instanceStepRate);
+		sb.buffer->Bind(rhi, s, sb.offset);
 	}
 
-	if(m_ib)
-		m_ib->Bind(device);
+	// 3. Index buffer.
+	if (m_ib)
+		m_ib->Bind(rhi);
+
+	// 4. Topology (в D3D9 — no-op, кэшируется; в D3D12 — часть PSO).
+	rhi.SetPrimitiveTopology(m_topology);
 }
 
-void CGeometry::Draw(IDirect3DDevice9Ex* device) const
+void CGeometry::Draw(IRenderBackend& rhi) const
 {
-	if(!device)
-		return;
-
-	const D3DPRIMITIVETYPE prim = ToD3DPrimitive(m_topology);
-	const uint32_t count = GetPrimitiveCount();
-
-	if(m_ib)
-	{
-		const uint32_t vcount = GetVertexCount();
-		device->DrawIndexedPrimitive(prim, 0, 0, vcount, 0, count);
-	}
+	if (m_ib)
+		rhi.DrawIndexed(GetIndexCount(), 0, 0);
 	else
-	{
-		device->DrawPrimitive(prim, 0, count);
-	}
+		rhi.Draw(GetVertexCount(), 0);
 }
 ////////////////////////////////////////////////////////////////////////////////

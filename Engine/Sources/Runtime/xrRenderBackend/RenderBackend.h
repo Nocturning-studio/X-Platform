@@ -49,7 +49,7 @@ class XRRB_API CRenderBackend
 	const RHIDeviceCaps& GetDeviceCaps() const;
 	const RHI_PresentationParams& GetPresentParams() const { return m_presentParams; }
 	bool IsReady() const { return m_pRHI != nullptr; }
-	uint32_t GetBackBufferWidth()  const;
+	uint32_t GetBackBufferWidth() const;
 	uint32_t GetBackBufferHeight() const;
 
 	// --- Subsystems ---
@@ -66,9 +66,9 @@ class XRRB_API CRenderBackend
 	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt = RHI_Format::D24_UNORM_S8_UINT);
 	void Clear(uint32_t flags, uint32_t colorARGB = 0, float z = 1.0f, uint32_t stencil = 0);
 
-	ref_vertexdecl CreateVertexDeclaration(const CVertexLayoutDesc& layout);
-	ref_vertexbuffer CreateVertexBuffer(const CVertexBufferDesc& desc, const void* data = nullptr);
-	ref_indexbuffer CreateIndexBuffer(const CIndexBufferDesc& desc, const void* data = nullptr);
+	ref_vertexdecl CreateVertexDeclaration(const RHI_InputLayoutDesc& layout);
+	ref_vertexbuffer CreateVertexBuffer(const RHI_BufferDesc& desc, const void* data = nullptr);
+	ref_indexbuffer CreateIndexBuffer(const RHI_BufferDesc& desc, const void* data = nullptr);
 	ref_geometry CreateGeometry();
 
 	void BindGeometry(const ref_geometry& g);

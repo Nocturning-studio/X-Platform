@@ -95,7 +95,7 @@ IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphI
 	for(; i != e; ++i)
 		if(value(tGraphID0, i) == tGraphID1)
 			return (edge_weight(i));
-	R_ASSERT2(false, "There is no proper graph point neighbour!");
+	R_ERROR("There is no proper graph point neighbour!");
 	return (_GRAPH_ID(-1));
 }
 

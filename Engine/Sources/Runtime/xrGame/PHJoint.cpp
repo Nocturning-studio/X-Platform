@@ -1388,7 +1388,7 @@ void CPHJoint::GetAnchorDynamic(fvec3& anchor)
 		dJointGetBallAnchor(m_joint, result);
 		break;
 	case slider:
-		R_ASSERT2(false, "position of slider joint is undefinite");
+		R_ERROR("position of slider joint is undefinite");
 	}
 	anchor.set(result[0], result[1], result[2]);
 }

@@ -585,7 +585,7 @@ bool CUITradeWnd::OnItemDbClick(CUICellItem* itm)
 	else if(old_owner == &m_uidata->UIOthersTradeList)
 		ToOthersBag();
 	else
-		R_ASSERT2(false, "wrong parent for cell item");
+		R_ERROR("wrong parent for cell item");
 
 	return true;
 }

@@ -6,22 +6,29 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include <xrRenderBackend/Resources/SharedResource.h>
-#include "VertexLayout.h"
 ////////////////////////////////////////////////////////////////////////////////
-
 class XRRB_API CVertexDeclaration : public CSharedResource
 {
 public:
-	virtual ~CVertexDeclaration() = default;
+	CVertexDeclaration() = default;
+	~CVertexDeclaration() override;
 
-	const CVertexLayoutDesc& GetLayout() const { return m_layout; }
+	CVertexDeclaration(const CVertexDeclaration&) = delete;
+	CVertexDeclaration& operator=(const CVertexDeclaration&) = delete;
 
-	// D3D9: SetVertexDeclaration(IDirect3DVertexDeclaration9).
-	// DX12: no-op — лэйаут является частью PSO, поэтому Bind() в DX12-пути не вызывается
-	virtual void Bind(IDirect3DDevice9Ex* device) const = 0;
+	bool Create(IRenderBackend& rhi, const RHI_InputLayoutDesc& desc);
 
-protected:
-	CVertexLayoutDesc m_layout;
+	const RHI_InputLayoutDesc& GetLayout() const { return m_desc; }
+	RHI_InputLayoutHandle GetRHIHandle() const { return m_rhiHandle; }
+
+	void Bind(IRenderBackend& rhi) const;
+
+private:
+	void DestroyRHI();
+
+	RHI_InputLayoutDesc   m_desc;
+	IRenderBackend* m_rhi = nullptr;
+	RHI_InputLayoutHandle m_rhiHandle{};
 };
 using ref_vertexdecl = CSharedPtr<CVertexDeclaration>;
 ////////////////////////////////////////////////////////////////////////////////

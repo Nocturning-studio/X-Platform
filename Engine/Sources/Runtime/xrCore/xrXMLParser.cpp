@@ -46,7 +46,7 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
 				{
 					string1024 tmpstr;
 					sprintf(tmpstr, "XML file[%s] parsing failed. Can't find include file:[%s]", path, inc_name);
-					R_ASSERT2(false, tmpstr);
+					R_ERROR(tmpstr);
 				}
 				ParseFile(path, W, I, xml);
 				FS.r_close(I);
@@ -86,7 +86,7 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
 	{
 		string1024 str;
 		sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorDesc());
-		R_ASSERT2(false, str);
+		R_ERROR(str);
 	}
 
 	m_root = m_Doc.FirstChildElement();

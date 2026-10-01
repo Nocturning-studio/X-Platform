@@ -131,7 +131,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 	if(!save_name)
 	{
 		if(!xr_strlen(m_save_name))
-			R_ASSERT2(false, "There is no file name specified!");
+			R_ERROR("There is no file name specified!");
 	}
 	else
 		strconcat(sizeof(m_save_name), m_save_name, save_name, SAVE_EXTENSION);

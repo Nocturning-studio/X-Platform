@@ -53,6 +53,21 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual void* GetTextureNativeHandle(RHI_TextureHandle handle) override;
 	virtual bool GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface) override;
 
+	virtual RHI_BufferHandle CreateVertexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr) override;
+	virtual RHI_BufferHandle CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr) override;
+	virtual void DestroyBuffer(RHI_BufferHandle handle) override;
+
+	virtual void* LockBuffer(RHI_BufferHandle handle, uint32_t offset, uint32_t size, uint32_t flags) override;
+	virtual void UnlockBuffer(RHI_BufferHandle handle) override;
+
+	virtual RHI_InputLayoutHandle CreateInputLayout(const RHI_InputLayoutDesc& desc) override;
+	virtual void DestroyInputLayout(RHI_InputLayoutHandle handle) override;
+
+	virtual void SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb, uint32_t offset, uint32_t stride) override;
+	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) override;
+	virtual void SetInputLayout(RHI_InputLayoutHandle layout) override;
+	virtual void SetPrimitiveTopology(RHI_Topology topology) override;
+
 	virtual void SetBlendState(const RHI_BlendState& state) override;
 	virtual const RHI_BlendState& GetBlendState() const override { return m_blendCache; }
 	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) override;
@@ -69,6 +84,9 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) override;
 
+	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) override;
+	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) override;
+
   private:
 	IDirect3D9Ex* m_pD3D;
 	IDirect3DDevice9Ex* m_pDevice;
@@ -84,6 +102,25 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 
 	std::vector<DX9Texture*> m_Textures;
 	std::stack<uint32_t> m_FreeTextureIndices;
+
+	std::vector<DX9Buffer*> m_buffers;
+	std::stack<uint32_t> m_freeBufferIndices;
+
+	std::vector<DX9InputLayout*> m_inputLayouts;
+	std::stack<uint32_t> m_freeInputLayoutIndices;
+
+	IDirect3DVertexDeclaration9* m_currentDecl = nullptr;
+	RHI_Topology m_currentTopology = RHI_Topology::TriangleList;
+	D3DPRIMITIVETYPE m_currentD3DTopology = D3DPT_TRIANGLELIST;
+
+	static constexpr uint32_t kMaxVertexStreams = 16; // D3D9: 16 streams
+	IDirect3DVertexBuffer9* m_currentVB[kMaxVertexStreams] = {};
+	uint32_t m_currentVBStride[kMaxVertexStreams] = {};
+	uint32_t m_currentVBOffset[kMaxVertexStreams] = {};
+
+	IDirect3DIndexBuffer9* m_currentIB = nullptr;
+
+	uint32_t m_stream0VertexCount = 0;
 
 	RHI_BlendState m_blendCache{};
 	RHI_DepthStencilState m_depthCache{};
@@ -110,7 +147,17 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	DX9Texture* GetTexture(RHI_TextureHandle handle);
 	void FreeRHI_TextureHandle(RHI_TextureHandle handle);
 
+	RHI_BufferHandle AllocBufferHandle(DX9Buffer* buf);
+	DX9Buffer* GetBuffer(RHI_BufferHandle h) const;
+	void FreeBufferHandle(RHI_BufferHandle h);
+
+	RHI_InputLayoutHandle AllocInputLayoutHandle(DX9InputLayout* lay);
+	DX9InputLayout* GetInputLayout(RHI_InputLayoutHandle h) const;
+	void FreeInputLayoutHandle(RHI_InputLayoutHandle h);
+
 	void ReleaseAllResources();
+
+	void InvalidateGeometryCache();
 
 	struct SDX9SurfaceSlot
 	{

@@ -176,7 +176,7 @@ void CAI_Space::validate(const u32 level_id) const
 			!level_graph().inside(game_graph().vertex(i)->level_vertex_id(), game_graph().vertex(i)->level_point())))
 		{
 			Msg("! Graph doesn't correspond to the cross table");
-			R_ASSERT2(false, "Graph doesn't correspond to the cross table");
+			R_ERROR("Graph doesn't correspond to the cross table");
 		}
 
 	//	Msg						("death graph point id : %d",cross_table().vertex(455236).game_vertex_id());

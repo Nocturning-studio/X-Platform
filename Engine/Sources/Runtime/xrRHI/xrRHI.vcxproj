@@ -206,6 +206,7 @@
   <ItemGroup>
     <ClInclude Include="Backends\DirectX9\xrBackendDX9.h" />
     <ClInclude Include="Backends\DirectX9\xrBackendDX9_Internal.h" />
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Geometry.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_RT.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_States.cpp" />
     <ClInclude Include="framework.h" />
@@ -213,8 +214,10 @@
     <ClInclude Include="xrRHI.h" />
     <ClInclude Include="xrRHI_API.h" />
     <ClInclude Include="xrRHI_BackendInterface.h" />
+    <ClInclude Include="xrRHI_Buffers.h" />
     <ClInclude Include="xrRHI_Caps.h" />
     <ClInclude Include="xrRHI_Handles.h" />
+    <ClInclude Include="xrRHI_InputLayout.h" />
     <ClInclude Include="xrRHI_Macros.h" />
     <ClInclude Include="xrRHI_States.h" />
     <ClInclude Include="xrRHI_Types.h" />

@@ -135,6 +135,7 @@ bool CBackendTest::Init(HINSTANCE hInst, int width, int height)
 	}
 
 	Msg("* [Test] Init OK - %ux%u (offscreen=%ux%u)", width, height, kOffscreenSize, kOffscreenSize);
+
 	return true;
 }
 
@@ -186,57 +187,44 @@ bool CBackendTest::CreateOffscreenTargets()
 bool CBackendTest::CreateTriangleGeometry()
 {
 	const STriangleVertex verts[] =
-		{
-			{0.0f, 0.6f, 0.5f, 1, 0, 0, 1},
-			{0.5f, -0.4f, 0.5f, 0, 1, 0, 1},
-			{-0.5f, -0.4f, 0.5f, 0, 0, 1, 1},
-		};
-	const uint16_t indices[] = {0, 1, 2};
+	{
+		{0.0f, 0.6f, 0.5f, 1, 0, 0, 1},
+		{0.5f, -0.4f, 0.5f, 0, 1, 0, 1},
+		{-0.5f, -0.4f, 0.5f, 0, 0, 1, 1},
+	};
+	const uint16_t indices[] = { 0, 1, 2 };
 
-	CVertexBufferDesc vbDesc{};
-	vbDesc.sizeBytes = sizeof(verts);
-	vbDesc.stride = sizeof(STriangleVertex);
-	vbDesc.usage = BufferUsage_Immutable;
+	RHI_BufferDesc vbDesc = RHI_BufferDesc::Vertex(sizeof(verts), sizeof(STriangleVertex), RHI_BufferUsage_Immutable);
 	vbDesc.debugName = "test.triangle.vb";
 	ref_vertexbuffer vb = m_backend.CreateVertexBuffer(vbDesc, verts);
-	if(!vb)
-		return false;
+	if (!vb) return false;
 
-	CIndexBufferDesc ibDesc{};
-	ibDesc.sizeBytes = sizeof(indices);
-	ibDesc.format = EIndexFormat::UInt16;
-	ibDesc.usage = BufferUsage_Immutable;
+	RHI_BufferDesc ibDesc = RHI_BufferDesc::Index(sizeof(indices), RHI_IndexFormat::UInt16, RHI_BufferUsage_Immutable);
 	ibDesc.debugName = "test.triangle.ib";
 	ref_indexbuffer ib = m_backend.CreateIndexBuffer(ibDesc, indices);
-	if(!ib)
-		return false;
+	if (!ib) return false;
 
-	CVertexLayoutDesc layout;
-	layout.elements.push_back({0, offsetof(STriangleVertex, x),
-							   EVertexElementType::Float3, EVertexElementSemantic::Position,
-							   0, EVertexInputRate::PerVertex, 0});
-	layout.elements.push_back({0, offsetof(STriangleVertex, r),
-							   EVertexElementType::Float4, EVertexElementSemantic::Color,
-							   0, EVertexInputRate::PerVertex, 0});
+	RHI_InputLayoutDesc layout;
+	layout.elements.push_back({ 0, offsetof(STriangleVertex, x),
+							    RHI_VertexElementType::Float3, RHI_VertexElementSemantic::Position,
+								0, RHI_VertexInputRate::PerVertex, 0 });
+	layout.elements.push_back({ 0, offsetof(STriangleVertex, r),
+								RHI_VertexElementType::Float4, RHI_VertexElementSemantic::Color,
+								0, RHI_VertexInputRate::PerVertex, 0 });
 	ref_vertexdecl vdecl = m_backend.CreateVertexDeclaration(layout);
-	if(!vdecl)
-		return false;
+	if (!vdecl) return false;
 
 	m_triangle = m_backend.CreateGeometry();
-	if(!m_triangle)
-		return false;
+	if (!m_triangle) return false;
 	m_triangle->SetVertexDeclaration(vdecl);
 	m_triangle->SetVertexBuffer(0, vb, 0, 0);
 	m_triangle->SetIndexBuffer(ib);
-	m_triangle->SetTopology(EPrimitiveTopology::TriangleList);
+	m_triangle->SetTopology(RHI_Topology::TriangleList);
 	return true;
 }
 
 bool CBackendTest::CreateQuadGeometry()
 {
-	// Full-screen quad в NDC. V-координата перевёрнута, чтобы (0,0) в текстуре
-	// попадало в верхний-левый угол экрана. В D3D9 render target имеет origin
-	// в верхнем-левом углу, но NDC — снизу-вверх.
 	const SQuadVertex verts[] =
 		{
 			{-1.0f, -1.0f, 0.5f, 0.0f, 1.0f}, // bottom-left
@@ -246,31 +234,25 @@ bool CBackendTest::CreateQuadGeometry()
 		};
 	const uint16_t indices[] = {0, 1, 2, 0, 2, 3};
 
-	CVertexBufferDesc vbDesc{};
-	vbDesc.sizeBytes = sizeof(verts);
-	vbDesc.stride = sizeof(SQuadVertex);
-	vbDesc.usage = BufferUsage_Immutable;
+	RHI_BufferDesc vbDesc = RHI_BufferDesc::Vertex(sizeof(verts), sizeof(SQuadVertex), RHI_BufferUsage_Immutable);
 	vbDesc.debugName = "test.quad.vb";
 	ref_vertexbuffer vb = m_backend.CreateVertexBuffer(vbDesc, verts);
 	if(!vb)
 		return false;
 
-	CIndexBufferDesc ibDesc{};
-	ibDesc.sizeBytes = sizeof(indices);
-	ibDesc.format = EIndexFormat::UInt16;
-	ibDesc.usage = BufferUsage_Immutable;
+	RHI_BufferDesc ibDesc = RHI_BufferDesc::Index(sizeof(indices), RHI_IndexFormat::UInt16, RHI_BufferUsage_Immutable);
 	ibDesc.debugName = "test.quad.ib";
 	ref_indexbuffer ib = m_backend.CreateIndexBuffer(ibDesc, indices);
 	if(!ib)
 		return false;
 
-	CVertexLayoutDesc layout;
+	RHI_InputLayoutDesc layout;
 	layout.elements.push_back({0, offsetof(SQuadVertex, x),
-							   EVertexElementType::Float3, EVertexElementSemantic::Position,
-							   0, EVertexInputRate::PerVertex, 0});
+							   RHI_VertexElementType::Float3, RHI_VertexElementSemantic::Position,
+							   0, RHI_VertexInputRate::PerVertex, 0});
 	layout.elements.push_back({0, offsetof(SQuadVertex, u),
-							   EVertexElementType::Float2, EVertexElementSemantic::TexCoord,
-							   0, EVertexInputRate::PerVertex, 0});
+							   RHI_VertexElementType::Float2, RHI_VertexElementSemantic::TexCoord,
+							   0, RHI_VertexInputRate::PerVertex, 0});
 	ref_vertexdecl vdecl = m_backend.CreateVertexDeclaration(layout);
 	if(!vdecl)
 		return false;
@@ -281,7 +263,7 @@ bool CBackendTest::CreateQuadGeometry()
 	m_quad->SetVertexDeclaration(vdecl);
 	m_quad->SetVertexBuffer(0, vb, 0, 0);
 	m_quad->SetIndexBuffer(ib);
-	m_quad->SetTopology(EPrimitiveTopology::TriangleList);
+	m_quad->SetTopology(RHI_Topology::TriangleList);
 	return true;
 }
 
@@ -323,7 +305,7 @@ void CBackendTest::DrawPass2_Display(IRenderBackend& rhi)
 	if(m_passDisplayReady && m_quad._get())
 	{
 		m_passDisplay.Apply(m_backend);
-		m_passDisplay.ApplySamplers(m_backend); // bind offscreen texture → s_tex
+		m_passDisplay.ApplySamplers(m_backend);
 		m_backend.DrawGeometry(m_quad);
 	}
 }
