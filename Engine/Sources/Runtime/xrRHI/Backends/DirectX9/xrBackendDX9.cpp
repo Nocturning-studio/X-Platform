@@ -254,6 +254,26 @@ void CRenderBackendDX9::ReleaseAllResources()
 	while (!m_freeInputLayoutIndices.empty())
 		m_freeInputLayoutIndices.pop();
 
+	// --- Shaders ---
+	for (size_t i = 0; i < m_shaders.size(); ++i)
+	{
+		DX9Shader* sh = m_shaders[i];
+		if (sh)
+		{
+			if (sh->vs) sh->vs->Release();
+			if (sh->ps) sh->ps->Release();
+			delete sh;
+			m_shaders[i] = nullptr;
+		}
+	}
+	m_shaders.clear();
+	while (!m_freeShaderIndices.empty())
+		m_freeShaderIndices.pop();
+
+	// --- Cached shader state ---
+	m_currentVS = nullptr;
+	m_currentPS = nullptr;
+
 	// --- Cached state ---
 	InvalidateGeometryCache();
 }

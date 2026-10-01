@@ -16,9 +16,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -88,6 +85,9 @@
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Geometry.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX_Shader.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
   </ItemGroup>

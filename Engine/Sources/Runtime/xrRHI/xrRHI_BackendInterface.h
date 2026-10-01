@@ -78,7 +78,12 @@ class XRRHI_API IRenderBackend
 
 	virtual void InvalidateStateCache() = 0;
 
+	virtual RHI_ShaderHandle CreateVertexShader(const void* bytecode, size_t size, const char* debugName = nullptr) = 0;
+	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) = 0;
+	virtual void SetVertexShader(RHI_ShaderHandle handle) = 0;
+	virtual void SetPixelShader(RHI_ShaderHandle handle) = 0;
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) = 0;
+	virtual void DestroyShader(RHI_ShaderHandle handle) = 0;
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) = 0;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) = 0;

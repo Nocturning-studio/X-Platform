@@ -4,14 +4,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <d3d9.h>
-#include <DXSDK/d3dx9.h>
 #include <xrRHI/xrRHI.h>
 #include "xrBackendDX9_Internal.h"
 ////////////////////////////////////////////////////////////////////////////////
 class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 {
-  public:
+public:
 	CRenderBackendDX9();
 	virtual ~CRenderBackendDX9();
 
@@ -82,24 +80,39 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 
 	virtual void InvalidateStateCache() override;
 
+	virtual RHI_ShaderHandle CreateVertexShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
+	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
+	virtual void SetVertexShader(RHI_ShaderHandle handle) override;
+	virtual void SetPixelShader(RHI_ShaderHandle handle) override;
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) override;
+	virtual void DestroyShader(RHI_ShaderHandle handle) override;
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) override;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) override;
 
-  private:
+private:
+	// ============================================================================
+	// Core D3D device / adapter / presentation
+	// ============================================================================
 	IDirect3D9Ex* m_pD3D;
 	IDirect3DDevice9Ex* m_pDevice;
+	HWND m_hWnd;
 	D3DPRESENT_PARAMETERS m_PP;
-	RHIDeviceCaps m_DeviceCaps;
 	D3DADAPTER_IDENTIFIER9 m_AdapterID;
 	D3DDISPLAYMODE m_DesktopMode;
+	UINT m_DesktopRefreshRate = 60;
+	RHIDeviceCaps m_DeviceCaps;
+
+	// ============================================================================
+	// Back buffer
+	// ============================================================================
 	u32 m_backBufferWidth = 0;
 	u32 m_backBufferHeight = 0;
 	D3DFORMAT m_BackBufferFmt;
-	HWND m_hWnd;
-	UINT m_DesktopRefreshRate = 60;
 
+	// ============================================================================
+	// Resource pools
+	// ============================================================================
 	std::vector<DX9Texture*> m_Textures;
 	std::stack<uint32_t> m_FreeTextureIndices;
 
@@ -109,19 +122,28 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	std::vector<DX9InputLayout*> m_inputLayouts;
 	std::stack<uint32_t> m_freeInputLayoutIndices;
 
+	std::vector<DX9Shader*> m_shaders;
+	std::stack<uint32_t> m_freeShaderIndices;
+
+	// ============================================================================
+	// Geometry binding cache
+	// ============================================================================
+	static constexpr uint32_t kMaxVertexStreams = 16; // D3D9: 16 streams
+
 	IDirect3DVertexDeclaration9* m_currentDecl = nullptr;
 	RHI_Topology m_currentTopology = RHI_Topology::TriangleList;
 	D3DPRIMITIVETYPE m_currentD3DTopology = D3DPT_TRIANGLELIST;
 
-	static constexpr uint32_t kMaxVertexStreams = 16; // D3D9: 16 streams
 	IDirect3DVertexBuffer9* m_currentVB[kMaxVertexStreams] = {};
 	uint32_t m_currentVBStride[kMaxVertexStreams] = {};
 	uint32_t m_currentVBOffset[kMaxVertexStreams] = {};
 
 	IDirect3DIndexBuffer9* m_currentIB = nullptr;
-
 	uint32_t m_stream0VertexCount = 0;
 
+	// ============================================================================
+	// State caches
+	// ============================================================================
 	RHI_BlendState m_blendCache{};
 	RHI_DepthStencilState m_depthCache{};
 	RHI_RasterizerState m_rasterCache{};
@@ -137,28 +159,12 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	bool m_scissorCacheValid = false;
 	bool m_scissorEnabled = false;
 
-	void FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt, D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz);
-	void CacheDeviceCapsFromD3D();
-	void CacheBackBufferDimensions();
-	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params, D3DFORMAT& outBackBufferFmt, D3DFORMAT& outDepthStencilFmt);
-	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
+	IDirect3DVertexShader9* m_currentVS = nullptr;
+	IDirect3DPixelShader9* m_currentPS = nullptr;
 
-	RHI_TextureHandle AllocRHI_TextureHandle(DX9Texture* tex);
-	DX9Texture* GetTexture(RHI_TextureHandle handle);
-	void FreeRHI_TextureHandle(RHI_TextureHandle handle);
-
-	RHI_BufferHandle AllocBufferHandle(DX9Buffer* buf);
-	DX9Buffer* GetBuffer(RHI_BufferHandle h) const;
-	void FreeBufferHandle(RHI_BufferHandle h);
-
-	RHI_InputLayoutHandle AllocInputLayoutHandle(DX9InputLayout* lay);
-	DX9InputLayout* GetInputLayout(RHI_InputLayoutHandle h) const;
-	void FreeInputLayoutHandle(RHI_InputLayoutHandle h);
-
-	void ReleaseAllResources();
-
-	void InvalidateGeometryCache();
-
+	// ============================================================================
+	// RTV / DSV storage and binding cache
+	// ============================================================================
 	struct SDX9SurfaceSlot
 	{
 		IDirect3DSurface9* surface = nullptr;
@@ -177,7 +183,51 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 	IDirect3DSurface9* m_currentRTASurfaces[4] = {};
 	IDirect3DSurface9* m_currentDSSurface = nullptr;
 
-	// --- RTV/DSV helpers ---
+	// ============================================================================
+	// Device / presentation helpers
+	// ============================================================================
+	void FillPresentParams(const RHI_PresentationParams& params,
+		D3DFORMAT backBufferFmt,
+		D3DFORMAT depthStencilFmt,
+		UINT fullscreenRefreshHz);
+
+	void CacheDeviceCapsFromD3D();
+	void CacheBackBufferDimensions();
+
+	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params,
+		D3DFORMAT& outBackBufferFmt,
+		D3DFORMAT& outDepthStencilFmt);
+
+	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
+
+	// ============================================================================
+	// Resource handle helpers
+	// ============================================================================
+	RHI_TextureHandle AllocRHI_TextureHandle(DX9Texture* tex);
+	DX9Texture* GetTexture(RHI_TextureHandle handle);
+	void FreeRHI_TextureHandle(RHI_TextureHandle handle);
+
+	RHI_BufferHandle AllocBufferHandle(DX9Buffer* buf);
+	DX9Buffer* GetBuffer(RHI_BufferHandle h) const;
+	void FreeBufferHandle(RHI_BufferHandle h);
+
+	RHI_InputLayoutHandle AllocInputLayoutHandle(DX9InputLayout* lay);
+	DX9InputLayout* GetInputLayout(RHI_InputLayoutHandle h) const;
+	void FreeInputLayoutHandle(RHI_InputLayoutHandle h);
+
+	RHI_ShaderHandle AllocShaderHandle(DX9Shader* sh);
+	DX9Shader* GetShader(RHI_ShaderHandle h) const;
+	void FreeShaderHandle(RHI_ShaderHandle h);
+
+	// ============================================================================
+	// Lifetime / invalidation
+	// ============================================================================
+	void ReleaseAllResources();
+	void InvalidateGeometryCache();
+
+	// ============================================================================
+	// RTV / DSV helpers
+	// ============================================================================
 	uint32_t AllocRTVSlot(IDirect3DSurface9* surf);
 	uint32_t AllocDSVSlot(IDirect3DSurface9* surf);
 	void FreeRTVSlot(uint32_t id);

@@ -53,6 +53,13 @@ struct DX9InputLayout
 	RHI_InputLayoutDesc desc;
 };
 
+struct DX9Shader
+{
+	IDirect3DVertexShader9* vs = nullptr;
+	IDirect3DPixelShader9* ps = nullptr;
+	bool isVertex = false;
+};
+
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);
 D3DTEXTUREADDRESS RHIAddressToD3D(RHI_TextureAddress addr);
 D3DTEXTUREFILTERTYPE RHIFilterToD3D(RHI_Filter f);

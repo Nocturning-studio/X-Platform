@@ -122,6 +122,9 @@ void CRenderBackendDX9::InvalidateStateCache()
 	m_viewportCacheValid = false;
 	m_scissorCacheValid = false;
 	m_scissorEnabled = false;
+
+	m_currentVS = nullptr;
+	m_currentPS = nullptr;
 }
 
 void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)
