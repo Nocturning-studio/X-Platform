@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrserver.h"
 
 BOOL xrServer::PerformRP(CSE_Abstract* EEE)

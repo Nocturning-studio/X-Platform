@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 void CRender::render_shadow_map_sun(light* L, u32 sub_phase)
 {

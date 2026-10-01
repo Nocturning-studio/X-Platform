@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIBuyWnd.h"
 #include "UIXmlInit.h"
 #include "UICellCustomItems.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "uicursor.h"
 
 #include "xrEngine/CustomHUD.h"

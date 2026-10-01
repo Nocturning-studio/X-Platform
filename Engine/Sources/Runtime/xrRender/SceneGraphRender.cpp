@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SceneGraph.h"
 #include "flod.h"
 #include "render.h"

@@ -6,7 +6,7 @@
 //	Description : car memory
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "car_memory.h"
 #include "car.h"
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "radioactivezone.h"
 #include "hudmanager.h"
 #include "level.h"

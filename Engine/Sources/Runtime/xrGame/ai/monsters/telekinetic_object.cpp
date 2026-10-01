@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrGame/physicsshellholder.h"
 #include "telekinetic_object.h"
 #include "xrGame/PhysicsShell.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "RenderView.h"
 #include "R_Backend.h"
 #include <DXSDK/d3dx9.h>

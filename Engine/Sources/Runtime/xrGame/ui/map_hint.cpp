@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "map_hint.h"
 #include "UIStatic.h"
 #include "UIFrameWindow.h"

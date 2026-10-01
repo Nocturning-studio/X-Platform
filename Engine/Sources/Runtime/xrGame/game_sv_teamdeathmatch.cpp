@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "game_sv_teamdeathmatch.h"
 #include "HUDmanager.h"
 #include "xrserver_objects_alife_monsters.h"

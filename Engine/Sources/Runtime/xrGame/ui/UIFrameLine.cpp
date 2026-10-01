@@ -9,7 +9,7 @@
 //	левая(верхняя) и центральная
 //=============================================================================
 
-#include "stdafx.h"
+#include "pch.h"
 #include "UIFrameLine.h"
 #include "../hudmanager.h"
 #include "UITextureMaster.h"

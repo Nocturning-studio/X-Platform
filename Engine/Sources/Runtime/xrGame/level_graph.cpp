@@ -6,7 +6,7 @@
 //	Description : Level graph
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "level_graph.h"
 #include "profiler.h"
 

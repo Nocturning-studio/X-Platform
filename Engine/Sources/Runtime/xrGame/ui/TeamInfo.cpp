@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "TeamInfo.h"
 #include "../string_table.h"
 

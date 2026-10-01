@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIArtefactPanel.h"
 #include "UIInventoryUtilities.h"
 #include "UIXmlInit.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "TimeManager.h"
 #include "IGame_Persistent.h" // Для g_pauseMngr, если нужно, или передавать через Engine
 #include <timeapi.h>

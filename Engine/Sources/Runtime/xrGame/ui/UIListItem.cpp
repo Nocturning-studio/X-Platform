@@ -2,7 +2,7 @@
 // UIListItem.cpp: элемент окна списка CListWnd
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "UIlistitem.h"
 

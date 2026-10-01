@@ -3,7 +3,7 @@
 // Author: NSDeathman
 // Nocturning studio for X-Platform
 ///////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "igame_level.h"

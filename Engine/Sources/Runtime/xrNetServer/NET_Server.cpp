@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <DXSDK/DxErr.h>
 #include "NET_Common.h"
 #include "net_server.h"

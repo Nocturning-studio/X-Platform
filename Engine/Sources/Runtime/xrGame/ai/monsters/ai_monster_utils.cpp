@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ai_monster_utils.h"
 #include "xrGame/entity.h"
 #include "xrGame/ai_object_location.h"

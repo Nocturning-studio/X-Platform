@@ -25,7 +25,7 @@ distribution.
 /*
  * THIS FILE WAS ALTERED BY Tyge Lшvset, 7. April 2005.
  */
-#include "stdafx.h"
+#include "pch.h"
 
 #ifndef TIXML_USE_STL
 #include "tinystr.h"

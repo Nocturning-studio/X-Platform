@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "CustomZone.h"
 #include "xrEngine/SkeletonAnimated.h"
 #include "ZoneVisual.h"

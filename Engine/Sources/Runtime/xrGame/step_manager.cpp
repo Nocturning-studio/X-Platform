@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrEngine/skeletonanimated.h"
 #include "step_manager_defs.h"
 #include "step_manager.h"

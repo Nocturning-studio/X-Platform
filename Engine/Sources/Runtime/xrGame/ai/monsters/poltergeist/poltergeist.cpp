@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "poltergeist.h"
 #include "poltergeist_state_manager.h"
 #include "xrGame/characterphysicssupport.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrserver.h"
 #include "xrmessages.h"
 #include "hudmanager.h"

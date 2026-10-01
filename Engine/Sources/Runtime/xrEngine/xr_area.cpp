@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "igame_level.h"
 
 #include "xr_area.h"

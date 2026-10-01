@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "rt_lzo1x.h"

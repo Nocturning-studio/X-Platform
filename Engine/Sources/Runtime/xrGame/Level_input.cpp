@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "HUDmanager.h"
 #include "xrEngine/xr_ioconsole.h"

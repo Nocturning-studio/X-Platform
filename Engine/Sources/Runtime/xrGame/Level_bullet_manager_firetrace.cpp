@@ -3,7 +3,7 @@
 //								(äëÿ ïðîñ÷åòà ñòîëêíîâåíèé è èõ âèçóàëèçàöèè)
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Level_Bullet_Manager.h"
 #include "entity.h"
 #include "gamemtllib.h"

@@ -1,7 +1,7 @@
 #ifndef xr_collide_defsH
 #define xr_collide_defsH
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <ppl.h>

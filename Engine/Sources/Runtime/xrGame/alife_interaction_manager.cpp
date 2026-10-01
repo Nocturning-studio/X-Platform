@@ -6,7 +6,7 @@
 //	Description : ALife communication manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "alife_interaction_manager.h"
 /**
 #include "xrServer_Objects_ALife_Monsters.h"

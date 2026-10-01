@@ -6,7 +6,7 @@
 #ifndef RENDER_PIPELINE_COMMON_HEADER_INCLUDED
 #define RENDER_PIPELINE_COMMON_HEADER_INCLUDED
 ////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "..\xrEngine\igame_persistent.h"
 #include "..\xrEngine\fbasicvisual.h"
 #include "..\xrEngine\customhud.h"

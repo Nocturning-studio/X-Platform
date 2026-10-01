@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "uistatic.h"
 #include "UIXmlInit.h"
 #include "UITextureMaster.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "boar.h"
 #include "boar_state_manager.h"
 #include "xrEngine/skeletoncustom.h"

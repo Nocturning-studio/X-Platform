@@ -7,7 +7,7 @@
 // Copyright 2004 GSC Game World
 //
 
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIComboBox.h"
 #include "UITextureMaster.h"
 #include "UIScrollBar.h"

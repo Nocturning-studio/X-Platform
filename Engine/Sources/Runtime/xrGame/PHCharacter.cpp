@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "phcharacter.h"
 #include "PHDynamicData.h"

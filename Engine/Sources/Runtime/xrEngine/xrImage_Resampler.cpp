@@ -4,7 +4,7 @@
  *		  by Dale Schumacher
  */
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "xrImage_Resampler.h"

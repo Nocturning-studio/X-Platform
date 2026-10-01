@@ -6,7 +6,7 @@
 //	Description : Events handling for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "ai_stalker.h"
 #include "xrGame/pda.h"
 #include "xrGame/inventory.h"

@@ -6,7 +6,7 @@
 //	Description : Stalker state animations
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "stalker_animation_state.h"
 #include "object_broker.h"
 #include "xrEngine/skeletonanimated.h"

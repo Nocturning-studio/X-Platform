@@ -6,7 +6,7 @@
 //	Description : Space restriction composition
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "space_restriction_bridge.h"
 #include "space_restriction_composition.h"
 #include "space_restriction_holder.h"

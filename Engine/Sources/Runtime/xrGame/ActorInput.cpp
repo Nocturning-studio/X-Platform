@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "Actor.h"
 #include "Torch.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "monster_corpse_memory.h"
 #include "BaseMonster/base_monster.h"
 #include "xrGame/memory_manager.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIPdaContactsWnd.h"
 #include "UIPdaAux.h"
 #include "../Pda.h"

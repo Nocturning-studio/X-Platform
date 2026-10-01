@@ -3,7 +3,7 @@
 //				собственный HUD (CWeapon, CMissile etc)
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "HudItem.h"
 #include "physic_item.h"
 #include "WeaponHUD.h"

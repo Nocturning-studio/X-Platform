@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "HOM.h"
 #include "xrEngine/GameFont.h"
 #include "CPUOcclusion.h"

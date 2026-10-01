@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "controller_direction.h"
 #include "controller.h"
 #include "xrGame/game_object_space.h"

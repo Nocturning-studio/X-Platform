@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ISpatial.h"
 
 extern fvec3 c_spatial_offset[8];

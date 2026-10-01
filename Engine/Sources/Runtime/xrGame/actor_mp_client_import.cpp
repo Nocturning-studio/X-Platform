@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "actor_mp_client.h"
 #include "inventory.h"
 #include "xrEngine/camerabase.h"

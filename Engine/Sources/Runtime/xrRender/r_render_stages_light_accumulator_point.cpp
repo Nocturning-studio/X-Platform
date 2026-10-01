@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 void CRender::accumulate_point_lights(light* L)
 {

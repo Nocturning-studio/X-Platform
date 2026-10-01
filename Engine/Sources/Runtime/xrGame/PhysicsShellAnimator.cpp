@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "PhysicsShellAnimator.h"
 #include "PhysicsShellAnimatorBoneData.h"
 #include "xrEngine/SkeletonCustom.h"

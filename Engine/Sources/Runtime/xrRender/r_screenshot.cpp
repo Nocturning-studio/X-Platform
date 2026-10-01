@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "tga.h"
 #include "..\xrEngine\xrImage_Resampler.h"
 #include "..\xrEngine\XR_IOConsole.h"

@@ -6,7 +6,7 @@
 //	Description :
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "ai_stalker.h"
 #include "xrGame/cover_point.h"
 #include "xrGame/cover_evaluators.h"

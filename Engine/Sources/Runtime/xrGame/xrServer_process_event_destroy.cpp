@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrServer.h"
 #include "game_sv_single.h"
 #include "alife_simulator.h"

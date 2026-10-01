@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "base_monster.h"
 #include "xrGame/PhysicsShell.h"
 #include "xrGame/hit.h"

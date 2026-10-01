@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "game_cl_deathmatch.h"
 #include "xrMessages.h"
 #include "hudmanager.h"

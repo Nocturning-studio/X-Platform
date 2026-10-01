@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "game_cl_base.h"
 #include "Level.h"
 #include "Weapon.h"

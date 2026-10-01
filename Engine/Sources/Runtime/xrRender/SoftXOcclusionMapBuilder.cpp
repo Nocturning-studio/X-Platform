@@ -3,7 +3,7 @@
 // Author: NSDeathman
 // Nocturning studio for X-Platform
 ////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "SoftXOcclusionMapBuilder.h"
 #include "SoftXOcclusionCore.h"
 #include "HOM.h"

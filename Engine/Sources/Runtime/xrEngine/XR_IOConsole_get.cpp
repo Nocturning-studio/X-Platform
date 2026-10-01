@@ -5,7 +5,7 @@
 //	Description : Console`s get-functions class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
 

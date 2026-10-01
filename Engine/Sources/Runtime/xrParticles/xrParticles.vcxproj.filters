@@ -12,7 +12,7 @@
     <ClInclude Include="psystem.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="noise.h">
@@ -35,7 +35,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="noise.cpp">

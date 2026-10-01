@@ -6,7 +6,7 @@
 //	Description : HUD item
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "hud_item_object.h"
 
 CHudItemObject::CHudItemObject()

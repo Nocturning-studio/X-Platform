@@ -6,7 +6,7 @@
 //	Description : Stalker death action classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "stalker_death_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_decision_space.h"

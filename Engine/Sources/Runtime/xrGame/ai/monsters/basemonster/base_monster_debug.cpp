@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "base_monster.h"
 #include "xrGame/level.h"
 #include "xrGame/level_debug.h"

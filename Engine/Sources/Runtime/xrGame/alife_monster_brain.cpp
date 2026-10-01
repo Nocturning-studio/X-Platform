@@ -6,7 +6,7 @@
 //	Description : ALife monster brain class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "alife_monster_brain.h"
 #include "object_broker.h"
 #include "xrServer_Objects_ALife_Monsters.h"

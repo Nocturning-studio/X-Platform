@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 void CRenderBackendFacade::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)

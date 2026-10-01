@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "phantom.h"
 #include "xrNetServer/net_utils.h"
 #include "xrGame/level.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "hudmanager.h"
 #include "xrserver.h"
 #include "game_sv_single.h"

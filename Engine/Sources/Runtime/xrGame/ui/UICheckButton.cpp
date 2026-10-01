@@ -2,7 +2,7 @@
 // с галочкой и без
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include ".\uicheckbutton.h"
 #include "../HUDManager.h"
 #include "UILines.h"

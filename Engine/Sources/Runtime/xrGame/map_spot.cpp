@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "map_spot.h"
 #include "map_location.h"
 

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIStatsIcon.h"
 #include "UITextureMaster.h"
 #include "UIInventoryUtilities.h"

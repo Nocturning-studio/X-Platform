@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 #include "detailmanager.h"
 #ifdef _EDITOR
@@ -37,7 +37,7 @@ short QC(float v)
 	clamp(t, -32768, 32767);
 	return short(t & 0xffff);
 }
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 #include "detailmanager.h"
 

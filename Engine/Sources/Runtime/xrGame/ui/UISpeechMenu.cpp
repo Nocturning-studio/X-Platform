@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UISpeechMenu.h"
 #include "UIScrollView.h"
 #include "UIStatic.h"

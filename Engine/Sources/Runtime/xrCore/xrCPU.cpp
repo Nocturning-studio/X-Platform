@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrCPU.h"
 #include <intrin.h>
 #include <thread>

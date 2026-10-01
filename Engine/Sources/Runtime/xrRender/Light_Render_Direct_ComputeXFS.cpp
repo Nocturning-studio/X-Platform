@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "light_render_direct.h"
 
 void CLight_Compute_Transform_and_VIS::compute_xf_spot(light* L)

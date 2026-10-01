@@ -3,7 +3,7 @@
 //	Description : Console`s control-functions class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "XR_IOConsole.h"
 
 void CConsole::add_cmd_history(shared_str const& str)

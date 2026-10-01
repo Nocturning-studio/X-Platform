@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "monster_cover_manager.h"
 #include "BaseMonster/base_monster.h"
 #include "xrGame/cover_evaluators.h"

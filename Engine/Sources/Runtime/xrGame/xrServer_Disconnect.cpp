@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrServer.h"
 
 void xrServer::Disconnect()

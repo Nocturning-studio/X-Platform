@@ -2,7 +2,7 @@
 
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "hudmanager.h"
 #include "Entity.h"
 #include "actor.h"

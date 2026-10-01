@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "ColorMapManager.h"
 
 class CEffectorsManager : public IEffectorsManager

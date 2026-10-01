@@ -29,7 +29,7 @@
   MODIFICATIONS.
 
  */
-#include "stdafx.h"
+#include "pch.h"
 #include "eqn.h"
 
 /*

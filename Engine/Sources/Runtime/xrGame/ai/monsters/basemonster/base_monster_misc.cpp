@@ -6,7 +6,7 @@
 //	Description : Miscellanious functions for all the biting monsters
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "base_monster.h"
 #include "xrGame/entitycondition.h"
 

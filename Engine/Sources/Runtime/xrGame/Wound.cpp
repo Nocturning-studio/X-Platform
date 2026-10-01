@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "wound.h"
 #include "xrEngine/../xrNetServer/net_utils.h"
 #include "xrEngine/bone.h"

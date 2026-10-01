@@ -5,7 +5,7 @@
 ====================================================================================================
 */
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
 #include "xrEngine/igame_level.h"
 #include "xrEngine/xr_area.h"

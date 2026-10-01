@@ -3,7 +3,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "hudtarget.h"
 #include "hudmanager.h"
 #include "GameMtlLib.h"

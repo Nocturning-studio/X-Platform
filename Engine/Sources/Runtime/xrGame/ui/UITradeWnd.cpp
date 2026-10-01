@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UITradeWnd.h"
 
 #include "xrUIXmlParser.h"

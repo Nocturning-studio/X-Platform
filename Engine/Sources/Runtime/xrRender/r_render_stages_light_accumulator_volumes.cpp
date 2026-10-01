@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrEngine/du_cone.h"
 #include "xrEngine/du_sphere.h"
 #include "xrEngine/du_sphere_part.h"

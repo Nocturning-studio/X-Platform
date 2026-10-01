@@ -6,7 +6,7 @@
 //	Description : Sight manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "sight_manager.h"
 #include "custommonster.h"
 #include "ai/stalker/ai_stalker.h"

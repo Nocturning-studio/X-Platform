@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "controller_psy_hit_effector.h"
 
 // void CPsyHitEffectorPP::load(LPCSTR section)

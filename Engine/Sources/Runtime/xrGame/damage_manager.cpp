@@ -6,7 +6,7 @@
 //	Description : Damage manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "damage_manager.h"
 #include "xrEngine/xr_object.h"
 #include "xrEngine/skeletoncustom.h"

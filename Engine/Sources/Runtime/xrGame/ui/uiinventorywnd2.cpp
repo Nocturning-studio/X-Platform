@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIInventoryWnd.h"
 #include "UISleepWnd.h"
 #include "../level.h"

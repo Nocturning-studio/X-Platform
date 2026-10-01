@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "render.h"
 #include "..\xrEngine\fbasicvisual.h"
 #include "..\xrEngine\xr_object.h"

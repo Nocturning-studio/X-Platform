@@ -3,7 +3,7 @@
 // Merged SFontManager and CFontManager logic
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "GameFont.h"
 #include "pure.h"
 

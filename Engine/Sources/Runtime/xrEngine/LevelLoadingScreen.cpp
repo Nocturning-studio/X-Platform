@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "LevelLoadingScreen.h"
 #include "Engine.h"			  // Для доступа к Engine.LevelManager
 #include "igame_persistent.h" // Для g_pGamePersistent

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "controller_animation.h"
 #include "controller.h"
 #include "xrGame/detail_path_manager.h"

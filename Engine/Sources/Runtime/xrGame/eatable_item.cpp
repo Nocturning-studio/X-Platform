@@ -6,7 +6,7 @@
 //	Description : Eatable item
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "eatable_item.h"
 #include "xrmessages.h"
 #include "xrEngine/../xrNetServer/net_utils.h"

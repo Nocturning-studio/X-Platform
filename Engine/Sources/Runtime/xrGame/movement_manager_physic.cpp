@@ -6,7 +6,7 @@
 //	Description : Movement manager : physic character movement
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "movement_manager.h"
 #include "PHMovementControl.h"
 #include "detail_path_manager.h"

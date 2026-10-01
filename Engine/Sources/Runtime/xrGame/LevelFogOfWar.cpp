@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "LevelFogOfWar.h"
 #include "level.h"
 #include "alife_registry_wrappers.h"

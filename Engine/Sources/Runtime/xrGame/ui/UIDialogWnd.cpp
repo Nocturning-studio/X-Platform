@@ -2,7 +2,7 @@
 // разным менюшек путем вызова виртуальных Show() И Hide()
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "uidialogwnd.h"
 #include "../hudmanager.h"
 #include "xrGame/xr_level_controller.h"

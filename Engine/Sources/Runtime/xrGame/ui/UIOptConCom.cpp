@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "xrEngine/xr_ioconsole.h"
 #include "xrEngine/xr_ioc_cmd.h"
 #include "UIOptConCom.h"

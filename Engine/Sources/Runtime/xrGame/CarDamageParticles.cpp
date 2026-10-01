@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "cardamageparticles.h"
 #ifdef DEBUG
 #include "ode_include.h"

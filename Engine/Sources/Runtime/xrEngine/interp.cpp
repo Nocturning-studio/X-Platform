@@ -10,7 +10,7 @@
 // This code shows how to evaluate envelopes in standalone programs.
 //======================================================================
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "envelope.h"

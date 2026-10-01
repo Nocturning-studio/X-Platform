@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "WeaponBinoculars.h"
 
 #include "xr_level_controller.h"

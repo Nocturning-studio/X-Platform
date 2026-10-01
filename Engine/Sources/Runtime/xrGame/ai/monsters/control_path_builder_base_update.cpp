@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "control_path_builder_base.h"
 #include "BaseMonster/base_monster.h"
 #include "xrGame/detail_path_manager.h"

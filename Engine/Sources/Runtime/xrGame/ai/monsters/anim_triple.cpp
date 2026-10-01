@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "anim_triple.h"
 #include "control_manager.h"
 

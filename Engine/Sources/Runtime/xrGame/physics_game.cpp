@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ParticlesObject.h"
 #include "gamemtllib.h"
 #include "level.h"

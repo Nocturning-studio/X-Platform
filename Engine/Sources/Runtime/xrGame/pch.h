@@ -5,7 +5,7 @@
 #pragma warning(disable : 4457)
 
 #pragma warning(disable : 4995)
-#include "xrEngine/stdafx.h"
+#include "xrEngine/pch.h"
 #pragma warning(default : 4995)
 #pragma warning(4 : 4018)
 #pragma warning(4 : 4244)

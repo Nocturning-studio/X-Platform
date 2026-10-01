@@ -9,7 +9,7 @@
 #undef GetVersionString
 #endif
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include <PresenceAudioSDK/Include/PresenceAudioAPI.h>

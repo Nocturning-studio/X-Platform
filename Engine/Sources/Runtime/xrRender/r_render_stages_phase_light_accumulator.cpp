@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 void CRender::set_light_accumulator()
 {

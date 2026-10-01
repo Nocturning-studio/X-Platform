@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "climableobject.h "
 #include "PHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"

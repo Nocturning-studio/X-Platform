@@ -6,7 +6,7 @@
 //	Description : Visual memory parameters
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "visual_memory_params.h"
 #include "memory_space.h"
 

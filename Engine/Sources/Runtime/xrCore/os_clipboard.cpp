@@ -5,7 +5,7 @@
 //	Description : os clipboard class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 #include "os_clipboard.h"
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "game_sv_artefacthunt.h"
 #include "xrMessages.h"
 #include "xrEngine/../xrNetServer/net_utils.h"

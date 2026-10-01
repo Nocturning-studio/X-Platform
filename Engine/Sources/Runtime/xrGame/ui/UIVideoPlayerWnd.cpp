@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIVideoPlayerWnd.h"
 #include "UITabControl.h"
 #include "UIStatic.h"

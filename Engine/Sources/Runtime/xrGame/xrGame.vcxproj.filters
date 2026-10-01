@@ -4689,7 +4689,7 @@
     <ClInclude Include="pch_script.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
+    <ClInclude Include="pch.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="xr_Client_BattlEye.h">
@@ -7811,7 +7811,7 @@
     <ClCompile Include="pch_script.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="xr_Client_BattlEye.cpp">

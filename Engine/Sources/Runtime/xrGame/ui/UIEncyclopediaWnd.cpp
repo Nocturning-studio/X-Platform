@@ -6,7 +6,7 @@
 //  Encyclopedia window
 //=============================================================================
 
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIEncyclopediaWnd.h"
 #include "UIXmlInit.h"
 #include "UIFrameWindow.h"

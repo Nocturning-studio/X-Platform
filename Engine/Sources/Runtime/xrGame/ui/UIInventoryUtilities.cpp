@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIInventoryUtilities.h"
 #include "../WeaponAmmo.h"
 #include "../UIStaticItem.h"

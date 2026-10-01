@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "phactorcharacter.h"
 #include "Extendedgeom.h"
 #include "PhysicsCommon.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIHint.h"
 #include "UIStatic.h"
 #include <xrGame/ui/UIBtnHint.h>

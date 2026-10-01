@@ -5,7 +5,7 @@
 //	Description : line editor class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "line_editor.h"
 
 namespace text_editor

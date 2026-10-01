@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIOutfitInfo.h"
 #include "UIXmlInit.h"
 #include "UIStatic.h"

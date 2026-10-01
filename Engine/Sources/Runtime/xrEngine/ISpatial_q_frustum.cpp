@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ISpatial.h"
 #include "frustum.h"
 

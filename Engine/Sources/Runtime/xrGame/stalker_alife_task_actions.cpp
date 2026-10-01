@@ -6,7 +6,7 @@
 //	Description : Stalker alife task action classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "stalker_alife_task_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/trader/ai_trader.h"

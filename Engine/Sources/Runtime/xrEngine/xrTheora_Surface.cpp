@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
 

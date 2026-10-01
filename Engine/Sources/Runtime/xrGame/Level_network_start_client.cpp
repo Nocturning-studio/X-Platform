@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrEngine/resourcemanager.h"
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"

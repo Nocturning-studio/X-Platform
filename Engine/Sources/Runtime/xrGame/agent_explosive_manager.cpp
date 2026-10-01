@@ -6,7 +6,7 @@
 //	Description : Agent explosive manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "agent_explosive_manager.h"
 #include "agent_manager.h"
 #include "agent_location_manager.h"

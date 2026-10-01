@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "psy_dog.h"
 #include "xrGame/level_graph.h"
 #include "xrGame/ai_space.h"

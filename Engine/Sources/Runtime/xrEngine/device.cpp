@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "frustum.h"
 
 #pragma warning(disable : 4995)

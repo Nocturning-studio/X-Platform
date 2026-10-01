@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "melee_checker.h"
 #include "basemonster/base_monster.h"
 #include "xrEngine/skeletonanimated.h"

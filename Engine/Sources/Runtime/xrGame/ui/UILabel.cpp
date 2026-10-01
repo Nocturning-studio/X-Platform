@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 
 #include "UILabel.h"
 #include "xrEngine/LightAnimLibrary.h"

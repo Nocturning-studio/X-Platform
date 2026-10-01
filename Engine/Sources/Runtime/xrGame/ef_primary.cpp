@@ -6,7 +6,7 @@
 //	Description : Primary evaluation function classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "weapon.h"
 #include "entity_alive.h"
 #include "inventoryowner.h"

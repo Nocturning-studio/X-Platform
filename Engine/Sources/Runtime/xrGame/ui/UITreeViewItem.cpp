@@ -6,7 +6,7 @@
 //  TreeView Item class
 //=============================================================================
 
-#include "stdafx.h"
+#include "pch.h"
 #include "UITreeViewItem.h"
 #include "UIListWnd.h"
 #include "../string_table.h"

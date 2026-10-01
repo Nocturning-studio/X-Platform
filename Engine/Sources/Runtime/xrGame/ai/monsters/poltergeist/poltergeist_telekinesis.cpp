@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "poltergeist.h"
 #include "xrGame/PhysicsShellHolder.h"
 #include "xrGame/level.h"

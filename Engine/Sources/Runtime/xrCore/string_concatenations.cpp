@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "string_concatenations.h"
 
 namespace xray

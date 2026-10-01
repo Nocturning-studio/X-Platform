@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "BoneProtections.h"
 #include "xrEngine/skeletonanimated.h"
 

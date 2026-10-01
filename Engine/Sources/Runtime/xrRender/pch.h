@@ -1,4 +1,4 @@
-// stdafx.h : include file for standard system include files,
+// pch.h : include file for standard system include files,
 // or project specific include files that are used frequently, but
 // are changed infrequently
 
@@ -7,7 +7,7 @@
 #include "xrRHI/xrRHI.h"
 
 #pragma warning(disable : 4995)
-#include "..\xrEngine\stdafx.h"
+#include "..\xrEngine\pch.h"
 #pragma warning(disable : 4995)
 #include <DXSDK/d3dx9.h>
 #pragma warning(default : 4995)

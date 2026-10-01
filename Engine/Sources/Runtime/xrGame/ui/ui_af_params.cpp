@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ui_af_params.h"
 #include "UIStatic.h"
 #include "../object_broker.h"

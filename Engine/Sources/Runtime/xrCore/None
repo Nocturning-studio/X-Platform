@@ -1,4 +1,4 @@
-﻿  stdafx.cpp
+﻿  pch.cpp
   BlackBoxUI.cpp
   BSUFunctions.cpp
   CrashHandler.cpp

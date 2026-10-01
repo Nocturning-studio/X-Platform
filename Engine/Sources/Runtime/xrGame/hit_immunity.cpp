@@ -2,7 +2,7 @@
 //						коэффициенты иммунитета для разных типов хитов
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "hit_immunity.h"
 
 CHitImmunity::CHitImmunity()

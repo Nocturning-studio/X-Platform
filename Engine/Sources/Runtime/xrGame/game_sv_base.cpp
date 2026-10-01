@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrServer.h"
 #include "LevelGameDef.h"
 #include "script_process.h"

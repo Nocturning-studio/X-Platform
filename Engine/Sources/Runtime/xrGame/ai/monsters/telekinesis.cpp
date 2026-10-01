@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "telekinesis.h"
 #include "xrGame/entity_alive.h"
 #include "xrGame/PhysicsShell.h"

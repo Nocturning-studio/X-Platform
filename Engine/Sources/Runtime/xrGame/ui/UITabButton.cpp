@@ -7,7 +7,7 @@
 //
 // Copyright: 2004 GSC Game World
 
-#include "StdAfx.h"
+#include "pch.h"
 #include "UITabButton.h"
 #include "../HUDManager.h"
 

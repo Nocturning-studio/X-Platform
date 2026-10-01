@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "entitycondition.h"
 #include "inventoryowner.h"
 #include "customoutfit.h"

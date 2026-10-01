@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "GameStateManager.h"
 #include "Optick_Capture.h"
 #include "igame_level.h"

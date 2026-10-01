@@ -1,7 +1,7 @@
 // UISleepWnd.cpp:  окошко для выбора того, сколько спать
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "UISleepWnd.h"
 #include "../alife_space.h"
 #include "UIXmlInit.h"

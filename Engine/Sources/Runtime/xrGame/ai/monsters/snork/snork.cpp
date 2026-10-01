@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "snork.h"
 #include "snork_state_manager.h"
 #include "xrGame/detail_path_manager_space.h"

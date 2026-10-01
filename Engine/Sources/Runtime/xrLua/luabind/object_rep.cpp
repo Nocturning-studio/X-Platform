@@ -27,7 +27,7 @@
 //#define TEST_GARBAGE_COLLECTOR
 
 #ifdef TEST_GARBAGE_COLLECTOR
-#	include "stdafx.h"
+#	include "pch.h"
 	string256	debug_test_constructor, debug_test_destructor;
 	LPCSTR		debug_class = "AttackError";//"stateAttackThreaten";
 #endif

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIMoneyIndicator.h"
 #include "UIColorAnimatorWrapper.h"
 #include "xrUIXmlParser.h"

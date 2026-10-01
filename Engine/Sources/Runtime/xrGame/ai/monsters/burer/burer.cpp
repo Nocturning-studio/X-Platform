@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "burer.h"
 #include "xrGame/PhysicsShell.h"
 #include "xrGame/characterphysicssupport.h"

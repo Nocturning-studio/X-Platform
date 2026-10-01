@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "..\xrEngine\igame_persistent.h"
 #include "..\xrEngine\environment.h"
 

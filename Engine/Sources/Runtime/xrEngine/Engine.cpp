@@ -5,7 +5,7 @@
 //
 // Engine class realization
 ////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "GameStateManager.h"
 #include "xrSheduler.h"
 #include "igame_level.h"

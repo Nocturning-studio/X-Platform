@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrDebugSupport.h"
 #include <tlhelp32.h>
 #include <algorithm>

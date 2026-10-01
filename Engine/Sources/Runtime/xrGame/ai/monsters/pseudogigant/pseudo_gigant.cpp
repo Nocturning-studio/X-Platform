@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "pseudo_gigant.h"
 #include "pseudo_gigant_step_effector.h"
 #include "xrGame/actor.h"

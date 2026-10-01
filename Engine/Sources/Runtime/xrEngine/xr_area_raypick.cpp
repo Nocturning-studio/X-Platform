@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xr_area.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"

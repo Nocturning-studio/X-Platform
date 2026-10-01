@@ -1,7 +1,7 @@
-// stdafx.cpp : source file that includes just the standard includes
+// pch.cpp : source file that includes just the standard includes
 // stdafx.obj will contain the pre-compiled type information
 
-#include "stdafx.h"
+#include "pch.h"
 
 #ifdef DEBUG
 #pragma message("xrNetServer - linked dxerr.lib")

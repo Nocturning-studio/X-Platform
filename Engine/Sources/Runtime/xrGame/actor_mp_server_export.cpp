@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "actor_mp_server.h"
 #include "xrEngine/../xrNetServer/net_utils.h"
 

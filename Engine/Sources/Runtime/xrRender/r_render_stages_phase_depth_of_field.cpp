@@ -2,7 +2,7 @@
 // Author: NSDeathman
 // Nocturning studio for X-Platform
 ///////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "Blender_depth_of_field.h"
 
 // Константы для расчета оптики (35mm Full Frame сенсор)

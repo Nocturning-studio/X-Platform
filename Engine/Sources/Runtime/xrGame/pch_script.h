@@ -11,7 +11,7 @@
 
 #define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
 
-#include "stdafx.h"
+#include "pch.h"
 
 // #pragma warning(disable:4244)
 // #pragma warning(disable:4995)

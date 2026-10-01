@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ShaderMacros.h"
 
 // Добавили const

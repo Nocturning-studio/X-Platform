@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrSheduler.h"
 #include "xr_object.h"
 

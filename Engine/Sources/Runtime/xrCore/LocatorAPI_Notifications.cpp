@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "LocatorAPI_Notifications.h"

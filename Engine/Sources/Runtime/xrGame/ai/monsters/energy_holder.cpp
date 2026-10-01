@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "energy_holder.h"
 #include "xrGame/gameobject.h"
 

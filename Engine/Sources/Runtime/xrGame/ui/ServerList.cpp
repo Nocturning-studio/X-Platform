@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "ServerList.h"
 #include "UIXmlInit.h"
 #include "../string_table.h"

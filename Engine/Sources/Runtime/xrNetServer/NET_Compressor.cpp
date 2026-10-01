@@ -1,7 +1,7 @@
 // NET_Compressor.cpp: implementation of the NET_Compressor class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "NET_Common.h"

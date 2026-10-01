@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "uieditbox.h"
 #include "../HUDManager.h"

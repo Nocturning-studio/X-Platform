@@ -22,7 +22,7 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#include "stdafx.h"
+#include "pch.h"
 #include <ctype.h>
 
 #ifdef TIXML_USE_STL

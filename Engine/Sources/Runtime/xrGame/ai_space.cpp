@@ -6,7 +6,7 @@
 //	Description : AI space class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "game_graph.h"
 #include "game_level_cross_table.h"
 #include "level_graph.h"

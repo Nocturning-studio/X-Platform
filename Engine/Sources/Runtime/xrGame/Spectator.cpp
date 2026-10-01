@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "spectator.h"
 #include "effectorfall.h"
 #include "CameraLook.h"

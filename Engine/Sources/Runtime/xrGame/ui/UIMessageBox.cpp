@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIMessageBox.h"
 #include "UIXmlInit.h"
 #include "UI3tButton.h"

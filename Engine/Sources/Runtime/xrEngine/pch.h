@@ -7,7 +7,7 @@
 #define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
 
 #ifdef _EDITOR
-#include "..\editors\ECore\stdafx.h"
+#include "..\editors\ECore\pch.h"
 #else
 
 #include <xrCore/xrCore.h>

@@ -108,7 +108,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="xrCore.cpp">
@@ -269,7 +269,7 @@
     <ClInclude Include="resource.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrCore.h">

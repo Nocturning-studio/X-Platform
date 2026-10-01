@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrEngine/Environment.h"
 #include "HUDmanager.h"
 #include "LevelGameDef.h"

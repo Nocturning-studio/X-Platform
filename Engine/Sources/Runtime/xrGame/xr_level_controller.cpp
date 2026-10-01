@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "xrEngine/xr_ioconsole.h"
 #include "xrEngine/xr_input.h"

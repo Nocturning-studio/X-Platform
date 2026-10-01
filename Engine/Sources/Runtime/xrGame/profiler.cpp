@@ -6,7 +6,7 @@
 //	Description : Profiler
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "profiler.h"
 #include "xrEngine/gamefont.h"
 

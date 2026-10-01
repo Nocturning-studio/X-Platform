@@ -6,7 +6,7 @@
 //	Description : Danger explosive class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "danger_explosive.h"
 #include "gameobject.h"
 #include "explosive.h"

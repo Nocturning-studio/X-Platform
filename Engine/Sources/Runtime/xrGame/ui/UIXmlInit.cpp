@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIXmlInit.h"
 #include "../hudmanager.h"
 #include "../UI.h"

@@ -15,7 +15,7 @@
     <ClCompile Include="Frustum.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="xrCDB.cpp">
@@ -107,7 +107,7 @@
     <ClInclude Include="Frustum.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
+    <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrCDB.h">

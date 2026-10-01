@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ai_monster_bones.h"
 #include "xrEngine/skeletoncustom.h"
 

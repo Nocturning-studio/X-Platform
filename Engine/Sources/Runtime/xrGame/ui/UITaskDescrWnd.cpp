@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UITaskDescrWnd.h"
 #include "UIXmlInit.h"
 #include "UIFrameWindow.h"

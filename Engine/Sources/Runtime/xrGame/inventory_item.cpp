@@ -6,7 +6,7 @@
 //	Description : Inventory item
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "inventory_item.h"
 #include "inventory_item_impl.h"
 #include "inventory.h"

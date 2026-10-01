@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "corpse_cover.h"
 #include "xrGame/cover_point.h"
 #include "xrGame/ai_space.h"

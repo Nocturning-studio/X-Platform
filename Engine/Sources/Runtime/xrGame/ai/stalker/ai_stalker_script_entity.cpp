@@ -6,7 +6,7 @@
 //	Description : Stalker script functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "ai_stalker.h"
 #include "xrGame/stalker_animation_manager.h"
 #include "xrGame/script_entity_action.h"

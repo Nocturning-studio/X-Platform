@@ -3,7 +3,7 @@
 // Antirad - таблетки выводящие радиацию
 ///////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "antirad.h"
 #include "PhysicsShell.h"

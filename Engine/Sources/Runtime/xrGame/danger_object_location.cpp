@@ -6,7 +6,7 @@
 //	Description : Danger object location
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "danger_object_location.h"
 #include "gameobject.h"
 

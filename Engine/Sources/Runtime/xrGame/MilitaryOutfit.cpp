@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "stdafx.h"
+#include "pch.h"
 #include "MilitaryOutfit.h"
 
 CMilitaryOutfit::CMilitaryOutfit()

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "control_path_builder_base.h"
 #include "xrGame/cover_point.h"
 #include "xrGame/cover_manager.h"

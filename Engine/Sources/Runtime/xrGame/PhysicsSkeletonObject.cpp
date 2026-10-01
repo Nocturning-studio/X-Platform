@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "physicsskeletonobject.h"
 #include "PhysicsShell.h"
 #include "phsynchronize.h"

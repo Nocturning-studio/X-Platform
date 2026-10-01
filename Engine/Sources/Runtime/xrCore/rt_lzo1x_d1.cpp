@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 /* lzo1x_d1.c -- LZO1X decompression

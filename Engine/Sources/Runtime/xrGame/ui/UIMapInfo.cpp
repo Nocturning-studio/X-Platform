@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIMapInfo.h"
 #include "UIScrollView.h"
 #include "UIXmlInit.h"

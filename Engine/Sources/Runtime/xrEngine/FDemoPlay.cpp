@@ -1,6 +1,6 @@
 // CDemoPlay.cpp: implementation of the CDemoPlay class.
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "fdemoplay.h"
 #include "xr_ioconsole.h"
 #include "motion.h"

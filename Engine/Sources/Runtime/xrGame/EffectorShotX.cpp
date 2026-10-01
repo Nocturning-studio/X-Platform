@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "EffectorShotX.h"
 #include "..\xrEngine/CameraBase.h"
 

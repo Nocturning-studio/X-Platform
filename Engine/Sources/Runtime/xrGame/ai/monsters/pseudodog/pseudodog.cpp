@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "pseudodog.h"
 #include "pseudodog_state_manager.h"
 #include "xrEngine/skeletonanimated.h"

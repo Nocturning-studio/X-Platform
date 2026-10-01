@@ -7,7 +7,7 @@
 // Copyright 2005 GSC GameWorld
 #pragma once
 
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIPdaKillMessage.h"
 #include "UIInventoryUtilities.h"
 

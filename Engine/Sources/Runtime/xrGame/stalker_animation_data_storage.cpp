@@ -6,7 +6,7 @@
 //	Description : Stalker animation data storage
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_animation_data.h"
 #include "object_broker.h"

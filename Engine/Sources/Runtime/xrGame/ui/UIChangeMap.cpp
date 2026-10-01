@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIChangeMap.h"
 #include "UIVotingCategory.h"
 #include "UIXmlInit.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIDialogHolder.h"
 #include "ui\UIDialogWnd.h"
 #include "UICursor.h"

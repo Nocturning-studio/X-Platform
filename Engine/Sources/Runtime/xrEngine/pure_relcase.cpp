@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "pure_relcase.h"
 #include "xr_object_list.h"
 #include "IGame_Level.h"

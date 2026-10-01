@@ -6,7 +6,7 @@
 //	Description : Sound player
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "sound_player.h"
 #include "script_engine.h"
 #include "ai/stalker/ai_stalker_space.h"

@@ -6,7 +6,7 @@
 //	Description : ALife dynamic object class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "xrServer_Objects_ALife.h"
 #include "alife_simulator.h"
 #include "alife_schedule_registry.h"

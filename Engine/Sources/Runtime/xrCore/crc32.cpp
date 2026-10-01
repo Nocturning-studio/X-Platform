@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 static BOOL crc32_ready = FALSE;

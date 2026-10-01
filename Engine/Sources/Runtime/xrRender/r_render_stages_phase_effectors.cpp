@@ -2,7 +2,7 @@
 // Author: NSDeathman
 // Nocturning studio for X-Platform
 ///////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "..\xrEngine\igame_persistent.h"
 #include "..\xrEngine\environment.h"
 #include "blender_effectors.h"

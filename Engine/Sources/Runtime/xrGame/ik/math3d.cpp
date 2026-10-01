@@ -30,7 +30,7 @@
   MODIFICATIONS.
 
  */
-#include "StdAfx.h"
+#include "pch.h"
 #include "math3d.h"
 
 #ifndef JACK

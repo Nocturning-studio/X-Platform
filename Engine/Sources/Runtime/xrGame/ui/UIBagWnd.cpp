@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIBagWnd.h"
 #include "UIBuyWndShared.h"
 #include "Restrictions.h"

@@ -2,7 +2,7 @@
 // ParticlesPlayer.cpp
 // интерфейс для проигрывания партиклов на объекте
 ///////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "ParticlesPlayer.h"
 #include "xrEngine/xr_object.h"
 #include "xrEngine/skeletoncustom.h"

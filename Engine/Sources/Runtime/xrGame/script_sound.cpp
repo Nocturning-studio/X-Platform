@@ -6,7 +6,7 @@
 //	Description : XRay Script sound class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "script_sound.h"
 #include "script_game_object.h"
 #include "gameobject.h"

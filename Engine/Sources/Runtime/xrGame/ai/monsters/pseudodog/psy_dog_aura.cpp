@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "psy_dog_aura.h"
 #include "psy_dog.h"
 #include "xrGame/actor.h"

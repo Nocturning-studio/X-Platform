@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 /* lzo_init.c -- initialization of the LZO library

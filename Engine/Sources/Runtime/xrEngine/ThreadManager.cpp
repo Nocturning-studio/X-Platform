@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ThreadManager.h"
 #include "optick_include.h"
 #include <algorithm>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIDiaryWnd.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"

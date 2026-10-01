@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIKeyBinding.h"
 #include "UIXmlInit.h"
 #include "xrUIXmlParser.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PHJointDestroyInfo.h"
 #include "PhysicsCommon.h"
 #include "MathUtils.h"

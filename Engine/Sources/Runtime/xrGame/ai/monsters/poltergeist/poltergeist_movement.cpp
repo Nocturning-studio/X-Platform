@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "poltergeist_movement.h"
 #include "poltergeist.h"
 #include "xrGame/detail_path_manager.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PHStaticGeomShell.h"
 #include "SpaceUtils.h"
 #include "GameObject.h"

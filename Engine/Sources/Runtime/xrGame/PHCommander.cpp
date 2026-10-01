@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PHCommander.h"
 
 CPHCall::CPHCall(CPHCondition* condition, CPHAction* action)

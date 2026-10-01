@@ -1,7 +1,7 @@
 //----------------------------------------------------
 // file: PSLibrary.cpp
 //----------------------------------------------------
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "PSLibrary.h"

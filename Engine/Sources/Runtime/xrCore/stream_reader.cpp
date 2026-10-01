@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "stream_reader.h"
 
 void CStreamReader::construct(const HANDLE& file_mapping_handle, const u32& start_offset, const u32& file_size,

@@ -6,7 +6,7 @@
 //	Description : Smart dynamic cast statistics
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <ppl.h>

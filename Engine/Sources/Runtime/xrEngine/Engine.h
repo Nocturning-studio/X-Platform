@@ -8,7 +8,7 @@
 class ENGINE_API CGameFont;
 struct xrDispatchTable;
 ////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "EventAPI.h"
 #include "xrBind_PSGP.h"
 #include "LevelManager.h"

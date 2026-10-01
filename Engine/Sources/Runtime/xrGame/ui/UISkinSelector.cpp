@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "UISkinSelector.h"
 #include "../level.h"

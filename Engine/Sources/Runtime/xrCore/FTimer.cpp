@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 XRCORE_API BOOL g_bEnableStatGather = FALSE;

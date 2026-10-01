@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "render.h"
 #include "xrEngine/resourcemanager.h"
 #include "xrEngine/fbasicvisual.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrEngine/xr_ioconsole.h"
 #include "customzone.h"
 #include "hit.h"

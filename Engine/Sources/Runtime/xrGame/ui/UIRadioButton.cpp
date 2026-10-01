@@ -3,7 +3,7 @@
 // и работающей в группе с такими же кнопками
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include ".\uiradiobutton.h"
 #include "UILines.h"
 

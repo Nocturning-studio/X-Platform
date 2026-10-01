@@ -525,7 +525,7 @@
     <ClInclude Include="Optick_Capture.h">
       <Filter>Engine\Profiling</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch.h">
       <Filter>General\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
@@ -938,7 +938,7 @@
     <ClCompile Include="Optick_Capture.cpp">
       <Filter>Engine\Profiling</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>General\Kernel</Filter>
     </ClCompile>
     <ClCompile Include="defines.cpp">

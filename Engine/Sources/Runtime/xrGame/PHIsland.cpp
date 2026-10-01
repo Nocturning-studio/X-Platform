@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PHIsland.h"
 #include "physics.h"
 void CPHIsland::Step(dReal step)

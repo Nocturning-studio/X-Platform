@@ -6,7 +6,7 @@
 //	Description : Cover manager class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "ppl.h"
 #include "level_graph.h"
 #include "cover_manager.h"

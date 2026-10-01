@@ -30,7 +30,7 @@
     <ClInclude Include="SoundRender.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="SoundRender_Core.h">
@@ -59,7 +59,7 @@
     <ClCompile Include="sound.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="SoundRender_Core.cpp">

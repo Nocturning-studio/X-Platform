@@ -6,7 +6,7 @@
 //	Description : Squad hierarchy holder
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
 #include "object_broker.h"

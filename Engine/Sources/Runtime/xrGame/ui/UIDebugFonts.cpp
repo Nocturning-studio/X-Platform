@@ -6,7 +6,7 @@
 //
 // Copyright 2005 GSC Game World
 
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIDebugFonts.h"
 #include "dinput.h"
 #include "../hudmanager.h"

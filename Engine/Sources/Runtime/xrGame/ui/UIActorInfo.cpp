@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIActorInfo.h"
 #include "UIXmlInit.h"
 #include "UIPdaAux.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PHGeometryOwner.h"
 #include "xrEngine/skeletonanimated.h"
 

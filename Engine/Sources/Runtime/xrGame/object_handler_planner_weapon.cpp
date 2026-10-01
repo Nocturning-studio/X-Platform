@@ -6,7 +6,7 @@
 //	Description : Object handler action planner weapon handling
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "object_handler_planner.h"
 #include "object_property_evaluators.h"
 #include "object_actions.h"

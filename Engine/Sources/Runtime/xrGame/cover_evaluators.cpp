@@ -6,7 +6,7 @@
 //	Description : Cover evaluators
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "cover_evaluators.h"
 #include "cover_point.h"
 #include "ai_space.h"

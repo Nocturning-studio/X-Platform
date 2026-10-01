@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "r_portal_traverser.h"
 #include "r_sector.h"
 #include "r_portal.h"

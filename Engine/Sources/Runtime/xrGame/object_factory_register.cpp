@@ -6,7 +6,7 @@
 //	Description : Object factory
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "object_factory_impl.h"

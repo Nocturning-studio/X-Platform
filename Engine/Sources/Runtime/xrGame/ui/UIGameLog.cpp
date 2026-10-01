@@ -5,7 +5,7 @@
 //	---------------------------------------------------------------------------
 //  Multiplayer game log window
 //=============================================================================
-#include "stdafx.h"
+#include "pch.h"
 #include "UIGameLog.h"
 #include "UIXmlInit.h"
 #include "UIColorAnimatorWrapper.h"

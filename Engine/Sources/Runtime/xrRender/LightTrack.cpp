@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "LightTrack.h"
 #include "..\xrEngine\xr_object.h"
 #include "..\xrEngine\igame_persistent.h"

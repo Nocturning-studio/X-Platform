@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "weaponpistol.h"
 #include "WeaponHUD.h"
 #include "ParticlesObject.h"

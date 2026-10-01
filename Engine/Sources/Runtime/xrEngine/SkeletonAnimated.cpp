@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #include "SkeletonAnimated.h"

@@ -1,4 +1,4 @@
-// #include "stdafx.h"
+// #include "pch.h"
 #ifndef __DXTRILIST_INCLUDED__
 
 #define __DXTRILIST_INCLUDED__

@@ -1,7 +1,7 @@
 // FVisual.cpp: implementation of the FVisual class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
 #pragma warning(disable : 4995)

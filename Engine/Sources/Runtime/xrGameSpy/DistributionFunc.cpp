@@ -1,7 +1,7 @@
 // DistributionFunc.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+#include "pch.h"
 #include "xrGameSpy_MainDefs.h"
 
 // WORD: Bit masks for languages

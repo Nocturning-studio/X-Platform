@@ -7,7 +7,7 @@
 //	шрифтами, цветами и даже с анимацией
 //=============================================================================
 
-#include "stdafx.h"
+#include "pch.h"
 #include "UIMultiTextStatic.h"
 #include "xrEngine/CustomHUD.h"
 

@@ -2,7 +2,7 @@
 // function responsible for firing with CWeapon
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Weapon.h"
 #include "WeaponHUD.h"
 #include "ParticlesObject.h"

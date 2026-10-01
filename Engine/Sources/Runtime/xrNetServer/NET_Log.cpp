@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "net_log.h"
 //---------------------------------------------------------
 string64 PacketName[] = {"M_UPDATE", // DUAL: Update state

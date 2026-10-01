@@ -177,7 +177,7 @@
     <ClCompile Include="luabind\wrapper_base.cpp">
       <Filter>luabind</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lapi.h">
@@ -273,7 +273,7 @@
     <ClInclude Include="dynasm\dasm_x86.h">
       <Filter>etc</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dynasm\dasm_x86.lua">

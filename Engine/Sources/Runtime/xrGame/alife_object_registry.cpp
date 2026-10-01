@@ -6,7 +6,7 @@
 //	Description : ALife object registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "alife_object_registry.h"
 #include "xrEngine/../xrNetServer/net_utils.h"
 #include "ai_debug.h"

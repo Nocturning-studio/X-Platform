@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "physicsshell.h"
 #include "phinterpolation.h"
 #include "phobject.h"

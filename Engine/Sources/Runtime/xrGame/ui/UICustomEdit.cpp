@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include "pch.h"
 
-#include "stdafx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "../HUDManager.h"
 #include "UICustomEdit.h"

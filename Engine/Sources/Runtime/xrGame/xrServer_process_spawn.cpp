@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrServer.h"
 #include "hudmanager.h"
 #include "xrserver_objects.h"

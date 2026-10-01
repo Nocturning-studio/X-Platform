@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UINewsItemWnd.h"
 #include "UIXmlInit.h"
 #include "UIStatic.h"

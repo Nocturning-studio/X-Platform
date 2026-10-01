@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "zone_effector.h"
 #include "level.h"
 #include "clsid_game.h"

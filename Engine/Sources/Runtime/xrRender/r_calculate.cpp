@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "..\xrEngine\customhud.h"
 
 float g_fSCREEN;

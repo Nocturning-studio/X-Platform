@@ -6,7 +6,7 @@
 //	Description : Attachment owner
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "attachment_owner.h"
 #include "attachable_item.h"
 #include "xrEngine/skeletoncustom.h"

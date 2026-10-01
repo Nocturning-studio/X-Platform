@@ -1,7 +1,7 @@
 // Actor_Movement.cpp:	 передвижения актера
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "actor.h"
 #include "inventory.h"

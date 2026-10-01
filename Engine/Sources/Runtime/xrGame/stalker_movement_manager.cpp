@@ -6,7 +6,7 @@
 //	Description : Stalker movement manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "stalker_movement_manager.h"
 #include "stalker_movement_manager_space.h"
 #include "script_entity_action.h"

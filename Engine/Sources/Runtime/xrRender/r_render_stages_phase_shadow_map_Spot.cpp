@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 void CRender::clear_shadow_map_spot()
 {

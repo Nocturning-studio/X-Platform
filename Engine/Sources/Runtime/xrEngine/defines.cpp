@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #ifdef DEBUG
 BOOL bDebug = FALSE;

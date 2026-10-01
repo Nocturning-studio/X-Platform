@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "xrBind_PSGP.h"
 #pragma hdrstop
 

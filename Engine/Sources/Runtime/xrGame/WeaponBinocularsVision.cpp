@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "WeaponBinocularsVision.h"
 #include "WeaponBinoculars.h"
 #include "ui\UIFrameWindow.h"

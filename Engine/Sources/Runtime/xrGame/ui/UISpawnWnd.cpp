@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <dinput.h>
 #include "UISpawnWnd.h"
 #include "UIXmlInit.h"

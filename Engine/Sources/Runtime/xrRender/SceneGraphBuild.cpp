@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "..\xrEngine\fhierrarhyvisual.h"
 #include "..\xrEngine\SkeletonCustom.h"

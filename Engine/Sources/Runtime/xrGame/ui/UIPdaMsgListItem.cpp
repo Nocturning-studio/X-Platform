@@ -3,7 +3,7 @@
 // экране для сообщений PDA
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "UIPdaMsgListItem.h"
 #include "../Entity.h"
 #include "../character_info.h"

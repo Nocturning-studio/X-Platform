@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "weaponammo.h"
 #include "PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"

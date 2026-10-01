@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "anomaly_detector.h"
 #include "BaseMonster/base_monster.h"
 #include "xrGame/restricted_object.h"

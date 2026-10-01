@@ -6,7 +6,7 @@
 //	Description : ALife schedule registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "alife_schedule_registry.h"
 
 CALifeScheduleRegistry::~CALifeScheduleRegistry()

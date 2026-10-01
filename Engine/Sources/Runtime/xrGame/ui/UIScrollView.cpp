@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIScrollView.h"
 #include "UIScrollBar.h"
 #include "../ui_base.h"

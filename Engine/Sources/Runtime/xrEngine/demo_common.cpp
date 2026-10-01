@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "demo_common.h"
 #include "IGame_Persistent.h"
 #include "xr_ioconsole.h"

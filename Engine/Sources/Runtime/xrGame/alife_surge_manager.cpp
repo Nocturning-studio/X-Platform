@@ -6,7 +6,7 @@
 //	Description : ALife Simulator surge manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "alife_surge_manager.h"
 #include "alife_object_registry.h"
 #include "alife_spawn_registry.h"

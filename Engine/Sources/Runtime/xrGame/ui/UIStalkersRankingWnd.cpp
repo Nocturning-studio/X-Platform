@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "UIStalkersRankingWnd.h"
 #include "UIXmlInit.h"
 #include "UIPdaAux.h"

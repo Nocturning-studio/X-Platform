@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "UIFrameLineWnd.h"
 
 CUIFrameLineWnd::CUIFrameLineWnd() : bHorizontal(true), m_bTextureAvailable(false)

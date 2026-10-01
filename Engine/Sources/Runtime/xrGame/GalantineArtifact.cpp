@@ -3,7 +3,7 @@
 // GalantineArtefact - артефакт ведбмин студень
 ///////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "GalantineArtifact.h"
 
 CGalantineArtefact::CGalantineArtefact(void)

@@ -1,7 +1,7 @@
 // UIWindow.cpp: implementation of the CUIWindow class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "pch.h"
 #include "UIWindow.h"
 #include "../UICursor.h"
 #include "../MainMenu.h"

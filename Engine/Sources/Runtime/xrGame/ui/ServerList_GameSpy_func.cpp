@@ -1,2 +1,2 @@
-#include "StdAfx.h"
+#include "pch.h"
 #include "ServerList.h"

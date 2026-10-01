@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ispatial.h"
 #include "icollidable.h"
 #include "xr_collide_form.h"

@@ -3,7 +3,7 @@
 // BottleItem - бутылка с напитком, которую можно разбить
 ///////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "BottleItem.h"
 #include "xrmessages.h"
 #include "xrEngine/../xrNetServer/net_utils.h"

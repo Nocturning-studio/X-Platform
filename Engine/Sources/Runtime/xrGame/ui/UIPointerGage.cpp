@@ -2,7 +2,7 @@
 // UIPointerGage.cpp:			цифровой прибор
 //////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "UIPointerGage.h"
 
 CUIPointerGage::CUIPointerGage()
