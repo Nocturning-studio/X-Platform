@@ -6,6 +6,7 @@
 #include "xrBackendDX9.h"
 ////////////////////////////////////////////////////////////////////////////////
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,6 +263,7 @@ void CRenderBackendDX9::ReleaseAllResources()
 		{
 			if (sh->vs) sh->vs->Release();
 			if (sh->ps) sh->ps->Release();
+			if (sh->blob) sh->blob->Release();
 			delete sh;
 			m_shaders[i] = nullptr;
 		}

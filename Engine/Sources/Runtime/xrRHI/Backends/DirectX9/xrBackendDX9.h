@@ -80,6 +80,8 @@ public:
 
 	virtual void InvalidateStateCache() override;
 
+	virtual RHI_ShaderCompileResult CompileShader(const RHI_ShaderCompileDesc& desc) override;
+	virtual bool GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize) override;
 	virtual RHI_ShaderHandle CreateVertexShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
 	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
 	virtual void SetVertexShader(RHI_ShaderHandle handle) override;

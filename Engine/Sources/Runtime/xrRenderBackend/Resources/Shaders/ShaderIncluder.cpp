@@ -68,19 +68,19 @@ void CShaderIncluder::AddSearchPath(LPCSTR path)
 	m_searchPaths.push_back(std::move(p));
 }
 
-HRESULT __stdcall CShaderIncluder::Open(D3D_INCLUDE_TYPE /*type*/,
-										LPCSTR pName,
-										LPCVOID /*pParentData*/,
-										LPCVOID* ppData,
-										UINT* pBytes)
+bool CShaderIncluder::Open(RHI_IncludeType /*type*/, 
+						   const char* pName,
+						   const void* /*pParentData*/,
+						   const void** ppData, 
+						   size_t* pBytes)
 {
-	if(!pName || !pName[0] || !ppData || !pBytes)
-		return E_FAIL;
+	if (!pName || !pName[0] || !ppData || !pBytes)
+		return false;
 
 	xr_string resolved;
 	IReader* reader = nullptr;
 
-	for(const auto& sp : m_searchPaths)
+	for (const auto& sp : m_searchPaths)
 	{
 		const xr_string cand = NormalizeRelative(sp + pName);
 
@@ -88,17 +88,17 @@ HRESULT __stdcall CShaderIncluder::Open(D3D_INCLUDE_TYPE /*type*/,
 		FS.update_path(full_path, kShaderRoot, cand.c_str());
 
 		reader = FS.r_open(full_path);
-		if(reader)
+		if (reader)
 		{
 			resolved = cand;
 			break;
 		}
 	}
 
-	if(!reader)
+	if (!reader)
 	{
 		Msg("! [Includer] Cannot resolve '%s' in $engine_shaders$", pName);
-		return E_FAIL;
+		return false;
 	}
 
 	xr_string content;
@@ -106,43 +106,36 @@ HRESULT __stdcall CShaderIncluder::Open(D3D_INCLUDE_TYPE /*type*/,
 
 	const xr_string guard = MakeGuardName(resolved);
 
-	if(m_wrapWithGuard)
+	if (m_wrapWithGuard)
 	{
-		content += "#ifndef ";
-		content += guard;
-		content += "\n";
-		content += "#define ";
-		content += guard;
-		content += "\n";
+		content += "#ifndef "; content += guard; content += "\n";
+		content += "#define "; content += guard; content += "\n";
 	}
 
 	content.append(static_cast<const char*>(reader->pointer()),
-				   static_cast<size_t>(reader->length()));
+		static_cast<size_t>(reader->length()));
 
-	if(m_wrapWithGuard)
+	if (m_wrapWithGuard)
 	{
-		content += "\n#endif // ";
-		content += guard;
-		content += "\n";
+		content += "\n#endif // "; content += guard; content += "\n";
 	}
 
 	FS.r_close(reader);
 
-	if(m_includedSet.insert(resolved).second)
+	if (m_includedSet.insert(resolved).second)
 		m_included.push_back(resolved);
 
 	m_buffers.push_back(std::move(content));
 	const xr_string& stored = m_buffers.back();
 
 	*ppData = stored.data();
-	*pBytes = static_cast<UINT>(stored.size());
+	*pBytes = stored.size();
 
-	return S_OK;
+	return true;
 }
 
-HRESULT __stdcall CShaderIncluder::Close(LPCVOID /*pData*/)
+void CShaderIncluder::Close(const void* /*pData*/)
 {
-	return S_OK;
 }
 
 xr_string CShaderIncluder::MakeGuardName(const xr_string& path) const

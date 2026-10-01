@@ -25,18 +25,17 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 {
 	m_valid = false;
 
-	IDirect3DDevice9Ex* device = backend.GetDevice();
 	IRenderBackend* rhi = backend.GetRHI();
-	if (!device || !rhi)
+	if (!rhi)
 	{
-		Msg("! [ShaderPass] Compile: backend is not ready");
+		Msg("! [ShaderPass] Compile: backend has no RHI");
 		return FALSE;
 	}
 
 	// Vertex
 	if (!m_vsFile.empty())
 	{
-		const HRESULT hr = m_vs.CompileFromFile(*rhi, device, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str());
+		const HRESULT hr = m_vs.CompileFromFile(*rhi, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str());
 		if (FAILED(hr))
 			return FALSE;
 	}
@@ -48,7 +47,7 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	// Pixel
 	if (!m_psFile.empty())
 	{
-		const HRESULT hr = m_ps.CompileFromFile(*rhi, device, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str());
+		const HRESULT hr = m_ps.CompileFromFile(*rhi, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str());
 		if (FAILED(hr))
 			return FALSE;
 	}
@@ -57,12 +56,11 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 		m_ps.Release();
 	}
 
+	// Reflection (D3D9-specific, но bytecode pointer теперь от RHI).
 	m_constants.Clear();
-
 	CShaderConstantTable vsTable, psTable;
 	vsTable.Parse(m_vs.GetBytecodePointer(), m_vs.GetBytecodeSize(), RC_dest_vertex_bit);
 	psTable.Parse(m_ps.GetBytecodePointer(), m_ps.GetBytecodeSize(), RC_dest_pixel_bit);
-
 	m_constants.Merge(vsTable);
 	m_constants.Merge(psTable);
 
@@ -78,7 +76,6 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	}
 
 	m_constantsBuffer.Reset();
-
 	m_valid = true;
 	return TRUE;
 }

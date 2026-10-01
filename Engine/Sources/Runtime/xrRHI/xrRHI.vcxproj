@@ -218,6 +218,7 @@
     <ClInclude Include="xrRHI_Handles.h" />
     <ClInclude Include="xrRHI_InputLayout.h" />
     <ClInclude Include="xrRHI_Macros.h" />
+    <ClInclude Include="xrRHI_Shaders.h" />
     <ClInclude Include="xrRHI_States.h" />
     <ClInclude Include="xrRHI_Types.h" />
   </ItemGroup>
@@ -226,7 +227,7 @@
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Caps.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Internal.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Texture.cpp" />
-    <ClCompile Include="Backends\DirectX9\xrBackendDX_Shader.cpp" />
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_Shader.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="xrRHI_BackendFabric.cpp" />
     <ClCompile Include="pch.cpp">

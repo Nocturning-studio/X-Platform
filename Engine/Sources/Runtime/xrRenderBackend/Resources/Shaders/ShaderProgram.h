@@ -6,16 +6,12 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include <xrRHI/xrRHI.h>
-#include <d3dcommon.h>
+#include <string>
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CShaderProgram
 {
-  public:
-	enum class Type
-	{
-		Vertex,
-		Pixel
-	};
+public:
+	enum class Type { Vertex, Pixel };
 
 	CShaderProgram() = default;
 	~CShaderProgram();
@@ -26,26 +22,24 @@ class XRRB_API CShaderProgram
 	CShaderProgram& operator=(CShaderProgram&& other) noexcept;
 
 	HRESULT CompileFromFile(IRenderBackend& rhi,
-							IDirect3DDevice9* device,
 							Type type,
 							LPCSTR file,
 							LPCSTR entry);
 
 	HRESULT CompileFromMemory(IRenderBackend& rhi,
-							  IDirect3DDevice9* device,
 							  Type type,
 							  LPCSTR source,
 							  UINT size,
 							  LPCSTR entry,
 							  LPCSTR debugName,
-							  ID3DInclude* pInclude = nullptr);
+							  RHI_IncludeHandler* pInclude = nullptr);
 
 	void Release();
 
 	bool IsValid() const { return m_rhiHandle.IsValid(); }
-	bool HasBytecode() const;
-	const void* GetBytecodePointer() const;
-	UINT GetBytecodeSize() const;
+	bool HasBytecode() const { return m_bytecodePtr != nullptr; }
+	const void* GetBytecodePointer() const { return m_bytecodePtr; }
+	UINT GetBytecodeSize() const { return static_cast<UINT>(m_bytecodeSize); }
 
 	Type GetType() const { return m_type; }
 	bool HasSourceFile() const { return !m_sourceFile.empty(); }
@@ -56,13 +50,14 @@ class XRRB_API CShaderProgram
 
 	void Apply(IRenderBackend& rhi) const;
 
-  private:
-	HRESULT CreateShaderObject(IRenderBackend& rhi);
-
+private:
 	Type m_type = Type::Vertex;
 	std::string m_sourceFile;
 	std::string m_entry = "main";
-	ID3DBlob* m_bytecode = nullptr;
+
+	const void* m_bytecodePtr = nullptr;
+	size_t m_bytecodeSize = 0;
+
 	RHI_ShaderHandle m_rhiHandle{};
 	IRenderBackend* m_rhi = nullptr;
 };

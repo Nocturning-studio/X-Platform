@@ -5,15 +5,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-#include <d3dcompiler.h>
+#include <xrRHI/xrRHI.h>
 #include <deque>
 #include <string>
 #include <vector>
 #include <unordered_set>
 ////////////////////////////////////////////////////////////////////////////////
-class XRRB_API CShaderIncluder : public ID3DInclude
+class XRRB_API CShaderIncluder : public RHI_IncludeHandler
 {
-  public:
+public:
 	CShaderIncluder();
 	~CShaderIncluder();
 
@@ -22,19 +22,13 @@ class XRRB_API CShaderIncluder : public ID3DInclude
 
 	const xr_vector<xr_string>& GetIncludedFiles() const { return m_included; }
 
-	// --- ID3DInclude ---
-	HRESULT __stdcall Open(D3D_INCLUDE_TYPE type,
-						   LPCSTR pName,
-						   LPCVOID pParentData,
-						   LPCVOID* ppData,
-						   UINT* pBytes) override;
+	bool Open(RHI_IncludeType type, const char* name, const void* parentData, const void** outData, size_t* outSize) override;
+	void Close(const void* data) override;
 
-	HRESULT __stdcall Close(LPCVOID pData) override;
-
-  private:
+private:
 	xr_string MakeGuardName(const xr_string& path) const;
 
-  private:
+private:
 	std::deque<xr_string> m_buffers;
 
 	xr_vector<xr_string> m_searchPaths;

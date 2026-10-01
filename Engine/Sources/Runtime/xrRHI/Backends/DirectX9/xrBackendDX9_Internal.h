@@ -57,6 +57,7 @@ struct DX9Shader
 {
 	IDirect3DVertexShader9* vs = nullptr;
 	IDirect3DPixelShader9* ps = nullptr;
+	ID3DBlob* blob = nullptr;
 	bool isVertex = false;
 };
 
