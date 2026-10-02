@@ -175,7 +175,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <MapExports>false</MapExports>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrEngine.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -289,7 +289,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <SubSystem>NotSet</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>

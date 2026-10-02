@@ -326,7 +326,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -410,7 +410,7 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
       <SubSystem>NotSet</SubSystem>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
