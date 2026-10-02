@@ -139,10 +139,7 @@ void CShaderPass::Apply(CRenderBackend& backend)
 	m_ps.Apply(*rhi);
 
 	ApplySamplers(backend);
-
-	IDirect3DDevice9Ex* device = backend.GetDevice();
-	if (device)
-		m_constantsBuffer.Flush(device);
+	m_constantsBuffer.Flush(*rhi);
 }
 
 void CShaderPass::Release()

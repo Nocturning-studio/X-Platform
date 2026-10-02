@@ -369,4 +369,59 @@ bool CRenderBackendDX9::GetShaderBytecode(RHI_ShaderHandle handle,
 	*outSize = sh->blob->GetBufferSize();
 	return true;
 }
+
+// ============================================================================
+// Setting resources
+// ============================================================================
+
+void CRenderBackendDX9::SetShaderResource(uint32_t slot, RHI_TextureHandle tex)
+{
+	if (!m_pDevice) return;
+
+	const DWORD stage = (slot < 16) ? slot : (D3DVERTEXTEXTURESAMPLER0 + (slot - 16));
+
+	IDirect3DBaseTexture9* native = nullptr;
+	if (tex.IsValid())
+	{
+		DX9Texture* t = GetTexture(tex);
+		if (t) native = t->GetBase();
+	}
+	m_pDevice->SetTexture(stage, native);
+}
+
+void CRenderBackendDX9::SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count)
+{
+	if (!m_pDevice || !data || vec4Count == 0)
+		return;
+
+	// D3D9 требует, чтобы константы были выровнены на 16 байт. Мы не
+	// проверяем это здесь — align — ответственность вызывающего кода.
+	// CShaderConstantBuffer хранит массив в ALIGN(16) fvec4, так что
+	// выравнивание соблюдено.
+	//
+	// Регистры нумеруются с 0, максимум — 255 для SM3.0 (или меньше по caps).
+	// Не проверяем границы — D3D9 молча проигнорирует out-of-range регистры.
+
+	HRESULT hr = E_FAIL;
+
+	switch (stage)
+	{
+	case RHI_ShaderType::Vertex:
+		hr = m_pDevice->SetVertexShaderConstantF(startRegister, data, vec4Count);
+		break;
+
+	case RHI_ShaderType::Pixel:
+		hr = m_pDevice->SetPixelShaderConstantF(startRegister, data, vec4Count);
+		break;
+
+	default:
+		Msg("! [DX9] SetShaderConstants: unsupported stage %u", (uint32_t)stage);
+		return;
+	}
+
+	if (FAILED(hr))
+	{
+		Msg("! [DX9] SetShaderConstants failed (stage=%u, start=%u, count=%u, hr=0x%08x)", (uint32_t)stage, startRegister, vec4Count, hr);
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////

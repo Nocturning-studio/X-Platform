@@ -99,22 +99,22 @@ bool CShaderConstantBuffer::SetMatrix(LPCSTR name, const fmat4x4& m, const CShad
 	// но записываются в транспонированном виде
 	auto write = [&](fvec4* dst, uint32_t reg)
 	{
-		switch(c->cls)
+		switch (c->cls)
 		{
 		case EConstantClass::Matrix2x4:
-			dst[reg + 0].set(m._11, m._21, m._31, m._41);
-			dst[reg + 1].set(m._12, m._22, m._32, m._42);
+			dst[reg + 0].set(m._11, m._12, m._13, m._14);
+			dst[reg + 1].set(m._21, m._22, m._23, m._24);
 			return 2;
 		case EConstantClass::Matrix3x4:
-			dst[reg + 0].set(m._11, m._21, m._31, m._41);
-			dst[reg + 1].set(m._12, m._22, m._32, m._42);
-			dst[reg + 2].set(m._13, m._23, m._33, m._43);
+			dst[reg + 0].set(m._11, m._12, m._13, m._14);
+			dst[reg + 1].set(m._21, m._22, m._23, m._24);
+			dst[reg + 2].set(m._31, m._32, m._33, m._34);
 			return 3;
 		case EConstantClass::Matrix4x4:
-			dst[reg + 0].set(m._11, m._21, m._31, m._41);
-			dst[reg + 1].set(m._12, m._22, m._32, m._42);
-			dst[reg + 2].set(m._13, m._23, m._33, m._43);
-			dst[reg + 3].set(m._14, m._24, m._34, m._44);
+			dst[reg + 0].set(m._11, m._12, m._13, m._14);
+			dst[reg + 1].set(m._21, m._22, m._23, m._24);
+			dst[reg + 2].set(m._31, m._32, m._33, m._34);
+			dst[reg + 3].set(m._41, m._42, m._43, m._44);
 			return 4;
 		default:
 			return 0;
@@ -161,12 +161,12 @@ bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, uint32_t index, const fm
 
 	auto write = [&](fvec4* dst, uint32_t reg)
 	{
-		dst[reg + 0].set(m._11, m._21, m._31, m._41);
-		dst[reg + 1].set(m._12, m._22, m._32, m._42);
-		if(stride >= 3)
-			dst[reg + 2].set(m._13, m._23, m._33, m._43);
-		if(stride >= 4)
-			dst[reg + 3].set(m._14, m._24, m._34, m._44);
+		dst[reg + 0].set(m._11, m._12, m._13, m._14);
+		dst[reg + 1].set(m._21, m._22, m._23, m._24);
+		if (stride >= 3)
+			dst[reg + 2].set(m._31, m._32, m._33, m._34);
+		if (stride >= 4)
+			dst[reg + 3].set(m._41, m._42, m._43, m._44);
 	};
 
 	if(c->vsRegister != uint32_t(-1))
@@ -184,28 +184,23 @@ bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, uint32_t index, const fm
 	return true;
 }
 
-void CShaderConstantBuffer::Flush(IDirect3DDevice9Ex* device)
+void CShaderConstantBuffer::Flush(IRenderBackend& rhi)
 {
-	if(!device)
-		return;
-
-	if(m_vsDirty && m_vsDirtyLo < m_vsDirtyHi)
+	if (m_vsDirty && m_vsDirtyLo < m_vsDirtyHi)
 	{
 		const uint32_t count = m_vsDirtyHi - m_vsDirtyLo;
-		CHK_DX(device->SetVertexShaderConstantF(m_vsDirtyLo,
-												reinterpret_cast<const float*>(&m_vsData[m_vsDirtyLo]),
-												count));
+		rhi.SetShaderConstants(RHI_ShaderType::Vertex, m_vsDirtyLo, reinterpret_cast<const float*>(&m_vsData[m_vsDirtyLo]), count);
+
 		m_vsDirty = false;
 		m_vsDirtyLo = 256;
 		m_vsDirtyHi = 0;
 	}
 
-	if(m_psDirty && m_psDirtyLo < m_psDirtyHi)
+	if (m_psDirty && m_psDirtyLo < m_psDirtyHi)
 	{
 		const uint32_t count = m_psDirtyHi - m_psDirtyLo;
-		CHK_DX(device->SetPixelShaderConstantF(m_psDirtyLo,
-											   reinterpret_cast<const float*>(&m_psData[m_psDirtyLo]),
-											   count));
+		rhi.SetShaderConstants(RHI_ShaderType::Pixel, m_psDirtyLo, reinterpret_cast<const float*>(&m_psData[m_psDirtyLo]), count);
+
 		m_psDirty = false;
 		m_psDirtyLo = 256;
 		m_psDirtyHi = 0;

@@ -16,6 +16,7 @@ enum class RHI_BackendType : uint32_t;
 struct RHI_PresentationParams;
 struct RHIDeviceCaps;
 class IRenderBackend;
+struct IDirect3DDevice9Ex;
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CRenderBackend
 {
@@ -45,7 +46,7 @@ class XRRB_API CRenderBackend
 
 	// --- Device access ---
 	IRenderBackend* GetRHI() const { return m_pRHI; }
-	DX_DEPRECATED IDirect3DDevice9Ex* GetDevice() const;
+	IDirect3DDevice9Ex* GetDevice() const;
 	const RHIDeviceCaps& GetDeviceCaps() const;
 	const RHI_PresentationParams& GetPresentParams() const { return m_presentParams; }
 	bool IsReady() const { return m_pRHI != nullptr; }
