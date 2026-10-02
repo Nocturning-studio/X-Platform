@@ -11,9 +11,9 @@ void CRender::render_ambient_occlusion()
 
 	Engine.Statistic->RenderCALC_AO.Begin();
 
-	RenderBackend.SetColorWriteEnable();
-	RenderBackend.SetCullMode(CULL_DISABLE);
-	RenderBackend.SetStencil(FALSE);
+	RenderBackendLegacy.SetColorWriteEnable();
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetStencil(FALSE);
 
 	float w = float(RenderTarget->rt_ao->dwWidth);
 	float h = float(RenderTarget->rt_ao->dwHeight);
@@ -40,14 +40,14 @@ void CRender::render_ambient_occlusion()
 		break;
 	}
 
-	RenderBackend.SetShaderElement(RenderTarget->s_ambient_occlusion->E[AOType], SE_AO_PASS_CALC);
-	RenderBackend.SetConstant("image_resolution", w, h, 1 / w, 1 / h);
-	RenderBackend.SetConstant("ao_params", ps_r_ao_bias, ps_r_ao_radius, negInvR2, RadiusPrecalc);
-	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_ao);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_ambient_occlusion->E[AOType], SE_AO_PASS_CALC);
+	RenderBackendLegacy.SetConstant("image_resolution", w, h, 1 / w, 1 / h);
+	RenderBackendLegacy.SetConstant("ao_params", ps_r_ao_bias, ps_r_ao_radius, negInvR2, RadiusPrecalc);
+	RenderBackendLegacy.RenderViewportSurface(w, h, RenderTarget->rt_ao);
 
-	RenderBackend.SetShaderElement(RenderTarget->s_ambient_occlusion->E[AOType], SE_AO_PASS_DENOISE);
-	RenderBackend.SetConstant("image_resolution", w, h, 1 / w, 1 / h);
-	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_ao);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_ambient_occlusion->E[AOType], SE_AO_PASS_DENOISE);
+	RenderBackendLegacy.SetConstant("image_resolution", w, h, 1 / w, 1 / h);
+	RenderBackendLegacy.RenderViewportSurface(w, h, RenderTarget->rt_ao);
 
 	Engine.Statistic->RenderCALC_AO.End();
 }

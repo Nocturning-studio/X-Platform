@@ -511,11 +511,11 @@ class ENGINE_API CRenderBackendFacade
 	ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
 };
 
-extern ENGINE_API CRenderBackendFacade RenderBackend;
+extern ENGINE_API CRenderBackendFacade RenderBackendLegacy;
 
 inline IRenderBackend* RHI()
 {
-	return RenderBackend.GetRHI();
+	return RenderBackendLegacy.GetRHI();
 }
 
 #include "R_Backend.inl"

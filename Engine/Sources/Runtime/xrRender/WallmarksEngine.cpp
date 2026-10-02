@@ -59,7 +59,7 @@ CWallmarksEngine::CWallmarksEngine()
 {
 	static_pool.reserve(256);
 	marks.reserve(256);
-	hGeom.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), NULL);
+	hGeom.create(FVF::F_LIT, RenderBackendLegacy.Vertex.Buffer(), NULL);
 }
 
 CWallmarksEngine::~CWallmarksEngine()
@@ -349,7 +349,7 @@ extern float r_ssaDISCARD;
 ICF void BeginStream(ref_geom hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
 {
 	w_offset = 0;
-	w_verts = (FVF::LIT*)RenderBackend.Vertex.Lock(MAX_TRIS * 3, hGeom->vb_stride, w_offset);
+	w_verts = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock(MAX_TRIS * 3, hGeom->vb_stride, w_offset);
 	w_start = w_verts;
 }
 
@@ -357,16 +357,16 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 					 BOOL bSuppressCull)
 {
 	u32 w_count = u32(w_verts - w_start);
-	RenderBackend.Vertex.Unlock(w_count, hGeom->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock(w_count, hGeom->vb_stride);
 	if(w_count)
 	{
-		RenderBackend.SetShader(shader);
-		RenderBackend.SetGeometry(hGeom);
+		RenderBackendLegacy.SetShader(shader);
+		RenderBackendLegacy.SetGeometry(hGeom);
 		if(bSuppressCull)
-			RenderBackend.SetCullMode(CULL_DISABLE);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, w_offset, w_count / 3);
+			RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, w_offset, w_count / 3);
 		if(bSuppressCull)
-			RenderBackend.SetCullMode(CULL_BACKFACE);
+			RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
 		Engine.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
 }
@@ -377,14 +377,14 @@ void CWallmarksEngine::Render()
 	// Projection and transform
 	float _43 = Engine.RenderView.Project._43;
 	Engine.RenderView.Project._43 -= ps_r_WallmarkSHIFT;
-	RenderBackend.SetTransformWorld(Fidentity);
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 
 	fmat4x4 mSavedView = Engine.RenderView.View;
 	fvec3 mViewPos;
 	mViewPos.mad(Engine.RenderView.Position, Engine.RenderView.Direction, ps_r_WallmarkSHIFT_V);
 	Engine.RenderView.View.build_camera_dir(mViewPos, Engine.RenderView.Direction, Engine.RenderView.Top);
-	RenderBackend.SetTransformView(Engine.RenderView.View);
+	RenderBackendLegacy.SetTransformView(Engine.RenderView.View);
 
 	Engine.Statistic->RenderDUMP_WM.Begin();
 	Engine.Statistic->RenderDUMP_WMS_Count = 0;
@@ -501,6 +501,6 @@ void CWallmarksEngine::Render()
 	// Projection
 	Engine.RenderView.View = mSavedView;
 	Engine.RenderView.Project._43 = _43;
-	RenderBackend.SetTransformView(Engine.RenderView.View);
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformView(Engine.RenderView.View);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 }

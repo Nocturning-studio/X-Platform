@@ -137,13 +137,13 @@ void CRender::render_gbuffer()
 	PROFILE_FUNCTION();
 
 	Engine.Statistic->RenderCALC_GBuffer.Begin();
-	RenderBackend.EnableAnisotropyFiltering();
+	RenderBackendLegacy.EnableAnisotropyFiltering();
 	set_gbuffer();
 
 	if (psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	RenderBackend.SetDepthWriteEnable(TRUE);
+	RenderBackendLegacy.SetDepthWriteEnable(TRUE);
 
 	Scene.Render(m_scene_visibility_data, SceneRenderPresets::Opaque, true, true);
 
@@ -156,15 +156,15 @@ void CRender::render_gbuffer()
 
 	if (Scene.GetWallmarks())
 	{
-		RenderBackend.SetDepthWriteEnable(FALSE);
+		RenderBackendLegacy.SetDepthWriteEnable(FALSE);
 		render_wallmarks();
 		Scene.RenderWallmarks();
 	}
 
 	if (psDeviceFlags.test(rsWireframe))
-		RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-	RenderBackend.DisableAnisotropyFiltering();
+	RenderBackendLegacy.DisableAnisotropyFiltering();
 	Engine.Statistic->RenderCALC_GBuffer.End();
 }
 
@@ -172,13 +172,13 @@ void CRender::render_stage_forward()
 {
 	PROFILE_FUNCTION();
 
-	RenderBackend.SetRenderTarget(RenderTarget->rt_Generic[1]);
-	RenderBackend.SetDepthBuffer(RenderBackend.GetBaseZB());
-	RenderBackend.SetCullMode(CULL_BACKFACE);
-	RenderBackend.SetStencil(FALSE);
+	RenderBackendLegacy.SetRenderTarget(RenderTarget->rt_Generic[1]);
+	RenderBackendLegacy.SetDepthBuffer(RenderBackendLegacy.GetBaseZB());
+	RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
+	RenderBackendLegacy.SetStencil(FALSE);
 
-	RenderBackend.SetColorWriteEnable();
-	RenderBackend.SetDepthWriteEnable(TRUE);
+	RenderBackendLegacy.SetColorWriteEnable();
+	RenderBackendLegacy.SetDepthWriteEnable(TRUE);
 
 	set_active_phase(PHASE_NORMAL);
 

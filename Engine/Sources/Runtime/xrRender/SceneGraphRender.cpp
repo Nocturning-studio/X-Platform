@@ -62,7 +62,7 @@ static void RenderDynamicBatch(SceneGraphTypes::mapMatrixItems& batch)
 
 	for(const auto& node : batch)
 	{
-		RenderBackend.SetTransformWorld(node.transform);
+		RenderBackendLegacy.SetTransformWorld(node.transform);
 		RenderImplementation.apply_ao_lighting(node.ao_cube);
 
 		node.pVisual->Render(CalculateLODFactor(node.screenSpaceArea, node.pVisual->vis.sphere.R));
@@ -77,8 +77,8 @@ static void __fastcall RenderSortedNode(SceneGraphTypes::mapSorted_Node* node)
 	IRender_Visual* pVisual = node->val.pVisual;
 	VERIFY(pVisual && pVisual->shader._get());
 
-	RenderBackend.SetShaderElement(node->val.se);
-	RenderBackend.SetTransformWorld(node->val.transform);
+	RenderBackendLegacy.SetShaderElement(node->val.se);
+	RenderBackendLegacy.SetTransformWorld(node->val.transform);
 	RenderImplementation.apply_ao_lighting(node->val.ao_cube);
 
 	pVisual->Render(CalculateLODFactor(node->key, pVisual->vis.sphere.R));
@@ -231,7 +231,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 {
 	PROFILE_FUNCTION();
 
-	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
 
 	mapNormalVS& map_vs = packet.queue_static[_priority];
 
@@ -239,7 +239,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 	for (auto* node_vs : m_scratch.nrmVS)
 	{
-		RenderBackend.SetVertexShader(node_vs->key);
+		RenderBackendLegacy.SetVertexShader(node_vs->key);
 
 		mapNormalPS& map_ps = node_vs->val;
 		map_ps.screenSpaceArea = 0;
@@ -247,7 +247,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 		for (auto* node_ps : m_scratch.nrmPS)
 		{
-			RenderBackend.SetPixelShader(node_ps->key);
+			RenderBackendLegacy.SetPixelShader(node_ps->key);
 
 			mapNormalCS& map_cs = node_ps->val;
 			map_cs.screenSpaceArea = 0;
@@ -255,7 +255,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 			for (auto* node_cs : m_scratch.nrmCS)
 			{
-				RenderBackend.SetConstants(node_cs->key);
+				RenderBackendLegacy.SetConstants(node_cs->key);
 
 				mapNormalStates& map_states = node_cs->val;
 				map_states.screenSpaceArea = 0;
@@ -263,7 +263,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 				for (auto* node_state : m_scratch.nrmStates)
 				{
-					RenderBackend.SetStates(node_state->key);
+					RenderBackendLegacy.SetStates(node_state->key);
 
 					mapNormalTextures& map_tex = node_state->val;
 					map_tex.screenSpaceArea = 0;
@@ -272,7 +272,7 @@ void CSceneGraph::_RenderStatic(SceneGraphPacket& packet, u32 _priority, bool _c
 
 					for (auto* node_tex : m_scratch.nrmTextures)
 					{
-						RenderBackend.SetTextures(node_tex->key);
+						RenderBackendLegacy.SetTextures(node_tex->key);
 
 						mapNormalItems& items = node_tex->val;
 						items.screenSpaceArea = 0;
@@ -314,7 +314,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 	for(auto* node_vs : m_scratch.matVS)
 	{
-		RenderBackend.SetVertexShader(node_vs->key);
+		RenderBackendLegacy.SetVertexShader(node_vs->key);
 
 		mapMatrixPS& map_ps = node_vs->val;
 		map_ps.screenSpaceArea = 0;
@@ -322,7 +322,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 		for(auto* node_ps : m_scratch.matPS)
 		{
-			RenderBackend.SetPixelShader(node_ps->key);
+			RenderBackendLegacy.SetPixelShader(node_ps->key);
 
 			mapMatrixCS& map_cs = node_ps->val;
 			map_cs.screenSpaceArea = 0;
@@ -330,7 +330,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 			for(auto* node_cs : m_scratch.matCS)
 			{
-				RenderBackend.SetConstants(node_cs->key);
+				RenderBackendLegacy.SetConstants(node_cs->key);
 
 				mapMatrixStates& map_states = node_cs->val;
 				map_states.screenSpaceArea = 0;
@@ -338,7 +338,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 				for(auto* node_state : m_scratch.matStates)
 				{
-					RenderBackend.SetStates(node_state->key);
+					RenderBackendLegacy.SetStates(node_state->key);
 
 					mapMatrixTextures& map_tex = node_state->val;
 					map_tex.screenSpaceArea = 0;
@@ -347,7 +347,7 @@ void CSceneGraph::_RenderDynamic(SceneGraphPacket& packet, u32 _priority, bool _
 
 					for(auto* node_tex : m_scratch.matTextures)
 					{
-						RenderBackend.SetTextures(node_tex->key);
+						RenderBackendLegacy.SetTextures(node_tex->key);
 
 						mapMatrixItems& items = node_tex->val;
 						items.screenSpaceArea = 0;
@@ -414,7 +414,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 											   g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 
 	// Render
 	RenderImplementation.set_render_mode(CRender::MODE_NEAR);
@@ -425,7 +425,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	// Restore Projection
 	Engine.RenderView.Project = ProjectOld;
 	Engine.RenderView.ViewProjection = ViewProjectOld;
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 }
 
 void CSceneGraph::_RenderTranslucent(SceneGraphPacket& packet)
@@ -483,7 +483,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 	FLOD::_hw* VertexBuffer;
 	{
 		OPTICK_EVENT("Lock vertex buffer");
-		VertexBuffer = (FLOD::_hw*)RenderBackend.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
+		VertexBuffer = (FLOD::_hw*)RenderBackendLegacy.Vertex.Lock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride, vb_offset);
 	}
 
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
@@ -558,7 +558,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 		});
 	}
 
-	RenderBackend.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock(packet.lstLODs.size() * 4, first_visual->geom->vb_stride);
 
 	// *** Группировка по шейдерам ***
 	if(!packet.lstLODs.empty())
@@ -587,7 +587,7 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 
 	// *** RENDER ***
 	int current_lod_index = 0;
-	RenderBackend.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
 
 	{
 		OPTICK_EVENT("Render");
@@ -598,13 +598,13 @@ void CSceneGraph::_RenderLODs(SceneGraphPacket& packet, bool _setup_zb, bool _cl
 			if (primitive_count > 0)
 			{
 				// Используем packet.lstLODs
-				RenderBackend.SetShaderElement(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
-				RenderBackend.SetGeometry(first_visual->geom);
+				RenderBackendLegacy.SetShaderElement(packet.lstLODs[current_lod_index].pVisual->shader->E[shader_id]);
+				RenderBackendLegacy.SetGeometry(first_visual->geom);
 
 				// Отрисовка батча (2 треугольника на 1 LOD)
-				RenderBackend.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);
+				RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vb_offset, 0, 4 * primitive_count, 0, 2 * primitive_count);
 
-				RenderBackend.stat.r.s_flora_lods.add(4 * primitive_count);
+				RenderBackendLegacy.stat.r.s_flora_lods.add(4 * primitive_count);
 
 				current_lod_index += primitive_count;
 				vb_offset += 4 * primitive_count;

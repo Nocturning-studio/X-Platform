@@ -3,27 +3,27 @@
 
 void CRenderBackendFacade::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
-	RenderBackend.SetGeometry(geom);
-	RenderBackend.Render(pt, vBase, pc);
+	RenderBackendLegacy.SetGeometry(geom);
+	RenderBackendLegacy.Render(pt, vBase, pc);
 }
 
 void CRenderBackendFacade::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	RenderBackend.SetGeometry(geom);
-	RenderBackend.Render(pt, baseV, startV, countV, startI, PC);
+	RenderBackendLegacy.SetGeometry(geom);
+	RenderBackendLegacy.Render(pt, baseV, startV, countV, startI, PC);
 }
 
 void CRenderBackendFacade::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 	OnFrameEnd();
-	CHK_DX(RenderBackend.GetDevice()->SetFVF(FVF::F_L));
-	CHK_DX(RenderBackend.GetDevice()->DrawIndexedPrimitiveUP(PrimType, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
+	CHK_DX(RenderBackendLegacy.GetDevice()->SetFVF(FVF::F_L));
+	CHK_DX(RenderBackendLegacy.GetDevice()->DrawIndexedPrimitiveUP(PrimType, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
 }
 void CRenderBackendFacade::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int pcnt)
 {
 	OnFrameEnd();
-	CHK_DX(RenderBackend.GetDevice()->SetFVF(FVF::F_L));
-	CHK_DX(RenderBackend.GetDevice()->DrawPrimitiveUP(PrimType, pcnt, pVerts, sizeof(FVF::L)));
+	CHK_DX(RenderBackendLegacy.GetDevice()->SetFVF(FVF::F_L));
+	CHK_DX(RenderBackendLegacy.GetDevice()->DrawPrimitiveUP(PrimType, pcnt, pVerts, sizeof(FVF::L)));
 }
 
 #define RGBA_GETALPHA(rgb) ((rgb) >> 24)
@@ -158,7 +158,7 @@ void CRenderBackendFacade::dbg_DrawEllipse(fmat4x4& Transform, u32 Color)
 	}
 
 	SetTransformWorld(Transform);
-	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces, 224);
-	RenderBackend.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	RenderBackendLegacy.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }

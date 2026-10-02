@@ -347,7 +347,7 @@ void CBulletManager::Render()
 		extern FvectorVec g_hit[];
 		FvectorIt it;
 		u32 C[3] = {0xffff0000, 0xff00ff00, 0xff0000ff};
-		RenderBackend.SetTransformWorld(Fidentity);
+		RenderBackendLegacy.SetTransformWorld(Fidentity);
 		for(int i = 0; i < 3; ++i)
 			for(it = g_hit[i].begin(); it != g_hit[i].end(); ++it)
 			{
@@ -362,7 +362,7 @@ void CBulletManager::Render()
 	u32 vOffset = 0;
 	u32 bullet_num = m_BulletsRendered.size();
 
-	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock((u32)bullet_num * 8, tracers.sh_Geom->vb_stride, vOffset);
+	FVF::LIT* verts = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock((u32)bullet_num * 8, tracers.sh_Geom->vb_stride, vOffset);
 	FVF::LIT* start = verts;
 
 	for(BulletVecIt it = m_BulletsRendered.begin(); it != m_BulletsRendered.end(); it++)
@@ -420,16 +420,16 @@ void CBulletManager::Render()
 	}
 
 	u32 vCount = (u32)(verts - start);
-	RenderBackend.Vertex.Unlock(vCount, tracers.sh_Geom->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock(vCount, tracers.sh_Geom->vb_stride);
 
 	if(vCount)
 	{
-		RenderBackend.SetCullMode(CULL_DISABLE);
-		RenderBackend.SetTransformWorld(Fidentity);
-		RenderBackend.SetShader(tracers.sh_Tracer);
-		RenderBackend.SetGeometry(tracers.sh_Geom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
-		RenderBackend.SetCullMode(CULL_BACKFACE);
+		RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+		RenderBackendLegacy.SetTransformWorld(Fidentity);
+		RenderBackendLegacy.SetShader(tracers.sh_Tracer);
+		RenderBackendLegacy.SetGeometry(tracers.sh_Geom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
+		RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
 	}
 }
 

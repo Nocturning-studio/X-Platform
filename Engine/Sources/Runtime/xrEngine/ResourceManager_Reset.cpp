@@ -30,10 +30,10 @@ void CResourceManagerLegacy::ResetBegin()
 	}
 
 	// destroy DStreams
-	RenderBackend.old_QuadIB = RenderBackend.QuadIB;
-	_RELEASE(RenderBackend.QuadIB);
-	RenderBackend.Index.ResetBegin();
-	RenderBackend.Vertex.ResetBegin();
+	RenderBackendLegacy.old_QuadIB = RenderBackendLegacy.QuadIB;
+	_RELEASE(RenderBackendLegacy.QuadIB);
+	RenderBackendLegacy.Index.ResetBegin();
+	RenderBackendLegacy.Vertex.ResetBegin();
 
 	// DeferredUnload();
 }
@@ -50,31 +50,31 @@ bool cmp_rtc(const CRTC* A, const CRTC* B)
 void CResourceManagerLegacy::ResetEnd()
 {
 	// create RDStreams
-	RenderBackend.Vertex.ResetEnd();
-	RenderBackend.Index.ResetEnd();
+	RenderBackendLegacy.Vertex.ResetEnd();
+	RenderBackendLegacy.Index.ResetEnd();
 	Evict();
-	RenderBackend.CreateQuadIB();
+	RenderBackendLegacy.CreateQuadIB();
 
 	// remark geom's which point to dynamic VB/IB
 	{
 		for(u32 _it = 0; _it < v_geoms.size(); _it++)
 		{
 			SGeometry* _G = v_geoms[_it];
-			if(_G->vb == RenderBackend.Vertex.old_pVB)
+			if(_G->vb == RenderBackendLegacy.Vertex.old_pVB)
 			{
-				_G->vb = RenderBackend.Vertex.Buffer();
+				_G->vb = RenderBackendLegacy.Vertex.Buffer();
 			}
 
 			// Here we may recover the buffer using one of
-			// RenderBackend's index buffers.
+			// RenderBackendLegacy's index buffers.
 			// Do not remove else.
-			if(_G->ib == RenderBackend.Index.old_pIB)
+			if(_G->ib == RenderBackendLegacy.Index.old_pIB)
 			{
-				_G->ib = RenderBackend.Index.Buffer();
+				_G->ib = RenderBackendLegacy.Index.Buffer();
 			}
-			else if(_G->ib == RenderBackend.old_QuadIB)
+			else if(_G->ib == RenderBackendLegacy.old_QuadIB)
 			{
-				_G->ib = RenderBackend.QuadIB;
+				_G->ib = RenderBackendLegacy.QuadIB;
 			}
 		}
 	}

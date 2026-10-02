@@ -50,45 +50,45 @@ void CSkeletonX::_Copy(CSkeletonX* B)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
-	RenderBackend.stat.r.s_dynamic.add(vCount);
+	RenderBackendLegacy.stat.r.s_dynamic.add(vCount);
 	switch(RenderMode)
 	{
 	case RM_SKINNING_SOFT:
 		_Render_soft(hGeom, vCount, iOffset, pCount);
-		RenderBackend.stat.r.s_dynamic_sw.add(vCount);
+		RenderBackendLegacy.stat.r.s_dynamic_sw.add(vCount);
 		break;
 	case RM_SINGLE:
 	{
 		fmat4x4 W;
-		W.mul_43(RenderBackend.transforms.m_World, Parent->LL_GetTransform_R(u16(RMS_boneid)));
-		RenderBackend.SetTransformWorld(W);
-		RenderBackend.SetGeometry(hGeom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
-		RenderBackend.stat.r.s_dynamic_inst.add(vCount);
+		W.mul_43(RenderBackendLegacy.transforms.m_World, Parent->LL_GetTransform_R(u16(RMS_boneid)));
+		RenderBackendLegacy.SetTransformWorld(W);
+		RenderBackendLegacy.SetGeometry(hGeom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+		RenderBackendLegacy.stat.r.s_dynamic_inst.add(vCount);
 	}
 	break;
 	case RM_SKINNING_1B:
 	case RM_SKINNING_2B:
 	{
 		// transfer matrices
-		ref_constant array = RenderBackend.GetConstant(s_bones_array_const);
+		ref_constant array = RenderBackendLegacy.GetConstant(s_bones_array_const);
 		u32 count = RMS_bonecount;
 		for(u32 mid = 0; mid < count; mid++)
 		{
 			fmat4x4& M = Parent->LL_GetTransform_R(u16(mid));
 			u32 id = mid * 3;
-			RenderBackend.SetArrayConstant(&*array, id + 0, M._11, M._21, M._31, M._41);
-			RenderBackend.SetArrayConstant(&*array, id + 1, M._12, M._22, M._32, M._42);
-			RenderBackend.SetArrayConstant(&*array, id + 2, M._13, M._23, M._33, M._43);
+			RenderBackendLegacy.SetArrayConstant(&*array, id + 0, M._11, M._21, M._31, M._41);
+			RenderBackendLegacy.SetArrayConstant(&*array, id + 1, M._12, M._22, M._32, M._42);
+			RenderBackendLegacy.SetArrayConstant(&*array, id + 2, M._13, M._23, M._33, M._43);
 		}
 
 		// render
-		RenderBackend.SetGeometry(hGeom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+		RenderBackendLegacy.SetGeometry(hGeom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
 		if(RM_SKINNING_1B == RenderMode)
-			RenderBackend.stat.r.s_dynamic_1B.add(vCount);
+			RenderBackendLegacy.stat.r.s_dynamic_1B.add(vCount);
 		else
-			RenderBackend.stat.r.s_dynamic_2B.add(vCount);
+			RenderBackendLegacy.stat.r.s_dynamic_2B.add(vCount);
 	}
 	break;
 	}
@@ -97,7 +97,7 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
 {
 	u32 vOffset = cache_vOffset;
 
-	VertexStream& _VS = RenderBackend.Vertex;
+	VertexStream& _VS = RenderBackendLegacy.Vertex;
 	if(cache_DiscardID != _VS.DiscardID() || vCount >= cache_vCount)
 	{
 		vertRender* Dest = (vertRender*)_VS.Lock(vCount, hGeom->vb_stride, vOffset);
@@ -126,8 +126,8 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
 		_VS.Unlock(vCount, hGeom->vb_stride);
 	}
 
-	RenderBackend.SetGeometry(hGeom);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
+	RenderBackendLegacy.SetGeometry(hGeom);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
 }
 
 //////////////////////////////////////////////////////////////////////

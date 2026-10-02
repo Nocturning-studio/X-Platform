@@ -18,40 +18,40 @@ void CRender::accumulate_point_lights(light* L)
 
 	// Transforms
 	L->transform_calc();
-	RenderBackend.SetTransformWorld(L->get_transform());
-	RenderBackend.SetTransformView(Engine.RenderView.View);
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformWorld(L->get_transform());
+	RenderBackendLegacy.SetTransformView(Engine.RenderView.View);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 	enable_scissor(L);
 
 	// *****************************	Mask by stencil		*************************************
 	// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 	// *** thus can cope without stencil clear with 127 lights
 	// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-	RenderBackend.SetShaderElement(RenderTarget->s_accum_mask->E[SE_MASK_POINT]); // masker
-	RenderBackend.SetColorWriteEnable(FALSE);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_accum_mask->E[SE_MASK_POINT]); // masker
+	RenderBackendLegacy.SetColorWriteEnable(FALSE);
 
 	// backfaces: if (stencil>=1 && zfail)	stencil = light_id
-	RenderBackend.SetCullMode(CULL_FRONTFACE);
-	RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+	RenderBackendLegacy.SetCullMode(CULL_FRONTFACE);
+	RenderBackendLegacy.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume(L);
 
 	// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
-	RenderBackend.SetCullMode(CULL_BACKFACE);
-	RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+	RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
+	RenderBackendLegacy.SetStencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume(L);
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RenderBackend.SetColorWriteEnable();
-	RenderBackend.SetCullMode(CULL_FRONTFACE); // back
+	RenderBackendLegacy.SetColorWriteEnable();
+	RenderBackendLegacy.SetCullMode(CULL_FRONTFACE); // back
 	/*
-	if (bIntersect)	RenderBackend.SetCullMode		(CULL_FRONTFACE);		// back
-	else			RenderBackend.SetCullMode		(CULL_BACKFACE);		// front
+	if (bIntersect)	RenderBackendLegacy.SetCullMode		(CULL_FRONTFACE);		// back
+	else			RenderBackendLegacy.SetCullMode		(CULL_BACKFACE);		// front
 	*/
 
 	// 2D texgens
 	fmat4x4 m_Texgen;
-	RenderBackend.ComputeTexgenScreen(m_Texgen);
+	RenderBackendLegacy.ComputeTexgenScreen(m_Texgen);
 
 	// Draw volume with projective texgen
 	{
@@ -72,18 +72,18 @@ void CRender::accumulate_point_lights(light* L)
 			_id = SE_L_UNSHADOWED;
 			// m_Shadow				= m_Lmap;
 		}
-		RenderBackend.SetShaderElement(shader->E[_id]);
+		RenderBackendLegacy.SetShaderElement(shader->E[_id]);
 
 		// Constants
-		RenderBackend.SetConstant("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, 1 / (L_R * L_R));
-		RenderBackend.SetConstant("Ldynamic_color", sRgbToLinear(L_clr.x), sRgbToLinear(L_clr.y), sRgbToLinear(L_clr.z));
-		RenderBackend.SetConstant("m_texgen", m_Texgen);
+		RenderBackendLegacy.SetConstant("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, 1 / (L_R * L_R));
+		RenderBackendLegacy.SetConstant("Ldynamic_color", sRgbToLinear(L_clr.x), sRgbToLinear(L_clr.y), sRgbToLinear(L_clr.z));
+		RenderBackendLegacy.SetConstant("m_texgen", m_Texgen);
 
 		// Render if (stencil >= light_id && z-pass)
-		RenderBackend.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP);
+		RenderBackendLegacy.SetStencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP);
 		draw_volume(L);
 	}
 
 	dwLightMarkerID += 2; // keep lowest bit always setted up
-	RenderBackend.SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+	RenderBackendLegacy.SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 }

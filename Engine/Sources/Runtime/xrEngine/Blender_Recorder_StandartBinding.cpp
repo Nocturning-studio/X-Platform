@@ -21,7 +21,7 @@
 	{                                                 \
 		virtual void setup(R_constant* C)             \
 		{                                             \
-			RenderBackend.transforms.set_c_##xf(C);   \
+			RenderBackendLegacy.transforms.set_c_##xf(C);   \
 		}                                             \
 	};                                                \
 	static cl_transform_##xf binder_##xf
@@ -37,7 +37,7 @@ BIND_DECLARE(WorldViewProject);
 	{                                           \
 		virtual void setup(R_constant* C)       \
 		{                                       \
-			RenderBackend.tree.set_c_##c(C);    \
+			RenderBackendLegacy.tree.set_c_##c(C);    \
 		}                                       \
 	};                                          \
 	static cl_tree_##c tree_binder_##c
@@ -53,9 +53,9 @@ class cl_InvView : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		fmat4x4 mInvV = fmat4x4().invert(RenderBackend.transforms.m_View);
+		fmat4x4 mInvV = fmat4x4().invert(RenderBackendLegacy.transforms.m_View);
 
-		RenderBackend.SetConstant(C, mInvV);
+		RenderBackendLegacy.SetConstant(C, mInvV);
 	}
 };
 static cl_InvView binder_InvView;
@@ -73,9 +73,9 @@ class cl_texgen : public R_constant_setup
 		fmat4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
-		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_WorldViewProject);
+		mTexgen.mul(mTexelAdjust, RenderBackendLegacy.transforms.m_WorldViewProject);
 
-		RenderBackend.SetConstant(C, mTexgen);
+		RenderBackendLegacy.SetConstant(C, mTexgen);
 	}
 };
 static cl_texgen binder_texgen;
@@ -93,9 +93,9 @@ class cl_VPtexgen : public R_constant_setup
 		fmat4x4 mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f,
 								0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
 
-		mTexgen.mul(mTexelAdjust, RenderBackend.transforms.m_ViewProject);
+		mTexgen.mul(mTexelAdjust, RenderBackendLegacy.transforms.m_ViewProject);
 
-		RenderBackend.SetConstant(C, mTexgen);
+		RenderBackendLegacy.SetConstant(C, mTexgen);
 	}
 };
 static cl_VPtexgen binder_VPtexgen;
@@ -113,7 +113,7 @@ class cl_fog_params : public R_constant_setup
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z),
 					   desc->fog_density);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_fog_params binder_fog_params;
@@ -130,7 +130,7 @@ class cl_fog_color : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z), 0);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_fog_color binder_fog_color;
@@ -146,7 +146,7 @@ static class cl_fog_density final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_density, 0, 0, 0);
 		}
-		RenderBackend.SetConstant(C, FogDensity);
+		RenderBackendLegacy.SetConstant(C, FogDensity);
 	}
 } binder_fog_density;
 
@@ -161,7 +161,7 @@ static class cl_fog_sky_influence final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_sky_influence, 0, 0, 0);
 		}
-		RenderBackend.SetConstant(C, FogDensity);
+		RenderBackendLegacy.SetConstant(C, FogDensity);
 	}
 } binder_fog_sky_influence;
 
@@ -176,7 +176,7 @@ static class cl_vertical_fog_density final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			VerticalFogDensity.set(desc->vertical_fog_density, 0, 0, 0);
 		}
-		RenderBackend.SetConstant(C, VerticalFogDensity);
+		RenderBackendLegacy.SetConstant(C, VerticalFogDensity);
 	}
 } binder_vertical_fog_density;
 
@@ -191,7 +191,7 @@ static class cl_vertical_fog_height final : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			VerticalFogHeight.set(desc->vertical_fog_height, 0, 0, 0);
 		}
-		RenderBackend.SetConstant(C, VerticalFogHeight);
+		RenderBackendLegacy.SetConstant(C, VerticalFogHeight);
 	}
 } binder_vertical_fog_height;
 
@@ -201,7 +201,7 @@ static class cl_rain_density : public R_constant_setup
 	{
 		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E->rain_density;
-		RenderBackend.SetConstant(C, fValue, fValue, fValue, 0);
+		RenderBackendLegacy.SetConstant(C, fValue, fValue, fValue, 0);
 	}
 } binder_rain_density;
 
@@ -211,7 +211,7 @@ static class cl_water_intensity : public R_constant_setup
 	{
 		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E->m_fWaterIntensity;
-		RenderBackend.SetConstant(C, fValue, fValue, fValue, 0);
+		RenderBackendLegacy.SetConstant(C, fValue, fValue, fValue, 0);
 	}
 } binder_water_intensity;
 
@@ -221,7 +221,7 @@ static class cl_pos_decompress_params : public R_constant_setup
 	{
 		float VertTan = -1.0f * tanf(deg2rad(Engine.RenderView.Fov / 2.0f));
 		float HorzTan = -VertTan / Engine.RenderView.Aspect;
-		RenderBackend.SetConstant(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
+		RenderBackendLegacy.SetConstant(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
 	}
 } binder_pos_decompress_params;
 
@@ -231,7 +231,7 @@ class cl_times : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		float t = Engine.TimeManager.GetGlobalTimeFixed();
-		RenderBackend.SetConstant(C, t, t * 10, t / 10, std::sin(t));
+		RenderBackendLegacy.SetConstant(C, t, t * 10, t / 10, std::sin(t));
 	}
 };
 static cl_times binder_times;
@@ -242,7 +242,7 @@ class cl_eye_P : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		fvec3& V = Engine.RenderView.Position;
-		RenderBackend.SetConstant(C, V.x, V.y, V.z, 1);
+		RenderBackendLegacy.SetConstant(C, V.x, V.y, V.z, 1);
 	}
 };
 static cl_eye_P binder_eye_P;
@@ -253,7 +253,7 @@ class cl_eye_D : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		fvec3& V = Engine.RenderView.Direction;
-		RenderBackend.SetConstant(C, V.x, V.y, V.z, 0);
+		RenderBackendLegacy.SetConstant(C, V.x, V.y, V.z, 0);
 	}
 };
 static cl_eye_D binder_eye_D;
@@ -270,7 +270,7 @@ class cl_sun0_color : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->sun_color.x), sRgbToLinear(desc->sun_color.y), sRgbToLinear(desc->sun_color.z), 0);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_sun0_color binder_sun0_color;
@@ -282,7 +282,7 @@ static class cl_env_color : public R_constant_setup
 		CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
 		fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS, sRgbToLinear(envdesc->hemi_color.y) * 2 + EPS,
 						sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
-		RenderBackend.SetConstant(C, envclr);
+		RenderBackendLegacy.SetConstant(C, envclr);
 	}
 } binder_env_color;
 
@@ -297,7 +297,7 @@ class cl_sun0_dir_w : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc->sun_dir.x, desc->sun_dir.y, desc->sun_dir.z, 0);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_sun0_dir_w binder_sun0_dir_w;
@@ -315,7 +315,7 @@ class cl_sun0_dir_e : public R_constant_setup
 			D.normalize();
 			result.set(D.x, D.y, D.z, 0);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_sun0_dir_e binder_sun0_dir_e;
@@ -332,7 +332,7 @@ class cl_amb_color : public R_constant_setup
 			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->ambient.x), sRgbToLinear(desc->ambient.y), sRgbToLinear(desc->ambient.z), desc->weight);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_amb_color binder_amb_color;
@@ -348,7 +348,7 @@ class cl_ambient_brightness : public R_constant_setup
 			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc->ambient_brightness, 0, 0, 0);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_ambient_brightness binder_ambient_brightness;
@@ -364,7 +364,7 @@ class cl_hemi_color : public R_constant_setup
 			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->hemi_color.x), sRgbToLinear(desc->hemi_color.y), sRgbToLinear(desc->hemi_color.z), desc->hemi_color.w);
 		}
-		RenderBackend.SetConstant(C, result);
+		RenderBackendLegacy.SetConstant(C, result);
 	}
 };
 static cl_hemi_color binder_hemi_color;
@@ -373,7 +373,7 @@ static class cl_screen_res : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		RenderBackend.SetConstant(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
+		RenderBackendLegacy.SetConstant(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
 	}
 } binder_screen_res;
 
@@ -382,7 +382,7 @@ class cl_wind_params : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
-		RenderBackend.SetConstant(C, desc->wind_direction3D.x, desc->wind_direction3D.y, desc->wind_direction3D.z, desc->wind_gusting);
+		RenderBackendLegacy.SetConstant(C, desc->wind_direction3D.x, desc->wind_direction3D.y, desc->wind_direction3D.z, desc->wind_gusting);
 	}
 };
 static cl_wind_params binder_wind_params;
@@ -393,7 +393,7 @@ class cl_wind_turbulence : public R_constant_setup
 	{
 		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
 
-		RenderBackend.SetConstant(C, desc->wind_turbulence, desc->wind_turbulence, desc->wind_anim_time, desc->wind_strength);
+		RenderBackendLegacy.SetConstant(C, desc->wind_turbulence, desc->wind_turbulence, desc->wind_anim_time, desc->wind_strength);
 	}
 };
 static cl_wind_turbulence binder_wind_turbulence;

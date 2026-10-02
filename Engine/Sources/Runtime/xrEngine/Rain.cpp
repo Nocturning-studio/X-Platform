@@ -87,9 +87,9 @@ CEffect_Rain::CEffect_Rain()
 
 	// Load shaders and geoms
 	m_sh_rain.create("effects\\rain", "fx\\fx_rain");
-	m_geom_rain.create(FVF::F_LIT, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
-	m_geom_drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RenderBackend.Vertex.Buffer(),
-						RenderBackend.Index.Buffer());
+	m_geom_rain.create(FVF::F_LIT, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
+	m_geom_drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RenderBackendLegacy.Vertex.Buffer(),
+						RenderBackendLegacy.Index.Buffer());
 
 	InitParticlePool();
 	FS.r_close(F);
@@ -574,7 +574,7 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 
 	// Lock Buffer
 	u32 v_offset;
-	FVF::LIT* verts = (FVF::LIT*)RenderBackend.Vertex.Lock(count * 4, m_geom_rain->vb_stride, v_offset);
+	FVF::LIT* verts = (FVF::LIT*)RenderBackendLegacy.Vertex.Lock(count * 4, m_geom_rain->vb_stride, v_offset);
 
 	// Вспомогательные
 	const fvec3& view_pos = Engine.RenderView.Position;
@@ -612,15 +612,15 @@ void CEffect_Rain::UpdateAndRenderDrops(u32 /*desired_items*/, u32 rain_color)
 		verts++;
 	}
 
-	RenderBackend.Vertex.Unlock(count * 4, m_geom_rain->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock(count * 4, m_geom_rain->vb_stride);
 
 	// Draw Call
-	RenderBackend.SetCullMode(CULL_DISABLE);
-	RenderBackend.SetTransformWorld(Fidentity);
-	RenderBackend.SetShader(m_sh_rain);
-	RenderBackend.SetGeometry(m_geom_rain);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, count * 4, 0, count * 2);
-	RenderBackend.SetCullMode(D3DCULL_CCW);
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetShader(m_sh_rain);
+	RenderBackendLegacy.SetGeometry(m_geom_rain);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, v_offset, 0, count * 4, 0, count * 2);
+	RenderBackendLegacy.SetCullMode(D3DCULL_CCW);
 }
 
 void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
@@ -633,7 +633,7 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 
 	float dt = Engine.TimeManager.GetDeltaTime();
 
-	RenderBackend.SetShader(m_dm_drop->shader);
+	RenderBackendLegacy.SetShader(m_dm_drop->shader);
 
 	// Lock Buffers for particles
 	u32 v_offset, i_offset;
@@ -641,8 +641,8 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 	u32 max_inds = PARTICLES_CACHE * m_dm_drop->number_indices;
 
 	IRender_DetailModel::fvfVertexOut* v_ptr =
-		(IRender_DetailModel::fvfVertexOut*)RenderBackend.Vertex.Lock(max_verts, m_geom_drops->vb_stride, v_offset);
-	u16* i_ptr = RenderBackend.Index.Lock(max_inds, i_offset);
+		(IRender_DetailModel::fvfVertexOut*)RenderBackendLegacy.Vertex.Lock(max_verts, m_geom_drops->vb_stride, v_offset);
+	u16* i_ptr = RenderBackendLegacy.Index.Lock(max_inds, i_offset);
 
 	fmat4x4 m_transform, m_scale;
 	int p_count = 0;
@@ -676,17 +676,17 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 			if(p_count >= PARTICLES_CACHE)
 			{
 				u32 prim_count = (p_count * m_dm_drop->number_indices) / 3;
-				RenderBackend.Vertex.Unlock(max_verts, m_geom_drops->vb_stride);
-				RenderBackend.Index.Unlock(max_inds);
+				RenderBackendLegacy.Vertex.Unlock(max_verts, m_geom_drops->vb_stride);
+				RenderBackendLegacy.Index.Unlock(max_inds);
 
-				RenderBackend.SetGeometry(m_geom_drops);
-				RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, p_count * m_dm_drop->number_vertices, i_offset,
+				RenderBackendLegacy.SetGeometry(m_geom_drops);
+				RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, v_offset, 0, p_count * m_dm_drop->number_vertices, i_offset,
 									 prim_count);
 
 				// Re-lock
-				v_ptr = (IRender_DetailModel::fvfVertexOut*)RenderBackend.Vertex.Lock(
+				v_ptr = (IRender_DetailModel::fvfVertexOut*)RenderBackendLegacy.Vertex.Lock(
 					max_verts, m_geom_drops->vb_stride, v_offset);
-				i_ptr = RenderBackend.Index.Lock(max_inds, i_offset);
+				i_ptr = RenderBackendLegacy.Index.Lock(max_inds, i_offset);
 				p_count = 0;
 			}
 		}
@@ -697,13 +697,13 @@ void CEffect_Rain::UpdateAndRenderSplashes(u32 rain_color)
 	u32 total_verts = p_count * m_dm_drop->number_vertices;
 	u32 total_inds = p_count * m_dm_drop->number_indices;
 
-	RenderBackend.Vertex.Unlock(total_verts, m_geom_drops->vb_stride);
-	RenderBackend.Index.Unlock(total_inds);
+	RenderBackendLegacy.Vertex.Unlock(total_verts, m_geom_drops->vb_stride);
+	RenderBackendLegacy.Index.Unlock(total_inds);
 
 	if(p_count > 0)
 	{
-		RenderBackend.SetGeometry(m_geom_drops);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, 0, total_verts, i_offset, total_inds / 3);
+		RenderBackendLegacy.SetGeometry(m_geom_drops);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, v_offset, 0, total_verts, i_offset, total_inds / 3);
 	}
 }
 

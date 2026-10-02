@@ -132,17 +132,17 @@ void FTreeVisual::Render(float LOD)
 		tvs.calculate();
 	// setup constants
 	fmat4x4 transform_v;
-	transform_v.mul_43(RenderBackend.GetTransformView(), transform);
-	RenderBackend.SetConstant(m_transform_v, transform_v); // matrix
+	transform_v.mul_43(RenderBackendLegacy.GetTransformView(), transform);
+	RenderBackendLegacy.SetConstant(m_transform_v, transform_v); // matrix
 	float s = ps_r_Tree_SBC;
-	RenderBackend.SetConstant(m_transform, transform);				  // matrix
-	RenderBackend.SetConstant(c_consts, tvs.scale, tvs.scale, 0, 0); // consts/scale
-	RenderBackend.SetConstant(c_wave, tvs.wave);					  // wave
-	RenderBackend.SetConstant(c_wind, tvs.wind);					  // wind
+	RenderBackendLegacy.SetConstant(m_transform, transform);				  // matrix
+	RenderBackendLegacy.SetConstant(c_consts, tvs.scale, tvs.scale, 0, 0); // consts/scale
+	RenderBackendLegacy.SetConstant(c_wave, tvs.wave);					  // wave
+	RenderBackendLegacy.SetConstant(c_wind, tvs.wind);					  // wind
 	s *= 1.3333f;
-	RenderBackend.SetConstant(c_c_scale, s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi); // scale
-	RenderBackend.SetConstant(c_c_bias, s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);	  // bias
-	RenderBackend.SetConstant(c_c_sun, s * c_scale.sun, s * c_bias.sun, 0, 0);										  // sun
+	RenderBackendLegacy.SetConstant(c_c_scale, s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi); // scale
+	RenderBackendLegacy.SetConstant(c_c_bias, s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);	  // bias
+	RenderBackendLegacy.SetConstant(c_c_sun, s * c_scale.sun, s * c_bias.sun, 0, 0);										  // sun
 }
 
 #define PCOPY(a) a = pFrom->a
@@ -196,9 +196,9 @@ void FTreeVisual_ST::Render(float LOD)
 	PROFILE_FUNCTION();
 
 	inherited::Render(LOD);
-	RenderBackend.SetGeometry(rm_geom);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
-	RenderBackend.stat.r.s_flora.add(vCount);
+	RenderBackendLegacy.SetGeometry(rm_geom);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
+	RenderBackendLegacy.stat.r.s_flora.add(vCount);
 }
 void FTreeVisual_ST::Copy(IRender_Visual* pSrc)
 {
@@ -242,9 +242,9 @@ void FTreeVisual_PM::Render(float LOD)
 	}
 	VERIFY(lod_id >= 0 && lod_id < int(pSWI->count));
 	FSlideWindow& SW = pSWI->sw[lod_id];
-	RenderBackend.SetGeometry(rm_geom);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);
-	RenderBackend.stat.r.s_flora.add(SW.num_verts);
+	RenderBackendLegacy.SetGeometry(rm_geom);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);
+	RenderBackendLegacy.stat.r.s_flora.add(SW.num_verts);
 }
 void FTreeVisual_PM::Copy(IRender_Visual* pSrc)
 {

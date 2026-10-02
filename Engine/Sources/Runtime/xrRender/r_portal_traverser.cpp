@@ -16,7 +16,7 @@ void CPortalTraverser::CreateResources()
 	if(!m_shader_fade)
 		m_shader_fade.create("portal");
 	if(!m_geom_fade)
-		m_geom_fade.create(FVF::F_L, RenderBackend.Vertex.Buffer(), 0);
+		m_geom_fade.create(FVF::F_L, RenderBackendLegacy.Vertex.Buffer(), 0);
 }
 
 void CPortalTraverser::DestroyResources()
@@ -280,7 +280,7 @@ void CPortalTraverser::RenderFade()
 	// 4. Блокировка вершинного буфера
 	u32 v_offset = 0;
 	// Используем формат FVF::L (Point + Color)
-	FVF::L* v_ptr = (FVF::L*)RenderBackend.Vertex.Lock(poly_count * 3, m_geom_fade.stride(), v_offset);
+	FVF::L* v_ptr = (FVF::L*)RenderBackendLegacy.Vertex.Lock(poly_count * 3, m_geom_fade.stride(), v_offset);
 
 	// 5. Подготовка констант цвета
 	float ssa_range = r_ssaLOD_A - r_ssaLOD_B;
@@ -323,20 +323,20 @@ void CPortalTraverser::RenderFade()
 		}
 	}
 
-	RenderBackend.Vertex.Unlock(poly_count * 3, m_geom_fade.stride());
+	RenderBackendLegacy.Vertex.Unlock(poly_count * 3, m_geom_fade.stride());
 
 	// 7. Отрисовка
-	RenderBackend.SetTransformWorld(Fidentity);
-	RenderBackend.SetShader(m_shader_fade);
-	RenderBackend.SetGeometry(m_geom_fade);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetShader(m_shader_fade);
+	RenderBackendLegacy.SetGeometry(m_geom_fade);
 
 	// Отключаем отсечение задних граней, чтобы "туман" был виден с любой стороны портала
-	RenderBackend.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
 
-	RenderBackend.Render(D3DPT_TRIANGLELIST, v_offset, poly_count);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, v_offset, poly_count);
 
 	// Восстанавливаем Cull Mode
-	RenderBackend.SetCullMode(CULL_BACKFACE);
+	RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
 
 	// 8. Очистка списка (данные устаревают каждый кадр)
 	m_fade_portals.clear();

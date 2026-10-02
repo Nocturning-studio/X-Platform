@@ -208,7 +208,7 @@ void CConstantManager::SetArrayConstant(R_constant* C, u32 e, float x, float y, 
 
 void CConstantManager::Flush()
 {
-	IDirect3DDevice9Ex* device = RenderBackend.GetDevice();
+	IDirect3DDevice9Ex* device = RenderBackendLegacy.GetDevice();
 	if(!device)
 		return;
 

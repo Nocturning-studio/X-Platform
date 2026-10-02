@@ -48,7 +48,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
     }
 
     // Захват — обязательно на рендер-потоке (device call).
-    IDirect3DSurface9* shot = RenderBackend.CaptureBackBuffer();
+    IDirect3DSurface9* shot = RenderBackendLegacy.CaptureBackBuffer();
     if (!shot)
     {
         Msg("! Screenshot: failed to capture backbuffer");
@@ -69,7 +69,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
             shot->GetDesc(&shotDesc);
 
             IDirect3DSurface9* thumb = nullptr;
-            HRESULT hr = RenderBackend.GetDevice()->CreateOffscreenPlainSurface(GAMESAVE_THUMB_SIZE, 
+            HRESULT hr = RenderBackendLegacy.GetDevice()->CreateOffscreenPlainSurface(GAMESAVE_THUMB_SIZE, 
                                                                                 GAMESAVE_THUMB_SIZE, 
                                                                                 shotDesc.Format, 
                                                                                 D3DPOOL_SYSTEMMEM, 
@@ -84,13 +84,13 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
                 return;
             }
 
-            RenderBackend.BlitSurface(thumb, shot);
+            RenderBackendLegacy.BlitSurface(thumb, shot);
 
             auto guardPtr = std::make_shared<ScreenshotGuard>(std::move(guard));
             Engine.ThreadManager.AddBackgroundTask([shot, thumb, guardPtr, save_path]() mutable
             {
                 ID3DXBuffer* saved = nullptr;
-                RenderBackend.SaveSurfaceToMemory(&saved, D3DXIFF_DDS, thumb);
+                RenderBackendLegacy.SaveSurfaceToMemory(&saved, D3DXIFF_DDS, thumb);
                 if (saved)
                 {
                     IWriter* fs = FS.w_open(save_path.c_str());
@@ -137,7 +137,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
             Engine.ThreadManager.AddBackgroundTask([shot, guardPtr, fname]() mutable
             {
                 ID3DXBuffer* saved = nullptr;
-                RenderBackend.SaveSurfaceToMemory(&saved, D3DXIFF_PNG, shot);
+                RenderBackendLegacy.SaveSurfaceToMemory(&saved, D3DXIFF_PNG, shot);
                 if (saved)
                 {
                     IWriter* fs = FS.w_open("$screenshots$", fname.c_str());
@@ -171,8 +171,8 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 
             // D3D-ресурсы создаём на рендер-потоке. Всё остальное — в воркере.
             IDirect3DTexture9* texture = nullptr;
-            RenderBackend.CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, nullptr);
-            IDirect3DSurface9* surface = RenderBackend.GetSurfaceLevel(texture, 0);
+            RenderBackendLegacy.CreateTexture(2048, 2048, 1, NULL, D3DFMT_DXT1, D3DPOOL_SYSTEMMEM, &texture, nullptr);
+            IDirect3DSurface9* surface = RenderBackendLegacy.GetSurfaceLevel(texture, 0);
 
             std::string fname = file_name;
 
@@ -180,10 +180,10 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
             Engine.ThreadManager.AddBackgroundTask([shot, texture, surface, fname, guardPtr]() mutable
             {
                 // DXT1-компрессия + запись DDS — это и есть основная работа.
-                RenderBackend.BlitSurface(surface, shot);
+                RenderBackendLegacy.BlitSurface(surface, shot);
 
                 ID3DXBuffer* saved = nullptr;
-                RenderBackend.SaveSurfaceToMemory(&saved, D3DXIFF_DDS, surface);
+                RenderBackendLegacy.SaveSurfaceToMemory(&saved, D3DXIFF_DDS, surface);
                 if (saved)
                 {
                     IWriter* fs = FS.w_open("$screenshots$", fname.c_str());
@@ -215,18 +215,18 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
             u32 id = (int)name[0] - (int)'1';
 
             if (id == 0)
-                RenderBackend.CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, nullptr);
+                RenderBackendLegacy.CreateCubeTexture(face_size, 1, NULL, D3DFMT_A16B16G16R16F, D3DPOOL_SYSTEMMEM, &cubemap, nullptr);
 
             D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)id;
-            surface[id] = RenderBackend.GetCubeMapSurface(cubemap, face, 0);
-            RenderBackend.BlitSurface(surface[id], shot);
+            surface[id] = RenderBackendLegacy.GetCubeMapSurface(cubemap, face, 0);
+            RenderBackendLegacy.BlitSurface(surface[id], shot);
 
             if (id == 5)
             {
                 sprintf_s(file_name, sizeof(string_path), "cubemap_%s_%s.dds", Core.UserName, timestamp(t_stemp));
 
                 ID3DXBuffer* saved = nullptr;
-                RenderBackend.SaveTextureToMemory(&saved, D3DXIFF_DDS, cubemap);
+                RenderBackendLegacy.SaveTextureToMemory(&saved, D3DXIFF_DDS, cubemap);
 
                 IWriter* fs = FS.w_open("$cubemaps$", file_name);
                 if (fs)

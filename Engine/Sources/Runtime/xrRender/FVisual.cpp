@@ -127,7 +127,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 			u32 dwUsage = D3DUSAGE_WRITEONLY;
 			BYTE* bytes = 0;
 			VERIFY(NULL == p_rm_Vertices);
-			RenderBackend.CreateVertexBuffer(vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &p_rm_Vertices);
+			RenderBackendLegacy.CreateVertexBuffer(vCount * vStride, dwUsage, 0, D3DPOOL_DEFAULT, &p_rm_Vertices);
 			R_CHK(p_rm_Vertices->Lock(0, 0, (void**)&bytes, 0));
 			CopyMemory(bytes, data->pointer(), vCount * vStride);
 			p_rm_Vertices->Unlock();
@@ -161,7 +161,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 			BYTE* bytes = 0;
 
 			VERIFY(NULL == p_rm_Indices);
-			RenderBackend.CreateIndexBuffer(iCount * 2, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &p_rm_Indices);
+			RenderBackendLegacy.CreateIndexBuffer(iCount * 2, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &p_rm_Indices);
 			R_CHK(p_rm_Indices->Lock(0, 0, (void**)&bytes, 0));
 			CopyMemory(bytes, data->pointer(), iCount * 2);
 			p_rm_Indices->Unlock();
@@ -178,15 +178,15 @@ void Fvisual::Render(float)
 {
 	if(m_fast && RenderImplementation.active_phase() == CRender::PHASE_SHADOW_DEPTH)
 	{
-		RenderBackend.SetGeometry(m_fast->rm_geom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
-		RenderBackend.stat.r.s_static.add(m_fast->vCount);
+		RenderBackendLegacy.SetGeometry(m_fast->rm_geom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
+		RenderBackendLegacy.stat.r.s_static.add(m_fast->vCount);
 	}
 	else
 	{
-		RenderBackend.SetGeometry(rm_geom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
-		RenderBackend.stat.r.s_static.add(vCount);
+		RenderBackendLegacy.SetGeometry(rm_geom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
+		RenderBackendLegacy.stat.r.s_static.add(vCount);
 	}
 }
 

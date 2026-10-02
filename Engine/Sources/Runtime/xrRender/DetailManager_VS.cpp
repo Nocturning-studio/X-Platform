@@ -62,12 +62,12 @@ void CDetailManager::hw_Load()
 	Msg("* [DETAILS] Instancing enabled. V(%d), P(%d), BufferSize(%d items)", dwVerts, dwIndices / 3, hw_MaxInstances);
 
 	// Create VB/IB for Geometry
-	R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(dwVerts * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &hw_VB, 0));
-	R_CHK(RenderBackend.GetDevice()->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
+	R_CHK(RenderBackendLegacy.GetDevice()->CreateVertexBuffer(dwVerts * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &hw_VB, 0));
+	R_CHK(RenderBackendLegacy.GetDevice()->CreateIndexBuffer(dwIndices * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &hw_IB, 0));
 
 	for(int i = 0; i < 3; ++i)
 	{
-		R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData),
+		R_CHK(RenderBackendLegacy.GetDevice()->CreateVertexBuffer(hw_MaxInstances * sizeof(InstanceData),
 															D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
 															0, D3DPOOL_DEFAULT, &hw_InstanceVB[i], 0));
 	}
@@ -224,14 +224,14 @@ void CDetailManager::Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix, const 
 	// 2. Настройка глобального состояния рендера
 	Engine.Statistic->RenderDUMP_DT_Render.Begin();
 	{
-		RenderBackend.SetCullMode(CULL_DISABLE);
-		RenderBackend.SetTransformWorld(Fidentity);
-		RenderBackend.SetGeometry(hw_Geom);
+		RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+		RenderBackendLegacy.SetTransformWorld(Fidentity);
+		RenderBackendLegacy.SetGeometry(hw_Geom);
 
 		// 3. Запуск проходов
 		ExecuteRenderPasses(ctx);
 
-		RenderBackend.SetCullMode(CULL_BACKFACE);
+		RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
 	}
 	Engine.Statistic->RenderDUMP_DT_Render.End();
 }
@@ -392,19 +392,19 @@ void CDetailManager::ProcessObjects(const SDetailRenderContext& ctx, EDetailVisi
 	for(u32 i = 0; i < visibleModels.size(); i++)
 	{
 		ModelBatch& mb = visibleModels[i];
-		RenderBackend.SetShaderElement(mb.shader);
+		RenderBackendLegacy.SetShaderElement(mb.shader);
 
 		// Установка stream source с нужным смещением
 		u32 offsetInBytes = mb.instanceOffset * sizeof(InstanceData);
-		RenderBackend.GetDevice()->SetStreamSource(1, pCurrentVB, offsetInBytes, sizeof(InstanceData));
-		RenderBackend.GetDevice()->SetStreamSourceFreq(0, D3DSTREAMSOURCE_INDEXEDDATA | mb.instanceCount);
-		RenderBackend.GetDevice()->SetStreamSourceFreq(1, D3DSTREAMSOURCE_INSTANCEDATA | 1);
+		RenderBackendLegacy.GetDevice()->SetStreamSource(1, pCurrentVB, offsetInBytes, sizeof(InstanceData));
+		RenderBackendLegacy.GetDevice()->SetStreamSourceFreq(0, D3DSTREAMSOURCE_INDEXEDDATA | mb.instanceCount);
+		RenderBackendLegacy.GetDevice()->SetStreamSourceFreq(1, D3DSTREAMSOURCE_INSTANCEDATA | 1);
 
 		u32 primCount = mb.object->number_indices / 3;
-		RenderBackend.Render(D3DPT_TRIANGLELIST, mb.vOffset, 0, mb.object->number_vertices, mb.iOffset, primCount);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, mb.vOffset, 0, mb.object->number_vertices, mb.iOffset, primCount);
 
 		Engine.Statistic->RenderDUMP_DT_Count += mb.instanceCount;
-		RenderBackend.stat.r.s_details.add(mb.instanceCount * mb.object->number_vertices);
+		RenderBackendLegacy.stat.r.s_details.add(mb.instanceCount * mb.object->number_vertices);
 	}
 
 	// Сброс буфера не требуется, следующий проход начнёт с DISCARD

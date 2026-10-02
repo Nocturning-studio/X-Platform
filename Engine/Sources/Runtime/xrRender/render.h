@@ -232,11 +232,11 @@ class CRender : public IRender_interface, public pureFrame
 
 	IC void apply_ao_lighting(const CROS_impl::AOCube& cube)
 	{
-		RenderBackend.SetConstant("ao_cube_pos_faces",
+		RenderBackendLegacy.SetConstant("ao_cube_pos_faces",
 								   cube[CROS_impl::CUBE_FACE_POS_X],
 								   cube[CROS_impl::CUBE_FACE_POS_Y],
 								   cube[CROS_impl::CUBE_FACE_POS_Z]);
-		RenderBackend.SetConstant("ao_cube_neg_faces",
+		RenderBackendLegacy.SetConstant("ao_cube_neg_faces",
 								   cube[CROS_impl::CUBE_FACE_NEG_X],
 								   cube[CROS_impl::CUBE_FACE_NEG_Y],
 								   cube[CROS_impl::CUBE_FACE_NEG_Z]);

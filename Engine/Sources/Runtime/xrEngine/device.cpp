@@ -30,10 +30,10 @@ ref_light precache_light = 0;
 void CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
-	if(RenderBackend.NeedReset())
+	if(RenderBackendLegacy.NeedReset())
 		Reset();
 
-	RenderBackend.OnFrameBegin();
+	RenderBackendLegacy.OnFrameBegin();
 
 	Engine.DebugUI.OnFrameBegin();
 
@@ -46,10 +46,10 @@ void CRenderDevice::End(void)
 #ifndef DEDICATED_SERVER
 	PROFILE_FUNCTION();
 
-	VERIFY(RenderBackend.GetDevice());
+	VERIFY(RenderBackendLegacy.GetDevice());
 
 	g_bRendering = FALSE;
-	RenderBackend.OnFrameEnd();
+	RenderBackendLegacy.OnFrameEnd();
 	Engine.DebugUI.OnFrameEnd();
 	Memory.dbg_check();
 
@@ -57,7 +57,7 @@ void CRenderDevice::End(void)
 		return;
 
 	Engine.Statistic->RenderPresentation.Begin();
-	RenderBackend.Present();
+	RenderBackendLegacy.Present();
 	Engine.Statistic->RenderPresentation.End();
 #endif
 }
@@ -184,10 +184,10 @@ void CRenderDevice::Initialize()
 	psCurrentVidMode[1] = dwHeight;
 #endif
 
-	RenderBackend.Create(Engine.WindowManager.GetHandle());
+	RenderBackendLegacy.Create(Engine.WindowManager.GetHandle());
 
-	dwWidth = RenderBackend.GetBackBufferWidth();
-	dwHeight = RenderBackend.GetBackBufferHeight();
+	dwWidth = RenderBackendLegacy.GetBackBufferWidth();
+	dwHeight = RenderBackendLegacy.GetBackBufferHeight();
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
@@ -196,7 +196,7 @@ void CRenderDevice::Initialize()
 
 	b_is_Ready = TRUE;
 
-	RenderBackend.OnDeviceCreate();
+	RenderBackendLegacy.OnDeviceCreate();
 
 	string_path fname;
 	FS.update_path(fname, "$game_data$", "shaders.xr");
@@ -224,13 +224,13 @@ void CRenderDevice::Destroy(void)
 
 	b_is_Ready = FALSE;
 	Engine.Statistic->OnDeviceDestroy();
-	RenderBackend.DeleteResources();
+	RenderBackendLegacy.DeleteResources();
 	Engine.ResourceManager->OnDeviceDestroy(FALSE);
-	RenderBackend.OnDeviceDestroy();
+	RenderBackendLegacy.OnDeviceDestroy();
 
 	Memory.mem_compact();
 
-	RenderBackend.Destroy();
+	RenderBackendLegacy.Destroy();
 }
 
 void CRenderDevice::Reset()
@@ -238,16 +238,16 @@ void CRenderDevice::Reset()
 	Engine.DebugUI.OnResetBegin();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", RenderBackend.GetDevice());
+	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", RenderBackendLegacy.GetDevice());
 #endif
 	bool b_16_before = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 
 	ShowCursor(TRUE);
 
-	RenderBackend.ResetBegin();
+	RenderBackendLegacy.ResetBegin();
 	Engine.ResourceManager->ResetBegin();
 	Memory.mem_compact();
-	RenderBackend.Reset();
+	RenderBackendLegacy.Reset();
 	dwWidth = Engine.WindowManager.GetWidth();
 	dwHeight = Engine.WindowManager.GetHeight();
 	fWidth_2 = float(dwWidth / 2);
@@ -262,7 +262,7 @@ void CRenderDevice::Reset()
 #endif
 
 	Engine.Events.DeviceReset.Process(rp_DeviceReset);
-	RenderBackend.ResetEnd();
+	RenderBackendLegacy.ResetEnd();
 
 	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 	if(b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
@@ -271,7 +271,7 @@ void CRenderDevice::Reset()
 	Engine.DebugUI.OnResetEnd();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", RenderBackend.GetDevice());
+	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", RenderBackendLegacy.GetDevice());
 #endif
 }
 
@@ -287,5 +287,5 @@ void CRenderDevice::SetNearer(BOOL enabled)
 		m_bNearer = FALSE;
 		Engine.RenderView.Project._43 += EPS_L;
 	}
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 }

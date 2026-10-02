@@ -144,8 +144,8 @@ void CUISequenceVideoItem::OnRender()
 
 	if(NULL == m_texture && m_wnd->GetShader())
 	{
-		RenderBackend.SetShader(m_wnd->GetShader());
-		m_texture = RenderBackend.GetActiveTexture(0);
+		RenderBackendLegacy.SetShader(m_wnd->GetShader());
+		m_texture = RenderBackendLegacy.GetActiveTexture(0);
 		m_texture->video_Stop();
 	}
 }

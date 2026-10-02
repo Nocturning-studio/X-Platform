@@ -234,7 +234,7 @@ void CSpaceRestrictor::OnRender()
 		return;
 	if(!(dbg_net_Draw_Flags.is_any((1 << 2))))
 		return;
-	RenderBackend.OnFrameEnd();
+	RenderBackendLegacy.OnFrameEnd();
 	fvec3 l_half;
 	l_half.set(.5f, .5f, .5f);
 	fmat4x4 l_ball, l_box;

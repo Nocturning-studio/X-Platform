@@ -8,7 +8,7 @@
 
 ENGINE_API extern int psAnisotropic;
 
-ENGINE_API CRenderBackendFacade RenderBackend;
+ENGINE_API CRenderBackendFacade RenderBackendLegacy;
 
 xr_token* vid_mode_token = NULL;
 
@@ -495,19 +495,19 @@ D3DBLEND CRenderBackendFacade::GetDstBlend() const
 
 void CRenderBackendFacade::EnableAnisotropyFiltering()
 {
-	for(u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+	for(u32 i = 0; i < RenderBackendLegacy.GetDeviceCaps().MaxSimultaneousTextures; i++)
 		SetSamplerState(i, D3DSAMP_MAXANISOTROPY, psAnisotropic);
 }
 
 void CRenderBackendFacade::DisableAnisotropyFiltering()
 {
-	for(u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+	for(u32 i = 0; i < RenderBackendLegacy.GetDeviceCaps().MaxSimultaneousTextures; i++)
 		SetSamplerState(i, D3DSAMP_MAXANISOTROPY, 1);
 }
 
 void CRenderBackendFacade::SetAnisotropyFiltering(int max_anisothropy)
 {
-	for(u32 i = 0; i < RenderBackend.GetDeviceCaps().MaxSimultaneousTextures; i++)
+	for(u32 i = 0; i < RenderBackendLegacy.GetDeviceCaps().MaxSimultaneousTextures; i++)
 		SetSamplerState(i, D3DSAMP_MAXANISOTROPY, max_anisothropy);
 }
 
@@ -561,49 +561,49 @@ void CRenderBackendFacade::SetRenderTarget(const ref_rt& rt_1, const ref_rt& rt_
 {
 	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (ref_rt& rt_1)");
 
-	RenderBackend.SetRenderTargetSurface(rt_1->pRT, 0);
+	RenderBackendLegacy.SetRenderTargetSurface(rt_1->pRT, 0);
 
 	if (rt_2)
-		RenderBackend.SetRenderTargetSurface(rt_2->pRT, 1);
+		RenderBackendLegacy.SetRenderTargetSurface(rt_2->pRT, 1);
 	else
-		RenderBackend.SetRenderTargetSurface(NULL, 1);
+		RenderBackendLegacy.SetRenderTargetSurface(NULL, 1);
 
 	if (rt_3)
-		RenderBackend.SetRenderTargetSurface(rt_3->pRT, 2);
+		RenderBackendLegacy.SetRenderTargetSurface(rt_3->pRT, 2);
 	else
-		RenderBackend.SetRenderTargetSurface(NULL, 2);
+		RenderBackendLegacy.SetRenderTargetSurface(NULL, 2);
 
 	if (rt_4)
-		RenderBackend.SetRenderTargetSurface(rt_4->pRT, 3);
+		RenderBackendLegacy.SetRenderTargetSurface(rt_4->pRT, 3);
 	else
-		RenderBackend.SetRenderTargetSurface(NULL, 3);
+		RenderBackendLegacy.SetRenderTargetSurface(NULL, 3);
 }
 
 void CRenderBackendFacade::SetRenderTarget(u32 W, u32 H, IDirect3DSurface9* rt_1, IDirect3DSurface9* rt_2, IDirect3DSurface9* rt_3, IDirect3DSurface9* rt_4)
 {
 	VERIFY2(rt_1, "Rendertarget must have minimum one target surface (IDirect3DSurface9* rt_1)");
 
-	RenderBackend.SetRenderTargetSurface(rt_1, 0);
+	RenderBackendLegacy.SetRenderTargetSurface(rt_1, 0);
 
 	if (rt_2)
-		RenderBackend.SetRenderTargetSurface(rt_2, 1);
+		RenderBackendLegacy.SetRenderTargetSurface(rt_2, 1);
 	else
-		RenderBackend.SetRenderTargetSurface(NULL, 1);
+		RenderBackendLegacy.SetRenderTargetSurface(NULL, 1);
 
 	if (rt_3)
-		RenderBackend.SetRenderTargetSurface(rt_3, 2);
+		RenderBackendLegacy.SetRenderTargetSurface(rt_3, 2);
 	else
-		RenderBackend.SetRenderTargetSurface(NULL, 2);
+		RenderBackendLegacy.SetRenderTargetSurface(NULL, 2);
 
 	if (rt_4)
-		RenderBackend.SetRenderTargetSurface(rt_4, 3);
+		RenderBackendLegacy.SetRenderTargetSurface(rt_4, 3);
 	else
-		RenderBackend.SetRenderTargetSurface(NULL, 3);
+		RenderBackendLegacy.SetRenderTargetSurface(NULL, 3);
 }
 
 void CRenderBackendFacade::SetDepthBuffer(IDirect3DSurface9* zb)
 {
-	RenderBackend.SetDepthBufferSurface(zb);
+	RenderBackendLegacy.SetDepthBufferSurface(zb);
 }
 
 void CRenderBackendFacade::ClearDepthBuffer(IDirect3DSurface9* zb)
@@ -623,7 +623,7 @@ void CRenderBackendFacade::ComputeTexgenScreen(fmat4x4& m_Texgen)
 							 0.0f, -0.5f, 0.0f, 0.0f,
 							 0.0f, 0.0f, 1.0f, 0.0f,
 							 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
-	m_Texgen.mul(m_TexelAdjust, RenderBackend.transforms.m_WorldViewProject);
+	m_Texgen.mul(m_TexelAdjust, RenderBackendLegacy.transforms.m_WorldViewProject);
 }
 
 void CRenderBackendFacade::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32& vOffset)
@@ -639,7 +639,7 @@ void CRenderBackendFacade::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32&
 	p1.set((w + 0.5f) / w, (h + 0.5f) / h);
 
 	// Fill vertex buffer
-	FVF::TL* pv = (FVF::TL*)RenderBackend.Vertex.Lock(4, geometry->vb_stride, vOffset);
+	FVF::TL* pv = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(4, geometry->vb_stride, vOffset);
 	pv->set_position(0, (float)h, d_Z, d_W);
 	pv->set_color(Color);
 	pv->set_uv(p0.x, p1.y);
@@ -659,10 +659,10 @@ void CRenderBackendFacade::SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32&
 	pv->set_color(Color);
 	pv->set_uv(p1.x, p0.y);
 	pv++;
-	RenderBackend.Vertex.Unlock(4, geometry->vb_stride);
+	RenderBackendLegacy.Vertex.Unlock(4, geometry->vb_stride);
 
 	// Set geometry
-	RenderBackend.SetGeometry(geometry);
+	RenderBackendLegacy.SetGeometry(geometry);
 }
 
 void CRenderBackendFacade::SetViewportGeom(u32 w, u32 h, u32& vOffset)
@@ -688,14 +688,14 @@ void CRenderBackendFacade::RenderViewportGeom(u32 w, u32 h)
 {
 	u32 vOffset;
 	SetViewportGeom(w, h, m_viewport, vOffset);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
 }
 
 void CRenderBackendFacade::RenderViewportSurface()
 {
 	u32 Offset = 0;
 	SetViewportGeom(Offset);
-	RenderBackend.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
 void CRenderBackendFacade::RenderViewportSurface(const ref_rt& rt_1, IDirect3DSurface9* zb)
@@ -803,7 +803,7 @@ void CRenderBackendFacade::GenerateMipChain(ref_rt source, ref_rt mip_chain, Sha
 	{
 		RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 		RECT dst_rect = {0, 0, 64, 64};
-		RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
+		RenderBackendLegacy.GetDevice()->StretchRect(src_surface, &src_rect, dst_level0, &dst_rect, D3DTEXF_LINEAR);
 		dst_level0->Release();
 	}
 
@@ -838,7 +838,7 @@ void CRenderBackendFacade::CopyViewportSurface(ref_rt source, ref_rt destination
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
 	// Выполняем копирование
-	HRESULT hr = RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
+	HRESULT hr = RenderBackendLegacy.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, D3DTEXF_LINEAR);
 
 	if(FAILED(hr))
 	{
@@ -861,7 +861,7 @@ void CRenderBackendFacade::CopyViewportSurface(ref_rt source, ref_rt destination
 	RECT src_rect = {0, 0, (LONG)source->dwWidth, (LONG)source->dwHeight};
 	RECT dst_rect = {0, 0, (LONG)destination->dwWidth, (LONG)destination->dwHeight};
 
-	RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+	RenderBackendLegacy.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
 // Версия с указанием конкретных областей
@@ -876,7 +876,7 @@ void CRenderBackendFacade::CopyViewportSurface(ref_rt source, RECT src_rect, ref
 	if(!src_surface || !dst_surface)
 		return;
 
-	RenderBackend.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
+	RenderBackendLegacy.GetDevice()->StretchRect(src_surface, &src_rect, dst_surface, &dst_rect, filter);
 }
 
 void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination)
@@ -903,7 +903,7 @@ void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, IDirect3DSurfa
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
 	// Выполняем копирование
-	HRESULT hr = RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
+	HRESULT hr = RenderBackendLegacy.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, D3DTEXF_LINEAR);
 
 	if(FAILED(hr))
 	{
@@ -924,7 +924,7 @@ void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, IDirect3DSurfa
 	RECT src_rect = {0, 0, (LONG)src_desc.Width, (LONG)src_desc.Height};
 	RECT dst_rect = {0, 0, (LONG)dst_desc.Width, (LONG)dst_desc.Height};
 
-	RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+	RenderBackendLegacy.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
 // Версия с указанием областей
@@ -933,7 +933,7 @@ void CRenderBackendFacade::CopySurface(IDirect3DSurface9* source, RECT src_rect,
 	if(!source || !destination)
 		return;
 
-	RenderBackend.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
+	RenderBackendLegacy.GetDevice()->StretchRect(source, &src_rect, destination, &dst_rect, filter);
 }
 
 

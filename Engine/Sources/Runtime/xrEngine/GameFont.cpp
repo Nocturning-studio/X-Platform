@@ -140,7 +140,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 
 	// Shading
 	pShader.create(cShader, cTexture);
-	pGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), RenderBackend.QuadIB);
+	pGeom.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.QuadIB);
 	m_FontTex.create(cTexture);
 }
 
@@ -178,18 +178,10 @@ void CGameFont::OnRender()
 {
 	VERIFY(g_bRendering);
 	if(pShader)
-		RenderBackend.SetShader(pShader);
+		RenderBackendLegacy.SetShader(pShader);
 
 	if(!(uFlags & fsValid))
 	{
-		// БЫЛО: (Требует FFP)
-		// CTextureLegacy* T = RenderBackend.GetActiveTexture(0);
-		// vTS.set((int)T->get_Width(), (int)T->get_Height());
-
-		// СТАЛО: (Используем наш сохраненный ресурс)
-		// m_FontTex работает как смарт-поинтер, разыменовываясь в CTextureLegacy*
-		// или имеет методы get_Width/get_Height напрямую (зависит от версии движка)
-
 		if(m_FontTex)
 		{
 			vTS.set((int)m_FontTex->get_Width(), (int)m_FontTex->get_Height());
@@ -224,7 +216,7 @@ void CGameFont::OnRender()
 
 		// lock AGP memory
 		u32 vOffset;
-		FVF::TL* v = (FVF::TL*)RenderBackend.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
+		FVF::TL* v = (FVF::TL*)RenderBackendLegacy.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
 		FVF::TL* start = v;
 
 		// fill vertices
@@ -306,11 +298,11 @@ void CGameFont::OnRender()
 
 		// Unlock and draw
 		u32 vCount = (u32)(v - start);
-		RenderBackend.Vertex.Unlock(vCount, pGeom.stride());
+		RenderBackendLegacy.Vertex.Unlock(vCount, pGeom.stride());
 		if(vCount)
 		{
-			RenderBackend.SetGeometry(pGeom);
-			RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
+			RenderBackendLegacy.SetGeometry(pGeom);
+			RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
 		}
 	}
 	strings.clear_not_free();

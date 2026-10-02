@@ -74,9 +74,9 @@ void FProgressive::Render(float LOD)
 		int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);
 		VERIFY(lod_id >= 0 && lod_id < int(xSWI->count));
 		FSlideWindow& SW = xSWI->sw[lod_id];
-		RenderBackend.SetGeometry(m_fast->rm_geom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, m_fast->vBase, 0, SW.num_verts, m_fast->iBase + SW.offset, SW.num_tris);
-		RenderBackend.stat.r.s_static.add(SW.num_verts);
+		RenderBackendLegacy.SetGeometry(m_fast->rm_geom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, m_fast->vBase, 0, SW.num_verts, m_fast->iBase + SW.offset, SW.num_tris);
+		RenderBackendLegacy.stat.r.s_static.add(SW.num_verts);
 	}
 	else
 	{
@@ -89,9 +89,9 @@ void FProgressive::Render(float LOD)
 		}
 		VERIFY(lod_id >= 0 && lod_id < int(nSWI.count));
 		FSlideWindow& SW = nSWI.sw[lod_id];
-		RenderBackend.SetGeometry(rm_geom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);
-		RenderBackend.stat.r.s_static.add(SW.num_verts);
+		RenderBackendLegacy.SetGeometry(rm_geom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);
+		RenderBackendLegacy.stat.r.s_static.add(SW.num_verts);
 	}
 }
 

@@ -556,9 +556,9 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 	{
 		render_shadow_map_sun(sun, cascade_ind);
 
-		RenderBackend.SetTransformWorld(Fidentity);
-		RenderBackend.SetTransformView(Fidentity);
-		RenderBackend.SetTransformProject(sun->TransformContext.Sun.combine);
+		RenderBackendLegacy.SetTransformWorld(Fidentity);
+		RenderBackendLegacy.SetTransformView(Fidentity);
+		RenderBackendLegacy.SetTransformProject(sun->TransformContext.Sun.combine);
 
 		if (CSunOccluder* occ = Scene.GetSunOccluder())
 			occ->Render();
@@ -633,7 +633,7 @@ void CRender::render_sun_cascades()
 		draw_sun_cascade(SE_SUN_FAR, *readBuffer.items[SE_SUN_FAR]);
 	}
 
-	RenderBackend.SetTransformWorld(Fidentity);
-	RenderBackend.SetTransformView(Engine.RenderView.View);
-	RenderBackend.SetTransformProject(Engine.RenderView.Project);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetTransformView(Engine.RenderView.View);
+	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);
 }

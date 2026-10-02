@@ -412,7 +412,7 @@ CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
 	m_pParentDragDropList = parent;
 	hShader.create("hud\\fog_of_war", "ui\\ui_grid");
-	hGeom.create(FVF::F_TL, RenderBackend.Vertex.Buffer(), 0);
+	hGeom.create(FVF::F_TL, RenderBackendLegacy.Vertex.Buffer(), 0);
 }
 
 CUICellContainer::~CUICellContainer()
@@ -724,7 +724,7 @@ void CUICellContainer::Draw()
 	// fill cell buffer
 	u32 vOffset = 0;
 	FVF::TL* start_pv =
-		(FVF::TL*)RenderBackend.Vertex.Lock((tgt_cells.width() + 1) * (tgt_cells.height() + 1) * 6, hGeom.stride(), vOffset);
+		(FVF::TL*)RenderBackendLegacy.Vertex.Lock((tgt_cells.width() + 1) * (tgt_cells.height() + 1) * 6, hGeom.stride(), vOffset);
 	FVF::TL* pv = start_pv;
 	for(int x = 0; x <= tgt_cells.width(); ++x)
 	{
@@ -742,16 +742,16 @@ void CUICellContainer::Draw()
 		}
 	}
 	std::ptrdiff_t p_cnt = (pv - start_pv) / 3;
-	RenderBackend.Vertex.Unlock(u32(pv - start_pv), hGeom.stride());
+	RenderBackendLegacy.Vertex.Unlock(u32(pv - start_pv), hGeom.stride());
 
 	UI()->PushScissor(clientArea);
 
 	if(p_cnt != 0)
 	{
 		// draw grid
-		RenderBackend.SetShader(hShader);
-		RenderBackend.SetGeometry(hGeom);
-		RenderBackend.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
+		RenderBackendLegacy.SetShader(hShader);
+		RenderBackendLegacy.SetGeometry(hGeom);
+		RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, vOffset, u32(p_cnt));
 	}
 
 	// draw shown items in range

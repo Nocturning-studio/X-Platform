@@ -7,25 +7,25 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::clear_gbuffer()
 {
-	RenderBackend.SetRenderTarget(RenderTarget->rt_GBuffer[0], RenderTarget->rt_GBuffer[1], RenderTarget->rt_GBuffer[2]);
-	RenderBackend.SetDepthBuffer(RenderBackend.GetBaseZB());
-	RenderBackend.Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L);
+	RenderBackendLegacy.SetRenderTarget(RenderTarget->rt_GBuffer[0], RenderTarget->rt_GBuffer[1], RenderTarget->rt_GBuffer[2]);
+	RenderBackendLegacy.SetDepthBuffer(RenderBackendLegacy.GetBaseZB());
+	RenderBackendLegacy.Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L);
 }
 
 void CRender::set_gbuffer()
 {
-	RenderBackend.SetRenderTarget(RenderTarget->rt_GBuffer[0], RenderTarget->rt_GBuffer[1], RenderTarget->rt_GBuffer[2]);
-	RenderBackend.SetDepthBuffer(RenderBackend.GetBaseZB());
+	RenderBackendLegacy.SetRenderTarget(RenderTarget->rt_GBuffer[0], RenderTarget->rt_GBuffer[1], RenderTarget->rt_GBuffer[2]);
+	RenderBackendLegacy.SetDepthBuffer(RenderBackendLegacy.GetBaseZB());
 
 	// Stencil - write 0x1 at pixel pos
-	RenderBackend.SetStencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+	RenderBackendLegacy.SetStencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
 	// Misc	- draw only front-faces
-	RenderBackend.SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE);
+	RenderBackendLegacy.SetRenderState(D3DRS_TWOSIDEDSTENCILMODE, FALSE);
 
 	// Set backface culling
-	RenderBackend.SetCullMode(CULL_BACKFACE);
+	RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
 
-	RenderBackend.SetColorWriteEnable();
+	RenderBackendLegacy.SetColorWriteEnable();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

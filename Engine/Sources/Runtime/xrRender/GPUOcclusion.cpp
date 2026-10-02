@@ -23,7 +23,7 @@ void GPUOcclusion::occq_create(u32 limit)
 	{
 		_Q q;
 		q.order = it;
-		if(FAILED(RenderBackend.GetDevice()->CreateQuery(D3DQUERYTYPE_OCCLUSION, &q.Q)))
+		if(FAILED(RenderBackendLegacy.GetDevice()->CreateQuery(D3DQUERYTYPE_OCCLUSION, &q.Q)))
 			break;
 		pool.push_back(q);
 	}

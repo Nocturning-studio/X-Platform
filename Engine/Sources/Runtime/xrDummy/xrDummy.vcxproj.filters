@@ -3,4 +3,13 @@
   <ItemGroup>
     <ClCompile Include="xrDummy.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="stalker.ico" />
+  </ItemGroup>
 </Project>

@@ -122,7 +122,7 @@ void CSunOccluder::Load()
 	// --- Создание буферов ---
 
 	u32 vSize = sizeof(v_occluder);
-	R_CHK(RenderBackend.GetDevice()->CreateVertexBuffer(m_VertexCount * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, 0));
+	R_CHK(RenderBackendLegacy.GetDevice()->CreateVertexBuffer(m_VertexCount * vSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_VB, 0));
 
 	v_occluder* pV;
 	R_CHK(m_VB->Lock(0, 0, (void**)&pV, 0));
@@ -133,7 +133,7 @@ void CSunOccluder::Load()
 	R_CHK(m_VB->Unlock());
 
 	R_CHK(
-		RenderBackend.GetDevice()->CreateIndexBuffer(m_IndexCount * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, 0));
+		RenderBackendLegacy.GetDevice()->CreateIndexBuffer(m_IndexCount * 2, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_IB, 0));
 
 	u16* pI;
 	R_CHK(m_IB->Lock(0, 0, (void**)&pI, 0));
@@ -165,11 +165,11 @@ void CSunOccluder::Render()
 	if(!m_Loaded)
 		return;
 
-	RenderBackend.SetGeometry(m_Geom);
-	RenderBackend.SetTransformWorld(Fidentity);
-	RenderBackend.SetShader(m_Shader);
+	RenderBackendLegacy.SetGeometry(m_Geom);
+	RenderBackendLegacy.SetTransformWorld(Fidentity);
+	RenderBackendLegacy.SetShader(m_Shader);
 
 	u32 primCount = m_IndexCount / 3;
-	RenderBackend.Render(D3DPT_TRIANGLELIST, 0, 0, m_VertexCount, 0, primCount);
+	RenderBackendLegacy.Render(D3DPT_TRIANGLELIST, 0, 0, m_VertexCount, 0, primCount);
 }
 ////////////////////////////////////////////////////////////////////////////////

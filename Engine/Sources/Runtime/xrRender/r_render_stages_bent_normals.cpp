@@ -8,11 +8,11 @@
 void CRender::render_bent_normals()
 {
 	////OPTICK_EVENT("CRender::render_bent_normals");
-	RenderBackend.SetColorWriteEnable();
-	RenderBackend.SetCullMode(CULL_DISABLE);
-	RenderBackend.SetStencil(FALSE);
+	RenderBackendLegacy.SetColorWriteEnable();
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetStencil(FALSE);
 
-	RenderBackend.SetShaderElement(RenderTarget->s_bent_normals->E[0]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Bent_Normals);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_bent_normals->E[0]);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Bent_Normals);
 }
 ///////////////////////////////////////////////////////////////////////////////////

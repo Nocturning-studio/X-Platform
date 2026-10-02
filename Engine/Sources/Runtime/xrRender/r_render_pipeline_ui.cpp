@@ -11,25 +11,25 @@ void CRender::RenderMenu()
 	PROFILE_FUNCTION();
 
 	// Globals
-	RenderBackend.SetCullMode(CULL_BACKFACE);
-	RenderBackend.SetStencil(FALSE);
-	RenderBackend.SetColorWriteEnable();
+	RenderBackendLegacy.SetCullMode(CULL_BACKFACE);
+	RenderBackendLegacy.SetStencil(FALSE);
+	RenderBackendLegacy.SetColorWriteEnable();
 
 	// Main Render
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[0], RenderBackend.GetBaseZB());
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[0], RenderBackendLegacy.GetBaseZB());
 	g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
 
 	// Prepare distortion mask
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Distortion_Mask, RenderBackend.GetBaseZB());
-	RenderBackend.Clear(0, 0, CLEAR_RENDERTARGET, color_rgba(127, 127, 0, 127), 1.0f, 0);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Distortion_Mask, RenderBackendLegacy.GetBaseZB());
+	RenderBackendLegacy.Clear(0, 0, CLEAR_RENDERTARGET, color_rgba(127, 127, 0, 127), 1.0f, 0);
 	g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
 
 	// Apply distortion
-	RenderBackend.SetShader(RenderTarget->s_menu_distortion);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1], RenderBackend.GetBaseZB());
+	RenderBackendLegacy.SetShader(RenderTarget->s_menu_distortion);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1], RenderBackendLegacy.GetBaseZB());
 
 	// Resolve gamma and actual display
-	RenderBackend.SetShader(RenderTarget->s_menu_gamma);
-	RenderBackend.RenderViewportSurface(Device.dwWidth, Device.dwHeight, RenderBackend.GetBaseRT(), RenderBackend.GetBaseZB());
+	RenderBackendLegacy.SetShader(RenderTarget->s_menu_gamma);
+	RenderBackendLegacy.RenderViewportSurface(Device.dwWidth, Device.dwHeight, RenderBackendLegacy.GetBaseRT(), RenderBackendLegacy.GetBaseZB());
 }
 ////////////////////////////////////////////////////////////////////////////////

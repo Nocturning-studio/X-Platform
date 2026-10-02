@@ -15,52 +15,52 @@ void CRender::motion_blur_pass_prepare_dilation_map()
 	m_previous.mul(RenderImplementation.m_saved_viewproj, m_invview);
 	m_current.set(Engine.RenderView.Project);
 
-	RenderBackend.SetCullMode(CULL_DISABLE);
-	RenderBackend.SetStencil(FALSE);
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetStencil(FALSE);
 
 	float w = float(Device.dwWidth * 0.5f);
 	float h = float(Device.dwHeight * 0.5f);
 
 	// 1. Создаем карту векторов
-	RenderBackend.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_PREPARE_DILATION_MAP]);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_PREPARE_DILATION_MAP]);
 	// ВАЖНО: Уменьшил силу в коде, так как новая формула точнее. Подберите значение по вкусу (например 0.5 - 1.5)
-	RenderBackend.SetConstant("m_blur_power", ps_r_mblur);
-	RenderBackend.SetConstant("m_current", m_current);
-	RenderBackend.SetConstant("m_previous", m_previous);
-	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_0);
+	RenderBackendLegacy.SetConstant("m_blur_power", ps_r_mblur);
+	RenderBackendLegacy.SetConstant("m_current", m_current);
+	RenderBackendLegacy.SetConstant("m_previous", m_previous);
+	RenderBackendLegacy.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_0);
 
 	// 2. Сглаживаем карту векторов (убирает шум в векторах)
 	// Можно оставить 1 итерацию
-	RenderBackend.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_DILATION_MAP], 0);
-	RenderBackend.SetConstant("image_resolution", w, h, 1.0f / w, 1.0f / h);
-	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_1);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_DILATION_MAP], 0);
+	RenderBackendLegacy.SetConstant("image_resolution", w, h, 1.0f / w, 1.0f / h);
+	RenderBackendLegacy.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_1);
 
-	RenderBackend.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_DILATION_MAP], 1);
-	RenderBackend.SetConstant("image_resolution", w, h, 1.0f / w, 1.0f / h);
-	RenderBackend.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_0);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_DILATION_MAP], 1);
+	RenderBackendLegacy.SetConstant("image_resolution", w, h, 1.0f / w, 1.0f / h);
+	RenderBackendLegacy.RenderViewportSurface(w, h, RenderTarget->rt_Motion_Blur_Dilation_Map_0);
 }
 
 void CRender::motion_blur_pass_blur()
 {
 	////OPTICK_EVENT("CRenderTarget::motion_blur_pass_blur");
 
-	RenderBackend.SetCullMode(CULL_DISABLE);
-	RenderBackend.SetStencil(FALSE);
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetStencil(FALSE);
 
-	RenderBackend.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
-	RenderBackend.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_FRAME]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Generic[1]);
+	RenderBackendLegacy.CopyViewportSurface(RenderTarget->rt_Generic[1], RenderTarget->rt_Generic[0]);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_BLUR_FRAME]);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
 
 void CRender::motion_blur_pass_save_depth()
 {
 	////OPTICK_EVENT("CRenderTarget::motion_blur_pass_save_depth");
 
-	RenderBackend.SetCullMode(CULL_DISABLE);
-	RenderBackend.SetStencil(FALSE);
+	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
+	RenderBackendLegacy.SetStencil(FALSE);
 
-	RenderBackend.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_SAVE_DEPTH_BUFFER]);
-	RenderBackend.RenderViewportSurface(RenderTarget->rt_Motion_Blur_Previous_Frame_Depth);
+	RenderBackendLegacy.SetShaderElement(RenderTarget->s_motion_blur->E[SE_PASS_SAVE_DEPTH_BUFFER]);
+	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Motion_Blur_Previous_Frame_Depth);
 }
 
 void CRender::render_motion_blur()

@@ -13,7 +13,7 @@
 IC void R_transforms::set_c_World(R_constant* C)
 {
     c_World = C;
-    RenderBackend.SetConstant(C, m_World);
+    RenderBackendLegacy.SetConstant(C, m_World);
 };
 IC void R_transforms::set_c_InvWorld(R_constant* C)
 {
@@ -23,27 +23,27 @@ IC void R_transforms::set_c_InvWorld(R_constant* C)
 IC void R_transforms::set_c_View(R_constant* C)
 {
     c_View = C;
-    RenderBackend.SetConstant(C, m_View);
+    RenderBackendLegacy.SetConstant(C, m_View);
 };
 IC void R_transforms::set_c_Project(R_constant* C)
 {
     c_Project = C;
-    RenderBackend.SetConstant(C, m_Project);
+    RenderBackendLegacy.SetConstant(C, m_Project);
 };
 IC void R_transforms::set_c_WorldView(R_constant* C)
 {
     c_WorldView = C;
-    RenderBackend.SetConstant(C, m_WorldView);
+    RenderBackendLegacy.SetConstant(C, m_WorldView);
 };
 IC void R_transforms::set_c_ViewProject(R_constant* C)
 {
     c_ViewProject = C;
-    RenderBackend.SetConstant(C, m_ViewProject);
+    RenderBackendLegacy.SetConstant(C, m_ViewProject);
 };
 IC void R_transforms::set_c_WorldViewProject(R_constant* C)
 {
     c_WorldViewProject = C;
-    RenderBackend.SetConstant(C, m_WorldViewProject);
+    RenderBackendLegacy.SetConstant(C, m_WorldViewProject);
 };
 
 IC void CRenderBackendFacade::SetTransformWorld(const fmat4x4& Matrix) { transforms.set_World(Matrix); }
@@ -76,7 +76,7 @@ ICF void CRenderBackendFacade::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV
     stat.verts += 3 * PC;
     stat.polys += PC;
     m_constantMgr.Flush();
-    CHK_DX(RenderBackend.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
+    CHK_DX(RenderBackendLegacy.GetDevice()->DrawPrimitive(PrimitiveType, startV, PC));
 }
 
 ICF void CRenderBackendFacade::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
