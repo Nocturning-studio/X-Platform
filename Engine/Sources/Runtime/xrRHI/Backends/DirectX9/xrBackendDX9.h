@@ -86,6 +86,7 @@ public:
 	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
 	virtual void SetVertexShader(RHI_ShaderHandle handle) override;
 	virtual void SetPixelShader(RHI_ShaderHandle handle) override;
+	virtual void SetSampler(uint32_t slot, const RHI_SamplerDesc& desc) override;
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) override;
 	virtual void SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count) override;
 	virtual void DestroyShader(RHI_ShaderHandle handle) override;

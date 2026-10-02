@@ -84,6 +84,7 @@ class XRRHI_API IRenderBackend
 	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) = 0;
 	virtual void SetVertexShader(RHI_ShaderHandle handle) = 0;
 	virtual void SetPixelShader(RHI_ShaderHandle handle) = 0;
+	virtual void SetSampler(uint32_t slot, const RHI_SamplerDesc& desc) = 0;
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) = 0;
 	virtual void SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count) = 0;
 	virtual void DestroyShader(RHI_ShaderHandle handle) = 0;

@@ -31,7 +31,7 @@ public:
 	bool SetConstant(LPCSTR name, const fmat4x4& m) { return m_constantsBuffer.SetMatrix(name, m, m_constants); }
 
 	bool SetTexture(LPCSTR samplerName, const ref_texture& tex);
-	bool SetSamplerDesc(LPCSTR samplerName, const CSamplerDesc& desc);
+	bool SetSamplerDesc(LPCSTR samplerName, const RHI_SamplerDesc& desc);
 
 	const xr_vector<CShaderSamplerBinding>& Samplers() const { return m_samplers; }
 	const CShaderSamplerBinding* FindSampler(LPCSTR name) const;

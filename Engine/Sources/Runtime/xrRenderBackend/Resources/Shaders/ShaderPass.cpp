@@ -71,7 +71,7 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 		b.name = entry.name;
 		b.dx9Stage = entry.dx9Stage;
 		b.type = entry.type;
-		b.desc = CSamplerDesc::Default();
+		b.desc = RHI_SamplerDesc::Default();
 		m_samplers.push_back(std::move(b));
 	}
 
@@ -97,7 +97,7 @@ bool CShaderPass::SetTexture(LPCSTR samplerName, const ref_texture& tex)
 	return true;
 }
 
-bool CShaderPass::SetSamplerDesc(LPCSTR samplerName, const CSamplerDesc& desc)
+bool CShaderPass::SetSamplerDesc(LPCSTR samplerName, const RHI_SamplerDesc& desc)
 {
 	auto* b = const_cast<CShaderSamplerBinding*>(FindSampler(samplerName));
 	if (!b) return false;
@@ -111,8 +111,6 @@ void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 	if (!rhi)
 		return;
 
-	IDirect3DDevice9Ex* device = backend.GetDevice();
-
 	for (const auto& b : m_samplers)
 	{
 		if (b.dx9Stage == uint32_t(-1))
@@ -124,8 +122,7 @@ void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 		else
 			rhi->SetShaderResource(b.dx9Stage, RHI_TextureHandle{});
 
-		if (device)
-			ApplySamplerDesc(device, b.dx9Stage, b.desc);
+		rhi->SetSampler(b.dx9Stage, b.desc);
 	}
 }
 

@@ -134,6 +134,11 @@ bool CBackendTest::Init(HINSTANCE hInst, int width, int height)
 		return false;
 	}
 
+	RHI_SamplerDesc desc;
+	desc = RHI_SamplerDesc::Linear();
+	desc.addressU = desc.addressV = desc.addressW = RHI_TextureAddress::Clamp;
+	m_passDisplay.SetSamplerDesc("s_tex", desc);
+
 	Msg("* [Test] Init OK - %ux%u (offscreen=%ux%u)", width, height, kOffscreenSize, kOffscreenSize);
 
 	return true;

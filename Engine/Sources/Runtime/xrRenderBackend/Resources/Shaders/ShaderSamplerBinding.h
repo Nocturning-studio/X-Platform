@@ -18,6 +18,6 @@ struct CShaderSamplerBinding
 
 	// Заполняется пользователем.
 	ref_texture texture;
-	CSamplerDesc desc;
+	RHI_SamplerDesc desc;
 };
 ////////////////////////////////////////////////////////////////////////////////

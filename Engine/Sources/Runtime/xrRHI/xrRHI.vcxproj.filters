@@ -55,6 +55,9 @@
     <ClInclude Include="xrRHI_Shaders.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="xrRHI_Samplers.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -88,6 +91,9 @@
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Shader.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="xrBackendDX9_Samplers.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
   </ItemGroup>
