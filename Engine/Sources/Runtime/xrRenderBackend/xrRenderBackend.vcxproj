@@ -215,7 +215,6 @@
     <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="xrRenderBackend.h" />
-    <ClInclude Include="xrRenderBackendMacros.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

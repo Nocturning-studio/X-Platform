@@ -21,7 +21,6 @@
     <ClInclude Include="Resources\SharedResource.h">
       <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="xrRenderBackendMacros.h" />
     <ClInclude Include="RenderBackend.h" />
     <ClInclude Include="Resources\Textures\Texture.h">
       <Filter>Resources\Textures</Filter>

@@ -6,4 +6,20 @@
 #  define XRRB_API __declspec(dllimport)
 #endif
 
-#include "xrRenderBackendMacros.h"
+#define RELEASE(x)			\
+	{                       \
+		if(x)               \
+		{                   \
+			(x)->Release(); \
+			(x) = NULL;     \
+		}                   \
+	}
+
+#define SHOW_REF(msg, x)						\
+	{											\
+		if(x)									\
+		{										\
+			x->AddRef();						\
+			Log(msg, uint32_t(x->Release()));	\
+		}										\
+	}
