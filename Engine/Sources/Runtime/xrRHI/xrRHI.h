@@ -5,7 +5,6 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include "xrRHI_API.h"
-#include "xrRHI_Macros.h"
 #include "xrRHI_Types.h"
 #include "xrRHI_States.h"
 #include "xrRHI_Caps.h"

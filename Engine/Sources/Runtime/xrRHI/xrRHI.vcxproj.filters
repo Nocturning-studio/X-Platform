@@ -43,9 +43,6 @@
     <ClInclude Include="xrRHI_API.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="xrRHI_Macros.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrRHI_States.h">
       <Filter>Core</Filter>
     </ClInclude>

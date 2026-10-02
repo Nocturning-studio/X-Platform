@@ -217,7 +217,6 @@
     <ClInclude Include="xrRHI_Caps.h" />
     <ClInclude Include="xrRHI_Handles.h" />
     <ClInclude Include="xrRHI_InputLayout.h" />
-    <ClInclude Include="xrRHI_Macros.h" />
     <ClInclude Include="xrRHI_Shaders.h" />
     <ClInclude Include="xrRHI_States.h" />
     <ClInclude Include="xrRHI_Types.h" />
