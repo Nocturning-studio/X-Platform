@@ -8,7 +8,7 @@
 #include <xrRenderBackend/Resources/SharedResource.h>
 #include <xrRenderBackend/Resources/ResourceState.h>
 ////////////////////////////////////////////////////////////////////////////////
-class XRRB_API CTexture : public CSharedResource
+class XRRB_API CTexture : public CRefCountedResource
 {
   public:
 	CTexture() = default;

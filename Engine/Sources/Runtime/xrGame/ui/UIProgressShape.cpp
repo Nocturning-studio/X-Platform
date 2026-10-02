@@ -65,7 +65,7 @@ void CUIProgressShape::Draw()
 	ref_shader sh = m_pTexture->GetShader();
 	ref_geom gm = GetUIGeom();
 	RenderBackend.SetShader(sh);
-	CTexture* T = RenderBackend.GetActiveTexture(0);
+	CTextureLegacy* T = RenderBackend.GetActiveTexture(0);
 	fvec2 tsize;
 	tsize.set(float(T->get_Width()), float(T->get_Height()));
 

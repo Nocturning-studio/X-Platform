@@ -406,7 +406,7 @@ ENGINE_API u32 engine_lua_memory_usage()
 #endif // USE_DL_ALLOCATOR
 
 // export
-void CResourceManager::LS_Load()
+void CResourceManagerLegacy::LS_Load()
 {
 #ifndef USE_DL_ALLOCATOR
 	LSVM = lua_newstate(lua_alloc_xr, NULL);
@@ -529,13 +529,13 @@ void CResourceManager::LS_Load()
 #endif
 }
 
-void CResourceManager::LS_Unload()
+void CResourceManagerLegacy::LS_Unload()
 {
 	lua_close(LSVM);
 	LSVM = NULL;
 }
 
-BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
+BOOL CResourceManagerLegacy::_lua_HasShader(LPCSTR s_shader)
 {
 	string256 undercorated;
 	for(int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
@@ -545,7 +545,7 @@ BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 		   Script::bfIsObjectPresent(LSVM, undercorated, "l_special", LUA_TFUNCTION);
 }
 
-Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
+Shader* CResourceManagerLegacy::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 {
 	CBlender_Compile C = {};
 	Shader S = {};

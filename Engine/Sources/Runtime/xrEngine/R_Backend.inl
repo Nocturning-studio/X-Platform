@@ -1,4 +1,4 @@
-#ifndef R_BACKEND_RUNTIMEH
+﻿#ifndef R_BACKEND_RUNTIMEH
 #define R_BACKEND_RUNTIMEH
 #pragma once
 
@@ -64,11 +64,10 @@ ICF void CRenderBackendFacade::Apply(u32 countV, u32 PC)
     m_constantMgr.Flush();
 }
 
-ICF void CRenderBackendFacade::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV,
-    u32 countV, u32 startI, u32 PC)
+ICF void CRenderBackendFacade::Render(D3DPRIMITIVETYPE PrimitiveType, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
     Apply(countV, PC);
-    CHK_DX(RenderBackend.GetDevice()->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
+    CHK_DX(m_pDevice->DrawIndexedPrimitive(PrimitiveType, baseV, startV, countV, startI, PC));
 }
 
 ICF void CRenderBackendFacade::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV, u32 PC)
@@ -82,7 +81,23 @@ ICF void CRenderBackendFacade::Render(D3DPRIMITIVETYPE PrimitiveType, u32 startV
 
 ICF void CRenderBackendFacade::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil)
 {
-    CHK_DX(RenderBackend.GetDevice()->Clear(Count, pRects, Flags, Color, Z, Stencil));
+    if (Count != 0)
+    {
+        CHK_DX(m_pDevice->Clear(Count, pRects, Flags, Color, Z, Stencil));
+        return;
+    }
+
+    // D3DCOLOR (0xAARRGGBB) -> fvec4
+    const float inv = 1.0f / 255.0f;
+    const fvec4 rgba{
+        float((Color >> 16) & 0xFF) * inv,
+        float((Color >> 8) & 0xFF) * inv,
+        float(Color & 0xFF) * inv,
+        float((Color >> 24) & 0xFF) * inv
+    };
+
+    // D3DCLEAR_* и RHI_CLEAR_* численно совпадают (0x1/0x2/0x4).
+    m_pRHI->Clear(Flags, rgba, Z, (uint8_t)Stencil);
 }
 
 ICF void CRenderBackendFacade::ClearTexture(const ref_rt& rt_1, u32 color)

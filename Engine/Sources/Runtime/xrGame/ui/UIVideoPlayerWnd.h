@@ -14,7 +14,7 @@ class CUIVideoPlayerWnd : public CUIDialogWnd, public CUIWndCallback
 
   protected:
 	ref_sound m_sound;
-	ref_texture m_texture;
+	ref_texture_legacy m_texture;
 	shared_str m_fn;
 	Flags8 m_flags;
 	enum

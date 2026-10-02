@@ -186,8 +186,8 @@ void CRenderDevice::Initialize()
 
 	RenderBackend.Create(Engine.WindowManager.GetHandle());
 
-	dwWidth = RenderBackend.m_DevPP.BackBufferWidth;
-	dwHeight = RenderBackend.m_DevPP.BackBufferHeight;
+	dwWidth = RenderBackend.GetBackBufferWidth();
+	dwHeight = RenderBackend.GetBackBufferHeight();
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);

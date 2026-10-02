@@ -20,9 +20,9 @@ class ENGINE_API IBlender;
 #pragma pack(push, 4)
 
 //////////////////////////////////////////////////////////////////////////
-struct ENGINE_API STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
+struct ENGINE_API STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture_legacy>>
 {
-	typedef xr_vector<std::pair<u32, ref_texture>> inherited_vec;
+	typedef xr_vector<std::pair<u32, ref_texture_legacy>> inherited_vec;
 	~STextureList();
 
 	IC BOOL equal(const STextureList& base) const

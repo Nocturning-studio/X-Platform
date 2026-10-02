@@ -89,28 +89,26 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 		return;
 	}
 
-	RHI_TextureDesc desc;
-	desc.width = w;
-	desc.height = h;
-	desc.depth = 1;
+	RHI_TextureDesc desc = isDepth
+		? RHI_TextureDesc::DepthStencil(w, h, f)
+		: RHI_TextureDesc::RenderTarget(w, h, f, levels);
+
 	desc.mipLevels = levels;
-	desc.format = f;
-	desc.isRenderTarget = !isDepth;
-	desc.isDepthStencil = isDepth;
-	desc.isCubeMap = false;
+	desc.dim = RHI_TextureDim::Tex2D;
+	desc.debugName = Name;
 
 	Engine.ResourceManager->Evict();
-	RHI_TextureHandle handle = RHI->CreateTexture(desc);
-	if(!handle.IsValid())
+	m_rhiHandle = RHI->CreateTexture(desc);
+	if(!m_rhiHandle.IsValid())
 	{
 		Msg("*!Can't create RT(%s), %dx%d, %d via RHI!", Name, w, h, levels);
 		return;
 	}
 
-	pSurface = (IDirect3DTexture9*)RHI->GetTextureNativeHandle(handle);
+	pSurface = (IDirect3DTexture9*)RHI->GetTextureNativeHandle(m_rhiHandle);
 	if(!pSurface)
 	{
-		RHI->DestroyTexture(handle);
+		RHI->DestroyTexture(m_rhiHandle);
 		Msg("*!Can't get native texture for RT(%s)!", Name);
 		return;
 	}
@@ -121,7 +119,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	{
 		pSurface->Release();
 		pSurface = nullptr;
-		RHI->DestroyTexture(handle);
+		RHI->DestroyTexture(m_rhiHandle);
 		Msg("*!Can't get surface level 0 for RT(%s)!", Name);
 		return;
 	}
@@ -141,6 +139,12 @@ void CRT::destroy()
 	}
 	_RELEASE(pRT);
 	_RELEASE(pSurface);
+	if (m_rhiHandle.IsValid())
+	{
+		if (IRenderBackend* rhi = ::RHI())
+			rhi->DestroyTexture(m_rhiHandle);
+		m_rhiHandle = {};
+	}
 }
 
 void CRT::ResetBegin()
@@ -207,28 +211,29 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 		return;
 	}
 
-	RHI_TextureDesc desc;
-	desc.width = size;
-	desc.height = size;
-	desc.depth = 1;
+	RHI_TextureDesc desc = isDepth
+		? RHI_TextureDesc::DepthStencil(size, size, f)
+		: RHI_TextureDesc::Cube(size, f, levels);
+
+	if (!isDepth)
+		desc.usage |= RHI_TexUsage_RenderTarget;
+
 	desc.mipLevels = levels;
-	desc.format = f;
-	desc.isRenderTarget = !isDepth;
-	desc.isDepthStencil = isDepth;
-	desc.isCubeMap = true;
+	desc.dim = RHI_TextureDim::Cube;
+	desc.debugName = Name;
 
 	Engine.ResourceManager->Evict();
-	RHI_TextureHandle handle = RHI->CreateTexture(desc);
-	if(!handle.IsValid())
+	m_rhiHandle = RHI->CreateTexture(desc);
+	if(!m_rhiHandle.IsValid())
 	{
 		Msg("!Failed to create RTc(%s) via RHI", Name);
 		return;
 	}
 
-	pSurface = static_cast<IDirect3DCubeTexture9*>(RHI->GetTextureNativeHandle(handle));
+	pSurface = static_cast<IDirect3DCubeTexture9*>(RHI->GetTextureNativeHandle(m_rhiHandle));
 	if(!pSurface)
 	{
-		RHI->DestroyTexture(handle);
+		RHI->DestroyTexture(m_rhiHandle);
 		Msg("!Failed to get native cube texture for RTc(%s)", Name);
 		return;
 	}
@@ -237,7 +242,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	for(u32 face = 0; face < 6; face++)
 	{
 		IDirect3DSurface9* surf = nullptr;
-		if(!RHI->GetCubeMapFaceNative(handle, face, 0, (void**)&surf) || !surf)
+		if(!RHI->GetCubeMapFaceNative(m_rhiHandle, face, 0, (void**)&surf) || !surf)
 		{
 			for(u32 j = 0; j < face; j++)
 				if(pRT[j])
@@ -247,7 +252,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 				}
 			pSurface->Release();
 			pSurface = nullptr;
-			RHI->DestroyTexture(handle);
+			RHI->DestroyTexture(m_rhiHandle);
 			Msg("!Failed to get cube face %d for RTc(%s)", face, Name);
 			return;
 		}
@@ -267,6 +272,12 @@ void CRTC::destroy()
 	for(u32 face = 0; face < 6; face++)
 		_RELEASE(pRT[face]);
 	_RELEASE(pSurface);
+	if (m_rhiHandle.IsValid())
+	{
+		if (IRenderBackend* rhi = ::RHI())
+			rhi->DestroyTexture(m_rhiHandle);
+		m_rhiHandle = {};
+	}
 }
 
 void CRTC::ResetBegin()

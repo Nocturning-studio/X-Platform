@@ -8,9 +8,10 @@
 class ENGINE_API CRT : public xr_resource_named
 {
   public:
+	RHI_TextureHandle  m_rhiHandle{};
 	IDirect3DTexture9* pSurface;
 	IDirect3DSurface9* pRT;
-	ref_texture pTexture;
+	ref_texture_legacy pTexture;
 
 	u32 dwWidth;
 	u32 dwHeight;
@@ -106,9 +107,10 @@ typedef resptr_core<CRT, resptrcode_crt> ref_rt;
 class ENGINE_API CRTC : public xr_resource_named
 {
   public:
+	RHI_TextureHandle  m_rhiHandle{};
 	IDirect3DCubeTexture9* pSurface;
 	IDirect3DSurface9* pRT[6];
-	ref_texture pTexture;
+	ref_texture_legacy pTexture;
 
 	u32 dwSize;
 	RHI_Format fmt;
@@ -125,7 +127,7 @@ class ENGINE_API CRTC : public xr_resource_named
 	void ResetEnd();
 	IC BOOL valid()
 	{
-		return !pTexture;
+		return !!pTexture;
 	}
 	void get_level_desc(u32 level, u32& size)
 	{

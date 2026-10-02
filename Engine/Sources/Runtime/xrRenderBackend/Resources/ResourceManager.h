@@ -41,7 +41,7 @@ class XRRB_API CResourceManager
 	uint32_t GetPendingDeleteCount() const;
 
   private:
-	void RegisterResource(CSharedResource* res);
+	void RegisterResource(CRefCountedResource* res);
 	void CollectGarbage();
 
   private:
@@ -49,7 +49,7 @@ class XRRB_API CResourceManager
 
 	struct STrackedResource
 	{
-		CSharedResource* ptr = nullptr;
+		CRefCountedResource* ptr = nullptr;
 		uint32_t frameReleased = uint32_t(-1);
 	};
 

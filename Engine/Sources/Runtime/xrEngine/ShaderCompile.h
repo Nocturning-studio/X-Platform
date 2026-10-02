@@ -369,7 +369,7 @@ class CShaderIncluderLegacy : public ID3DXInclude
 
 //----------------------------------------------------------------
 template <typename T>
-T* CResourceManager::RegisterShader(const char* _name)
+T* CResourceManagerLegacy::RegisterShader(const char* _name)
 {
 	T* sh = xr_new<T>();
 	sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -379,7 +379,7 @@ T* CResourceManager::RegisterShader(const char* _name)
 }
 
 template <typename T>
-T* CResourceManager::FindShader(const char* _name)
+T* CResourceManagerLegacy::FindShader(const char* _name)
 {
 	ShaderTypeTraits<T>::Map_S& sh_map = GetShaderMap<ShaderTypeTraits<T>::Map_S>();
 	ShaderTypeTraits<T>::Map_S::iterator I = sh_map.find(_name);
@@ -399,7 +399,7 @@ T* CResourceManager::FindShader(const char* _name)
 }
 
 template <typename T>
-T* CResourceManager::CreateShader(const char* _name, const char* _entry, CShaderMacros& _macros)
+T* CResourceManagerLegacy::CreateShader(const char* _name, const char* _entry, CShaderMacros& _macros)
 {
 	CShaderMacros macros;
 	CShaderMacros fetched = ::Render->FetchShaderMacros();
@@ -468,7 +468,7 @@ T* CResourceManager::CreateShader(const char* _name, const char* _entry, CShader
 }
 
 template <typename T>
-HRESULT CResourceManager::ReadShaderCache(string_path name, T*& result, time_t sourceModTime)
+HRESULT CResourceManagerLegacy::ReadShaderCache(string_path name, T*& result, time_t sourceModTime)
 {
 	// Используем относительный путь для чтения
 	IReader* file = FS.r_open("$app_data_root$", name);
@@ -542,7 +542,7 @@ HRESULT CResourceManager::ReadShaderCache(string_path name, T*& result, time_t s
 }
 
 template <typename T>
-HRESULT CResourceManager::ReflectShader(DWORD const* src, UINT size, T*& result)
+HRESULT CResourceManagerLegacy::ReflectShader(DWORD const* src, UINT size, T*& result)
 {
 	result->sh = ShaderTypeTraits<T>::D3DCreateShader(src, size);
 
@@ -595,7 +595,7 @@ static bool EnsureCacheDirectoryExists(const char* cachePath)
 }
 
 template <typename T>
-HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UINT size, LPCSTR target, LPCSTR entry, CShaderMacros& macros, T*& result)
+HRESULT CResourceManagerLegacy::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UINT size, LPCSTR target, LPCSTR entry, CShaderMacros& macros, T*& result)
 {
 	bool bUseShaderCache = true;
 	bool bDisassebleShader = true;
@@ -849,7 +849,7 @@ HRESULT CResourceManager::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR src, UIN
 	return _result;
 }
 
-void CResourceManager::RecompileDependentShaders(const std::string& changedHeader)
+void CResourceManagerLegacy::RecompileDependentShaders(const std::string& changedHeader)
 {
 	string_path searchPattern;
 	sprintf_s(searchPattern, "shaders_cache\\*\\*.xrcache.xrdep");
@@ -896,7 +896,7 @@ void CResourceManager::RecompileDependentShaders(const std::string& changedHeade
 }
 
 template <typename T>
-void CResourceManager::DestroyShader(const T* sh)
+void CResourceManagerLegacy::DestroyShader(const T* sh)
 {
 	ShaderTypeTraits<T>::Map_S& sh_map = GetShaderMap<ShaderTypeTraits<T>::Map_S>();
 

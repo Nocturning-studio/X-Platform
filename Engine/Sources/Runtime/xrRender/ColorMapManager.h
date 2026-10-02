@@ -25,10 +25,10 @@ class ColorMapManager
 		}
 	};
 
-	DEFINE_MAP_PRED(shared_str, ref_texture, map_Tex, map_TexIt, str_pred);
+	DEFINE_MAP_PRED(shared_str, ref_texture_legacy, map_Tex, map_TexIt, str_pred);
 
   private:
-	ref_texture m_CMap[2];
+	ref_texture_legacy m_CMap[2];
 	shared_str m_strCMap[2];
 
 	map_Tex m_TexCache;

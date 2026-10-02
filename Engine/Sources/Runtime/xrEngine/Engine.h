@@ -25,7 +25,7 @@ class ENGINE_API CSheduler;
 class ENGINE_API CLevelLoadingScreen;
 class ENGINE_API CGameStateManager;
 class ENGINE_API CStats;
-class ENGINE_API CResourceManager;
+class ENGINE_API CResourceManagerLegacy;
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
 {
@@ -87,7 +87,7 @@ class ENGINE_API CEngine
 	CLevelLoadingScreen* LoadingScreen;
 	CSheduler* Sheduler;
 	CStats* Statistic;
-	CResourceManager* ResourceManager;
+	CResourceManagerLegacy* ResourceManager;
 
   public:
 	CEngine();

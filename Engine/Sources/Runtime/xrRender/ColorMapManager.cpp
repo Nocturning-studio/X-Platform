@@ -31,7 +31,7 @@ void ColorMapManager::UpdateTexture(const shared_str& strTexName, int iTex)
 		}
 		else
 		{
-			ref_texture tmp;
+			ref_texture_legacy tmp;
 			tmp.create(strTexName.c_str());
 
 			m_TexCache.insert(mk_pair(strTexName, tmp));

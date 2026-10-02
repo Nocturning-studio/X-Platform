@@ -82,11 +82,11 @@ class CRenderTarget : public IRender_Target
 	ref_rt rt_ao;
 
 	// env
-	ref_texture t_irradiance_map_0; // env-0
-	ref_texture t_irradiance_map_1; // env-1
+	ref_texture_legacy t_irradiance_map_0; // env-0
+	ref_texture_legacy t_irradiance_map_1; // env-1
 
-	ref_texture t_LUT_0; // lut-0
-	ref_texture t_LUT_1; // lut-1
+	ref_texture_legacy t_LUT_0; // lut-0
+	ref_texture_legacy t_LUT_1; // lut-1
 
 	ref_rt rt_Motion_Blur_Previous_Frame_Depth;
 	ref_rt rt_Motion_Blur_Dilation_Map_0;
@@ -98,7 +98,7 @@ class CRenderTarget : public IRender_Target
 	IDirect3DSurface9* rt_smap_ZB; //
 
 	IDirect3DTexture9* t_noise_surf[TEX_jitter_count];
-	ref_texture t_noise[TEX_jitter_count];
+	ref_texture_legacy t_noise[TEX_jitter_count];
 
   public:
 	// OCCq

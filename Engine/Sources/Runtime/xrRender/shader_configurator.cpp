@@ -409,7 +409,7 @@ void configure_shader(CBlender_Compile& C, bool bIsHightQualityGeometry, LPCSTR 
 			}
 		}
 
-		ref_texture refAlbedoTexture;
+		ref_texture_legacy refAlbedoTexture;
 		refAlbedoTexture.create(AlbedoTexture);
 		if(!bUseBump)
 			bUseBump = refAlbedoTexture.bump_exist();

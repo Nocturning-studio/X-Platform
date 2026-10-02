@@ -18,7 +18,7 @@ void resptrcode_texture::create(LPCSTR _name)
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CTexture::CTexture()
+CTextureLegacy::CTextureLegacy()
 {
 	pAVI = NULL;
 	pTheora = NULL;
@@ -29,10 +29,10 @@ CTexture::CTexture()
 	flags.bUser = false;
 	flags.seqCycles = FALSE;
 	m_material = 1.0f;
-	bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_load);
+	bind = fastdelegate::FastDelegate1<u32>(this, &CTextureLegacy::apply_load);
 }
 
-CTexture::~CTexture()
+CTextureLegacy::~CTextureLegacy()
 {
 	Unload();
 
@@ -40,7 +40,7 @@ CTexture::~CTexture()
 	Engine.ResourceManager->_DeleteTexture(this);
 }
 
-void CTexture::surface_set(IDirect3DBaseTexture9* surf)
+void CTextureLegacy::surface_set(IDirect3DBaseTexture9* surf)
 {
 	if(surf)
 		surf->AddRef();
@@ -49,26 +49,26 @@ void CTexture::surface_set(IDirect3DBaseTexture9* surf)
 	pSurface = surf;
 }
 
-IDirect3DBaseTexture9* CTexture::surface_get()
+IDirect3DBaseTexture9* CTextureLegacy::surface_get()
 {
 	if(pSurface)
 		pSurface->AddRef();
 	return pSurface;
 }
 
-void CTexture::PostLoad()
+void CTextureLegacy::PostLoad()
 {
 	if(pTheora)
-		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_theora);
+		bind = fastdelegate::FastDelegate1<u32>(this, &CTextureLegacy::apply_theora);
 	else if(pAVI)
-		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_avi);
+		bind = fastdelegate::FastDelegate1<u32>(this, &CTextureLegacy::apply_avi);
 	else if(!seqDATA.empty())
-		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_seq);
+		bind = fastdelegate::FastDelegate1<u32>(this, &CTextureLegacy::apply_seq);
 	else
-		bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_normal);
+		bind = fastdelegate::FastDelegate1<u32>(this, &CTextureLegacy::apply_normal);
 }
 
-void CTexture::apply_load(u32 dwStage)
+void CTextureLegacy::apply_load(u32 dwStage)
 {
 	if(!flags.bLoaded)
 		Load();
@@ -77,7 +77,7 @@ void CTexture::apply_load(u32 dwStage)
 	bind(dwStage);
 };
 
-void CTexture::apply_theora(u32 dwStage)
+void CTextureLegacy::apply_theora(u32 dwStage)
 {
 	if(pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Engine.TimeManager.GetContinualTimeMs()))
 	{
@@ -102,7 +102,7 @@ void CTexture::apply_theora(u32 dwStage)
 	}
 	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
-void CTexture::apply_avi(u32 dwStage)
+void CTextureLegacy::apply_avi(u32 dwStage)
 {
 	if(pAVI->NeedUpdate())
 	{
@@ -122,7 +122,7 @@ void CTexture::apply_avi(u32 dwStage)
 	}
 	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
-void CTexture::apply_seq(u32 dwStage)
+void CTextureLegacy::apply_seq(u32 dwStage)
 {
 	// SEQ
 	u32 frame = Engine.TimeManager.GetContinualTimeMs() / seqMSPF;
@@ -141,18 +141,18 @@ void CTexture::apply_seq(u32 dwStage)
 	}
 	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
-void CTexture::apply_normal(u32 dwStage)
+void CTextureLegacy::apply_normal(u32 dwStage)
 {
 	CHK_DX(RenderBackend.GetDevice()->SetTexture(dwStage, pSurface));
 };
 
-void CTexture::Preload()
+void CTextureLegacy::Preload()
 {
 	m_bumpmap = Engine.ResourceManager->m_textures_description.GetBumpName(cName);
 	m_material = Engine.ResourceManager->m_textures_description.GetMaterial(cName);
 }
 
-void CTexture::Load()
+void CTextureLegacy::Load()
 {
 	// Msg("Loading texture: %s", *cName);
 
@@ -293,7 +293,7 @@ void CTexture::Load()
 	PostLoad();
 }
 
-void CTexture::Unload()
+void CTextureLegacy::Unload()
 {
 #ifdef DEBUG
 	string_path msg_buff;
@@ -320,10 +320,10 @@ void CTexture::Unload()
 	xr_delete(pAVI);
 	xr_delete(pTheora);
 
-	bind = fastdelegate::FastDelegate1<u32>(this, &CTexture::apply_load);
+	bind = fastdelegate::FastDelegate1<u32>(this, &CTextureLegacy::apply_load);
 }
 
-void CTexture::desc_update()
+void CTextureLegacy::desc_update()
 {
 	desc_cache = pSurface;
 	if(pSurface && (D3DRTYPE_TEXTURE == pSurface->GetType()))
@@ -333,25 +333,25 @@ void CTexture::desc_update()
 	}
 }
 
-void CTexture::video_Play(BOOL looped, u32 _time)
+void CTextureLegacy::video_Play(BOOL looped, u32 _time)
 {
 	if(pTheora)
 		pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Engine.TimeManager.GetContinualTimeMs());
 }
 
-void CTexture::video_Pause(BOOL state)
+void CTextureLegacy::video_Pause(BOOL state)
 {
 	if(pTheora)
 		pTheora->Pause(state);
 }
 
-void CTexture::video_Stop()
+void CTextureLegacy::video_Stop()
 {
 	if(pTheora)
 		pTheora->Stop();
 }
 
-BOOL CTexture::video_IsPlaying()
+BOOL CTextureLegacy::video_IsPlaying()
 {
 	return (pTheora) ? pTheora->IsPlaying() : FALSE;
 }

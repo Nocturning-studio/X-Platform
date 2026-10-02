@@ -10,7 +10,7 @@
 #include "Buffer.h"
 #include "VertexDeclaration.h"
 ////////////////////////////////////////////////////////////////////////////////
-class XRRB_API CGeometry : public CSharedResource
+class XRRB_API CGeometry : public CRefCountedResource
 {
 public:
 	CGeometry() = default;

@@ -3,6 +3,8 @@
 #include "R_Backend.h"
 #include "sh_texture.h"
 #include "r_constants.h"
+#include <xrRenderBackend/Resources/Shaders/ShaderPass.h>
+////////////////////////////////////////////////////////////////////////////////
 
 // ----------------------------------------------------------------
 // Invalidate
@@ -10,19 +12,31 @@
 void CBackendResourceBinder::Invalidate(CRenderBackendFacade& /*backend*/)
 {
 	m_state = nullptr;
-	m_ps = nullptr;
-	m_vs = nullptr;
-	m_decl = nullptr;
-	m_vb = nullptr;
-	m_ib = nullptr;
+
+	// RHI cache.
+	m_ps = {};
+	m_vs = {};
+	m_decl = {};
+	m_vb = {};
+	m_ib = {};
+	m_ibFormat = RHI_IndexFormat::UInt16;
 	m_vbStride = 0;
+
+	// Legacy cache.
+	m_psLegacy = nullptr;
+	m_vsLegacy = nullptr;
+	m_declLegacy = nullptr;
+	m_vbLegacy = nullptr;
+	m_ibLegacy = nullptr;
+	m_vbStrideLegacy = 0;
+
+	m_owner = EStateOwner::Unknown;
+
 	m_ctable = nullptr;
 	m_T = nullptr;
 
-	for(u32 i = 0; i < 16; ++i)
-		m_texturesPS[i] = nullptr;
-	for(u32 i = 0; i < 5; ++i)
-		m_texturesVS[i] = nullptr;
+	for (u32 i = 0; i < 16; ++i) m_texturesPS[i] = nullptr;
+	for (u32 i = 0; i < 5; ++i) m_texturesVS[i] = nullptr;
 
 #ifdef DEBUG
 	m_psName = nullptr;
@@ -31,83 +45,77 @@ void CBackendResourceBinder::Invalidate(CRenderBackendFacade& /*backend*/)
 }
 
 // ----------------------------------------------------------------
-// State block
+// State block (legacy)
 // ----------------------------------------------------------------
 void CBackendResourceBinder::SetStates(CRenderBackendFacade& backend, IDirect3DStateBlock9* state)
 {
-	if(m_state != state)
+	// TODO[E5]: state blocks не имеют аналога в RHI. В D3D12 модель PSO
+	// делает их ненужными. Пока оставляем legacy-путь.
+	if (m_state != state)
 	{
 #ifdef DEBUG
 		backend.stat.states++;
 #endif
 		m_state = state;
-		if(state)
-			state->Apply(); // D3D9 state block apply
+		if (state)
+			state->Apply();
 	}
 }
 
 // ----------------------------------------------------------------
-// Pixel Shader
+// Pixel shader
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetPixelShader(CRenderBackendFacade& backend, IDirect3DPixelShader9* ps, LPCSTR name)
+void CBackendResourceBinder::SetPixelShader(CRenderBackendFacade& backend, RHI_ShaderHandle ps, LPCSTR name)
 {
-	if(m_ps != ps)
+	const bool cacheValid = (m_owner == EStateOwner::RHI && m_ps == ps);
+	if (!cacheValid)
 	{
 		backend.stat.ps++;
 		m_ps = ps;
-		D3D_SetPixelShader(backend.GetDevice(), ps);
-#ifdef DEBUG
-		m_psName = name;
-#endif
+		backend.GetRHI()->SetPixelShader(ps);
+		m_owner = EStateOwner::RHI;
 	}
-}
-
-void CBackendResourceBinder::D3D_SetPixelShader(IDirect3DDevice9Ex* device, IDirect3DPixelShader9* ps)
-{
-	HRESULT hr = device->SetPixelShader(ps);
-	VERIFY(SUCCEEDED(hr));
+#ifdef DEBUG
+	m_psName = name;
+#endif
 }
 
 // ----------------------------------------------------------------
-// Vertex Shader
+// Vertex shader
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetVertexShader(CRenderBackendFacade& backend, IDirect3DVertexShader9* vs, LPCSTR name)
+void CBackendResourceBinder::SetVertexShader(CRenderBackendFacade& backend, RHI_ShaderHandle vs, LPCSTR name)
 {
-	if(m_vs != vs)
+	const bool cacheValid = (m_owner == EStateOwner::RHI && m_vs == vs);
+	if (!cacheValid)
 	{
 		backend.stat.vs++;
 		m_vs = vs;
-		D3D_SetVertexShader(backend.GetDevice(), vs);
-#ifdef DEBUG
-		m_vsName = name;
-#endif
+		backend.GetRHI()->SetVertexShader(vs);
+		m_owner = EStateOwner::RHI;
 	}
-}
-
-void CBackendResourceBinder::D3D_SetVertexShader(IDirect3DDevice9Ex* device, IDirect3DVertexShader9* vs)
-{
-	HRESULT hr = device->SetVertexShader(vs);
-	VERIFY(SUCCEEDED(hr));
+#ifdef DEBUG
+	m_vsName = name;
+#endif
 }
 
 // ----------------------------------------------------------------
-// Shader Pass
+// Shader pass
 // ----------------------------------------------------------------
 void CBackendResourceBinder::SetShaderPass(CRenderBackendFacade& backend, CShaderPass* pass)
 {
 	if (!pass)
 	{
-		SetVertexShader(backend, nullptr, nullptr);
-		SetPixelShader(backend, nullptr, nullptr);
+		SetVertexShader(backend, RHI_ShaderHandle{}, nullptr);
+		SetPixelShader(backend, RHI_ShaderHandle{}, nullptr);
 		return;
 	}
 
-	IDirect3DVertexShader9* vs = pass->GetRawVertexShader();
-	IDirect3DPixelShader9* ps = pass->GetRawPixelShader();
+	const RHI_ShaderHandle vs = pass->GetVertexProgram().GetRHIHandle();
+	const RHI_ShaderHandle ps = pass->GetPixelProgram().GetRHIHandle();
 
 #ifdef DEBUG
-	LPCSTR vsName = vs ? pass->GetVertexShaderFile() : nullptr;
-	LPCSTR psName = ps ? pass->GetPixelShaderFile() : nullptr;
+	LPCSTR vsName = vs.IsValid() ? pass->GetVertexShaderFile() : nullptr;
+	LPCSTR psName = ps.IsValid() ? pass->GetPixelShaderFile() : nullptr;
 	SetVertexShader(backend, vs, vsName);
 	SetPixelShader(backend, ps, psName);
 #else
@@ -115,192 +123,246 @@ void CBackendResourceBinder::SetShaderPass(CRenderBackendFacade& backend, CShade
 	SetPixelShader(backend, ps);
 #endif
 
-	pass->FlushConstants(backend.GetDevice());
+	// Константы — как в старом коде. Samplers/текстуры применяются
+	// отдельно через SetTextures (и, при необходимости, pass->ApplySamplers).
+	pass->ConstantBuffer().Flush(*backend.GetRHI());
 }
 
 // ----------------------------------------------------------------
-// Vertex Declaration
+// Vertex declaration
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetVertexDeclaration(CRenderBackendFacade& backend, IDirect3DVertexDeclaration9* decl)
+void CBackendResourceBinder::SetVertexDeclaration(CRenderBackendFacade& backend, RHI_InputLayoutHandle decl)
 {
-	if(m_decl != decl)
+	const bool cacheValid = (m_owner == EStateOwner::RHI && m_decl == decl);
+	if (!cacheValid)
 	{
 #ifdef DEBUG
 		backend.stat.decl++;
 #endif
 		m_decl = decl;
-		D3D_SetVertexDeclaration(backend.GetDevice(), decl);
-	}
+		backend.GetRHI()->SetInputLayout(decl);
+		m_owner = EStateOwner::RHI;
 }
-
-void CBackendResourceBinder::D3D_SetVertexDeclaration(IDirect3DDevice9Ex* device, IDirect3DVertexDeclaration9* decl)
-{
-	HRESULT hr = device->SetVertexDeclaration(decl);
-	VERIFY(SUCCEEDED(hr));
 }
 
 // ----------------------------------------------------------------
-// Vertex Buffer
+// Vertex buffer
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetVertexBuffer(CRenderBackendFacade& backend, IDirect3DVertexBuffer9* vb, u32 stride)
+void CBackendResourceBinder::SetVertexBuffer(CRenderBackendFacade& backend, RHI_BufferHandle vb, u32 stride)
 {
-	if(m_vb != vb || m_vbStride != stride)
+	const bool cacheValid = (m_owner == EStateOwner::RHI && m_vb == vb && m_vbStride == stride);
+	if (!cacheValid)
 	{
 #ifdef DEBUG
 		backend.stat.vb++;
 #endif
 		m_vb = vb;
 		m_vbStride = stride;
-		D3D_SetStreamSource(backend.GetDevice(), 0, vb, stride);
+		backend.GetRHI()->SetVertexBuffer(0, vb, 0, stride);
+		m_owner = EStateOwner::RHI;
 	}
 }
 
-void CBackendResourceBinder::D3D_SetStreamSource(IDirect3DDevice9Ex* device, u32 stream, IDirect3DVertexBuffer9* vb, u32 stride)
-{
-	HRESULT hr = device->SetStreamSource(stream, vb, 0, stride);
-	VERIFY(SUCCEEDED(hr));
-}
-
 // ----------------------------------------------------------------
-// Index Buffer
+// Index buffer
 // ----------------------------------------------------------------
-void CBackendResourceBinder::SetIndexBuffer(CRenderBackendFacade& backend, IDirect3DIndexBuffer9* ib)
+void CBackendResourceBinder::SetIndexBuffer(CRenderBackendFacade& backend, RHI_BufferHandle ib, RHI_IndexFormat fmt)
 {
-	if(m_ib != ib)
+	const bool cacheValid = (m_owner == EStateOwner::RHI && m_ib == ib);
+	if (!cacheValid)
 	{
 #ifdef DEBUG
 		backend.stat.ib++;
 #endif
 		m_ib = ib;
-		D3D_SetIndices(backend.GetDevice(), ib);
+		m_ibFormat = fmt;
+		backend.GetRHI()->SetIndexBuffer(ib, fmt);
+		m_owner = EStateOwner::RHI;
 	}
 }
 
-void CBackendResourceBinder::D3D_SetIndices(IDirect3DDevice9Ex* device, IDirect3DIndexBuffer9* ib)
-{
-	HRESULT hr = device->SetIndices(ib);
-	VERIFY(SUCCEEDED(hr));
-}
-
 // ----------------------------------------------------------------
-// Constant Table (with handler processing)
+// Constant table — без изменений
 // ----------------------------------------------------------------
 void CBackendResourceBinder::SetConstantTable(CRenderBackendFacade& backend, R_constant_table* ctable, R_transforms& transforms)
 {
-	if(m_ctable == ctable)
+	if (m_ctable == ctable)
 		return;
 
 	m_ctable = ctable;
 	transforms.unmap();
 
-	if(!ctable)
+	if (!ctable)
 		return;
 
-	// process constant-loaders
 	R_constant_table::c_table::iterator it = ctable->table.begin();
 	R_constant_table::c_table::iterator end = ctable->table.end();
-	for(; it != end; ++it)
+	for (; it != end; ++it)
 	{
 		R_constant* C = &**it;
-		if(C->handler)
+		if (C->handler)
 			C->handler->setup(C);
 	}
 }
 
 // ----------------------------------------------------------------
-// Textures
+// Textures — TODO[E3b]: пока legacy.
 // ----------------------------------------------------------------
 void CBackendResourceBinder::SetTextures(CRenderBackendFacade& backend, STextureList* T)
 {
-	if(m_T == T)
+	if (m_T == T)
 		return;
 	m_T = T;
 
 	u32 last_ps = 0;
 	u32 last_vs = 0;
 
-	if(!T)
+	if (!T)
 		return;
 
 	STextureList::iterator it = T->begin();
 	STextureList::iterator end = T->end();
-	for(; it != end; ++it)
+	for (; it != end; ++it)
 	{
-		std::pair<u32, ref_texture>& loader = *it;
-		u32 load_id = loader.first;
-		CTexture* load_surf = &*loader.second;
+		std::pair<u32, ref_texture_legacy>& loader = *it;
+		u32              load_id = loader.first;
+		CTextureLegacy* load_surf = &*loader.second;
 
-		if(load_id < 256) // pixel stage
+		if (load_id < 256) // pixel stage
 		{
-			if(load_id > last_ps)
+			if (load_id > last_ps)
 				last_ps = load_id;
-			if(m_texturesPS[load_id] != load_surf)
+			if (m_texturesPS[load_id] != load_surf)
 			{
 				m_texturesPS[load_id] = load_surf;
 #ifdef DEBUG
 				backend.stat.textures++;
 #endif
-				if(load_surf)
-					load_surf->bind(load_id); // bind internally calls D3D
+				if (load_surf)
+					load_surf->bind(load_id);
 				else
-					D3D_SetTexture(backend.GetDevice(), load_id, nullptr);
+					backend.GetDevice()->SetTexture(load_id, nullptr);
 			}
 		}
-		else // vertex stage (dmap or custom)
+		else // vertex stage
 		{
 			u32 load_id_remapped = load_id - 256;
-			if(load_id_remapped > last_vs)
+			if (load_id_remapped > last_vs)
 				last_vs = load_id_remapped;
-			if(m_texturesVS[load_id_remapped] != load_surf)
+			if (m_texturesVS[load_id_remapped] != load_surf)
 			{
 				m_texturesVS[load_id_remapped] = load_surf;
 #ifdef DEBUG
 				backend.stat.textures++;
 #endif
-				if(load_surf)
+				if (load_surf)
 					load_surf->bind(load_id);
 				else
-					D3D_SetTexture(backend.GetDevice(), load_id, nullptr);
+					backend.GetDevice()->SetTexture(load_id, nullptr);
 			}
 		}
 	}
 
 	// clear remaining pixel stages
-	for(++last_ps; last_ps < 16; ++last_ps)
+	for (++last_ps; last_ps < 16; ++last_ps)
 	{
-		if(m_texturesPS[last_ps] != nullptr)
+		if (m_texturesPS[last_ps] != nullptr)
 		{
 			m_texturesPS[last_ps] = nullptr;
-			D3D_SetTexture(backend.GetDevice(), last_ps, nullptr);
+			backend.GetDevice()->SetTexture(last_ps, nullptr);
 		}
 	}
 
 	// clear remaining vertex stages
-	for(++last_vs; last_vs < 5; ++last_vs)
+	for (++last_vs; last_vs < 5; ++last_vs)
 	{
-		if(m_texturesVS[last_vs] != nullptr)
+		if (m_texturesVS[last_vs] != nullptr)
 		{
 			m_texturesVS[last_vs] = nullptr;
-			D3D_SetTexture(backend.GetDevice(), last_vs + 256, nullptr);
+			backend.GetDevice()->SetTexture(last_vs + 256, nullptr);
 		}
 	}
 }
 
-CTexture* CBackendResourceBinder::GetActiveTexture(u32 stage) const
+CTextureLegacy* CBackendResourceBinder::GetActiveTexture(u32 stage) const
 {
-	if(stage >= 256)
+	if (stage >= 256)
 		return m_texturesVS[stage - 256];
-	else
-		return m_texturesPS[stage];
+	return m_texturesPS[stage];
 }
 
-void CBackendResourceBinder::D3D_SetTexture(IDirect3DDevice9Ex* device, u32 stage, CTexture* tex)
+void CBackendResourceBinder::SetPixelShaderLegacy(CRenderBackendFacade& backend, IDirect3DPixelShader9* ps, LPCSTR name)
 {
-	if(tex)
-		tex->bind(stage); // calls device->SetTexture internally
-	else
+	const bool cacheValid = (m_owner == EStateOwner::Legacy && m_psLegacy == ps);
+	if (!cacheValid)
 	{
-		HRESULT hr = device->SetTexture(stage, nullptr);
-		VERIFY(SUCCEEDED(hr));
+		backend.stat.ps++;
+		m_psLegacy = ps;
+		backend.GetDevice()->SetPixelShader(ps);
+		m_owner = EStateOwner::Legacy;
+	}
+#ifdef DEBUG
+	m_psName = name;
+#endif
+}
+
+void CBackendResourceBinder::SetVertexShaderLegacy(CRenderBackendFacade& backend, IDirect3DVertexShader9* vs, LPCSTR name)
+{
+	const bool cacheValid = (m_owner == EStateOwner::Legacy && m_vsLegacy == vs);
+	if (!cacheValid)
+	{
+		backend.stat.vs++;
+		m_vsLegacy = vs;
+		backend.GetDevice()->SetVertexShader(vs);
+		m_owner = EStateOwner::Legacy;
+	}
+#ifdef DEBUG
+	m_vsName = name;
+#endif
+}
+
+void CBackendResourceBinder::SetVertexDeclarationLegacy(CRenderBackendFacade& backend, IDirect3DVertexDeclaration9* decl)
+{
+	const bool cacheValid = (m_owner == EStateOwner::Legacy && m_declLegacy == decl);
+	if (!cacheValid)
+	{
+#ifdef DEBUG
+		backend.stat.decl++;
+#endif
+		m_declLegacy = decl;
+		backend.GetDevice()->SetVertexDeclaration(decl);
+		m_owner = EStateOwner::Legacy;
 	}
 }
+
+void CBackendResourceBinder::SetVertexBufferLegacy(CRenderBackendFacade& backend, IDirect3DVertexBuffer9* vb, u32 stride)
+{
+	const bool cacheValid = (m_owner == EStateOwner::Legacy &&
+		m_vbLegacy == vb &&
+		m_vbStrideLegacy == stride);
+	if (!cacheValid)
+	{
+#ifdef DEBUG
+		backend.stat.vb++;
+#endif
+		m_vbLegacy = vb;
+		m_vbStrideLegacy = stride;
+		backend.GetDevice()->SetStreamSource(0, vb, 0, stride);
+		m_owner = EStateOwner::Legacy;
+	}
+}
+
+void CBackendResourceBinder::SetIndexBufferLegacy(CRenderBackendFacade& backend, IDirect3DIndexBuffer9* ib)
+{
+	const bool cacheValid = (m_owner == EStateOwner::Legacy && m_ibLegacy == ib);
+	if (!cacheValid)
+	{
+#ifdef DEBUG
+		backend.stat.ib++;
+#endif
+		m_ibLegacy = ib;
+		backend.GetDevice()->SetIndices(ib);
+		m_owner = EStateOwner::Legacy;
+	}
+}
+////////////////////////////////////////////////////////////////////////////////

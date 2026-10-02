@@ -15,7 +15,7 @@
 struct lua_State;
 
 // defs
-class ENGINE_API CResourceManager
+class ENGINE_API CResourceManagerLegacy
 {
   private:
 	struct str_pred
@@ -34,7 +34,7 @@ class ENGINE_API CResourceManager
 
   public:
 	DEFINE_MAP_PRED(const char*, IBlender*, map_Blender, map_BlenderIt, str_pred);
-	DEFINE_MAP_PRED(const char*, CTexture*, map_Texture, map_TextureIt, str_pred);
+	DEFINE_MAP_PRED(const char*, CTextureLegacy*, map_Texture, map_TextureIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CRT*, map_RT, map_RTIt, str_pred);
 	DEFINE_MAP_PRED(const char*, CRTC*, map_RTC, map_RTCIt, str_pred);
 	DEFINE_MAP_PRED(const char*, SVS*, map_VS, map_VSIt, str_pred);
@@ -64,7 +64,7 @@ class ENGINE_API CResourceManager
 	xr_vector<ShaderElement*> v_elements;
 	xr_vector<Shader*> v_shaders;
 
-	xr_vector<ref_texture> m_necessary;
+	xr_vector<ref_texture_legacy> m_necessary;
 	// misc
   public:
 	CTextureDescrMngr m_textures_description;
@@ -90,12 +90,12 @@ class ENGINE_API CResourceManager
 		return m_blenders;
 	}
 
-	CTexture* m_LoadedTexture;
+	CTextureLegacy* m_LoadedTexture;
 	LPCSTR m_loadingTextureName;
 
 	// Low level resource creation
-	CTexture* _CreateTexture(LPCSTR _Name);
-	void _DeleteTexture(const CTexture* T);
+	CTextureLegacy* _CreateTexture(LPCSTR _Name);
+	void _DeleteTexture(const CTextureLegacy* T);
 
 	R_constant_table* _CreateConstantTable(R_constant_table& C);
 	void _DeleteConstantTable(const R_constant_table* C);
@@ -127,10 +127,10 @@ class ENGINE_API CResourceManager
 	Shader* _lua_Create(LPCSTR s_shader, LPCSTR s_textures);
 	BOOL _lua_HasShader(LPCSTR s_shader);
 
-	CResourceManager() : bDeferredLoad(TRUE)
+	CResourceManagerLegacy() : bDeferredLoad(TRUE)
 	{
 	}
-	~CResourceManager();
+	~CResourceManagerLegacy();
 
 	void OnDeviceCreate(IReader* F);
 	void OnDeviceCreate(LPCSTR name);
@@ -215,10 +215,10 @@ BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
 	return FALSE;
 }
 
-template SPS* CResourceManager::CreateShader<SPS>(LPCSTR _name, LPCSTR _entry, CShaderMacros& macros);
-template SVS* CResourceManager::CreateShader<SVS>(LPCSTR _name, LPCSTR _entry, CShaderMacros& macros);
+template SPS* CResourceManagerLegacy::CreateShader<SPS>(LPCSTR _name, LPCSTR _entry, CShaderMacros& macros);
+template SVS* CResourceManagerLegacy::CreateShader<SVS>(LPCSTR _name, LPCSTR _entry, CShaderMacros& macros);
 
-template void CResourceManager::DestroyShader<SPS>(const SPS* sh);
-template void CResourceManager::DestroyShader<SVS>(const SVS* sh);
+template void CResourceManagerLegacy::DestroyShader<SPS>(const SPS* sh);
+template void CResourceManagerLegacy::DestroyShader<SVS>(const SVS* sh);
 
 #endif // ResourceManagerH

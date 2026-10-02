@@ -5,7 +5,7 @@
 class ENGINE_API CAviPlayerCustom;
 class ENGINE_API CTheoraSurface;
 
-class ENGINE_API CTexture : public xr_resource_named
+class ENGINE_API CTextureLegacy : public xr_resource_named
 {
   public:
 	struct
@@ -86,10 +86,10 @@ class ENGINE_API CTexture : public xr_resource_named
 	void video_Stop();
 	BOOL video_IsPlaying();
 
-	CTexture();
-	virtual ~CTexture();
+	CTextureLegacy();
+	virtual ~CTextureLegacy();
 };
-struct ENGINE_API resptrcode_texture : public resptr_base<CTexture>
+struct ENGINE_API resptrcode_texture : public resptr_base<CTextureLegacy>
 {
 	void create(LPCSTR _name);
 	void destroy()
@@ -105,4 +105,4 @@ struct ENGINE_API resptrcode_texture : public resptr_base<CTexture>
 		return 0 != bump_get().size();
 	}
 };
-typedef resptr_core<CTexture, resptrcode_texture> ref_texture;
+typedef resptr_core<CTextureLegacy, resptrcode_texture> ref_texture_legacy;

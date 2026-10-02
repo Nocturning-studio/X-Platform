@@ -316,7 +316,7 @@ bool CEngine::Initialize()
 		CSound_manager_interface::_create(u64(WindowManager.GetHandle()));
 	}
 
-	ResourceManager = xr_new<CResourceManager>();
+	ResourceManager = xr_new<CResourceManagerLegacy>();
 
 	Statistic = xr_new<CStats>();
 	Statistic->Initialize();

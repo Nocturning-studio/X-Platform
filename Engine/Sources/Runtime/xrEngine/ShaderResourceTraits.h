@@ -8,7 +8,7 @@ struct ShaderTypeTraits;
 template <>
 struct ShaderTypeTraits<SVS>
 {
-	typedef CResourceManager::map_VS Map_S;
+	typedef CResourceManagerLegacy::map_VS Map_S;
 	typedef IDirect3DVertexShader9 ID3DShader;
 
 	static inline u32 GetShaderDest()
@@ -39,7 +39,7 @@ struct ShaderTypeTraits<SVS>
 template <>
 struct ShaderTypeTraits<SPS>
 {
-	typedef CResourceManager::map_PS Map_S;
+	typedef CResourceManagerLegacy::map_PS Map_S;
 	typedef IDirect3DPixelShader9 ID3DShader;
 
 	static inline u32 GetShaderDest()
@@ -68,12 +68,12 @@ struct ShaderTypeTraits<SPS>
 };
 
 template <>
-inline CResourceManager::map_VS& CResourceManager::GetShaderMap()
+inline CResourceManagerLegacy::map_VS& CResourceManagerLegacy::GetShaderMap()
 {
 	return m_vs;
 }
 template <>
-inline CResourceManager::map_PS& CResourceManager::GetShaderMap()
+inline CResourceManagerLegacy::map_PS& CResourceManagerLegacy::GetShaderMap()
 {
 	return m_ps;
 }

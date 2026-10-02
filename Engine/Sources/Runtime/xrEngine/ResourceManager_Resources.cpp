@@ -22,7 +22,7 @@
 #pragma warning(pop)
 
 //--------------------------------------------------------------------------------------------------------------
-SState* CResourceManager::_CreateState(SimulatorStates& state_code)
+SState* CResourceManagerLegacy::_CreateState(SimulatorStates& state_code)
 {
 	for(SState* C : v_states)
 	{
@@ -40,7 +40,7 @@ SState* CResourceManager::_CreateState(SimulatorStates& state_code)
 	return v_states.back();
 }
 
-void CResourceManager::_DeleteState(const SState* state)
+void CResourceManagerLegacy::_DeleteState(const SState* state)
 {
 	if(0 == (state->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -52,7 +52,7 @@ void CResourceManager::_DeleteState(const SState* state)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SPass* CResourceManager::_CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T)
+SPass* CResourceManagerLegacy::_CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs, ref_ctable& _ctable, ref_texture_list& _T)
 {
 	for(SPass* pass : v_passes)
 	{
@@ -73,7 +73,7 @@ SPass* CResourceManager::_CreatePass(ref_state& _state, ref_ps& _ps, ref_vs& _vs
 	return v_passes.back();
 }
 
-void CResourceManager::_DeletePass(const SPass* P)
+void CResourceManagerLegacy::_DeletePass(const SPass* P)
 {
 	if(0 == (P->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -97,7 +97,7 @@ static BOOL dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 	return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
 }
 
-SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
+SDeclaration* CResourceManagerLegacy::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 {
 	for(SDeclaration* D : v_declarations)
 	{
@@ -115,7 +115,7 @@ SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 	return D;
 }
 
-void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
+void CResourceManagerLegacy::_DeleteDecl(const SDeclaration* dcl)
 {
 	if(0 == (dcl->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -125,7 +125,7 @@ void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
 }
 //--------------------------------------------------------------------------------------------------------------
 
-R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
+R_constant_table* CResourceManagerLegacy::_CreateConstantTable(R_constant_table& C)
 {
 	if(C.empty())
 		return NULL;
@@ -142,7 +142,7 @@ R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
 	return v_constant_tables.back();
 }
 
-void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
+void CResourceManagerLegacy::_DeleteConstantTable(const R_constant_table* C)
 {
 	if(0 == (C->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -154,7 +154,7 @@ void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
+CRT* CResourceManagerLegacy::_CreateRT(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 {
 	R_ASSERT(Name && Name[0] && w && h);
 
@@ -179,7 +179,7 @@ CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 le
 	}
 }
 
-void CResourceManager::_DeleteRT(const CRT* RT)
+void CResourceManagerLegacy::_DeleteRT(const CRT* RT)
 {
 	if(0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -193,7 +193,7 @@ void CResourceManager::_DeleteRT(const CRT* RT)
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 //--------------------------------------------------------------------------------------------------------------
-CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
+CRTC* CResourceManagerLegacy::_CreateRTC(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 {
 	R_ASSERT(Name && Name[0] && size);
 
@@ -218,7 +218,7 @@ CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, RHI_Format f, u32 leve
 	}
 }
 
-void CResourceManager::_DeleteRTC(const CRTC* RT)
+void CResourceManagerLegacy::_DeleteRTC(const CRTC* RT)
 {
 	if(0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -234,7 +234,7 @@ void CResourceManager::_DeleteRTC(const CRTC* RT)
 }
 //--------------------------------------------------------------------------------------------------------------
 
-SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
+SGeometry* CResourceManagerLegacy::CreateGeom(D3DVERTEXELEMENT9* decl, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
 {
 	R_ASSERT(decl && vb);
 
@@ -258,7 +258,7 @@ SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, IDirect3DVertex
 	return Geom;
 }
 
-SGeometry* CResourceManager::CreateGeom(u32 FVF, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
+SGeometry* CResourceManagerLegacy::CreateGeom(u32 FVF, IDirect3DVertexBuffer9* vb, IDirect3DIndexBuffer9* ib)
 {
 	D3DVERTEXELEMENT9 dcl[MAX_FVF_DECL_SIZE];
 	CHK_DX(D3DXDeclaratorFromFVF(FVF, dcl));
@@ -266,7 +266,7 @@ SGeometry* CResourceManager::CreateGeom(u32 FVF, IDirect3DVertexBuffer9* vb, IDi
 	return g;
 }
 
-void CResourceManager::DeleteGeom(const SGeometry* Geom)
+void CResourceManagerLegacy::DeleteGeom(const SGeometry* Geom)
 {
 	if(this == NULL)
 		return;
@@ -282,7 +282,7 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
 
 //--------------------------------------------------------------------------------------------------------------
 #pragma todo("NSDeathman to NSDeathman: Вынести на второй поток")
-CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
+CTextureLegacy* CResourceManagerLegacy::_CreateTexture(LPCSTR _Name)
 {
 	if(0 == xr_strcmp(_Name, "null"))
 		return 0;
@@ -301,7 +301,7 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 	}
 	else
 	{
-		CTexture* T = xr_new<CTexture>();
+		CTextureLegacy* T = xr_new<CTextureLegacy>();
 		T->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 		m_textures.insert(mk_pair(T->set_name(Name), T));
 		T->Preload();
@@ -313,7 +313,7 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 	}
 }
 
-void CResourceManager::_DeleteTexture(const CTexture* T)
+void CResourceManagerLegacy::_DeleteTexture(const CTextureLegacy* T)
 {
 	if(0 == (T->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;
@@ -327,11 +327,11 @@ void CResourceManager::_DeleteTexture(const CTexture* T)
 	Msg("! ERROR: Failed to find texture surface '%s'", *T->cName);
 }
 //--------------------------------------------------------------------------------------------------------------
-bool cmp_tl(const std::pair<u32, ref_texture>& _1, const std::pair<u32, ref_texture>& _2)
+bool cmp_tl(const std::pair<u32, ref_texture_legacy>& _1, const std::pair<u32, ref_texture_legacy>& _2)
 {
 	return _1.first < _2.first;
 }
-STextureList* CResourceManager::_CreateTextureList(STextureList& L)
+STextureList* CResourceManagerLegacy::_CreateTextureList(STextureList& L)
 {
 	std::sort(L.begin(), L.end(), cmp_tl);
 
@@ -347,7 +347,7 @@ STextureList* CResourceManager::_CreateTextureList(STextureList& L)
 	lst_textures.push_back(lst);
 	return lst;
 }
-void CResourceManager::_DeleteTextureList(const STextureList* L)
+void CResourceManagerLegacy::_DeleteTextureList(const STextureList* L)
 {
 	if(0 == (L->dwFlags & xr_resource_flagged::RF_REGISTERED))
 		return;

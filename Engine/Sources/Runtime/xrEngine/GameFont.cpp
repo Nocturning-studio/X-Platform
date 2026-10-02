@@ -183,11 +183,11 @@ void CGameFont::OnRender()
 	if(!(uFlags & fsValid))
 	{
 		// БЫЛО: (Требует FFP)
-		// CTexture* T = RenderBackend.GetActiveTexture(0);
+		// CTextureLegacy* T = RenderBackend.GetActiveTexture(0);
 		// vTS.set((int)T->get_Width(), (int)T->get_Height());
 
 		// СТАЛО: (Используем наш сохраненный ресурс)
-		// m_FontTex работает как смарт-поинтер, разыменовываясь в CTexture*
+		// m_FontTex работает как смарт-поинтер, разыменовываясь в CTextureLegacy*
 		// или имеет методы get_Width/get_Height напрямую (зависит от версии движка)
 
 		if(m_FontTex)

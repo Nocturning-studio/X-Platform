@@ -9,7 +9,7 @@
 #include <xrRenderBackend/Resources/SharedResource.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-class XRRB_API CVertexBuffer : public CSharedResource
+class XRRB_API CVertexBuffer : public CRefCountedResource
 {
 public:
 	CVertexBuffer() = default;
@@ -42,7 +42,7 @@ using ref_vertexbuffer = CSharedPtr<CVertexBuffer>;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class XRRB_API CIndexBuffer : public CSharedResource
+class XRRB_API CIndexBuffer : public CRefCountedResource
 {
 public:
 	CIndexBuffer() = default;

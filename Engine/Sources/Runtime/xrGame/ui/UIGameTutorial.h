@@ -147,7 +147,7 @@ class CUISequenceVideoItem : public CUISequenceItem
 {
 	typedef CUISequenceItem inherited;
 	ref_sound m_sound;
-	CTexture* m_texture;
+	CTextureLegacy* m_texture;
 	enum
 	{
 		etiPlaying = (1 << (eti_last + 0)),

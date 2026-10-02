@@ -212,7 +212,7 @@ void CLevelLoadingScreen::DrawInternal()
 	k.set(float(_w) / bw, float(_h) / bh);
 
 	RenderBackend.SetShader(sh_progress);
-	CTexture* T = RenderBackend.GetActiveTexture(0);
+	CTextureLegacy* T = RenderBackend.GetActiveTexture(0);
 	fvec2 tsz;
 	tsz.set((float)T->get_Width(), (float)T->get_Height());
 	Frect back_text_coords;

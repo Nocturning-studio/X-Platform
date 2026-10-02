@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "blender.h"
 
-void CResourceManager::OnDeviceDestroy(BOOL)
+void CResourceManagerLegacy::OnDeviceDestroy(BOOL)
 {
 	if(Device.b_is_Ready)
 		return;
@@ -34,7 +34,7 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 #endif
 }
 
-void CResourceManager::OnDeviceCreate(IReader* F)
+void CResourceManagerLegacy::OnDeviceCreate(IReader* F)
 {
 	if(!Device.b_is_Ready)
 		return;
@@ -87,7 +87,7 @@ void CResourceManager::OnDeviceCreate(IReader* F)
 	m_textures_description.Load();
 }
 
-void CResourceManager::OnDeviceCreate(LPCSTR shName)
+void CResourceManagerLegacy::OnDeviceCreate(LPCSTR shName)
 {
 #ifdef _EDITOR
 	if(!FS.exist(shName))
@@ -108,7 +108,7 @@ void CResourceManager::OnDeviceCreate(LPCSTR shName)
 	FS.r_close(F);
 }
 
-void CResourceManager::StoreNecessaryTextures()
+void CResourceManagerLegacy::StoreNecessaryTextures()
 {
 	if(!m_necessary.empty())
 		return;
@@ -124,13 +124,13 @@ void CResourceManager::StoreNecessaryTextures()
 		if(!strchr(texture_name, '\\'))
 			continue;
 
-		ref_texture T;
+		ref_texture_legacy T;
 		T.create(texture_name);
 		m_necessary.push_back(T);
 	}
 }
 
-void CResourceManager::DestroyNecessaryTextures()
+void CResourceManagerLegacy::DestroyNecessaryTextures()
 {
 	m_necessary.clear();
 }

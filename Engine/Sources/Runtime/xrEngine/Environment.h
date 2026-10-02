@@ -113,8 +113,8 @@ class ENGINE_API CEnvironment
 
 	float fTimeFactor;
 
-	ref_texture tsky0, tsky1;
-	ref_texture tlut0, tlut1;
+	ref_texture_legacy tsky0, tsky1;
+	ref_texture_legacy tlut0, tlut1;
 
 	void SelectEnvs(float gt);
 

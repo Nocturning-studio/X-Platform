@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <xrRenderBackend/Resources/SharedResource.h>
 ////////////////////////////////////////////////////////////////////////////////
-class XRRB_API CVertexDeclaration : public CSharedResource
+class XRRB_API CVertexDeclaration : public CRefCountedResource
 {
 public:
 	CVertexDeclaration() = default;

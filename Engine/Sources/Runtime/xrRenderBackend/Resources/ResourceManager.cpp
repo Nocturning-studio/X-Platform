@@ -99,7 +99,7 @@ ref_geometry CResourceManager::CreateGeometry()
 	return ref_geometry(g);
 }
 
-void CResourceManager::RegisterResource(CSharedResource* res)
+void CResourceManager::RegisterResource(CRefCountedResource* res)
 {
 	if (!res) return;
 	STrackedResource tr;

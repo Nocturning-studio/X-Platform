@@ -1,9 +1,11 @@
 #pragma once
-
+////////////////////////////////////////////////////////////////////////////////
+#include <xrRHI/xrRHI.h>
+////////////////////////////////////////////////////////////////////////////////
 class CRenderBackendFacade;
 class R_transforms;
 struct STextureList;
-class CTexture;
+class CTextureLegacy;
 class R_constant_table;
 class CShaderPass;
 struct IDirect3DStateBlock9;
@@ -12,61 +14,97 @@ struct IDirect3DVertexShader9;
 struct IDirect3DVertexDeclaration9;
 struct IDirect3DVertexBuffer9;
 struct IDirect3DIndexBuffer9;
-struct IDirect3DDevice9Ex;
 
 class ENGINE_API CBackendResourceBinder
 {
-  public:
+public:
 	void Invalidate(CRenderBackendFacade& backend);
 
-	// State block
 	void SetStates(CRenderBackendFacade& backend, IDirect3DStateBlock9* state);
 
-	// Shaders
-	void SetPixelShader(CRenderBackendFacade& backend, IDirect3DPixelShader9* ps, LPCSTR name = nullptr);
-	void SetVertexShader(CRenderBackendFacade& backend, IDirect3DVertexShader9* vs, LPCSTR name = nullptr);
+	// ====================================================================
+	// RHI-путь.
+	// ====================================================================
+	void SetPixelShader(CRenderBackendFacade& backend, RHI_ShaderHandle ps, LPCSTR name = nullptr);
+	void SetVertexShader(CRenderBackendFacade& backend, RHI_ShaderHandle vs, LPCSTR name = nullptr);
 	void SetShaderPass(CRenderBackendFacade& backend, CShaderPass* pass);
 	void SetShaderPass(CRenderBackendFacade& backend, CShaderPass& pass) { SetShaderPass(backend, &pass); }
 
-	// Vertex declaration & buffers
-	void SetVertexDeclaration(CRenderBackendFacade& backend, IDirect3DVertexDeclaration9* decl);
-	void SetVertexBuffer(CRenderBackendFacade& backend, IDirect3DVertexBuffer9* vb, u32 stride);
-	void SetIndexBuffer(CRenderBackendFacade& backend, IDirect3DIndexBuffer9* ib);
+	void SetVertexDeclaration(CRenderBackendFacade& backend, RHI_InputLayoutHandle decl);
+	void SetVertexBuffer(CRenderBackendFacade& backend, RHI_BufferHandle vb, u32 stride);
+	void SetIndexBuffer(CRenderBackendFacade& backend, RHI_BufferHandle ib, RHI_IndexFormat fmt);
 
-	// Constant table (with handler setup)
 	void SetConstantTable(CRenderBackendFacade& backend, R_constant_table* ctable, R_transforms& transforms);
 	IC R_constant_table* GetConstantTable() const { return m_ctable; }
 
-	// Textures
 	void SetTextures(CRenderBackendFacade& backend, STextureList* T);
+	CTextureLegacy* GetActiveTexture(u32 stage) const;
 
-	// Helper for active texture
-	CTexture* GetActiveTexture(u32 stage) const;
+	// ====================================================================
+	// LEGACY D3D9-путь — coexistence bridge.
+	// ====================================================================
+	//
+	// Принимает raw D3D9-указатели и вызывает device->SetX напрямую.
+	// Нужен, чтобы движок продолжал работать, пока идёт миграция.
+	//
+	// Два кэша (RHI и legacy) взаимоисключающие: как только один из путей
+	// меняет device-state, кэш второго инвалидируется. Это гарантирует,
+	// что ни один путь не пропустит bind, сделанный другим путём.
+	//
+	// Удаляется после полной миграции вызывающего кода на RHI.
+	void SetPixelShaderLegacy(CRenderBackendFacade& backend, IDirect3DPixelShader9* ps, LPCSTR name = nullptr);
+	void SetVertexShaderLegacy(CRenderBackendFacade& backend, IDirect3DVertexShader9* vs, LPCSTR name = nullptr);
+	void SetVertexDeclarationLegacy(CRenderBackendFacade& backend, IDirect3DVertexDeclaration9* decl);
+	void SetVertexBufferLegacy(CRenderBackendFacade& backend, IDirect3DVertexBuffer9* vb, u32 stride);
+	void SetIndexBufferLegacy(CRenderBackendFacade& backend, IDirect3DIndexBuffer9* ib);
 
-  private:
+private:
+	// Legacy state block.
 	IDirect3DStateBlock9* m_state = nullptr;
-	IDirect3DPixelShader9* m_ps = nullptr;
-	IDirect3DVertexShader9* m_vs = nullptr;
-	IDirect3DVertexDeclaration9* m_decl = nullptr;
-	IDirect3DVertexBuffer9* m_vb = nullptr;
-	IDirect3DIndexBuffer9* m_ib = nullptr;
-	u32 m_vbStride = 0;
+
+	// -----------------------------------------------------------------
+	// RHI cache.
+	// -----------------------------------------------------------------
+	RHI_ShaderHandle      m_ps{};
+	RHI_ShaderHandle      m_vs{};
+	RHI_InputLayoutHandle m_decl{};
+	RHI_BufferHandle      m_vb{};
+	RHI_BufferHandle      m_ib{};
+	RHI_IndexFormat       m_ibFormat = RHI_IndexFormat::UInt16;
+	u32                   m_vbStride = 0;
+
+	// -----------------------------------------------------------------
+	// Legacy cache.
+	// -----------------------------------------------------------------
+	IDirect3DPixelShader9* m_psLegacy = nullptr;
+	IDirect3DVertexShader9* m_vsLegacy = nullptr;
+	IDirect3DVertexDeclaration9* m_declLegacy = nullptr;
+	IDirect3DVertexBuffer9* m_vbLegacy = nullptr;
+	IDirect3DIndexBuffer9* m_ibLegacy = nullptr;
+	u32                          m_vbStrideLegacy = 0;
+
+	// -----------------------------------------------------------------
+	// Источник истины для device-state. Только один путь может быть
+	// «владельцем» кэша одновременно.
+	//
+	//   Unknown — после Invalidate(), ни один кэш не валиден
+	//   RHI     — device-state соответствует RHI-кэшу
+	//   Legacy  — device-state соответствует legacy-кэшу
+	//
+	// Флаг общий: все bind'ы идут через один поток, и переключение путей
+	// происходит редко (обычно раз в кадр), так что общий флаг — норма.
+	// -----------------------------------------------------------------
+	enum class EStateOwner : uint8_t { Unknown, RHI, Legacy };
+	EStateOwner m_owner = EStateOwner::Unknown;
+
 	R_constant_table* m_ctable = nullptr;
 	STextureList* m_T = nullptr;
 
-	CTexture* m_texturesPS[16] = {};
-	CTexture* m_texturesVS[5] = {};
+	CTextureLegacy* m_texturesPS[16] = {};
+	CTextureLegacy* m_texturesVS[5] = {};
 
 #ifdef DEBUG
 	LPCSTR m_psName = nullptr;
 	LPCSTR m_vsName = nullptr;
 #endif
-
-	// Low‑level D3D9 wrappers
-	void D3D_SetPixelShader(IDirect3DDevice9Ex* device, IDirect3DPixelShader9* ps);
-	void D3D_SetVertexShader(IDirect3DDevice9Ex* device, IDirect3DVertexShader9* vs);
-	void D3D_SetVertexDeclaration(IDirect3DDevice9Ex* device, IDirect3DVertexDeclaration9* decl);
-	void D3D_SetStreamSource(IDirect3DDevice9Ex* device, u32 stream, IDirect3DVertexBuffer9* vb, u32 stride);
-	void D3D_SetIndices(IDirect3DDevice9Ex* device, IDirect3DIndexBuffer9* ib);
-	void D3D_SetTexture(IDirect3DDevice9Ex* device, u32 stage, CTexture* tex);
 };

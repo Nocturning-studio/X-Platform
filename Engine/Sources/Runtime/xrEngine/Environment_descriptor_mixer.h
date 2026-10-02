@@ -3,14 +3,14 @@
 class ENGINE_API CEnvDescriptorMixer : public CEnvDescriptor
 {
   public:
-	ref_texture sky_texture_0;
-	ref_texture sky_texture_1;
-	ref_texture sky_irradiance_0;
-	ref_texture sky_irradiance_1;
-	ref_texture clouds_texture_0;
-	ref_texture clouds_texture_1;
-	ref_texture lut_texture_0;
-	ref_texture lut_texture_1;
+	ref_texture_legacy sky_texture_0;
+	ref_texture_legacy sky_texture_1;
+	ref_texture_legacy sky_irradiance_0;
+	ref_texture_legacy sky_irradiance_1;
+	ref_texture_legacy clouds_texture_0;
+	ref_texture_legacy clouds_texture_1;
+	ref_texture_legacy lut_texture_0;
+	ref_texture_legacy lut_texture_1;
 
 	float weight;
 

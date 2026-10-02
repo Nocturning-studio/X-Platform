@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "xrRHI/xrRHI.h"
-
 #pragma warning(disable : 4995)
 #include "..\xrEngine\pch.h"
 #pragma warning(disable : 4995)

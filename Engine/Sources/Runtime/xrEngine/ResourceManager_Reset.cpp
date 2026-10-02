@@ -11,7 +11,7 @@
 #include <ppl.h>
 #pragma warning(pop)
 
-void CResourceManager::ResetBegin()
+void CResourceManagerLegacy::ResetBegin()
 {
 	// destroy everything, renderer may use
 	Render->ResetBegin();
@@ -47,7 +47,7 @@ bool cmp_rtc(const CRTC* A, const CRTC* B)
 	return A->_order < B->_order;
 }
 
-void CResourceManager::ResetEnd()
+void CResourceManagerLegacy::ResetEnd()
 {
 	// create RDStreams
 	RenderBackend.Vertex.ResetEnd();
@@ -92,13 +92,13 @@ void mdump(C c)
 		Msg("*        : %3d: %s", I->second->dwReference, I->second->cName.c_str());
 }
 
-CResourceManager::~CResourceManager()
+CResourceManagerLegacy::~CResourceManagerLegacy()
 {
 	DestroyNecessaryTextures();
 	Dump(false);
 }
 
-void CResourceManager::Dump(bool bBrief)
+void CResourceManagerLegacy::Dump(bool bBrief)
 {
 	Msg("* RM_Dump: textures  : %d", m_textures.size());
 	Msg("* RM_Dump: rtargets  : %d", m_rtargets.size());

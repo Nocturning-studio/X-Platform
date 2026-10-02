@@ -278,7 +278,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
 void CBlender_Compile::i_Texture(u32 s, LPCSTR name)
 {
 	if(name && xr_strcmp(name, "$null") != 0)
-		passTextures.push_back(mk_pair(s, ref_texture(Engine.ResourceManager->_CreateTexture(name))));
+		passTextures.push_back(mk_pair(s, ref_texture_legacy(Engine.ResourceManager->_CreateTexture(name))));
 }
 
 void CBlender_Compile::i_Address(u32 s, u32 address)

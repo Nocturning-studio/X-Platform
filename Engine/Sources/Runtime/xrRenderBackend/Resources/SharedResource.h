@@ -11,14 +11,14 @@
 #include <xrRenderBackend/xrRenderBackendAPI.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-class XRRB_API CSharedResource
+class XRRB_API CRefCountedResource
 {
   public:
-	CSharedResource() = default;
-	virtual ~CSharedResource() = default;
+	CRefCountedResource() = default;
+	virtual ~CRefCountedResource() = default;
 
-	CSharedResource(const CSharedResource&) = delete;
-	CSharedResource& operator=(const CSharedResource&) = delete;
+	CRefCountedResource(const CRefCountedResource&) = delete;
+	CRefCountedResource& operator=(const CRefCountedResource&) = delete;
 
 	uint32_t AddRef() const noexcept { return ++m_refCount; }
 	uint32_t Release() const noexcept { return --m_refCount; }
@@ -33,7 +33,7 @@ class XRRB_API CSharedResource
 template <class T>
 class CSharedPtr
 {
-	static_assert(std::is_base_of<CSharedResource, T>::value, "CSharedPtr<T>: T must inherit from CSharedResource");
+	static_assert(std::is_base_of<CRefCountedResource, T>::value, "CSharedPtr<T>: T must inherit from CRefCountedResource");
 
   public:
 	CSharedPtr() noexcept = default;
