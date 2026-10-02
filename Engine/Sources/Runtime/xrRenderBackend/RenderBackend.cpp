@@ -35,7 +35,7 @@ bool CRenderBackend::LoadRHIModule(RHI_BackendType type)
 	m_hRHI = LoadLibraryA("xrRHI.dll");
 	if (!m_hRHI)
 	{
-		Msg("! [RenderBackendLegacy] Failed to load xrRHI.dll");
+		Msg("! [RenderBackend] Failed to load xrRHI.dll");
 		return false;
 	}
 
@@ -45,7 +45,7 @@ bool CRenderBackend::LoadRHIModule(RHI_BackendType type)
 
 	if (!createBackend)
 	{
-		Msg("! [RenderBackendLegacy] CreateRenderBackend not found in xrRHI.dll");
+		Msg("! [RenderBackend] CreateRenderBackend not found in xrRHI.dll");
 		FreeLibrary(m_hRHI);
 		m_hRHI = nullptr;
 		return false;
@@ -54,7 +54,7 @@ bool CRenderBackend::LoadRHIModule(RHI_BackendType type)
 	m_pRHI = createBackend(type);
 	if (!m_pRHI)
 	{
-		Msg("! [RenderBackendLegacy] Failed to create IRenderBackend");
+		Msg("! [RenderBackend] Failed to create IRenderBackend");
 		FreeLibrary(m_hRHI);
 		m_hRHI = nullptr;
 		return false;
@@ -67,7 +67,7 @@ bool CRenderBackend::CreateDevice(HWND hWnd, RHI_BackendType backendType, const 
 {
 	if (m_pRHI)
 	{
-		Msg("! [RenderBackendLegacy] CreateDevice: device already created");
+		Msg("! [RenderBackend] CreateDevice: device already created");
 		return false;
 	}
 
@@ -76,7 +76,7 @@ bool CRenderBackend::CreateDevice(HWND hWnd, RHI_BackendType backendType, const 
 
 	if (!m_pRHI->CreateDevice(hWnd, params))
 	{
-		Msg("! [RenderBackendLegacy] IRenderBackend::CreateDevice failed");
+		Msg("! [RenderBackend] IRenderBackend::CreateDevice failed");
 		delete m_pRHI;
 		m_pRHI = nullptr;
 		FreeLibrary(m_hRHI);
@@ -90,7 +90,7 @@ bool CRenderBackend::CreateDevice(HWND hWnd, RHI_BackendType backendType, const 
 
 	m_resources.SetRHI(m_pRHI);
 
-	Msg("* [RenderBackendLegacy] Device created: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
+	Msg("* [RenderBackend] Device created: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 	return true;
 }
 
@@ -125,7 +125,7 @@ bool CRenderBackend::ResetDevice(const RHI_PresentationParams& params)
 
 	if (!m_pRHI->Reset(params))
 	{
-		Msg("! [RenderBackendLegacy] RHI Reset failed");
+		Msg("! [RenderBackend] RHI Reset failed");
 		return false;
 	}
 
@@ -135,7 +135,7 @@ bool CRenderBackend::ResetDevice(const RHI_PresentationParams& params)
 
 	m_resources.SetRHI(m_pRHI);
 
-	Msg("* [RenderBackendLegacy] Device reset: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
+	Msg("* [RenderBackend] Device reset: %ux%u", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 	return true;
 }
 

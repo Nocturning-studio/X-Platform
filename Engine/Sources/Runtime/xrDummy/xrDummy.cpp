@@ -69,7 +69,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	params.Windowed = TRUE;
 	params.BackBufferCount = 2;
 	params.SyncInterval = 1;
-	params.FullscreenRefreshHz = 60;
+	params.FullscreenRefreshHz = 0;
 
 	if (!backend.CreateDevice(hWnd, RHI_BackendType::DirectX9Ex, params))
 		R_ERROR("! [Test] CreateDevice failed");

@@ -631,18 +631,14 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname, 
 	string_path full_fs_path = {0};
 	bool found = false;
 
-	Msg("* Searching for %s starting from %s", target_fname, current_dir);
-
 	// Цикл подъёма: проверяем до 8 родительских каталогов
 	for(int level = 0; level <= 8; ++level)
 	{
 		// Формируем полный путь к проверяемому файлу
 		strconcat(sizeof(full_fs_path), full_fs_path, current_dir, target_fname);
-		Msg("  [%d] Checking: %s", level, full_fs_path);
 
 		if(::GetFileAttributes(full_fs_path) != INVALID_FILE_ATTRIBUTES)
 		{
-			Msg("  -> Found!");
 			found = true;
 			break;
 		}
@@ -774,9 +770,6 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_fname, 
 		size_t len = xr_strlen(gamedata_path);
 		if(len > 0 && gamedata_path[len - 1] == '\\')
 			gamedata_path[len - 1] = 0;
-
-		if(::GetFileAttributes(gamedata_path) != INVALID_FILE_ATTRIBUTES)
-			Msg("* Gamedata folder found: %s", gamedata_path);
 	}
 
 	m_Flags.set(flReady, TRUE);
