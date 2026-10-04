@@ -15,13 +15,11 @@ void CRenderBackendFacade::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV
 
 void CRenderBackendFacade::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
-	OnFrameEnd();
 	CHK_DX(RenderBackendLegacy.GetDevice()->SetFVF(FVF::F_L));
 	CHK_DX(RenderBackendLegacy.GetDevice()->DrawIndexedPrimitiveUP(PrimType, 0, vcnt, pcnt, pIdx, D3DFMT_INDEX16, pVerts, sizeof(FVF::L)));
 }
 void CRenderBackendFacade::dbg_Draw(D3DPRIMITIVETYPE PrimType, FVF::L* pVerts, int pcnt)
 {
-	OnFrameEnd();
 	CHK_DX(RenderBackendLegacy.GetDevice()->SetFVF(FVF::F_L));
 	CHK_DX(RenderBackendLegacy.GetDevice()->DrawPrimitiveUP(PrimType, pcnt, pVerts, sizeof(FVF::L)));
 }

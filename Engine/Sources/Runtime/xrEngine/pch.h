@@ -23,7 +23,7 @@
 #include <DPlay\dplay8.h>
 #pragma warning(default : 4995)
 
-#include "xr_engine_common.h"
+#include "xrEngineAPI.h"
 
 // Our headers
 #include "Engine.h"

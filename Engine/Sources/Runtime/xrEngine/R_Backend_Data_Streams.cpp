@@ -83,11 +83,13 @@ void VertexStream::Unlock(u32 Count, u32 Stride)
 
 void VertexStream::ResetBegin()
 {
+	Msg("VertexStream::ResetBegin()");
 	old_pVB = pVB;
 	Destroy();
 }
 void VertexStream::ResetEnd()
 {
+	Msg("VertexStream::ResetEnd()");
 	Create();
 }
 
@@ -147,11 +149,13 @@ void IndexStream::Unlock(u32 RealCount)
 
 void IndexStream::ResetBegin()
 {
+	Msg("IndexStream::ResetBegin()");
 	old_pIB = pIB;
 	Destroy();
 }
 void IndexStream::ResetEnd()
 {
+	Msg("IndexStream::ResetEnd()");
 	Create();
 }
 //////////////////////////////////////////////////////////////////////

@@ -191,16 +191,16 @@ private:
 	// Device / presentation helpers
 	// ============================================================================
 	void FillPresentParams(const RHI_PresentationParams& params,
-		D3DFORMAT backBufferFmt,
-		D3DFORMAT depthStencilFmt,
-		UINT fullscreenRefreshHz);
+						   D3DFORMAT backBufferFmt,
+						   D3DFORMAT depthStencilFmt,
+						   UINT fullscreenRefreshHz);
 
 	void CacheDeviceCapsFromD3D();
 	void CacheBackBufferDimensions();
 
 	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params,
-		D3DFORMAT& outBackBufferFmt,
-		D3DFORMAT& outDepthStencilFmt);
+															 D3DFORMAT& outBackBufferFmt,
+															 D3DFORMAT& outDepthStencilFmt);
 
 	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
 
@@ -228,6 +228,9 @@ private:
 	// ============================================================================
 	void ReleaseAllResources();
 	void InvalidateGeometryCache();
+
+	void ReleaseNativeDeviceResources();
+	void RecreateNativeDeviceResources();
 
 	// ============================================================================
 	// RTV / DSV helpers

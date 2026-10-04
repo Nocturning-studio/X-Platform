@@ -8,6 +8,7 @@
 #include <malloc.h>
 #include <direct.h>
 #include <stdio.h>
+#include <Psapi.h>
 
 extern bool shared_str_initialized;
 
@@ -332,7 +333,52 @@ static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* 
 				  func[0] ? func : __FUNCTION__, ignore_always);
 }
 
-static void std_out_of_memory_handler() { handler_base("std: out of memory"); }
+static void std_out_of_memory_handler()
+{
+	// === Без всяких зависимостей от движка ===
+
+	// 1. Разбивка VA
+	MEMORY_BASIC_INFORMATION mbi = {};
+	size_t free_bytes = 0, reserved_bytes = 0, committed_bytes = 0;
+	size_t largest_free = 0;
+	u8* p = nullptr;
+	while (VirtualQuery(p, &mbi, sizeof(mbi))) {
+		if (mbi.State == MEM_FREE) {
+			free_bytes += mbi.RegionSize;
+			if (mbi.RegionSize > largest_free) largest_free = mbi.RegionSize;
+		}
+		else if (mbi.State == MEM_RESERVE) {
+			reserved_bytes += mbi.RegionSize;
+		}
+		else if (mbi.State == MEM_COMMIT) {
+			committed_bytes += mbi.RegionSize;
+		}
+		p = (u8*)mbi.BaseAddress + mbi.RegionSize;
+	}
+
+	// 2. Working set / peak
+	PROCESS_MEMORY_COUNTERS_EX pmc = {};
+	GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+
+	// 3. Количество хендлов/тредов
+	DWORD handles = 0;
+	GetProcessHandleCount(GetCurrentProcess(), &handles);
+
+	char buf[512];
+	_snprintf_s(buf, _TRUNCATE,
+		"[OOM] VA free=%zuMB largest=%zuMB commit=%zuMB reserved=%zuMB | WS=%zuMB peak=%zuMB | handles=%u\n",
+		free_bytes / 1048576, largest_free / 1048576,
+		committed_bytes / 1048576, reserved_bytes / 1048576,
+		pmc.WorkingSetSize / 1048576, pmc.PeakWorkingSetSize / 1048576,
+		handles);
+
+	// Логируем всеми доступными средствами
+	OutputDebugStringA(buf);
+	if (shared_str_initialized) Msg("%s", buf);
+	if (FILE* f = fopen("xr_oom.log", "a")) { fputs(buf, f); fclose(f); }
+
+	handler_base("std: out of memory");
+}
 static void pure_call_handler() { handler_base("pure virtual function call"); }
 
 #ifdef CS_USE_EXCEPTIONS

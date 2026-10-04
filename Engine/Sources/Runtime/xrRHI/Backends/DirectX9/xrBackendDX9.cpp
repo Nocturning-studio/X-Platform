@@ -280,6 +280,175 @@ void CRenderBackendDX9::ReleaseAllResources()
 	InvalidateGeometryCache();
 }
 
+void CRenderBackendDX9::ReleaseNativeDeviceResources()
+{
+	// --- Textures ---
+	for (DX9Texture* t : m_Textures)
+	{
+		if (!t) continue;
+		if (t->tex2D) { t->tex2D->Release();   t->tex2D = nullptr; }
+		if (t->texCube) { t->texCube->Release(); t->texCube = nullptr; }
+		if (t->tex3D) { t->tex3D->Release();   t->tex3D = nullptr; }
+		if (t->surface) { t->surface->Release(); t->surface = nullptr; }
+	}
+
+	// --- Buffers ---
+	for (DX9Buffer* b : m_buffers)
+	{
+		if (!b) continue;
+		if (b->vb) { b->vb->Release(); b->vb = nullptr; }
+		if (b->ib) { b->ib->Release(); b->ib = nullptr; }
+	}
+
+	// --- Input layouts ---
+	for (DX9InputLayout* l : m_inputLayouts)
+	{
+		if (!l) continue;
+		if (l->decl) { l->decl->Release(); l->decl = nullptr; }
+	}
+
+	// --- Shaders ---
+	for (DX9Shader* s : m_shaders)
+	{
+		if (!s) continue;
+		if (s->vs) { s->vs->Release(); s->vs = nullptr; }
+		if (s->ps) { s->ps->Release(); s->ps = nullptr; }
+		// s->blob держим — это CPU-side bytecode, нужен для пересоздания.
+	}
+
+	// --- RTV/DSV surfaces ---
+	for (auto& slot : m_rtvSlots)
+		if (slot.surface) { slot.surface->Release(); slot.surface = nullptr; }
+	for (auto& slot : m_dsvSlots)
+		if (slot.surface) { slot.surface->Release(); slot.surface = nullptr; }
+
+	// --- Сбрасываем кэш привязок (все указатели теперь мертвы) ---
+	InvalidateStateCache();
+	InvalidateGeometryCache();
+	InvalidateRenderTargetCache();
+}
+
+void CRenderBackendDX9::RecreateNativeDeviceResources()
+{
+	if (!m_pDevice) return;
+
+	// --- Textures ---
+	for (DX9Texture* t : m_Textures)
+	{
+		if (!t) continue;
+		const D3DFORMAT fmt = RHIToD3DFormat(t->format);
+		if (fmt == D3DFMT_UNKNOWN) continue;
+
+		DWORD usage = 0;
+		if (t->isRenderTarget) usage |= D3DUSAGE_RENDERTARGET;
+		if (t->isDepthStencil) usage |= D3DUSAGE_DEPTHSTENCIL;
+
+		HRESULT hr = E_FAIL;
+		switch (t->dim)
+		{
+		case RHI_TextureDim::Tex2D:
+		case RHI_TextureDim::Tex1D:
+		{
+			IDirect3DTexture9* tex = nullptr;
+			hr = m_pDevice->CreateTexture(t->width, t->height, t->mipLevels,
+				usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			if (SUCCEEDED(hr)) t->tex2D = tex;
+			break;
+		}
+		case RHI_TextureDim::Cube:
+		{
+			IDirect3DCubeTexture9* tex = nullptr;
+			hr = m_pDevice->CreateCubeTexture(t->width, t->mipLevels,
+				usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			if (SUCCEEDED(hr)) t->texCube = tex;
+			break;
+		}
+		case RHI_TextureDim::Tex3D:
+		{
+			IDirect3DVolumeTexture9* tex = nullptr;
+			hr = m_pDevice->CreateVolumeTexture(t->width, t->height, t->depth,
+				t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			if (SUCCEEDED(hr)) t->tex3D = tex;
+			break;
+		}
+		}
+		if (FAILED(hr))
+			Msg("! [DX9] Reset: failed to recreate texture (fmt=%u, %ux%u)", (u32)t->format, t->width, t->height);
+	}
+
+	// --- Buffers ---
+	for (DX9Buffer* b : m_buffers)
+	{
+		if (!b) continue;
+
+		DWORD usage = 0;
+		if (b->desc.usage & RHI_BufferUsage_Dynamic)
+			usage |= D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY;
+
+		if (b->isIndex)
+		{
+			const D3DFORMAT fmt = (b->desc.indexFormat == RHI_IndexFormat::UInt32)
+				? D3DFMT_INDEX32 : D3DFMT_INDEX16;
+			IDirect3DIndexBuffer9* ib = nullptr;
+			if (SUCCEEDED(m_pDevice->CreateIndexBuffer(b->desc.sizeBytes, usage, fmt,
+				D3DPOOL_DEFAULT, &ib, nullptr)))
+				b->ib = ib;
+		}
+		else
+		{
+			IDirect3DVertexBuffer9* vb = nullptr;
+			if (SUCCEEDED(m_pDevice->CreateVertexBuffer(b->desc.sizeBytes, usage, 0,
+				D3DPOOL_DEFAULT, &vb, nullptr)))
+				b->vb = vb;
+		}
+	}
+
+	// --- Input layouts ---
+	for (DX9InputLayout* l : m_inputLayouts)
+	{
+		if (!l || l->desc.elements.empty()) continue;
+
+		xr_vector<D3DVERTEXELEMENT9> elems;
+		elems.reserve(l->desc.elements.size() + 1);
+		for (const auto& e : l->desc.elements)
+		{
+			D3DVERTEXELEMENT9 de{};
+			de.Stream = (WORD)e.stream;
+			de.Offset = (WORD)e.offset;
+			de.Type = ToD3DDeclType(e.type);
+			de.Method = D3DDECLMETHOD_DEFAULT;
+			de.Usage = ToD3DDeclUsage(e.semantic);
+			de.UsageIndex = (BYTE)e.semanticIndex;
+			elems.push_back(de);
+		}
+		elems.push_back(D3DDECL_END());
+
+		IDirect3DVertexDeclaration9* decl = nullptr;
+		if (SUCCEEDED(m_pDevice->CreateVertexDeclaration(elems.data(), &decl)))
+			l->decl = decl;
+	}
+
+	// --- Shaders ---
+	for (DX9Shader* s : m_shaders)
+	{
+		if (!s || !s->blob) continue;
+		const DWORD* code = static_cast<const DWORD*>(s->blob->GetBufferPointer());
+
+		if (s->isVertex)
+		{
+			IDirect3DVertexShader9* vs = nullptr;
+			if (SUCCEEDED(m_pDevice->CreateVertexShader(code, &vs)))
+				s->vs = vs;
+		}
+		else
+		{
+			IDirect3DPixelShader9* ps = nullptr;
+			if (SUCCEEDED(m_pDevice->CreatePixelShader(code, &ps)))
+				s->ps = ps;
+		}
+	}
+}
+
 bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 {
 	if(!m_pDevice)
@@ -295,12 +464,16 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 
 	FillPresentParams(params, backBufferFmt, depthStencilFmt, refreshHz);
 
+	ReleaseNativeDeviceResources();
+
 	HRESULT hr = m_pDevice->Reset(&m_PP);
 	if(FAILED(hr))
 	{
 		Msg("! [DX9] Reset failed (0x%08x)", hr);
 		return false;
 	}
+
+	RecreateNativeDeviceResources();
 
 	CacheBackBufferDimensions();
 

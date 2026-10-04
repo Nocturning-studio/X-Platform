@@ -242,6 +242,14 @@ void CRenderBackend::Clear(uint32_t flags, uint32_t colorARGB, float z, uint32_t
 	m_pRHI->Clear(flags, ARGBToFvec4(colorARGB), z, static_cast<u8>(stencil));
 }
 
+void CRenderBackend::Clear(uint32_t flags, fvec4 colorRGBA, float z, uint32_t stencil)
+{
+	if (!m_pRHI)
+		return;
+
+	m_pRHI->Clear(flags, colorRGBA, z, static_cast<u8>(stencil));
+}
+
 ref_vertexdecl CRenderBackend::CreateVertexDeclaration(const RHI_InputLayoutDesc& layout)
 {
 	return m_resources.CreateVertexDeclaration(layout);

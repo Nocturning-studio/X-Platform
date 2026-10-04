@@ -97,7 +97,7 @@ ICF void CRenderBackendFacade::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD F
     };
 
     // D3DCLEAR_* и RHI_CLEAR_* численно совпадают (0x1/0x2/0x4).
-    m_pRHI->Clear(Flags, rgba, Z, (uint8_t)Stencil);
+    Engine.RHI->Clear(Flags, rgba, Z, (uint8_t)Stencil);
 }
 
 ICF void CRenderBackendFacade::ClearTexture(const ref_rt& rt_1, u32 color)

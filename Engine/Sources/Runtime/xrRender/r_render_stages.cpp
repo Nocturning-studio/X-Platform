@@ -88,7 +88,15 @@ void CRender::calculate_scene_culling()
 	if (has_sector)
 	{
 		req.flags = SceneRenderPresets::GatherMainView;
-		req.culling_bounds = m_need_render_sun ? &main_coarse_structure : nullptr;
+		if (m_need_render_sun)
+		{
+			main_coarse_structure.clear();
+			req.culling_bounds = &main_coarse_structure;
+		}
+		else
+		{
+			req.culling_bounds = nullptr;
+		}
 	}
 	else
 	{

@@ -66,6 +66,7 @@ class XRRB_API CRenderBackend
 	ref_texture CreateRenderTarget(uint32_t w, uint32_t h, RHI_Format fmt, uint32_t mips = 1);
 	ref_texture CreateDepthStencil(uint32_t w, uint32_t h, RHI_Format fmt = RHI_Format::D24_UNORM_S8_UINT);
 	void Clear(uint32_t flags, uint32_t colorARGB = 0, float z = 1.0f, uint32_t stencil = 0);
+	void Clear(uint32_t flags, fvec4 colorRGBA = fvec4{0, 0, 0, 0}, float z = 1.0f, uint32_t stencil = 0);
 
 	ref_vertexdecl CreateVertexDeclaration(const RHI_InputLayoutDesc& layout);
 	ref_vertexbuffer CreateVertexBuffer(const RHI_BufferDesc& desc, const void* data = nullptr);

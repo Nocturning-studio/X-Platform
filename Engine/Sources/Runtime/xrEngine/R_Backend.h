@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xr_engine_common.h"
+#include "xrEngineAPI.h"
 #include "R_Backend_ResourceBinder.h"
 #include "R_Backend_ConstantManager.h"
 #include "R_Backend_Data_Streams.h"
@@ -80,9 +80,6 @@ class ENGINE_API CRenderBackendFacade
 	IDirect3DSurface9* m_pBaseZB;
 	RHI_PresentationParams m_presentParams{};
 
-	IRenderBackend* m_pRHI;
-	HINSTANCE m_hRHI_DLL;
-
 	VertexStream Vertex;
 	IndexStream Index;
 
@@ -138,10 +135,7 @@ class ENGINE_API CRenderBackendFacade
 
 	// Device & frame
 	void CreateQuadIB();
-	void OnFrameBegin();
-	void Present();
-	void OnFrameEnd();
-	void OnDeviceCreate();
+	void OnDeviceCreate(HWND hWnd, const RHI_PresentationParams& params);
 	void OnDeviceDestroy();
 	void DeleteResources();
 	void ResetBegin();
@@ -152,17 +146,10 @@ class ENGINE_API CRenderBackendFacade
 	DEPRECATED IDirect3D9Ex* GetD3D() const { return m_pD3D; }
 	IDirect3DSurface9* GetBaseRT() const { return m_pBaseRT; }
 	IDirect3DSurface9* GetBaseZB() const { return m_pBaseZB; }
-	IRenderBackend* GetRHI() const { return m_pRHI; }
-	const RHIDeviceCaps& GetDeviceCaps() const { return m_pRHI->GetDeviceCaps(); }
+	const RHIDeviceCaps& GetDeviceCaps() const { return Engine.RHI->GetDeviceCaps(); }
 
-	u32 GetBackBufferWidth()  const { return m_pRHI ? m_pRHI->GetBackBufferWidth() : 0; }
-	u32 GetBackBufferHeight() const { return m_pRHI ? m_pRHI->GetBackBufferHeight() : 0; }
-
-	// Initialization
-	void Create(HWND hWnd);
-	void Destroy();
-	void Reset();
-	bool NeedReset();
+	u32 GetBackBufferWidth()  const { return Engine.RHI->GetBackBufferWidth(); }
+	u32 GetBackBufferHeight() const { return Engine.RHI->GetBackBufferHeight(); }
 
 	void SelectResolution(u32& w, u32& h, BOOL bWindowed);
 	u32 SelectPresentInterval();
@@ -185,9 +172,9 @@ class ENGINE_API CRenderBackendFacade
 	// --- Pipeline state (delegated to m_stateCache) ---
 	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0) { CHK_DX(m_pDevice->SetRenderTarget(ID, RT)); }
 	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB) { CHK_DX(m_pDevice->SetDepthStencilSurface(ZB)); }
-	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable(*m_pRHI, (uint8_t)_mask); }
-	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(*m_pRHI, state); }
-	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode(*m_pRHI, (RHI_CullMode)_mode); }
+	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable(*Engine.RHI.GetRawRHI(), (uint8_t)_mask); }
+	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(*Engine.RHI.GetRawRHI(), state); }
+	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode(*Engine.RHI.GetRawRHI(), (RHI_CullMode)_mode); }
 	IC void SetScissor(Irect* rect = NULL)
 	{
 		if(rect)
@@ -197,11 +184,11 @@ class ENGINE_API CRenderBackendFacade
 			r.top = rect->y1;
 			r.right = rect->x2;
 			r.bottom = rect->y2;
-			m_stateCache.SetScissor(*m_pRHI, &r);
+			m_stateCache.SetScissor(*Engine.RHI.GetRawRHI(), &r);
 		}
 		else
 		{
-			m_stateCache.SetScissor(*m_pRHI, nullptr);
+			m_stateCache.SetScissor(*Engine.RHI.GetRawRHI(), nullptr);
 		}
 	}
 
@@ -211,12 +198,12 @@ class ENGINE_API CRenderBackendFacade
 	IC void SetViewport(const D3DVIEWPORT9& VP)
 	{
 		RHI_Viewport vp{VP.X, VP.Y, VP.Width, VP.Height, VP.MinZ, VP.MaxZ};
-		m_stateCache.SetViewport(*m_pRHI, vp);
+		m_stateCache.SetViewport(*Engine.RHI.GetRawRHI(), vp);
 	}
 
 	IC void GetViewport(D3DVIEWPORT9* VP)
 	{
-		const RHI_Viewport vp = m_pRHI->GetViewport();
+		const RHI_Viewport vp = Engine.RHI.GetRawRHI()->GetViewport();
 		VP->X = vp.X;
 		VP->Y = vp.Y;
 		VP->Width = vp.Width;
@@ -234,7 +221,7 @@ class ENGINE_API CRenderBackendFacade
 					   u32 _pass = D3DSTENCILOP_KEEP,
 					   u32 _zfail = D3DSTENCILOP_KEEP)
 	{
-		m_stateCache.SetStencil(*m_pRHI,
+		m_stateCache.SetStencil(*Engine.RHI.GetRawRHI(),
 								_enable != 0,
 								(RHI_CmpFunc)_func,
 								(uint8_t)_ref,
@@ -512,11 +499,8 @@ class ENGINE_API CRenderBackendFacade
 };
 
 extern ENGINE_API CRenderBackendFacade RenderBackendLegacy;
-
-inline IRenderBackend* RHI()
-{
-	return RenderBackendLegacy.GetRHI();
-}
+ENGINE_API void R_InitVidModeList();
+ENGINE_API void R_FreeVidModeList();
 
 #include "R_Backend.inl"
 

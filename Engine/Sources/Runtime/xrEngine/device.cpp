@@ -27,13 +27,36 @@ ENGINE_API BOOL g_bRendering = FALSE;
 
 ref_light precache_light = 0;
 
+namespace
+{
+	static void SelectResolution(u32& dwWidth, u32& dwHeight, BOOL /*bWindowed*/)
+	{
+#ifdef DEDICATED_SERVER
+		dwWidth = 32;
+		dwHeight = 32;
+#else
+		dwWidth = psCurrentVidMode[0];
+		dwHeight = psCurrentVidMode[1];
+#endif
+	}
+
+	static u32 SelectPresentInterval()
+	{
+#ifdef DEDICATED_SERVER
+		return 0;
+#else
+		return psDeviceFlags.test(rsVSync) ? 1 : 0;
+#endif
+	}
+}
+
 void CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
-	if(RenderBackendLegacy.NeedReset())
+	if (Engine.RHI.NeedReset())
 		Reset();
 
-	RenderBackendLegacy.OnFrameBegin();
+	Engine.RHI.BeginFrame();
 
 	Engine.DebugUI.OnFrameBegin();
 
@@ -46,18 +69,16 @@ void CRenderDevice::End(void)
 #ifndef DEDICATED_SERVER
 	PROFILE_FUNCTION();
 
-	VERIFY(RenderBackendLegacy.GetDevice());
-
 	g_bRendering = FALSE;
-	RenderBackendLegacy.OnFrameEnd();
+	Engine.RHI.EndFrame();
 	Engine.DebugUI.OnFrameEnd();
 	Memory.dbg_check();
 
-	if(IsIconic(Engine.WindowManager.GetHandle()))
+	if (IsIconic(Engine.WindowManager.GetHandle()))
 		return;
 
 	Engine.Statistic->RenderPresentation.Begin();
-	RenderBackendLegacy.Present();
+	Engine.RHI.Present();
 	Engine.Statistic->RenderPresentation.End();
 #endif
 }
@@ -170,7 +191,7 @@ void CRenderDevice::SetActivate(bool bActive)
 
 void CRenderDevice::Initialize()
 {
-	if(b_is_Ready)
+	if (b_is_Ready)
 		return;
 
 	Msg("Initializing Render Device...");
@@ -184,10 +205,52 @@ void CRenderDevice::Initialize()
 	psCurrentVidMode[1] = dwHeight;
 #endif
 
-	RenderBackendLegacy.Create(Engine.WindowManager.GetHandle());
+	if (!Engine.RHI.Initialize(RHI_BackendType::DirectX9Ex))
+	{
+		FATAL("! [Device] Engine.RHI.Initialize failed");
+		return;
+	}
 
-	dwWidth = RenderBackendLegacy.GetBackBufferWidth();
-	dwHeight = RenderBackendLegacy.GetBackBufferHeight();
+#ifndef DEDICATED_SERVER
+	BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
+#else
+	BOOL bWindowed = TRUE;
+#endif
+
+	u32 width, height;
+	SelectResolution(width, height, bWindowed);
+	u32 presentInterval = SelectPresentInterval();
+
+	Engine.WindowManager.SetWindowed(bWindowed);
+	Engine.WindowManager.SetResolution(width, height);
+	Engine.WindowManager.SetRefreshRate(60);
+	Engine.WindowManager.Apply();
+
+	RECT rcClient;
+	GetClientRect(Engine.WindowManager.GetHandle(), &rcClient);
+
+	RHI_PresentationParams params;
+	params.BackBufferWidth = rcClient.right - rcClient.left;
+	params.BackBufferHeight = rcClient.bottom - rcClient.top;
+	params.Windowed = bWindowed;
+	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
+	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
+	params.BackBufferCount = 2;
+	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
+	params.FullscreenRefreshHz = 60;
+	params.SwapEffect = RHI_SwapEffect::Discard;
+	params.EnableAutoDepthStencil = true;
+
+	if (!Engine.RHI.CreateDevice(Engine.WindowManager.GetHandle(), params))
+	{
+		FATAL("! [Device] Engine.RHI.CreateDevice failed");
+		return;
+	}
+
+	RenderBackendLegacy.OnDeviceCreate(Engine.WindowManager.GetHandle(), params);
+
+	dwWidth = Engine.RHI.GetBackBufferWidth();
+	dwHeight = Engine.RHI.GetBackBufferHeight();
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
@@ -195,8 +258,6 @@ void CRenderDevice::Initialize()
 	Memory.mem_compact();
 
 	b_is_Ready = TRUE;
-
-	RenderBackendLegacy.OnDeviceCreate();
 
 	string_path fname;
 	FS.update_path(fname, "$game_data$", "shaders.xr");
@@ -208,11 +269,13 @@ void CRenderDevice::Initialize()
 	m_SelectionShader.create("hud\\crosshair");
 	DU.OnDeviceCreate();
 #endif
+
+	R_InitVidModeList();
 }
 
 void CRenderDevice::Destroy(void)
 {
-	if(!b_is_Ready)
+	if (!b_is_Ready)
 		return;
 
 	Log("\nDestroying Direct3D...");
@@ -223,38 +286,85 @@ void CRenderDevice::Destroy(void)
 	m_SelectionShader.destroy();
 
 	b_is_Ready = FALSE;
+
 	Engine.Statistic->OnDeviceDestroy();
 	RenderBackendLegacy.DeleteResources();
 	Engine.ResourceManager->OnDeviceDestroy(FALSE);
+
 	RenderBackendLegacy.OnDeviceDestroy();
 
 	Memory.mem_compact();
 
-	RenderBackendLegacy.Destroy();
+	Engine.RHI.Destroy();
+
+	R_FreeVidModeList();
 }
+
 
 void CRenderDevice::Reset()
 {
 	Engine.DebugUI.OnResetBegin();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", RenderBackendLegacy.GetDevice());
+	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:",
+		Engine.RHI.GetRawRHI() ? Engine.RHI.GetRawRHI()->GetDeviceHandle() : nullptr);
 #endif
+
 	bool b_16_before = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
 
 	ShowCursor(TRUE);
 
+	// --- 1. Legacy: освобождаем DEFAULT-pool ресурсы ---
 	RenderBackendLegacy.ResetBegin();
 	Engine.ResourceManager->ResetBegin();
+
 	Memory.mem_compact();
-	RenderBackendLegacy.Reset();
-	dwWidth = Engine.WindowManager.GetWidth();
-	dwHeight = Engine.WindowManager.GetHeight();
+
+	// --- 2. RHI Reset ---
+#ifndef DEDICATED_SERVER
+	BOOL bWindowed = strstr(Core.Params, "-windowed") ? TRUE : !psDeviceFlags.is(rsFullscreen);
+#else
+	BOOL bWindowed = TRUE;
+#endif
+
+	u32 width, height;
+	SelectResolution(width, height, bWindowed);
+	u32 presentInterval = SelectPresentInterval();
+
+	Engine.WindowManager.SetWindowed(bWindowed);
+	Engine.WindowManager.SetResolution(width, height);
+	Engine.WindowManager.Apply();
+
+	RECT rcClient;
+	GetClientRect(Engine.WindowManager.GetHandle(), &rcClient);
+
+	RHI_PresentationParams params;
+	params.BackBufferWidth = rcClient.right - rcClient.left;
+	params.BackBufferHeight = rcClient.bottom - rcClient.top;
+	params.Windowed = bWindowed;
+	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
+	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
+	params.BackBufferCount = 1;
+	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
+	params.FullscreenRefreshHz = 60;
+	params.SwapEffect = RHI_SwapEffect::Discard;
+	params.EnableAutoDepthStencil = true;
+
+	if (!Engine.RHI.ResetDevice(params))
+		R_ERROR("! [Device] RHI Reset failed");
+
+	// --- 3. Реальные размеры ---
+	dwWidth = Engine.RHI.GetBackBufferWidth();
+	dwHeight = Engine.RHI.GetBackBufferHeight();
+	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
+
+	// --- 4. Legacy: пересоздаём ресурсы ---
+	RenderBackendLegacy.ResetEnd();
 	Engine.ResourceManager->ResetEnd();
 
-	if(g_pGamePersistent)
+	if (g_pGamePersistent)
 		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 
 #ifndef DEDICATED_SERVER
@@ -262,17 +372,21 @@ void CRenderDevice::Reset()
 #endif
 
 	Engine.Events.DeviceReset.Process(rp_DeviceReset);
-	RenderBackendLegacy.ResetEnd();
 
 	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
-	if(b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
+	if (b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
 		g_pGameLevel->pHUD->OnScreenRatioChanged();
 
 	Engine.DebugUI.OnResetEnd();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", RenderBackendLegacy.GetDevice());
+	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", Engine.RHI.GetRawRHI() ? Engine.RHI.GetRawRHI()->GetDeviceHandle() : nullptr);
 #endif
+}
+
+bool CRenderDevice::NeedReset() const
+{
+	return Engine.RHI.NeedReset();
 }
 
 void CRenderDevice::SetNearer(BOOL enabled)

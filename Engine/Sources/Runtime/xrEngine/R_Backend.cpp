@@ -12,7 +12,7 @@ ENGINE_API CRenderBackendFacade RenderBackendLegacy;
 
 xr_token* vid_mode_token = NULL;
 
-static void free_vid_mode_list()
+static void R_FreeVidModeList()
 {
 	if(vid_mode_token)
 	{
@@ -23,7 +23,7 @@ static void free_vid_mode_list()
 	}
 }
 
-static void fill_vid_mode_list()
+static void R_InitVidModeList()
 {
 	if(vid_mode_token != NULL)
 		return;
@@ -96,215 +96,13 @@ static void fill_vid_mode_list()
 	}
 }
 
-CRenderBackendFacade::CRenderBackendFacade()
-	: m_pD3D(NULL), m_pDevice(NULL), m_pBaseRT(NULL), m_pBaseZB(NULL),
-	  m_pRHI(nullptr), m_hRHI_DLL(NULL), QuadIB(NULL), old_QuadIB(NULL)
+CRenderBackendFacade::CRenderBackendFacade() : m_pD3D(NULL), m_pDevice(NULL), m_pBaseRT(NULL), m_pBaseZB(NULL), QuadIB(NULL), old_QuadIB(NULL)
 {
 	Invalidate();
 }
 
 CRenderBackendFacade::~CRenderBackendFacade()
 {
-	Destroy();
-}
-
-void CRenderBackendFacade::Create(HWND m_hWnd)
-{
-	m_hRHI_DLL = LoadLibrary("xrRHI.dll");
-	if (!m_hRHI_DLL)
-	{
-		Msg("! Failed to load xrRHI.dll");
-		FlushLog();
-		MessageBox(NULL, "Failed to load xrRHI.dll", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
-
-	typedef IRenderBackend* (*CreateBackendFunc)(RHI_BackendType);
-	auto createBackend = (CreateBackendFunc)GetProcAddress(m_hRHI_DLL, "CreateRenderBackend");
-	if (!createBackend)
-	{
-		Msg("! Failed to get CreateRenderBackend from xrRHI.dll");
-		FlushLog();
-		MessageBox(NULL, "Invalid xrRHI.dll", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
-
-	m_pRHI = createBackend(RHI_BackendType::DirectX9Ex);
-	if (!m_pRHI)
-	{
-		Msg("! Failed to create render backend");
-		FlushLog();
-		MessageBox(NULL, "Failed to create render backend", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
-
-#ifndef DEDICATED_SERVER
-	BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
-#else
-	BOOL bWindowed = TRUE;
-#endif
-
-	u32 width, height;
-	SelectResolution(width, height, bWindowed);
-	u32 presentInterval = SelectPresentInterval();
-	u32 refreshHz = D3DPRESENT_RATE_DEFAULT;
-
-	CWindowManager& wm = Engine.WindowManager;
-	wm.SetWindowed(bWindowed);
-	wm.SetResolution(width, height);
-	wm.SetRefreshRate(refreshHz);
-	wm.Apply();
-
-	RECT rcClient;
-	GetClientRect(m_hWnd, &rcClient);
-
-	RHI_PresentationParams params;
-	params.BackBufferWidth = rcClient.right - rcClient.left;
-	params.BackBufferHeight = rcClient.bottom - rcClient.top;
-	params.Windowed = bWindowed;
-	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
-	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
-	params.BackBufferCount = 2;
-	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
-	params.FullscreenRefreshHz = refreshHz;
-	params.SwapEffect = RHI_SwapEffect::Discard;
-	params.EnableAutoDepthStencil = true;
-
-	if (!m_pRHI->CreateDevice(m_hWnd, params))
-	{
-		Msg("! RHI CreateDevice failed");
-		delete m_pRHI;
-		m_pRHI = nullptr;
-		FreeLibrary(m_hRHI_DLL);
-		m_hRHI_DLL = nullptr;
-		FlushLog();
-		MessageBox(NULL, "Failed to create graphics device", "Fatal Error", MB_OK | MB_ICONERROR);
-		TerminateProcess(GetCurrentProcess(), 0);
-		return;
-	}
-
-	// DEPRECATED: raw D3D9 указатели — только для ещё не мигрированного кода.
-	m_pDevice = (IDirect3DDevice9Ex*)m_pRHI->GetDeviceHandle();
-	m_pD3D = (IDirect3D9Ex*)m_pRHI->GetD3DHandle();
-
-	R_CHK(m_pDevice->GetRenderTarget(0, &m_pBaseRT));
-	R_CHK(m_pDevice->GetDepthStencilSurface(&m_pBaseZB));
-
-	// RHI сам выставил viewport, сам хранит back buffer. Читаем только
-	// актуальные размеры (могли отличаться от запрошенных — например,
-	// в fullscreen RHI выбирает ближайший поддерживаемый режим).
-	m_presentParams = params;
-	m_presentParams.BackBufferWidth = m_pRHI->GetBackBufferWidth();
-	m_presentParams.BackBufferHeight = m_pRHI->GetBackBufferHeight();
-
-	Device.dwWidth = m_presentParams.BackBufferWidth;
-	Device.dwHeight = m_presentParams.BackBufferHeight;
-
-	Msg("* Backbuffer real size: %ux%u", Device.dwWidth, Device.dwHeight);
-
-#ifndef DEDICATED_SERVER
-	ShowCursor(FALSE);
-	SetForegroundWindow(m_hWnd);
-#endif
-
-	fill_vid_mode_list();
-
-	Msg("* RHI backend initialized successfully.");
-}
-
-void CRenderBackendFacade::Destroy()
-{
-	_RELEASE(m_pBaseRT);
-	_RELEASE(m_pBaseZB);
-
-	if (m_pRHI)
-	{
-		m_pRHI->DestroyDevice();
-		delete m_pRHI;
-		m_pRHI = nullptr;
-	}
-	if (m_hRHI_DLL)
-	{
-		FreeLibrary(m_hRHI_DLL);
-		m_hRHI_DLL = nullptr;
-	}
-
-	m_pDevice = nullptr;
-	m_pD3D = nullptr;
-
-#ifndef _EDITOR
-	free_vid_mode_list();
-#endif
-}
-
-void CRenderBackendFacade::Reset()
-{
-	if (!m_pRHI)
-		return;
-
-#ifndef DEDICATED_SERVER
-	BOOL bWindowed = strstr(Core.Params, "-windowed") ? TRUE : !psDeviceFlags.is(rsFullscreen);
-#else
-	BOOL bWindowed = TRUE;
-#endif
-
-	u32 width, height;
-	SelectResolution(width, height, bWindowed);
-	u32 presentInterval = SelectPresentInterval();
-	u32 refreshHz = D3DPRESENT_RATE_DEFAULT;
-
-	CWindowManager& wm = Engine.WindowManager;
-	wm.SetWindowed(bWindowed);
-	wm.SetResolution(width, height);
-	wm.SetRefreshRate(refreshHz);
-	wm.Apply();
-
-	HWND hWnd = wm.GetHandle();
-	RECT rcClient;
-	GetClientRect(hWnd, &rcClient);
-
-	RHI_PresentationParams params;
-	params.BackBufferWidth = rcClient.right - rcClient.left;
-	params.BackBufferHeight = rcClient.bottom - rcClient.top;
-	params.Windowed = bWindowed;
-	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
-	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
-	params.BackBufferCount = 1;
-	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
-	params.FullscreenRefreshHz = refreshHz;
-	params.SwapEffect = RHI_SwapEffect::Discard;
-	params.EnableAutoDepthStencil = true;
-
-	if (!m_pRHI->Reset(params))
-	{
-		Msg("! RHI Reset failed");
-		return;
-	}
-
-	m_pDevice = (IDirect3DDevice9Ex*)m_pRHI->GetDeviceHandle();
-	m_pD3D = (IDirect3D9Ex*)m_pRHI->GetD3DHandle();
-
-	R_CHK(m_pDevice->GetRenderTarget(0, &m_pBaseRT));
-	R_CHK(m_pDevice->GetDepthStencilSurface(&m_pBaseZB));
-
-	m_presentParams = params;
-	m_presentParams.BackBufferWidth = m_pRHI->GetBackBufferWidth();
-	m_presentParams.BackBufferHeight = m_pRHI->GetBackBufferHeight();
-
-	Device.dwWidth = m_presentParams.BackBufferWidth;
-	Device.dwHeight = m_presentParams.BackBufferHeight;
-
-	Msg("* Backbuffer real size after reset: %ux%u", Device.dwWidth, Device.dwHeight);
-}
-
-bool CRenderBackendFacade::NeedReset()
-{
-	if (!m_pRHI)
-		return false;
-	return m_pRHI->CheckDeviceStatus() == RHI_DeviceStatus::NeedReset;
 }
 
 void CRenderBackendFacade::SelectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
@@ -356,14 +154,44 @@ void CRenderBackendFacade::CreateQuadIB()
 	R_CHK(QuadIB->Unlock());
 }
 
-void CRenderBackendFacade::OnDeviceCreate()
+void CRenderBackendFacade::OnDeviceCreate(HWND /*hWnd*/, const RHI_PresentationParams& params)
 {
+	IRenderBackend* rhi = Engine.RHI.GetRawRHI();
+	if (!rhi)
+	{
+		Msg("! [Legacy] OnDeviceCreate: RHI is not ready");
+		return;
+	}
+
+	// Кэшируем raw D3D9-указатели для legacy-операций.
+	m_pDevice = static_cast<IDirect3DDevice9Ex*>(rhi->GetDeviceHandle());
+	m_pD3D = static_cast<IDirect3D9Ex*>(rhi->GetD3DHandle());
+
+	if (!m_pDevice)
+	{
+		Msg("! [Legacy] OnDeviceCreate: no D3D9 device");
+		return;
+	}
+
+	// Кэшируем back buffer RT/ZB. Это НЕ владение — просто ссылки,
+	// используемые legacy-путём (GetBaseRT / GetBaseZB).
+	R_CHK(m_pDevice->GetRenderTarget(0, &m_pBaseRT));
+	R_CHK(m_pDevice->GetDepthStencilSurface(&m_pBaseZB));
+
+	// Параметры — для логов/UI. Реальные размеры читаем у RHI.
+	m_presentParams = params;
+	m_presentParams.BackBufferWidth = rhi->GetBackBufferWidth();
+	m_presentParams.BackBufferHeight = rhi->GetBackBufferHeight();
+
+	// Legacy-ресурсы.
 	CreateQuadIB();
 	Vertex.Create();
 	Index.Create();
 	Invalidate();
 	m_constantMgr.ResetDirty();
 	m_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
+
+	Msg("* [Legacy] OnDeviceCreate done (bb=%ux%u)", m_presentParams.BackBufferWidth, m_presentParams.BackBufferHeight);
 }
 
 void CRenderBackendFacade::OnDeviceDestroy()
@@ -371,17 +199,59 @@ void CRenderBackendFacade::OnDeviceDestroy()
 	Index.Destroy();
 	Vertex.Destroy();
 	m_constantMgr.ResetDirty();
+
+	m_viewport.destroy();
 	_RELEASE(QuadIB);
+
+	_RELEASE(m_pBaseRT);
+	_RELEASE(m_pBaseZB);
+
+	m_pDevice = nullptr;
+	m_pD3D = nullptr;
+
+	Msg("* [Legacy] OnDeviceDestroy done");
 }
 
 void CRenderBackendFacade::ResetBegin()
 {
+	_RELEASE(m_pBaseRT);
+	_RELEASE(m_pBaseZB);
+
+	m_viewport.destroy();
+	Vertex.ResetBegin();
+	Index.ResetBegin();
+	old_QuadIB = QuadIB;
+	_RELEASE(QuadIB);
+
+	Invalidate();
 	m_constantMgr.ForceDirty();
 	m_resBinder.Invalidate(*this);
 }
 
 void CRenderBackendFacade::ResetEnd()
 {
+	IRenderBackend* rhi = Engine.RHI.GetRawRHI();
+	if (!rhi)
+	{
+		Msg("! [Legacy] ResetEnd: RHI is not ready");
+		return;
+	}
+
+	m_pDevice = static_cast<IDirect3DDevice9Ex*>(rhi->GetDeviceHandle());
+	m_pD3D = static_cast<IDirect3D9Ex*>(rhi->GetD3DHandle());
+	if (!m_pDevice)
+		return;
+
+	R_CHK(m_pDevice->GetRenderTarget(0, &m_pBaseRT));
+	R_CHK(m_pDevice->GetDepthStencilSurface(&m_pBaseZB));
+
+	// Пересоздаём собственные ресурсы.
+	Vertex.ResetEnd();       // Create() → новый pVB
+	Index.ResetEnd();        // Create() → новый pIB
+	CreateQuadIB();          // новый QuadIB
+
+	m_viewport.create(FVF::F_TL, Vertex.Buffer(), QuadIB);
+
 	m_constantMgr.ResetDirty();
 }
 
@@ -429,12 +299,12 @@ void CRenderBackendFacade::RestoreRenderState()
 
 void CRenderBackendFacade::SetBlend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 {
-	m_stateCache.SetBlend(*m_pRHI, enable != 0, (RHI_Blend)src, (RHI_Blend)dest);
+	m_stateCache.SetBlend(*Engine.RHI.GetRawRHI(), enable != 0, (RHI_Blend)src, (RHI_Blend)dest);
 }
 
 void CRenderBackendFacade::SetBlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
 {
-	m_stateCache.SetBlendEx(*m_pRHI, enable != 0, (RHI_Blend)src, (RHI_Blend)dest, (RHI_BlendOp)op);
+	m_stateCache.SetBlendEx(*Engine.RHI.GetRawRHI(), enable != 0, (RHI_Blend)src, (RHI_Blend)dest, (RHI_BlendOp)op);
 }
 
 void CRenderBackendFacade::SetBlendAlpha()
@@ -480,17 +350,17 @@ void CRenderBackendFacade::SetBlendColorAdd()
 
 BOOL CRenderBackendFacade::GetBlendState() const
 {
-	return m_stateCache.GetBlendEnable(*m_pRHI) ? TRUE : FALSE;
+	return m_stateCache.GetBlendEnable(*Engine.RHI.GetRawRHI()) ? TRUE : FALSE;
 }
 
 D3DBLEND CRenderBackendFacade::GetSrcBlend() const
 {
-	return (D3DBLEND)m_stateCache.GetSrcBlend(*m_pRHI);
+	return (D3DBLEND)m_stateCache.GetSrcBlend(*Engine.RHI.GetRawRHI());
 }
 
 D3DBLEND CRenderBackendFacade::GetDstBlend() const
 {
-	return (D3DBLEND)m_stateCache.GetDstBlend(*m_pRHI);
+	return (D3DBLEND)m_stateCache.GetDstBlend(*Engine.RHI.GetRawRHI());
 }
 
 void CRenderBackendFacade::EnableAnisotropyFiltering()
@@ -516,32 +386,6 @@ void CRenderBackendFacade::Invalidate()
 	m_resBinder.Invalidate(*this);
 }
 
-void CRenderBackendFacade::OnFrameBegin()
-{
-#ifndef DEDICATED_SERVER
-	std::memset(&stat, 0, sizeof(stat));
-	Vertex.Flush();
-	Index.Flush();
-	SetStencil(FALSE);
-	RHI()->OnFrameBegin();
-#endif
-}
-
-void CRenderBackendFacade::OnFrameEnd()
-{
-#ifndef DEDICATED_SERVER
-	RHI()->OnFrameEnd();
-	Invalidate();
-#endif
-}
-
-void CRenderBackendFacade::Present()
-{
-	PROFILE_FUNCTION();
-
-	RHI()->Present();
-}
-
 #ifndef DEDICATED_SERVER
 
 void CRenderBackendFacade::SetTextures(STextureList* _T)
@@ -555,7 +399,6 @@ void CRenderBackendFacade::SetTextures(STextureList* _T)
 }
 
 #endif
-
 
 void CRenderBackendFacade::SetRenderTarget(const ref_rt& rt_1, const ref_rt& rt_2, const ref_rt& rt_3, const ref_rt& rt_4)
 {

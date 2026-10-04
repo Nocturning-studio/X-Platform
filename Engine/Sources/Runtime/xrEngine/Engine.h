@@ -20,6 +20,7 @@ struct xrDispatchTable;
 #include "ThreadManager.h"
 #include "RenderView.h"
 #include "ResourceManager.h"
+#include "RHI.h"
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API CSheduler;
 class ENGINE_API CLevelLoadingScreen;
@@ -88,6 +89,8 @@ class ENGINE_API CEngine
 	CSheduler* Sheduler;
 	CStats* Statistic;
 	CResourceManagerLegacy* ResourceManager;
+
+	CXRHISubsystem RHI;
 
   public:
 	CEngine();

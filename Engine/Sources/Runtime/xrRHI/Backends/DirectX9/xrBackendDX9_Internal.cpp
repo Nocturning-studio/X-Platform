@@ -223,4 +223,81 @@ size_t GetPixelSize(RHI_Format fmt)
 		return 0;
 	}
 }
+
+BYTE ToD3DDeclType(RHI_VertexElementType t)
+{
+	switch (t)
+	{
+	case RHI_VertexElementType::Float1:
+		return D3DDECLTYPE_FLOAT1;
+	case RHI_VertexElementType::Float2:
+		return D3DDECLTYPE_FLOAT2;
+	case RHI_VertexElementType::Float3:
+		return D3DDECLTYPE_FLOAT3;
+	case RHI_VertexElementType::Float4:
+		return D3DDECLTYPE_FLOAT4;
+	case RHI_VertexElementType::UByte4:
+		return D3DDECLTYPE_UBYTE4;
+	case RHI_VertexElementType::UByte4N:
+		return D3DDECLTYPE_UBYTE4N;
+	case RHI_VertexElementType::Short2:
+		return D3DDECLTYPE_SHORT2;
+	case RHI_VertexElementType::Short2N:
+		return D3DDECLTYPE_SHORT2N;
+	case RHI_VertexElementType::Short4:
+		return D3DDECLTYPE_SHORT4;
+	case RHI_VertexElementType::Short4N:
+		return D3DDECLTYPE_SHORT4N;
+		// UInt1..4 не имеют аналога в D3D9 — это задел под DX10+.
+	default:
+		return D3DDECLTYPE_UNUSED;
+	}
+}
+
+BYTE ToD3DDeclUsage(RHI_VertexElementSemantic s)
+{
+	switch (s)
+	{
+	case RHI_VertexElementSemantic::Position:
+		return D3DDECLUSAGE_POSITION;
+	case RHI_VertexElementSemantic::Normal:
+		return D3DDECLUSAGE_NORMAL;
+	case RHI_VertexElementSemantic::Tangent:
+		return D3DDECLUSAGE_TANGENT;
+	case RHI_VertexElementSemantic::Binormal:
+		return D3DDECLUSAGE_BINORMAL;
+	case RHI_VertexElementSemantic::TexCoord:
+		return D3DDECLUSAGE_TEXCOORD;
+	case RHI_VertexElementSemantic::Color:
+		return D3DDECLUSAGE_COLOR;
+	case RHI_VertexElementSemantic::BlendWeight:
+		return D3DDECLUSAGE_BLENDWEIGHT;
+	case RHI_VertexElementSemantic::BlendIndices:
+		return D3DDECLUSAGE_BLENDINDICES;
+	case RHI_VertexElementSemantic::PositionT:
+		return D3DDECLUSAGE_POSITIONT;
+	default:
+		return D3DDECLUSAGE_POSITION;
+	}
+}
+
+D3DPRIMITIVETYPE ToD3DPrimitive(RHI_Topology t)
+{
+	switch (t)
+	{
+	case RHI_Topology::PointList:
+		return D3DPT_POINTLIST;
+	case RHI_Topology::LineList:
+		return D3DPT_LINELIST;
+	case RHI_Topology::LineStrip:
+		return D3DPT_LINESTRIP;
+	case RHI_Topology::TriangleList:
+		return D3DPT_TRIANGLELIST;
+	case RHI_Topology::TriangleStrip:
+		return D3DPT_TRIANGLESTRIP;
+	case RHI_Topology::TriangleFan:
+		return D3DPT_TRIANGLEFAN;
+	}
+	return D3DPT_TRIANGLELIST;
+}
 ////////////////////////////////////////////////////////////////////////////////

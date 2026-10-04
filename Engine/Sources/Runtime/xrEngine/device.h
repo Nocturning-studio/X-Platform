@@ -88,6 +88,7 @@ class ENGINE_API CRenderDevice
 	void RenderFrame();
 	void Destroy();
 	void Reset();
+	bool NeedReset() const;
 };
 
 extern ENGINE_API CRenderDevice Device;

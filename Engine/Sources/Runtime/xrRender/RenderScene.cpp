@@ -239,6 +239,9 @@ void CRenderScene::ComputeVisibility(const SSceneVisibilityRequest& req, SceneGr
 
 void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req, SceneGraphPacket& packet, SceneTraversalContext& ctx)
 {
+	packet.Clear();
+	packet.visible_sectors_map.clear();
+
 	ctx.RenderView = req.render_view;
 	ctx.use_hom = req.use_hom;
 	ctx.use_feedback = req.use_feedback;

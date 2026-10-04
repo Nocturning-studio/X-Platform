@@ -67,4 +67,8 @@ D3DTEXTUREFILTERTYPE RHIFilterToD3D(RHI_Filter f);
 size_t GetPixelSize(RHI_Format fmt);
 
 RHI_Format D3DFormatToRHI(D3DFORMAT fmt);
+
+BYTE ToD3DDeclType(RHI_VertexElementType t);
+BYTE ToD3DDeclUsage(RHI_VertexElementSemantic s);
+D3DPRIMITIVETYPE ToD3DPrimitive(RHI_Topology t);
 ////////////////////////////////////////////////////////////////////////////////

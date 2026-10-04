@@ -72,7 +72,7 @@ void CBackendResourceBinder::SetPixelShader(CRenderBackendFacade& backend, RHI_S
 	{
 		backend.stat.ps++;
 		m_ps = ps;
-		backend.GetRHI()->SetPixelShader(ps);
+		Engine.RHI.GetRawRHI()->SetPixelShader(ps);
 		m_owner = EStateOwner::RHI;
 	}
 #ifdef DEBUG
@@ -90,7 +90,7 @@ void CBackendResourceBinder::SetVertexShader(CRenderBackendFacade& backend, RHI_
 	{
 		backend.stat.vs++;
 		m_vs = vs;
-		backend.GetRHI()->SetVertexShader(vs);
+		Engine.RHI.GetRawRHI()->SetVertexShader(vs);
 		m_owner = EStateOwner::RHI;
 	}
 #ifdef DEBUG
@@ -125,7 +125,7 @@ void CBackendResourceBinder::SetShaderPass(CRenderBackendFacade& backend, CShade
 
 	// Константы — как в старом коде. Samplers/текстуры применяются
 	// отдельно через SetTextures (и, при необходимости, pass->ApplySamplers).
-	pass->ConstantBuffer().Flush(*backend.GetRHI());
+	pass->ConstantBuffer().Flush(*Engine.RHI.GetRawRHI());
 }
 
 // ----------------------------------------------------------------
@@ -140,7 +140,7 @@ void CBackendResourceBinder::SetVertexDeclaration(CRenderBackendFacade& backend,
 		backend.stat.decl++;
 #endif
 		m_decl = decl;
-		backend.GetRHI()->SetInputLayout(decl);
+		Engine.RHI.GetRawRHI()->SetInputLayout(decl);
 		m_owner = EStateOwner::RHI;
 }
 }
@@ -158,7 +158,7 @@ void CBackendResourceBinder::SetVertexBuffer(CRenderBackendFacade& backend, RHI_
 #endif
 		m_vb = vb;
 		m_vbStride = stride;
-		backend.GetRHI()->SetVertexBuffer(0, vb, 0, stride);
+		Engine.RHI.GetRawRHI()->SetVertexBuffer(0, vb, 0, stride);
 		m_owner = EStateOwner::RHI;
 	}
 }
@@ -176,7 +176,7 @@ void CBackendResourceBinder::SetIndexBuffer(CRenderBackendFacade& backend, RHI_B
 #endif
 		m_ib = ib;
 		m_ibFormat = fmt;
-		backend.GetRHI()->SetIndexBuffer(ib, fmt);
+		Engine.RHI.GetRawRHI()->SetIndexBuffer(ib, fmt);
 		m_owner = EStateOwner::RHI;
 	}
 }

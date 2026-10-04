@@ -59,7 +59,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, RHI_Format f, u32 levels)
 	dwHeight = h;
 	fmt = f;
 
-	IRenderBackend* RHI = ::RHI();
+	IRenderBackend* RHI = Engine.RHI.GetRawRHI();
 	const RHIDeviceCaps& caps = RHI->GetDeviceCaps();
 
 	if(!btwIsPow2(w) || !btwIsPow2(h))
@@ -141,7 +141,7 @@ void CRT::destroy()
 	_RELEASE(pSurface);
 	if (m_rhiHandle.IsValid())
 	{
-		if (IRenderBackend* rhi = ::RHI())
+		if (IRenderBackend* rhi = Engine.RHI.GetRawRHI())
 			rhi->DestroyTexture(m_rhiHandle);
 		m_rhiHandle = {};
 	}
@@ -195,7 +195,7 @@ void CRTC::create(LPCSTR Name, u32 size, RHI_Format f, u32 levels)
 	dwSize = size;
 	fmt = f;
 
-	IRenderBackend* RHI = ::RHI();
+	IRenderBackend* RHI = Engine.RHI.GetRawRHI();
 	const RHIDeviceCaps& caps = RHI->GetDeviceCaps();
 
 	if(size > caps.MaxTextureWidth || size > caps.MaxTextureHeight)
@@ -274,7 +274,7 @@ void CRTC::destroy()
 	_RELEASE(pSurface);
 	if (m_rhiHandle.IsValid())
 	{
-		if (IRenderBackend* rhi = ::RHI())
+		if (IRenderBackend* rhi = Engine.RHI.GetRawRHI())
 			rhi->DestroyTexture(m_rhiHandle);
 		m_rhiHandle = {};
 	}

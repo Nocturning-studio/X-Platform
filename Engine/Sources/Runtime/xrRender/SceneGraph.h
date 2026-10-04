@@ -72,7 +72,7 @@ struct SceneGraphPacket
 
 	void ReleaseVisualRefs()
 	{
-		for(IRender_Visual* V : m_visual_refs)
+		for (IRender_Visual* V : m_visual_refs)
 			V->ReleaseRef();
 		m_visual_refs.clear();
 	}

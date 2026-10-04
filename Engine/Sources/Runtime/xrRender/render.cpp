@@ -205,6 +205,7 @@ void CRender::Destroy()
 
 void CRender::ResetBegin()
 {
+	Msg("CRender::ResetBegin()");
 	WaitForPendingTasks();
 
 	m_scene_visibility_data.FreeResources();
@@ -218,6 +219,7 @@ void CRender::ResetBegin()
 
 void CRender::ResetEnd()
 {
+	Msg("CRender::ResetEnd()");
 	HWOCC.occq_create(occq_size);
 
 	update_options();

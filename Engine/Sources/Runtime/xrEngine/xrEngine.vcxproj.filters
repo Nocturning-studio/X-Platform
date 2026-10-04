@@ -211,6 +211,9 @@
     <Filter Include="Legacy Render\Render backend\Camera view">
       <UniqueIdentifier>{63460ad0-eae8-45c6-b91e-973f5bf1ca88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{975e1b55-dc3b-4c53-be20-7ea683528fd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -621,9 +624,6 @@
     <ClInclude Include="R_Backend_ConstantManager.h">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="xr_engine_common.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="R_Backend_tree.h">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClInclude>
@@ -632,6 +632,12 @@
     </ClInclude>
     <ClInclude Include="device.h">
       <Filter>Legacy Render\Render backend</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="xrEngineAPI.h">
+      <Filter>General\Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1051,6 +1057,9 @@
     </ClCompile>
     <ClCompile Include="device.cpp">
       <Filter>Legacy Render\Render backend</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

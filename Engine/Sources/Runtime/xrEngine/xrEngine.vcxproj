@@ -795,6 +795,7 @@
     <ClInclude Include="IRender.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RHI.h" />
     <ClInclude Include="R_Backend.h" />
     <ClInclude Include="R_Backend_ConstantManager.h" />
     <ClInclude Include="R_Backend_RenderTarget.h" />
@@ -830,7 +831,7 @@
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="xrBind_PSGP.h" />
-    <ClInclude Include="xr_engine_common.h" />
+    <ClInclude Include="xrEngineAPI.h" />
     <ClInclude Include="xrHemisphere.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrLevel.h" />
@@ -988,6 +989,7 @@
     <ClCompile Include="ResourceManager_Reset.cpp" />
     <ClCompile Include="ResourceManager_Resources.cpp" />
     <ClCompile Include="ResourceManager_Scripting.cpp" />
+    <ClCompile Include="RHI.cpp" />
     <ClCompile Include="R_Backend.cpp" />
     <ClCompile Include="R_Backend_ConstantManager.cpp" />
     <ClCompile Include="R_Backend_DBG.cpp" />

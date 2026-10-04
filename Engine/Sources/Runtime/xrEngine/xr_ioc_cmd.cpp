@@ -397,7 +397,6 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 	else
 	{
 		Msg("! Cannot open script file [%s]", cfg_full_name);
-		R_ASSERT(false);
 	}
 }
 

@@ -13,29 +13,9 @@
 
 void CResourceManagerLegacy::ResetBegin()
 {
-	// destroy everything, renderer may use
+	Msg("CResourceManagerLegacy::ResetBegin()");
+
 	Render->ResetBegin();
-
-	if(0)
-	{
-		// destroy state-blocks
-		for(u32 _it = 0; _it < v_states.size(); _it++)
-			_RELEASE(v_states[_it]->state);
-
-		// destroy RTs
-		for(map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
-			rt_it->second->ResetBegin();
-		for(map_RTCIt rtc_it = m_rtargets_c.begin(); rtc_it != m_rtargets_c.end(); rtc_it++)
-			rtc_it->second->ResetBegin();
-	}
-
-	// destroy DStreams
-	RenderBackendLegacy.old_QuadIB = RenderBackendLegacy.QuadIB;
-	_RELEASE(RenderBackendLegacy.QuadIB);
-	RenderBackendLegacy.Index.ResetBegin();
-	RenderBackendLegacy.Vertex.ResetBegin();
-
-	// DeferredUnload();
 }
 
 bool cmp_rt(const CRT* A, const CRT* B)
@@ -49,37 +29,22 @@ bool cmp_rtc(const CRTC* A, const CRTC* B)
 
 void CResourceManagerLegacy::ResetEnd()
 {
-	// create RDStreams
-	RenderBackendLegacy.Vertex.ResetEnd();
-	RenderBackendLegacy.Index.ResetEnd();
-	Evict();
-	RenderBackendLegacy.CreateQuadIB();
-
 	// remark geom's which point to dynamic VB/IB
 	{
-		for(u32 _it = 0; _it < v_geoms.size(); _it++)
+		for (u32 _it = 0; _it < v_geoms.size(); _it++)
 		{
 			SGeometry* _G = v_geoms[_it];
-			if(_G->vb == RenderBackendLegacy.Vertex.old_pVB)
-			{
-				_G->vb = RenderBackendLegacy.Vertex.Buffer();
-			}
 
-			// Here we may recover the buffer using one of
-			// RenderBackendLegacy's index buffers.
-			// Do not remove else.
-			if(_G->ib == RenderBackendLegacy.Index.old_pIB)
-			{
+			if (_G->vb == RenderBackendLegacy.Vertex.old_pVB)
+				_G->vb = RenderBackendLegacy.Vertex.Buffer();
+
+			if (_G->ib == RenderBackendLegacy.Index.old_pIB)
 				_G->ib = RenderBackendLegacy.Index.Buffer();
-			}
-			else if(_G->ib == RenderBackendLegacy.old_QuadIB)
-			{
+			else if (_G->ib == RenderBackendLegacy.old_QuadIB)
 				_G->ib = RenderBackendLegacy.QuadIB;
-			}
 		}
 	}
 
-	// create everything, renderer may use
 	Render->ResetEnd();
 }
 

@@ -282,8 +282,6 @@ void CStatGraph::OnRender()
 {
 	// OPTICK_EVENT("CStatGraph::OnRender");
 
-	RenderBackendLegacy.OnFrameEnd();
-
 	RenderBack();
 
 	u32 TriElem = 0;
