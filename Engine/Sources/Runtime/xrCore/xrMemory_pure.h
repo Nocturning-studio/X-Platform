@@ -9,6 +9,4 @@
 #endif // DEBUG
 #endif // XRCORE_STATIC
 
-#define PURE_ALLOC
-
 #endif // XRMEMORY_PURE_H

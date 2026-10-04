@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "Psapi.lib")
 
 #include <mmsystem.h>
 #include <objbase.h>
