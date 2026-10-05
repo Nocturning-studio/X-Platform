@@ -519,6 +519,118 @@ void CRenderBackendDX9::SetPrimitiveTopology(RHI_Topology topology)
 }
 
 // ============================================================================
+// Screen quad
+// ============================================================================
+
+namespace
+{
+	// =====================================================================
+	// Fullscreen triangle vertex
+	// =====================================================================
+	struct FullscreenVertex
+	{
+		float x, y;   // NDC position
+		float u, v;   // UV (0..1, origin top-left)
+	};
+
+	// =====================================================================
+	// Fullscreen triangle
+	// =====================================================================
+	//
+	// Один большой треугольник вместо quad'а:
+	//
+	//   (-1,-1)     (3,-1)
+	//      \         /
+	//       \       /
+	//        \     /
+	//         \   /
+	//          \ /
+	//           *
+	//         (-1, 3)
+	//
+	// Видимая часть — квадрат [-1,1]² в NDC. Растеризатор сам отсечёт всё
+	// за пределами.
+	//
+	// UV:  u = (x + 1) / 2,   v = (1 - y) / 2
+	const FullscreenVertex kFullscreenVerts[3] = {
+		{ -1.0f, -1.0f,  0.0f,  1.0f },  // A - NDC (-1,-1), bottom-left
+		{ -1.0f,  3.0f,  0.0f, -1.0f },  // C - NDC (-1, 3), far top-left
+		{  3.0f, -1.0f,  2.0f,  1.0f },  // B - NDC ( 3,-1), far bottom-right
+	};
+
+	constexpr uint32_t kFullscreenStride = sizeof(FullscreenVertex);
+}
+
+void CRenderBackendDX9::CreateFullscreenGeometry()
+{
+	DestroyFullscreenGeometry();
+
+	if (!m_pDevice)
+		return;
+
+	// VB: 3 вершины, статический, DEFAULT pool (D3D9Ex).
+	const HRESULT hrVB = m_pDevice->CreateVertexBuffer(sizeof(kFullscreenVerts),
+													   0,                                 // без DYNAMIC
+													   0,                                 // без FVF
+													   D3DPOOL_DEFAULT,
+													   &m_fullscreenVB,
+													   nullptr);
+
+	if (FAILED(hrVB) || !m_fullscreenVB)
+	{
+		Msg("! [DX9] CreateFullscreenGeometry: CreateVertexBuffer failed (0x%08x)", hrVB);
+		m_fullscreenVB = nullptr;
+		return;
+	}
+
+	void* p = nullptr;
+	if (SUCCEEDED(m_fullscreenVB->Lock(0, 0, &p, 0)) && p)
+	{
+		memcpy(p, kFullscreenVerts, sizeof(kFullscreenVerts));
+		m_fullscreenVB->Unlock();
+	}
+	else
+	{
+		Msg("! [DX9] CreateFullscreenGeometry: initial upload failed");
+	}
+
+	// Vertex declaration: POSITION (float2, index 0) + TEXCOORD0 (float2).
+	// Это публичный контракт для DrawFullscreen — см. комментарий
+	// в IRenderBackend.
+	D3DVERTEXELEMENT9 decl[3] = {};
+	decl[0] = { 0, static_cast<WORD>(offsetof(FullscreenVertex, x)),
+				D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 };
+	decl[1] = { 0, static_cast<WORD>(offsetof(FullscreenVertex, u)),
+				D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 };
+	decl[2] = D3DDECL_END();
+
+	const HRESULT hrDecl = m_pDevice->CreateVertexDeclaration(decl, &m_fullscreenDecl);
+	if (FAILED(hrDecl) || !m_fullscreenDecl)
+	{
+		Msg("! [DX9] CreateFullscreenGeometry: CreateVertexDeclaration failed (0x%08x)", hrDecl);
+		DestroyFullscreenGeometry();
+		return;
+	}
+}
+
+void CRenderBackendDX9::DestroyFullscreenGeometry()
+{
+	if (m_fullscreenVB)
+	{
+		m_fullscreenVB->Release();
+		m_fullscreenVB = nullptr;
+	}
+	if (m_fullscreenDecl)
+	{
+		m_fullscreenDecl->Release();
+		m_fullscreenDecl = nullptr;
+	}
+
+	if (m_currentDecl == m_fullscreenDecl)
+		m_currentDecl = nullptr;
+}
+
+// ============================================================================
 // Draw
 // ============================================================================
 
@@ -564,6 +676,69 @@ void CRenderBackendDX9::DrawIndexed(uint32_t indexCount, uint32_t startIndex, ui
 			m_stream0VertexCount,
 			startIndex,
 			primCount);
+	}
+}
+
+void CRenderBackendDX9::DrawFullscreen()
+{
+	if (!m_pDevice)
+		return;
+
+	// Ленивая инициализация — на случай, если CreateDevice по какой-то
+	// причине не создал геометрию.
+	if (!m_fullscreenVB || !m_fullscreenDecl)
+	{
+		CreateFullscreenGeometry();
+		if (!m_fullscreenVB || !m_fullscreenDecl)
+			return;
+	}
+
+	// Привязываем layout.
+	if (m_currentDecl != m_fullscreenDecl)
+	{
+		const HRESULT hr = m_pDevice->SetVertexDeclaration(m_fullscreenDecl);
+		if (FAILED(hr))
+		{
+			Msg("! [DX9] DrawFullscreen: SetVertexDeclaration failed (0x%08x)", hr);
+			return;
+		}
+		m_currentDecl = m_fullscreenDecl;
+	}
+
+	// Привязываем VB.
+	if (m_currentVB[0] != m_fullscreenVB ||
+		m_currentVBStride[0] != kFullscreenStride ||
+		m_currentVBOffset[0] != 0)
+	{
+		const HRESULT hr = m_pDevice->SetStreamSource(0, m_fullscreenVB, 0, kFullscreenStride);
+		if (FAILED(hr))
+		{
+			Msg("! [DX9] DrawFullscreen: SetStreamSource failed (0x%08x)", hr);
+			return;
+		}
+		m_currentVB[0] = m_fullscreenVB;
+		m_currentVBStride[0] = kFullscreenStride;
+		m_currentVBOffset[0] = 0;
+		m_stream0VertexCount = 3;
+	}
+
+	// IB не нужен — 3 вершины, non-indexed draw.
+	if (m_currentIB != nullptr)
+	{
+		m_pDevice->SetIndices(nullptr);
+		m_currentIB = nullptr;
+	}
+
+	// Topology — треугольник. Кэшируем, чтобы Draw/DrawIndexed позже
+	// (если их вызовут без SetPrimitiveTopology) не попали в неверный
+	// D3D-topology.
+	m_currentTopology = RHI_Topology::TriangleList;
+	m_currentD3DTopology = D3DPT_TRIANGLELIST;
+
+	const HRESULT hr = m_pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+	if (FAILED(hr))
+	{
+		Msg("! [DX9] DrawFullscreen: DrawPrimitive failed (0x%08x)", hr);
 	}
 }
 

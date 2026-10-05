@@ -104,7 +104,7 @@ class ENGINE_API CRenderBackendFacade
 		D3DVIEWPORT9 viewport{};
 	} m_savedState;
 
-  private:
+  public:
 	void Invalidate();
 
   public:

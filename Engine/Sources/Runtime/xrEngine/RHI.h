@@ -40,9 +40,6 @@ public:
 
 	IRenderBackend* GetRawRHI() const;
 
-	u32 GetBackBufferWidth() const;
-	u32 GetBackBufferHeight() const;
-
 private:
 	RHI_BackendType m_type = RHI_BackendType::DirectX9Ex;
 	CRenderBackend* m_backend = nullptr;

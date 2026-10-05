@@ -85,6 +85,16 @@ struct RHI_BlendState
 		return s;
 	}
 
+	static RHI_BlendState PureAdditive()
+	{
+		RHI_BlendState s;
+		s.enable = true;
+		s.srcColor = RHI_Blend::One;
+		s.dstColor = RHI_Blend::One;
+		s.opColor = RHI_BlendOp::Add;
+		return s;
+	}
+
 	static RHI_BlendState Multiply()
 	{
 		RHI_BlendState s;

@@ -73,6 +73,7 @@ void CXRHISubsystem::EndFrame()
 
 void CXRHISubsystem::Present()
 {
+	PROFILE_FUNCTION();
 	if (m_backend) m_backend->Present();
 }
 
@@ -94,17 +95,5 @@ IRenderBackend* CXRHISubsystem::GetRawRHI() const
 {
 	if (!m_backend) return nullptr;
 	return m_backend->GetRHI();
-}
-
-u32 CXRHISubsystem::GetBackBufferWidth() const
-{
-	if (!m_backend) return 0;
-	return m_backend->GetBackBufferWidth();
-}
-
-u32 CXRHISubsystem::GetBackBufferHeight() const
-{
-	if (!m_backend) return 0;
-	return m_backend->GetBackBufferHeight();
 }
 ////////////////////////////////////////////////////////////////////////////////

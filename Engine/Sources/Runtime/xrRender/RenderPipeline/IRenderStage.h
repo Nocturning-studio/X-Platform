@@ -4,16 +4,21 @@
 // Nocturning studio for NS Platform X
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
+////////////////////////////////////////////////////////////////////////////////
 #include <string_view>
 ////////////////////////////////////////////////////////////////////////////////
 class IRenderStage
 {
-  public:
-	virtual std::string_view GetName() const = 0;
-	virtual void OnAttach() = 0;
-	virtual void Execute() = 0;
-	virtual void OnDetach() = 0;
-	virtual bool IsEnabled() const { return true; }
-	virtual ~IRenderStage() = default;
+public:
+    virtual std::string_view GetName() const = 0;
+
+    virtual void OnAttach() = 0;
+    virtual void OnDeviceReset() = 0;
+    virtual void Execute() = 0;
+    virtual void OnDetach() = 0;
+
+    virtual bool IsEnabled() const { return true; }
+
+    virtual ~IRenderStage() = default;
 };
 ////////////////////////////////////////////////////////////////////////////////

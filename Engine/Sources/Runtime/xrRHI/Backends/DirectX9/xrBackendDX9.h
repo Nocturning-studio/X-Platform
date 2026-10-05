@@ -93,6 +93,7 @@ public:
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) override;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) override;
+	virtual void DrawFullscreen() override;
 
 private:
 	// ============================================================================
@@ -144,6 +145,9 @@ private:
 
 	IDirect3DIndexBuffer9* m_currentIB = nullptr;
 	uint32_t m_stream0VertexCount = 0;
+
+	IDirect3DVertexBuffer9* m_fullscreenVB = nullptr;
+	IDirect3DVertexDeclaration9* m_fullscreenDecl = nullptr;
 
 	// ============================================================================
 	// State caches
@@ -249,5 +253,11 @@ private:
 	void ReleaseAllRTVDSV();
 	void InvalidateRenderTargetCache();
 	void InvalidateUserRTVDSVOnReset();
+
+	// ============================================================================
+	// Screen quad
+	// ============================================================================
+	void CreateFullscreenGeometry();
+	void DestroyFullscreenGeometry();
 };
 ////////////////////////////////////////////////////////////////////////////////

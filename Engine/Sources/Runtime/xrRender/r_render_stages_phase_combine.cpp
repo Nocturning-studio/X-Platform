@@ -14,9 +14,9 @@ void CRender::combine_additional_postprocess()
 	RenderBackendLegacy.SetShaderElement(RenderTarget->s_combine->E[SE_COMBINE_POSTPROCESS]);
 	RenderBackendLegacy.SetConstant("cas_params", ps_cas_contrast, ps_cas_sharpening, 0, 0);
 	RenderBackendLegacy.SetConstant("bloom_parameters", ps_r_bloom_threshold,
-							   ps_r_bloom_brightness,
-							   ps_r_bloom_blades_threshold,
-							   ps_r_bloom_blades_brightness);
+														ps_r_bloom_brightness,
+														ps_r_bloom_blades_threshold,
+														ps_r_bloom_blades_brightness);
 	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[0]);
 }
 ///////////////////////////////////////////////////////////////////////////////////

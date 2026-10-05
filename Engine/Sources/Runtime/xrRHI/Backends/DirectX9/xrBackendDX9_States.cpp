@@ -125,6 +125,8 @@ void CRenderBackendDX9::InvalidateStateCache()
 
 	m_currentVS = nullptr;
 	m_currentPS = nullptr;
+
+	InvalidateGeometryCache();
 }
 
 void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)

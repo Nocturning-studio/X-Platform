@@ -1,0 +1,25 @@
+////////////////////////////////////////////////////////////////////////////////
+// Created: 04.10.2026 18:58:37
+// Author: NS_Deathman
+// File: DefferedLightingPipeline.h
+// Nocturning studio for X-Platform
+////////////////////////////////////////////////////////////////////////////////
+#pragma once
+////////////////////////////////////////////////////////////////////////////////
+#include "IRenderPipeline.h"
+#include "DeferredLightingResources.h"
+////////////////////////////////////////////////////////////////////////////////
+class CDeferredLightingPipeline : public IRenderPipeline
+{
+public:
+    virtual std::string_view GetName() const override { return "Deferred lighting pipeline"; };
+    void Initialize() override;
+    void Destroy() override;
+    void OnDeviceReset() override;
+
+    CDeferredLightingResources& Resources() { return m_resources; }
+
+private:
+    CDeferredLightingResources m_resources;
+};
+////////////////////////////////////////////////////////////////////////////////

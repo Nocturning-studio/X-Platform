@@ -91,6 +91,7 @@ class XRRHI_API IRenderBackend
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) = 0;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) = 0;
+	virtual void DrawFullscreen() = 0;
 };
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus

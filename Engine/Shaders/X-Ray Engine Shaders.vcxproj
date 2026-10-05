@@ -386,6 +386,8 @@
     <None Include="simple_color.xrps" />
     <None Include="simple_color.xrvs" />
     <None Include="simple_image.xrps" />
+    <ClInclude Include="deferred_lighting_pipeline\frame_output_stage.hlsl" />
+    <ClInclude Include="deferred_lighting_pipeline\indirect_lighting_stage.hlsl" />
     <ClInclude Include="postprocess_stage_autoexposure.xrps" />
     <ClInclude Include="skinning.xrh" />
     <None Include="sky2.xrps" />
@@ -429,6 +431,7 @@
     <ClInclude Include="parallax_shadows.xrh" />
     <ClInclude Include="screen_space_shadows.xrh" />
     <ClInclude Include="shadow_filtering.xrh" />
+    <ClInclude Include="utils\fullscreen.hlsl" />
     <ClInclude Include="volumetric_light.xrh" />
   </ItemGroup>
   <ItemGroup>

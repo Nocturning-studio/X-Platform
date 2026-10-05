@@ -249,8 +249,8 @@ void CRenderDevice::Initialize()
 
 	RenderBackendLegacy.OnDeviceCreate(Engine.WindowManager.GetHandle(), params);
 
-	dwWidth = Engine.RHI.GetBackBufferWidth();
-	dwHeight = Engine.RHI.GetBackBufferHeight();
+	dwWidth = Engine.RHI->GetBackBufferWidth();
+	dwHeight = Engine.RHI->GetBackBufferHeight();
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
@@ -354,8 +354,8 @@ void CRenderDevice::Reset()
 		R_ERROR("! [Device] RHI Reset failed");
 
 	// --- 3. Реальные размеры ---
-	dwWidth = Engine.RHI.GetBackBufferWidth();
-	dwHeight = Engine.RHI.GetBackBufferHeight();
+	dwWidth = Engine.RHI->GetBackBufferWidth();
+	dwHeight = Engine.RHI->GetBackBufferHeight();
 	Engine.WindowManager.UpdateSize(dwWidth, dwHeight);
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);

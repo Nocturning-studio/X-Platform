@@ -6,8 +6,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::output_frame_to_screen()
 {
-	////OPTICK_EVENT("CRender::output_frame_to_screen");
-
 	RenderBackendLegacy.SetCullMode(CULL_DISABLE);
 	RenderBackendLegacy.SetStencil(FALSE);
 	RenderBackendLegacy.SetShaderElement(RenderTarget->s_output_to_screen->E[0]);

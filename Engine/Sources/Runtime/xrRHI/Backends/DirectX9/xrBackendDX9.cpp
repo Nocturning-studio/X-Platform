@@ -180,6 +180,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	}
 
 	CacheBackBufferDimensions();
+	CreateFullscreenGeometry();
 
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &m_AdapterID);
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
@@ -191,6 +192,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 
 void CRenderBackendDX9::DestroyDevice()
 {
+	DestroyFullscreenGeometry();
 	ReleaseAllResources();
 	ReleaseAllRTVDSV();
 	InvalidateStateCache();
@@ -476,6 +478,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	RecreateNativeDeviceResources();
 
 	CacheBackBufferDimensions();
+	CreateFullscreenGeometry();
 
 	m_pD3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &m_AdapterID);
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);

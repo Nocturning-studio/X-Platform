@@ -1,59 +1,73 @@
+////////////////////////////////////////////////////////////////////////////////
+// Fullscreen pass test
+//
+// Pass 1: colored triangle -> offscreen RT
+// Pass 2: fullscreen triangle, sampler 's_src' -> back buffer
+////////////////////////////////////////////////////////////////////////////////
+
 // ============================================================================
-// Pass 1: flat colored triangle (offscreen)
+// Pass 1: colored triangle
 // ============================================================================
 
-struct VS_INPUT_TRIANGLE
+struct VS_TRIANGLE_IN
 {
     float3 pos : POSITION;
     float4 col : COLOR0;
 };
 
-struct VS_OUTPUT_TRIANGLE
+struct VS_TRIANGLE_OUT
 {
     float4 pos : POSITION;
     float4 col : COLOR0;
 };
 
-VS_OUTPUT_TRIANGLE vs_main(VS_INPUT_TRIANGLE input)
+VS_TRIANGLE_OUT vs_triangle(VS_TRIANGLE_IN i)
 {
-    VS_OUTPUT_TRIANGLE o;
-    o.pos = float4(input.pos, 1.0f);
-    o.col = input.col;
+    VS_TRIANGLE_OUT o;
+    o.pos = float4(i.pos, 1.0f);
+    o.col = i.col;
     return o;
 }
 
-float4 ps_main(VS_OUTPUT_TRIANGLE input) : COLOR
+float4 ps_triangle(VS_TRIANGLE_OUT i) : COLOR
 {
-    return input.col;
+    return i.col;
 }
 
 // ============================================================================
-// Pass 2: full-screen quad sampling offscreen texture
+// Pass 2: fullscreen copy
+//
+// Контракт input layout задаётся DrawFullscreen:
+//   float2 pos : POSITION;   // NDC
+//   float2 uv  : TEXCOORD0;  // (0,0) — левый-верхний угол RT
+//
+// Vertex shader должен вернуть float4(pos, 0, 1) как clip-space position
+// и пропустить uv в пиксельный шейдер.
 // ============================================================================
 
-struct VS_INPUT_QUAD
+struct VS_FULLSCREEN_IN
 {
-    float3 pos : POSITION;
+    float2 pos : POSITION;
     float2 uv  : TEXCOORD0;
 };
 
-struct VS_OUTPUT_QUAD
+struct VS_FULLSCREEN_OUT
 {
     float4 pos : POSITION;
     float2 uv  : TEXCOORD0;
 };
 
-VS_OUTPUT_QUAD vs_quad(VS_INPUT_QUAD input)
+VS_FULLSCREEN_OUT vs_fullscreen(VS_FULLSCREEN_IN i)
 {
-    VS_OUTPUT_QUAD o;
-    o.pos = float4(input.pos, 1.0f);
-    o.uv = input.uv;
+    VS_FULLSCREEN_OUT o;
+    o.pos = float4(i.pos, 0.0f, 1.0f);
+    o.uv = i.uv;
     return o;
 }
 
-sampler2D s_tex;
+sampler2D s_src : register(s0);
 
-float4 ps_texture(VS_OUTPUT_QUAD input) : COLOR
+float4 ps_fullscreen(VS_FULLSCREEN_OUT i) : COLOR
 {
-    return tex2D(s_tex, input.uv);
+    return tex2D(s_src, i.uv);
 }

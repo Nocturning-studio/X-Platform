@@ -25,116 +25,14 @@
     <Filter Include="Render Console">
       <UniqueIdentifier>{25048830-d3aa-4387-b01b-a2a0cdbac8ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render pipeline">
-      <UniqueIdentifier>{a66da469-b2b7-41cc-9813-8abfcd08e1b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages">
-      <UniqueIdentifier>{4bda8459-77e1-4998-9fe5-50179f622e5f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Core">
-      <UniqueIdentifier>{fe8ea627-ce82-4380-8edb-1145c56ad896}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Rendertargets">
-      <UniqueIdentifier>{fec1153a-2d47-4773-b385-8ff1d008ed3c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Models">
       <UniqueIdentifier>{a263f29c-0c06-4cad-90de-b322ee2f04e4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Models\Visuals">
       <UniqueIdentifier>{cc83a68c-2620-42ca-8e59-6eaf108f2a8a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages">
-      <UniqueIdentifier>{41e0c0ec-bc21-4c56-876e-74866a9c1ba3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Ambient occlusion">
-      <UniqueIdentifier>{6f5146c0-4c67-421d-a6d2-292967c3c6ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\GBuffer stage">
-      <UniqueIdentifier>{964b9781-c3a8-49a5-a0b6-207d726274fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage">
-      <UniqueIdentifier>{547f704f-ed77-4140-b62a-f6fbc94f7722}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage">
-      <UniqueIdentifier>{52b64951-58a7-49f9-9bc8-5580e7f82d3f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Direct">
-      <UniqueIdentifier>{da8e30e7-900b-4650-a603-bd330811dd4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Core">
-      <UniqueIdentifier>{e6aa645c-aa56-48a2-a216-78078383a554}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni">
-      <UniqueIdentifier>{8ecf1628-3ffe-4e54-917d-028ab5f7b670}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Output to screen stage">
-      <UniqueIdentifier>{1506a672-e327-473e-89b1-1d4fc7661f5f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages">
-      <UniqueIdentifier>{cc4245e8-dd12-4eca-828c-efeab14ab465}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\ColorMap">
-      <UniqueIdentifier>{62ec11ae-77b9-4c27-acbf-ebfd9b85f724}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Scene combine stage">
-      <UniqueIdentifier>{c8ba8337-f7ec-4e83-824d-72dbd0be3165}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Core">
-      <UniqueIdentifier>{87a07ac8-8513-43f2-a079-ddc438035210}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Reflections phase">
-      <UniqueIdentifier>{db159c05-241d-450b-b59d-e222513d8751}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\HI-Z phase">
-      <UniqueIdentifier>{53fe20fd-9df4-40a7-b31a-83e97f019f57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Bent normals phase">
-      <UniqueIdentifier>{6280449e-3d93-43ec-b968-e5f084646b57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Autoexposure">
-      <UniqueIdentifier>{f234fe23-1985-474a-b3a4-fbc4ea46323d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Antialiasing">
-      <UniqueIdentifier>{8e126c45-9a5b-4387-a432-754a743281dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Bloom">
-      <UniqueIdentifier>{de9037d1-a368-4c6b-8ca5-9cd8e22ae400}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Depth of field">
-      <UniqueIdentifier>{a93fa9ff-fb61-451f-b2e0-5a0623735f04}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Distortion">
-      <UniqueIdentifier>{fca0c934-d1a8-4b80-85dc-2db7f68db37e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Effectors">
-      <UniqueIdentifier>{33a9d6a0-c2d2-43ab-8a47-46b0c89a5e66}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Postprocess stages\Motion blur">
-      <UniqueIdentifier>{94911cf6-3cac-4b4e-834d-3ce151606ef2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Overlays stage">
-      <UniqueIdentifier>{c8fcd8cd-b4ea-45bc-bbbc-101a0f54cf62}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\GBuffer stage\Blenders">
-      <UniqueIdentifier>{619c8b6c-717a-47b0-8f8a-3a23caa29dc9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Blenders">
-      <UniqueIdentifier>{d348d627-5566-4ed0-aa28-3df1836064a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Core\Rendering">
-      <UniqueIdentifier>{1cb38cff-ea29-43d6-afa5-2e3b2dac430a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Core\Rendering\Specific pipelines">
-      <UniqueIdentifier>{86f4370c-d488-4549-9820-c6399fa37bd2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Core\Rendering\Core">
-      <UniqueIdentifier>{e3e61797-6191-437a-90a7-5c9ecad40841}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Effectors">
       <UniqueIdentifier>{7bf0db16-0f91-4a4d-92b7-4a9621cc3321}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes">
-      <UniqueIdentifier>{27c3fc1c-ba18-4597-a09f-0d9e4b7ca8be}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{1acabd85-122d-4133-b296-b437d83473ec}</UniqueIdentifier>
@@ -168,6 +66,132 @@
     </Filter>
     <Filter Include="Occlusion culling\GPU Occlusion">
       <UniqueIdentifier>{d6e49b28-b759-4018-853a-205d1ddf0253}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy">
+      <UniqueIdentifier>{a66da469-b2b7-41cc-9813-8abfcd08e1b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages">
+      <UniqueIdentifier>{4bda8459-77e1-4998-9fe5-50179f622e5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages">
+      <UniqueIdentifier>{41e0c0ec-bc21-4c56-876e-74866a9c1ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Ambient occlusion">
+      <UniqueIdentifier>{6f5146c0-4c67-421d-a6d2-292967c3c6ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\GBuffer stage">
+      <UniqueIdentifier>{964b9781-c3a8-49a5-a0b6-207d726274fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders">
+      <UniqueIdentifier>{619c8b6c-717a-47b0-8f8a-3a23caa29dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage">
+      <UniqueIdentifier>{547f704f-ed77-4140-b62a-f6fbc94f7722}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage">
+      <UniqueIdentifier>{52b64951-58a7-49f9-9bc8-5580e7f82d3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes">
+      <UniqueIdentifier>{27c3fc1c-ba18-4597-a09f-0d9e4b7ca8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage\Direct">
+      <UniqueIdentifier>{da8e30e7-900b-4650-a603-bd330811dd4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage\Core">
+      <UniqueIdentifier>{e6aa645c-aa56-48a2-a216-78078383a554}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage\Spot%255cOmni">
+      <UniqueIdentifier>{8ecf1628-3ffe-4e54-917d-028ab5f7b670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Light accumulation stage\Blenders">
+      <UniqueIdentifier>{d348d627-5566-4ed0-aa28-3df1836064a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Output to screen stage">
+      <UniqueIdentifier>{1506a672-e327-473e-89b1-1d4fc7661f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages">
+      <UniqueIdentifier>{cc4245e8-dd12-4eca-828c-efeab14ab465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\ColorMap">
+      <UniqueIdentifier>{62ec11ae-77b9-4c27-acbf-ebfd9b85f724}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Reflections phase">
+      <UniqueIdentifier>{db159c05-241d-450b-b59d-e222513d8751}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\HI-Z phase">
+      <UniqueIdentifier>{53fe20fd-9df4-40a7-b31a-83e97f019f57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Bent normals phase">
+      <UniqueIdentifier>{6280449e-3d93-43ec-b968-e5f084646b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Autoexposure">
+      <UniqueIdentifier>{f234fe23-1985-474a-b3a4-fbc4ea46323d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Antialiasing">
+      <UniqueIdentifier>{8e126c45-9a5b-4387-a432-754a743281dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Bloom">
+      <UniqueIdentifier>{de9037d1-a368-4c6b-8ca5-9cd8e22ae400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Depth of field">
+      <UniqueIdentifier>{a93fa9ff-fb61-451f-b2e0-5a0623735f04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Distortion">
+      <UniqueIdentifier>{fca0c934-d1a8-4b80-85dc-2db7f68db37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Effectors">
+      <UniqueIdentifier>{33a9d6a0-c2d2-43ab-8a47-46b0c89a5e66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Postprocess stages\Motion blur">
+      <UniqueIdentifier>{94911cf6-3cac-4b4e-834d-3ce151606ef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Scene combine stage">
+      <UniqueIdentifier>{c8ba8337-f7ec-4e83-824d-72dbd0be3165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Stages\Overlays stage">
+      <UniqueIdentifier>{c8fcd8cd-b4ea-45bc-bbbc-101a0f54cf62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Render stages\Core">
+      <UniqueIdentifier>{87a07ac8-8513-43f2-a079-ddc438035210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Core">
+      <UniqueIdentifier>{fe8ea627-ce82-4380-8edb-1145c56ad896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Core\Rendering">
+      <UniqueIdentifier>{1cb38cff-ea29-43d6-afa5-2e3b2dac430a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Core\Rendering\Specific pipelines">
+      <UniqueIdentifier>{86f4370c-d488-4549-9820-c6399fa37bd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Core\Rendering\Core">
+      <UniqueIdentifier>{e3e61797-6191-437a-90a7-5c9ecad40841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline legacy\Rendertargets">
+      <UniqueIdentifier>{fec1153a-2d47-4773-b385-8ff1d008ed3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline">
+      <UniqueIdentifier>{f1f84def-365c-4fec-ad4d-b8dbcff45ebe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Core">
+      <UniqueIdentifier>{0a73d221-4a4e-4543-adbd-91850d90c1ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Specific pipelines">
+      <UniqueIdentifier>{2d68fbeb-d99d-444d-b07e-cd9e435f5402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Stages">
+      <UniqueIdentifier>{7678c75e-c8d9-4d0b-8dab-55f28deae448}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Stages\Scene">
+      <UniqueIdentifier>{2bcd8a73-2054-4d2c-94ff-357034c71443}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Stages\Output stage">
+      <UniqueIdentifier>{c2fd2ec0-c3b5-4037-bd3c-8277b17118be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Specific pipelines\Deffered lighting">
+      <UniqueIdentifier>{a083a713-cda5-4ff0-94c4-1ef29a13be0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render pipeline\Stages\Lighting">
+      <UniqueIdentifier>{d8f445e4-3c59-48cd-91fa-ba3ca3154435}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -247,28 +271,28 @@
       <Filter>Occlusion culling\HOM Occlusion</Filter>
     </ClInclude>
     <ClInclude Include="Blender_frame_overlay.h">
-      <Filter>Render pipeline\Render stages\Stages\Overlays stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Overlays stage</Filter>
     </ClInclude>
     <ClInclude Include="Blender_motion_blur.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Motion blur</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Motion blur</Filter>
     </ClInclude>
     <ClInclude Include="Blender_depth_of_field.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Depth of field</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Depth of field</Filter>
     </ClInclude>
     <ClInclude Include="PSLibrary.h">
       <Filter>Core\Particle library</Filter>
     </ClInclude>
     <ClInclude Include="Blender_distortion.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Distortion</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Distortion</Filter>
     </ClInclude>
     <ClInclude Include="ColorMapManager.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\ColorMap</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\ColorMap</Filter>
     </ClInclude>
     <ClInclude Include="r_color_converting.h">
       <Filter>Core\Color convertation</Filter>
     </ClInclude>
     <ClInclude Include="blender_effectors.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Effectors</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Effectors</Filter>
     </ClInclude>
     <ClInclude Include="xrRender_console.h">
       <Filter>Render Console</Filter>
@@ -280,94 +304,94 @@
       <Filter>Scene\Scene Graph</Filter>
     </ClInclude>
     <ClInclude Include="r_rendertarget.h">
-      <Filter>Render pipeline\Rendertargets</Filter>
+      <Filter>Render pipeline legacy\Rendertargets</Filter>
     </ClInclude>
     <ClInclude Include="r_render_stages.h">
-      <Filter>Render pipeline\Render stages\Core</Filter>
+      <Filter>Render pipeline legacy\Render stages\Core</Filter>
     </ClInclude>
     <ClInclude Include="r_types.h">
-      <Filter>Render pipeline\Rendertargets</Filter>
+      <Filter>Render pipeline legacy\Rendertargets</Filter>
     </ClInclude>
     <ClInclude Include="Blender_ambient_occlusion.h">
-      <Filter>Render pipeline\Render stages\Stages\Ambient occlusion</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Ambient occlusion</Filter>
     </ClInclude>
     <ClInclude Include="blender_combine.h">
-      <Filter>Render pipeline\Render stages\Stages\Scene combine stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Scene combine stage</Filter>
     </ClInclude>
     <ClInclude Include="SunOccluder.h">
       <Filter>Scene\Sun occluder</Filter>
     </ClInclude>
     <ClInclude Include="Blender_hi_z.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\HI-Z phase</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\HI-Z phase</Filter>
     </ClInclude>
     <ClInclude Include="Blender_reflections.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Reflections phase</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Reflections phase</Filter>
     </ClInclude>
     <ClInclude Include="Blender_bent_normals.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Bent normals phase</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Bent normals phase</Filter>
     </ClInclude>
     <ClInclude Include="blender_autoexposure.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Autoexposure</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Autoexposure</Filter>
     </ClInclude>
     <ClInclude Include="Blender_antialiasing.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Antialiasing</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Antialiasing</Filter>
     </ClInclude>
     <ClInclude Include="blender_bloom.h">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Bloom</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Bloom</Filter>
     </ClInclude>
     <ClInclude Include="Blender_output_to_screen.h">
-      <Filter>Render pipeline\Render stages\Stages\Output to screen stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Output to screen stage</Filter>
     </ClInclude>
     <ClInclude Include="Blender_detail_object.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_Lm(EbB).h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_Model_EbB.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_multiple_usage.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_Screen_SET.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_skinned_mesh.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_static_mesh.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_terrain.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_transluent.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="shader_configurator.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="Blender_Particle.h">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="blender_light_direct_cascade.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="blender_light_mask.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="blender_light_occq.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="blender_light_point.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="blender_light_spot.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Blenders</Filter>
     </ClInclude>
     <ClInclude Include="r_render_pipeline.h">
-      <Filter>Render pipeline\Core\Rendering\Core</Filter>
+      <Filter>Render pipeline legacy\Core\Rendering\Core</Filter>
     </ClInclude>
     <ClInclude Include="EffectorsManager.h">
       <Filter>Core\Effectors</Filter>
@@ -385,13 +409,13 @@
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
     <ClInclude Include="..\xrEngine\du_cone.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClInclude>
     <ClInclude Include="..\xrEngine\du_sphere.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClInclude>
     <ClInclude Include="..\xrEngine\du_sphere_part.h">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClInclude>
     <ClInclude Include="SoftXOcclusionCore.h">
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
@@ -412,10 +436,37 @@
       <Filter>Occlusion culling\GPU Occlusion</Filter>
     </ClInclude>
     <ClInclude Include="r_sun_cascades.h">
-      <Filter>Render pipeline\Core</Filter>
+      <Filter>Render pipeline legacy\Core</Filter>
     </ClInclude>
     <ClInclude Include="RenderSceneFlags.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\IRenderStage.h">
+      <Filter>Render pipeline\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\IRenderPipeline.h">
+      <Filter>Render pipeline\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\OutputStage.h">
+      <Filter>Render pipeline\Stages\Output stage</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\GBufferStage.h">
+      <Filter>Render pipeline\Stages\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\DeferredLightingResources.h">
+      <Filter>Render pipeline\Specific pipelines\Deffered lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\DeferredLightingPipeline.h">
+      <Filter>Render pipeline\Specific pipelines\Deffered lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\RenderPipelineFlow.h">
+      <Filter>Render pipeline\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\RenderPipelineRegistry.h">
+      <Filter>Render pipeline\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline\IndirectLightingStage.h">
+      <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -507,31 +558,31 @@
       <Filter>Occlusion culling\HOM Occlusion</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_gbuffer.cpp">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_combine.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Scene combine stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Scene combine stage</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_direct.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Direct</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Direct</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_shadow_map_Direct.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Core</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_shadow_map_Spot.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Core</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_light_accumulator.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Core</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_enable_scissor.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Core</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_point.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_spot.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Spot%255cOmni</Filter>
     </ClCompile>
     <ClCompile Include="r_screenshot.cpp">
       <Filter>Core\Screenshots</Filter>
@@ -546,13 +597,13 @@
       <Filter>Core\Texture</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_ambient_occlusion.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Ambient occlusion</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Ambient occlusion</Filter>
     </ClCompile>
     <ClCompile Include="ColorMapManager.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\ColorMap</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\ColorMap</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_output_to_screen.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Output to screen stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Output to screen stage</Filter>
     </ClCompile>
     <ClCompile Include="xrRender_console.cpp">
       <Filter>Render Console</Filter>
@@ -564,70 +615,70 @@
       <Filter>Scene\Scene Graph</Filter>
     </ClCompile>
     <ClCompile Include="r_calculate.cpp">
-      <Filter>Render pipeline\Core</Filter>
+      <Filter>Render pipeline legacy\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_lights.cpp">
-      <Filter>Render pipeline\Core</Filter>
+      <Filter>Render pipeline legacy\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_sun.cpp">
-      <Filter>Render pipeline\Core</Filter>
+      <Filter>Render pipeline legacy\Core</Filter>
     </ClCompile>
     <ClCompile Include="r_rendertarget.cpp">
-      <Filter>Render pipeline\Rendertargets</Filter>
+      <Filter>Render pipeline legacy\Rendertargets</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages.cpp">
-      <Filter>Render pipeline\Render stages\Core</Filter>
+      <Filter>Render pipeline legacy\Render stages\Core</Filter>
     </ClCompile>
     <ClCompile Include="SunOccluder.cpp">
       <Filter>Scene\Sun occluder</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_hi_z.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\HI-Z phase</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\HI-Z phase</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_ssr.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Reflections phase</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Reflections phase</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_bent_normals.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Bent normals phase</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Bent normals phase</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_autoexposure.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Autoexposure</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Autoexposure</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_antialiasing.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Antialiasing</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Antialiasing</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_bloom.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Bloom</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Bloom</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_depth_of_field.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Depth of field</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Depth of field</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_distortion.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Distortion</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Distortion</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_effectors.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Effectors</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Effectors</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_motion_blur.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Postprocess stages\Motion blur</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Postprocess stages\Motion blur</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_frame_overlay.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Overlays stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Overlays stage</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_phase_wallmarks.cpp">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage</Filter>
     </ClCompile>
     <ClCompile Include="shader_configurator.cpp">
-      <Filter>Render pipeline\Render stages\Stages\GBuffer stage\Blenders</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\GBuffer stage\Blenders</Filter>
     </ClCompile>
     <ClCompile Include="r_render_pipeline_scene.cpp">
-      <Filter>Render pipeline\Core\Rendering\Specific pipelines</Filter>
+      <Filter>Render pipeline legacy\Core\Rendering\Specific pipelines</Filter>
     </ClCompile>
     <ClCompile Include="r_render_pipeline_ui.cpp">
-      <Filter>Render pipeline\Core\Rendering\Specific pipelines</Filter>
+      <Filter>Render pipeline legacy\Core\Rendering\Specific pipelines</Filter>
     </ClCompile>
     <ClCompile Include="r_render_pipeline.cpp">
-      <Filter>Render pipeline\Core\Rendering\Core</Filter>
+      <Filter>Render pipeline legacy\Core\Rendering\Core</Filter>
     </ClCompile>
     <ClCompile Include="EffectorsManager.cpp">
       <Filter>Core\Effectors</Filter>
@@ -642,19 +693,19 @@
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
     <ClCompile Include="..\xrEngine\du_cone.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClCompile>
     <ClCompile Include="..\xrEngine\du_sphere.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClCompile>
     <ClCompile Include="..\xrEngine\du_sphere_part.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_volumes.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
     </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_culling.cpp">
-      <Filter>Render pipeline\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
+      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
     </ClCompile>
     <ClCompile Include="SoftXOcclusionCore.cpp">
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
@@ -673,6 +724,27 @@
     </ClCompile>
     <ClCompile Include="GPUOcclusion.cpp">
       <Filter>Occlusion culling\GPU Occlusion</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\IRenderPipeline.cpp">
+      <Filter>Render pipeline\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\OutputStage.cpp">
+      <Filter>Render pipeline\Stages\Output stage</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\GBufferStage.cpp">
+      <Filter>Render pipeline\Stages\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\DeferredLightingResources.cpp">
+      <Filter>Render pipeline\Specific pipelines\Deffered lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\DeferredLightingPipeline.cpp">
+      <Filter>Render pipeline\Specific pipelines\Deffered lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\RenderPipelineRegistry.cpp">
+      <Filter>Render pipeline\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline\IndirectLightingStage.cpp">
+      <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

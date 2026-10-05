@@ -196,6 +196,11 @@ const RHIDeviceCaps& CRenderBackend::GetDeviceCaps() const
 	return m_pRHI ? m_pRHI->GetDeviceCaps() : s_empty;
 }
 
+RHI_Format CRenderBackend::GetBackBufferFormat() const
+{
+	return m_pRHI ? m_pRHI->GetBackBufferFormat() : RHI_Format::Unknown;
+}
+
 uint32_t CRenderBackend::GetBackBufferWidth() const
 {
 	return m_pRHI ? m_pRHI->GetBackBufferWidth() : 0;
@@ -250,6 +255,18 @@ void CRenderBackend::Clear(uint32_t flags, fvec4 colorRGBA, float z, uint32_t st
 	m_pRHI->Clear(flags, colorRGBA, z, static_cast<u8>(stencil));
 }
 
+RHI_DeviceStatus CRenderBackend::CheckDeviceStatus() const
+{
+	return m_pRHI ? m_pRHI->CheckDeviceStatus() : RHI_DeviceStatus::Lost;
+}
+
+void CRenderBackend::GetAvailableResolutions(RHI_Format format, std::vector<std::pair<uint32_t, uint32_t>>& outResolutions) const
+{
+	outResolutions.clear();
+	if (m_pRHI)
+		m_pRHI->GetAvailableResolutions(format, outResolutions);
+}
+
 ref_vertexdecl CRenderBackend::CreateVertexDeclaration(const RHI_InputLayoutDesc& layout)
 {
 	return m_resources.CreateVertexDeclaration(layout);
@@ -282,5 +299,236 @@ void CRenderBackend::DrawGeometry(const ref_geometry& g)
 		return;
 	g->Bind(*m_pRHI);
 	g->Draw(*m_pRHI);
+}
+
+RHI_RenderTargetView CRenderBackend::CreateRTV(RHI_TextureHandle tex, uint32_t mip, uint32_t face)
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->CreateRTV(tex, mip, face);
+}
+
+RHI_DepthStencilView CRenderBackend::CreateDSV(RHI_TextureHandle tex, uint32_t mip, uint32_t face)
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->CreateDSV(tex, mip, face);
+}
+
+void CRenderBackend::DestroyRTV(RHI_RenderTargetView rtv)
+{
+	if (m_pRHI)
+		m_pRHI->DestroyRTV(rtv);
+}
+
+void CRenderBackend::DestroyDSV(RHI_DepthStencilView dsv)
+{
+	if (m_pRHI)
+		m_pRHI->DestroyDSV(dsv);
+}
+
+RHI_RenderTargetView CRenderBackend::GetBackBufferRTV() const
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->GetBackBufferRTV();
+}
+
+RHI_DepthStencilView CRenderBackend::GetBackBufferDSV() const
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->GetBackBufferDSV();
+}
+
+void CRenderBackend::SetRenderTargets(const RHI_RenderTargetView* rtvs, uint32_t count, RHI_DepthStencilView dsv)
+{
+	if (m_pRHI)
+		m_pRHI->SetRenderTargets(rtvs, count, dsv);
+}
+
+void CRenderBackend::ClearRenderTarget(RHI_RenderTargetView rtv, const fvec4& color)
+{
+	if (m_pRHI)
+		m_pRHI->ClearRenderTarget(rtv, color);
+}
+
+void CRenderBackend::ClearDepthStencil(RHI_DepthStencilView dsv, float depth, uint8_t stencil)
+{
+	if (m_pRHI)
+		m_pRHI->ClearDepthStencil(dsv, depth, stencil);
+}
+
+void CRenderBackend::SetBlendState(const RHI_BlendState& state)
+{
+	if (m_pRHI)
+		m_pRHI->SetBlendState(state);
+}
+
+void CRenderBackend::SetDepthStencilState(const RHI_DepthStencilState& state)
+{
+	if (m_pRHI)
+		m_pRHI->SetDepthStencilState(state);
+}
+
+void CRenderBackend::SetRasterizerState(const RHI_RasterizerState& state)
+{
+	if (m_pRHI)
+		m_pRHI->SetRasterizerState(state);
+}
+
+const RHI_BlendState& CRenderBackend::GetBlendState() const
+{
+	static const RHI_BlendState s_empty{};
+	return m_pRHI ? m_pRHI->GetBlendState() : s_empty;
+}
+
+const RHI_DepthStencilState& CRenderBackend::GetDepthStencilState() const
+{
+	static const RHI_DepthStencilState s_empty{};
+	return m_pRHI ? m_pRHI->GetDepthStencilState() : s_empty;
+}
+
+const RHI_RasterizerState& CRenderBackend::GetRasterizerState() const
+{
+	static const RHI_RasterizerState s_empty{};
+	return m_pRHI ? m_pRHI->GetRasterizerState() : s_empty;
+}
+
+void CRenderBackend::SetViewport(const RHI_Viewport& vp)
+{
+	if (m_pRHI)
+		m_pRHI->SetViewport(vp);
+}
+
+void CRenderBackend::SetScissorRect(const RHI_Rect* rect)
+{
+	if (m_pRHI)
+		m_pRHI->SetScissorRect(rect);
+}
+
+RHI_Viewport CRenderBackend::GetViewport() const
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->GetViewport();
+}
+
+bool CRenderBackend::GetScissorRect(RHI_Rect& out) const
+{
+	if (!m_pRHI)
+		return false;
+	return m_pRHI->GetScissorRect(out);
+}
+
+void CRenderBackend::InvalidateStateCache()
+{
+	if (m_pRHI)
+		m_pRHI->InvalidateStateCache();
+}
+
+void CRenderBackend::SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb,
+	uint32_t offset, uint32_t stride)
+{
+	if (m_pRHI)
+		m_pRHI->SetVertexBuffer(slot, vb, offset, stride);
+}
+
+void CRenderBackend::SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt)
+{
+	if (m_pRHI)
+		m_pRHI->SetIndexBuffer(ib, fmt);
+}
+
+void CRenderBackend::SetInputLayout(RHI_InputLayoutHandle layout)
+{
+	if (m_pRHI)
+		m_pRHI->SetInputLayout(layout);
+}
+
+void CRenderBackend::SetPrimitiveTopology(RHI_Topology topology)
+{
+	if (m_pRHI)
+		m_pRHI->SetPrimitiveTopology(topology);
+}
+
+void CRenderBackend::Draw(uint32_t vertexCount, uint32_t startVertex)
+{
+	if (m_pRHI)
+		m_pRHI->Draw(vertexCount, startVertex);
+}
+
+void CRenderBackend::DrawIndexed(uint32_t indexCount, uint32_t startIndex, uint32_t baseVertex)
+{
+	if (m_pRHI)
+		m_pRHI->DrawIndexed(indexCount, startIndex, baseVertex);
+}
+
+RHI_ShaderCompileResult CRenderBackend::CompileShader(const RHI_ShaderCompileDesc& desc)
+{
+	if (!m_pRHI)
+	{
+		RHI_ShaderCompileResult r;
+		r.errorMessage = "backend is not ready";
+		return r;
+	}
+	return m_pRHI->CompileShader(desc);
+}
+
+RHI_ShaderHandle CRenderBackend::CreateVertexShader(const void* bytecode, size_t size, const char* debugName)
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->CreateVertexShader(bytecode, size, debugName);
+}
+
+RHI_ShaderHandle CRenderBackend::CreatePixelShader(const void* bytecode, size_t size, const char* debugName)
+{
+	if (!m_pRHI)
+		return {};
+	return m_pRHI->CreatePixelShader(bytecode, size, debugName);
+}
+
+void CRenderBackend::DestroyShader(RHI_ShaderHandle handle)
+{
+	if (m_pRHI)
+		m_pRHI->DestroyShader(handle);
+}
+
+bool CRenderBackend::GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize)
+{
+	if (!m_pRHI)
+		return false;
+	return m_pRHI->GetShaderBytecode(handle, outData, outSize);
+}
+
+void CRenderBackend::SetVertexShader(RHI_ShaderHandle handle)
+{
+	if (m_pRHI)
+		m_pRHI->SetVertexShader(handle);
+}
+
+void CRenderBackend::SetPixelShader(RHI_ShaderHandle handle)
+{
+	if (m_pRHI)
+		m_pRHI->SetPixelShader(handle);
+}
+
+void CRenderBackend::SetSampler(uint32_t slot, const RHI_SamplerDesc& desc)
+{
+	if (m_pRHI)
+		m_pRHI->SetSampler(slot, desc);
+}
+
+void CRenderBackend::SetShaderResource(uint32_t slot, RHI_TextureHandle tex)
+{
+	if (m_pRHI)
+		m_pRHI->SetShaderResource(slot, tex);
+}
+
+void CRenderBackend::SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count)
+{
+	if (m_pRHI)
+		m_pRHI->SetShaderConstants(stage, startRegister, data, vec4Count);
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -6,6 +6,9 @@
 #include "pch.h"
 #include "r_render_pipeline.h"
 ////////////////////////////////////////////////////////////////////////////////
+#include "RenderPipeline/DeferredLightingPipeline.h"
+CDeferredLightingPipeline* scene_pipe = nullptr;
+////////////////////////////////////////////////////////////////////////////////
 void CRender::Render()
 {
 	PROFILE_FUNCTION();
@@ -19,6 +22,8 @@ void CRender::Render()
 
 	if(b_need_render_menu)
 	{
+		RenderBackendLegacy.Invalidate();
+		Engine.RHI->InvalidateStateCache();
 		RenderMenu();
 	}
 	else
@@ -26,7 +31,21 @@ void CRender::Render()
 		if(!(g_pGameLevel && g_pGameLevel->pHUD))
 			return;
 
-		RenderScene();
+		if (scene_pipe == nullptr)
+		{
+			scene_pipe = xr_new<CDeferredLightingPipeline>();
+			scene_pipe->Initialize();
+		}
+
+		prepare_to_render();
+		calculate_scene_culling();
+
+		RenderBackendLegacy.Invalidate();
+		Engine.RHI->InvalidateStateCache();
+
+		scene_pipe->Execute();
+
+		//RenderScene();
 		// RenderDebug();
 	}
 
