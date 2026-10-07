@@ -205,8 +205,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Backends\DirectX12\xrBackendDX12.h" />
     <ClInclude Include="Backends\DirectX9\xrBackendDX9.h" />
     <ClInclude Include="Backends\DirectX9\xrBackendDX9_Internal.h" />
+    <ClCompile Include="Backends\DirectX12\xrBackendDX12.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Geometry.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_RT.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Samplers.cpp" />

@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "xrRHI.h"
 #include "Backends/DirectX9/xrBackendDX9.h"
+#include "Backends/DirectX12/xrBackendDX12.h"
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
 {
@@ -14,6 +15,8 @@ extern "C"
 		{
 		case RHI_BackendType::DirectX9Ex:
 			return new CRenderBackendDX9();
+		case RHI_BackendType::DirectX12:
+			return new CRenderBackendDX12();
 		default:
 			return nullptr;
 		}

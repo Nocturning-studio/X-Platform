@@ -14,6 +14,9 @@
     <Filter Include="Backends Implementation\DirectX9">
       <UniqueIdentifier>{c20eee90-4c4d-434d-a548-b7609b644ce4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Backends Implementation\DirectX12">
+      <UniqueIdentifier>{ca49dee7-5498-41bf-a0e9-c01a1e9de60c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -58,6 +61,9 @@
     <ClInclude Include="xrRHI_Samplers.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Backends\DirectX12\xrBackendDX12.h">
+      <Filter>Backends Implementation\DirectX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -95,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Samplers.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX12\xrBackendDX12.cpp">
+      <Filter>Backends Implementation\DirectX12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
