@@ -43,6 +43,10 @@ public:
 	const CShaderConstantTable& Constants() const { return m_constants; }
 	CShaderConstantBuffer& ConstantBuffer() { return m_constantsBuffer; }
 
+	void AddMacro(LPCSTR name, LPCSTR value = "1") { m_macros.Add(name, value); }
+	void ClearMacros() { m_macros.Clear(); }
+	const RHI_ShaderMacro* GetMacros() const { return m_macros.Data(); }
+
 	LPCSTR GetVertexShaderFile()  const { return m_vsFile.c_str(); }
 	LPCSTR GetVertexShaderEntry() const { return m_vsEntry.c_str(); }
 	LPCSTR GetPixelShaderFile()   const { return m_psFile.c_str(); }
@@ -74,6 +78,8 @@ private:
 	CShaderConstantBuffer m_constantsBuffer;
 
 	xr_vector<CShaderSamplerBinding> m_samplers;
+
+	RHI_ShaderMacroList m_macros;
 
 	bool m_valid = false;
 };

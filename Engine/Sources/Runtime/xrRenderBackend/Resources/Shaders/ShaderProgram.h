@@ -24,7 +24,8 @@ public:
 	HRESULT CompileFromFile(IRenderBackend& rhi,
 							Type type,
 							LPCSTR file,
-							LPCSTR entry);
+							LPCSTR entry,
+							const RHI_ShaderMacro* defines = nullptr);
 
 	HRESULT CompileFromMemory(IRenderBackend& rhi,
 							  Type type,
@@ -32,7 +33,8 @@ public:
 							  UINT size,
 							  LPCSTR entry,
 							  LPCSTR debugName,
-							  RHI_IncludeHandler* pInclude = nullptr);
+							  RHI_IncludeHandler* pInclude = nullptr,
+							  const RHI_ShaderMacro* defines = nullptr);
 
 	void Release();
 

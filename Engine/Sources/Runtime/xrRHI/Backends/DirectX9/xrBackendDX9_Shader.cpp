@@ -287,12 +287,28 @@ RHI_ShaderCompileResult CRenderBackendDX9::CompileShader(const RHI_ShaderCompile
 	if (desc.flags & RHI_ShaderCompile_PreferFlowControl) flags1 |= D3DCOMPILE_PREFER_FLOW_CONTROL;
 	if (desc.flags & RHI_ShaderCompile_OptimizeLevel3)    flags1 |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
+	std::vector<D3D_SHADER_MACRO> d3dMacros;
+	if (desc.defines)
+	{
+		const RHI_ShaderMacro* m = desc.defines;
+		while (m->name != nullptr)
+		{
+			D3D_SHADER_MACRO dm;
+			dm.Name       = m->name;
+			dm.Definition = m->value;
+			d3dMacros.push_back(dm);
+			++m;
+		}
+		d3dMacros.push_back({ nullptr, nullptr }); // terminator для D3DCompile
+	}
+	const D3D_SHADER_MACRO* d3dMacrosPtr = d3dMacros.empty() ? nullptr : d3dMacros.data();
+
 	ID3DBlob* bytecode = nullptr;
 	ID3DBlob* errors = nullptr;
 
 	const HRESULT hr = D3DCompile(desc.source, desc.sourceSize,
 								  desc.sourceName ? desc.sourceName : "<memory>",
-								  nullptr,                                            // defines (TODO: маппинг RHI_ShaderMacro)
+								  d3dMacrosPtr,
 								  desc.includeHandler ? &includeAdapter : nullptr,
 								  desc.entryPoint ? desc.entryPoint : "main",
 								  target, flags1, 0,

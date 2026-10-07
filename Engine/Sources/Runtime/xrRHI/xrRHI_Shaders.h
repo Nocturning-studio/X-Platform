@@ -73,6 +73,95 @@ struct RHI_ShaderMacro
 };
 
 // ============================================================================
+// RHI_ShaderMacroList
+// ============================================================================
+//
+// RAII-обёртка для удобного построения null-terminated массива макросов.
+// Владеет строками (копирует их), отдаёт Data() — указатель, пригодный для
+// передачи в RHI_ShaderCompileDesc::defines.
+//
+// Использование:
+//   RHI_ShaderMacroList macros;
+//   macros.Add("MAX_LIGHTS", "4");
+//   macros.Add("USE_NORMALMAP");       // value по умолчанию = "1"
+//
+//   RHI_ShaderCompileDesc desc;
+//   desc.defines = macros.Data();      // nullptr, если макросов нет
+//   ...
+//
+// Указатель, возвращаемый Data(), валиден до следующего Add/Clear.
+// При желании можно хранить RHI_ShaderMacroList рядом с desc и заполнять
+// один раз — например, в CShaderPass.
+//
+// ============================================================================
+class XRRHI_API RHI_ShaderMacroList
+{
+public:
+	RHI_ShaderMacroList() = default;
+
+	RHI_ShaderMacroList(const RHI_ShaderMacroList&) = delete;
+	RHI_ShaderMacroList& operator=(const RHI_ShaderMacroList&) = delete;
+
+	// Добавить макрос. name должно быть непустым, value может быть nullptr —
+	// тогда подставляется "1" (как #define NAME без значения).
+	void Add(const char* name, const char* value)
+	{
+		if (!name || !name[0])
+			return;
+
+		// std::deque хранит элементы узлами — адреса строк стабильны при
+		// push_back, что нам и нужно: Data() отдаёт c_str() на элементы,
+		// и они не инвалидируются при последующих Add().
+		m_names.emplace_back(name);
+		m_values.emplace_back(value ? value : "1");
+		Rebuild();
+	}
+
+	void Add(const char* name)
+	{
+		Add(name, "1");
+	}
+
+	void Clear()
+	{
+		m_names.clear();
+		m_values.clear();
+		m_macros.clear();
+	}
+
+	bool empty() const { return m_names.empty(); }
+	size_t size() const { return m_names.size(); }
+
+	// Null-terminated массив D3D-совместимых пар {name, value}.
+	// Возвращает nullptr, если макросов нет. Указатель валиден до
+	// следующего Add/Clear.
+	const RHI_ShaderMacro* Data() const
+	{
+		return m_macros.empty() ? nullptr : m_macros.data();
+	}
+
+private:
+	void Rebuild()
+	{
+		m_macros.clear();
+		m_macros.reserve(m_names.size() + 1);
+
+		for (size_t i = 0; i < m_names.size(); ++i)
+		{
+			RHI_ShaderMacro m;
+			m.name = m_names[i].c_str();
+			m.value = m_values[i].c_str();
+			m_macros.push_back(m);
+		}
+		m_macros.push_back({ nullptr, nullptr }); // terminator
+	}
+
+	std::deque<std::string>      m_names;
+	std::deque<std::string>      m_values;
+	std::vector<RHI_ShaderMacro> m_macros;
+};
+
+// ============================================================================
 // RHI_ShaderCompileFlags
 // ============================================================================
 enum RHI_ShaderCompileFlags : uint32_t

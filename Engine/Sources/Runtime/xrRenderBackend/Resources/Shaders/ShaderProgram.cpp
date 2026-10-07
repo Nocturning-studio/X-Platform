@@ -11,13 +11,13 @@
 CShaderProgram::~CShaderProgram() { Release(); }
 
 CShaderProgram::CShaderProgram(CShaderProgram&& other) noexcept
-		: m_type(other.m_type), 
-		m_sourceFile(std::move(other.m_sourceFile)), 
-		m_entry(std::move(other.m_entry)), 
-		m_bytecodePtr(other.m_bytecodePtr), 
-		m_bytecodeSize(other.m_bytecodeSize), 
-		m_rhiHandle(other.m_rhiHandle), 
-		m_rhi(other.m_rhi)
+	: m_type(other.m_type),
+	  m_sourceFile(std::move(other.m_sourceFile)),
+	  m_entry(std::move(other.m_entry)),
+	  m_bytecodePtr(other.m_bytecodePtr),
+	  m_bytecodeSize(other.m_bytecodeSize),
+	  m_rhiHandle(other.m_rhiHandle),
+	  m_rhi(other.m_rhi)
 {
 	other.m_bytecodePtr = nullptr;
 	other.m_bytecodeSize = 0;
@@ -61,7 +61,7 @@ void CShaderProgram::Release()
 	m_type = Type::Vertex;
 }
 
-HRESULT CShaderProgram::CompileFromFile(IRenderBackend& rhi, Type type, LPCSTR file, LPCSTR entry)
+HRESULT CShaderProgram::CompileFromFile(IRenderBackend& rhi, Type type, LPCSTR file, LPCSTR entry, const RHI_ShaderMacro* defines)
 {
 	const xr_string localFile = file ? file : "";
 	const xr_string localEntry = (entry && entry[0]) ? entry : "main";
@@ -84,15 +84,20 @@ HRESULT CShaderProgram::CompileFromFile(IRenderBackend& rhi, Type type, LPCSTR f
 										 static_cast<UINT>(reader->length()),
 										 localEntry.c_str(),
 										 localFile.c_str(),
-										 &includer);
+										 &includer,
+										 defines);
 	FS.r_close(reader);
 	return hr;
 }
 
-HRESULT CShaderProgram::CompileFromMemory(IRenderBackend& rhi, Type type,
-										  LPCSTR source, UINT size,
-										  LPCSTR entry, LPCSTR debugName,
-										  RHI_IncludeHandler* pInclude)
+HRESULT CShaderProgram::CompileFromMemory(IRenderBackend& rhi,
+										  Type type,
+										  LPCSTR source,
+										  UINT size,
+										  LPCSTR entry,
+										  LPCSTR debugName,
+										  RHI_IncludeHandler* pInclude,
+										  const RHI_ShaderMacro* defines)
 {
 	Release();
 
@@ -108,6 +113,7 @@ HRESULT CShaderProgram::CompileFromMemory(IRenderBackend& rhi, Type type,
 	desc.entryPoint = m_entry.c_str();
 	desc.type = (type == Type::Vertex) ? RHI_ShaderType::Vertex : RHI_ShaderType::Pixel;
 	desc.includeHandler = pInclude;
+	desc.defines = defines;
 	desc.debugName = m_sourceFile.empty() ? nullptr : m_sourceFile.c_str();
 	desc.flags = RHI_ShaderCompile_Default;
 

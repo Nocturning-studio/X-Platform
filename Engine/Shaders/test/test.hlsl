@@ -65,9 +65,13 @@ VS_FULLSCREEN_OUT vs_fullscreen(VS_FULLSCREEN_IN i)
     return o;
 }
 
-sampler2D s_src : register(s0);
+sampler2D s_src;
 
 float4 ps_fullscreen(VS_FULLSCREEN_OUT i) : COLOR
 {
+#ifdef USE_COLOR
+    return float4(i.uv, 0, 0);
+#else
     return tex2D(s_src, i.uv);
+#endif
 }

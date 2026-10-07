@@ -192,6 +192,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	CShaderPass passFullscreen;
 	passFullscreen.SetVertexShader("test\\test.hlsl", "vs_fullscreen");
 	passFullscreen.SetPixelShader("test\\test.hlsl", "ps_fullscreen");
+	passFullscreen.AddMacro("USE_COLOR");
 	if (!passFullscreen.Compile(backend))
 	{
 		R_ERROR("! [Test] passFullscreen compile failed");
@@ -200,8 +201,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 
 	if (!passFullscreen.SetTexture("s_src", offscreen))
 	{
-		R_ERROR("! [Test] passFullscreen: sampler 's_src' not found " "(check HLSL declaration)");
-		return 1;
+		Msg("! [Test] passFullscreen: sampler 's_src' not found (Probably unused?)" "(check HLSL declaration)");
 	}
 
 	Msg("* [Test] Init OK - window=%ux%u, offscreen=%ux%u", kWindowWidth, kWindowHeight, kOffscreenWidth, kOffscreenHeight);

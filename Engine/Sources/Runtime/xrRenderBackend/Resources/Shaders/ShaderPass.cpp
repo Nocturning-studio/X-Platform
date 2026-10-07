@@ -32,10 +32,12 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 		return FALSE;
 	}
 
+	const RHI_ShaderMacro* macros = m_macros.Data();
+
 	// Vertex
 	if (!m_vsFile.empty())
 	{
-		const HRESULT hr = m_vs.CompileFromFile(*rhi, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str());
+		const HRESULT hr = m_vs.CompileFromFile(*rhi, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str(), macros);
 		if (FAILED(hr))
 			return FALSE;
 	}
@@ -47,7 +49,7 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	// Pixel
 	if (!m_psFile.empty())
 	{
-		const HRESULT hr = m_ps.CompileFromFile(*rhi, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str());
+		const HRESULT hr = m_ps.CompileFromFile(*rhi, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str(), macros);
 		if (FAILED(hr))
 			return FALSE;
 	}
