@@ -142,12 +142,4 @@ HRESULT CShaderProgram::CompileFromMemory(IRenderBackend& rhi,
 
 	return S_OK;
 }
-
-void CShaderProgram::Apply(IRenderBackend& rhi) const
-{
-	if(m_type == Type::Vertex)
-		rhi.SetVertexShader(m_rhiHandle);
-	else
-		rhi.SetPixelShader(m_rhiHandle);
-}
 ////////////////////////////////////////////////////////////////////////////////

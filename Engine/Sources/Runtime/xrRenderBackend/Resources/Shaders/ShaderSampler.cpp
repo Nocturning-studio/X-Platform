@@ -9,29 +9,37 @@
 namespace
 {
 
-	D3DTEXTUREFILTERTYPE ToD3DFilter(ESamplerFilter f)
+D3DTEXTUREFILTERTYPE ToD3DFilter(ESamplerFilter f)
+{
+	switch(f)
 	{
-		switch (f)
-		{
-		case ESamplerFilter::Point:       return D3DTEXF_POINT;
-		case ESamplerFilter::Linear:      return D3DTEXF_LINEAR;
-		case ESamplerFilter::Anisotropic: return D3DTEXF_ANISOTROPIC;
-		}
+	case ESamplerFilter::Point:
+		return D3DTEXF_POINT;
+	case ESamplerFilter::Linear:
 		return D3DTEXF_LINEAR;
+	case ESamplerFilter::Anisotropic:
+		return D3DTEXF_ANISOTROPIC;
 	}
+	return D3DTEXF_LINEAR;
+}
 
-	D3DTEXTUREADDRESS ToD3DAddress(ESamplerAddress a)
+D3DTEXTUREADDRESS ToD3DAddress(ESamplerAddress a)
+{
+	switch(a)
 	{
-		switch (a)
-		{
-		case ESamplerAddress::Wrap:       return D3DTADDRESS_WRAP;
-		case ESamplerAddress::Clamp:      return D3DTADDRESS_CLAMP;
-		case ESamplerAddress::Mirror:     return D3DTADDRESS_MIRROR;
-		case ESamplerAddress::Border:     return D3DTADDRESS_BORDER;
-		case ESamplerAddress::MirrorOnce: return D3DTADDRESS_MIRRORONCE;
-		}
+	case ESamplerAddress::Wrap:
 		return D3DTADDRESS_WRAP;
+	case ESamplerAddress::Clamp:
+		return D3DTADDRESS_CLAMP;
+	case ESamplerAddress::Mirror:
+		return D3DTADDRESS_MIRROR;
+	case ESamplerAddress::Border:
+		return D3DTADDRESS_BORDER;
+	case ESamplerAddress::MirrorOnce:
+		return D3DTADDRESS_MIRRORONCE;
 	}
+	return D3DTADDRESS_WRAP;
+}
 
 } // namespace
 
@@ -45,20 +53,20 @@ void ApplySamplerDesc(IDirect3DDevice9* device, uint32_t stage, const CSamplerDe
 	CHK_DX(device->SetSamplerState(stage, D3DSAMP_ADDRESSV, ToD3DAddress(desc.addressV)));
 	CHK_DX(device->SetSamplerState(stage, D3DSAMP_ADDRESSW, ToD3DAddress(desc.addressW)));
 
-	if (desc.minFilter == ESamplerFilter::Anisotropic ||
-		desc.magFilter == ESamplerFilter::Anisotropic)
+	if(desc.minFilter == ESamplerFilter::Anisotropic ||
+	   desc.magFilter == ESamplerFilter::Anisotropic)
 	{
 		CHK_DX(device->SetSamplerState(stage, D3DSAMP_MAXANISOTROPY, desc.maxAnisotropy));
 	}
 
-	if (desc.addressU == ESamplerAddress::Border ||
-		desc.addressV == ESamplerAddress::Border ||
-		desc.addressW == ESamplerAddress::Border)
+	if(desc.addressU == ESamplerAddress::Border ||
+	   desc.addressV == ESamplerAddress::Border ||
+	   desc.addressW == ESamplerAddress::Border)
 	{
 		CHK_DX(device->SetSamplerState(stage, D3DSAMP_BORDERCOLOR, desc.borderColor));
 	}
 
-	if (desc.mipLodBias != 0.0f)
+	if(desc.mipLodBias != 0.0f)
 	{
 		const DWORD bias = static_cast<DWORD>(desc.mipLodBias * 256.0f);
 		CHK_DX(device->SetSamplerState(stage, D3DSAMP_MIPMAPLODBIAS, bias));

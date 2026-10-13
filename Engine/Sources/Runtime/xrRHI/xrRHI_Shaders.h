@@ -96,7 +96,7 @@ struct RHI_ShaderMacro
 // ============================================================================
 class XRRHI_API RHI_ShaderMacroList
 {
-public:
+  public:
 	RHI_ShaderMacroList() = default;
 
 	RHI_ShaderMacroList(const RHI_ShaderMacroList&) = delete;
@@ -106,7 +106,7 @@ public:
 	// тогда подставляется "1" (как #define NAME без значения).
 	void Add(const char* name, const char* value)
 	{
-		if (!name || !name[0])
+		if(!name || !name[0])
 			return;
 
 		// std::deque хранит элементы узлами — адреса строк стабильны при
@@ -140,24 +140,24 @@ public:
 		return m_macros.empty() ? nullptr : m_macros.data();
 	}
 
-private:
+  private:
 	void Rebuild()
 	{
 		m_macros.clear();
 		m_macros.reserve(m_names.size() + 1);
 
-		for (size_t i = 0; i < m_names.size(); ++i)
+		for(size_t i = 0; i < m_names.size(); ++i)
 		{
 			RHI_ShaderMacro m;
 			m.name = m_names[i].c_str();
 			m.value = m_values[i].c_str();
 			m_macros.push_back(m);
 		}
-		m_macros.push_back({ nullptr, nullptr }); // terminator
+		m_macros.push_back({nullptr, nullptr}); // terminator
 	}
 
-	std::deque<std::string>      m_names;
-	std::deque<std::string>      m_values;
+	std::deque<std::string> m_names;
+	std::deque<std::string> m_values;
 	std::vector<RHI_ShaderMacro> m_macros;
 };
 
@@ -173,8 +173,8 @@ enum RHI_ShaderCompileFlags : uint32_t
 	RHI_ShaderCompile_PreferFlowControl = 1u << 4,
 	RHI_ShaderCompile_OptimizeLevel3 = 1u << 5,
 
-	RHI_ShaderCompile_Default = RHI_ShaderCompile_RowMajor | 
-								RHI_ShaderCompile_PreferFlowControl | 
+	RHI_ShaderCompile_Default = RHI_ShaderCompile_RowMajor |
+								RHI_ShaderCompile_PreferFlowControl |
 								RHI_ShaderCompile_OptimizeLevel3,
 };
 

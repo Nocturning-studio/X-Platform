@@ -11,7 +11,7 @@
 
 class XRRB_API CVertexBuffer : public CRefCountedResource
 {
-public:
+  public:
 	CVertexBuffer() = default;
 	~CVertexBuffer() override;
 
@@ -31,10 +31,10 @@ public:
 
 	void Bind(IRenderBackend& rhi, uint32_t stream = 0, uint32_t offset = 0) const;
 
-private:
+  private:
 	void DestroyRHI();
 
-	RHI_BufferDesc   m_desc;
+	RHI_BufferDesc m_desc;
 	IRenderBackend* m_rhi = nullptr;
 	RHI_BufferHandle m_rhiHandle{};
 };
@@ -44,7 +44,7 @@ using ref_vertexbuffer = CSharedPtr<CVertexBuffer>;
 
 class XRRB_API CIndexBuffer : public CRefCountedResource
 {
-public:
+  public:
 	CIndexBuffer() = default;
 	~CIndexBuffer() override;
 
@@ -65,10 +65,10 @@ public:
 
 	void Bind(IRenderBackend& rhi) const;
 
-private:
+  private:
 	void DestroyRHI();
 
-	RHI_BufferDesc   m_desc;
+	RHI_BufferDesc m_desc;
 	IRenderBackend* m_rhi = nullptr;
 	RHI_BufferHandle m_rhiHandle{};
 };

@@ -26,8 +26,10 @@ class XRRB_API CShaderConstantBuffer
 	void MarkDirty(bool pixel, uint32_t lo, uint32_t hi);
 
 	// Массивы значений. 256 float4-регистров — максимум SM3.0.
-	ALIGN(16) fvec4 m_vsData[256];
-	ALIGN(16) fvec4 m_psData[256];
+	ALIGN(16)
+	fvec4 m_vsData[256];
+	ALIGN(16)
+	fvec4 m_psData[256];
 
 	bool m_vsDirty = false;
 	bool m_psDirty = false;

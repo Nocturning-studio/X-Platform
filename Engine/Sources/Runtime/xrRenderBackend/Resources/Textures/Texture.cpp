@@ -20,12 +20,12 @@ bool CTexture::Create(IRenderBackend& rhi, const RHI_TextureDesc& desc)
 	m_rhi = &rhi;
 
 	m_rhiHandle = rhi.CreateTexture(desc, nullptr);
-	if (!m_rhiHandle.IsValid())
+	if(!m_rhiHandle.IsValid())
 	{
 		Msg("! [CTexture] CreateTexture failed for '%s' (%ux%u, fmt=%u)", desc.debugName ? desc.debugName : "<unnamed>",
-																		  desc.width, 
-																		  desc.height, 
-																		  (uint32_t)desc.format);
+			desc.width,
+			desc.height,
+			(uint32_t)desc.format);
 		m_rhi = nullptr;
 		return false;
 	}
@@ -34,8 +34,9 @@ bool CTexture::Create(IRenderBackend& rhi, const RHI_TextureDesc& desc)
 
 RHI_RenderTargetView CTexture::CreateRTV(uint32_t mip, uint32_t face) const
 {
-	if (!m_rhi || !m_rhiHandle.IsValid()) return {};
-	if (!(m_desc.usage & RHI_TexUsage_RenderTarget))
+	if(!m_rhi || !m_rhiHandle.IsValid())
+		return {};
+	if(!(m_desc.usage & RHI_TexUsage_RenderTarget))
 	{
 		Msg("! [CTexture] CreateRTV: '%s' is not a render target", m_desc.debugName ? m_desc.debugName : "<unnamed>");
 		return {};
@@ -45,8 +46,9 @@ RHI_RenderTargetView CTexture::CreateRTV(uint32_t mip, uint32_t face) const
 
 RHI_DepthStencilView CTexture::CreateDSV(uint32_t mip, uint32_t face) const
 {
-	if (!m_rhi || !m_rhiHandle.IsValid()) return {};
-	if (!(m_desc.usage & RHI_TexUsage_DepthStencil))
+	if(!m_rhi || !m_rhiHandle.IsValid())
+		return {};
+	if(!(m_desc.usage & RHI_TexUsage_DepthStencil))
 	{
 		Msg("! [CTexture] CreateDSV: '%s' is not depth/stencil", m_desc.debugName ? m_desc.debugName : "<unnamed>");
 		return {};
@@ -61,7 +63,7 @@ void CTexture::Bind(IRenderBackend& rhi, uint32_t slot) const
 
 void CTexture::DestroyRHI()
 {
-	if (m_rhi && m_rhiHandle.IsValid())
+	if(m_rhi && m_rhiHandle.IsValid())
 		m_rhi->DestroyTexture(m_rhiHandle);
 	m_rhiHandle = {};
 	m_rhi = nullptr;

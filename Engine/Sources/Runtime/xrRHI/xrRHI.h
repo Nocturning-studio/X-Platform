@@ -15,5 +15,8 @@
 #include "xrRHI_InputLayout.h"
 #include "xrRHI_Shaders.h"
 #include "xrRHI_Samplers.h"
+#include "xrRHI_PipelineLayout.h"
+#include "xrRHI_PipelineState.h"
 #include "xrRHI_BackendInterface.h"
+#include "xrRHI_BackendAccess.h"
 ////////////////////////////////////////////////////////////////////////////////

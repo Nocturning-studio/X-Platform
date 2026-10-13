@@ -20,7 +20,7 @@ bool CVertexBuffer::Create(IRenderBackend& rhi, const RHI_BufferDesc& desc, cons
 {
 	DestroyRHI();
 
-	if (desc.sizeBytes == 0 || desc.stride == 0)
+	if(desc.sizeBytes == 0 || desc.stride == 0)
 	{
 		Msg("! [CVertexBuffer] invalid desc: size=%u, stride=%u", desc.sizeBytes, desc.stride);
 		return false;
@@ -30,7 +30,7 @@ bool CVertexBuffer::Create(IRenderBackend& rhi, const RHI_BufferDesc& desc, cons
 	m_rhi = &rhi;
 
 	m_rhiHandle = rhi.CreateVertexBuffer(desc, initialData);
-	if (!m_rhiHandle.IsValid())
+	if(!m_rhiHandle.IsValid())
 	{
 		Msg("! [CVertexBuffer] CreateVertexBuffer failed (size=%u, stride=%u)",
 			desc.sizeBytes, desc.stride);
@@ -42,28 +42,28 @@ bool CVertexBuffer::Create(IRenderBackend& rhi, const RHI_BufferDesc& desc, cons
 
 void* CVertexBuffer::Lock(uint32_t offset, uint32_t size, uint32_t flags)
 {
-	if (!m_rhi || !m_rhiHandle.IsValid())
+	if(!m_rhi || !m_rhiHandle.IsValid())
 		return nullptr;
 	return m_rhi->LockBuffer(m_rhiHandle, offset, size, flags);
 }
 
 void CVertexBuffer::Unlock()
 {
-	if (!m_rhi || !m_rhiHandle.IsValid())
+	if(!m_rhi || !m_rhiHandle.IsValid())
 		return;
 	m_rhi->UnlockBuffer(m_rhiHandle);
 }
 
 void CVertexBuffer::Bind(IRenderBackend& rhi, uint32_t stream, uint32_t offset) const
 {
-	if (!m_rhiHandle.IsValid())
+	if(!m_rhiHandle.IsValid())
 		return;
 	rhi.SetVertexBuffer(stream, m_rhiHandle, offset, m_desc.stride);
 }
 
 void CVertexBuffer::DestroyRHI()
 {
-	if (m_rhi && m_rhiHandle.IsValid())
+	if(m_rhi && m_rhiHandle.IsValid())
 		m_rhi->DestroyBuffer(m_rhiHandle);
 	m_rhiHandle = {};
 	m_rhi = nullptr;
@@ -82,7 +82,7 @@ bool CIndexBuffer::Create(IRenderBackend& rhi, const RHI_BufferDesc& desc, const
 {
 	DestroyRHI();
 
-	if (desc.sizeBytes == 0)
+	if(desc.sizeBytes == 0)
 	{
 		Msg("! [CIndexBuffer] invalid desc: size=0");
 		return false;
@@ -92,7 +92,7 @@ bool CIndexBuffer::Create(IRenderBackend& rhi, const RHI_BufferDesc& desc, const
 	m_rhi = &rhi;
 
 	m_rhiHandle = rhi.CreateIndexBuffer(desc, initialData);
-	if (!m_rhiHandle.IsValid())
+	if(!m_rhiHandle.IsValid())
 	{
 		Msg("! [CIndexBuffer] CreateIndexBuffer failed (size=%u, fmt=%u)",
 			desc.sizeBytes, (uint32_t)desc.indexFormat);
@@ -104,28 +104,28 @@ bool CIndexBuffer::Create(IRenderBackend& rhi, const RHI_BufferDesc& desc, const
 
 void* CIndexBuffer::Lock(uint32_t offset, uint32_t size, uint32_t flags)
 {
-	if (!m_rhi || !m_rhiHandle.IsValid())
+	if(!m_rhi || !m_rhiHandle.IsValid())
 		return nullptr;
 	return m_rhi->LockBuffer(m_rhiHandle, offset, size, flags);
 }
 
 void CIndexBuffer::Unlock()
 {
-	if (!m_rhi || !m_rhiHandle.IsValid())
+	if(!m_rhi || !m_rhiHandle.IsValid())
 		return;
 	m_rhi->UnlockBuffer(m_rhiHandle);
 }
 
 void CIndexBuffer::Bind(IRenderBackend& rhi) const
 {
-	if (!m_rhiHandle.IsValid())
+	if(!m_rhiHandle.IsValid())
 		return;
 	rhi.SetIndexBuffer(m_rhiHandle, m_desc.indexFormat);
 }
 
 void CIndexBuffer::DestroyRHI()
 {
-	if (m_rhi && m_rhiHandle.IsValid())
+	if(m_rhi && m_rhiHandle.IsValid())
 		m_rhi->DestroyBuffer(m_rhiHandle);
 	m_rhiHandle = {};
 	m_rhi = nullptr;

@@ -18,11 +18,11 @@ enum class EConstantRegister : uint16_t
 
 enum class EConstantClass : uint16_t
 {
-	Scalar = 0,		// 1 float4
-	Vector = 1,		// 1 float4
-	Matrix2x4 = 2,	// 2 float4 (транспонированная 4x2)
-	Matrix3x4 = 3,	// 3 float4
-	Matrix4x4 = 4,	// 4 float4
+	Scalar = 0,	   // 1 float4
+	Vector = 1,	   // 1 float4
+	Matrix2x4 = 2, // 2 float4 (транспонированная 4x2)
+	Matrix3x4 = 3, // 3 float4
+	Matrix4x4 = 4, // 4 float4
 	Struct = 5,
 	Object = 6,
 	Unknown = 0xFFFF,
@@ -42,7 +42,7 @@ enum class EConstantType : uint16_t
 struct CShaderSamplerEntry
 {
 	xr_string name;
-	uint32_t dx9Stage = uint32_t(-1);      // 0-15 для PS, 257+ для VS
+	uint32_t dx9Stage = uint32_t(-1);			 // 0-15 для PS, 257+ для VS
 	EConstantType type = EConstantType::Unknown; // 2D / Cube / 3D / ...
 };
 

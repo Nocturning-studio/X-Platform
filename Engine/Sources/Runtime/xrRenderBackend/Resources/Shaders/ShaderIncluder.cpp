@@ -68,19 +68,19 @@ void CShaderIncluder::AddSearchPath(LPCSTR path)
 	m_searchPaths.push_back(std::move(p));
 }
 
-bool CShaderIncluder::Open(RHI_IncludeType /*type*/, 
+bool CShaderIncluder::Open(RHI_IncludeType /*type*/,
 						   const char* pName,
 						   const void* /*pParentData*/,
-						   const void** ppData, 
+						   const void** ppData,
 						   size_t* pBytes)
 {
-	if (!pName || !pName[0] || !ppData || !pBytes)
+	if(!pName || !pName[0] || !ppData || !pBytes)
 		return false;
 
 	xr_string resolved;
 	IReader* reader = nullptr;
 
-	for (const auto& sp : m_searchPaths)
+	for(const auto& sp : m_searchPaths)
 	{
 		const xr_string cand = NormalizeRelative(sp + pName);
 
@@ -88,14 +88,14 @@ bool CShaderIncluder::Open(RHI_IncludeType /*type*/,
 		FS.update_path(full_path, kShaderRoot, cand.c_str());
 
 		reader = FS.r_open(full_path);
-		if (reader)
+		if(reader)
 		{
 			resolved = cand;
 			break;
 		}
 	}
 
-	if (!reader)
+	if(!reader)
 	{
 		Msg("! [Includer] Cannot resolve '%s' in $engine_shaders$", pName);
 		return false;
@@ -106,23 +106,29 @@ bool CShaderIncluder::Open(RHI_IncludeType /*type*/,
 
 	const xr_string guard = MakeGuardName(resolved);
 
-	if (m_wrapWithGuard)
+	if(m_wrapWithGuard)
 	{
-		content += "#ifndef "; content += guard; content += "\n";
-		content += "#define "; content += guard; content += "\n";
+		content += "#ifndef ";
+		content += guard;
+		content += "\n";
+		content += "#define ";
+		content += guard;
+		content += "\n";
 	}
 
 	content.append(static_cast<const char*>(reader->pointer()),
-		static_cast<size_t>(reader->length()));
+				   static_cast<size_t>(reader->length()));
 
-	if (m_wrapWithGuard)
+	if(m_wrapWithGuard)
 	{
-		content += "\n#endif // "; content += guard; content += "\n";
+		content += "\n#endif // ";
+		content += guard;
+		content += "\n";
 	}
 
 	FS.r_close(reader);
 
-	if (m_includedSet.insert(resolved).second)
+	if(m_includedSet.insert(resolved).second)
 		m_included.push_back(resolved);
 
 	m_buffers.push_back(std::move(content));

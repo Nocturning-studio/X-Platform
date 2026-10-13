@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CGeometry : public CRefCountedResource
 {
-public:
+  public:
 	CGeometry() = default;
 	~CGeometry() override = default;
 
@@ -29,9 +29,9 @@ public:
 	};
 
 	void SetVertexBuffer(uint32_t stream, const ref_vertexbuffer& vb,
-		uint32_t offset = 0, uint32_t instanceStepRate = 0)
+						 uint32_t offset = 0, uint32_t instanceStepRate = 0)
 	{
-		if (stream >= m_streams.size())
+		if(stream >= m_streams.size())
 			m_streams.resize(stream + 1);
 		m_streams[stream].buffer = vb;
 		m_streams[stream].offset = offset;
@@ -69,7 +69,7 @@ public:
 	// внутри Bind через SetPrimitiveTopology.
 	void Draw(IRenderBackend& rhi) const;
 
-private:
+  private:
 	xr_vector<SStreamBinding> m_streams;
 	ref_indexbuffer m_ib;
 	ref_vertexdecl m_vdecl;

@@ -124,7 +124,6 @@ struct RHI_BlendState
 //   stencilFunc         -> D3DRS_STENCILFUNC
 //   stencilReadMask     -> D3DRS_STENCILMASK
 //   stencilWriteMask    -> D3DRS_STENCILWRITEMASK
-//   stencilRef          -> D3DRS_STENCILREF
 //   stencilFailOp       -> D3DRS_STENCILFAIL
 //   stencilDepthFailOp  -> D3DRS_STENCILZFAIL
 //   stencilPassOp       -> D3DRS_STENCILPASS
@@ -141,7 +140,6 @@ struct RHI_DepthStencilState
 	RHI_CmpFunc stencilFunc = RHI_CmpFunc::Always;
 	uint8_t stencilReadMask = 0xFF;
 	uint8_t stencilWriteMask = 0xFF;
-	uint8_t stencilRef = 0;
 	RHI_StencilOp stencilFailOp = RHI_StencilOp::Keep;
 	RHI_StencilOp stencilDepthFailOp = RHI_StencilOp::Keep;
 	RHI_StencilOp stencilPassOp = RHI_StencilOp::Keep;
@@ -161,7 +159,6 @@ struct RHI_DepthStencilState
 		return stencilFunc == o.stencilFunc &&
 			   stencilReadMask == o.stencilReadMask &&
 			   stencilWriteMask == o.stencilWriteMask &&
-			   stencilRef == o.stencilRef &&
 			   stencilFailOp == o.stencilFailOp &&
 			   stencilDepthFailOp == o.stencilDepthFailOp &&
 			   stencilPassOp == o.stencilPassOp;
@@ -170,10 +167,7 @@ struct RHI_DepthStencilState
 
 	// ---- Presets ----
 
-	static RHI_DepthStencilState Default()
-	{
-		return {};
-	}
+	static RHI_DepthStencilState Default() { return {}; }
 
 	static RHI_DepthStencilState DepthReadOnly()
 	{
@@ -201,9 +195,6 @@ struct RHI_DepthStencilState
 //   scissorEnable        -> D3DRS_SCISSORTESTENABLE
 //   depthBias            -> D3DRS_DEPTHBIAS            (float bits)
 //   slopeScaledDepthBias -> D3DRS_SLOPESCALEDEPTHBIAS  (float bits)
-//
-// frontCounterClockwise в D3D9 не управляется отдельным render state — там
-// фиксированное правило обхода (CW). Оставляем поле для совместимости с D3D12.
 //
 // ============================================================================
 

@@ -142,7 +142,7 @@ void CRenderBackendDX9::FreeBufferHandle(RHI_BufferHandle h)
 RHI_InputLayoutHandle CRenderBackendDX9::AllocInputLayoutHandle(DX9InputLayout* lay)
 {
 	uint32_t idx;
-	if(!m_freeInputLayoutIndices.empty())
+	if (!m_freeInputLayoutIndices.empty())
 	{
 		idx = m_freeInputLayoutIndices.top();
 		m_freeInputLayoutIndices.pop();
@@ -153,36 +153,37 @@ RHI_InputLayoutHandle CRenderBackendDX9::AllocInputLayoutHandle(DX9InputLayout* 
 		idx = static_cast<uint32_t>(m_inputLayouts.size());
 		m_inputLayouts.push_back(lay);
 	}
-	return RHI_InputLayoutHandle{idx};
+	return RHI_InputLayoutHandle{ idx };
 }
 
 DX9InputLayout* CRenderBackendDX9::GetInputLayout(RHI_InputLayoutHandle h) const
 {
-	if(!h.IsValid() || h.id >= m_inputLayouts.size())
+	if (!h.IsValid() || h.id >= m_inputLayouts.size())
 		return nullptr;
 	return m_inputLayouts[h.id];
 }
 
 void CRenderBackendDX9::FreeInputLayoutHandle(RHI_InputLayoutHandle h)
 {
-	if(!h.IsValid() || h.id >= m_inputLayouts.size())
+	if (!h.IsValid() || h.id >= m_inputLayouts.size())
 		return;
 
 	DX9InputLayout* lay = m_inputLayouts[h.id];
-	if(!lay)
+	if (!lay)
 	{
 		Msg("! [DX9] Double free of RHI_InputLayoutHandle(id=%u) detected, ignoring.", h.id);
 		return;
 	}
 
-	if(m_currentDecl == lay->decl)
+	if (m_currentDecl == lay->decl)
 	{
-		if(m_pDevice)
+		if (m_pDevice)
 			m_pDevice->SetVertexDeclaration(nullptr);
 		m_currentDecl = nullptr;
+		m_psoCacheValid = false;
 	}
 
-	if(lay->decl)
+	if (lay->decl)
 		lay->decl->Release();
 
 	delete lay;
@@ -196,10 +197,9 @@ void CRenderBackendDX9::FreeInputLayoutHandle(RHI_InputLayoutHandle h)
 
 RHI_BufferHandle CRenderBackendDX9::CreateVertexBuffer(const RHI_BufferDesc& desc, const void* initialData)
 {
-	if(!m_pDevice || desc.sizeBytes == 0 || desc.stride == 0)
+	if (!m_pDevice || desc.sizeBytes == 0 || desc.stride == 0)
 	{
-		Msg("! [DX9] CreateVertexBuffer: invalid args (device=%p, size=%u, stride=%u)",
-			m_pDevice, desc.sizeBytes, desc.stride);
+		Msg("! [DX9] CreateVertexBuffer: invalid args (device=%p, size=%u, stride=%u)", m_pDevice, desc.sizeBytes, desc.stride);
 		return {};
 	}
 
@@ -209,13 +209,13 @@ RHI_BufferHandle CRenderBackendDX9::CreateVertexBuffer(const RHI_BufferDesc& des
 
 	IDirect3DVertexBuffer9* vb = nullptr;
 	const HRESULT hr = m_pDevice->CreateVertexBuffer(desc.sizeBytes, d3dUsage, 0, pool, &vb, nullptr);
-	if(FAILED(hr) || !vb)
+	if (FAILED(hr) || !vb)
 	{
 		Msg("! [DX9] CreateVertexBuffer failed (hr=0x%08x, size=%u, stride=%u, usage=0x%x)", hr, desc.sizeBytes, desc.stride, desc.usage);
 		return {};
 	}
 
-	if(desc.debugName && desc.debugName[0])
+	if (desc.debugName && desc.debugName[0])
 		vb->SetPrivateData(WKPDID_D3DDebugObjectName, desc.debugName, (DWORD)strlen(desc.debugName), 0);
 
 	DX9Buffer* buf = new DX9Buffer;
@@ -224,12 +224,11 @@ RHI_BufferHandle CRenderBackendDX9::CreateVertexBuffer(const RHI_BufferDesc& des
 	buf->pool = pool;
 	buf->isIndex = false;
 
-	// Загружаем initial data, если дано.
-	if(initialData)
+	if (initialData)
 	{
 		void* p = nullptr;
 		const DWORD lf = ToD3DLockFlags(RHI_BufferUsage_Dynamic, desc.usage, true);
-		if(SUCCEEDED(vb->Lock(0, 0, &p, lf)) && p)
+		if (SUCCEEDED(vb->Lock(0, 0, &p, lf)) && p)
 		{
 			memcpy(p, initialData, desc.sizeBytes);
 			vb->Unlock();
@@ -245,10 +244,9 @@ RHI_BufferHandle CRenderBackendDX9::CreateVertexBuffer(const RHI_BufferDesc& des
 
 RHI_BufferHandle CRenderBackendDX9::CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData)
 {
-	if(!m_pDevice || desc.sizeBytes == 0)
+	if (!m_pDevice || desc.sizeBytes == 0)
 	{
-		Msg("! [DX9] CreateIndexBuffer: invalid args (device=%p, size=%u)",
-			m_pDevice, desc.sizeBytes);
+		Msg("! [DX9] CreateIndexBuffer: invalid args (device=%p, size=%u)", m_pDevice, desc.sizeBytes);
 		return {};
 	}
 
@@ -260,13 +258,13 @@ RHI_BufferHandle CRenderBackendDX9::CreateIndexBuffer(const RHI_BufferDesc& desc
 
 	IDirect3DIndexBuffer9* ib = nullptr;
 	const HRESULT hr = m_pDevice->CreateIndexBuffer(desc.sizeBytes, d3dUsage, fmt, pool, &ib, nullptr);
-	if(FAILED(hr) || !ib)
+	if (FAILED(hr) || !ib)
 	{
 		Msg("! [DX9] CreateIndexBuffer failed (hr=0x%08x, size=%u, fmt=%u)", hr, desc.sizeBytes, (uint32_t)desc.indexFormat);
 		return {};
 	}
 
-	if(desc.debugName && desc.debugName[0])
+	if (desc.debugName && desc.debugName[0])
 		ib->SetPrivateData(WKPDID_D3DDebugObjectName, desc.debugName, (DWORD)strlen(desc.debugName), 0);
 
 	DX9Buffer* buf = new DX9Buffer;
@@ -275,11 +273,11 @@ RHI_BufferHandle CRenderBackendDX9::CreateIndexBuffer(const RHI_BufferDesc& desc
 	buf->pool = pool;
 	buf->isIndex = true;
 
-	if(initialData)
+	if (initialData)
 	{
 		void* p = nullptr;
 		const DWORD lf = ToD3DLockFlags(RHI_BufferUsage_Dynamic, desc.usage, true);
-		if(SUCCEEDED(ib->Lock(0, 0, &p, lf)) && p)
+		if (SUCCEEDED(ib->Lock(0, 0, &p, lf)) && p)
 		{
 			memcpy(p, initialData, desc.sizeBytes);
 			ib->Unlock();
@@ -305,7 +303,7 @@ void CRenderBackendDX9::DestroyBuffer(RHI_BufferHandle handle)
 void* CRenderBackendDX9::LockBuffer(RHI_BufferHandle handle, uint32_t offset, uint32_t size, uint32_t flags)
 {
 	DX9Buffer* buf = GetBuffer(handle);
-	if(!buf || !buf->locked == false)
+	if(!buf || buf->locked == true)
 	{
 		// D3D9 не поддерживает рекурсивный Lock.
 		if(buf && buf->locked)
@@ -354,16 +352,19 @@ void CRenderBackendDX9::UnlockBuffer(RHI_BufferHandle handle)
 
 RHI_InputLayoutHandle CRenderBackendDX9::CreateInputLayout(const RHI_InputLayoutDesc& desc)
 {
-	if(!m_pDevice || desc.elements.empty())
+	if (!m_pDevice || desc.elements.empty())
 	{
 		Msg("! [DX9] CreateInputLayout: invalid args (device=%p, elements=%u)", m_pDevice, (uint32_t)desc.elements.size());
 		return {};
 	}
 
-	xr_vector<D3DVERTEXELEMENT9> elems;
-	elems.reserve(desc.elements.size() + 1);
+	RHI_InputLayoutDesc localDesc = desc;
+	localDesc.ComputeStridesIfNeeded();
 
-	for(const auto& e : desc.elements)
+	xr_vector<D3DVERTEXELEMENT9> elems;
+	elems.reserve(localDesc.elements.size() + 1);
+
+	for (const auto& e : localDesc.elements)
 	{
 		D3DVERTEXELEMENT9 de{};
 		de.Stream = (WORD)e.stream;
@@ -378,15 +379,15 @@ RHI_InputLayoutHandle CRenderBackendDX9::CreateInputLayout(const RHI_InputLayout
 
 	IDirect3DVertexDeclaration9* decl = nullptr;
 	const HRESULT hr = m_pDevice->CreateVertexDeclaration(elems.data(), &decl);
-	if(FAILED(hr) || !decl)
+	if (FAILED(hr) || !decl)
 	{
-		Msg("! [DX9] CreateVertexDeclaration failed (hr=0x%08x, elems=%u)", hr, (uint32_t)desc.elements.size());
+		Msg("! [DX9] CreateVertexDeclaration failed (hr=0x%08x, elems=%u)", hr, (uint32_t)localDesc.elements.size());
 		return {};
 	}
 
 	DX9InputLayout* lay = new DX9InputLayout;
 	lay->decl = decl;
-	lay->desc = desc;
+	lay->desc = localDesc;
 	return AllocInputLayoutHandle(lay);
 }
 
@@ -394,6 +395,7 @@ void CRenderBackendDX9::DestroyInputLayout(RHI_InputLayoutHandle handle)
 {
 	FreeInputLayoutHandle(handle);
 }
+
 
 // ============================================================================
 // Geometry binding
@@ -484,14 +486,16 @@ void CRenderBackendDX9::SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt)
 
 void CRenderBackendDX9::SetInputLayout(RHI_InputLayoutHandle layout)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
 
+	m_psoCacheValid = false;
+
 	IDirect3DVertexDeclaration9* nativeDecl = nullptr;
-	if(layout.IsValid())
+	if (layout.IsValid())
 	{
 		DX9InputLayout* lay = GetInputLayout(layout);
-		if(!lay)
+		if (!lay)
 		{
 			Msg("! [DX9] SetInputLayout: invalid handle (id=%u)", layout.id);
 			return;
@@ -499,11 +503,11 @@ void CRenderBackendDX9::SetInputLayout(RHI_InputLayoutHandle layout)
 		nativeDecl = lay->decl;
 	}
 
-	if(m_currentDecl == nativeDecl)
+	if (m_currentDecl == nativeDecl)
 		return;
 
 	const HRESULT hr = m_pDevice->SetVertexDeclaration(nativeDecl);
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
 		Msg("! [DX9] SetVertexDeclaration failed (hr=0x%08x)", hr);
 		return;
@@ -615,6 +619,9 @@ void CRenderBackendDX9::CreateFullscreenGeometry()
 
 void CRenderBackendDX9::DestroyFullscreenGeometry()
 {
+	if (m_currentDecl == m_fullscreenDecl)
+		m_currentDecl = nullptr;
+
 	if (m_fullscreenVB)
 	{
 		m_fullscreenVB->Release();
@@ -625,9 +632,6 @@ void CRenderBackendDX9::DestroyFullscreenGeometry()
 		m_fullscreenDecl->Release();
 		m_fullscreenDecl = nullptr;
 	}
-
-	if (m_currentDecl == m_fullscreenDecl)
-		m_currentDecl = nullptr;
 }
 
 // ============================================================================
@@ -692,6 +696,8 @@ void CRenderBackendDX9::DrawFullscreen()
 		if (!m_fullscreenVB || !m_fullscreenDecl)
 			return;
 	}
+
+	m_psoCacheValid = false;
 
 	// Привязываем layout.
 	if (m_currentDecl != m_fullscreenDecl)

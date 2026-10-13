@@ -99,7 +99,7 @@ bool CShaderConstantBuffer::SetMatrix(LPCSTR name, const fmat4x4& m, const CShad
 	// но записываются в транспонированном виде
 	auto write = [&](fvec4* dst, uint32_t reg)
 	{
-		switch (c->cls)
+		switch(c->cls)
 		{
 		case EConstantClass::Matrix2x4:
 			dst[reg + 0].set(m._11, m._12, m._13, m._14);
@@ -163,9 +163,9 @@ bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, uint32_t index, const fm
 	{
 		dst[reg + 0].set(m._11, m._12, m._13, m._14);
 		dst[reg + 1].set(m._21, m._22, m._23, m._24);
-		if (stride >= 3)
+		if(stride >= 3)
 			dst[reg + 2].set(m._31, m._32, m._33, m._34);
-		if (stride >= 4)
+		if(stride >= 4)
 			dst[reg + 3].set(m._41, m._42, m._43, m._44);
 	};
 
@@ -186,7 +186,7 @@ bool CShaderConstantBuffer::SetMatrixArray(LPCSTR name, uint32_t index, const fm
 
 void CShaderConstantBuffer::Flush(IRenderBackend& rhi)
 {
-	if (m_vsDirty && m_vsDirtyLo < m_vsDirtyHi)
+	if(m_vsDirty && m_vsDirtyLo < m_vsDirtyHi)
 	{
 		const uint32_t count = m_vsDirtyHi - m_vsDirtyLo;
 		rhi.SetShaderConstants(RHI_ShaderType::Vertex, m_vsDirtyLo, reinterpret_cast<const float*>(&m_vsData[m_vsDirtyLo]), count);
@@ -196,7 +196,7 @@ void CShaderConstantBuffer::Flush(IRenderBackend& rhi)
 		m_vsDirtyHi = 0;
 	}
 
-	if (m_psDirty && m_psDirtyLo < m_psDirtyHi)
+	if(m_psDirty && m_psDirtyLo < m_psDirtyHi)
 	{
 		const uint32_t count = m_psDirtyHi - m_psDirtyLo;
 		rhi.SetShaderConstants(RHI_ShaderType::Pixel, m_psDirtyLo, reinterpret_cast<const float*>(&m_psData[m_psDirtyLo]), count);

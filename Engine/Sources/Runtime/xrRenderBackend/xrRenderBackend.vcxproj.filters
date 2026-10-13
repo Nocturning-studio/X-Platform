@@ -9,9 +9,6 @@
     <ClInclude Include="d3d9fwd.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="States\StateCache.h">
-      <Filter>States</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\ResourceManager.h">
       <Filter>Resources</Filter>
     </ClInclude>
@@ -66,9 +63,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="States\StateCache.cpp">
-      <Filter>States</Filter>
-    </ClCompile>
     <ClCompile Include="Resources\ResourceManager.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
@@ -107,9 +101,6 @@
   <ItemGroup>
     <Filter Include="Kernel">
       <UniqueIdentifier>{9ab4b5a3-b0ec-413f-9789-bf32f83c0004}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="States">
-      <UniqueIdentifier>{2e237a42-d93e-4166-84a0-60c18f3abeb2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{7d118cd4-b2e7-4c90-91c3-9b8f33dcbae1}</UniqueIdentifier>

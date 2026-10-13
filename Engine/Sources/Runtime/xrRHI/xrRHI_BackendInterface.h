@@ -22,6 +22,7 @@ class XRRHI_API IRenderBackend
 
 	virtual void* GetDeviceHandle() = 0;
 	virtual void* GetD3DHandle() { return nullptr; }
+	virtual RHI_BackendType GetBackendType() const = 0;
 
 	virtual const RHIDeviceCaps& GetDeviceCaps() const = 0;
 
@@ -54,27 +55,18 @@ class XRRHI_API IRenderBackend
 	virtual void DestroyBuffer(RHI_BufferHandle handle) = 0;
 
 	virtual void* LockBuffer(RHI_BufferHandle handle, uint32_t offset, uint32_t size, uint32_t flags) = 0;
-	virtual void  UnlockBuffer(RHI_BufferHandle handle) = 0;
+	virtual void UnlockBuffer(RHI_BufferHandle handle) = 0;
 
 	virtual RHI_InputLayoutHandle CreateInputLayout(const RHI_InputLayoutDesc& desc) = 0;
 	virtual void DestroyInputLayout(RHI_InputLayoutHandle handle) = 0;
 
-	virtual void SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb, uint32_t offset, uint32_t stride) = 0;
-	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) = 0;
-	virtual void SetInputLayout(RHI_InputLayoutHandle layout) = 0;
-	virtual void SetPrimitiveTopology(RHI_Topology topology) = 0;
+	virtual RHI_PipelineLayoutHandle CreatePipelineLayout(const RHI_PipelineLayoutDesc& desc) = 0;
+	virtual void DestroyPipelineLayout(RHI_PipelineLayoutHandle handle) = 0;
 
-	virtual void SetBlendState(const RHI_BlendState& state) = 0;
-	virtual const RHI_BlendState& GetBlendState() const = 0;
-	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) = 0;
-	virtual const RHI_DepthStencilState& GetDepthStencilState() const = 0;
-	virtual void SetRasterizerState(const RHI_RasterizerState& state) = 0;
-	virtual const RHI_RasterizerState& GetRasterizerState() const = 0;
-
-	virtual void SetViewport(const RHI_Viewport& vp) = 0;
-	virtual void SetScissorRect(const RHI_Rect* rect) = 0;
-	virtual RHI_Viewport GetViewport() const = 0;
-	virtual bool GetScissorRect(RHI_Rect& out) const = 0;
+	virtual RHI_PipelineStateHandle CreatePipelineState(const RHI_PipelineStateDesc& desc) = 0;
+	virtual void DestroyPipelineState(RHI_PipelineStateHandle handle) = 0;
+	virtual void SetPipelineState(RHI_PipelineStateHandle handle) = 0;
+	virtual RHI_PipelineStateHandle GetCurrentPipelineState() const = 0;
 
 	virtual void InvalidateStateCache() = 0;
 
@@ -82,12 +74,24 @@ class XRRHI_API IRenderBackend
 	virtual bool GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize) = 0;
 	virtual RHI_ShaderHandle CreateVertexShader(const void* bytecode, size_t size, const char* debugName = nullptr) = 0;
 	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) = 0;
-	virtual void SetVertexShader(RHI_ShaderHandle handle) = 0;
-	virtual void SetPixelShader(RHI_ShaderHandle handle) = 0;
+	virtual void DestroyShader(RHI_ShaderHandle handle) = 0;
+
 	virtual void SetSampler(uint32_t slot, const RHI_SamplerDesc& desc) = 0;
 	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) = 0;
 	virtual void SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count) = 0;
-	virtual void DestroyShader(RHI_ShaderHandle handle) = 0;
+
+	virtual void SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb, uint32_t offset, uint32_t stride) = 0;
+	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) = 0;
+	virtual void SetPrimitiveTopology(RHI_Topology topology) = 0;
+
+	virtual void SetViewport(const RHI_Viewport& vp) = 0;
+	virtual void SetScissorRect(const RHI_Rect* rect) = 0;
+	virtual RHI_Viewport GetViewport() const = 0;
+	virtual bool GetScissorRect(RHI_Rect& out) const = 0;
+
+	virtual void SetStencilRef(uint8_t ref) = 0;
+	virtual void SetBlendFactor(const fvec4& factor) = 0;
+	virtual void SetDepthBounds(float minZ, float maxZ) = 0;
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) = 0;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) = 0;

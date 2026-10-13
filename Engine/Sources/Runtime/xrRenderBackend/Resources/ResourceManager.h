@@ -29,6 +29,14 @@ class XRRB_API CResourceManager
 	ref_indexbuffer CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData = nullptr);
 	ref_geometry CreateGeometry();
 
+	// --- PSO ---
+	//
+	// CreatePipelineState дедуплицирует по хэшу desc. Возвращает уже
+	// существующий handle, если такой PSO уже создавался.
+	//
+	RHI_PipelineStateHandle CreatePipelineState(const RHI_PipelineStateDesc& desc);
+	void DestroyPipelineState(RHI_PipelineStateHandle handle);
+
 	// --- Кадровый цикл ---
 	void OnFrameBegin();
 	void OnFrameEnd();
@@ -39,6 +47,7 @@ class XRRB_API CResourceManager
 	// --- Диагностика ---
 	uint32_t GetTrackedCount() const { return (uint32_t)m_tracked.size(); }
 	uint32_t GetPendingDeleteCount() const;
+	uint32_t GetCachedPipelineCount() const { return (uint32_t)m_psoCache.size(); }
 
   private:
 	void RegisterResource(CRefCountedResource* res);
@@ -55,10 +64,10 @@ class XRRB_API CResourceManager
 
 	xr_vector<STrackedResource> m_tracked;
 
+	std::unordered_map<RHI_PipelineStateDesc, RHI_PipelineStateHandle> m_psoCache;
+
 	uint32_t m_frameIndex = 0;
 
-	// Сколько кадров держать «мёртвый» ресурс, прежде чем удалить.
-	// Нужно, чтобы команды кадра, уже отправленные в GPU, успели выполниться.
 	static constexpr uint32_t kDeferredFrameCount = 3;
 };
 ////////////////////////////////////////////////////////////////////////////////

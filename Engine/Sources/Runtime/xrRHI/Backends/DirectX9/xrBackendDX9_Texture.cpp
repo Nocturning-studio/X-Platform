@@ -46,28 +46,29 @@ void CRenderBackendDX9::FreeRHI_TextureHandle(RHI_TextureHandle handle)
 
 RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, const void* initialData)
 {
-	if (!m_pDevice) return {};
+	if(!m_pDevice)
+		return {};
 
-	if (desc.width == 0 || desc.height == 0)
+	if(desc.width == 0 || desc.height == 0)
 	{
 		Msg("! [DX9] CreateTexture: invalid dimensions (%ux%u)", desc.width, desc.height);
 		return {};
 	}
 
-	if (desc.sampleCount > 1)
+	if(desc.sampleCount > 1)
 	{
 		Msg("! [DX9] CreateTexture: MSAA textures not supported (sampleCount=%u)", desc.sampleCount);
 		return {};
 	}
 
-	if (desc.arraySize > 1)
+	if(desc.arraySize > 1)
 	{
 		Msg("! [DX9] CreateTexture: texture arrays not supported (arraySize=%u)", desc.arraySize);
 		return {};
 	}
 
 	const D3DFORMAT d3dFmt = RHIToD3DFormat(desc.format);
-	if (d3dFmt == D3DFMT_UNKNOWN)
+	if(d3dFmt == D3DFMT_UNKNOWN)
 	{
 		Msg("! [DX9] CreateTexture: unsupported format %u", (uint32_t)desc.format);
 		return {};
@@ -76,13 +77,17 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	DWORD usage = 0;
 	D3DPOOL pool = D3DPOOL_DEFAULT;
 
-	if (desc.usage & RHI_TexUsage_RenderTarget) usage |= D3DUSAGE_RENDERTARGET;
-	if (desc.usage & RHI_TexUsage_DepthStencil) usage |= D3DUSAGE_DEPTHSTENCIL;
-	if (desc.usage & RHI_TexUsage_GenerateMips) usage |= D3DUSAGE_AUTOGENMIPMAP;
+	if(desc.usage & RHI_TexUsage_RenderTarget)
+		usage |= D3DUSAGE_RENDERTARGET;
+	if(desc.usage & RHI_TexUsage_DepthStencil)
+		usage |= D3DUSAGE_DEPTHSTENCIL;
+	if(desc.usage & RHI_TexUsage_GenerateMips)
+		usage |= D3DUSAGE_AUTOGENMIPMAP;
 
-	if (desc.usage & (RHI_TexUsage_CPUReadable | RHI_TexUsage_CPUWritable))
-		R_ERRORF("! [DX9] CreateTexture: CPUReadable/CPUWritable flags are ignored in D3D9Ex " 
-				 "(texture '%s'). Use staging workflow instead.", desc.debugName ? desc.debugName : "<unnamed>");
+	if(desc.usage & (RHI_TexUsage_CPUReadable | RHI_TexUsage_CPUWritable))
+		R_ERRORF("! [DX9] CreateTexture: CPUReadable/CPUWritable flags are ignored in D3D9Ex "
+				 "(texture '%s'). Use staging workflow instead.",
+				 desc.debugName ? desc.debugName : "<unnamed>");
 
 	// mipLevels == 0 => полная цепочка
 	UINT mips = (desc.mipLevels == 0) ? 0 : desc.mipLevels;
@@ -103,34 +108,46 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	HRESULT hr = E_FAIL;
 	IDirect3DBaseTexture9* base = nullptr;
 
-	switch (desc.dim)
+	switch(desc.dim)
 	{
 	case RHI_TextureDim::Tex1D:
 	case RHI_TextureDim::Tex2D:
 	{
 		IDirect3DTexture9* t = nullptr;
 		hr = m_pDevice->CreateTexture(desc.width, desc.height, mips, usage, d3dFmt, pool, &t, nullptr);
-		if (SUCCEEDED(hr)) { impl->tex2D = t; base = t; }
+		if(SUCCEEDED(hr))
+		{
+			impl->tex2D = t;
+			base = t;
+		}
 		break;
 	}
 	case RHI_TextureDim::Cube:
 	{
 		IDirect3DCubeTexture9* t = nullptr;
 		hr = m_pDevice->CreateCubeTexture(desc.width, mips, usage, d3dFmt, pool, &t, nullptr);
-		if (SUCCEEDED(hr)) { impl->texCube = t; base = t; }
+		if(SUCCEEDED(hr))
+		{
+			impl->texCube = t;
+			base = t;
+		}
 		break;
 	}
 	case RHI_TextureDim::Tex3D:
 	{
 		IDirect3DVolumeTexture9* t = nullptr;
 		hr = m_pDevice->CreateVolumeTexture(desc.width, desc.height, desc.depth, mips,
-			usage, d3dFmt, pool, &t, nullptr);
-		if (SUCCEEDED(hr)) { impl->tex3D = t; base = t; }
+											usage, d3dFmt, pool, &t, nullptr);
+		if(SUCCEEDED(hr))
+		{
+			impl->tex3D = t;
+			base = t;
+		}
 		break;
 	}
 	}
 
-	if (FAILED(hr) || !base)
+	if(FAILED(hr) || !base)
 	{
 		Msg("! [DX9] CreateTexture failed (hr=0x%08x, %ux%u dim=%u fmt=%u)", hr, desc.width, desc.height, (uint32_t)desc.dim, (uint32_t)desc.format);
 		delete impl;
@@ -138,34 +155,30 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	}
 
 	// Debug name — D3D9 поддерживает D3DDebugObjectName через SetPrivateData.
-	if (desc.debugName && desc.debugName[0])
+	if(desc.debugName && desc.debugName[0])
 	{
 		base->SetPrivateData(WKPDID_D3DDebugObjectName, desc.debugName, (DWORD)strlen(desc.debugName), 0);
 	}
 
 	// --- Initial data upload (только для обычных 2D-текстур без RT/DS) ---
-	if (initialData
-		&& desc.dim == RHI_TextureDim::Tex2D
-		&& !impl->isRenderTarget
-		&& !impl->isDepthStencil
-		&& pool == D3DPOOL_DEFAULT)
+	if(initialData && desc.dim == RHI_TextureDim::Tex2D && !impl->isRenderTarget && !impl->isDepthStencil && pool == D3DPOOL_DEFAULT)
 	{
 		const size_t pixelSize = GetPixelSize(desc.format);
-		if (pixelSize > 0)
+		if(pixelSize > 0)
 		{
 			IDirect3DTexture9* sysTex = nullptr;
 			hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels,
-				0, d3dFmt, D3DPOOL_SYSTEMMEM, &sysTex, nullptr);
-			if (SUCCEEDED(hr))
+										  0, d3dFmt, D3DPOOL_SYSTEMMEM, &sysTex, nullptr);
+			if(SUCCEEDED(hr))
 			{
 				D3DLOCKED_RECT locked{};
-				if (SUCCEEDED(sysTex->LockRect(0, &locked, nullptr, 0)))
+				if(SUCCEEDED(sysTex->LockRect(0, &locked, nullptr, 0)))
 				{
 					const uint8_t* src = static_cast<const uint8_t*>(initialData);
 					uint8_t* dst = static_cast<uint8_t*>(locked.pBits);
 					const size_t rowSize = size_t(desc.width) * pixelSize;
 
-					for (uint32_t y = 0; y < desc.height; ++y)
+					for(uint32_t y = 0; y < desc.height; ++y)
 					{
 						memcpy(dst, src, rowSize);
 						src += rowSize;
@@ -173,7 +186,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 					}
 					sysTex->UnlockRect(0);
 					hr = m_pDevice->UpdateTexture(sysTex, impl->tex2D);
-					if (FAILED(hr))
+					if(FAILED(hr))
 						Msg("! [DX9] UpdateTexture failed (0x%08x)", hr);
 				}
 				sysTex->Release();
@@ -191,15 +204,19 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 void CRenderBackendDX9::DestroyTexture(RHI_TextureHandle handle)
 {
 	DX9Texture* impl = GetTexture(handle);
-	if (!impl)
+	if(!impl)
 	{
 		Msg("! [DX9] DestroyTexture: invalid handle (id=%u)", handle.id);
 		return;
 	}
-	if (impl->tex2D)   impl->tex2D->Release();
-	if (impl->texCube) impl->texCube->Release();
-	if (impl->tex3D)   impl->tex3D->Release();
-	if (impl->surface) impl->surface->Release();
+	if(impl->tex2D)
+		impl->tex2D->Release();
+	if(impl->texCube)
+		impl->texCube->Release();
+	if(impl->tex3D)
+		impl->tex3D->Release();
+	if(impl->surface)
+		impl->surface->Release();
 	FreeRHI_TextureHandle(handle);
 }
 

@@ -61,6 +61,16 @@ struct DX9Shader
 	bool isVertex = false;
 };
 
+struct DX9PipelineState
+{
+	RHI_PipelineStateDesc desc{};
+};
+
+struct DX9PipelineLayout
+{
+	RHI_PipelineLayoutDesc desc{};
+};
+
 D3DFORMAT RHIToD3DFormat(RHI_Format fmt);
 D3DTEXTUREADDRESS RHIAddressToD3D(RHI_TextureAddress addr);
 D3DTEXTUREFILTERTYPE RHIFilterToD3D(RHI_Filter f);

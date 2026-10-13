@@ -213,7 +213,6 @@
     <ClInclude Include="Resources\Shaders\ShaderSamplerBinding.h" />
     <ClInclude Include="Resources\SharedResource.h" />
     <ClInclude Include="Resources\Textures\Texture.h" />
-    <ClInclude Include="States\StateCache.h" />
     <ClInclude Include="xrRenderBackendAPI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="xrRenderBackend.h" />
@@ -238,7 +237,6 @@
     <ClCompile Include="Resources\Shaders\ShaderProgram.cpp" />
     <ClCompile Include="Resources\Shaders\ShaderSampler.cpp" />
     <ClCompile Include="Resources\Textures\Texture.cpp" />
-    <ClCompile Include="States\StateCache.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">

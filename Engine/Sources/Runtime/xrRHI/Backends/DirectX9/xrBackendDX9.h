@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 {
-public:
+  public:
 	CRenderBackendDX9();
 	virtual ~CRenderBackendDX9();
 
@@ -24,6 +24,7 @@ public:
 
 	DX_DEPRECATED virtual void* GetDeviceHandle() override { return m_pDevice; }
 	DX_DEPRECATED virtual void* GetD3DHandle() override { return m_pD3D; }
+	RHI_BackendType GetBackendType() const override { return RHI_BackendType::DirectX9Ex; }
 
 	virtual const RHIDeviceCaps& GetDeviceCaps() const override;
 
@@ -61,41 +62,65 @@ public:
 	virtual RHI_InputLayoutHandle CreateInputLayout(const RHI_InputLayoutDesc& desc) override;
 	virtual void DestroyInputLayout(RHI_InputLayoutHandle handle) override;
 
+	virtual RHI_PipelineStateHandle CreatePipelineState(const RHI_PipelineStateDesc& desc) override;
+	virtual void DestroyPipelineState(RHI_PipelineStateHandle handle) override;
+	virtual void SetPipelineState(RHI_PipelineStateHandle handle) override;
+	virtual RHI_PipelineStateHandle GetCurrentPipelineState() const override;
+
+	virtual RHI_PipelineLayoutHandle CreatePipelineLayout(const RHI_PipelineLayoutDesc& desc) override;
+	virtual void DestroyPipelineLayout(RHI_PipelineLayoutHandle handle) override;
+
+	virtual RHI_ShaderCompileResult CompileShader(const RHI_ShaderCompileDesc& desc) override;
+	virtual bool GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize) override;
+	virtual RHI_ShaderHandle CreateVertexShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
+	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
+	virtual void SetSampler(uint32_t slot, const RHI_SamplerDesc& desc) override;
+	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) override;
+	virtual void SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count) override;
+	virtual void DestroyShader(RHI_ShaderHandle handle) override;
+
 	virtual void SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb, uint32_t offset, uint32_t stride) override;
 	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) override;
-	virtual void SetInputLayout(RHI_InputLayoutHandle layout) override;
 	virtual void SetPrimitiveTopology(RHI_Topology topology) override;
-
-	virtual void SetBlendState(const RHI_BlendState& state) override;
-	virtual const RHI_BlendState& GetBlendState() const override { return m_blendCache; }
-	virtual void SetDepthStencilState(const RHI_DepthStencilState& state) override;
-	virtual const RHI_DepthStencilState& GetDepthStencilState() const override { return m_depthCache; }
-	virtual void SetRasterizerState(const RHI_RasterizerState& state) override;
-	virtual const RHI_RasterizerState& GetRasterizerState() const override { return m_rasterCache; }
 
 	virtual void SetViewport(const RHI_Viewport& vp) override;
 	virtual RHI_Viewport GetViewport() const override;
 	virtual void SetScissorRect(const RHI_Rect* rect) override;
 	virtual bool GetScissorRect(RHI_Rect& out) const override;
 
-	virtual void InvalidateStateCache() override;
+	virtual void SetStencilRef(uint8_t ref) override;
+	virtual void SetBlendFactor(const fvec4& factor) override;
+	virtual void SetDepthBounds(float minZ, float maxZ) override;
 
-	virtual RHI_ShaderCompileResult CompileShader(const RHI_ShaderCompileDesc& desc) override;
-	virtual bool GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize) override;
-	virtual RHI_ShaderHandle CreateVertexShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
-	virtual RHI_ShaderHandle CreatePixelShader(const void* bytecode, size_t size, const char* debugName = nullptr) override;
-	virtual void SetVertexShader(RHI_ShaderHandle handle) override;
-	virtual void SetPixelShader(RHI_ShaderHandle handle) override;
-	virtual void SetSampler(uint32_t slot, const RHI_SamplerDesc& desc) override;
-	virtual void SetShaderResource(uint32_t slot, RHI_TextureHandle tex) override;
-	virtual void SetShaderConstants(RHI_ShaderType stage, uint32_t startRegister, const float* data, uint32_t vec4Count) override;
-	virtual void DestroyShader(RHI_ShaderHandle handle) override;
+	virtual void InvalidateStateCache() override;
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) override;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) override;
 	virtual void DrawFullscreen() override;
 
-private:
+	// ============================================================================
+	// Extended D3D9-only API.
+	//
+	// Эти методы дают "тонкий" контроль над отдельными состояниями.
+	// Доступ — через AsDX9(backend).
+	//
+	// ВАЖНО: вызов любого из них инвалидирует m_psoCacheValid. Следующий
+	// SetPipelineState() заново применит все поля PSO.
+	//
+	// ============================================================================
+	void SetVertexShader(RHI_ShaderHandle handle);
+	void SetPixelShader(RHI_ShaderHandle handle);
+
+	void SetBlendState(const RHI_BlendState& state);
+	const RHI_BlendState& GetBlendState() const { return m_blendCache; }
+	void SetDepthStencilState(const RHI_DepthStencilState& state);
+	const RHI_DepthStencilState& GetDepthStencilState() const { return m_depthCache; }
+	void SetRasterizerState(const RHI_RasterizerState& state);
+	const RHI_RasterizerState& GetRasterizerState() const { return m_rasterCache; }
+
+	void SetInputLayout(RHI_InputLayoutHandle layout);
+
+  private:
 	// ============================================================================
 	// Core D3D device / adapter / presentation
 	// ============================================================================
@@ -167,6 +192,12 @@ private:
 	bool m_scissorCacheValid = false;
 	bool m_scissorEnabled = false;
 
+	uint8_t m_stencilRefCache = 0;
+	bool m_stencilRefCacheValid = false;
+
+	DWORD m_blendFactorCache = 0;
+	bool m_blendFactorCacheValid = false;
+
 	IDirect3DVertexShader9* m_currentVS = nullptr;
 	IDirect3DPixelShader9* m_currentPS = nullptr;
 
@@ -187,9 +218,29 @@ private:
 	RHI_DepthStencilView m_backBufferDSV{};
 
 	// Кэш последних привязанных RT/DS. Нужен для дедупликации вызовов
-	// SetRenderTarget/SetDepthStencilSurface.
+	// SetRenderTarget/SetDepthStencilSurface. (DX9 не поддерживает больше 4 MRT)
 	IDirect3DSurface9* m_currentRTASurfaces[4] = {};
 	IDirect3DSurface9* m_currentDSSurface = nullptr;
+
+	// ============================================================================
+	// Pipeline state (emulation)
+	// ============================================================================
+	std::vector<DX9PipelineLayout*> m_pipelineLayouts;
+	std::stack<uint32_t> m_freePipelineLayoutIndices;
+
+	std::vector<DX9PipelineState*> m_pipelineStates;
+	std::stack<uint32_t> m_freePSOIndices;
+
+	RHI_PipelineStateHandle m_currentPSO{};
+	bool m_psoCacheValid = false;
+
+	RHI_PipelineStateHandle AllocPipelineStateHandle(DX9PipelineState* pso);
+	DX9PipelineState* GetPipelineState(RHI_PipelineStateHandle h) const;
+	void FreePipelineStateHandle(RHI_PipelineStateHandle h);
+
+	RHI_PipelineLayoutHandle AllocPipelineLayoutHandle(DX9PipelineLayout* lay);
+	DX9PipelineLayout* GetPipelineLayout(RHI_PipelineLayoutHandle h) const;
+	void FreePipelineLayoutHandle(RHI_PipelineLayoutHandle h);
 
 	// ============================================================================
 	// Device / presentation helpers

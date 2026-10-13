@@ -61,8 +61,14 @@
     <ClInclude Include="xrRHI_Samplers.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Backends\DirectX12\xrBackendDX12.h">
-      <Filter>Backends Implementation\DirectX12</Filter>
+    <ClInclude Include="xrRHI_PipelineState.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_BackendAccess.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRHI_PipelineLayout.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -102,8 +108,11 @@
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Samplers.cpp">
       <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
-    <ClCompile Include="Backends\DirectX12\xrBackendDX12.cpp">
-      <Filter>Backends Implementation\DirectX12</Filter>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_PipelineState.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_PipelineLayout.cpp">
+      <Filter>Backends Implementation\DirectX9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

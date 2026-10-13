@@ -16,7 +16,7 @@ bool CVertexDeclaration::Create(IRenderBackend& rhi, const RHI_InputLayoutDesc& 
 {
 	DestroyRHI();
 
-	if (desc.elements.empty())
+	if(desc.elements.empty())
 	{
 		Msg("! [CVertexDeclaration] empty layout");
 		return false;
@@ -26,7 +26,7 @@ bool CVertexDeclaration::Create(IRenderBackend& rhi, const RHI_InputLayoutDesc& 
 	m_rhi = &rhi;
 
 	m_rhiHandle = rhi.CreateInputLayout(desc);
-	if (!m_rhiHandle.IsValid())
+	if(!m_rhiHandle.IsValid())
 	{
 		Msg("! [CVertexDeclaration] CreateInputLayout failed (elems=%u)",
 			(uint32_t)desc.elements.size());
@@ -36,16 +36,9 @@ bool CVertexDeclaration::Create(IRenderBackend& rhi, const RHI_InputLayoutDesc& 
 	return true;
 }
 
-void CVertexDeclaration::Bind(IRenderBackend& rhi) const
-{
-	if (!m_rhiHandle.IsValid())
-		return;
-	rhi.SetInputLayout(m_rhiHandle);
-}
-
 void CVertexDeclaration::DestroyRHI()
 {
-	if (m_rhi && m_rhiHandle.IsValid())
+	if(m_rhi && m_rhiHandle.IsValid())
 		m_rhi->DestroyInputLayout(m_rhiHandle);
 	m_rhiHandle = {};
 	m_rhi = nullptr;

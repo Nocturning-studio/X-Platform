@@ -205,22 +205,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Backends\DirectX12\xrBackendDX12.h" />
     <ClInclude Include="Backends\DirectX9\xrBackendDX9.h" />
     <ClInclude Include="Backends\DirectX9\xrBackendDX9_Internal.h" />
-    <ClCompile Include="Backends\DirectX12\xrBackendDX12.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Geometry.cpp" />
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_PipelineLayout.cpp" />
+    <ClCompile Include="Backends\DirectX9\xrBackendDX9_PipelineState.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_RT.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_Samplers.cpp" />
     <ClCompile Include="Backends\DirectX9\xrBackendDX9_States.cpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="xrRHI.h" />
     <ClInclude Include="xrRHI_API.h" />
+    <ClInclude Include="xrRHI_BackendAccess.h" />
     <ClInclude Include="xrRHI_BackendInterface.h" />
     <ClInclude Include="xrRHI_Buffers.h" />
     <ClInclude Include="xrRHI_Caps.h" />
     <ClInclude Include="xrRHI_Handles.h" />
     <ClInclude Include="xrRHI_InputLayout.h" />
+    <ClInclude Include="xrRHI_PipelineLayout.h" />
+    <ClInclude Include="xrRHI_PipelineState.h" />
     <ClInclude Include="xrRHI_Samplers.h" />
     <ClInclude Include="xrRHI_Shaders.h" />
     <ClInclude Include="xrRHI_States.h" />

@@ -226,7 +226,7 @@ size_t GetPixelSize(RHI_Format fmt)
 
 BYTE ToD3DDeclType(RHI_VertexElementType t)
 {
-	switch (t)
+	switch(t)
 	{
 	case RHI_VertexElementType::Float1:
 		return D3DDECLTYPE_FLOAT1;
@@ -256,7 +256,7 @@ BYTE ToD3DDeclType(RHI_VertexElementType t)
 
 BYTE ToD3DDeclUsage(RHI_VertexElementSemantic s)
 {
-	switch (s)
+	switch(s)
 	{
 	case RHI_VertexElementSemantic::Position:
 		return D3DDECLUSAGE_POSITION;
@@ -283,7 +283,7 @@ BYTE ToD3DDeclUsage(RHI_VertexElementSemantic s)
 
 D3DPRIMITIVETYPE ToD3DPrimitive(RHI_Topology t)
 {
-	switch (t)
+	switch(t)
 	{
 	case RHI_Topology::PointList:
 		return D3DPT_POINTLIST;

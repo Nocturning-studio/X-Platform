@@ -1,12 +1,12 @@
 #pragma once
 
 #ifdef XRRENDERBACKEND_EXPORTS
-#  define XRRB_API __declspec(dllexport)
+#define XRRB_API __declspec(dllexport)
 #else
-#  define XRRB_API __declspec(dllimport)
+#define XRRB_API __declspec(dllimport)
 #endif
 
-#define RELEASE(x)			\
+#define RELEASE(x)          \
 	{                       \
 		if(x)               \
 		{                   \
@@ -15,11 +15,11 @@
 		}                   \
 	}
 
-#define SHOW_REF(msg, x)						\
-	{											\
-		if(x)									\
-		{										\
-			x->AddRef();						\
-			Log(msg, uint32_t(x->Release()));	\
-		}										\
+#define SHOW_REF(msg, x)                      \
+	{                                         \
+		if(x)                                 \
+		{                                     \
+			x->AddRef();                      \
+			Log(msg, uint32_t(x->Release())); \
+		}                                     \
 	}

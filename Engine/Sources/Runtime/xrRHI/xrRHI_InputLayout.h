@@ -97,7 +97,15 @@ struct RHI_InputLayoutDesc
 {
 	xr_vector<RHI_VertexElement> elements;
 
-	// Stride для конкретного stream'а (наибольший offset+size).
+	// Явные strides per-stream.
+	// ВАЖНО для D3D12: stride жёстко вшит в PSO.
+	// В D3D9 stride передаётся в SetStreamSource отдельно, поэтому там
+	// значение из этого поля не критично.
+	//
+	// Если элемент равен 0 — ComputeStridesIfNeeded() вычислит его
+	// автоматически как max(offset + size) по всем элементам стрима.
+	xr_vector<uint32_t> streamStrides;
+
 	uint32_t ComputeStreamStride(uint32_t stream) const
 	{
 		uint32_t maxEnd = 0;
@@ -127,6 +135,34 @@ struct RHI_InputLayoutDesc
 				strides[e.stream] = end;
 		}
 		return strides;
+	}
+
+	// Заполнить streamStrides для всех стримов, у которых он не задан явно.
+	void ComputeStridesIfNeeded()
+	{
+		uint32_t streamCount = 0;
+		for(const auto& e : elements)
+			if(e.stream + 1 > streamCount)
+				streamCount = e.stream + 1;
+
+		if(streamStrides.size() < streamCount)
+			streamStrides.resize(streamCount, 0);
+
+		for(uint32_t i = 0; i < streamCount; ++i)
+		{
+			if(streamStrides[i] != 0)
+				continue;
+			uint32_t maxEnd = 0;
+			for(const auto& e : elements)
+			{
+				if(e.stream != i)
+					continue;
+				const uint32_t end = e.offset + RHI_VertexElementTypeSize(e.type);
+				if(end > maxEnd)
+					maxEnd = end;
+			}
+			streamStrides[i] = maxEnd;
+		}
 	}
 };
 ////////////////////////////////////////////////////////////////////////////////

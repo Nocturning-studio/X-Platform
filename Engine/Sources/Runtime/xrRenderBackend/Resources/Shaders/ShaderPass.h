@@ -61,7 +61,11 @@ public:
 	// --- Рендеринг ---
 	void Apply(CRenderBackend& backend);
 
-	// Диагностика
+	// --- Хендлы для включения в PSO ---
+	RHI_ShaderHandle GetVertexShaderHandle() const { return m_vs.GetRHIHandle(); }
+	RHI_ShaderHandle GetPixelShaderHandle() const { return m_ps.GetRHIHandle(); }
+
+	// --- Диагностика ---
 	const CShaderProgram& GetVertexProgram() const { return m_vs; }
 	const CShaderProgram& GetPixelProgram()  const { return m_ps; }
 

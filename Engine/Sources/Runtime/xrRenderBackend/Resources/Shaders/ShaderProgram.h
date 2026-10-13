@@ -10,8 +10,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CShaderProgram
 {
-public:
-	enum class Type { Vertex, Pixel };
+  public:
+	enum class Type
+	{
+		Vertex,
+		Pixel
+	};
 
 	CShaderProgram() = default;
 	~CShaderProgram();
@@ -50,9 +54,7 @@ public:
 
 	RHI_ShaderHandle GetRHIHandle() const { return m_rhiHandle; }
 
-	void Apply(IRenderBackend& rhi) const;
-
-private:
+  private:
 	Type m_type = Type::Vertex;
 	std::string m_sourceFile;
 	std::string m_entry = "main";

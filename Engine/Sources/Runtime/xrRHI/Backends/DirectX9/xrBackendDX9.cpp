@@ -18,7 +18,6 @@ CRenderBackendDX9::CRenderBackendDX9() : m_pD3D(nullptr), m_pDevice(nullptr), m_
 
 CRenderBackendDX9::~CRenderBackendDX9()
 {
-	ReleaseAllResources();
 	DestroyDevice();
 }
 
@@ -59,7 +58,7 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 			outDepthStencilFmt = RHIToD3DFormat(params.DepthStencilFormat);
 			if(outDepthStencilFmt == D3DFMT_UNKNOWN)
 				Msg("! [DX9] Unsupported depth/stencil format %d, trying auto select",
-					  (int)params.DepthStencilFormat);
+					(int)params.DepthStencilFormat);
 		}
 		if(outDepthStencilFmt == D3DFMT_UNKNOWN)
 			outDepthStencilFmt = SelectDepthStencilFormat(outBackBufferFmt);
@@ -74,9 +73,9 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 	return true;
 }
 
-void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params, 
-										  D3DFORMAT backBufferFmt, 
-										  D3DFORMAT depthStencilFmt, 
+void CRenderBackendDX9::FillPresentParams(const RHI_PresentationParams& params,
+										  D3DFORMAT backBufferFmt,
+										  D3DFORMAT depthStencilFmt,
 										  UINT fullscreenRefreshHz)
 {
 	ZeroMemory(&m_PP, sizeof(m_PP));
@@ -209,72 +208,112 @@ void CRenderBackendDX9::DestroyDevice()
 void CRenderBackendDX9::ReleaseAllResources()
 {
 	// --- Textures ---
-	for (size_t i = 0; i < m_Textures.size(); ++i)
+	for(size_t i = 0; i < m_Textures.size(); ++i)
 	{
 		DX9Texture* tex = m_Textures[i];
-		if (tex)
+		if(tex)
 		{
-			if (tex->tex2D)   tex->tex2D->Release();
-			if (tex->tex3D)   tex->tex3D->Release();
-			if (tex->texCube) tex->texCube->Release();
-			if (tex->surface) tex->surface->Release();
+			if(tex->tex2D)
+				tex->tex2D->Release();
+			if(tex->tex3D)
+				tex->tex3D->Release();
+			if(tex->texCube)
+				tex->texCube->Release();
+			if(tex->surface)
+				tex->surface->Release();
 			delete tex;
 			m_Textures[i] = nullptr;
 		}
 	}
 	m_Textures.clear();
-	while (!m_FreeTextureIndices.empty())
+	while(!m_FreeTextureIndices.empty())
 		m_FreeTextureIndices.pop();
 
 	// --- Buffers ---
-	for (size_t i = 0; i < m_buffers.size(); ++i)
+	for(size_t i = 0; i < m_buffers.size(); ++i)
 	{
 		DX9Buffer* buf = m_buffers[i];
-		if (buf)
+		if(buf)
 		{
-			if (buf->vb) buf->vb->Release();
-			if (buf->ib) buf->ib->Release();
+			if(buf->vb)
+				buf->vb->Release();
+			if(buf->ib)
+				buf->ib->Release();
 			delete buf;
 			m_buffers[i] = nullptr;
 		}
 	}
 	m_buffers.clear();
-	while (!m_freeBufferIndices.empty())
+	while(!m_freeBufferIndices.empty())
 		m_freeBufferIndices.pop();
 
 	// --- Input layouts ---
-	for (size_t i = 0; i < m_inputLayouts.size(); ++i)
+	for(size_t i = 0; i < m_inputLayouts.size(); ++i)
 	{
 		DX9InputLayout* lay = m_inputLayouts[i];
-		if (lay)
+		if(lay)
 		{
-			if (lay->decl) lay->decl->Release();
+			if(lay->decl)
+				lay->decl->Release();
 			delete lay;
 			m_inputLayouts[i] = nullptr;
 		}
 	}
 	m_inputLayouts.clear();
-	while (!m_freeInputLayoutIndices.empty())
+	while(!m_freeInputLayoutIndices.empty())
 		m_freeInputLayoutIndices.pop();
 
 	// --- Shaders ---
-	for (size_t i = 0; i < m_shaders.size(); ++i)
+	for(size_t i = 0; i < m_shaders.size(); ++i)
 	{
 		DX9Shader* sh = m_shaders[i];
-		if (sh)
+		if(sh)
 		{
-			if (sh->vs) sh->vs->Release();
-			if (sh->ps) sh->ps->Release();
-			if (sh->blob) sh->blob->Release();
+			if(sh->vs)
+				sh->vs->Release();
+			if(sh->ps)
+				sh->ps->Release();
+			if(sh->blob)
+				sh->blob->Release();
 			delete sh;
 			m_shaders[i] = nullptr;
 		}
 	}
 	m_shaders.clear();
-	while (!m_freeShaderIndices.empty())
+	while(!m_freeShaderIndices.empty())
 		m_freeShaderIndices.pop();
 
-	// --- Cached shader state ---
+	// --- Pipeline layouts (CPU-only) ---
+	for(size_t i = 0; i < m_pipelineLayouts.size(); ++i)
+	{
+		DX9PipelineLayout* lay = m_pipelineLayouts[i];
+		if(lay)
+		{
+			delete lay;
+			m_pipelineLayouts[i] = nullptr;
+		}
+	}
+	m_pipelineLayouts.clear();
+	while(!m_freePipelineLayoutIndices.empty())
+		m_freePipelineLayoutIndices.pop();
+
+	// --- Pipeline states (CPU-only) ---
+	for(size_t i = 0; i < m_pipelineStates.size(); ++i)
+	{
+		DX9PipelineState* pso = m_pipelineStates[i];
+		if(pso)
+		{
+			delete pso;
+			m_pipelineStates[i] = nullptr;
+		}
+	}
+	m_pipelineStates.clear();
+	while(!m_freePSOIndices.empty())
+		m_freePSOIndices.pop();
+
+	m_currentPSO = {};
+	m_psoCacheValid = false;
+
 	m_currentVS = nullptr;
 	m_currentPS = nullptr;
 
@@ -285,44 +324,92 @@ void CRenderBackendDX9::ReleaseAllResources()
 void CRenderBackendDX9::ReleaseNativeDeviceResources()
 {
 	// --- Textures ---
-	for (DX9Texture* t : m_Textures)
+	for(DX9Texture* t : m_Textures)
 	{
-		if (!t) continue;
-		if (t->tex2D) { t->tex2D->Release();   t->tex2D = nullptr; }
-		if (t->texCube) { t->texCube->Release(); t->texCube = nullptr; }
-		if (t->tex3D) { t->tex3D->Release();   t->tex3D = nullptr; }
-		if (t->surface) { t->surface->Release(); t->surface = nullptr; }
+		if(!t)
+			continue;
+		if(t->tex2D)
+		{
+			t->tex2D->Release();
+			t->tex2D = nullptr;
+		}
+		if(t->texCube)
+		{
+			t->texCube->Release();
+			t->texCube = nullptr;
+		}
+		if(t->tex3D)
+		{
+			t->tex3D->Release();
+			t->tex3D = nullptr;
+		}
+		if(t->surface)
+		{
+			t->surface->Release();
+			t->surface = nullptr;
+		}
 	}
 
 	// --- Buffers ---
-	for (DX9Buffer* b : m_buffers)
+	for(DX9Buffer* b : m_buffers)
 	{
-		if (!b) continue;
-		if (b->vb) { b->vb->Release(); b->vb = nullptr; }
-		if (b->ib) { b->ib->Release(); b->ib = nullptr; }
+		if(!b)
+			continue;
+		if(b->vb)
+		{
+			b->vb->Release();
+			b->vb = nullptr;
+		}
+		if(b->ib)
+		{
+			b->ib->Release();
+			b->ib = nullptr;
+		}
 	}
 
 	// --- Input layouts ---
-	for (DX9InputLayout* l : m_inputLayouts)
+	for(DX9InputLayout* l : m_inputLayouts)
 	{
-		if (!l) continue;
-		if (l->decl) { l->decl->Release(); l->decl = nullptr; }
+		if(!l)
+			continue;
+		if(l->decl)
+		{
+			l->decl->Release();
+			l->decl = nullptr;
+		}
 	}
 
 	// --- Shaders ---
-	for (DX9Shader* s : m_shaders)
+	for(DX9Shader* s : m_shaders)
 	{
-		if (!s) continue;
-		if (s->vs) { s->vs->Release(); s->vs = nullptr; }
-		if (s->ps) { s->ps->Release(); s->ps = nullptr; }
+		if(!s)
+			continue;
+		if(s->vs)
+		{
+			s->vs->Release();
+			s->vs = nullptr;
+		}
+		if(s->ps)
+		{
+			s->ps->Release();
+			s->ps = nullptr;
+		}
 		// s->blob держим — это CPU-side bytecode, нужен для пересоздания.
 	}
 
 	// --- RTV/DSV surfaces ---
-	for (auto& slot : m_rtvSlots)
-		if (slot.surface) { slot.surface->Release(); slot.surface = nullptr; }
-	for (auto& slot : m_dsvSlots)
-		if (slot.surface) { slot.surface->Release(); slot.surface = nullptr; }
+	for(auto& slot : m_rtvSlots)
+		if(slot.surface)
+		{
+			slot.surface->Release();
+			slot.surface = nullptr;
+		}
+	for(auto& slot : m_dsvSlots)
+		if(slot.surface)
+		{
+			slot.surface->Release();
+			slot.surface = nullptr;
+		}
 
 	// --- Сбрасываем кэш привязок (все указатели теперь мертвы) ---
 	InvalidateStateCache();
@@ -332,87 +419,98 @@ void CRenderBackendDX9::ReleaseNativeDeviceResources()
 
 void CRenderBackendDX9::RecreateNativeDeviceResources()
 {
-	if (!m_pDevice) return;
+	if(!m_pDevice)
+		return;
 
 	// --- Textures ---
-	for (DX9Texture* t : m_Textures)
+	for(DX9Texture* t : m_Textures)
 	{
-		if (!t) continue;
+		if(!t)
+			continue;
 		const D3DFORMAT fmt = RHIToD3DFormat(t->format);
-		if (fmt == D3DFMT_UNKNOWN) continue;
+		if(fmt == D3DFMT_UNKNOWN)
+			continue;
 
 		DWORD usage = 0;
-		if (t->isRenderTarget) usage |= D3DUSAGE_RENDERTARGET;
-		if (t->isDepthStencil) usage |= D3DUSAGE_DEPTHSTENCIL;
+		if(t->isRenderTarget)
+			usage |= D3DUSAGE_RENDERTARGET;
+		if(t->isDepthStencil)
+			usage |= D3DUSAGE_DEPTHSTENCIL;
 
 		HRESULT hr = E_FAIL;
-		switch (t->dim)
+		switch(t->dim)
 		{
 		case RHI_TextureDim::Tex2D:
 		case RHI_TextureDim::Tex1D:
 		{
 			IDirect3DTexture9* tex = nullptr;
 			hr = m_pDevice->CreateTexture(t->width, t->height, t->mipLevels,
-				usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
-			if (SUCCEEDED(hr)) t->tex2D = tex;
+										  usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			if(SUCCEEDED(hr))
+				t->tex2D = tex;
 			break;
 		}
 		case RHI_TextureDim::Cube:
 		{
 			IDirect3DCubeTexture9* tex = nullptr;
 			hr = m_pDevice->CreateCubeTexture(t->width, t->mipLevels,
-				usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
-			if (SUCCEEDED(hr)) t->texCube = tex;
+											  usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			if(SUCCEEDED(hr))
+				t->texCube = tex;
 			break;
 		}
 		case RHI_TextureDim::Tex3D:
 		{
 			IDirect3DVolumeTexture9* tex = nullptr;
 			hr = m_pDevice->CreateVolumeTexture(t->width, t->height, t->depth,
-				t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
-			if (SUCCEEDED(hr)) t->tex3D = tex;
+												t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			if(SUCCEEDED(hr))
+				t->tex3D = tex;
 			break;
 		}
 		}
-		if (FAILED(hr))
+		if(FAILED(hr))
 			Msg("! [DX9] Reset: failed to recreate texture (fmt=%u, %ux%u)", (u32)t->format, t->width, t->height);
 	}
 
 	// --- Buffers ---
-	for (DX9Buffer* b : m_buffers)
+	for(DX9Buffer* b : m_buffers)
 	{
-		if (!b) continue;
+		if(!b)
+			continue;
 
 		DWORD usage = 0;
-		if (b->desc.usage & RHI_BufferUsage_Dynamic)
+		if(b->desc.usage & RHI_BufferUsage_Dynamic)
 			usage |= D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY;
 
-		if (b->isIndex)
+		if(b->isIndex)
 		{
 			const D3DFORMAT fmt = (b->desc.indexFormat == RHI_IndexFormat::UInt32)
-				? D3DFMT_INDEX32 : D3DFMT_INDEX16;
+									  ? D3DFMT_INDEX32
+									  : D3DFMT_INDEX16;
 			IDirect3DIndexBuffer9* ib = nullptr;
-			if (SUCCEEDED(m_pDevice->CreateIndexBuffer(b->desc.sizeBytes, usage, fmt,
-				D3DPOOL_DEFAULT, &ib, nullptr)))
+			if(SUCCEEDED(m_pDevice->CreateIndexBuffer(b->desc.sizeBytes, usage, fmt,
+													  D3DPOOL_DEFAULT, &ib, nullptr)))
 				b->ib = ib;
 		}
 		else
 		{
 			IDirect3DVertexBuffer9* vb = nullptr;
-			if (SUCCEEDED(m_pDevice->CreateVertexBuffer(b->desc.sizeBytes, usage, 0,
-				D3DPOOL_DEFAULT, &vb, nullptr)))
+			if(SUCCEEDED(m_pDevice->CreateVertexBuffer(b->desc.sizeBytes, usage, 0,
+													   D3DPOOL_DEFAULT, &vb, nullptr)))
 				b->vb = vb;
 		}
 	}
 
 	// --- Input layouts ---
-	for (DX9InputLayout* l : m_inputLayouts)
+	for(DX9InputLayout* l : m_inputLayouts)
 	{
-		if (!l || l->desc.elements.empty()) continue;
+		if(!l || l->desc.elements.empty())
+			continue;
 
 		xr_vector<D3DVERTEXELEMENT9> elems;
 		elems.reserve(l->desc.elements.size() + 1);
-		for (const auto& e : l->desc.elements)
+		for(const auto& e : l->desc.elements)
 		{
 			D3DVERTEXELEMENT9 de{};
 			de.Stream = (WORD)e.stream;
@@ -426,26 +524,27 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 		elems.push_back(D3DDECL_END());
 
 		IDirect3DVertexDeclaration9* decl = nullptr;
-		if (SUCCEEDED(m_pDevice->CreateVertexDeclaration(elems.data(), &decl)))
+		if(SUCCEEDED(m_pDevice->CreateVertexDeclaration(elems.data(), &decl)))
 			l->decl = decl;
 	}
 
 	// --- Shaders ---
-	for (DX9Shader* s : m_shaders)
+	for(DX9Shader* s : m_shaders)
 	{
-		if (!s || !s->blob) continue;
+		if(!s || !s->blob)
+			continue;
 		const DWORD* code = static_cast<const DWORD*>(s->blob->GetBufferPointer());
 
-		if (s->isVertex)
+		if(s->isVertex)
 		{
 			IDirect3DVertexShader9* vs = nullptr;
-			if (SUCCEEDED(m_pDevice->CreateVertexShader(code, &vs)))
+			if(SUCCEEDED(m_pDevice->CreateVertexShader(code, &vs)))
 				s->vs = vs;
 		}
 		else
 		{
 			IDirect3DPixelShader9* ps = nullptr;
-			if (SUCCEEDED(m_pDevice->CreatePixelShader(code, &ps)))
+			if(SUCCEEDED(m_pDevice->CreatePixelShader(code, &ps)))
 				s->ps = ps;
 		}
 	}
@@ -484,21 +583,21 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
-	Msg("* [DX9] Device reset successfully: %dx%d %s, interval=%d", m_backBufferWidth, 
-																	m_backBufferHeight, 
-																	params.Windowed ? "windowed" : "fullscreen", 
-																	params.SyncInterval);
+	Msg("* [DX9] Device reset successfully: %dx%d %s, interval=%d", m_backBufferWidth,
+		m_backBufferHeight,
+		params.Windowed ? "windowed" : "fullscreen",
+		params.SyncInterval);
 	return true;
 }
 
 RHI_DeviceStatus CRenderBackendDX9::CheckDeviceStatus() const
 {
-	if (!m_pDevice)
+	if(!m_pDevice)
 		return RHI_DeviceStatus::Lost;
 
 	const HRESULT hr = m_pDevice->TestCooperativeLevel();
 
-	switch (hr)
+	switch(hr)
 	{
 	case D3D_OK:
 		return RHI_DeviceStatus::OK;

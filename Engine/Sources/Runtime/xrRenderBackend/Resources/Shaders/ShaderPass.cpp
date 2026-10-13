@@ -26,7 +26,7 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	m_valid = false;
 
 	IRenderBackend* rhi = backend.GetRHI();
-	if (!rhi)
+	if(!rhi)
 	{
 		Msg("! [ShaderPass] Compile: backend has no RHI");
 		return FALSE;
@@ -35,10 +35,10 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	const RHI_ShaderMacro* macros = m_macros.Data();
 
 	// Vertex
-	if (!m_vsFile.empty())
+	if(!m_vsFile.empty())
 	{
 		const HRESULT hr = m_vs.CompileFromFile(*rhi, CShaderProgram::Type::Vertex, m_vsFile.c_str(), m_vsEntry.c_str(), macros);
-		if (FAILED(hr))
+		if(FAILED(hr))
 			return FALSE;
 	}
 	else
@@ -47,10 +47,10 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	}
 
 	// Pixel
-	if (!m_psFile.empty())
+	if(!m_psFile.empty())
 	{
 		const HRESULT hr = m_ps.CompileFromFile(*rhi, CShaderProgram::Type::Pixel, m_psFile.c_str(), m_psEntry.c_str(), macros);
-		if (FAILED(hr))
+		if(FAILED(hr))
 			return FALSE;
 	}
 	else
@@ -67,7 +67,7 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 	m_constants.Merge(psTable);
 
 	m_samplers.clear();
-	for (const auto& entry : m_constants.Samplers())
+	for(const auto& entry : m_constants.Samplers())
 	{
 		CShaderSamplerBinding b;
 		b.name = entry.name;
@@ -84,9 +84,10 @@ BOOL CShaderPass::Compile(CRenderBackend& backend)
 
 const CShaderSamplerBinding* CShaderPass::FindSampler(LPCSTR name) const
 {
-	if (!name) return nullptr;
-	for (const auto& b : m_samplers)
-		if (xr_strcmp(b.name.c_str(), name) == 0)
+	if(!name)
+		return nullptr;
+	for(const auto& b : m_samplers)
+		if(xr_strcmp(b.name.c_str(), name) == 0)
 			return &b;
 	return nullptr;
 }
@@ -94,7 +95,8 @@ const CShaderSamplerBinding* CShaderPass::FindSampler(LPCSTR name) const
 bool CShaderPass::SetTexture(LPCSTR samplerName, const ref_texture& tex)
 {
 	auto* b = const_cast<CShaderSamplerBinding*>(FindSampler(samplerName));
-	if (!b) return false;
+	if(!b)
+		return false;
 	b->texture = tex;
 	return true;
 }
@@ -102,7 +104,8 @@ bool CShaderPass::SetTexture(LPCSTR samplerName, const ref_texture& tex)
 bool CShaderPass::SetSamplerDesc(LPCSTR samplerName, const RHI_SamplerDesc& desc)
 {
 	auto* b = const_cast<CShaderSamplerBinding*>(FindSampler(samplerName));
-	if (!b) return false;
+	if(!b)
+		return false;
 	b->desc = desc;
 	return true;
 }
@@ -110,16 +113,16 @@ bool CShaderPass::SetSamplerDesc(LPCSTR samplerName, const RHI_SamplerDesc& desc
 void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 {
 	IRenderBackend* rhi = backend.GetRHI();
-	if (!rhi)
+	if(!rhi)
 		return;
 
-	for (const auto& b : m_samplers)
+	for(const auto& b : m_samplers)
 	{
-		if (b.dx9Stage == uint32_t(-1))
+		if(b.dx9Stage == uint32_t(-1))
 			continue;
 
 		CTexture* tex = b.texture._get();
-		if (tex)
+		if(tex)
 			tex->Bind(*rhi, b.dx9Stage);
 		else
 			rhi->SetShaderResource(b.dx9Stage, RHI_TextureHandle{});
@@ -131,11 +134,8 @@ void CShaderPass::ApplySamplers(CRenderBackend& backend) const
 void CShaderPass::Apply(CRenderBackend& backend)
 {
 	IRenderBackend* rhi = backend.GetRHI();
-	if (!rhi)
+	if(!rhi)
 		return;
-
-	m_vs.Apply(*rhi);
-	m_ps.Apply(*rhi);
 
 	ApplySamplers(backend);
 	m_constantsBuffer.Flush(*rhi);

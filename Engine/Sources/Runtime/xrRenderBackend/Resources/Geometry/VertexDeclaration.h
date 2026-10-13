@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 class XRRB_API CVertexDeclaration : public CRefCountedResource
 {
-public:
+  public:
 	CVertexDeclaration() = default;
 	~CVertexDeclaration() override;
 
@@ -21,12 +21,10 @@ public:
 	const RHI_InputLayoutDesc& GetLayout() const { return m_desc; }
 	RHI_InputLayoutHandle GetRHIHandle() const { return m_rhiHandle; }
 
-	void Bind(IRenderBackend& rhi) const;
-
-private:
+  private:
 	void DestroyRHI();
 
-	RHI_InputLayoutDesc   m_desc;
+	RHI_InputLayoutDesc m_desc;
 	IRenderBackend* m_rhi = nullptr;
 	RHI_InputLayoutHandle m_rhiHandle{};
 };

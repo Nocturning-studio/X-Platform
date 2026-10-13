@@ -16,31 +16,60 @@ struct RHI_Handle
 
 	constexpr bool operator==(const RHI_Handle& o) const noexcept { return id == o.id; }
 	constexpr bool operator!=(const RHI_Handle& o) const noexcept { return id != o.id; }
-	constexpr bool operator< (const RHI_Handle& o) const noexcept { return id < o.id; }
+	constexpr bool operator<(const RHI_Handle& o) const noexcept { return id < o.id; }
 
 	constexpr explicit operator bool() const noexcept { return IsValid(); }
 };
 
 // --- Ресурсы ---
-struct RHI_TextureTag {};
-struct RHI_BufferTag {};
-struct RHI_ConstantBufferTag {};
+struct RHI_TextureTag
+{
+};
+struct RHI_BufferTag
+{
+};
+struct RHI_ConstantBufferTag
+{
+};
 
 // --- Пайплайн ---
-struct RHI_ShaderTag {};
-struct RHI_InputLayoutTag {};
-struct RHI_SamplerTag {};
-struct RHI_PipelineStateTag {};
+struct RHI_ShaderTag
+{
+};
+struct RHI_InputLayoutTag
+{
+};
+struct RHI_SamplerTag
+{
+};
+struct RHI_PipelineLayoutTag
+{
+};
+struct RHI_PipelineStateTag
+{
+};
 
 // --- Views ---
-struct RHI_RenderTargetViewTag {};
-struct RHI_DepthStencilViewTag {};
-struct RHI_ShaderResourceViewTag {};
-struct RHI_UnorderedAccessViewTag {};
+struct RHI_RenderTargetViewTag
+{
+};
+struct RHI_DepthStencilViewTag
+{
+};
+struct RHI_ShaderResourceViewTag
+{
+};
+struct RHI_UnorderedAccessViewTag
+{
+};
 
 // --- Синхронизация ---
-struct RHI_QueryTag {};
-struct RHI_FenceTag {};
+struct RHI_QueryTag
+{
+};
+struct RHI_FenceTag
+{
+};
 
 // ============================================================================
 // Публичные алиасы
@@ -54,6 +83,7 @@ using RHI_ConstantBufferHandle = RHI_Handle<RHI_ConstantBufferTag>;
 // Пайплайн
 using RHI_ShaderHandle = RHI_Handle<RHI_ShaderTag>;
 using RHI_InputLayoutHandle = RHI_Handle<RHI_InputLayoutTag>;
+using RHI_PipelineLayoutHandle = RHI_Handle<RHI_PipelineLayoutTag>;
 using RHI_SamplerHandle = RHI_Handle<RHI_SamplerTag>;
 using RHI_PipelineStateHandle = RHI_Handle<RHI_PipelineStateTag>;
 
@@ -69,13 +99,13 @@ using RHI_FenceHandle = RHI_Handle<RHI_FenceTag>;
 
 namespace std
 {
-	template <typename Tag>
-	struct hash<RHI_Handle<Tag>>
+template <typename Tag>
+struct hash<RHI_Handle<Tag>>
+{
+	size_t operator()(const RHI_Handle<Tag>& h) const noexcept
 	{
-		size_t operator()(const RHI_Handle<Tag>& h) const noexcept
-		{
-			return std::hash<u32>{}(h.id);
-		}
-	};
-}
+		return std::hash<u32>{}(h.id);
+	}
+};
+} // namespace std
 ////////////////////////////////////////////////////////////////////////////////

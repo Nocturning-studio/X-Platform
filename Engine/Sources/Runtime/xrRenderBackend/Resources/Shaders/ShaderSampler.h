@@ -23,15 +23,15 @@ enum class ESamplerAddress : uint8_t
 
 struct CSamplerDesc
 {
-	ESamplerFilter  minFilter = ESamplerFilter::Linear;
-	ESamplerFilter  magFilter = ESamplerFilter::Linear;
-	ESamplerFilter  mipFilter = ESamplerFilter::Linear;
+	ESamplerFilter minFilter = ESamplerFilter::Linear;
+	ESamplerFilter magFilter = ESamplerFilter::Linear;
+	ESamplerFilter mipFilter = ESamplerFilter::Linear;
 	ESamplerAddress addressU = ESamplerAddress::Wrap;
 	ESamplerAddress addressV = ESamplerAddress::Wrap;
 	ESamplerAddress addressW = ESamplerAddress::Wrap;
-	uint32_t             maxAnisotropy = 1;
-	uint32_t             borderColor = 0;
-	float           mipLodBias = 0.0f;
+	uint32_t maxAnisotropy = 1;
+	uint32_t borderColor = 0;
+	float mipLodBias = 0.0f;
 
 	static CSamplerDesc Default() { return {}; }
 

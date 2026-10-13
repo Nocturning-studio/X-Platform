@@ -80,6 +80,14 @@ enum class RHI_Topology : uint32_t
 	TriangleFan	   // D3DPT_TRIANGLEFAN
 };
 
+enum class RHI_PrimitiveTopologyType : uint32_t
+{
+	Point = 0,
+	Line,
+	Triangle,
+	Patch,
+};
+
 // =========================================================================
 // Растеризация (Rasterizer State)
 // =========================================================================
@@ -171,6 +179,20 @@ enum class RHI_Filter : uint32_t
 	Anisotropic,   // D3DTEXF_ANISOTROPIC
 	PyramidalQuad, // D3DTEXF_PYRAMIDALQUAD
 	GaussianQuad   // D3DTEXF_GAUSSIANQUAD
+};
+
+// =========================================================================
+// Описание параметров мультисемплинга
+// =========================================================================
+struct RHI_SampleDesc
+{
+	uint32_t count = 1;
+	uint32_t quality = 0;
+
+	constexpr bool operator==(const RHI_SampleDesc& o) const noexcept
+	{
+		return count == o.count && quality == o.quality;
+	}
 };
 
 // =========================================================================
