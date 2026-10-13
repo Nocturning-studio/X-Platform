@@ -300,6 +300,15 @@ class XRRHI_API CRenderBackendDX9 : public IRenderBackend
 
 	IDirect3DSurface9* GetTextureSurfaceForRT(DX9Texture* tex, uint32_t mip, uint32_t face) const;
 
+	// --- Sampleable depth (INTZ / DF16 / DF24) -------------------------------
+	// Проверяет поддержку shadow-map формата глубины данным устройством.
+	bool IsShadowDepthFormatSupported(D3DFORMAT fmt) const;
+
+	// Подбирает sampleable-формат глубины для запрошенного RHI-формата.
+	// Порядок предпочтений: INTZ -> DF24 -> DF16 (последний — только для D16).
+	// Возвращает D3DFMT_UNKNOWN, если ни один не поддерживается.
+	D3DFORMAT SelectSampleableDepthFormat(RHI_Format rhiFmt) const;
+
 	void RefreshBackBufferRTVs();
 	void ReleaseAllRTVDSV();
 	void InvalidateRenderTargetCache();

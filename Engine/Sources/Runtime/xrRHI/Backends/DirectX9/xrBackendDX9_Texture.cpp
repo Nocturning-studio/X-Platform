@@ -5,6 +5,24 @@
 #include "pch.h"
 #include "xrBackendDX9.h"
 ////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	// "Обычный" depth-формат, для которого имеет смысл искать sampleable-аналог.
+	inline bool IsStandardDepthFormat(RHI_Format f) noexcept
+	{
+		return f == RHI_Format::D24_UNORM_S8_UINT ||
+			   f == RHI_Format::D16_UNORM;
+	}
+
+	// INTZ всегда 24-битный, DF24 - 24-битный, DF16 - 16-битный.
+	inline bool IsShadowDepthD3DFormat(D3DFORMAT f) noexcept
+	{
+		return f == static_cast<D3DFORMAT>(MAKEFOURCC('I', 'N', 'T', 'Z')) ||
+			   f == static_cast<D3DFORMAT>(MAKEFOURCC('D', 'F', '2', '4')) ||
+			   f == static_cast<D3DFORMAT>(MAKEFOURCC('D', 'F', '1', '6'));
+	}
+} // namespace
+////////////////////////////////////////////////////////////////////////////////
 RHI_TextureHandle CRenderBackendDX9::AllocRHI_TextureHandle(DX9Texture* tex)
 {
 	uint32_t index;
@@ -67,11 +85,33 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		return {};
 	}
 
-	const D3DFORMAT d3dFmt = RHIToD3DFormat(desc.format);
+	D3DFORMAT d3dFmt = RHIToD3DFormat(desc.format);
 	if(d3dFmt == D3DFMT_UNKNOWN)
 	{
 		Msg("! [DX9] CreateTexture: unsupported format %u", (uint32_t)desc.format);
 		return {};
+	}
+
+	const bool wantsSampleableDepth = (desc.usage & RHI_TexUsage_DepthStencil) && 
+									  (desc.usage & RHI_TexUsage_ShaderResource) && 
+									  IsStandardDepthFormat(desc.format);
+
+	bool usingShadowFormat = false;
+	if (wantsSampleableDepth)
+	{
+		const D3DFORMAT shadow = SelectSampleableDepthFormat(desc.format);
+		if (shadow != D3DFMT_UNKNOWN)
+		{
+			d3dFmt = shadow;
+			usingShadowFormat = true;
+		}
+		else
+		{
+			R_ERRORF("! [DX9] CreateTexture: sampleable depth requested, "
+				"but no INTZ/DF24/DF16 support on this device "
+				"(texture '%s'). Depth reads in shaders will not work.",
+				desc.debugName ? desc.debugName : "<unnamed>");
+		}
 	}
 
 	DWORD usage = 0;
@@ -91,6 +131,12 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 
 	// mipLevels == 0 => полная цепочка
 	UINT mips = (desc.mipLevels == 0) ? 0 : desc.mipLevels;
+	// Sampleable depth почти всегда mip=1 - INTZ не любит мипы
+	if (usingShadowFormat && desc.mipLevels != 1)
+	{
+		Msg("! [DX9] CreateTexture: INTZ/DFx with mipLevels=%u may not be supported " "by driver; forcing mipLevels=1", desc.mipLevels);
+		mips = 1;
+	}
 
 	DX9Texture* impl = new DX9Texture;
 	impl->format = desc.format;
@@ -104,6 +150,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	impl->usage = desc.usage;
 	impl->isRenderTarget = (desc.usage & RHI_TexUsage_RenderTarget) != 0;
 	impl->isDepthStencil = (desc.usage & RHI_TexUsage_DepthStencil) != 0;
+	impl->isSampleableDepth = usingShadowFormat;
 
 	HRESULT hr = E_FAIL;
 	IDirect3DBaseTexture9* base = nullptr;
@@ -136,8 +183,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 	case RHI_TextureDim::Tex3D:
 	{
 		IDirect3DVolumeTexture9* t = nullptr;
-		hr = m_pDevice->CreateVolumeTexture(desc.width, desc.height, desc.depth, mips,
-											usage, d3dFmt, pool, &t, nullptr);
+		hr = m_pDevice->CreateVolumeTexture(desc.width, desc.height, desc.depth, mips, usage, d3dFmt, pool, &t, nullptr);
 		if(SUCCEEDED(hr))
 		{
 			impl->tex3D = t;
@@ -156,9 +202,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 
 	// Debug name — D3D9 поддерживает D3DDebugObjectName через SetPrivateData.
 	if(desc.debugName && desc.debugName[0])
-	{
 		base->SetPrivateData(WKPDID_D3DDebugObjectName, desc.debugName, (DWORD)strlen(desc.debugName), 0);
-	}
 
 	// --- Initial data upload (только для обычных 2D-текстур без RT/DS) ---
 	if(initialData && desc.dim == RHI_TextureDim::Tex2D && !impl->isRenderTarget && !impl->isDepthStencil && pool == D3DPOOL_DEFAULT)
@@ -167,8 +211,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		if(pixelSize > 0)
 		{
 			IDirect3DTexture9* sysTex = nullptr;
-			hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels,
-										  0, d3dFmt, D3DPOOL_SYSTEMMEM, &sysTex, nullptr);
+			hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels, 0, d3dFmt, D3DPOOL_SYSTEMMEM, &sysTex, nullptr);
 			if(SUCCEEDED(hr))
 			{
 				D3DLOCKED_RECT locked{};
@@ -235,19 +278,62 @@ bool CRenderBackendDX9::CheckFormatSupport(RHI_Format fmt, bool isRenderTarget, 
 		return false;
 	}
 
+	const bool isShadowFmt = d3dFmt == static_cast<D3DFORMAT>(MAKEFOURCC('I', 'N', 'T', 'Z')) ||
+							 d3dFmt == static_cast<D3DFORMAT>(MAKEFOURCC('D', 'F', '2', '4')) ||
+							 d3dFmt == static_cast<D3DFORMAT>(MAKEFOURCC('D', 'F', '1', '6'));
+
+	D3DRESOURCETYPE rtype = (isCube && !isShadowFmt) ? D3DRTYPE_CUBETEXTURE : D3DRTYPE_TEXTURE;
+
 	DWORD usage = 0;
 	if(isRenderTarget)
 		usage |= D3DUSAGE_RENDERTARGET;
-	if(isDepthStencil)
+	if(isDepthStencil || isShadowFmt)
 		usage |= D3DUSAGE_DEPTHSTENCIL;
-
-	D3DRESOURCETYPE rtype = isCube ? D3DRTYPE_CUBETEXTURE : D3DRTYPE_TEXTURE;
 
 	const D3DFORMAT adapterFmt = D3DFMT_X8R8G8B8;
 
 	HRESULT hr = m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, adapterFmt, usage, rtype, d3dFmt);
 
 	return SUCCEEDED(hr);
+}
+
+bool CRenderBackendDX9::IsShadowDepthFormatSupported(D3DFORMAT fmt) const
+{
+	if (!m_pD3D)
+		return false;
+
+	// INTZ/DF24/DF16 - это текстуры, которые одновременно являются
+	// depth-stencil поверхностями. Правильная проверка - именно
+	// D3DUSAGE_DEPTHSTENCIL + D3DRTYPE_TEXTURE.
+	return SUCCEEDED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT,
+											   D3DDEVTYPE_HAL,
+											   D3DFMT_X8R8G8B8,
+											   D3DUSAGE_DEPTHSTENCIL,
+											   D3DRTYPE_TEXTURE,
+											   fmt));
+}
+
+D3DFORMAT CRenderBackendDX9::SelectSampleableDepthFormat(RHI_Format rhiFmt) const
+{
+	// INTZ - наиболее распространённый (NV + большинство AMD).
+	const D3DFORMAT intz = static_cast<D3DFORMAT>(MAKEFOURCC('I', 'N', 'T', 'Z'));
+	if (IsShadowDepthFormatSupported(intz))
+		return intz;
+
+	// DF24 - AMD-специфичный эквивалент.
+	const D3DFORMAT df24 = static_cast<D3DFORMAT>(MAKEFOURCC('D', 'F', '2', '4'));
+	if (IsShadowDepthFormatSupported(df24))
+		return df24;
+
+	// DF16 - 16-битный. Разумно использовать только если запрошен D16.
+	if (rhiFmt == RHI_Format::D16_UNORM)
+	{
+		const D3DFORMAT df16 = static_cast<D3DFORMAT>(MAKEFOURCC('D', 'F', '1', '6'));
+		if (IsShadowDepthFormatSupported(df16))
+			return df16;
+	}
+
+	return D3DFMT_UNKNOWN;
 }
 
 void* CRenderBackendDX9::GetTextureNativeHandle(RHI_TextureHandle handle)

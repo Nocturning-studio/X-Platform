@@ -12,6 +12,7 @@ struct DX9Texture
 	IDirect3DSurface9* surface = nullptr;
 
 	RHI_Format format = RHI_Format::Unknown;
+	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
 	RHI_TextureDim dim = RHI_TextureDim::Tex2D;
 	uint32_t width = 0;
 	uint32_t height = 0;
@@ -23,6 +24,7 @@ struct DX9Texture
 
 	bool isRenderTarget = false;
 	bool isDepthStencil = false;
+	bool isSampleableDepth = false;
 
 	IDirect3DBaseTexture9* GetBase() const
 	{

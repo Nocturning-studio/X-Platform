@@ -32,6 +32,8 @@ static constexpr uint32_t kWindowHeight = 720;
 static constexpr uint32_t kOffscreenWidth = 1920;
 static constexpr uint32_t kOffscreenHeight = 1080;
 
+static constexpr uint32_t kTriangleCount = 3;
+
 ////////////////////////////////////////////////////////////////////////////////
 // WndProc
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,15 +69,15 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	RECT rc{ 0, 0, (LONG)kWindowWidth, (LONG)kWindowHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-	HWND hWnd = CreateWindowA("xrDummy", 
-							  "X-Ray PSO Test", 
-							  WS_OVERLAPPEDWINDOW, 
-							  CW_USEDEFAULT, 
-							  CW_USEDEFAULT, 
-							  rc.right - rc.left, 
-							  rc.bottom - rc.top, 
-							  nullptr, nullptr, 
-							  hInst, 
+	HWND hWnd = CreateWindowA("xrDummy",
+							  "X-Ray Sampleable Depth Test",
+							  WS_OVERLAPPEDWINDOW,
+							  CW_USEDEFAULT,
+							  CW_USEDEFAULT,
+							  rc.right - rc.left,
+							  rc.bottom - rc.top,
+							  nullptr, nullptr,
+							  hInst,
 							  nullptr);
 	if (!hWnd)
 		return 1;
@@ -108,9 +110,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	}
 
 	// ========================================================================
-	// Offscreen render target (512x512)
+	// Offscreen color RT
 	// ========================================================================
-	ref_texture offscreen = backend.CreateRenderTarget(kOffscreenWidth, kOffscreenHeight, RHI_Format::RGBA8_UNORM);
+	ref_texture offscreen = backend.CreateRenderTarget(kOffscreenWidth, kOffscreenHeight,
+		RHI_Format::RGBA8_UNORM);
 	if (!offscreen)
 	{
 		R_ERROR("! [Test] CreateRenderTarget failed");
@@ -125,13 +128,42 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	}
 
 	// ========================================================================
-	// Геометрия треугольника
+	// Offscreen depth: DSV + SRV (INTZ / DF24 / DF16)
+	//
+	// Двойной usage — DepthStencil | ShaderResource — это и есть триггер
+	// подмены обычного D24S8 на INTZ в DX9-бэкенде. В DX12 это будет
+	// D24S8/D32F с SRV-флагом.
+	//
+	// ВАЖНО: используем Resources().CreateTexture, а не backend.CreateDepthStencil,
+	// потому что фабрика DepthStencil() не выставляет ShaderResource.
+	// ========================================================================
+	RHI_TextureDesc depthDesc = RHI_TextureDesc::DepthStencil(kOffscreenWidth, kOffscreenHeight, RHI_Format::D24_UNORM_S8_UINT);
+	depthDesc.usage |= RHI_TexUsage_ShaderResource;
+	depthDesc.debugName = "test.offscreen.depth";
+
+	ref_texture offscreenDepth = backend.Resources().CreateTexture(depthDesc);
+	if (!offscreenDepth)
+	{
+		R_ERROR("! [Test] CreateTexture(depth) failed — INTZ/DF24/DF16 unsupported?");
+		return 1;
+	}
+
+	const RHI_DepthStencilView offscreenDSV = backend.CreateDSV(offscreenDepth->GetRHIHandle());
+	if (!offscreenDSV.IsValid())
+	{
+		R_ERROR("! [Test] CreateDSV failed");
+		return 1;
+	}
+
+	// ========================================================================
+	// Геометрия одного треугольника (Z = 0, положение задаётся трансформом)
 	// ========================================================================
 	const STriangleVertex verts[] =
 	{
-		{ 0.0f,  0.6f, 0.5f, 1, 0, 0, 1 },
-		{ 0.5f, -0.4f, 0.5f, 0, 1, 0, 1 },
-		{-0.5f, -0.4f, 0.5f, 0, 0, 1, 1 },
+		//   x      y     z     r  g  b  a
+		{  0.0f,  0.6f, 0.0f,  1, 0, 0, 1 },
+		{  0.5f, -0.4f, 0.0f,  0, 1, 0, 1 },
+		{ -0.5f, -0.4f, 0.0f,  0, 0, 1, 1 },
 	};
 	const uint16_t indices[] = { 0, 1, 2 };
 
@@ -180,7 +212,23 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	triangle->SetTopology(RHI_Topology::TriangleList);
 
 	// ========================================================================
-	// Pass 1: цветной треугольник
+	// Инстансы: три треугольника на разной глубине
+	//
+	// xrMath — row-vector convention: [xyz1] * M. Соответственно:
+	//   - translate() кладёт смещение в 4-ю строку,
+	//   - vs_triangle использует mul(float4(i.pos,1), mWorld).
+	//
+	// D3DCOMPILE_PACK_MATRIX_ROW_MAJOR (по умолчанию в RHI) согласуется
+	// с CShaderConstantBuffer::SetMatrix — строки матрицы уходят в
+	// последовательные float4-регистры как есть.
+	// ========================================================================
+	fmat4x4 triangleWorld[kTriangleCount] { Fidentity };
+	triangleWorld[0].translate(-0.7f, 0.0f, 0.1f); // ближний,  слева
+	triangleWorld[1].translate(0.0f, 0.0f, 0.5f); // средний,  центр
+	triangleWorld[2].translate(0.7f, 0.0f, 0.9f); // дальний,  справа
+
+	// ========================================================================
+	// Pass 1: цветные треугольники -> offscreen RT + depth
 	// ========================================================================
 	CShaderPass passTriangle;
 	passTriangle.SetVertexShader("test\\test.hlsl", "vs_triangle");
@@ -192,7 +240,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	}
 
 	// ========================================================================
-	// Pass 2: fullscreen-копирование
+	// Pass 2: fullscreen copy + depth visualization
 	// ========================================================================
 	CShaderPass passFullscreen;
 	passFullscreen.SetVertexShader("test\\test.hlsl", "vs_fullscreen");
@@ -204,31 +252,27 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	}
 
 	if (!passFullscreen.SetTexture("s_src", offscreen))
-	{
-		Msg("! [Test] passFullscreen: sampler 's_src' not found "
-			"(check HLSL declaration)");
-	}
+		Msg("! [Test] passFullscreen: sampler 's_src' not found");
+
+	if (!passFullscreen.SetTexture("s_depth", offscreenDepth))
+		R_ERROR("! [Test] passFullscreen: sampler 's_depth' not found — проверь HLSL");
+
+	// INTZ/DF24/DF16 не поддерживают линейную фильтрацию — только Point.
 	passFullscreen.SetSamplerDesc("s_src", RHI_SamplerDesc::Linear());
+	passFullscreen.SetSamplerDesc("s_depth", RHI_SamplerDesc::Point());
 
 	// ========================================================================
-	// PSO — собираем один раз, используем каждый кадр.
-	//
-	// Вся state-часть пайплайна (шейдеры, input layout, blend/depth/raster,
-	// форматы RT/DS, MSAA) упакована в RHI_PipelineStateDesc. Динамическими
-	// остаются только: реальная топология (List/Strip/Fan), viewport,
-	// scissor, VB/IB, samplers/SRV/constants.
+	// PSO — собираем один раз, используем каждый кадр
 	// ========================================================================
 
-	// --- Pass 1: triangle -> offscreen RT (RGBA8, без DS) ---
-	RHI_PipelineStateDesc trianglePSD = backend.BuildPipelineDesc(passTriangle, *triangle,
+	// --- Pass 1: triangle -> offscreen (RGBA8 + D24S8 depth) ---
+	RHI_PipelineStateDesc trianglePSD = backend.BuildPipelineDesc(passTriangle, 
+																  *triangle,
 																  RHI_BlendState::Opaque(),
-																  RHI_DepthStencilState::NoDepth(),
+																  RHI_DepthStencilState::Default(),   // depth ON + write
 																  RHI_RasterizerState::CullNone(),
 																  RHI_Format::RGBA8_UNORM,
-																  RHI_Format::Unknown);
-
-	// debugName — литерал, живёт вечно. Хранится в desc как raw pointer,
-	// поэтому временные строки использовать нельзя.
+																  RHI_Format::D24_UNORM_S8_UINT);     // формат DSV
 	trianglePSD.debugName = "test.triangle";
 
 	const RHI_PipelineStateHandle trianglePSO = backend.CreatePipelineState(trianglePSD);
@@ -238,27 +282,24 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 		return 1;
 	}
 
-	// --- Проверка дедупликации PSO-кэша ---
+	// Проверка дедупликации PSO-кэша
 	{
 		const RHI_PipelineStateHandle again = backend.CreatePipelineState(trianglePSD);
 		if (again != trianglePSO)
-		{
 			R_ERRORF("! [Test] PSO cache dedup failed: %u != %u", trianglePSO.id, again.id);
-		}
 		else
-		{
 			Msg("* [Test] PSO cache dedup OK: trianglePSO id=%u", trianglePSO.id);
-		}
 	}
 
 	// --- Pass 2: fullscreen copy -> back buffer ---
 	//
-	// BuildPipelineDesc требует CGeometry&. DrawFullscreen же использует
-	// свою внутреннюю геометрию, поэтому собираем desc вручную.
+	// DrawFullscreen привязывает собственную геометрию, поэтому inputLayout
+	// оставляем пустым, а BuildPipelineDesc (требующий CGeometry&) не
+	// используем — собираем desc вручную.
 	RHI_PipelineStateDesc fullscreenPSD;
 	fullscreenPSD.vertexShader = passFullscreen.GetVertexShaderHandle();
 	fullscreenPSD.pixelShader = passFullscreen.GetPixelShaderHandle();
-	fullscreenPSD.inputLayout = {}; // DrawFullscreen сам привяжет свой decl
+	fullscreenPSD.inputLayout = {};
 	fullscreenPSD.topologyType = RHI_PrimitiveTopologyType::Triangle;
 	fullscreenPSD.blend = RHI_BlendState::Opaque();
 	fullscreenPSD.depthStencil = RHI_DepthStencilState::NoDepth();
@@ -275,7 +316,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 		return 1;
 	}
 
-	Msg("* [Test] Init OK - window=%ux%u, offscreen=%ux%u, "
+	Msg("* [Test] Init OK - window=%ux%u, offscreen=%ux%u (color+depth), "
 		"trianglePSO=%u, fullscreenPSO=%u",
 		kWindowWidth, kWindowHeight, kOffscreenWidth, kOffscreenHeight,
 		trianglePSO.id, fullscreenPSO.id);
@@ -306,37 +347,35 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 		backend.BeginFrame();
 
 		// ------------------------------------------------------------
-		// Pass 1: треугольник -> offscreen RT
+		// Pass 1: три треугольника -> offscreen RT + depth
 		// ------------------------------------------------------------
 		{
 			RHI_RenderTargetView rtvs[1] = { offscreenRTV };
-			backend.SetRenderTargets(rtvs, 1, RHI_DepthStencilView{});
+			backend.SetRenderTargets(rtvs, 1, offscreenDSV);
 
 			RHI_Viewport vp{ 0, 0, kOffscreenWidth, kOffscreenHeight, 0.0f, 1.0f };
 			backend.SetViewport(vp);
 
 			backend.ClearRenderTarget(offscreenRTV, fvec4{ 0.05f, 0.05f, 0.4f, 1.0f });
+			backend.ClearDepthStencil(offscreenDSV, 1.0f, 0);
 
-			// Один вызов применяет шейдеры, layout, blend/depth/raster.
-			// Внутри DX9-бэкенд развернёт desc в набор SetRenderState/
-			// SetVertexDeclaration/SetVertexShader/... — но с field-level
-			// diff'ом, так что при повторном вызове с тем же handle это
-			// бесплатно (m_psoCacheValid).
 			backend.SetPipelineState(trianglePSO);
-
-			// Реальная топология — динамический стейт, не часть PSO.
-			// В DX12 это будет IASetPrimitiveTopology; в DX9 — SetPrimitiveTopology.
 			backend.SetPrimitiveTopology(RHI_Topology::TriangleList);
 
-			// Ресурсные биндинги: samplers, SRV, константы.
-			backend.SetShaderPass(passTriangle);
-
-			// VB/IB + draw. Input layout уже в PSO.
-			backend.DrawGeometry(triangle);
+			for (uint32_t t = 0; t < kTriangleCount; ++t)
+			{
+				if (!passTriangle.SetConstant("mWorld", triangleWorld[t]))
+				{
+					R_ERRORF("! [Test] SetConstant('mWorld') failed for instance %u", t);
+					break;
+				}
+				backend.SetShaderPass(passTriangle);
+				backend.DrawGeometry(triangle);
+			}
 		}
 
 		// ------------------------------------------------------------
-		// Pass 2: fullscreen copy -> back buffer
+		// Pass 2: fullscreen — слева цвет, справа глубина
 		// ------------------------------------------------------------
 		{
 			const RHI_RenderTargetView bb = backend.GetBackBufferRTV();
@@ -363,16 +402,18 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	}
 
 	// ========================================================================
-	// Shutdown — строгий порядок
+	// Shutdown
 	// ========================================================================
 
 	passTriangle.Release();
 	passFullscreen.Release();
 
+	backend.DestroyDSV(offscreenDSV);
 	backend.DestroyRTV(offscreenRTV);
 
 	triangle.Clear();
 
+	offscreenDepth.Clear();
 	offscreen.Clear();
 	vdecl.Clear();
 	ib.Clear();

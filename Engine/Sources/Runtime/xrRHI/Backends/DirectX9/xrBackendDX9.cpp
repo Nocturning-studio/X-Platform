@@ -427,15 +427,16 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 	{
 		if(!t)
 			continue;
-		const D3DFORMAT fmt = RHIToD3DFormat(t->format);
-		if(fmt == D3DFMT_UNKNOWN)
+
+		D3DFORMAT fmt = t->d3dFormat;
+		if (fmt == D3DFMT_UNKNOWN)
+			fmt = RHIToD3DFormat(t->format);
+		if (fmt == D3DFMT_UNKNOWN)
 			continue;
 
 		DWORD usage = 0;
-		if(t->isRenderTarget)
-			usage |= D3DUSAGE_RENDERTARGET;
-		if(t->isDepthStencil)
-			usage |= D3DUSAGE_DEPTHSTENCIL;
+		if (t->isRenderTarget) usage |= D3DUSAGE_RENDERTARGET;
+		if (t->isDepthStencil) usage |= D3DUSAGE_DEPTHSTENCIL;
 
 		HRESULT hr = E_FAIL;
 		switch(t->dim)
@@ -444,8 +445,7 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 		case RHI_TextureDim::Tex1D:
 		{
 			IDirect3DTexture9* tex = nullptr;
-			hr = m_pDevice->CreateTexture(t->width, t->height, t->mipLevels,
-										  usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			hr = m_pDevice->CreateTexture(t->width, t->height, t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
 			if(SUCCEEDED(hr))
 				t->tex2D = tex;
 			break;
@@ -453,8 +453,7 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 		case RHI_TextureDim::Cube:
 		{
 			IDirect3DCubeTexture9* tex = nullptr;
-			hr = m_pDevice->CreateCubeTexture(t->width, t->mipLevels,
-											  usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			hr = m_pDevice->CreateCubeTexture(t->width, t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
 			if(SUCCEEDED(hr))
 				t->texCube = tex;
 			break;
@@ -462,8 +461,7 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 		case RHI_TextureDim::Tex3D:
 		{
 			IDirect3DVolumeTexture9* tex = nullptr;
-			hr = m_pDevice->CreateVolumeTexture(t->width, t->height, t->depth,
-												t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
+			hr = m_pDevice->CreateVolumeTexture(t->width, t->height, t->depth, t->mipLevels, usage, fmt, D3DPOOL_DEFAULT, &tex, nullptr);
 			if(SUCCEEDED(hr))
 				t->tex3D = tex;
 			break;
@@ -485,19 +483,15 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 
 		if(b->isIndex)
 		{
-			const D3DFORMAT fmt = (b->desc.indexFormat == RHI_IndexFormat::UInt32)
-									  ? D3DFMT_INDEX32
-									  : D3DFMT_INDEX16;
+			const D3DFORMAT fmt = (b->desc.indexFormat == RHI_IndexFormat::UInt32) ? D3DFMT_INDEX32 : D3DFMT_INDEX16;
 			IDirect3DIndexBuffer9* ib = nullptr;
-			if(SUCCEEDED(m_pDevice->CreateIndexBuffer(b->desc.sizeBytes, usage, fmt,
-													  D3DPOOL_DEFAULT, &ib, nullptr)))
+			if(SUCCEEDED(m_pDevice->CreateIndexBuffer(b->desc.sizeBytes, usage, fmt, D3DPOOL_DEFAULT, &ib, nullptr)))
 				b->ib = ib;
 		}
 		else
 		{
 			IDirect3DVertexBuffer9* vb = nullptr;
-			if(SUCCEEDED(m_pDevice->CreateVertexBuffer(b->desc.sizeBytes, usage, 0,
-													   D3DPOOL_DEFAULT, &vb, nullptr)))
+			if(SUCCEEDED(m_pDevice->CreateVertexBuffer(b->desc.sizeBytes, usage, 0, D3DPOOL_DEFAULT, &vb, nullptr)))
 				b->vb = vb;
 		}
 	}

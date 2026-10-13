@@ -1,12 +1,5 @@
-////////////////////////////////////////////////////////////////////////////////
-// Fullscreen pass test
-//
-// Pass 1: colored triangle -> offscreen RT
-// Pass 2: fullscreen triangle, sampler 's_src' -> back buffer
-////////////////////////////////////////////////////////////////////////////////
-
 // ============================================================================
-// Pass 1: colored triangle
+// Pass 1: colored triangle (instanced by CPU-side constant)
 // ============================================================================
 
 struct VS_TRIANGLE_IN
@@ -21,10 +14,12 @@ struct VS_TRIANGLE_OUT
     float4 col : COLOR0;
 };
 
+uniform float4x4 mWorld;
+
 VS_TRIANGLE_OUT vs_triangle(VS_TRIANGLE_IN i)
 {
     VS_TRIANGLE_OUT o;
-    o.pos = float4(i.pos, 1.0f);
+    o.pos = mul(float4(i.pos, 1.0f), mWorld);
     o.col = i.col;
     return o;
 }
@@ -35,26 +30,19 @@ float4 ps_triangle(VS_TRIANGLE_OUT i) : COLOR
 }
 
 // ============================================================================
-// Pass 2: fullscreen copy
-//
-// Контракт input layout задаётся DrawFullscreen:
-//   float2 pos : POSITION;   // NDC
-//   float2 uv  : TEXCOORD0;  // (0,0) — левый-верхний угол RT
-//
-// Vertex shader должен вернуть float4(pos, 0, 1) как clip-space position
-// и пропустить uv в пиксельный шейдер.
+// Pass 2: fullscreen copy + depth visualization
 // ============================================================================
 
 struct VS_FULLSCREEN_IN
 {
     float2 pos : POSITION;
-    float2 uv  : TEXCOORD0;
+    float2 uv : TEXCOORD0;
 };
 
 struct VS_FULLSCREEN_OUT
 {
     float4 pos : POSITION;
-    float2 uv  : TEXCOORD0;
+    float2 uv : TEXCOORD0;
 };
 
 VS_FULLSCREEN_OUT vs_fullscreen(VS_FULLSCREEN_IN i)
@@ -65,13 +53,18 @@ VS_FULLSCREEN_OUT vs_fullscreen(VS_FULLSCREEN_IN i)
     return o;
 }
 
-sampler2D s_src;
+sampler2D s_src; // color offscreen
+sampler2D s_depth; // INTZ / DF24 / DF16
 
 float4 ps_fullscreen(VS_FULLSCREEN_OUT i) : COLOR
 {
-#ifdef USE_COLOR
-    return float4(i.uv, 0, 0);
-#else
-    return tex2D(s_src, i.uv);
-#endif
+    if (i.uv.x < 0.5f)
+    {
+        float2 uv = float2(i.uv.x * 2.0f, i.uv.y);
+        return tex2D(s_src, uv);
+    }
+
+    float2 uv = float2((i.uv.x - 0.5f) * 2.0f, i.uv.y);
+    float d = tex2D(s_depth, uv).r;
+    return float4(d, d, d, 1.0f);
 }
