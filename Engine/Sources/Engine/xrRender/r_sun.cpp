@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "..\xrFramework\igame_persistent.h"
-#include "..\xrFramework\irenderable.h"
+#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\irenderable.h"
 
 const float tweak_COP_initial_offs = 1200.f;
 

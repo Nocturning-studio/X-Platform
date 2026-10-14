@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "LightTrack.h"
-#include "..\xrFramework\xr_object.h"
-#include "..\xrFramework\igame_persistent.h"
-#include "..\xrFramework\environment.h"
+#include "Engine\xrFramework\xr_object.h"
+#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\environment.h"
 
 // Оптимизированные направления гемисферы из X-Ray 1.6
 constexpr float hdir[lt_aosamples][3] = {

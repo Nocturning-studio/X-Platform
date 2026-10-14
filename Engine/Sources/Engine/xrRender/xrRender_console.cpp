@@ -300,8 +300,8 @@ Flags32 ps_r_overlay_flags = {NULL};
 /*-------------------------------------------------------------------------------*/
 #ifndef _EDITOR
 ///////////////////////////////////////////////////////////////////////////////////
-#include "..\xrFramework\xr_ioconsole.h"
-#include "..\xrFramework\xr_ioc_cmd.h"
+#include "Engine\xrFramework\xr_ioconsole.h"
+#include "Engine\xrFramework\xr_ioc_cmd.h"
 ///////////////////////////////////////////////////////////////////////////////////
 #define MAX_CONDITIONS_TOKEN_SIZE 32
 class CCC_ConditionsToken : public CCC_Token

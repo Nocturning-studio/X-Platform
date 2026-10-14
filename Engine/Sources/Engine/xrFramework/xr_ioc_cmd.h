@@ -1,5 +1,5 @@
 #pragma once
-#include "..\xrFramework\XR_IOConsole.h"
+#include "Engine\xrFramework\XR_IOConsole.h"
 
 extern ENGINE_API Flags32 ps_psp_ls_flags;
 enum

@@ -19,7 +19,7 @@
 
 #include "object_broker.h"
 
-#include "..\xrFramework\debug_ui.h"
+#include "Engine\xrFramework\debug_ui.h"
 
 string128 ErrMsgBoxTemplate[] = {"message_box_invalid_pass",
 								 "message_box_invalid_host",

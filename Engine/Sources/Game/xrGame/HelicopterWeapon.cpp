@@ -3,7 +3,7 @@
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
 #include "xrFramework/../xrNetServer/net_utils.h"
-#include "..\xrFramework\skeletoncustom.h"
+#include "Engine\xrFramework\skeletoncustom.h"
 #include "Level.h"
 
 void CHelicopter::BoneMGunCallbackX(CBoneInstance* B)

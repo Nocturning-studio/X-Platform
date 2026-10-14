@@ -2,8 +2,8 @@
 
 #include <unordered_map>
 
-#include "..\xrFramework\IRender.h"
-#include "..\xrFramework\ispatial.h"
+#include "Engine\xrFramework\IRender.h"
+#include "Engine\xrFramework\ispatial.h"
 #include "SceneGraphTypes.h"
 #include "r_sector.h"
 #include "r_portal.h"

@@ -5,8 +5,8 @@
 #include "igame_persistent.h"
 #include "environment.h"
 #else
-#include "..\xrFramework\igame_persistent.h"
-#include "..\xrFramework\environment.h"
+#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\environment.h"
 #endif
 const int quant = 16384;
 

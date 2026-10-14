@@ -11,7 +11,7 @@
 #ifdef _EDITOR
 #include "SkeletonX.h"
 #else
-#include "..\xrFramework\SkeletonX.h"
+#include "Engine\xrFramework\SkeletonX.h"
 #endif
 struct SEnumVerticesCallback;
 class CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates

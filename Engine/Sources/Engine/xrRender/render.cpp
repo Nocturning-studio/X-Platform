@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "render.h"
-#include "..\xrFramework\fbasicvisual.h"
-#include "..\xrFramework\xr_object.h"
-#include "..\xrFramework\CustomHUD.h"
-#include "..\xrFramework\igame_persistent.h"
-#include "..\xrFramework\environment.h"
-#include "..\xrFramework\SkeletonCustom.h"
+#include "Engine\xrFramework\fbasicvisual.h"
+#include "Engine\xrFramework\xr_object.h"
+#include "Engine\xrFramework\CustomHUD.h"
+#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\environment.h"
+#include "Engine\xrFramework\SkeletonCustom.h"
 #include "LightTrack.h"
 #include <boost/crc.hpp>
 #include "xrFramework\r_constants.h"
@@ -461,7 +461,7 @@ void CRender::set_render_mode(int mode)
 	RenderBackendLegacy.SetViewport(VP);
 }
 
-#include "..\xrFramework\GameFont.h"
+#include "Engine\xrFramework\GameFont.h"
 // #include "xrRender/xrRender_console.cpp"
 void CRender::Statistics(CGameFont* _F)
 {

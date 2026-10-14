@@ -5,7 +5,7 @@
 #pragma once
 
 #pragma warning(disable : 4995)
-#include "..\xrFramework\pch.h"
+#include "Engine\xrFramework\pch.h"
 #pragma warning(disable : 4995)
 #include <DXSDK/d3dx9.h>
 #pragma warning(default : 4995)
@@ -14,13 +14,13 @@
 #pragma warning(4 : 4244)
 #pragma warning(disable : 4237)
 
-#include "..\xrFramework\resourcemanager.h"
-#include "..\xrFramework\vis_common.h"
-#include "..\xrFramework\IRender.h"
-#include "..\xrFramework\igame_level.h"
-#include "..\xrFramework\blender.h"
-#include "..\xrFramework\blender_clsid.h"
-#include "..\xrFramework\psystem.h"
+#include "Engine\xrFramework\resourcemanager.h"
+#include "Engine\xrFramework\vis_common.h"
+#include "Engine\xrFramework\IRender.h"
+#include "Engine\xrFramework\igame_level.h"
+#include "Engine\xrFramework\blender.h"
+#include "Engine\xrFramework\blender_clsid.h"
+#include "Engine\xrFramework\psystem.h"
 #include "xrRender_console.h"
 #include "render.h"
 #include "r_color_converting.h"

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "tga.h"
-#include "..\xrFramework\xrImage_Resampler.h"
-#include "..\xrFramework\XR_IOConsole.h"
+#include "Engine\xrFramework\xrImage_Resampler.h"
+#include "Engine\xrFramework\XR_IOConsole.h"
 #include <xrCore/build_identificator.h>
 
 namespace

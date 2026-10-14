@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 #include "r_rendertarget.h"
 #include "render.h"
-#include "..\xrFramework\resourcemanager.h"
+#include "Engine\xrFramework\resourcemanager.h"
 #include "blender_ambient_occlusion.h"
 #include "blender_bloom.h"
 #include "blender_antialiasing.h"

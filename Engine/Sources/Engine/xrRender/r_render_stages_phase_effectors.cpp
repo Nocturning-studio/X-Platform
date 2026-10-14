@@ -3,8 +3,8 @@
 // Nocturning studio for X-Platform
 ///////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include "..\xrFramework\igame_persistent.h"
-#include "..\xrFramework\environment.h"
+#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\environment.h"
 #include "blender_effectors.h"
 ///////////////////////////////////////////////////////////////////////////////////
 void CRenderTarget::u_calc_tc_duality_ss(fvec2& r0, fvec2& r1, fvec2& l0, fvec2& l1)

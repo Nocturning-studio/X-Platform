@@ -783,7 +783,7 @@ CPHDestroyable* CAI_Stalker::ph_destroyable()
 }
 
 #include "xrGame/enemy_manager.h"
-#include <Engine/xrGame/smart_cast.h>
+#include "xrGame/smart_cast.h"
 
 void CAI_Stalker::shedule_Update(u32 DT)
 {

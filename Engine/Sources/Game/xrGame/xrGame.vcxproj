@@ -91,7 +91,7 @@
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Engine\;$(SolutionDir)Sources\Third-party\include\;$(SolutionDir)\Sources\Engine\xrLua\src\;$(SolutionDir)\Sources\Engine\xrCore\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ThirdPartyLib)\$(PlatformShortName)\;$(xrBuildLibDir)\$(Configuration)-$(Platform)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrGameDir)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyCppRuntimeToOutputDir>false</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
@@ -101,7 +101,7 @@
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Engine\;$(SolutionDir)Sources\Third-party\include\;$(SolutionDir)\Sources\Engine\xrLua\src\;$(SolutionDir)\Sources\Engine\xrCore\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ThirdPartyLib)\$(PlatformShortName)\;$(xrBuildLibDir)\$(Configuration)-$(Platform)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrGameDir)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyCppRuntimeToOutputDir>false</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
@@ -111,7 +111,7 @@
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Engine\;$(SolutionDir)Sources\Third-party\include\;$(SolutionDir)\Sources\Engine\xrLua\src\;$(SolutionDir)\Sources\Engine\xrCore\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ThirdPartyLib)\$(PlatformShortName)\;$(xrBuildLibDir)\$(Configuration)-$(Platform)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrGameDir)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyCppRuntimeToOutputDir>false</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
@@ -121,7 +121,7 @@
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(SolutionDir)Sources\Engine\;$(SolutionDir)Sources\Third-party\include\;$(SolutionDir)\Sources\Engine\xrLua\src\;$(SolutionDir)\Sources\Engine\xrCore\;$(SolutionDir)Sources\Third-party\include\DXSDK\Include\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(ThirdPartyLib)\$(PlatformShortName)\;$(xrBuildLibDir)\$(Configuration)-$(Platform)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(xrSourcesRoot)\;$(xrGameDir)\;$(xrEngineDir)\;$(ThirdPartyInclude)\</IncludePath>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyCppRuntimeToOutputDir>false</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
@@ -14866,6 +14866,12 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Engine\xrFramework\xrFramework.vcxproj">
+      <Project>{2578c6d8-660d-48ae-9322-7422f8664f06}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Engine\xrRenderBackend\xrRenderBackend.vcxproj">
+      <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Third-party\include\Optick\include\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
     </ProjectReference>
@@ -14874,9 +14880,6 @@
     </ProjectReference>
     <ProjectReference Include="..\xrGameSpy\xrGameSpy.vcxproj">
       <Project>{5535f6b4-7ae6-4b66-8aea-cc31c14d7ab7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
-      <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

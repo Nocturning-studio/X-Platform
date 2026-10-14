@@ -8,7 +8,7 @@
 #include "SkeletonCustom.h"
 #include "xrCDB/cl_intersect.h"
 
-#include "xrGame/object_broker.h"
+#include "Game/xrGame/object_broker.h"
 
 #ifdef _EDITOR
 #include "ui_toolscustom.h"

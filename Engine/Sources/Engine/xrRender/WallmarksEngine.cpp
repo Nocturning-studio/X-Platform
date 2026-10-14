@@ -4,10 +4,10 @@
 #include "pch.h"
 #include "WallmarksEngine.h"
 
-#include "..\xrFramework\xr_object.h"
-#include "..\xrFramework\Engine.h"
-#include "..\xrFramework\GameFont.h"
-#include "..\xrFramework\SkeletonCustom.h"
+#include "Engine\xrFramework\xr_object.h"
+#include "Engine\xrFramework\Engine.h"
+#include "Engine\xrFramework\GameFont.h"
+#include "Engine\xrFramework\SkeletonCustom.h"
 
 namespace WallmarksEngine
 {

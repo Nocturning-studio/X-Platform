@@ -1,10 +1,10 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "..\xrFramework\igame_persistent.h"
-#include "..\xrFramework\igame_level.h"
-#include "..\xrFramework\environment.h"
-#include "..\xrFramework\fmesh.h"
+#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\igame_level.h"
+#include "Engine\xrFramework\environment.h"
+#include "Engine\xrFramework\fmesh.h"
 
 #include "ftreevisual.h"
 

@@ -9,7 +9,7 @@
 #include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
 #include "xrFramework/igame_level.h"
 #include "xrFramework/xr_area.h"
-#include "..\xrGame\GameMtlLib.h"
+#include "xrGame\GameMtlLib.h"
 
 class XRayGeometryAdapter : public Presence::IGeometryProvider
 {

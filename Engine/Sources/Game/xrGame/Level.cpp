@@ -40,7 +40,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
-#include "..\xrFramework\XR_IOConsole.h"
+#include "Engine\xrFramework\XR_IOConsole.h"
 
 #include <functional>
 
