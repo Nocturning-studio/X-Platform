@@ -9,7 +9,7 @@
 #include "pch_script.h"
 extern "C"
 {
-#include "lstate.h"
+#include "LuaAPI\src\lstate.h"
 };
 #include "script_engine.h"
 #include "script_thread.h"

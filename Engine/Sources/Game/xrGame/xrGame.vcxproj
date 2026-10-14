@@ -177,7 +177,7 @@
       <MapExports>false</MapExports>
       <LargeAddressAware>false</LargeAddressAware>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
-      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;LuaAPI.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>call "$(SolutionDir)\post-build.bat" $(PlatformShortName) "$(OutDir)" "$(SolutionDir)"</Command>
@@ -230,7 +230,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;LuaAPI.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
@@ -294,7 +294,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
-      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;LuaAPI.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>
@@ -359,7 +359,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
-      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;xrLUA.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;xrCore.lib;xrNetServer.lib;xrCDB.lib;LuaAPI.lib;xrFramework.lib;xrSound.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PostBuildEvent>

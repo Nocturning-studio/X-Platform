@@ -627,9 +627,6 @@
     <ClInclude Include="RHI.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="xrFrameworkAPI.h">
-      <Filter>General\Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="R_Backend_StateCache.h">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClInclude>
@@ -639,6 +636,7 @@
     <ClInclude Include="xrFramework.h">
       <Filter>General\Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="xrEngineAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">

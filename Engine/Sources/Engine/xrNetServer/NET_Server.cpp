@@ -101,38 +101,24 @@ xr_string IBannedClient::BannedTimeTo() const
 
 void gen_auth_code()
 {
+#pragma fixme("Аутентификация")
 	xr_vector<xr_string> ignore, test;
 
 	LPCSTR pth = FS.get_path("$app_data_root$")->m_Path;
 	ignore.push_back(xr_string(pth));
-	ignore.push_back(xr_string("gamedata\\config\\localization.ltx"));
-	ignore.push_back(xr_string("gamedata\\config\\fonts.ltx"));
-	ignore.push_back(xr_string("gamedata\\config\\misc\\items.ltx"));
-	ignore.push_back(xr_string("gamedata\\config\\text"));
-	ignore.push_back(xr_string("gamedata\\config\\gameplay"));
-	ignore.push_back(xr_string("gamedata\\config\\ui"));
 
-	test.push_back(xr_string("gamedata\\config"));
-	//.		test.push_back			(xr_string("gamedata\\scripts"));
-	test.push_back(xr_string("gamedata\\shaders"));
-	test.push_back(xr_string("gamedata\\textures\\act"));
-	test.push_back(xr_string("gamedata\\textures\\wpn"));
-
-	test.push_back(xr_string("xrd3d9-null.dll"));
 	test.push_back(xr_string("ode.dll"));
 	test.push_back(xr_string("xrcdb.dll"));
 	test.push_back(xr_string("xrcore.dll"));
-	test.push_back(xr_string("xrcpu_pipe.dll"));
 	test.push_back(xr_string("xrgame.dll"));
 	test.push_back(xr_string("xrgamespy.dll"));
-	test.push_back(xr_string("xrlua.dll"));
+	test.push_back(xr_string("luaapi.dll"));
 	test.push_back(xr_string("xrnetserver.dll"));
 	test.push_back(xr_string("xrparticles.dll"));
-	test.push_back(xr_string("xrrender_r1.dll"));
-	test.push_back(xr_string("xrrender_r2.dll"));
+	test.push_back(xr_string("xrrender.dll"));
 	test.push_back(xr_string("xrsound.dll"));
 	test.push_back(xr_string("xrxmlparser.dll"));
-	//		test.push_back			(xr_string("xrFramework.exe"));
+	test.push_back(xr_string("xrframework.dll"));
 
 	FS.auth_generate(ignore, test);
 }
