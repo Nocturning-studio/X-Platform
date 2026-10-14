@@ -1,6 +1,7 @@
 #pragma once
 
 #include "xrEngineAPI.h"
+#include "R_Backend_StateCache.h"
 #include "R_Backend_ResourceBinder.h"
 #include "R_Backend_ConstantManager.h"
 #include "R_Backend_Data_Streams.h"
@@ -170,8 +171,8 @@ class ENGINE_API CRenderBackendFacade
 	IC const fmat4x4& GetTransformProject();
 
 	// --- Pipeline state (delegated to m_stateCache) ---
-	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0) { CHK_DX(m_pDevice->SetRenderTarget(ID, RT)); }
-	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB) { CHK_DX(m_pDevice->SetDepthStencilSurface(ZB)); }
+	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0) { CHK_DX(m_pDevice->SetRenderTarget(ID, RT)); Engine.RHI->InvalidateCache(); }
+	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB) { CHK_DX(m_pDevice->SetDepthStencilSurface(ZB)); Engine.RHI->InvalidateCache(); }
 	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable(*Engine.RHI.GetRawRHI(), (uint8_t)_mask); }
 	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(*Engine.RHI.GetRawRHI(), state); }
 	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode(*Engine.RHI.GetRawRHI(), (RHI_CullMode)_mode); }
@@ -192,7 +193,7 @@ class ENGINE_API CRenderBackendFacade
 		}
 	}
 
-	ICF void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value) { CHK_DX(m_pDevice->SetRenderState(State, Value)); }
+	void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value);
 	IC void SetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value) { CHK_DX(m_pDevice->SetSamplerState(Sampler, Type, Value)); }
 	IC void GetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD* Value) { CHK_DX(m_pDevice->GetSamplerState(Sampler, Type, Value)); }
 	IC void SetViewport(const D3DVIEWPORT9& VP)
@@ -455,7 +456,7 @@ class ENGINE_API CRenderBackendFacade
 	// Debug (temporary direct D3D calls, will be moved to CDebugRenderer)
 	void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
 	void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
-	IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) { CHK_DX(m_pDevice->SetRenderState(p1, p2)); }
+	void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) {};
 	IC void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value) { CHK_DX(m_pDevice->SetSamplerState(sampler, type, value)); }
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
@@ -499,8 +500,8 @@ class ENGINE_API CRenderBackendFacade
 };
 
 extern ENGINE_API CRenderBackendFacade RenderBackendLegacy;
-ENGINE_API void R_InitVidModeList();
-ENGINE_API void R_FreeVidModeList();
+extern ENGINE_API void R_InitVidModeList();
+extern ENGINE_API void R_FreeVidModeList();
 
 #include "R_Backend.inl"
 

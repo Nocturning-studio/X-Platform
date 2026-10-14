@@ -22,10 +22,6 @@ void CGBufferStage::BindTargets()
 
     RHI_Viewport vp{ 0, 0, m_res.Width(), m_res.Height(), 0.0f, 1.0f };
     Engine.RHI->SetViewport(vp);
-
-    Engine.RHI->SetBlendState(RHI_BlendState::Opaque());
-    Engine.RHI->SetDepthStencilState(RHI_DepthStencilState::Default());
-    Engine.RHI->SetRasterizerState(RHI_RasterizerState::CullBack());
 }
 
 void CGBufferStage::ClearTargets()
@@ -48,6 +44,6 @@ void CGBufferStage::RenderScene()
 {
     RenderImplementation.set_active_phase(CRender::PHASE_NORMAL);
     RenderImplementation.Scene.Render(RenderImplementation.m_scene_visibility_data, SceneRenderPresets::Opaque);
-    Engine.RHI->InvalidateStateCache();
+    Engine.RHI->InvalidateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////

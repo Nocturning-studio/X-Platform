@@ -800,6 +800,7 @@
     <ClInclude Include="R_Backend_ConstantManager.h" />
     <ClInclude Include="R_Backend_RenderTarget.h" />
     <ClInclude Include="R_Backend_ResourceBinder.h" />
+    <ClInclude Include="R_Backend_StateCache.h" />
     <ClInclude Include="R_Backend_transform.h" />
     <ClInclude Include="R_Backend_tree.h" />
     <ClInclude Include="r_constants.h" />
@@ -995,6 +996,7 @@
     <ClCompile Include="R_Backend_DBG.cpp" />
     <ClCompile Include="R_Backend_RenderTarget.cpp" />
     <ClCompile Include="R_Backend_ResourceBinder.cpp" />
+    <ClCompile Include="R_Backend_StateCache.cpp" />
     <ClCompile Include="R_Backend_transform.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>

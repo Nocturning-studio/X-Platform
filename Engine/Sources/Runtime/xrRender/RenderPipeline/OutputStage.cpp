@@ -25,16 +25,54 @@ void CFrameOutputStage::OnAttach()
     RHI_SamplerDesc sd = RHI_SamplerDesc::Linear();
     sd.addressU = sd.addressV = sd.addressW = RHI_TextureAddress::Clamp;
     m_pass.SetSamplerDesc(kFrameSampler, sd);
+
+    RebuildPSO();
+}
+
+void CFrameOutputStage::RebuildPSO()
+{
+    if (m_pso.IsValid())
+    {
+        Engine.RHI->DestroyPipelineState(m_pso);
+        m_pso = {};
+    }
+
+    if (!m_pass_valid)
+        return;
+
+    RHI_PipelineStateDesc psd;
+    psd.vertexShader = m_pass.GetVertexShaderHandle();
+    psd.pixelShader = m_pass.GetPixelShaderHandle();
+    psd.inputLayout = {};
+    psd.topologyType = RHI_PrimitiveTopologyType::Triangle;
+    psd.blend = RHI_BlendState::Opaque();
+    psd.depthStencil = RHI_DepthStencilState::NoDepth();
+    psd.rasterizer = RHI_RasterizerState::CullNone();
+    psd.rtvFormats[0] = Engine.RHI->GetBackBufferFormat();
+    psd.rtvCount = 1;
+    psd.dsvFormat = RHI_Format::D24_UNORM_S8_UINT;
+    psd.debugName = "FrameOutputStage.PSO";
+
+    m_pso = Engine.RHI->CreatePipelineState(psd);
+    if (!m_pso.IsValid())
+        Msg("! [FrameOutputStage] CreatePipelineState failed");
 }
 
 void CFrameOutputStage::OnDeviceReset()
 {
     if (!m_pass_valid)
         m_pass_valid = (m_pass.Compile(*Engine.RHI.Get()) == TRUE);
+
+    RebuildPSO();
 }
 
 void CFrameOutputStage::OnDetach()
 {
+    if (m_pso.IsValid())
+    {
+        Engine.RHI->DestroyPipelineState(m_pso);
+        m_pso = {};
+    }
     m_pass.Release();
     m_pass_valid = false;
 }
@@ -58,9 +96,7 @@ void CFrameOutputStage::Execute()
     RHI_Viewport vp{ 0, 0, Engine.RHI->GetBackBufferWidth(), Engine.RHI->GetBackBufferHeight(), 0.0f, 1.0f };
     Engine.RHI->SetViewport(vp);
 
-    Engine.RHI->SetBlendState(RHI_BlendState::Opaque());
-    Engine.RHI->SetDepthStencilState(RHI_DepthStencilState::NoDepth());
-    Engine.RHI->SetRasterizerState(RHI_RasterizerState::CullNone());
+    Engine.RHI->SetPipelineState(m_pso);
 
     m_pass.SetTexture(kFrameSampler, m_res.FrameColor);
     m_pass.Apply(*Engine.RHI.Get());

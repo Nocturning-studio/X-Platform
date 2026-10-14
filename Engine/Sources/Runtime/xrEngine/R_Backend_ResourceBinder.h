@@ -107,4 +107,6 @@ private:
 	LPCSTR m_psName = nullptr;
 	LPCSTR m_vsName = nullptr;
 #endif
+
+	void NotifyRHICacheStaleOnLegacyTransition(EStateOwner prev);
 };

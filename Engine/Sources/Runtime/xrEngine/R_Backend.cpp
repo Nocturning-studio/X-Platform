@@ -6,6 +6,9 @@
 #include "xr_IOconsole.h"
 #include <SDL3/SDL.h>
 
+#include <xrRHI/Backends/DirectX9/xrBackendDX9.h>
+#include <xrRHI/xrRHI_BackendAccess.h>
+
 ENGINE_API extern int psAnisotropic;
 
 ENGINE_API CRenderBackendFacade RenderBackendLegacy;
@@ -95,6 +98,239 @@ static void R_InitVidModeList()
 		vid_mode_token[i].name = _tmp[i];
 	}
 }
+
+namespace
+{
+	// ---------------------------------------------------------------------------
+	// D3D9 render state -> RHI state cache, через CRenderBackendDX9.
+	//
+	// Legacy-путь и RHI-путь пишут в один и тот же device. Любая запись в обход
+	// типизированных сеттеров DX9-бэкенда делает его внутренний кэш stale,
+	// и следующий rhi.SetXxxState() пропустит bind.
+	//
+	// Эта функция транслирует D3DRENDERSTATETYPE в обновление конкретного поля
+	// RHI-состояния и применяет через CRenderBackendDX9 — кэш остаётся coherent.
+	//
+	// Возвращает false, если state не мапится (тогда caller сам пишет в D3D9).
+	// ---------------------------------------------------------------------------
+
+	inline float DWORDToFloat(DWORD v) noexcept
+	{
+		float f;
+		std::memcpy(&f, &v, sizeof(f));
+		return f;
+	}
+
+	inline fvec4 D3DColorToFvec4(DWORD c) noexcept
+	{
+		const float inv = 1.0f / 255.0f;
+		return fvec4{
+			float((c >> 16) & 0xFF) * inv,
+			float((c >> 8) & 0xFF) * inv,
+			float(c & 0xFF) * inv,
+			float((c >> 24) & 0xFF) * inv
+		};
+	}
+
+	bool TryRouteD3DRenderState(CRenderBackendDX9* dx9, D3DRENDERSTATETYPE state, DWORD value)
+	{
+		if (!dx9)
+			return false;
+
+		switch (state)
+		{
+			// ---- Blend ----------------------------------------------------------
+		case D3DRS_ALPHABLENDENABLE:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.enable = (value != 0);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_SEPARATEALPHABLENDENABLE:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.separateAlpha = (value != 0);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_SRCBLEND:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.srcColor = static_cast<RHI_Blend>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_DESTBLEND:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.dstColor = static_cast<RHI_Blend>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_BLENDOP:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.opColor = static_cast<RHI_BlendOp>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_SRCBLENDALPHA:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.srcAlpha = static_cast<RHI_Blend>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_DESTBLENDALPHA:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.dstAlpha = static_cast<RHI_Blend>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_BLENDOPALPHA:
+		{
+			RHI_BlendState s = dx9->GetBlendState();
+			s.opAlpha = static_cast<RHI_BlendOp>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+		case D3DRS_COLORWRITEENABLE:
+		case D3DRS_COLORWRITEENABLE1:
+		case D3DRS_COLORWRITEENABLE2:
+		case D3DRS_COLORWRITEENABLE3:
+		{
+			// DX9-бэкенд хранит одну маску и применяет ко всем RT.
+			RHI_BlendState s = dx9->GetBlendState();
+			s.writeMask = static_cast<uint8_t>(value);
+			dx9->SetBlendState(s);
+			return true;
+		}
+
+		// ---- Depth / stencil ------------------------------------------------
+		case D3DRS_ZENABLE:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.depthEnable = (value != 0);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_ZWRITEENABLE:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.depthWriteEnable = (value != 0);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_ZFUNC:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.depthFunc = static_cast<RHI_CmpFunc>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILENABLE:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilEnable = (value != 0);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILFUNC:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilFunc = static_cast<RHI_CmpFunc>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILMASK:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilReadMask = static_cast<uint8_t>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILWRITEMASK:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilWriteMask = static_cast<uint8_t>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILFAIL:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilFailOp = static_cast<RHI_StencilOp>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILZFAIL:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilDepthFailOp = static_cast<RHI_StencilOp>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILPASS:
+		{
+			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			s.stencilPassOp = static_cast<RHI_StencilOp>(value);
+			dx9->SetDepthStencilState(s);
+			return true;
+		}
+		case D3DRS_STENCILREF:
+			dx9->SetStencilRef(static_cast<uint8_t>(value));
+			return true;
+
+			// ---- Rasterizer -----------------------------------------------------
+		case D3DRS_FILLMODE:
+		{
+			RHI_RasterizerState s = dx9->GetRasterizerState();
+			s.fillMode = static_cast<RHI_FillMode>(value);
+			dx9->SetRasterizerState(s);
+			return true;
+		}
+		case D3DRS_CULLMODE:
+		{
+			RHI_RasterizerState s = dx9->GetRasterizerState();
+			s.cullMode = static_cast<RHI_CullMode>(value);
+			dx9->SetRasterizerState(s);
+			return true;
+		}
+		case D3DRS_SCISSORTESTENABLE:
+		{
+			RHI_RasterizerState s = dx9->GetRasterizerState();
+			s.scissorEnable = (value != 0);
+			dx9->SetRasterizerState(s);
+			return true;
+		}
+		case D3DRS_DEPTHBIAS:
+		{
+			RHI_RasterizerState s = dx9->GetRasterizerState();
+			s.depthBias = DWORDToFloat(value);
+			dx9->SetRasterizerState(s);
+			return true;
+		}
+		case D3DRS_SLOPESCALEDEPTHBIAS:
+		{
+			RHI_RasterizerState s = dx9->GetRasterizerState();
+			s.slopeScaledDepthBias = DWORDToFloat(value);
+			dx9->SetRasterizerState(s);
+			return true;
+		}
+
+		// ---- Blend factor ---------------------------------------------------
+		case D3DRS_BLENDFACTOR:
+			dx9->SetBlendFactor(D3DColorToFvec4(value));
+			return true;
+
+		default:
+			return false;
+		}
+	}
+
+} // namespace
 
 CRenderBackendFacade::CRenderBackendFacade() : m_pD3D(NULL), m_pDevice(NULL), m_pBaseRT(NULL), m_pBaseZB(NULL), QuadIB(NULL), old_QuadIB(NULL)
 {
@@ -263,6 +499,22 @@ void CRenderBackendFacade::DeleteResources()
 // ---------------------------------------------------------------------------
 // State cache delegations
 // ---------------------------------------------------------------------------
+void CRenderBackendFacade::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
+{
+	IRenderBackend* rhi = Engine.RHI.GetRawRHI();
+
+	if (TryRouteD3DRenderState(AsDX9(rhi), State, Value))
+		return;
+
+	// Fallback: неизвестный state. Пишем напрямую в D3D9 и инвалидируем
+	// кэш RHI-бэкенда, иначе следующая типизированная установка (с теми же
+	// значениями, что уже в кэше) не доедет до device.
+	CHK_DX(m_pDevice->SetRenderState(State, Value));
+
+	if (rhi)
+		rhi->InvalidateCache();
+}
+
 void CRenderBackendFacade::SaveRenderState()
 {
 	if (!m_pDevice)

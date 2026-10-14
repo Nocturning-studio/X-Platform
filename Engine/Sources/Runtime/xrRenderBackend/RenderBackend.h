@@ -194,7 +194,7 @@ class XRRB_API CRenderBackend
 	// =====================================================================
 	// Misc
 	// =====================================================================
-	void InvalidateStateCache();
+	void InvalidateCache();
 
   private:
 	bool LoadRHIModule(RHI_BackendType type);

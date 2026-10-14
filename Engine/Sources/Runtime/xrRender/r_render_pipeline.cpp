@@ -23,7 +23,7 @@ void CRender::Render()
 	if(b_need_render_menu)
 	{
 		RenderBackendLegacy.Invalidate();
-		Engine.RHI->InvalidateStateCache();
+		Engine.RHI->InvalidateCache();
 		RenderMenu();
 	}
 	else
@@ -41,7 +41,7 @@ void CRender::Render()
 		calculate_scene_culling();
 
 		RenderBackendLegacy.Invalidate();
-		Engine.RHI->InvalidateStateCache();
+		Engine.RHI->InvalidateCache();
 
 		scene_pipe->Execute();
 

@@ -194,7 +194,7 @@ void CRenderBackendDX9::DestroyDevice()
 	DestroyFullscreenGeometry();
 	ReleaseAllResources();
 	ReleaseAllRTVDSV();
-	InvalidateStateCache();
+	InvalidateCache();
 	m_backBufferWidth = 0;
 	m_backBufferHeight = 0;
 	if(m_pDevice)
@@ -412,9 +412,7 @@ void CRenderBackendDX9::ReleaseNativeDeviceResources()
 		}
 
 	// --- Сбрасываем кэш привязок (все указатели теперь мертвы) ---
-	InvalidateStateCache();
-	InvalidateGeometryCache();
-	InvalidateRenderTargetCache();
+	InvalidateCache();
 }
 
 void CRenderBackendDX9::RecreateNativeDeviceResources()

@@ -26,5 +26,9 @@ private:
 
     CShaderPass m_pass;
     bool m_pass_valid = false;
+
+    RHI_PipelineStateHandle m_pso{};
+
+    void RebuildPSO();
 };
 ////////////////////////////////////////////////////////////////////////////////

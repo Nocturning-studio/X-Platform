@@ -4,7 +4,18 @@
 #include "sh_texture.h"
 #include "r_constants.h"
 #include <xrRenderBackend/Resources/Shaders/ShaderPass.h>
+#include <xrRHI/Backends/DirectX9/xrBackendDX9.h>
+#include <xrRHI/xrRHI_BackendAccess.h>
 ////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	// Единая точка получения DX9-фасада. Возвращает nullptr для не-DX9 бэкенда
+	// (пригодится, когда появится DX12 — тут будет симметричная ветка).
+	inline CRenderBackendDX9* DX9Binder()
+	{
+		return AsDX9(Engine.RHI.GetRawRHI());
+	}
+} // namespace
 
 // ----------------------------------------------------------------
 // Invalidate
@@ -44,22 +55,58 @@ void CBackendResourceBinder::Invalidate(CRenderBackendFacade& /*backend*/)
 #endif
 }
 
+void CBackendResourceBinder::NotifyRHICacheStaleOnLegacyTransition(EStateOwner prev)
+{
+	if (prev == EStateOwner::Legacy)
+		return;
+	if (IRenderBackend* rhi = Engine.RHI.GetRawRHI())
+		rhi->InvalidateCache();
+}
+
 // ----------------------------------------------------------------
 // State block (legacy)
 // ----------------------------------------------------------------
 void CBackendResourceBinder::SetStates(CRenderBackendFacade& backend, IDirect3DStateBlock9* state)
 {
-	// TODO[E5]: state blocks не имеют аналога в RHI. В D3D12 модель PSO
-	// делает их ненужными. Пока оставляем legacy-путь.
-	if (m_state != state)
-	{
+	if (m_state == state)
+		return;
+
+	m_state = state;
+
+	if (!state)
+		return;
+
 #ifdef DEBUG
-		backend.stat.states++;
+	backend.stat.states++;
 #endif
-		m_state = state;
-		if (state)
-			state->Apply();
-	}
+
+	state->Apply();
+
+	// state->Apply() пишет в device напрямую и переписывает ВСЁ: VS, PS,
+	// vertex declaration, stream source, indices, render states.
+	// Оба кэша (собственные legacy-кэши и DX9 RHI-кэш) теперь stale —
+	// их надо сбросить, иначе следующий SetXxxLegacy(тот_же_указатель)
+	// коротко замкнётся, и на устройстве останется состояние из state-block.
+	m_ps = {};
+	m_vs = {};
+	m_decl = {};
+	m_vb = {};
+	m_ib = {};
+	m_ibFormat = RHI_IndexFormat::UInt16;
+	m_vbStride = 0;
+
+	m_psLegacy = nullptr;
+	m_vsLegacy = nullptr;
+	m_declLegacy = nullptr;
+	m_vbLegacy = nullptr;
+	m_ibLegacy = nullptr;
+	m_vbStrideLegacy = 0;
+
+	// m_ctable / m_T не трогаем — state blocks их не содержат.
+	m_owner = EStateOwner::Unknown;
+
+	if (IRenderBackend* rhi = Engine.RHI.GetRawRHI())
+		rhi->InvalidateCache();
 }
 
 // ----------------------------------------------------------------
@@ -72,7 +119,7 @@ void CBackendResourceBinder::SetPixelShader(CRenderBackendFacade& backend, RHI_S
 	{
 		backend.stat.ps++;
 		m_ps = ps;
-		Engine.RHI.GetRawRHI()->SetPixelShader(ps);
+		DX9Binder()->SetPixelShader(ps);
 		m_owner = EStateOwner::RHI;
 	}
 #ifdef DEBUG
@@ -90,7 +137,7 @@ void CBackendResourceBinder::SetVertexShader(CRenderBackendFacade& backend, RHI_
 	{
 		backend.stat.vs++;
 		m_vs = vs;
-		Engine.RHI.GetRawRHI()->SetVertexShader(vs);
+		DX9Binder()->SetVertexShader(vs);
 		m_owner = EStateOwner::RHI;
 	}
 #ifdef DEBUG
@@ -140,7 +187,7 @@ void CBackendResourceBinder::SetVertexDeclaration(CRenderBackendFacade& backend,
 		backend.stat.decl++;
 #endif
 		m_decl = decl;
-		Engine.RHI.GetRawRHI()->SetInputLayout(decl);
+		DX9Binder()->SetInputLayout(decl);
 		m_owner = EStateOwner::RHI;
 }
 }
@@ -300,6 +347,7 @@ void CBackendResourceBinder::SetPixelShaderLegacy(CRenderBackendFacade& backend,
 		m_psLegacy = ps;
 		backend.GetDevice()->SetPixelShader(ps);
 		m_owner = EStateOwner::Legacy;
+		NotifyRHICacheStaleOnLegacyTransition(m_owner);
 	}
 #ifdef DEBUG
 	m_psName = name;
@@ -315,6 +363,7 @@ void CBackendResourceBinder::SetVertexShaderLegacy(CRenderBackendFacade& backend
 		m_vsLegacy = vs;
 		backend.GetDevice()->SetVertexShader(vs);
 		m_owner = EStateOwner::Legacy;
+		NotifyRHICacheStaleOnLegacyTransition(m_owner);
 	}
 #ifdef DEBUG
 	m_vsName = name;
@@ -332,6 +381,7 @@ void CBackendResourceBinder::SetVertexDeclarationLegacy(CRenderBackendFacade& ba
 		m_declLegacy = decl;
 		backend.GetDevice()->SetVertexDeclaration(decl);
 		m_owner = EStateOwner::Legacy;
+		NotifyRHICacheStaleOnLegacyTransition(m_owner);
 	}
 }
 
@@ -349,6 +399,7 @@ void CBackendResourceBinder::SetVertexBufferLegacy(CRenderBackendFacade& backend
 		m_vbStrideLegacy = stride;
 		backend.GetDevice()->SetStreamSource(0, vb, 0, stride);
 		m_owner = EStateOwner::Legacy;
+		NotifyRHICacheStaleOnLegacyTransition(m_owner);
 	}
 }
 
@@ -363,6 +414,7 @@ void CBackendResourceBinder::SetIndexBufferLegacy(CRenderBackendFacade& backend,
 		m_ibLegacy = ib;
 		backend.GetDevice()->SetIndices(ib);
 		m_owner = EStateOwner::Legacy;
+		NotifyRHICacheStaleOnLegacyTransition(m_owner);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -637,9 +637,9 @@ RHI_PipelineStateHandle CRenderBackend::ApplyPipeline(const CShaderPass& pass,
 	return pso;
 }
 
-void CRenderBackend::InvalidateStateCache()
+void CRenderBackend::InvalidateCache()
 {
 	if(m_pRHI)
-		m_pRHI->InvalidateStateCache();
+		m_pRHI->InvalidateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////

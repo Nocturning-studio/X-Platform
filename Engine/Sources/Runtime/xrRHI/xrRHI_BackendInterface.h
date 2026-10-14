@@ -68,7 +68,7 @@ class XRRHI_API IRenderBackend
 	virtual void SetPipelineState(RHI_PipelineStateHandle handle) = 0;
 	virtual RHI_PipelineStateHandle GetCurrentPipelineState() const = 0;
 
-	virtual void InvalidateStateCache() = 0;
+	virtual void InvalidateCache() = 0;
 
 	virtual RHI_ShaderCompileResult CompileShader(const RHI_ShaderCompileDesc& desc) = 0;
 	virtual bool GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize) = 0;

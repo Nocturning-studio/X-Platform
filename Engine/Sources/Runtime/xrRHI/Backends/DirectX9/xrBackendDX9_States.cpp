@@ -147,6 +147,13 @@ inline DWORD F2DW(float f) noexcept
 
 } // namespace
 
+void CRenderBackendDX9::InvalidateCache()
+{
+	InvalidateStateCache();
+	InvalidateGeometryCache();
+	InvalidateRenderTargetCache();
+}
+
 void CRenderBackendDX9::InvalidateStateCache()
 {
 	m_blendCache = RHI_BlendState{};
@@ -172,8 +179,6 @@ void CRenderBackendDX9::InvalidateStateCache()
 
 	m_currentPSO = {};
 	m_psoCacheValid = false;
-
-	InvalidateGeometryCache();
 }
 
 void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)
@@ -512,6 +517,6 @@ void CRenderBackendDX9::CacheBackBufferDimensions()
 	// InvalidateStateCache() выставляет valid=false, но getters всё равно
 	// вернут "дефолтные" значения, соответствующие D3D9-дефолтам.
 	RefreshBackBufferRTVs();
-	InvalidateStateCache();
+	InvalidateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////
