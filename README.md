@@ -66,7 +66,8 @@ X-Platform/
     │       └── xrEngine.exe    ← Исполняемый файл движка
     ├── Shaders/                ← Шейдеры (для того чтобы не привязывать их к конкретным модам)
     └── Sources/
-        ├── Runtime/            ← основной код движка (xrCore, xrMath, xrEngine, xrRender и т.д.)
+        ├── Engine/             ← основной код движка (xrCore, xrMath, xrEngine, xrRender и т.д.)
+        ├── Game/               ← код игры, игровых модулей, специфичные имплементации игры Third-Party
         ├── Third-Party/        ← сторонние библиотеки (ODE, SoftX, PresenceAudio и т.п.)
         └── QOL&Network/        ← утилиты и сетевые инструменты (Лог сендер, лаунчер)
 ```
