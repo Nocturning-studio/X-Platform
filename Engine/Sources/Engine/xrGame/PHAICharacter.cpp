@@ -9,7 +9,7 @@
 #include "phaicharacter.h"
 
 #ifdef DEBUG
-#include "xrEngine/StatGraph.h"
+#include "xrFramework/StatGraph.h"
 #include "PHDebug.h"
 #include "level.h"
 #include "debug_renderer.h"

@@ -3,7 +3,7 @@
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
 #include "xrGame/PHMovementControl.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/detail_path_manager.h"
 #include "xrGame/level.h"
 #include "control_animation_base.h"

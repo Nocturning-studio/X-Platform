@@ -7,7 +7,7 @@
 #include "PhysicsShell.h"
 #include "PHSynchronize.h"
 #include "MathUtils.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "PHObject.h"
 #include "PHCollideValidator.h"
 #include "ai_object_location.h"

@@ -13,7 +13,7 @@
 #include <array>
 #include <functional>
 #include <condition_variable>
-#include "xrEngineAPI.h"
+#include "xrFrameworkAPI.h"
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API CThreadManager
 {

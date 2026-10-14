@@ -627,7 +627,7 @@
     <ClInclude Include="RHI.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="xrEngineAPI.h">
+    <ClInclude Include="xrFrameworkAPI.h">
       <Filter>General\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_StateCache.h">
@@ -636,7 +636,7 @@
     <ClInclude Include="IEngineHost.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="xrEngine.h">
+    <ClInclude Include="xrFramework.h">
       <Filter>General\Kernel</Filter>
     </ClInclude>
   </ItemGroup>

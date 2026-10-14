@@ -7,10 +7,10 @@
 #define RENDER_PIPELINE_COMMON_HEADER_INCLUDED
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include "..\xrEngine\igame_persistent.h"
-#include "..\xrEngine\fbasicvisual.h"
-#include "..\xrEngine\customhud.h"
-#include "..\xrEngine\xr_object.h"
+#include "..\xrFramework\igame_persistent.h"
+#include "..\xrFramework\fbasicvisual.h"
+#include "..\xrFramework\customhud.h"
+#include "..\xrFramework\xr_object.h"
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -9,8 +9,8 @@
 #include "gamefont.h"
 #include "xrLevel.h"
 #include "CameraManager.h"
-#include "xrEngine/xr_ioconsole.h"
-#include "xrEngine/LevelLoadingScreen.h"
+#include "xrFramework/xr_ioconsole.h"
+#include "xrFramework/LevelLoadingScreen.h"
 
 ENGINE_API IGame_Level* g_pGameLevel = NULL;
 

@@ -12,5 +12,5 @@
 
 #include <Engine/xrMath/xrMath.h>
 #include <Engine/xrCore/xrCore.h>
-#include <Engine/xrEngine/xrEngine.h>
+#include <Engine/xrFramework/xrFramework.h>
 ////////////////////////////////////////////////////////////////////////////////

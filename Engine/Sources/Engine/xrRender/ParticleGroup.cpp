@@ -2,7 +2,7 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "..\xrEngine\psystem.h"
+#include "..\xrFramework\psystem.h"
 #include "ParticleGroup.h"
 #include "PSLibrary.h"
 

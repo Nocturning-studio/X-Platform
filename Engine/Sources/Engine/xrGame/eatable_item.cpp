@@ -9,7 +9,7 @@
 #include "pch.h"
 #include "eatable_item.h"
 #include "xrmessages.h"
-#include "xrEngine/../xrNetServer/net_utils.h"
+#include "xrFramework/../xrNetServer/net_utils.h"
 #include "physic_item.h"
 #include "Level.h"
 #include "entity_alive.h"

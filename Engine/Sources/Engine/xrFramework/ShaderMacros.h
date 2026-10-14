@@ -3,7 +3,7 @@
 #pragma once
 #include <DXSDK/d3dx9.h>
 #include <xrCore/xrstring.h>
-#include "xrEngineAPI.h"
+#include "xrFrameworkAPI.h"
 
 class ENGINE_API CShaderMacros
 {

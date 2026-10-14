@@ -5,7 +5,7 @@
 #pragma warning(disable : 4457)
 
 #pragma warning(disable : 4995)
-#include "xrEngine/pch.h"
+#include "xrFramework/pch.h"
 #pragma warning(default : 4995)
 #pragma warning(4 : 4018)
 #pragma warning(4 : 4244)
@@ -50,9 +50,9 @@ IC void throw_and_log(const xr_string& s)
 #define THROW3 VERIFY3
 #endif
 
-#include "xrEngine/gamefont.h"
-#include "xrEngine/xr_object.h"
-#include "xrEngine/igame_level.h"
+#include "xrFramework/gamefont.h"
+#include "xrFramework/xr_object.h"
+#include "xrFramework/igame_level.h"
 
 #define REGISTRY_VALUE_GSCDKEY "InstallCDKEY"
 #define REGISTRY_VALUE_VERSION "InstallVers"

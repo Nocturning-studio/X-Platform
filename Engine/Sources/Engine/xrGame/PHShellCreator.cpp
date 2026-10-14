@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 
 void CPHShellSimpleCreator::CreatePhysicsShell()
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xrEngine/effectorPP.h"
+#include "xrFramework/effectorPP.h"
 #include "xrGame/ActorEffector.h"
 
 //////////////////////////////////////////////////////////////////////////

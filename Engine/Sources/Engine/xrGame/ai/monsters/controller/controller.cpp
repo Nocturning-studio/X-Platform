@@ -7,7 +7,7 @@
 #include "../ai_monster_effector.h"
 #include "xrGame/hudmanager.h"
 #include "xrGame/ui.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/level.h"
 #include "xrGame/sound_player.h"
 #include "xrGame/ai_monster_space.h"

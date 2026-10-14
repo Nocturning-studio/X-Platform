@@ -42,7 +42,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{2578C6D8-660D-48AE-9322-7422F8664F06}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>xrEngine</ProjectName>
+    <ProjectName>xrFramework</ProjectName>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\engine.globals.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -223,7 +223,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <AdditionalOptions>/Zm200  /utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -282,7 +282,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <AdditionalOptions>/Zm200  %(AdditionalOptions)</AdditionalOptions>
@@ -346,7 +346,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -401,7 +401,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -465,7 +465,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -530,7 +530,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <AdditionalOptions>/Zm200  %(AdditionalOptions)</AdditionalOptions>
@@ -587,7 +587,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
@@ -641,7 +641,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\xrEngine.tlb</TypeLibraryName>
+      <TypeLibraryName>x:\xrFramework.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
@@ -834,7 +834,7 @@
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="xrBind_PSGP.h" />
-    <ClInclude Include="xrEngine.h" />
+    <ClInclude Include="xrFramework.h" />
     <ClInclude Include="xrEngineAPI.h" />
     <ClInclude Include="xrHemisphere.h" />
     <ClInclude Include="xrImage_Resampler.h" />

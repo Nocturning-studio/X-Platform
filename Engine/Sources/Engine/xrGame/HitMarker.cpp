@@ -2,8 +2,8 @@
 // OLES
 #include "pch.h"
 #include "HitMarker.h"
-#include "xrEngine/IRender.h"
-#include "xrEngine/LightAnimLibrary.h"
+#include "xrFramework/IRender.h"
+#include "xrFramework/LightAnimLibrary.h"
 #include "UIStaticItem.h"
 
 static fvec2 as_PC[5];

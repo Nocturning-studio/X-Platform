@@ -1,7 +1,7 @@
 #pragma once
 
 #include "r_portal.h"
-#include "..\xrEngine\xrLevel.h" // Для fsP_Portals, fsP_Root
+#include "..\xrFramework\xrLevel.h" // Для fsP_Portals, fsP_Root
 
 class CSector : public IRender_Sector
 {

@@ -8,7 +8,7 @@
 
 #include "pch.h"
 #include "base_monster.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/sound_player.h"
 #include "xrGame/ai_monster_space.h"
 #include "../control_animation_base.h"

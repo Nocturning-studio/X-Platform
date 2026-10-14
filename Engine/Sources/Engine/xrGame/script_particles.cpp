@@ -8,7 +8,7 @@
 
 #include "pch.h"
 #include "script_particles.h"
-#include "xrEngine/objectanimator.h"
+#include "xrFramework/objectanimator.h"
 
 CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName)
 	: CParticlesObject(caParticlesName, FALSE, true)

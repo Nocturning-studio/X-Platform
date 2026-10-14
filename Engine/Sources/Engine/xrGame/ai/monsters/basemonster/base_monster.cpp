@@ -16,7 +16,7 @@
 #include "xrGame/squad_hierarchy_holder.h"
 #include "xrGame/group_hierarchy_holder.h"
 #include "xrGame/phdestroyable.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "xrGame/detail_path_manager.h"
 #include "xrGame/hudmanager.h"
 #include "xrGame/memory_manager.h"

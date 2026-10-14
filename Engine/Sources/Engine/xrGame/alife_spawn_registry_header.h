@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "xrEngine/xrLevel.h"
+#include "xrFramework/xrLevel.h"
 
 class CALifeSpawnHeader
 {

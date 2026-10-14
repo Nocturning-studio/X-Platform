@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "actor_mp_state.h"
-#include "xrEngine/../xrNetServer/net_utils.h"
+#include "xrFramework/../xrNetServer/net_utils.h"
 
 #define USE_LOGIC_ACCELERATION
 

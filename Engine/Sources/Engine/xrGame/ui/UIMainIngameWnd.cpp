@@ -24,7 +24,7 @@
 
 #include "../date_time.h"
 #include "xrGame/xrServer_Objects_ALife_Monsters.h"
-#include "xrEngine/LightAnimLibrary.h"
+#include "xrFramework/LightAnimLibrary.h"
 
 #include "UIInventoryUtilities.h"
 
@@ -39,7 +39,7 @@
 
 #ifdef DEBUG
 #include "../attachable_item.h"
-#include "xrEngine/xr_input.h"
+#include "xrFramework/xr_input.h"
 #endif
 
 #include "UIScrollView.h"

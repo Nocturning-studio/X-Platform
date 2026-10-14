@@ -8,11 +8,11 @@
 #include <DXSDK/d3dx9.h>
 #pragma warning(default : 4995)
 
-#include "xrEngine/fmesh.h"
-#include "xrEngine/xrBind_PSGP.h"
+#include "xrFramework/fmesh.h"
+#include "xrFramework/xrBind_PSGP.h"
 #include "FSkinned.h"
 
-#include "xrEngine/EnnumerateVertices.h"
+#include "xrFramework/EnnumerateVertices.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

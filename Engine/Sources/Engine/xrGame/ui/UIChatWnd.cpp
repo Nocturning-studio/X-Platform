@@ -6,7 +6,7 @@
 #include "../game_cl_base.h"
 #include "xrGame/xr_level_controller.h"
 #include "../Level.h"
-#include "xrEngine/xr_object.h"
+#include "xrFramework/xr_object.h"
 
 CUIChatWnd::CUIChatWnd(CUIGameLog* pList) : pUILogList(pList), sendNextMessageToTeam(false), pOwner(NULL)
 {

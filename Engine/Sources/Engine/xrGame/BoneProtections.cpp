@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "BoneProtections.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 
 float SBoneProtections::getBoneProtection(s16 bone_id)
 {

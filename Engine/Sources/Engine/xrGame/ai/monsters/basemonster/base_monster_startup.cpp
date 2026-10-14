@@ -6,7 +6,7 @@
 #include "xrGame/CharacterPhysicsSupport.h"
 #include "xrGame/phmovementcontrol.h"
 #include "../ai_monster_squad_manager.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/detail_path_manager.h"
 #include "xrGame/level_graph.h"
 #include "../corpse_cover.h"

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "boar.h"
 #include "boar_state_manager.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "../monster_velocity_space.h"
 #include "xrGame/game_object_space.h"
 #include "../control_animation_base.h"

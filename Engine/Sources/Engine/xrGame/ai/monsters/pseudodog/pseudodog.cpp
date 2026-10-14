@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "pseudodog.h"
 #include "pseudodog_state_manager.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/sound_player.h"
 #include "xrGame/level.h"
 #include "xrGame/ai_monster_space.h"

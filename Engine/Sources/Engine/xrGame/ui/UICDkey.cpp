@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "UICDkey.h"
 #include "UIColorAnimatorWrapper.h"
-#include "xrEngine/xr_IOConsole.h"
+#include "xrFramework/xr_IOConsole.h"
 #include "../RegistryFuncs.h"
 
 extern string64 gsCDKey;

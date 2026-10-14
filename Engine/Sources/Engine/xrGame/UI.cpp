@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "UI.h"
-#include "xrEngine/xr_IOConsole.h"
+#include "xrFramework/xr_IOConsole.h"
 #include "Entity.h"
 #include "HUDManager.h"
 #include "UIGameSP.h"

@@ -4,7 +4,7 @@ VisualStudioVersion = 16.0.37507.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Third-Party", "Third-Party", "{2BFC806B-CE92-4EA4-8FE8-5F2EA54BA348}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrEngine", "Sources\Engine\xrEngine\xrEngine.vcxproj", "{2578C6D8-660D-48AE-9322-7422F8664F06}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrFramework", "Sources\Engine\xrFramework\xrFramework.vcxproj", "{2578C6D8-660D-48AE-9322-7422F8664F06}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrSound", "Sources\Engine\xrSound\xrSound.vcxproj", "{CCCA7859-EB86-493E-9B53-C4235F45B3C5}"
 EndProject

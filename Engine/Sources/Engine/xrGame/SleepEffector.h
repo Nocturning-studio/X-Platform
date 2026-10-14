@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "xrEngine/effectorPP.h"
-#include "xrEngine/effector.h"
-#include "xrEngine/cameramanager.h"
+#include "xrFramework/effectorPP.h"
+#include "xrFramework/effector.h"
+#include "xrFramework/cameramanager.h"
 
 #define SLEEP_EFFECTOR_TYPE_ID 8
 

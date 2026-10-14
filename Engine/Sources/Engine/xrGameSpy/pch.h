@@ -9,6 +9,6 @@
 // Windows Header Files:
 #include <windows.h>
 
-#include "..\xrEngine\optick_include.h"
+#include "..\xrFramework\optick_include.h"
 
 // TODO: reference additional headers your program requires here

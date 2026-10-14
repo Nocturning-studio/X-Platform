@@ -19,7 +19,7 @@
 #include <DPlay\dplay8.h>
 #pragma warning(default : 4995)
 
-#include "xrEngineAPI.h"
+#include "xrFrameworkAPI.h"
 
 // Our headers
 #include "xrXRC.h"

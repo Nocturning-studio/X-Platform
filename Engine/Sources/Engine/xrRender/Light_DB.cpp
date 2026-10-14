@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "..\xrEngine\xrLevel.h"
-#include "..\xrEngine\igame_persistent.h"
-#include "..\xrEngine\environment.h"
+#include "..\xrFramework\xrLevel.h"
+#include "..\xrFramework\igame_persistent.h"
+#include "..\xrFramework\environment.h"
 #include "light_db.h"
 
 CLight_DB::CLight_DB()

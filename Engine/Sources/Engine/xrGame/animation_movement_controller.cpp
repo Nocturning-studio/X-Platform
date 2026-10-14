@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "animation_movement_controller.h"
-#include "xrEngine/SkeletonAnimated.h"
+#include "xrFramework/SkeletonAnimated.h"
 #include "game_object_space.h"
 
 animation_movement_controller::animation_movement_controller(fmat4x4* _pObjTransform, CKinematics* _pKinematicsC, CBlend* b)

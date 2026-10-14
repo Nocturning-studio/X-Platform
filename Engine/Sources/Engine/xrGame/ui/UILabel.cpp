@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "UILabel.h"
-#include "xrEngine/LightAnimLibrary.h"
+#include "xrFramework/LightAnimLibrary.h"
 
 CUILabel::CUILabel()
 {

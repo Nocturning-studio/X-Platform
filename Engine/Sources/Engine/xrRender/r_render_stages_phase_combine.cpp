@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include "..\xrEngine\igame_persistent.h"
-#include "..\xrEngine\environment.h"
+#include "..\xrFramework\igame_persistent.h"
+#include "..\xrFramework\environment.h"
 #include "blender_combine.h"
 ///////////////////////////////////////////////////////////////////////////////////
 void CRender::combine_additional_postprocess()

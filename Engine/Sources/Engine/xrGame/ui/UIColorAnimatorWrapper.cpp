@@ -12,7 +12,7 @@
 
 #include "pch.h"
 #include "UIColorAnimatorWrapper.h"
-#include "xrEngine/LightAnimLibrary.h"
+#include "xrFramework/LightAnimLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 

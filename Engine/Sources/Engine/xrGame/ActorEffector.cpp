@@ -1,10 +1,10 @@
 #include "pch.h"
 
-#include "..\xrEngine\igame_persistent.h"
+#include "..\xrFramework\igame_persistent.h"
 #include "ActorEffector.h"
 #include "PostprocessAnimator.h"
-#include "xrEngine/effectorPP.h"
-#include "xrEngine/ObjectAnimator.h"
+#include "xrFramework/effectorPP.h"
+#include "xrFramework/ObjectAnimator.h"
 #include "object_broker.h"
 #include "actor.h"
 

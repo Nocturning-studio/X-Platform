@@ -1,9 +1,9 @@
 #pragma once
 
-#include "xrEngine/CustomHUD.h"
+#include "xrFramework/CustomHUD.h"
 #include "HitMarker.h"
 #include "UI.h"
-#include "xrEngine/FontManager.h"
+#include "xrFramework/FontManager.h"
 
 class CContextMenu;
 class CHUDTarget;

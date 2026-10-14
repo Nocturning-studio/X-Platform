@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_sv_artefacthunt.h"
 #include "xrMessages.h"
-#include "xrEngine/../xrNetServer/net_utils.h"
+#include "xrFramework/../xrNetServer/net_utils.h"
 
 void game_sv_ArtefactHunt::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 {

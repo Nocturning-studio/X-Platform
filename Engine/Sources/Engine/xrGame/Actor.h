@@ -1,16 +1,16 @@
 #pragma once
 
-#include "xrEngine/feel_touch.h"
-#include "xrEngine/feel_sound.h"
-#include "xrEngine/iinputreceiver.h"
-#include "xrEngine/SkeletonAnimated.h"
+#include "xrFramework/feel_touch.h"
+#include "xrFramework/feel_sound.h"
+#include "xrFramework/iinputreceiver.h"
+#include "xrFramework/SkeletonAnimated.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
 #include "entity_alive.h"
 #include "PHMovementControl.h"
 #include "PhysicsShell.h"
 #include "InventoryOwner.h"
-#include "xrEngine/StatGraph.h"
+#include "xrFramework/StatGraph.h"
 #include "PhraseDialogManager.h"
 
 #include "step_manager.h"

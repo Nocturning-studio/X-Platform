@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
-#include "xrEngine/../xrNetServer/net_utils.h"
+#include "xrFramework/../xrNetServer/net_utils.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "game_base_space.h"
@@ -23,8 +23,8 @@
 #include "defines.h"
 LPCSTR GAME_CONFIG = "game.ltx";
 #else
-#include "..\xrEngine/bone.h"
-#include "..\xrEngine/IRender.h"
+#include "..\xrFramework/bone.h"
+#include "..\xrFramework/IRender.h"
 #endif
 
 #pragma warning(push)

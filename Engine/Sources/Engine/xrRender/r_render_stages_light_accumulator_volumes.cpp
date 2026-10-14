@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "xrEngine/du_cone.h"
-#include "xrEngine/du_sphere.h"
-#include "xrEngine/du_sphere_part.h"
+#include "xrFramework/du_cone.h"
+#include "xrFramework/du_sphere.h"
+#include "xrFramework/du_sphere_part.h"
 
 void CRenderTarget::accum_spot_geom_create()
 {

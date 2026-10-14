@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include "DynamicHeightMap.h"
-#include "xrEngine/cl_intersect.h"
+#include "xrFramework/cl_intersect.h"
 
 const int tasksPerFrame = 1;
 const float limit_up = 100.f;

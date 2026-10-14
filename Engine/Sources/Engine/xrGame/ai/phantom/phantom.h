@@ -2,7 +2,7 @@
 
 #include "xrGame/entity.h"
 #include "xrGame/fastdelegate.h"
-#include "xrEngine/SkeletonAnimated.h"
+#include "xrFramework/SkeletonAnimated.h"
 
 class CParticlesObject;
 

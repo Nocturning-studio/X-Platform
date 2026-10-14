@@ -2,8 +2,8 @@
 #include "helicopter.h"
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
-#include "xrEngine/../xrNetServer/net_utils.h"
-#include "..\xrEngine\skeletoncustom.h"
+#include "xrFramework/../xrNetServer/net_utils.h"
+#include "..\xrFramework\skeletoncustom.h"
 #include "Level.h"
 
 void CHelicopter::BoneMGunCallbackX(CBoneInstance* B)

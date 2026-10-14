@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "..\xrEngine\igame_persistent.h"
-#include "..\xrEngine\environment.h"
+#include "..\xrFramework\igame_persistent.h"
+#include "..\xrFramework\environment.h"
 
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space

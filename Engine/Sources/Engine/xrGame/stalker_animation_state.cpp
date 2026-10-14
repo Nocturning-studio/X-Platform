@@ -9,7 +9,7 @@
 #include "pch.h"
 #include "stalker_animation_state.h"
 #include "object_broker.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 
 CStalkerAnimationState::CStalkerAnimationState()
 {

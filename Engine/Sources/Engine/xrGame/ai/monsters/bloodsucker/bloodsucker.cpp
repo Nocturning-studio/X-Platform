@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "bloodsucker.h"
 #include "bloodsucker_state_manager.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "xrGame/actor.h"
 #include "xrGame/ActorEffector.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/level.h"
 #include "xrGame/material_manager.h"
 #include "bloodsucker_vampire_effector.h"
@@ -19,7 +19,7 @@
 #include "../control_rotation_jump.h"
 
 #include "xrGame/sound_player.h"
-#include "xrEngine/camerabase.h"
+#include "xrFramework/camerabase.h"
 #include "xrGame/xr_level_controller.h"
 #include "xrGame/ActorCondition.h"
 

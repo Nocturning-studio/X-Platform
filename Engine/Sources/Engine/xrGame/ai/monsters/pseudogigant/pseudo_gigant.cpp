@@ -9,7 +9,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 #include "../ai_monster_effector.h"
-#include "xrEngine/CameraBase.h"
+#include "xrFramework/CameraBase.h"
 #include "xrGame/xr_level_controller.h"
 #include "xrGame/detail_path_manager_space.h"
 #include "xrGame/detail_path_manager.h"

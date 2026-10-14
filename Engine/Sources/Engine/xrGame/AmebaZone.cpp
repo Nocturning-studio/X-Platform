@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CustomZone.h"
-#include "xrEngine/SkeletonAnimated.h"
+#include "xrFramework/SkeletonAnimated.h"
 #include "ZoneVisual.h"
 #include "PHObject.h"
 #include "PHMovementControl.h"

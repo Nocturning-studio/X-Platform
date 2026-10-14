@@ -3,7 +3,7 @@
 #include "xrNetServer/net_utils.h"
 #include "xrGame/level.h"
 #include "xrGame/xrServer_Objects_ALife_Monsters.h"
-#include "xrEngine/motion.h"
+#include "xrFramework/motion.h"
 
 CPhantom::CPhantom()
 {

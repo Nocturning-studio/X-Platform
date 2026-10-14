@@ -1,6 +1,6 @@
 #ifndef DefinesH
 #define DefinesH
-#include "xrEngineAPI.h"
+#include "xrFrameworkAPI.h"
 
 #ifdef DEBUG
 ENGINE_API extern BOOL bDebug;

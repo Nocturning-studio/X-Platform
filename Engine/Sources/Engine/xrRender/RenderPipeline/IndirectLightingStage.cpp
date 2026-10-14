@@ -6,8 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "IndirectLightingStage.h"
-#include "..\xrEngine\igame_persistent.h"
-#include "..\xrEngine\environment.h"
+#include "..\xrFramework\igame_persistent.h"
+#include "..\xrFramework\environment.h"
 ////////////////////////////////////////////////////////////////////////////////
 namespace
 {

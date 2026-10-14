@@ -1,8 +1,8 @@
 #include "pch.h"
 #include <dinput.h>
-#include "xrEngine/xr_ioconsole.h"
-#include "xrEngine/xr_input.h"
-#include "xrEngine/xr_ioc_cmd.h"
+#include "xrFramework/xr_ioconsole.h"
+#include "xrFramework/xr_input.h"
+#include "xrFramework/xr_ioc_cmd.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
 

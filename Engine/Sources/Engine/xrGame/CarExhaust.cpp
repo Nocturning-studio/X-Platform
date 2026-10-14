@@ -1,14 +1,14 @@
 #include "pch.h"
 #ifdef DEBUG
 #include "ode_include.h"
-#include "xrEngine/StatGraph.h"
+#include "xrFramework/StatGraph.h"
 #include "PHDebug.h"
 #endif
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "PHWorld.h"
 extern CPHWorld* ph_world;
 

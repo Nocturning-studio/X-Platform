@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\xrEngine\ispatial.h"
+#include "..\xrFramework\ispatial.h"
 #include "light_package.h"
 #include "light_smapvis.h"
 

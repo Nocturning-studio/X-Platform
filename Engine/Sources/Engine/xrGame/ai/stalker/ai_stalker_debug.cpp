@@ -42,14 +42,14 @@
 #include "xrGame/agent_corpse_manager.h"
 #include "xrGame/agent_location_manager.h"
 #include "xrGame/cover_point.h"
-#include "xrEngine/camerabase.h"
+#include "xrFramework/camerabase.h"
 #include "xrGame/clsid_game.h"
 #include "xrGame/mt_config.h"
 #include "xrGame/weaponmagazined.h"
 #include "xrGame/object_handler_space.h"
 #include "xrGame/debug_renderer.h"
 #include "xrGame/CharacterPhysicsSupport.h"
-#include "../../../xrEngine/xrSheduler.h"
+#include "../../../xrFramework/xrSheduler.h"
 
 CActor* g_debug_actor = 0;
 

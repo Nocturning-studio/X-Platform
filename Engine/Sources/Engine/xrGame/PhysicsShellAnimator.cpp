@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PhysicsShellAnimator.h"
 #include "PhysicsShellAnimatorBoneData.h"
-#include "xrEngine/SkeletonCustom.h"
+#include "xrFramework/SkeletonCustom.h"
 #include "PHDynamicData.h"
 #include "game_object_space.h"
 #include "PhysicsShellHolder.h"

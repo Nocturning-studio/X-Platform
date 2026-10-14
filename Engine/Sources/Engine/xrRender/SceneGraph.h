@@ -2,13 +2,13 @@
 
 #include <unordered_map>
 
-#include "..\xrEngine\IRender.h"
-#include "..\xrEngine\ispatial.h"
+#include "..\xrFramework\IRender.h"
+#include "..\xrFramework\ispatial.h"
 #include "SceneGraphTypes.h"
 #include "r_sector.h"
 #include "r_portal.h"
 #include "r_portal_traverser.h"
-#include <xrEngine/FBasicVisual.h>
+#include <xrFramework/FBasicVisual.h>
 #include "RenderSceneFlags.h"
 
 class CRender;

@@ -9,7 +9,7 @@
 #include "pch.h"
 #include "attachment_owner.h"
 #include "attachable_item.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "inventory_item.h"
 #include "physicsshellholder.h"
 

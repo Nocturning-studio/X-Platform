@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "WeaponStatMgun.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "PhysicsShell.h"
 #include "weaponAmmo.h"
 #include "object_broker.h"

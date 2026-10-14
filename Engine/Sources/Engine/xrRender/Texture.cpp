@@ -10,7 +10,7 @@
 
 // #include "std_classes.h"
 // #include "xr_avi.h"
-#include "xrEngine/ResourceManager.h"
+#include "xrFramework/ResourceManager.h"
 
 int get_texture_load_lod(LPCSTR fn)
 {

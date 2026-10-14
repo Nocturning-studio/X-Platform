@@ -17,7 +17,7 @@
 #include "../game_cl_base.h"
 #include "../string_table.h"
 #include "xrGame/xr_level_controller.h"
-#include "xrEngine/cameraBase.h"
+#include "xrFramework/cameraBase.h"
 #include "UIXmlInit.h"
 
 CUITalkWnd::CUITalkWnd()

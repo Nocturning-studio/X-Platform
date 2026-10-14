@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "xrEngine/xr_ioconsole.h"
-#include "xrEngine/xr_ioc_cmd.h"
+#include "xrFramework/xr_ioconsole.h"
+#include "xrFramework/xr_ioc_cmd.h"
 #include "level.h"
 #include "xrServer.h"
 #include "game_cl_base.h"

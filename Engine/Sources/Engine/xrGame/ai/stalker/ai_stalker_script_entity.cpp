@@ -14,7 +14,7 @@
 #include "xrGame/inventory.h"
 #include "xrGame/weapon.h"
 #include "xrGame/weaponmagazined.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "xrGame/script_engine.h"
 #include "xrGame/sight_manager.h"
 #include "xrGame/stalker_movement_manager.h"

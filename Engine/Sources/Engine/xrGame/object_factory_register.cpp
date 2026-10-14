@@ -17,7 +17,7 @@
 
 // client entities includes
 #ifndef NO_XR_GAME
-#include "xrEngine/std_classes.h"
+#include "xrFramework/std_classes.h"
 #include "level.h"
 #include "gamepersistent.h"
 #include "hudmanager.h"
@@ -49,7 +49,7 @@
 #include "ai/crow/ai_crow.h"
 
 #ifdef DEBUG
-#include "xrEngine/StatGraph.h"
+#include "xrFramework/StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
 

@@ -9,7 +9,7 @@
 
 #include "pch.h"
 #include "UIMultiTextStatic.h"
-#include "xrEngine/CustomHUD.h"
+#include "xrFramework/CustomHUD.h"
 
 //////////////////////////////////////////////////////////////////////////
 CUIMultiTextStatic::CUIMultiTextStatic()

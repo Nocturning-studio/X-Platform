@@ -329,7 +329,7 @@
       <LargeAddressAware>false</LargeAddressAware>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -417,7 +417,7 @@
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -469,7 +469,7 @@
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -521,7 +521,7 @@
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -573,7 +573,7 @@
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -626,7 +626,7 @@
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -897,7 +897,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>$(xrBuildLibDir)\$(Configuration)-$(Platform)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrEngine.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;d3d9.lib;d3dcompiler.lib;xrFramework.lib;xrCDB.lib;xrCore.lib;xrLua.lib;xrParticles.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -943,9 +943,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\xrEngine\du_cone.h" />
-    <ClInclude Include="..\xrEngine\du_sphere.h" />
-    <ClInclude Include="..\xrEngine\du_sphere_part.h" />
+    <ClInclude Include="..\xrFramework\du_cone.h" />
+    <ClInclude Include="..\xrFramework\du_sphere.h" />
+    <ClInclude Include="..\xrFramework\du_sphere_part.h" />
     <ClInclude Include="Blender_bent_normals.h" />
     <ClInclude Include="Blender_hi_z.h" />
     <ClInclude Include="Blender_terrain.h" />
@@ -1036,9 +1036,9 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\xrEngine\du_cone.cpp" />
-    <ClCompile Include="..\xrEngine\du_sphere.cpp" />
-    <ClCompile Include="..\xrEngine\du_sphere_part.cpp" />
+    <ClCompile Include="..\xrFramework\du_cone.cpp" />
+    <ClCompile Include="..\xrFramework\du_sphere.cpp" />
+    <ClCompile Include="..\xrFramework\du_sphere_part.cpp" />
     <ClCompile Include="CPUOcclusion.cpp" />
     <ClCompile Include="DetailManager.cpp" />
     <ClCompile Include="DetailManager_VS.cpp" />
@@ -1217,7 +1217,7 @@
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\xrEngine\xrEngine.vcxproj">
+    <ProjectReference Include="..\xrFramework\xrFramework.vcxproj">
       <Project>{2578c6d8-660d-48ae-9322-7422f8664f06}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

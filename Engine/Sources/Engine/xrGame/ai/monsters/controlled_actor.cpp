@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "controlled_actor.h"
 #include "xrGame/actor.h"
-#include "xrEngine/CameraBase.h"
+#include "xrFramework/CameraBase.h"
 #include "xrGame/xr_level_controller.h"
 #include "xrGame/level.h"
 #include "ai_monster_utils.h"

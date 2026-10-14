@@ -1,15 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "render.h"
-#include "xrEngine/resourcemanager.h"
-#include "xrEngine/fbasicvisual.h"
-#include "xrEngine/fmesh.h"
-#include "xrEngine/xrLevel.h"
-#include "xrEngine/Engine.h"
-#include "xrEngine/IGame_Persistent.h"
+#include "xrFramework/resourcemanager.h"
+#include "xrFramework/fbasicvisual.h"
+#include "xrFramework/fmesh.h"
+#include "xrFramework/xrLevel.h"
+#include "xrFramework/Engine.h"
+#include "xrFramework/IGame_Persistent.h"
 #include <xrCore/stream_reader.h>
-#include "xrEngine/xr_ioconsole.h"
-#include "xrEngine/LevelLoadingScreen.h"
+#include "xrFramework/xr_ioconsole.h"
+#include "xrFramework/LevelLoadingScreen.h"
 ////////////////////////////////////////////////////////////////////////////////
 struct ShaderRequest
 {

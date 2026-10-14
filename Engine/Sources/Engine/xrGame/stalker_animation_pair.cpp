@@ -8,7 +8,7 @@
 
 #include "pch.h"
 #include "stalker_animation_pair.h"
-#include "xrEngine/motion.h"
+#include "xrFramework/motion.h"
 #include "ai_debug.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/ai_monsters_anims.h"

@@ -1,9 +1,9 @@
 #include "pch.h"
 
-#include "..\xrEngine\fhierrarhyvisual.h"
-#include "..\xrEngine\SkeletonCustom.h"
-#include "..\xrEngine\fmesh.h"
-#include "..\xrEngine\irenderable.h"
+#include "..\xrFramework\fhierrarhyvisual.h"
+#include "..\xrFramework\SkeletonCustom.h"
+#include "..\xrFramework\fmesh.h"
+#include "..\xrFramework\irenderable.h"
 
 #include "flod.h"
 #include "particlegroup.h"

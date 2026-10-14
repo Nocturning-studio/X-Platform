@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "searchlight.h"
-#include "xrEngine/LightAnimLibrary.h"
+#include "xrFramework/LightAnimLibrary.h"
 #include "script_entity_action.h"
 #include "xrServer_Objects_ALife.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "game_object_space.h"
 
 //////////////////////////////////////////////////////////////////////

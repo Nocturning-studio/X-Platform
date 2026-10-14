@@ -8,7 +8,7 @@
 #include "xrGame/level.h"
 #include "xrGame/actor.h"
 #include "xrGame/ActorEffector.h"
-#include "xrEngine/CameraBase.h"
+#include "xrFramework/CameraBase.h"
 #include "xrGame/CharacterPhysicsSupport.h"
 #include "xrGame/level_debug.h"
 

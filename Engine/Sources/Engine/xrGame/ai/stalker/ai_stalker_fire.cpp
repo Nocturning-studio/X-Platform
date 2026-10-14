@@ -15,7 +15,7 @@
 #include "xrGame/stalker_decision_space.h"
 #include "xrGame/script_game_object.h"
 #include "xrGame/customzone.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/agent_manager.h"
 #include "xrGame/stalker_animation_manager.h"
 #include "xrGame/stalker_planner.h"

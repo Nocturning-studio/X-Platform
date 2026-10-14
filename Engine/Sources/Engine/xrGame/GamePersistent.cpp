@@ -1,9 +1,9 @@
 #include "pch_script.h"
 #include "gamepersistent.h"
-#include "xrEngine/fmesh.h"
-#include "xrEngine/xr_ioconsole.h"
+#include "xrFramework/fmesh.h"
+#include "xrFramework/xr_ioconsole.h"
 #include "gamemtllib.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
@@ -18,10 +18,10 @@
 #include "stalker_velocity_holder.h"
 #include "hudmanager.h"
 #include "UIGameCustom.h"
-#include "xrEngine/CameraManager.h"
+#include "xrFramework/CameraManager.h"
 #include "actor.h"
-#include "xrEngine/LevelLoadingScreen.h"
-#include "xrEngine/xrSheduler.h"
+#include "xrFramework/LevelLoadingScreen.h"
+#include "xrFramework/xrSheduler.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"
@@ -219,7 +219,7 @@ void CGamePersistent::Disconnect()
 }
 
 #include "xr_level_controller.h"
-#include "xrEngine/xr_ioc_cmd.h"
+#include "xrFramework/xr_ioc_cmd.h"
 
 void CGamePersistent::OnGameStart()
 {
@@ -677,7 +677,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 	MainMenu()->OnRenderPPUI_PP();
 }
 #include "string_table.h"
-#include "xrEngine/Engine.h"
+#include "xrFramework/Engine.h"
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512 buff;

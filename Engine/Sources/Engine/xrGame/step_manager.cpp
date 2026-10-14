@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "step_manager_defs.h"
 #include "step_manager.h"
 #include "entity_alive.h"

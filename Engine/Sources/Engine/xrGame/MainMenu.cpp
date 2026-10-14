@@ -2,9 +2,9 @@
 #include "MainMenu.h"
 #include "UI/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
-#include "xrEngine/xr_IOConsole.h"
-#include "xrEngine/IGame_Level.h"
-#include "xrEngine/CameraManager.h"
+#include "xrFramework/xr_IOConsole.h"
+#include "xrFramework/IGame_Level.h"
+#include "xrFramework/CameraManager.h"
 #include "xr_Level_controller.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UIXmlInit.h"
@@ -19,7 +19,7 @@
 
 #include "object_broker.h"
 
-#include "..\xrEngine\debug_ui.h"
+#include "..\xrFramework\debug_ui.h"
 
 string128 ErrMsgBoxTemplate[] = {"message_box_invalid_pass",
 								 "message_box_invalid_host",

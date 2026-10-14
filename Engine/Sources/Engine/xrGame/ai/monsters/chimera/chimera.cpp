@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "chimera.h"
 #include "chimera_state_manager.h"
-#include "xrEngine/skeletonanimated.h"
+#include "xrFramework/skeletonanimated.h"
 #include "xrGame/detail_path_manager.h"
 #include "../monster_velocity_space.h"
 #include "xrGame/level.h"

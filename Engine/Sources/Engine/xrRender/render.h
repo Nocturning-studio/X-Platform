@@ -4,9 +4,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "xrEngine\irender.h"
-#include "xrEngine\irenderable.h"
-#include "xrEngine\fmesh.h"
+#include "xrFramework\irender.h"
+#include "xrFramework\irenderable.h"
+#include "xrFramework\fmesh.h"
 
 #include "xrRender_console.h"
 

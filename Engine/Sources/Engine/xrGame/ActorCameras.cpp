@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Actor.h"
-#include "xrEngine/CameraBase.h"
+#include "xrFramework/CameraBase.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif

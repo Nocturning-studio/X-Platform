@@ -25,7 +25,7 @@
 #include "xrGame/xr_level_controller.h"
 #include "xrGame/hudmanager.h"
 #include "xrGame/clsid_game.h"
-#include "xrEngine/skeletoncustom.h"
+#include "xrFramework/skeletoncustom.h"
 #include "xrGame/character_info.h"
 #include "xrGame/actor.h"
 #include "xrGame/relation_registry.h"

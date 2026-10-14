@@ -1,5 +1,5 @@
 #pragma once
-#include "xrEngine/effector.h"
+#include "xrFramework/effector.h"
 #include "xrGame/pp_effector_custom.h"
 
 ////////////////////////////////////////////////////////////////////////////////////
