@@ -1,0 +1,510 @@
+#pragma once
+
+#include "RHI.h"
+#include "R_Backend_StateCache.h"
+#include "R_Backend_ResourceBinder.h"
+#include "R_Backend_ConstantManager.h"
+#include "R_Backend_Data_Streams.h"
+#include "r_backend_transform.h"
+#include "r_backend_tree.h"
+#include "fvf.h"
+#include <DXSDK/d3dx9.h>
+#include <mutex>
+
+class CShaderPass;
+
+const u32 CULL_BACKFACE = D3DCULL_CCW;
+const u32 CULL_FRONTFACE = D3DCULL_CW;
+const u32 CULL_DISABLE = D3DCULL_NONE;
+
+const u32 CLEAR_RENDERTARGET = D3DCLEAR_TARGET;
+const u32 CLEAR_ZBUFFER = D3DCLEAR_ZBUFFER;
+const u32 CLEAR_STENCIL = D3DCLEAR_STENCIL;
+
+const u32 ALLOW_COLOR_WRITE = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA;
+
+struct R_statistics_element
+{
+	u32 verts, dips;
+	ICF void add(u32 _verts)
+	{
+		verts += _verts;
+		dips++;
+	}
+};
+
+struct R_statistics
+{
+	R_statistics_element s_static;
+	R_statistics_element s_flora;
+	R_statistics_element s_flora_lods;
+	R_statistics_element s_details;
+	R_statistics_element s_ui;
+	R_statistics_element s_dynamic;
+	R_statistics_element s_dynamic_sw;
+	R_statistics_element s_dynamic_inst;
+	R_statistics_element s_dynamic_1B;
+	R_statistics_element s_dynamic_2B;
+};
+
+class ENGINE_API CSurfaceLock
+{
+	IDirect3DSurface9* m_pSurface = nullptr;
+	D3DLOCKED_RECT m_Rect{};
+
+  public:
+	CSurfaceLock(IDirect3DSurface9* pSurface, DWORD Flags = D3DLOCK_NOSYSLOCK) : m_pSurface(pSurface)
+	{
+		if(m_pSurface)
+			R_CHK(m_pSurface->LockRect(&m_Rect, nullptr, Flags));
+	}
+	~CSurfaceLock()
+	{
+		if(m_pSurface)
+			m_pSurface->UnlockRect();
+	}
+	CSurfaceLock(const CSurfaceLock&) = delete;
+	CSurfaceLock& operator=(const CSurfaceLock&) = delete;
+
+	bool Valid() const { return m_pSurface != nullptr; }
+	u32* Bits() const { return static_cast<u32*>(m_Rect.pBits); }
+	u32 Pitch() const { return static_cast<u32>(m_Rect.Pitch); }
+};
+
+class ENGINE_API CRenderBackendFacade
+{
+  public:
+	// D3D / RHI
+	IDirect3D9Ex* m_pD3D;
+	IDirect3DDevice9Ex* m_pDevice;
+	IDirect3DSurface9* m_pBaseRT;
+	IDirect3DSurface9* m_pBaseZB;
+	RHI_PresentationParams m_presentParams{};
+
+	VertexStream Vertex;
+	IndexStream Index;
+
+	IDirect3DIndexBuffer9* QuadIB;
+	IDirect3DIndexBuffer9* old_QuadIB;
+
+	R_transforms transforms;
+	R_tree tree;
+
+	ref_geom m_viewport;
+
+	CConstantManager m_constantMgr;
+	CStateCache m_stateCache;
+	CBackendResourceBinder m_resBinder;
+
+	mutable std::recursive_mutex m_d3dxMutex;
+
+	struct SavedState
+	{
+		IDirect3DSurface9* rt[4] = {};
+		IDirect3DSurface9* zb = nullptr;
+		D3DVIEWPORT9 viewport{};
+	} m_savedState;
+
+  public:
+	void Invalidate();
+
+  public:
+	struct _stats
+	{
+		u32 polys;
+		u32 verts;
+		u32 calls;
+		u32 vs;
+		u32 ps;
+#ifdef DEBUG
+		u32 decl;
+		u32 vb;
+		u32 ib;
+		u32 states;
+		u32 textures;
+#endif
+		u32 transforms;
+		u32 target_rt;
+		u32 target_zb;
+
+		R_statistics r;
+	} stat;
+
+  public:
+	CRenderBackendFacade();
+	~CRenderBackendFacade();
+
+	// Device & frame
+	void CreateQuadIB();
+	void OnDeviceCreate(HWND hWnd, const RHI_PresentationParams& params);
+	void OnDeviceDestroy();
+	void DeleteResources();
+	void ResetBegin();
+	void ResetEnd();
+
+	// Device access
+	DEPRECATED IDirect3DDevice9Ex* GetDevice() const { return m_pDevice; }
+	DEPRECATED IDirect3D9Ex* GetD3D() const { return m_pD3D; }
+	IDirect3DSurface9* GetBaseRT() const { return m_pBaseRT; }
+	IDirect3DSurface9* GetBaseZB() const { return m_pBaseZB; }
+	const RHIDeviceCaps& GetDeviceCaps() const { return RHI()->GetDeviceCaps(); }
+
+	u32 GetBackBufferWidth()  const { return RHI()->GetBackBufferWidth(); }
+	u32 GetBackBufferHeight() const { return RHI()->GetBackBufferHeight(); }
+
+	void SelectResolution(u32& w, u32& h, BOOL bWindowed);
+	u32 SelectPresentInterval();
+
+	// Render state save/restore (delegates to cache)
+	void SaveRenderState();
+	void RestoreRenderState();
+
+	// Active texture info
+	IC CTextureLegacy* GetActiveTexture(u32 stage) { return m_resBinder.GetActiveTexture(stage); }
+
+	// Transform API (implementations remain in R_Backend_Runtime.h or .cpp)
+	IC void SetTransformWorld(const fmat4x4& M);
+	IC void SetTransformView(const fmat4x4& M);
+	IC void SetTransformProject(const fmat4x4& M);
+	IC const fmat4x4& GetTransformWorld();
+	IC const fmat4x4& GetTransformView();
+	IC const fmat4x4& GetTransformProject();
+
+	// --- Pipeline state (delegated to m_stateCache) ---
+	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0) { CHK_DX(m_pDevice->SetRenderTarget(ID, RT)); RHI()->InvalidateCache(); }
+	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB) { CHK_DX(m_pDevice->SetDepthStencilSurface(ZB)); RHI()->InvalidateCache(); }
+	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable(*RHI().GetRawRHI(), (uint8_t)_mask); }
+	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(*RHI().GetRawRHI(), state); }
+	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode(*RHI().GetRawRHI(), (RHI_CullMode)_mode); }
+	IC void SetScissor(Irect* rect = NULL)
+	{
+		if(rect)
+		{
+			RHI_Rect r;
+			r.left = rect->x1;
+			r.top = rect->y1;
+			r.right = rect->x2;
+			r.bottom = rect->y2;
+			m_stateCache.SetScissor(*RHI().GetRawRHI(), &r);
+		}
+		else
+		{
+			m_stateCache.SetScissor(*RHI().GetRawRHI(), nullptr);
+		}
+	}
+
+	void SetRenderState(D3DRENDERSTATETYPE State, DWORD Value);
+	IC void SetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value) { CHK_DX(m_pDevice->SetSamplerState(Sampler, Type, Value)); }
+	IC void GetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD* Value) { CHK_DX(m_pDevice->GetSamplerState(Sampler, Type, Value)); }
+	IC void SetViewport(const D3DVIEWPORT9& VP)
+	{
+		RHI_Viewport vp{VP.X, VP.Y, VP.Width, VP.Height, VP.MinZ, VP.MaxZ};
+		m_stateCache.SetViewport(*RHI().GetRawRHI(), vp);
+	}
+
+	IC void GetViewport(D3DVIEWPORT9* VP)
+	{
+		const RHI_Viewport vp = RHI().GetRawRHI()->GetViewport();
+		VP->X = vp.X;
+		VP->Y = vp.Y;
+		VP->Width = vp.Width;
+		VP->Height = vp.Height;
+		VP->MinZ = vp.MinZ;
+		VP->MaxZ = vp.MaxZ;
+	}
+
+	IC void SetStencil(u32 _enable,
+					   u32 _func = D3DCMP_ALWAYS,
+					   u32 _ref = 0x00,
+					   u32 _mask = 0x00,
+					   u32 _writemask = 0x00,
+					   u32 _fail = D3DSTENCILOP_KEEP,
+					   u32 _pass = D3DSTENCILOP_KEEP,
+					   u32 _zfail = D3DSTENCILOP_KEEP)
+	{
+		m_stateCache.SetStencil(*RHI().GetRawRHI(),
+								_enable != 0,
+								(RHI_CmpFunc)_func,
+								(uint8_t)_ref,
+								(uint8_t)_mask,
+								(uint8_t)_writemask,
+								(RHI_StencilOp)_fail,
+								(RHI_StencilOp)_pass,
+								(RHI_StencilOp)_zfail);
+	}
+
+	// Blend helpers (delegated)
+	void SetBlend(BOOL enable, D3DBLEND src = D3DBLEND_ONE, D3DBLEND dest = D3DBLEND_ZERO);
+	void SetBlendAlpha();
+	void SetBlendAdd();
+	void SetBlendMultiply();
+	void SetBlendDefault();
+	void SetBlendSubstract();
+	void SetBlendScreen();
+	void SetBlendLightAdd();
+	void SetBlendColorAdd();
+	void SetBlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op = D3DBLENDOP_ADD);
+	BOOL GetBlendState() const;
+	D3DBLEND GetSrcBlend() const;
+	D3DBLEND GetDstBlend() const;
+
+	// Anisotropy (will be moved to sampler state manager later)
+	void EnableAnisotropyFiltering();
+	void DisableAnisotropyFiltering();
+	void SetAnisotropyFiltering(int max_anisothropy);
+
+	// --- Resource binding (delegated to m_resBinder) ---
+	IC void CreateVertexBuffer(u32 Length,
+							   u32 Usage,
+							   u32 FVF,
+							   D3DPOOL Pool,
+							   IDirect3DVertexBuffer9** ppVB,
+							   HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVB, pSharedHandle));
+	}
+	IC void CreateIndexBuffer(u32 Length,
+							  u32 Usage,
+							  D3DFORMAT Format,
+							  D3DPOOL Pool,
+							  IDirect3DIndexBuffer9** ppIB,
+							  HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateIndexBuffer(Length, Usage, Format, Pool, ppIB, pSharedHandle));
+	}
+
+	IC void CreateTexture(u32 Width,
+						  u32 Height,
+						  u32 Levels,
+						  DWORD Usage,
+						  D3DFORMAT Format,
+						  D3DPOOL Pool,
+						  IDirect3DTexture9** ppTexture,
+						  HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle));
+	}
+	IC void CreateCubeTexture(u32 EdgeLength,
+							  u32 Levels,
+							  DWORD Usage,
+							  D3DFORMAT Format,
+							  D3DPOOL Pool,
+							  IDirect3DCubeTexture9** ppCubeTexture,
+							  HANDLE* pSharedHandle = NULL)
+	{
+		R_CHK(m_pDevice->CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture, pSharedHandle));
+	}
+
+	IC void GetRenderTargetData(IDirect3DSurface9* pRenderTarget, IDirect3DSurface9* pDestSurface);
+
+	IC IDirect3DSurface9* GetSurfaceLevel(IDirect3DTexture9* pTex, u32 Level)
+	{
+		IDirect3DSurface9* pSurf = nullptr;
+		R_CHK(pTex->GetSurfaceLevel(Level, &pSurf));
+		return pSurf;
+	}
+	IC IDirect3DSurface9* GetCubeMapSurface(IDirect3DCubeTexture9* pTex, D3DCUBEMAP_FACES Face, u32 Level)
+	{
+		IDirect3DSurface9* pSurf = nullptr;
+		R_CHK(pTex->GetCubeMapSurface(Face, Level, &pSurf));
+		return pSurf;
+	}
+
+	// --- Blit with format conversion (D3DX under the hood because StretchRect
+	//     cannot convert to compressed / extended formats and cannot read from
+	//     D3DPOOL_SYSTEMMEM sources) ---
+	IC void BlitSurface(IDirect3DSurface9* pDst, IDirect3DSurface9* pSrc)
+	{
+		std::lock_guard<std::recursive_mutex> lk(m_d3dxMutex);
+		R_CHK(D3DXLoadSurfaceFromSurface(pDst, nullptr, nullptr,
+										 pSrc, nullptr, nullptr,
+										 D3DX_DEFAULT, NULL));
+	}
+
+	// --- Serialization to memory (for FS write-out) ---
+	IC void SaveSurfaceToMemory(ID3DXBuffer** ppOut, D3DXIMAGE_FILEFORMAT Format, IDirect3DSurface9* pSurf)
+	{
+		std::lock_guard<std::recursive_mutex> lk(m_d3dxMutex);
+		R_CHK(D3DXSaveSurfaceToFileInMemory(ppOut, Format, pSurf, nullptr, nullptr));
+	}
+	IC void SaveTextureToMemory(ID3DXBuffer** ppOut, D3DXIMAGE_FILEFORMAT Format, IDirect3DBaseTexture9* pTex)
+	{
+		std::lock_guard<std::recursive_mutex> lk(m_d3dxMutex);
+		R_CHK(D3DXSaveTextureToFileInMemory(ppOut, Format, pTex, nullptr));
+	}
+
+	IDirect3DSurface9* CaptureBackBuffer();
+
+	IC void SetConstants(R_constant_table* C) { m_resBinder.SetConstantTable(*this, C, transforms); }
+	IC void SetConstants(ref_ctable& CTable) { SetConstants(&*CTable); }
+
+	void SetTextures(STextureList* T);
+	IC void SetTextures(ref_texture_list& TexList) { SetTextures(&*TexList); }
+
+	ICF void SetStates(IDirect3DStateBlock9* _state) { m_resBinder.SetStates(*this, _state); }
+	ICF void SetStates(ref_state& _state) { SetStates(_state->state); }
+
+	ICF void SetVertexDeclaration(RHI_InputLayoutHandle decl) { m_resBinder.SetVertexDeclaration(*this, decl); }
+
+	ICF void SetPixelShader(RHI_ShaderHandle ps, LPCSTR n = nullptr) { m_resBinder.SetPixelShader(*this, ps, n); }
+	ICF void SetVertexShader(RHI_ShaderHandle vs, LPCSTR n = nullptr) { m_resBinder.SetVertexShader(*this, vs, n); }
+
+	ICF void SetVertices(RHI_BufferHandle vb, u32 vb_stride) { m_resBinder.SetVertexBuffer(*this, vb, vb_stride); }
+	ICF void SetIndices(RHI_BufferHandle ib, RHI_IndexFormat fmt) { m_resBinder.SetIndexBuffer(*this, ib, fmt); }
+
+	ICF void SetVertexDeclaration(IDirect3DVertexDeclaration9* decl) { m_resBinder.SetVertexDeclarationLegacy(*this, decl); }
+
+	ICF void SetPixelShader(IDirect3DPixelShader9* ps, LPCSTR n = nullptr) { m_resBinder.SetPixelShaderLegacy(*this, ps, n); }
+	ICF void SetVertexShader(IDirect3DVertexShader9* vs, LPCSTR n = nullptr) { m_resBinder.SetVertexShaderLegacy(*this, vs, n); }
+
+	ICF void SetVertices(IDirect3DVertexBuffer9* vb, u32 vb_stride) { m_resBinder.SetVertexBufferLegacy(*this, vb, vb_stride); }
+	ICF void SetIndices(IDirect3DIndexBuffer9* ib) { m_resBinder.SetIndexBufferLegacy(*this, ib); }
+
+	ICF void SetGeometryLegacy(SGeometry* _geom)
+	{
+		if (!_geom) return;
+		SetVertexDeclaration(_geom->dcl._get()->dcl); // raw decl
+		SetVertices(_geom->vb, _geom->vb_stride);      // raw vb
+		SetIndices(_geom->ib);                          // raw ib
+	}
+	ICF void SetGeometry(ref_geom& _geom) { SetGeometryLegacy(&*_geom); }
+
+	IC void SetShaderElement(ShaderElement* S, u32 pass = 0)
+	{
+		SPass& P = *(S->passes[pass]);
+		SetStates(P.state);
+		SetPixelShader(P.ps->sh);
+		SetVertexShader(P.vs->sh);
+		SetConstants(P.constants);
+		SetTextures(P.T);
+	}
+	IC void SetShaderElement(ref_selement& S, u32 pass = 0) { SetShaderElement(&*S, pass); }
+
+	IC void SetShader(Shader* S, u32 pass = 0) { SetShaderElement(S->E[0], pass); }
+	IC void SetShader(ref_shader& S, u32 pass = 0) { SetShader(&*S, pass); }
+
+	ICF void SetShaderPass(CShaderPass* pass) { m_resBinder.SetShaderPass(*this, pass); }
+	ICF void SetShaderPass(CShaderPass& pass) { m_resBinder.SetShaderPass(*this, pass); }
+
+	// Constant setters (still using internal R_constants, will be extracted to CConstantManager)
+	ICF ref_constant GetConstant(LPCSTR n)
+	{
+		R_constant_table* ctable = m_resBinder.GetConstantTable();
+		return ctable ? ctable->get(n) : 0;
+	}
+	ICF ref_constant GetConstant(shared_str& n)
+	{
+		R_constant_table* ctable = m_resBinder.GetConstantTable();
+		return ctable ? ctable->get(n) : 0;
+	}
+
+	ICF void SetConstant(R_constant* Const, const fmat4x4& A)
+	{
+		if(Const)
+			m_constantMgr.SetConstant(Const, A);
+	}
+	ICF void SetConstant(R_constant* Const, const fvec4& A)
+	{
+		if(Const)
+			m_constantMgr.SetConstant(Const, A);
+	}
+	ICF void SetConstant(R_constant* Const, float x, float y = 0.0f, float z = 0.0f, float w = 0.0f)
+	{
+		if(Const)
+			m_constantMgr.SetConstant(Const, x, y, z, w);
+	}
+	ICF void SetArrayConstant(R_constant* Const, u32 e, const fmat4x4& A)
+	{
+		if(Const)
+			m_constantMgr.SetArrayConstant(Const, e, A);
+	}
+	ICF void SetArrayConstant(R_constant* Const, u32 e, const fvec4& A)
+	{
+		if(Const)
+			m_constantMgr.SetArrayConstant(Const, e, A);
+	}
+	ICF void SetArrayConstant(R_constant* Const, u32 e, float x, float y, float z, float w)
+	{
+		if(Const)
+			m_constantMgr.SetArrayConstant(Const, e, x, y, z, w);
+	}
+
+	// Slow lookups via ctable
+	ICF void SetConstant(LPCSTR n, const fmat4x4& A) { SetConstant(GetConstant(n)._get(), A); }
+	ICF void SetConstant(LPCSTR n, const fvec4& A) { SetConstant(GetConstant(n)._get(), A); }
+	ICF void SetConstant(LPCSTR n, float x) { SetConstant(GetConstant(n)._get(), x, 0, 0, 0); }
+	ICF void SetConstant(LPCSTR n, float x, float y) { SetConstant(GetConstant(n)._get(), x, y, 0, 0); }
+	ICF void SetConstant(LPCSTR n, float x, float y, float z) { SetConstant(GetConstant(n)._get(), x, y, z, 0); }
+	ICF void SetConstant(LPCSTR n, float x, float y, float z, float w) { SetConstant(GetConstant(n)._get(), x, y, z, w); }
+	ICF void SetArrayConstant(LPCSTR n, u32 e, const fmat4x4& A) { SetArrayConstant(GetConstant(n)._get(), e, A); }
+	ICF void SetArrayConstant(LPCSTR n, u32 e, const fvec4& A) { SetArrayConstant(GetConstant(n)._get(), e, A); }
+	ICF void SetArrayConstant(LPCSTR n, u32 e, float x, float y, float z, float w) { SetArrayConstant(GetConstant(n)._get(), e, x, y, z, w); }
+
+	ICF void SetConstant(shared_str& n, const fmat4x4& A) { SetConstant(GetConstant(n)._get(), A); }
+	ICF void SetConstant(shared_str& n, const fvec4& A) { SetConstant(GetConstant(n)._get(), A); }
+	ICF void SetConstant(shared_str& n, const fvec3& A) { SetConstant(GetConstant(n)._get(), fvec4().set(A.x, A.y, A.z, 0.0f)); }
+	ICF void SetConstant(shared_str& n, float x, float y, float z, float w) { SetConstant(GetConstant(n)._get(), x, y, z, w); }
+	ICF void SetArrayConstant(shared_str& n, u32 e, const fmat4x4& A) { SetArrayConstant(GetConstant(n)._get(), e, A); }
+	ICF void SetArrayConstant(shared_str& n, u32 e, const fvec4& A) { SetArrayConstant(GetConstant(n)._get(), e, A); }
+	ICF void SetArrayConstant(shared_str& n, u32 e, float x, float y, float z, float w) { SetArrayConstant(GetConstant(n)._get(), e, x, y, z, w); }
+
+	// Drawing
+	ICF void Apply(u32 countV, u32 PC);
+	ICF void Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
+	ICF void Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
+
+	// Debug (temporary direct D3D calls, will be moved to CDebugRenderer)
+	void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
+	void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
+	void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) {};
+	IC void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value) { CHK_DX(m_pDevice->SetSamplerState(sampler, type, value)); }
+	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
+	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
+	IC void dbg_DrawAABB(fvec3& Translation, float sx, float sy, float sz, u32 Color);
+	void dbg_DrawOBB(fmat4x4& T, fvec3& half_dim, u32 C);
+	IC void dbg_DrawTRI(fmat4x4& Transform, fvec3* p, u32 Color) { dbg_DrawTRI(Transform, p[0], p[1], p[2], Color); }
+	void dbg_DrawTRI(fmat4x4& T, fvec3& p1, fvec3& p2, fvec3& p3, u32 C);
+	void dbg_DrawLINE(fmat4x4& T, fvec3& p1, fvec3& p2, u32 C);
+	void dbg_DrawEllipse(fmat4x4& T, u32 C);
+
+	// Render target / viewport helpers
+	void ComputeTexgenScreen(fmat4x4& dest);
+	void SetViewportGeom(u32 w, u32 h, ref_geom geometry, u32& vOffset);
+	void SetRenderTarget(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL);
+	void SetRenderTarget(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2 = NULL, IDirect3DSurface9* _3 = NULL, IDirect3DSurface9* _4 = NULL);
+	void SetDepthBuffer(IDirect3DSurface9* zb);
+	void ClearDepthBuffer(IDirect3DSurface9* zb);
+	void SetViewportGeom(u32 w, u32 h, u32& vOffset);
+	void SetViewportGeom(ref_geom geometry, u32& vOffset);
+	void SetViewportGeom(u32& vOffset);
+	void RenderViewportGeom(u32 w, u32 h);
+	void RenderViewportSurface();
+	void RenderViewportSurface(u32 w, u32 h, IDirect3DSurface9* _1, IDirect3DSurface9* zb = NULL);
+	void RenderViewportSurface(IDirect3DSurface9* _1);
+	void RenderViewportSurface(const ref_rt& _1, IDirect3DSurface9* zb = NULL);
+	void RenderViewportSurface(u32 w, u32 h, const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL);
+	void RenderToMipLevel(ref_rt target, u32 mip_level);
+	void RenderToMipLevel(ref_rt target, u32 mip_level, ShaderElement* shader, u32 pass);
+	void GenerateMipChain(ref_rt source, ref_rt mip_chain, ShaderElement* downsample_shader, u32 pass = 0);
+	void CopyViewportSurface(ref_rt source, ref_rt destination);
+	void CopyViewportSurface(ref_rt source, ref_rt destination, D3DTEXTUREFILTERTYPE filter);
+	void CopyViewportSurface(ref_rt source, RECT src_rect, ref_rt destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter);
+	void CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination);
+	void CopySurface(IDirect3DSurface9* source, IDirect3DSurface9* destination, D3DTEXTUREFILTERTYPE filter);
+	void CopySurface(IDirect3DSurface9* source, RECT src_rect, IDirect3DSurface9* destination, RECT dst_rect, D3DTEXTUREFILTERTYPE filter);
+	ICF void Clear(DWORD Count, const D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
+	ICF void ClearTexture(const ref_rt& _1, u32 color = color_rgba(0, 0, 0, 0));
+	ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, u32 color = color_rgba(0, 0, 0, 0));
+	ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, u32 color = color_rgba(0, 0, 0, 0));
+	ICF void ClearTexture(const ref_rt& _1, const ref_rt& _2 = NULL, const ref_rt& _3 = NULL, const ref_rt& _4 = NULL, u32 color = color_rgba(0, 0, 0, 0));
+};
+
+extern ENGINE_API CRenderBackendFacade RenderBackendLegacy;
+extern ENGINE_API void R_InitVidModeList();
+extern ENGINE_API void R_FreeVidModeList();
+
+#include "R_Backend.inl"
+
+#ifndef _EDITOR
+#include "D3DUtils.h"
+#endif

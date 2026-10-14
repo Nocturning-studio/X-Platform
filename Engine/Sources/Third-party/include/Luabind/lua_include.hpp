@@ -25,8 +25,8 @@
 
 extern "C"
 {
-#include <Runtime/xrLua/src/lua.h>
-#include <Runtime/xrLua/src/lauxlib.h>
+#include <Engine/xrLua/src/lua.h>
+#include <Engine/xrLua/src/lauxlib.h>
 };
 
 #endif
