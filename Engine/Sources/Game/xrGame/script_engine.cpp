@@ -157,6 +157,22 @@ void CScriptEngine::setup_auto_load()
 	// lua_settop							(lua(),-0);
 }
 
+void CScriptEngine::define_legacy_functions()
+{
+	// Lua 5.0 compatibility: restore string.gfind as alias for string.gmatch
+	// (gfind was renamed to gmatch in Lua 5.1 and removed in LuaJIT 2.1)
+	lua_getglobal(lua(), "string");       // push string table
+	lua_getfield(lua(), -1, "gmatch");    // push string.gmatch
+	lua_setfield(lua(), -2, "gfind");     // string.gfind = string.gmatch
+	lua_pop(lua(), 1);
+
+	// Lua 5.0 compatibility: restore math.mod as alias for math.fmod
+	lua_getglobal(lua(), "math");        // push math table
+	lua_getfield(lua(), -1, "fmod");     // push math.fmod
+	lua_setfield(lua(), -2, "mod");      // math.mod = math.fmod
+	lua_pop(lua(), 1);                   // pop math table
+}
+
 void CScriptEngine::init()
 {
 	CScriptStorage::reinit();
@@ -165,6 +181,8 @@ void CScriptEngine::init()
 	setup_callbacks();
 	export_classes(lua());
 	setup_auto_load();
+
+	define_legacy_functions();
 
 #ifdef DEBUG
 	m_stack_is_ready = true;

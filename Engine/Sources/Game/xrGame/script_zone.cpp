@@ -99,9 +99,11 @@ void CScriptZone::OnRender()
 {
 	// PROFILE_FUNCTION();
 
+#pragma fixme("CScriptZone::OnRender()")
+
 	if(!bDebug)
 		return;
-	RenderBackendLegacy.OnFrameEnd();
+	//RenderBackendLegacy.OnFrameEnd();
 	fvec3 l_half;
 	l_half.set(.5f, .5f, .5f);
 	fmat4x4 l_ball, l_box;

@@ -19,11 +19,13 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
+#include <pch_lua.h>
 
 #define LUA_LIB
-#include "lua_include.hpp"
-#include "luabind.hpp"
-#include "detail/implicit_cast.hpp"
+#include <luabind/lua_include.hpp>
+
+#include <luabind/luabind.hpp>
+#include <luabind/detail/implicit_cast.hpp>
 
 using namespace luabind::detail;
 
@@ -32,27 +34,26 @@ namespace luabind
 	namespace detail
 	{
 
-
 		// *************************************
 		// PROXY OBJECT
 
-#define LUABIND_PROXY_ASSIGNMENT_OPERATOR(rhs)\
-		proxy_object& proxy_object::operator=(const rhs& p) \
-		{ \
-			assert((lua_state() == p.lua_state()) && "you cannot assign a value from a different lua state"); \
-			lua_State* L = lua_state(); \
-			m_obj->pushvalue(); \
-			m_key.get(L);\
-			p.pushvalue(); \
-			lua_settable(L, -3); \
-			lua_pop(L, 1); \
-			return *this; \
-		}
+#define LUABIND_PROXY_ASSIGNMENT_OPERATOR(rhs)                                                                         \
+	proxy_object& proxy_object::operator=(const rhs& p)                                                                \
+	{                                                                                                                  \
+		assert((lua_state() == p.lua_state()) && "you cannot assign a value from a different lua state");              \
+		lua_State* L = lua_state();                                                                                    \
+		m_obj->pushvalue();                                                                                            \
+		m_key.get(L);                                                                                                  \
+		p.pushvalue();                                                                                                 \
+		lua_settable(L, -3);                                                                                           \
+		lua_pop(L, 1);                                                                                                 \
+		return *this;                                                                                                  \
+	}
 
-LUABIND_PROXY_ASSIGNMENT_OPERATOR(object)
-LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_object)
-LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_raw_object)
-LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
+		LUABIND_PROXY_ASSIGNMENT_OPERATOR(object)
+		LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_object)
+		LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_raw_object)
+		LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 
 #undef LUABIND_PROXY_ASSIGNMENT_OPERATOR
 
@@ -79,29 +80,25 @@ LUABIND_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 			lua_pop(L, 2);
 		}
 
-
-
 		// *************************************
 		// PROXY ARRAY OBJECT
 
+#define LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(rhs)                                                                   \
+	proxy_array_object& proxy_array_object::operator=(const rhs& p)                                                    \
+	{                                                                                                                  \
+		assert((lua_state() == p.lua_state()) && "you cannot assign a value from a different lua state");              \
+		lua_State* L = lua_state();                                                                                    \
+		m_obj->pushvalue();                                                                                            \
+		p.pushvalue();                                                                                                 \
+		lua_rawseti(L, -2, m_key);                                                                                     \
+		lua_pop(L, 1);                                                                                                 \
+		return *this;                                                                                                  \
+	}
 
-
-#define LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(rhs)\
-		proxy_array_object& proxy_array_object::operator=(const rhs& p) \
-		{ \
-			assert((lua_state() == p.lua_state()) && "you cannot assign a value from a different lua state"); \
-			lua_State* L = lua_state(); \
-			m_obj->pushvalue(); \
-			p.pushvalue(); \
-			lua_rawseti(L, -2, m_key); \
-			lua_pop(L, 1); \
-			return *this; \
-		}
-
-LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(object)
-LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_object)
-LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_raw_object)
-LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
+		LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(object)
+		LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_object)
+		LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_raw_object)
+		LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 
 #undef LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR
 
@@ -126,28 +123,26 @@ LUABIND_ARRAY_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 			lua_pop(L, 2);
 		}
 
-
 		// *************************************
 		// PROXY RAW OBJECT
 
+#define LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(rhs)                                                                     \
+	proxy_raw_object& proxy_raw_object::operator=(const rhs& p)                                                        \
+	{                                                                                                                  \
+		assert((lua_state() == p.lua_state()) && "you cannot assign a value from a different lua state");              \
+		lua_State* L = lua_state();                                                                                    \
+		m_obj->pushvalue();                                                                                            \
+		m_key.get(L);                                                                                                  \
+		p.pushvalue();                                                                                                 \
+		lua_rawset(L, -3);                                                                                             \
+		lua_pop(L, 1);                                                                                                 \
+		return *this;                                                                                                  \
+	}
 
-#define LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(rhs)\
-		proxy_raw_object& proxy_raw_object::operator=(const rhs& p) \
-		{ \
-			assert((lua_state() == p.lua_state()) && "you cannot assign a value from a different lua state"); \
-			lua_State* L = lua_state(); \
-			m_obj->pushvalue(); \
-			m_key.get(L);\
-			p.pushvalue(); \
-			lua_rawset(L, -3); \
-			lua_pop(L, 1); \
-			return *this; \
-		}
-
-LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(object)
-LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_object)
-LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_raw_object)
-LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
+		LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(object)
+		LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_object)
+		LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_raw_object)
+		LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 
 #undef LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR
 
@@ -174,61 +169,57 @@ LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 			lua_pop(L, 2);
 		}
 
-	} // detail
+	} // namespace detail
 
-#define LUABIND_DECLARE_OPERATOR(MACRO)\
-	MACRO(object, object) \
-	MACRO(object, detail::proxy_object) \
-	MACRO(object, detail::proxy_array_object) \
-	MACRO(object, detail::proxy_raw_object) \
-	MACRO(detail::proxy_object, object) \
-	MACRO(detail::proxy_object, detail::proxy_object) \
-	MACRO(detail::proxy_object, detail::proxy_array_object) \
-	MACRO(detail::proxy_object, detail::proxy_raw_object) \
-	MACRO(detail::proxy_array_object, object) \
-	MACRO(detail::proxy_array_object, detail::proxy_object) \
-	MACRO(detail::proxy_array_object, detail::proxy_array_object) \
-	MACRO(detail::proxy_array_object, detail::proxy_raw_object) \
-	MACRO(detail::proxy_raw_object, object) \
-	MACRO(detail::proxy_raw_object, detail::proxy_object) \
-	MACRO(detail::proxy_raw_object, detail::proxy_array_object) \
+#define LUABIND_DECLARE_OPERATOR(MACRO)                                                                                \
+	MACRO(object, object)                                                                                              \
+	MACRO(object, detail::proxy_object)                                                                                \
+	MACRO(object, detail::proxy_array_object)                                                                          \
+	MACRO(object, detail::proxy_raw_object)                                                                            \
+	MACRO(detail::proxy_object, object)                                                                                \
+	MACRO(detail::proxy_object, detail::proxy_object)                                                                  \
+	MACRO(detail::proxy_object, detail::proxy_array_object)                                                            \
+	MACRO(detail::proxy_object, detail::proxy_raw_object)                                                              \
+	MACRO(detail::proxy_array_object, object)                                                                          \
+	MACRO(detail::proxy_array_object, detail::proxy_object)                                                            \
+	MACRO(detail::proxy_array_object, detail::proxy_array_object)                                                      \
+	MACRO(detail::proxy_array_object, detail::proxy_raw_object)                                                        \
+	MACRO(detail::proxy_raw_object, object)                                                                            \
+	MACRO(detail::proxy_raw_object, detail::proxy_object)                                                              \
+	MACRO(detail::proxy_raw_object, detail::proxy_array_object)                                                        \
 	MACRO(detail::proxy_raw_object, detail::proxy_raw_object)
 
+	// *****************************
+	// OPERATOR ==
 
-		// *****************************
-		// OPERATOR ==
-
-
-
-#define LUABIND_EQUALITY_OPERATOR(lhs_t, rhs_t)\
-	bool operator==(const lhs_t& lhs, const rhs_t& rhs) \
-	{ \
-		if (!lhs.is_valid()) return false; \
-		if (!rhs.is_valid()) return false; \
-		assert((lhs.lua_state() == rhs.lua_state()) && "you cannot compare objects from different lua states"); \
-		lua_State* L = lhs.lua_state(); \
-		lhs.pushvalue(); \
-		rhs.pushvalue(); \
-		bool result = lua_equal(L, -1, -2) != 0; \
-		lua_pop(L, 2); \
-		return result; \
+#define LUABIND_EQUALITY_OPERATOR(lhs_t, rhs_t)                                                                        \
+	bool operator==(const lhs_t& lhs, const rhs_t& rhs)                                                                \
+	{                                                                                                                  \
+		if (!lhs.is_valid()) return false;                                                                             \
+		if (!rhs.is_valid()) return false;                                                                             \
+		assert((lhs.lua_state() == rhs.lua_state()) && "you cannot compare objects from different lua states");        \
+		lua_State* L = lhs.lua_state();                                                                                \
+		lhs.pushvalue();                                                                                               \
+		rhs.pushvalue();                                                                                               \
+		bool result = lua_equal(L, -1, -2) != 0;                                                                       \
+		lua_pop(L, 2);                                                                                                 \
+		return result;                                                                                                 \
 	}
 
 	LUABIND_DECLARE_OPERATOR(LUABIND_EQUALITY_OPERATOR)
 
 #undef LUABIND_EQUALITY_OPERATOR
 
-
 	// *****************************
 	// OPERATOR =
 
-#define LUABIND_ASSIGNMENT_OPERATOR(rhs)\
-	object& object::operator=(const rhs& o) const \
-	{ \
-		m_state = o.lua_state(); \
-		o.pushvalue(); \
-		set(); \
-		return const_cast<luabind::object&>(*this); \
+#define LUABIND_ASSIGNMENT_OPERATOR(rhs)                                                                               \
+	object& object::operator=(const rhs& o) const                                                                      \
+	{                                                                                                                  \
+		m_state = o.lua_state();                                                                                       \
+		o.pushvalue();                                                                                                 \
+		set();                                                                                                         \
+		return const_cast<luabind::object&>(*this);                                                                    \
 	}
 
 	LUABIND_ASSIGNMENT_OPERATOR(object)
@@ -236,44 +227,40 @@ LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 	LUABIND_ASSIGNMENT_OPERATOR(proxy_array_object)
 	LUABIND_ASSIGNMENT_OPERATOR(proxy_raw_object)
 
+	// *****************************
+	// OPERATOR ==
 
-	
-		// *****************************
-		// OPERATOR ==
-
-
-
-#define LUABIND_LESSTHAN_OPERATOR(lhs_t, rhs_t)\
-	bool operator<(const lhs_t& lhs, const rhs_t& rhs) \
-	{ \
-		if (!lhs.is_valid()) return false; \
-		if (!rhs.is_valid()) return false; \
-		assert((lhs.lua_state() == rhs.lua_state()) && "you cannot compare objects from different lua states"); \
-		lua_State* L = lhs.lua_state(); \
-		lhs.pushvalue(); \
-		rhs.pushvalue(); \
-		bool result = lua_lessthan(L, -1, -2) != 0; \
-		lua_pop(L, 2); \
-		return result; \
+#define LUABIND_LESSTHAN_OPERATOR(lhs_t, rhs_t)                                                                        \
+	bool operator<(const lhs_t& lhs, const rhs_t& rhs)                                                                 \
+	{                                                                                                                  \
+		if (!lhs.is_valid()) return false;                                                                             \
+		if (!rhs.is_valid()) return false;                                                                             \
+		assert((lhs.lua_state() == rhs.lua_state()) && "you cannot compare objects from different lua states");        \
+		lua_State* L = lhs.lua_state();                                                                                \
+		lhs.pushvalue();                                                                                               \
+		rhs.pushvalue();                                                                                               \
+		bool result = lua_lessthan(L, -1, -2) != 0;                                                                    \
+		lua_pop(L, 2);                                                                                                 \
+		return result;                                                                                                 \
 	}
 
 	LUABIND_DECLARE_OPERATOR(LUABIND_LESSTHAN_OPERATOR)
 
 #undef LUABIND_LESSTHAN_OPERATOR
 
-#define LUABIND_LESSOREQUAL_OPERATOR(lhs_t, rhs_t)\
-	bool operator<=(const lhs_t& lhs, const rhs_t& rhs) \
-	{ \
-		if (!lhs.is_valid()) return false; \
-		if (!rhs.is_valid()) return false; \
-		assert((lhs.lua_state() == rhs.lua_state()) && "you cannot compare objects from different lua states"); \
-		lua_State* L = lhs.lua_state(); \
-		lhs.pushvalue(); \
-		rhs.pushvalue(); \
-		bool result1 = lua_lessthan(L, -1, -2) != 0; \
-		bool result2 = lua_equal(L, -1, -2) != 0; \
-		lua_pop(L, 2); \
-		return result1 || result2; \
+#define LUABIND_LESSOREQUAL_OPERATOR(lhs_t, rhs_t)                                                                     \
+	bool operator<=(const lhs_t& lhs, const rhs_t& rhs)                                                                \
+	{                                                                                                                  \
+		if (!lhs.is_valid()) return false;                                                                             \
+		if (!rhs.is_valid()) return false;                                                                             \
+		assert((lhs.lua_state() == rhs.lua_state()) && "you cannot compare objects from different lua states");        \
+		lua_State* L = lhs.lua_state();                                                                                \
+		lhs.pushvalue();                                                                                               \
+		rhs.pushvalue();                                                                                               \
+		bool result1 = lua_lessthan(L, -1, -2) != 0;                                                                   \
+		bool result2 = lua_equal(L, -1, -2) != 0;                                                                      \
+		lua_pop(L, 2);                                                                                                 \
+		return result1 || result2;                                                                                     \
 	}
 
 	LUABIND_DECLARE_OPERATOR(LUABIND_LESSOREQUAL_OPERATOR)
@@ -282,8 +269,6 @@ LUABIND_RAW_PROXY_ASSIGNMENT_OPERATOR(proxy_array_object)
 
 #undef LUABIND_GREATERTHAN_OPERATOR
 
-
 #undef LUABIND_DECLARE_OPERATOR
 
-}
-
+} // namespace luabind

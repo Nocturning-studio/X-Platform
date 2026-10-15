@@ -1064,8 +1064,8 @@ void draw_visiblity_rays(CCustomMonster* self, const CObject* object, collide::r
 void CCustomMonster::OnRender()
 {
 	// PROFILE_FUNCTION();
-
-	RenderBackendLegacy.OnFrameEnd();
+#pragma fixme("CCustomMonster::OnRender()")
+	//RenderBackendLegacy.OnFrameEnd();
 
 	for(int i = 0; i < 1; ++i)
 	{

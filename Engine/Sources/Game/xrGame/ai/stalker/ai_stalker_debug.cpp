@@ -49,7 +49,7 @@
 #include "xrGame/object_handler_space.h"
 #include "xrGame/debug_renderer.h"
 #include "xrGame/CharacterPhysicsSupport.h"
-#include "../../../xrFramework/xrSheduler.h"
+#include <xrFramework/xrSheduler.h>
 
 CActor* g_debug_actor = 0;
 

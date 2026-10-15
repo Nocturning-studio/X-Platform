@@ -20,23 +20,23 @@
 
 extern "C"
 {
-#include <LuaAPI\src\lua.h>
-#include <LuaAPI\src\lualib.h>
-#include <LuaAPI\src\lauxlib.h>
-#include <LuaAPI\src\luajit.h>
+#include <LuaJIT-2.1.0-beta3\src\lua.h>
+#include <LuaJIT-2.1.0-beta3\src\lualib.h>
+#include <LuaJIT-2.1.0-beta3\src\lauxlib.h>
+#include <LuaJIT-2.1.0-beta3\src\luajit.h>
 };
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
-#include <LuaAPI/luabind/luabind.hpp>
+#include <luabind/luabind.hpp>
 #pragma warning(pop)
 
-#include <LuaAPI/luabind/object.hpp>
-#include <LuaAPI/luabind/functor.hpp>
-#include <LuaAPI/luabind/operator.hpp>
-#include <LuaAPI/luabind/adopt_policy.hpp>
-#include <LuaAPI/luabind/return_reference_to_policy.hpp>
-#include <LuaAPI/luabind/out_value_policy.hpp>
-#include <LuaAPI/luabind/iterator_policy.hpp>
+#include <luabind/object.hpp>
+#include <luabind/functor.hpp>
+#include <luabind/operator.hpp>
+#include <luabind/adopt_policy.hpp>
+#include <luabind/return_reference_to_policy.hpp>
+#include <luabind/out_value_policy.hpp>
+#include <luabind/iterator_policy.hpp>
 
 #endif // PCH_SCRIPT_H

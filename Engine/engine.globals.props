@@ -9,7 +9,7 @@
         <xrEngineDir>$(xrSourcesRoot)\Engine\</xrEngineDir>
 		<xrGameDir>$(xrSourcesRoot)\Game\</xrGameDir>
         <xrUtilsDir>$(xrSourcesRoot)\Utils\</xrUtilsDir>
-	    <ThirdPartyDir>$(xrSourcesRoot)Third-Party\</ThirdPartyDir>
+	    <ThirdPartyDir>$(xrSourcesRoot)\Third-Party\</ThirdPartyDir>
         <ThirdPartyBin>$(ThirdPartyDir)\binaries\$(PlatformShortName)\</ThirdPartyBin>
         <ThirdPartyLib>$(ThirdPartyDir)\libraries\$(PlatformShortName)\</ThirdPartyLib>
         <ThirdPartyInclude>$(ThirdPartyDir)\include\</ThirdPartyInclude>

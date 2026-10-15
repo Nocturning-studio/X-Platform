@@ -305,8 +305,7 @@ void CRenderDevice::Reset()
 	Engine.DebugUI.OnResetBegin();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:",
-		Engine.RHI.GetRawRHI() ? Engine.RHI.GetRawRHI()->GetDeviceHandle() : nullptr);
+	//_SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", Engine.RHI.GetRawRHI() ? Engine.RHI.GetRawRHI()->GetDeviceHandle() : nullptr);
 #endif
 
 	bool b_16_before = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
@@ -379,7 +378,7 @@ void CRenderDevice::Reset()
 	Engine.DebugUI.OnResetEnd();
 
 #ifdef DEBUG
-	_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", Engine.RHI.GetRawRHI() ? Engine.RHI.GetRawRHI()->GetDeviceHandle() : nullptr);
+	//_SHOW_REF("*ref +CRenderDevice::ResetTotal: DeviceREF:", Engine.RHI.GetRawRHI() ? Engine.RHI.GetRawRHI()->GetDeviceHandle() : nullptr);
 #endif
 }
 

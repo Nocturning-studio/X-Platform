@@ -8,8 +8,8 @@
 #include "blender_recorder.h"
 #include "ai_script_space.h"
 #include "ai_script_lua_extension.h"
-#include <LuaAPI/luabind/error.hpp>
-#include <LuaAPI/luabind/return_reference_to_policy.hpp>
+#include <luabind/error.hpp>
+#include <luabind/return_reference_to_policy.hpp>
 
 using namespace luabind;
 

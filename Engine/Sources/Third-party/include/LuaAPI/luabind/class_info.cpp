@@ -19,20 +19,22 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
+#include <pch_lua.h>
 
 #define LUA_LIB
-#include "lua_include.hpp"
-#include "luabind.hpp"
-#include "class_info.hpp"
+#include <luabind/lua_include.hpp>
+
+#include <luabind/luabind.hpp>
+#include <luabind/class_info.hpp>
 
 namespace luabind
 {
 	class_info get_class_info(const object& o)
 	{
 		lua_State* L = o.lua_state();
-	
+
 		class_info result(L);
-	
+
 		o.pushvalue();
 		detail::object_rep* obj = static_cast<detail::object_rep*>(lua_touserdata(L, -1));
 		lua_pop(L, 1);
@@ -44,11 +46,10 @@ namespace luabind
 		result.attributes = newtable(L);
 
 		typedef detail::class_rep::property_map map_type;
-		
+
 		std::size_t index = 1;
-		
-		for (map_type::const_iterator i = obj->crep()->properties().begin();
-				i != obj->crep()->properties().end(); ++i)
+
+		for (map_type::const_iterator i = obj->crep()->properties().begin(); i != obj->crep()->properties().end(); ++i)
 		{
 			result.attributes[index] = i->first;
 		}
@@ -58,15 +59,11 @@ namespace luabind
 
 	void bind_class_info(lua_State* L)
 	{
-		module(L)
-		[
-			class_<class_info>("class_info_data")
-				.def_readonly("name", &class_info::name)
-				.def_readonly("methods", &class_info::methods)
-				.def_readonly("attributes", &class_info::attributes),
-		
-			def("class_info", &get_class_info)
-		];
-	}
-}
+		module(L)[class_<class_info>("class_info_data")
+					  .def_readonly("name", &class_info::name)
+					  .def_readonly("methods", &class_info::methods)
+					  .def_readonly("attributes", &class_info::attributes),
 
+				  def("class_info", &get_class_info)];
+	}
+} // namespace luabind

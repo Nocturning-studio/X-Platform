@@ -7,6 +7,7 @@
 #include "pch.h"
 #include "IEngineHost.h"
 #include "std_classes.h"
+#include "IGame_Persistent.h"
 ////////////////////////////////////////////////////////////////////////////////
 IGame_Persistent* IEngineHost::CreateGamePersistent(Factory_Create* factory)
 {

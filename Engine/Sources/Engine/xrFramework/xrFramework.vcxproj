@@ -1071,6 +1071,9 @@
     <ClCompile Include="Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-party\include\Imgui\Imgui.vcxproj">
+      <Project>{416e416c-4ce6-4163-888b-884d8ad77f7b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Third-party\include\libogg\win32\libogg_static.vcxproj">
       <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
     </ProjectReference>

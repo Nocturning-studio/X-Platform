@@ -15,9 +15,8 @@
 
 extern "C"
 {
-#include <LuaAPI\src\lua.h>
-#include <LuaAPI\src\luajit.h>
-#include <LuaAPI\src\lcoco.h>
+#include <LuaJIT-2.1.0-beta3\src\lua.h>
+#include <LuaJIT-2.1.0-beta3\src\luajit.h>
 };
 // #define DBG_DISABLE_SCRIPTS
 
@@ -67,6 +66,7 @@ class CScriptEngine : public CScriptStorage
 	virtual ~CScriptEngine();
 	void init();
 	virtual void unload();
+	void define_legacy_functions();
 	static int lua_panic(lua_State* L);
 	static void lua_error(lua_State* L);
 	static int lua_pcall_failed(lua_State* L);

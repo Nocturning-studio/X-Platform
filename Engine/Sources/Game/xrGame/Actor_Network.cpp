@@ -47,6 +47,8 @@
 #include "debug_renderer.h"
 #endif
 
+#include <xrFramework/xrSheduler.h>
+
 int g_cl_InterpolationType = 0;
 u32 g_cl_InterpolationMaxPoints = 0;
 int g_dwInputUpdateDelta = 20;
@@ -1463,8 +1465,8 @@ void dbg_draw_piramid(fvec3 pos, fvec3 dir, float size, float xdir, u32 color)
 void CActor::OnRender_Network()
 {
 	// OPTICK_EVENT("CActor::OnRender_Network");
-
-	RenderBackendLegacy.OnFrameEnd();
+#pragma fixme("OnRender_Network")
+	//RenderBackendLegacy.OnFrameEnd();
 
 	//-----------------------------------------------------------------------------------------------------
 	float size = 0.2f;

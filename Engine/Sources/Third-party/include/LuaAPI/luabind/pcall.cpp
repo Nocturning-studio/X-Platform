@@ -19,34 +19,34 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
+#include <pch_lua.h>
 
 #define LUA_LIB
-#include "detail/pcall.hpp"
-#include "error.hpp"
-#include "lua_include.hpp"
+#include <luabind/detail/pcall.hpp>
+#include <luabind/error.hpp>
+#include <luabind/lua_include.hpp>
 
-namespace luabind { namespace detail
+namespace luabind
 {
-	int pcall(lua_State *L, int nargs, int nresults)
+	namespace detail
 	{
-		pcall_callback_fun e = get_pcall_callback();
-		int en = 0;
-		if ( e )
+		int pcall(lua_State* L, int nargs, int nresults)
 		{
-			int base = lua_gettop(L) - nargs;
-			lua_pushcfunction(L, e);
-			lua_insert(L, base);  // push pcall_callback under chunk and args
-			en = base;
-  		}
-		int result = lua_pcall(L, nargs, nresults, en);
-		if ( en )
-			lua_remove(L, en);  // remove pcall_callback
-		return result;
-	}
+			pcall_callback_fun e = get_pcall_callback();
+			int en = 0;
+			if (e)
+			{
+				int base = lua_gettop(L) - nargs;
+				lua_pushcfunction(L, e);
+				lua_insert(L, base); // push pcall_callback under chunk and args
+				en = base;
+			}
+			int result = lua_pcall(L, nargs, nresults, en);
+			if (en) lua_remove(L, en); // remove pcall_callback
+			return result;
+		}
 
-	int resume_impl(lua_State *L, int nargs, int)
-	{
-		return lua_resume(L, nargs);
-	}
+		int resume_impl(lua_State* L, int nargs, int) { return lua_resume(L, nargs); }
 
-}}
+	} // namespace detail
+} // namespace luabind

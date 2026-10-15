@@ -144,14 +144,20 @@ struct profile_timer_script
 
 	IC void stop()
 	{
-		THROW(m_recurse_mark);
+		/* LuaJIT 2.1 + Luabind может копировать объект при передаче в метод,
+		** из-за чего stop() иногда вызывается на экземпляре без парного start().
+		** Вместо фатальной ошибки — просто игнорируем такой вызов.
+		*/
+		if (!m_recurse_mark)
+			return;
+
 		--m_recurse_mark;
 
-		if(m_recurse_mark)
+		if (m_recurse_mark)
 			return;
 
 		u64 finish = CPU::GetCLK();
-		if(finish > m_start_cpu_tick_count)
+		if (finish > m_start_cpu_tick_count)
 			m_accumulator += finish - m_start_cpu_tick_count;
 	}
 

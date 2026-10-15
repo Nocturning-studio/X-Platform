@@ -17,15 +17,15 @@
 extern "C"
 {
 	// #define BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-#include <LuaAPI/src/lua.h>
-#include <LuaAPI/src/lualib.h>
-#include <LuaAPI/src/lauxlib.h>
-#include <LuaAPI/src/luajit.h>
+#include <LuaJIT-2.1.0-beta3/src/lua.h>
+#include <LuaJIT-2.1.0-beta3/src/lualib.h>
+#include <LuaJIT-2.1.0-beta3/src/lauxlib.h>
+#include <LuaJIT-2.1.0-beta3/src/luajit.h>
 }
 
 // Lua-bind
-#include <LuaAPI/luabind/luabind.hpp>
-#include <LuaAPI/luabind/object.hpp>
+#include <luabind/luabind.hpp>
+#include <luabind/object.hpp>
 
 #pragma warning(default : 4244)
 #pragma warning(default : 4995)

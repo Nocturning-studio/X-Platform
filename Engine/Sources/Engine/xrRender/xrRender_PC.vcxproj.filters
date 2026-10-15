@@ -408,15 +408,6 @@
     <ClInclude Include="CPUOcclusion.h">
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\xrFramework\du_cone.h">
-      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\xrFramework\du_sphere.h">
-      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\xrFramework\du_sphere_part.h">
-      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
-    </ClInclude>
     <ClInclude Include="SoftXOcclusionCore.h">
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClInclude>
@@ -468,6 +459,9 @@
     <ClInclude Include="RenderPipeline\IndirectLightingStage.h">
       <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrFramework\du_cone.h" />
+    <ClInclude Include="..\xrFramework\du_sphere.h" />
+    <ClInclude Include="..\xrFramework\du_sphere_part.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -692,15 +686,6 @@
     <ClCompile Include="CPUOcclusion.cpp">
       <Filter>Occlusion culling\SoftX occlusion culling</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\xrFramework\du_cone.cpp">
-      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\xrFramework\du_sphere.cpp">
-      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\xrFramework\du_sphere_part.cpp">
-      <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage\Light volumes shapes</Filter>
-    </ClCompile>
     <ClCompile Include="r_render_stages_light_accumulator_volumes.cpp">
       <Filter>Render pipeline legacy\Render stages\Stages\Light accumulation stage\Occlusion culling stage</Filter>
     </ClCompile>
@@ -746,6 +731,9 @@
     <ClCompile Include="RenderPipeline\IndirectLightingStage.cpp">
       <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrFramework\du_cone.cpp" />
+    <ClCompile Include="..\xrFramework\du_sphere.cpp" />
+    <ClCompile Include="..\xrFramework\du_sphere_part.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

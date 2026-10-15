@@ -1,0 +1,533 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{1269f2c4-9d3f-4642-9bb4-046e3b784756}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jit">
+      <UniqueIdentifier>{86143d4c-2d77-4c7c-897a-6e75dac658cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="host">
+      <UniqueIdentifier>{c6885ad0-61fb-4ea7-bb9d-7281d1eada1b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ljamalg.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\luajit.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_aux.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_base.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_bit.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_debug.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_ffi.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_init.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_io.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_jit.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_math.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_os.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_package.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_string.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib_table.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_alloc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_api.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_asm.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_bc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_bcread.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_bcwrite.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_buf.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_carith.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_ccall.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_ccallback.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_cconv.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_cdata.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_char.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_clib.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_cparse.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_crecord.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_ctype.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_debug.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_dispatch.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_err.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_ffrecord.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_func.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_gc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_gdbjit.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_ir.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_lex.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_lib.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_load.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_mcode.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_meta.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_obj.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_dce.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_fold.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_loop.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_mem.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_narrow.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_sink.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_opt_split.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_parse.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_profile.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_record.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_snap.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_state.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_str.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_strfmt.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_strfmt_num.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_strscan.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_tab.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_trace.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_udata.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_vmevent.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lj_vmmath.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host\buildvm_lib.c">
+      <Filter>host</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host\buildvm_peobj.c">
+      <Filter>host</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host\minilua.c">
+      <Filter>host</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host\buildvm.c">
+      <Filter>host</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host\buildvm_asm.c">
+      <Filter>host</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host\buildvm_fold.c">
+      <Filter>host</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\lua.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lua.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luaconf.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\luajit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lualib.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lauxlib.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_alloc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_arch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_asm.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_asm_arm.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_asm_arm64.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_asm_mips.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_asm_ppc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_asm_x86.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_bc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_bcdef.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_bcdump.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_buf.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_carith.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ccall.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ccallback.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_cconv.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_cdata.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_char.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_clib.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_cparse.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_crecord.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ctype.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_debug.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_def.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_dispatch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_emit_arm.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_emit_arm64.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_emit_mips.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_emit_ppc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_emit_x86.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_err.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_errmsg.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ff.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ffdef.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ffrecord.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_folddef.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_frame.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_func.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_gc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_gdbjit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ir.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_ircall.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_iropt.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_jit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_lex.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_lib.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_libdef.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_mcode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_meta.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_obj.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_parse.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_profile.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_recdef.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_record.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_snap.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_state.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_str.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_strfmt.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_strscan.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_tab.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_target.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_target_arm.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_target_arm64.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_target_mips.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_target_ppc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_target_x86.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_trace.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_traceerr.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_udata.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_vm.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lj_vmevent.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\host\buildvm_libbc.h">
+      <Filter>host</Filter>
+    </ClInclude>
+    <ClInclude Include="src\host\buildvm.h">
+      <Filter>host</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\lj.supp">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\jit\dis_mips64.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_mips64el.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_mipsel.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_ppc.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_x64.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_x86.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dump.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\p.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\v.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\zone.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\bc.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\bcsave.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_arm.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_arm64.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_arm64be.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\jit\dis_mips.lua">
+      <Filter>jit</Filter>
+    </None>
+    <None Include="src\host\genlibbc.lua">
+      <Filter>host</Filter>
+    </None>
+    <None Include="src\host\genminilua.lua">
+      <Filter>host</Filter>
+    </None>
+  </ItemGroup>
+</Project>
