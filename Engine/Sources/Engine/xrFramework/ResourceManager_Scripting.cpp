@@ -349,6 +349,22 @@ class adopt_blend
   public:
 };
 
+namespace
+{
+	// LuaJIT 2.1 / Lua 5.1: luaopen_* functions expect the module name
+	// to be pushed onto the stack before being called. This mirrors what
+	// luaL_openlibs does internally.
+	struct luajit_helper
+	{
+		static void open_lib(lua_State* L, const char* module_name, lua_CFunction function)
+		{
+			lua_pushcfunction(L, function);
+			lua_pushstring(L, module_name);
+			lua_call(L, 1, 0);
+		}
+	};
+}
+
 void LuaLog(LPCSTR caMessage)
 {
 	MDB;
@@ -405,35 +421,52 @@ ENGINE_API u32 engine_lua_memory_usage()
 }
 #endif // USE_DL_ALLOCATOR
 
-// export
-void CResourceManagerLegacy::LS_Load()
+bool CResourceManagerLegacy::LS_CreateVM()
 {
 #ifndef USE_DL_ALLOCATOR
 	LSVM = lua_newstate(lua_alloc_xr, NULL);
-#else  // USE_XR_ALLOCAOR
+#else
 	LSVM = lua_newstate(lua_alloc_dl, NULL);
-#endif // USE_XR_ALLOCAOR
-	if(!LSVM)
+#endif
+
+	if (!LSVM)
 	{
 		Msg("! ERROR : Cannot initialize LUA VM!");
-		return;
+		return false;
 	}
 
-	// initialize lua standard library functions
-	luaopen_base(LSVM);
-	luaopen_table(LSVM);
-	luaopen_string(LSVM);
-	luaopen_math(LSVM);
-#ifdef USE_JIT
-	luaopen_jit(LSVM);
+	// Open standard libraries using the Lua 5.1 calling convention.
+	luajit_helper::open_lib(LSVM, "", luaopen_base);
+	luajit_helper::open_lib(LSVM, LUA_TABLIBNAME, luaopen_table);
+	luajit_helper::open_lib(LSVM, LUA_STRLIBNAME, luaopen_string);
+	luajit_helper::open_lib(LSVM, LUA_MATHLIBNAME, luaopen_math);
+
+	if (!strstr(Core.Params, "-nojit"))
+	{
+		luajit_helper::open_lib(LSVM, LUA_JITLIBNAME, luaopen_jit);
+
+#ifndef DEBUG
+		// Force JIT optimization level 2 (full optimizations).
+		// Without this, shader compilation uses the lazy default level.
+		luaL_dostring(LSVM, "if jit and jit.opt then jit.opt.start('2') end");
 #endif
+	}
 
 	luabind::open(LSVM);
 
 #ifndef XRAY_EXCEPTIONS
-	if(0 == luabind::get_error_callback())
+	if (0 == luabind::get_error_callback())
 		luabind::set_error_callback(LuaError);
 #endif
+
+	return true;
+}
+
+// export
+void CResourceManagerLegacy::LS_Load()
+{
+	if (!LS_CreateVM())
+		R_ERROR("Lua machine intialization error!");
 
 	function(LSVM, "log", LuaLog);
 

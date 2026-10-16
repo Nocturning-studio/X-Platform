@@ -73,6 +73,8 @@ class ENGINE_API CResourceManagerLegacy
 	BOOL bDeferredLoad;
 
   private:
+	bool LS_CreateVM();
+
 	void LS_Load();
 	void LS_Unload();
 
