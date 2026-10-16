@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "RenderBackend.h"
-#include <xrRHI/xrRHI.h>
+#include <X-RHI/include/XRHI.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace
 {
@@ -73,20 +73,19 @@ bool CRenderBackend::LoadRHIModule(RHI_BackendType type)
 	if(m_pRHI)
 		return true;
 
-	m_hRHI = LoadLibraryA("xrRHI.dll");
+	m_hRHI = LoadLibraryA("XRHI.dll");
 	if(!m_hRHI)
 	{
-		Msg("! [RenderBackend] Failed to load xrRHI.dll");
+		Msg("! [RenderBackend] Failed to load XRHI.dll");
 		return false;
 	}
 
 	using CreateBackendFunc = IRenderBackend* (*)(RHI_BackendType);
-	auto createBackend = reinterpret_cast<CreateBackendFunc>(
-		GetProcAddress(m_hRHI, "CreateRenderBackend"));
+	auto createBackend = reinterpret_cast<CreateBackendFunc>(GetProcAddress(m_hRHI, "CreateRenderBackend"));
 
 	if(!createBackend)
 	{
-		Msg("! [RenderBackend] CreateRenderBackend not found in xrRHI.dll");
+		Msg("! [RenderBackend] CreateRenderBackend not found in XRHI.dll");
 		FreeLibrary(m_hRHI);
 		m_hRHI = nullptr;
 		return false;

@@ -28,13 +28,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "R_Backend_StateCache.h"
-
-// Временный мост до полного перехода на RHI-only API.
-// SetBlendState/SetDepthStencilState/SetRasterizerState и Get'еры живут
-// только в CRenderBackendDX9, поэтому тянем его заголовок и AsDX9.
-#include <xrRHI/Backends/DirectX9/xrBackendDX9.h>
-#include <xrRHI/xrRHI_BackendAccess.h>
-
 ////////////////////////////////////////////////////////////////////////////////
 namespace
 {

@@ -239,11 +239,11 @@
     <ClCompile Include="Resources\Textures\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-party\include\X-RHI\XRHI.vcxproj">
+      <Project>{e65db17b-f6fa-41c0-ac83-8546a1d70fc4}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\xrRHI\xrRHI.vcxproj">
-      <Project>{a00d33cc-7f6c-4c7c-93e9-7e304c5d704f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

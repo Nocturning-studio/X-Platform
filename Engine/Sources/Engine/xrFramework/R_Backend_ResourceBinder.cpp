@@ -3,9 +3,9 @@
 #include "R_Backend.h"
 #include "sh_texture.h"
 #include "r_constants.h"
+#include <X-RHI/source/Backends/DirectX9/BackendDX9.h>
+#include <X-RHI/include/XRHI_BackendAccess.h>
 #include <xrRenderBackend/Resources/Shaders/ShaderPass.h>
-#include <xrRHI/Backends/DirectX9/xrBackendDX9.h>
-#include <xrRHI/xrRHI_BackendAccess.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace
 {

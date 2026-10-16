@@ -3,7 +3,6 @@
 
 #include "R_Backend_RenderTarget.h"
 #include "ResourceManager.h"
-#include "xrRHI/xrRHI_Types.h"
 
 // Хелпер для определения Usage
 static bool IsDepthStencilFormat(RHI_Format fmt)

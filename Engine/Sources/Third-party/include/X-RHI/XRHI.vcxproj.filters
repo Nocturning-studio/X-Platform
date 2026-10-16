@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{ac6ad269-2a36-448e-ae8b-149475af1f2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{9f8c1231-5b37-4e51-87cc-9e17152694e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Kernel">
+      <UniqueIdentifier>{e82a4854-d891-4850-8e93-acae9ad18040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Backends">
+      <UniqueIdentifier>{bac825f0-6e07-44c0-a011-6b5cd61f33b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Backends\DirectX 9">
+      <UniqueIdentifier>{f2539579-cca6-40dc-90ce-ea00ed8dd614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{e938e057-f755-4f41-91e0-54e73b49cf6a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\XRHI.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_API.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_BackendAccess.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_BackendInterface.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Base.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Buffers.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Caps.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Handles.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_InputLayout.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Log.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_PipelineLayout.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_PipelineState.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Samplers.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Shaders.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_States.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Types.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="source\pch.h">
+      <Filter>Source\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Backends\DirectX9\BackendDX9.h">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Backends\DirectX9\BackendDX9_Internal.h">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Math.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XRHI_Config.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\dllmain.cpp">
+      <Filter>Source\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="source\pch.cpp">
+      <Filter>Source\Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_Caps.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_Geometry.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_Internal.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_PipelineLayout.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_PipelineState.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_RT.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_Samplers.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_Shader.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_States.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_Texture.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XRHI_BackendFabric.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XRHI_Log.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\cpp.hint">
+      <Filter>Source\Kernel</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -6,8 +6,8 @@
 #include "xr_IOconsole.h"
 #include <SDL3/SDL.h>
 
-#include <xrRHI/Backends/DirectX9/xrBackendDX9.h>
-#include <xrRHI/xrRHI_BackendAccess.h>
+#include <X-RHI/source/Backends/DirectX9/BackendDX9.h>
+#include <X-RHI/include/XRHI_BackendAccess.h>
 
 ENGINE_API extern int psAnisotropic;
 

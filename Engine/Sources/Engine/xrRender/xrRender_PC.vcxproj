@@ -1227,9 +1227,6 @@
     <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
       <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\xrRHI\xrRHI.vcxproj">
-      <Project>{a00d33cc-7f6c-4c7c-93e9-7e304c5d704f}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

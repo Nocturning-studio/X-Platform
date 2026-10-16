@@ -1092,6 +1092,9 @@
     <ProjectReference Include="..\..\Third-party\include\Optick\include\OptickCore.vcxproj">
       <Project>{830934d9-6f6c-c37d-18f2-fb3304348f00}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\Third-party\include\X-RHI\XRHI.vcxproj">
+      <Project>{e65db17b-f6fa-41c0-ac83-8546a1d70fc4}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\xrNetServer\xrNetServer.vcxproj">
       <Project>{435bac9a-b225-457d-ab40-c9bd0cc8838c}</Project>
     </ProjectReference>
@@ -1101,9 +1104,6 @@
     </ProjectReference>
     <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
       <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\xrRHI\xrRHI.vcxproj">
-      <Project>{a00d33cc-7f6c-4c7c-93e9-7e304c5d704f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xrSound\xrSound.vcxproj">
       <Project>{ccca7859-eb86-493e-9b53-c4235f45b3c5}</Project>

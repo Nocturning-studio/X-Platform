@@ -1,8 +1,0 @@
-#define XRRHI_API __declspec(dllexport)
-#define XRRHI_API __declspec(dllimport)
-#define DEPRECATED(x) [[deprecated(x)]]
-#define DEPRECATED(x) __declspec(deprecated(x))
-#define DEPRECATED(x)
-#define DEPRECATED __declspec(deprecated("This function/field is deprecated. Use new backend instead."))
-#define DEPRECATED __attribute__((deprecated("This function/field is deprecated. Use new backend instead.")))
-#define DEPRECATED
