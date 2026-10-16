@@ -59,6 +59,101 @@ LPCSTR file_header = 0;
 #endif // USE_MEMORY_MONITOR
 #endif // PURE_ALLOC
 
+static void l_message(lua_State* state, const char* msg) { Msg("! [LUA_JIT] %s", msg); }
+
+static int report(lua_State* L, int status)
+{
+	if (status && !lua_isnil(L, -1))
+	{
+		const char* msg = lua_tostring(L, -1);
+		if (msg == NULL) msg = "(error object is not a string)";
+		l_message(L, msg);
+		lua_pop(L, 1);
+	}
+	return status;
+}
+
+static int loadjitmodule(lua_State* L)
+{
+	lua_getglobal(L, "require");
+	lua_pushliteral(L, "jit.");
+	lua_pushvalue(L, -3);
+	lua_concat(L, 2);
+	if (lua_pcall(L, 1, 1, 0))
+	{
+		const char* msg = lua_tostring(L, -1);
+		if (msg && !strncmp(msg, "module ", 7)) goto nomodule;
+		return report(L, 1);
+	}
+	lua_getfield(L, -1, "start");
+	if (lua_isnil(L, -1))
+	{
+	nomodule:
+		l_message(L, "unknown luaJIT command or jit.* modules not installed");
+		return 1;
+	}
+	lua_remove(L, -2); /* Drop module table. */
+	return 0;
+}
+
+/* Run command with options. */
+static int runcmdopt(lua_State* L, const char* opt)
+{
+	int narg = 0;
+	if (opt && *opt)
+	{
+		for (;;)
+		{ /* Split arguments. */
+			const char* p = strchr(opt, ',');
+			narg++;
+			if (!p) break;
+			if (p == opt)
+				lua_pushnil(L);
+			else
+				lua_pushlstring(L, opt, (size_t)(p - opt));
+			opt = p + 1;
+		}
+		if (*opt)
+			lua_pushstring(L, opt);
+		else
+			lua_pushnil(L);
+	}
+	return report(L, lua_pcall(L, narg, 0, 0));
+}
+
+/* JIT engine control command: try jit library first or load add-on module. */
+static int dojitcmd(lua_State* L, const char* cmd)
+{
+	const char* opt = strchr(cmd, '=');
+	lua_pushlstring(L, cmd, opt ? (size_t)(opt - cmd) : strlen(cmd));
+	lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
+	lua_getfield(L, -1, "jit"); /* Get jit.* module table. */
+	lua_remove(L, -2);
+	lua_pushvalue(L, -2);
+	lua_gettable(L, -2); /* Lookup library function. */
+	if (!lua_isfunction(L, -1))
+	{
+		lua_pop(L, 2); /* Drop non-function and jit.* table, keep module name. */
+		if (loadjitmodule(L)) return 1;
+	}
+	else { lua_remove(L, -2); /* Drop jit.* table. */ }
+	lua_remove(L, -2); /* Drop module name. */
+	return runcmdopt(L, opt ? opt + 1 : opt);
+}
+
+/* Optimization flags. */
+static int dojitopt(lua_State* L, const char* opt)
+{
+	lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
+	lua_getfield(L, -1, "jit.opt"); /* Get jit.opt.* module table. */
+	lua_remove(L, -2);
+	lua_getfield(L, -1, "start");
+	lua_remove(L, -2);
+	return runcmdopt(L, opt);
+}
+
+void jit_command(lua_State* state, const char* command) { dojitcmd(state, command); }
+
 #ifndef USE_DL_ALLOCATOR
 static void* lua_alloc_xr(void* ud, void* ptr, size_t osize, size_t nsize)
 {
@@ -115,46 +210,41 @@ CScriptStorage::~CScriptStorage()
 
 void CScriptStorage::reinit()
 {
-	if(m_virtual_machine)
-		lua_close(m_virtual_machine);
+	if (m_virtual_machine) lua_close(m_virtual_machine);
 
-#ifndef USE_DL_ALLOCATOR
-	m_virtual_machine = lua_newstate(lua_alloc_xr, NULL);
-#else  // USE_DL_ALLOCATOR
-	m_virtual_machine = lua_newstate(lua_alloc_dl, NULL);
-#endif // USE_DL_ALLOCATOR
+	m_virtual_machine = luaL_newstate();
+	R_ASSERT2(m_virtual_machine, "ERROR : Cannot initialize script virtual machine!");
 
-	if(!m_virtual_machine)
+	struct luajit
 	{
-		Msg("! ERROR : Cannot initialize script virtual machine!");
-		return;
-	}
-	// initialize lua standard library functions
-	luaopen_base(lua());
-	luaopen_table(lua());
-	luaopen_string(lua());
-	luaopen_math(lua());
+		static void open_lib(lua_State* L, char* module_name, lua_CFunction function)
+		{
+			lua_pushcfunction(L, function);
+			lua_pushstring(L, module_name);
+			lua_call(L, 1, 0);
+		}
+	}; // struct lua;
 
-#ifdef DEBUG
-	luaopen_debug(lua());
-//	luaopen_io				(lua());
-#endif
+	luajit::open_lib(lua(), "", luaopen_base);
+	luajit::open_lib(lua(), LUA_LOADLIBNAME, luaopen_package);
+	luajit::open_lib(lua(), LUA_TABLIBNAME, luaopen_table);
+	luajit::open_lib(lua(), LUA_IOLIBNAME, luaopen_io);
+	luajit::open_lib(lua(), LUA_OSLIBNAME, luaopen_os);
+	luajit::open_lib(lua(), LUA_MATHLIBNAME, luaopen_math);
+	luajit::open_lib(lua(), LUA_STRLIBNAME, luaopen_string);
+	luajit::open_lib(lua(), LUA_DBLIBNAME, luaopen_debug);
 
-#ifdef USE_JIT
-	if(strstr(Core.Params, "-nojit"))
+	if (!strstr(Core.Params, "-nojit"))
 	{
-		//		luaopen_jit			(lua());
-		//		luaopen_coco		(lua());
-		//		luaJIT_setmode		(lua(),2,LUAJIT_MODE_DEBUG);
-	}
-	else
-	{
-		luaopen_jit(lua());
-		luaopen_coco(lua());
-	}
-#endif
+		luajit::open_lib(lua(), LUA_JITLIBNAME, luaopen_jit);
+#ifndef DEBUG
+		// put_function(lua(), opt_lua_binary, sizeof(opt_lua_binary), "jit.opt");
+		// put_function(lua(), opt_inline_lua_binary, sizeof(opt_lua_binary), "jit.opt_inline");
+		dojitopt(lua(), "2");
+#endif // #ifndef DEBUG
+}
 
-	if(strstr(Core.Params, "-_g"))
+	if (strstr(Core.Params, "-_g"))
 		file_header = file_header_new;
 	else
 		file_header = file_header_old;
@@ -170,8 +260,9 @@ int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 #endif
 
 #ifndef DEBUG
-	return (0);
-#else // DEBUG
+	if (tLuaMessageType != ScriptStorage::eLuaMessageTypeError)
+		return (0);
+#endif
 
 	LPCSTR S = "", SS = "";
 	LPSTR S1;
@@ -240,14 +331,18 @@ int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 	vsprintf(S1, caFormat, marker);
 	strcat(S2, "\r\n");
 
-#ifndef ENGINE_BUILD
 #ifdef DEBUG
+	strcpy(S2, SS);
+	S1 = S2 + xr_strlen(SS);
+	vsprintf(S1, caFormat, marker);
+	strcat(S2, "\r\n");
+
+#ifndef ENGINE_BUILD
 	ai().script_engine().m_output.w(S2, xr_strlen(S2) * sizeof(char));
-#endif // DEBUG
+#endif // ENGINE_BUILD
 #endif // DEBUG
 
 	return (l_iResult);
-#endif
 }
 
 #ifdef DEBUG
@@ -371,9 +466,7 @@ bool CScriptStorage::load_buffer(lua_State* L, LPCSTR caBuffer, size_t tSize, LP
 
 	if(l_iErrorCode)
 	{
-#ifdef DEBUG
 		print_output(L, caScriptName, l_iErrorCode);
-#endif
 		return (false);
 	}
 	return (true);
@@ -425,10 +518,7 @@ bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 #endif
 	if(l_iErrorCode)
 	{
-
-#ifdef DEBUG
 		print_output(lua(), caScriptName, l_iErrorCode);
-#endif
 		lua_settop(lua(), start);
 		return (false);
 	}
