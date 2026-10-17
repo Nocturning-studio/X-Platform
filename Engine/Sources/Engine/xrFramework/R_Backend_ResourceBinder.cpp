@@ -107,6 +107,8 @@ void CBackendResourceBinder::SetStates(CRenderBackendFacade& backend, IDirect3DS
 
 	if (IRenderBackend* rhi = Engine.RHI.GetRawRHI())
 		rhi->InvalidateCache();
+
+	backend.m_stateCache.Invalidate();
 }
 
 // ----------------------------------------------------------------

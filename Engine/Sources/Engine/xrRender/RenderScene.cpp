@@ -117,7 +117,7 @@ void CRenderScene::OnFrame()
 {
 	PROFILE_FUNCTION();
 
-	if (m_details && m_details->dtFS)
+	if (0)//(m_details && m_details->dtFS)
 	{
 		m_details->PrepareToCalc();
 		Engine.ThreadManager.AddParallelTask([this]() { m_details->MT_CALC(); });

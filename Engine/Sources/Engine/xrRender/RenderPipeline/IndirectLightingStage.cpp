@@ -51,7 +51,7 @@ void CIndirectLightingStage::RebuildPSO()
     psd.inputLayout = {};
     psd.topologyType = RHI_PrimitiveTopologyType::Triangle;
     psd.blend = RHI_BlendState::PureAdditive();
-    psd.depthStencil = RHI_DepthStencilState::Default();
+    psd.depthStencil = RHI_DepthStencilState::NoDepth();
     psd.rasterizer = RHI_RasterizerState::CullBack();
     psd.rtvFormats[0] = RHI_Format::RGBA16_FLOAT;
     psd.rtvCount = 1;

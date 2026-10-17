@@ -173,9 +173,9 @@ class ENGINE_API CRenderBackendFacade
 	// --- Pipeline state (delegated to m_stateCache) ---
 	IC void SetRenderTargetSurface(IDirect3DSurface9* RT, u32 ID = 0) { CHK_DX(m_pDevice->SetRenderTarget(ID, RT)); RHI()->InvalidateCache(); }
 	IC void SetDepthBufferSurface(IDirect3DSurface9* ZB) { CHK_DX(m_pDevice->SetDepthStencilSurface(ZB)); RHI()->InvalidateCache(); }
-	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable(*RHI().GetRawRHI(), (uint8_t)_mask); }
-	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(*RHI().GetRawRHI(), state); }
-	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode(*RHI().GetRawRHI(), (RHI_CullMode)_mode); }
+	IC void SetColorWriteEnable(u32 _mask = ALLOW_COLOR_WRITE) { m_stateCache.SetColorWriteEnable((uint8_t)_mask); }
+	IC void SetDepthWriteEnable(bool state) { m_stateCache.SetDepthWriteEnable(state); }
+	IC void SetCullMode(u32 _mode) { m_stateCache.SetCullMode((RHI_CullMode)_mode); }
 	IC void SetScissor(Irect* rect = NULL)
 	{
 		if(rect)
@@ -185,11 +185,11 @@ class ENGINE_API CRenderBackendFacade
 			r.top = rect->y1;
 			r.right = rect->x2;
 			r.bottom = rect->y2;
-			m_stateCache.SetScissor(*RHI().GetRawRHI(), &r);
+			m_stateCache.SetScissorRect(&r);
 		}
 		else
 		{
-			m_stateCache.SetScissor(*RHI().GetRawRHI(), nullptr);
+			m_stateCache.SetScissorRect(nullptr);
 		}
 	}
 
@@ -198,19 +198,16 @@ class ENGINE_API CRenderBackendFacade
 	IC void GetSamplerState(u32 Sampler, D3DSAMPLERSTATETYPE Type, DWORD* Value) { CHK_DX(m_pDevice->GetSamplerState(Sampler, Type, Value)); }
 	IC void SetViewport(const D3DVIEWPORT9& VP)
 	{
-		RHI_Viewport vp{VP.X, VP.Y, VP.Width, VP.Height, VP.MinZ, VP.MaxZ};
-		m_stateCache.SetViewport(*RHI().GetRawRHI(), vp);
+		RHI_Viewport vp{ VP.X, VP.Y, VP.Width, VP.Height, VP.MinZ, VP.MaxZ };
+		m_stateCache.SetViewport(vp);
 	}
 
 	IC void GetViewport(D3DVIEWPORT9* VP)
 	{
-		const RHI_Viewport vp = RHI().GetRawRHI()->GetViewport();
-		VP->X = vp.X;
-		VP->Y = vp.Y;
-		VP->Width = vp.Width;
-		VP->Height = vp.Height;
-		VP->MinZ = vp.MinZ;
-		VP->MaxZ = vp.MaxZ;
+		const RHI_Viewport vp = m_stateCache.GetViewport();
+		VP->X = vp.X; VP->Y = vp.Y;
+		VP->Width = vp.Width; VP->Height = vp.Height;
+		VP->MinZ = vp.MinZ;   VP->MaxZ = vp.MaxZ;
 	}
 
 	IC void SetStencil(u32 _enable,
@@ -222,8 +219,7 @@ class ENGINE_API CRenderBackendFacade
 					   u32 _pass = D3DSTENCILOP_KEEP,
 					   u32 _zfail = D3DSTENCILOP_KEEP)
 	{
-		m_stateCache.SetStencil(*RHI().GetRawRHI(),
-								_enable != 0,
+		m_stateCache.SetStencil(_enable != 0,
 								(RHI_CmpFunc)_func,
 								(uint8_t)_ref,
 								(uint8_t)_mask,

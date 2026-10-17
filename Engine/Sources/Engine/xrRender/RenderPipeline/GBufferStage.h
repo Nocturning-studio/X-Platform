@@ -16,16 +16,20 @@ public:
 
     std::string_view GetName() const override { return "GBufferStage"; }
 
-    void OnAttach() override {}
-    void OnDeviceReset() override {}
+    void OnAttach() override;
+    void OnDeviceReset() override;
     void Execute() override;
-    void OnDetach() override {}
+    void OnDetach() override;
 
 private:
     void BindTargets();
     void ClearTargets();
     void RenderScene();
 
+    void RebuildBasePSO();
+    void DestroyBasePSO();
+
     CDeferredLightingResources& m_res;
+    RHI_PipelineStateHandle m_basePSO{};
 };
 ////////////////////////////////////////////////////////////////////////////////

@@ -8,95 +8,128 @@
 //  SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //
 //  Этот файл распространяется на условиях PolyForm Noncommercial 1.0.0.
-//  Копирование, изменение и распространение разрешены для некоммерческих
-//  целей. Публичное указание авторства в вашем проекте, документации или
-//  рекламе не требуется — оно приветствуется, но не является условием
-//  использования.
-//
-//  При распространении копий или производных работ лицензия обязывает
-//  сохранять настоящие уведомления и передавать получателю текст лицензии
-//  или ссылку на него. Пожалуйста, не удаляйте эту плашку — это помогает
-//  сохранять историю проекта и корректно соблюдать лицензию.
-//
-//  Коммерческое использование без отдельного разрешения правообладателей
-//  запрещено.
-//
-//  Полный текст лицензии:
-//      https://polyformproject.org/licenses/noncommercial/1.0.0
-//
-//  Этот файл является source-available, а не open source.
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
-class IRenderBackend;
+#include <X-RHI/include/XRHI.h>
 ////////////////////////////////////////////////////////////////////////////////
+
+struct IDirect3DDevice9Ex;
+
+// ============================================================================
+// CStateCache
+// ============================================================================
+//
+// Самостоятельный кеш D3D9-состояний для legacy-фасада (CRenderBackendFacade).
+//
+// Заменяет прежнюю реализацию, которая ходила через IRenderBackend/AsDX9
+// в CRenderBackendDX9. Теперь весь D3D9-специфичный код сосредоточен здесь,
+// а xrRHI/xrRenderBackend остаются чистыми абстракциями.
+//
+// Контракт:
+//   - SetDevice() вызывается при создании/сбросе устройства.
+//   - Invalidate() — после Reset/пересоздания (сбрасывает и значения,
+//     и validity-флаги; Get* после этого возвращают D3D9-дефолты).
+//   - Set*State() применяют diff относительно внутреннего кеша; если кеш
+//     невалиден — форсированно пишут все поля (учтите это при переключении
+//     на ручное управление device->SetRenderState: после такой записи
+//     зовите Invalidate() либо используйте только методы кеша).
+//
+// ============================================================================
 class ENGINE_API CStateCache
 {
 public:
-	CStateCache() = default;
-	~CStateCache() = default;
+    CStateCache() = default;
+    ~CStateCache() = default;
 
-	CStateCache(const CStateCache&) = delete;
-	CStateCache& operator=(const CStateCache&) = delete;
+    CStateCache(const CStateCache&) = delete;
+    CStateCache& operator=(const CStateCache&) = delete;
 
-	// =====================================================================
-	// RHI-native — прямые форвардеры.
-	//
-	// Реализация вынесена в .cpp: сигнатуры принимают IRenderBackend&,
-	// но внутри кастятся на CRenderBackendDX9 через AsDX9, потому что
-	// SetBlendState/SetDepthStencilState/SetRasterizerState и
-	// соответствующие Get'еры объявлены только в DX9-бэкенде.
-	// =====================================================================
+    // =====================================================================
+    // Device binding
+    // =====================================================================
+    void SetDevice(IDirect3DDevice9Ex* device);
+    IDirect3DDevice9Ex* GetDevice() const { return m_pDevice; }
 
-	void SetBlendState(IRenderBackend& rhi, const RHI_BlendState& state);
-	void SetDepthStencilState(IRenderBackend& rhi, const RHI_DepthStencilState& state);
-	void SetRasterizerState(IRenderBackend& rhi, const RHI_RasterizerState& state);
+    // Сброс всех кешей. После вызова Get* возвращают дефолты D3D9.
+    void Invalidate();
 
-	void SetViewport(IRenderBackend& rhi, const RHI_Viewport& vp) { rhi.SetViewport(vp); }
-	void SetScissor(IRenderBackend& rhi, const RHI_Rect* rect) { rhi.SetScissorRect(rect); }
+    // =====================================================================
+    // RHI-native setters (агрегированные)
+    // =====================================================================
+    void SetBlendState(const RHI_BlendState& state);
+    const RHI_BlendState& GetBlendState() const { return m_blendCache; }
 
-	void SetRenderTargets(IRenderBackend& rhi,
-		const RHI_RenderTargetView* rtvs,
-		uint32_t count,
-		RHI_DepthStencilView dsv)
-	{
-		rhi.SetRenderTargets(rtvs, count, dsv);
-	}
+    void SetDepthStencilState(const RHI_DepthStencilState& state);
+    const RHI_DepthStencilState& GetDepthStencilState() const { return m_depthCache; }
 
-	void ClearRenderTarget(IRenderBackend& rhi, RHI_RenderTargetView rtv, const fvec4& color)
-	{
-		rhi.ClearRenderTarget(rtv, color);
-	}
+    void SetRasterizerState(const RHI_RasterizerState& state);
+    const RHI_RasterizerState& GetRasterizerState() const { return m_rasterCache; }
 
-	void ClearDepthStencil(IRenderBackend& rhi, RHI_DepthStencilView dsv, float depth, uint8_t stencil)
-	{
-		rhi.ClearDepthStencil(dsv, depth, stencil);
-	}
+    // =====================================================================
+    // Scalar states
+    // =====================================================================
+    void SetStencilRef(uint8_t ref);
+    uint8_t GetStencilRef() const { return m_stencilRef; }
 
-	// =====================================================================
-	// Convenience — меняют одно поле поверх текущего состояния
-	// =====================================================================
+    // Blend factor: ARGB, 0xAARRGGBB — как у D3DRS_BLENDFACTOR.
+    void SetBlendFactor(uint32_t argb);
+    void SetBlendFactor(const fvec4& rgba);
+    uint32_t GetBlendFactorARGB() const { return m_blendFactor; }
 
-	void SetBlend(IRenderBackend& rhi, bool enable, RHI_Blend src, RHI_Blend dst);
-	void SetBlendEx(IRenderBackend& rhi, bool enable, RHI_Blend src, RHI_Blend dst, RHI_BlendOp op);
+    // =====================================================================
+    // Dynamic rasterizer
+    // =====================================================================
+    void SetViewport(const RHI_Viewport& vp);
+    const RHI_Viewport& GetViewport() const { return m_viewportCache; }
 
-	void SetStencil(IRenderBackend& rhi,
-		bool enable,
-		RHI_CmpFunc func,
-		uint8_t ref, uint8_t mask, uint8_t writemask,
-		RHI_StencilOp fail, RHI_StencilOp pass, RHI_StencilOp zfail);
+    void SetScissorRect(const RHI_Rect* rect);
+    bool GetScissorRect(RHI_Rect& out) const;
 
-	void SetColorWriteEnable(IRenderBackend& rhi, uint8_t mask);
-	void SetDepthWriteEnable(IRenderBackend& rhi, bool enable);
-	void SetCullMode(IRenderBackend& rhi, RHI_CullMode mode);
+    // =====================================================================
+    // Convenience setters (меняют одно поле поверх текущего состояния)
+    // =====================================================================
+    void SetBlend(bool enable, RHI_Blend src, RHI_Blend dst);
+    void SetBlendEx(bool enable, RHI_Blend src, RHI_Blend dst, RHI_BlendOp op);
 
-	// =====================================================================
-	// Getters
-	// =====================================================================
+    void SetStencil(bool enable,
+        RHI_CmpFunc func,
+        uint8_t ref, uint8_t mask, uint8_t writemask,
+        RHI_StencilOp fail, RHI_StencilOp pass, RHI_StencilOp zfail);
 
-	bool GetBlendEnable(const IRenderBackend& rhi) const;
-	RHI_Blend GetSrcBlend(const IRenderBackend& rhi) const;
-	RHI_Blend GetDstBlend(const IRenderBackend& rhi) const;
-	RHI_CullMode GetCullMode(const IRenderBackend& rhi) const;
+    void SetColorWriteEnable(uint8_t mask);
+    void SetDepthWriteEnable(bool enable);
+    void SetCullMode(RHI_CullMode mode);
+
+    // =====================================================================
+    // Getters
+    // =====================================================================
+    bool GetBlendEnable() const { return m_blendCache.enable; }
+    RHI_Blend GetSrcBlend() const { return m_blendCache.srcColor; }
+    RHI_Blend GetDstBlend() const { return m_blendCache.dstColor; }
+    RHI_CullMode GetCullMode() const { return m_rasterCache.cullMode; }
+
+private:
+    IDirect3DDevice9Ex* m_pDevice = nullptr;
+
+    // ---- Cached state values (D3D9-дефолты) ----
+    RHI_BlendState        m_blendCache{};
+    RHI_DepthStencilState m_depthCache{};
+    RHI_RasterizerState   m_rasterCache{};
+    RHI_Viewport          m_viewportCache{};
+    RHI_Rect              m_scissorCache{};
+
+    uint8_t  m_stencilRef = 0;
+    uint32_t m_blendFactor = 0xFFFFFFFF; // (1,1,1,1) — D3D9 default
+
+    // ---- Cache validity ----
+    bool m_blendValid = false;
+    bool m_depthValid = false;
+    bool m_rasterValid = false;
+    bool m_viewportValid = false;
+    bool m_scissorValid = false;
+    bool m_scissorEnabled = false;
+    bool m_stencilRefValid = false;
+    bool m_blendFactorValid = false;
 };
 ////////////////////////////////////////////////////////////////////////////////

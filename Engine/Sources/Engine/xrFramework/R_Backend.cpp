@@ -409,6 +409,8 @@ void CRenderBackendFacade::OnDeviceCreate(HWND /*hWnd*/, const RHI_PresentationP
 		return;
 	}
 
+	m_stateCache.SetDevice(m_pDevice);
+
 	// Кэшируем back buffer RT/ZB. Это НЕ владение — просто ссылки,
 	// используемые legacy-путём (GetBaseRT / GetBaseZB).
 	R_CHK(m_pDevice->GetRenderTarget(0, &m_pBaseRT));
@@ -478,6 +480,8 @@ void CRenderBackendFacade::ResetEnd()
 	if (!m_pDevice)
 		return;
 
+	m_stateCache.SetDevice(m_pDevice);
+
 	R_CHK(m_pDevice->GetRenderTarget(0, &m_pBaseRT));
 	R_CHK(m_pDevice->GetDepthStencilSurface(&m_pBaseZB));
 
@@ -511,8 +515,7 @@ void CRenderBackendFacade::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 	// значениями, что уже в кэше) не доедет до device.
 	CHK_DX(m_pDevice->SetRenderState(State, Value));
 
-	if (rhi)
-		rhi->InvalidateCache();
+	m_stateCache.Invalidate();
 }
 
 void CRenderBackendFacade::SaveRenderState()
@@ -551,12 +554,12 @@ void CRenderBackendFacade::RestoreRenderState()
 
 void CRenderBackendFacade::SetBlend(BOOL enable, D3DBLEND src, D3DBLEND dest)
 {
-	m_stateCache.SetBlend(*Engine.RHI.GetRawRHI(), enable != 0, (RHI_Blend)src, (RHI_Blend)dest);
+	m_stateCache.SetBlend(enable != 0, (RHI_Blend)src, (RHI_Blend)dest);
 }
 
 void CRenderBackendFacade::SetBlendEx(BOOL enable, D3DBLEND src, D3DBLEND dest, D3DBLENDOP op)
 {
-	m_stateCache.SetBlendEx(*Engine.RHI.GetRawRHI(), enable != 0, (RHI_Blend)src, (RHI_Blend)dest, (RHI_BlendOp)op);
+	m_stateCache.SetBlendEx(enable != 0, (RHI_Blend)src, (RHI_Blend)dest, (RHI_BlendOp)op);
 }
 
 void CRenderBackendFacade::SetBlendAlpha()
@@ -602,17 +605,17 @@ void CRenderBackendFacade::SetBlendColorAdd()
 
 BOOL CRenderBackendFacade::GetBlendState() const
 {
-	return m_stateCache.GetBlendEnable(*Engine.RHI.GetRawRHI()) ? TRUE : FALSE;
+	return m_stateCache.GetBlendEnable() ? TRUE : FALSE;
 }
 
 D3DBLEND CRenderBackendFacade::GetSrcBlend() const
 {
-	return (D3DBLEND)m_stateCache.GetSrcBlend(*Engine.RHI.GetRawRHI());
+	return (D3DBLEND)m_stateCache.GetSrcBlend();
 }
 
 D3DBLEND CRenderBackendFacade::GetDstBlend() const
 {
-	return (D3DBLEND)m_stateCache.GetDstBlend(*Engine.RHI.GetRawRHI());
+	return (D3DBLEND)m_stateCache.GetDstBlend();
 }
 
 void CRenderBackendFacade::EnableAnisotropyFiltering()

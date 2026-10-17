@@ -256,7 +256,7 @@ void CRender::OnFrame()
 	CPUOCC.Update();
 	Scene.OnFrame();
 
-	if(need_render_sun())
+	if(0)//(need_render_sun())
 	{
 		wait_for_sun_task();
 		swap_sun_buffers();
