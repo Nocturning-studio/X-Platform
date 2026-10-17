@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPUDetector.cpp" />
+    <ClCompile Include="DepthBuffer.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="OcclusionQuery.cpp" />
