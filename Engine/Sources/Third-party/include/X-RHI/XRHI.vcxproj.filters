@@ -27,9 +27,6 @@
     <ClInclude Include="include\XRHI_API.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\XRHI_BackendAccess.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="include\XRHI_BackendInterface.h">
       <Filter>Include</Filter>
     </ClInclude>

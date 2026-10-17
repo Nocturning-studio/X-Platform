@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClInclude Include="include\XRHI.h" />
     <ClInclude Include="include\XRHI_API.h" />
-    <ClInclude Include="include\XRHI_BackendAccess.h" />
     <ClInclude Include="include\XRHI_BackendInterface.h" />
     <ClInclude Include="include\XRHI_Base.h" />
     <ClInclude Include="include\XRHI_Buffers.h" />
