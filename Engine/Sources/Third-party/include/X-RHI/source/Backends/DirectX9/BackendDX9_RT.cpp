@@ -48,25 +48,31 @@ uint32_t CRenderBackendDX9::AllocDSVSlot(IDirect3DSurface9* surf)
 
 void CRenderBackendDX9::FreeRTVSlot(uint32_t id)
 {
-	if(id >= m_rtvSlots.size())
-		return;
-	if(m_rtvSlots[id].surface)
+	if (id >= m_rtvSlots.size()) return;
+
+	if (!m_rtvSlots[id].surface)
 	{
-		m_rtvSlots[id].surface->Release();
-		m_rtvSlots[id].surface = nullptr;
+		Print("! [DX9] Double free of RTV slot (id=%u), ignoring.", id);
+		return;
 	}
+
+	m_rtvSlots[id].surface->Release();
+	m_rtvSlots[id].surface = nullptr;
 	m_freeRTVSlots.push(id);
 }
 
 void CRenderBackendDX9::FreeDSVSlot(uint32_t id)
 {
-	if(id >= m_dsvSlots.size())
-		return;
-	if(m_dsvSlots[id].surface)
+	if (id >= m_dsvSlots.size()) return;
+
+	if (!m_dsvSlots[id].surface)
 	{
-		m_dsvSlots[id].surface->Release();
-		m_dsvSlots[id].surface = nullptr;
+		Print("! [DX9] Double free of RTV slot (id=%u), ignoring.", id);
+		return;
 	}
+
+	m_dsvSlots[id].surface->Release();
+	m_dsvSlots[id].surface = nullptr;
 	m_freeDSVSlots.push(id);
 }
 
@@ -210,10 +216,9 @@ void CRenderBackendDX9::InvalidateUserRTVDSVOnReset()
 {
 	// Освобождаем все пользовательские RTV/DSV. Back buffer слоты (id == 0)
 	// не трогаем — их поверхность обновится в RefreshBackBufferRTVs.
+
 	for(uint32_t i = 0; i < m_rtvSlots.size(); ++i)
 	{
-		if(m_backBufferRTV.IsValid() && i == m_backBufferRTV.id)
-			continue;
 		if(m_rtvSlots[i].surface)
 		{
 			m_rtvSlots[i].surface->Release();
@@ -221,10 +226,12 @@ void CRenderBackendDX9::InvalidateUserRTVDSVOnReset()
 			m_freeRTVSlots.push(i);
 		}
 	}
+
 	for(uint32_t i = 0; i < m_dsvSlots.size(); ++i)
 	{
 		if(m_backBufferDSV.IsValid() && i == m_backBufferDSV.id)
 			continue;
+
 		if(m_dsvSlots[i].surface)
 		{
 			m_dsvSlots[i].surface->Release();
@@ -323,7 +330,7 @@ void CRenderBackendDX9::SetRenderTargets(const RHI_RenderTargetView* rtvs,
 
 	m_psoCacheValid = false;
 
-	uint32_t kMaxRT = 4;
+	const uint32_t kMaxRT = m_DeviceCaps.MaxSimultaneousRTs;
 	if(count > kMaxRT)
 	{
 		Crash("! [DX9] SetRenderTargets - RT count greater than device supports: required %d, supported %d", count, kMaxRT);

@@ -70,74 +70,6 @@ void BuildShaderTarget(char (&out)[16], RHI_ShaderType type, IDirect3DDevice9* d
 } // namespace
 
 // ============================================================================
-// Pool management
-// ============================================================================
-
-RHI_ShaderHandle CRenderBackendDX9::AllocShaderHandle(DX9Shader* sh)
-{
-	uint32_t idx;
-	if(!m_freeShaderIndices.empty())
-	{
-		idx = m_freeShaderIndices.top();
-		m_freeShaderIndices.pop();
-		m_shaders[idx] = sh;
-	}
-	else
-	{
-		idx = static_cast<uint32_t>(m_shaders.size());
-		m_shaders.push_back(sh);
-	}
-	return RHI_ShaderHandle{idx};
-}
-
-DX9Shader* CRenderBackendDX9::GetShader(RHI_ShaderHandle h) const
-{
-	if(!h.IsValid() || h.id >= m_shaders.size())
-		return nullptr;
-	return m_shaders[h.id];
-}
-
-void CRenderBackendDX9::FreeShaderHandle(RHI_ShaderHandle h)
-{
-	if(!h.IsValid() || h.id >= m_shaders.size())
-		return;
-
-	DX9Shader* sh = m_shaders[h.id];
-	if(!sh)
-	{
-		Print("! [DX9] Double free of RHI_ShaderHandle(id=%u) detected, ignoring.", h.id);
-		return;
-	}
-
-	// Разбиндить, если привязан. Иначе D3D9 получит висячий указатель.
-	if(sh->isVertex && m_currentVS == sh->vs)
-	{
-		if(m_pDevice)
-			m_pDevice->SetVertexShader(nullptr);
-		m_currentVS = nullptr;
-		m_psoCacheValid = false;
-	}
-	else if(!sh->isVertex && m_currentPS == sh->ps)
-	{
-		if(m_pDevice)
-			m_pDevice->SetPixelShader(nullptr);
-		m_currentPS = nullptr;
-		m_psoCacheValid = false;
-	}
-
-	if(sh->vs)
-		sh->vs->Release();
-	if(sh->ps)
-		sh->ps->Release();
-	if(sh->blob)
-		sh->blob->Release();
-
-	delete sh;
-	m_shaders[h.id] = nullptr;
-	m_freeShaderIndices.push(h.id);
-}
-
-// ============================================================================
 // Create
 // ============================================================================
 
@@ -163,7 +95,7 @@ RHI_ShaderHandle CRenderBackendDX9::CreateVertexShader(const void* bytecode, siz
 	DX9Shader* sh = new DX9Shader;
 	sh->vs = vs;
 	sh->isVertex = true;
-	return AllocShaderHandle(sh);
+	return m_shaders.Allocate(sh);
 }
 
 RHI_ShaderHandle CRenderBackendDX9::CreatePixelShader(const void* bytecode, size_t size, const char* debugName)
@@ -188,12 +120,42 @@ RHI_ShaderHandle CRenderBackendDX9::CreatePixelShader(const void* bytecode, size
 	DX9Shader* sh = new DX9Shader;
 	sh->ps = ps;
 	sh->isVertex = false;
-	return AllocShaderHandle(sh);
+	return m_shaders.Allocate(sh);
 }
 
 void CRenderBackendDX9::DestroyShader(RHI_ShaderHandle handle)
 {
-	FreeShaderHandle(handle);
+	DX9Shader* sh = m_shaders.Release(handle);
+	if (!sh)
+	{
+		if (handle.IsValid() && handle.id < m_shaders.Data().size())
+			Print("! [DX9] DestroyShader: double free of RHI_ShaderHandle(id=%u), ignoring", handle.id);
+		return;
+	}
+
+	if (sh->isVertex && m_currentVS == sh->vs)
+	{
+		if (m_pDevice)
+			m_pDevice->SetVertexShader(nullptr);
+		m_currentVS = nullptr;
+		m_psoCacheValid = false;
+	}
+	else if (!sh->isVertex && m_currentPS == sh->ps)
+	{
+		if (m_pDevice)
+			m_pDevice->SetPixelShader(nullptr);
+		m_currentPS = nullptr;
+		m_psoCacheValid = false;
+	}
+
+	if (sh->vs)
+		sh->vs->Release();
+	if (sh->ps)
+		sh->ps->Release();
+	if (sh->blob)
+		sh->blob->Release();
+
+	delete sh;
 }
 
 // ============================================================================
@@ -374,7 +336,7 @@ RHI_ShaderCompileResult CRenderBackendDX9::CompileShader(const RHI_ShaderCompile
 		return result;
 	}
 
-	result.shader = AllocShaderHandle(sh);
+	result.shader = m_shaders.Allocate(sh);
 	return result;
 }
 
@@ -382,8 +344,7 @@ RHI_ShaderCompileResult CRenderBackendDX9::CompileShader(const RHI_ShaderCompile
 // GetShaderBytecode
 // ============================================================================
 
-bool CRenderBackendDX9::GetShaderBytecode(RHI_ShaderHandle handle,
-										  const void** outData, size_t* outSize)
+bool CRenderBackendDX9::GetShaderBytecode(RHI_ShaderHandle handle, const void** outData, size_t* outSize)
 {
 	if(!outData || !outSize)
 		return false;

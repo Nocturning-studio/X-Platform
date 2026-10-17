@@ -7,53 +7,6 @@
 #include <source/pch.h>
 #include "BackendDX9.h"
 ////////////////////////////////////////////////////////////////////////////////
-RHI_PipelineStateHandle CRenderBackendDX9::AllocPipelineStateHandle(DX9PipelineState* pso)
-{
-	uint32_t idx;
-	if (!m_freePSOIndices.empty())
-	{
-		idx = m_freePSOIndices.top();
-		m_freePSOIndices.pop();
-		m_pipelineStates[idx] = pso;
-	}
-	else
-	{
-		idx = static_cast<uint32_t>(m_pipelineStates.size());
-		m_pipelineStates.push_back(pso);
-	}
-	return RHI_PipelineStateHandle{ idx };
-}
-
-DX9PipelineState* CRenderBackendDX9::GetPipelineState(RHI_PipelineStateHandle h) const
-{
-	if (!h.IsValid() || h.id >= m_pipelineStates.size())
-		return nullptr;
-	return m_pipelineStates[h.id];
-}
-
-void CRenderBackendDX9::FreePipelineStateHandle(RHI_PipelineStateHandle h)
-{
-	if (!h.IsValid() || h.id >= m_pipelineStates.size())
-		return;
-
-	DX9PipelineState* pso = m_pipelineStates[h.id];
-	if (!pso)
-	{
-		Print("! [DX9] Double free of RHI_PipelineStateHandle(id=%u), ignoring.", h.id);
-		return;
-	}
-
-	if (m_currentPSO == h)
-	{
-		m_currentPSO = {};
-		m_psoCacheValid = false;
-	}
-
-	delete pso;
-	m_pipelineStates[h.id] = nullptr;
-	m_freePSOIndices.push(h.id);
-}
-
 RHI_PipelineStateHandle CRenderBackendDX9::CreatePipelineState(const RHI_PipelineStateDesc& desc)
 {
 	if (!m_pDevice)
@@ -76,12 +29,26 @@ RHI_PipelineStateHandle CRenderBackendDX9::CreatePipelineState(const RHI_Pipelin
 
 	DX9PipelineState* pso = new DX9PipelineState;
 	pso->desc = desc;
-	return AllocPipelineStateHandle(pso);
+	return m_pipelineStates.Allocate(pso);
 }
 
 void CRenderBackendDX9::DestroyPipelineState(RHI_PipelineStateHandle handle)
 {
-	FreePipelineStateHandle(handle);
+	DX9PipelineState* pso = m_pipelineStates.Release(handle);
+	if (!pso)
+	{
+		if (handle.IsValid() && handle.id < m_pipelineStates.Data().size())
+			Print("! [DX9] DestroyPipelineState: double free of RHI_PipelineStateHandle(id=%u), ignoring", handle.id);
+		return;
+	}
+
+	if (m_currentPSO == handle)
+	{
+		m_currentPSO = {};
+		m_psoCacheValid = false;
+	}
+
+	delete pso;
 }
 
 void CRenderBackendDX9::SetPipelineState(RHI_PipelineStateHandle handle)

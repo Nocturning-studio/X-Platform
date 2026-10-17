@@ -124,17 +124,22 @@ class CRenderBackendDX9 : public IRenderBackend
 	// ============================================================================
 	// Resource pools
 	// ============================================================================
-	std::vector<DX9Texture*> m_Textures;
-	std::stack<uint32_t> m_FreeTextureIndices;
+	DX9HandlePool<RHI_TextureTag, DX9Texture> m_textures;
+	DX9HandlePool<RHI_BufferTag, DX9Buffer> m_buffers;
+	DX9HandlePool<RHI_InputLayoutTag, DX9InputLayout> m_inputLayouts;
+	DX9HandlePool<RHI_ShaderTag, DX9Shader> m_shaders;
+	DX9HandlePool<RHI_PipelineLayoutTag, DX9PipelineLayout> m_pipelineLayouts;
+	DX9HandlePool<RHI_PipelineStateTag, DX9PipelineState> m_pipelineStates;
 
-	std::vector<DX9Buffer*> m_buffers;
-	std::stack<uint32_t> m_freeBufferIndices;
-
-	std::vector<DX9InputLayout*> m_inputLayouts;
-	std::stack<uint32_t> m_freeInputLayoutIndices;
-
-	std::vector<DX9Shader*> m_shaders;
-	std::stack<uint32_t> m_freeShaderIndices;
+	// ============================================================================
+	// Handle accessors
+	// ============================================================================
+	DX9Texture* GetTexture(RHI_TextureHandle h) const { return m_textures.Get(h); }
+	DX9Buffer* GetBuffer(RHI_BufferHandle h) const { return m_buffers.Get(h); }
+	DX9InputLayout* GetInputLayout(RHI_InputLayoutHandle h) const { return m_inputLayouts.Get(h); }
+	DX9Shader* GetShader(RHI_ShaderHandle h) const { return m_shaders.Get(h); }
+	DX9PipelineLayout* GetPipelineLayout(RHI_PipelineLayoutHandle h) const { return m_pipelineLayouts.Get(h); }
+	DX9PipelineState* GetPipelineState(RHI_PipelineStateHandle h) const { return m_pipelineStates.Get(h); }
 
 	// ============================================================================
 	// Geometry binding cache
@@ -206,58 +211,20 @@ class CRenderBackendDX9 : public IRenderBackend
 	// ============================================================================
 	// Pipeline state (emulation)
 	// ============================================================================
-	std::vector<DX9PipelineLayout*> m_pipelineLayouts;
-	std::stack<uint32_t> m_freePipelineLayoutIndices;
-
-	std::vector<DX9PipelineState*> m_pipelineStates;
-	std::stack<uint32_t> m_freePSOIndices;
-
 	RHI_PipelineStateHandle m_currentPSO{};
 	bool m_psoCacheValid = false;
-
-	RHI_PipelineStateHandle AllocPipelineStateHandle(DX9PipelineState* pso);
-	DX9PipelineState* GetPipelineState(RHI_PipelineStateHandle h) const;
-	void FreePipelineStateHandle(RHI_PipelineStateHandle h);
-
-	RHI_PipelineLayoutHandle AllocPipelineLayoutHandle(DX9PipelineLayout* lay);
-	DX9PipelineLayout* GetPipelineLayout(RHI_PipelineLayoutHandle h) const;
-	void FreePipelineLayoutHandle(RHI_PipelineLayoutHandle h);
 
 	// ============================================================================
 	// Device / presentation helpers
 	// ============================================================================
-	void FillPresentParams(const RHI_PresentationParams& params,
-						   D3DFORMAT backBufferFmt,
-						   D3DFORMAT depthStencilFmt,
-						   UINT fullscreenRefreshHz);
+	void FillPresentParams(const RHI_PresentationParams& params, D3DFORMAT backBufferFmt, D3DFORMAT depthStencilFmt, UINT fullscreenRefreshHz);
 
 	void CacheDeviceCapsFromD3D();
 	void CacheBackBufferDimensions();
 
-	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params,
-															 D3DFORMAT& outBackBufferFmt,
-															 D3DFORMAT& outDepthStencilFmt);
+	bool DetermineDepthAndBackBufferFormatsFromPresentParams(const RHI_PresentationParams& params, D3DFORMAT& outBackBufferFmt, D3DFORMAT& outDepthStencilFmt);
 
 	D3DFORMAT SelectDepthStencilFormat(D3DFORMAT backBufferFmt) const;
-
-	// ============================================================================
-	// Resource handle helpers
-	// ============================================================================
-	RHI_TextureHandle AllocRHI_TextureHandle(DX9Texture* tex);
-	DX9Texture* GetTexture(RHI_TextureHandle handle);
-	void FreeRHI_TextureHandle(RHI_TextureHandle handle);
-
-	RHI_BufferHandle AllocBufferHandle(DX9Buffer* buf);
-	DX9Buffer* GetBuffer(RHI_BufferHandle h) const;
-	void FreeBufferHandle(RHI_BufferHandle h);
-
-	RHI_InputLayoutHandle AllocInputLayoutHandle(DX9InputLayout* lay);
-	DX9InputLayout* GetInputLayout(RHI_InputLayoutHandle h) const;
-	void FreeInputLayoutHandle(RHI_InputLayoutHandle h);
-
-	RHI_ShaderHandle AllocShaderHandle(DX9Shader* sh);
-	DX9Shader* GetShader(RHI_ShaderHandle h) const;
-	void FreeShaderHandle(RHI_ShaderHandle h);
 
 	// ============================================================================
 	// Lifetime / invalidation

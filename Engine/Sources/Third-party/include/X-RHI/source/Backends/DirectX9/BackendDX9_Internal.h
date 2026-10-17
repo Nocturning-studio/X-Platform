@@ -6,6 +6,61 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <d3dcommon.h>
 ////////////////////////////////////////////////////////////////////////////////
+template <typename Tag, typename T>
+class DX9HandlePool
+{
+  public:
+	using Handle = RHI_Handle<Tag>;
+
+	Handle Allocate(T* obj)
+	{
+		uint32_t idx;
+		if(!m_free.empty())
+		{
+			idx = m_free.top();
+			m_free.pop();
+			m_data[idx] = obj;
+		}
+		else
+		{
+			idx = static_cast<uint32_t>(m_data.size());
+			m_data.push_back(obj);
+		}
+		return Handle{idx};
+	}
+
+	T* Get(Handle h) const
+	{
+		if(!h.IsValid() || h.id >= m_data.size())
+			return nullptr;
+		return m_data[h.id];
+	}
+
+	T* Release(Handle h)
+	{
+		T* obj = Get(h);
+		if(!obj)
+			return nullptr;
+		m_data[h.id] = nullptr;
+		m_free.push(h.id);
+		return obj;
+	}
+
+	std::vector<T*>& Data() { return m_data; }
+	const std::vector<T*>& Data() const { return m_data; }
+
+	void Clear()
+	{
+		m_data.clear();
+		while(!m_free.empty())
+			m_free.pop();
+	}
+
+  private:
+	std::vector<T*> m_data;
+	std::stack<uint32_t> m_free;
+};
+
 struct DX9Texture
 {
 	IDirect3DTexture9* tex2D = nullptr;

@@ -58,140 +58,6 @@ DWORD ToD3DLockFlags(uint32_t lockFlags, uint32_t bufferUsage, bool wholeBuffer)
 ////////////////////////////////////////////////////////////////////////////////
 
 // ============================================================================
-// Pool management: buffers
-// ============================================================================
-
-RHI_BufferHandle CRenderBackendDX9::AllocBufferHandle(DX9Buffer* buf)
-{
-	uint32_t idx;
-	if(!m_freeBufferIndices.empty())
-	{
-		idx = m_freeBufferIndices.top();
-		m_freeBufferIndices.pop();
-		m_buffers[idx] = buf;
-	}
-	else
-	{
-		idx = static_cast<uint32_t>(m_buffers.size());
-		m_buffers.push_back(buf);
-	}
-	return RHI_BufferHandle{idx};
-}
-
-DX9Buffer* CRenderBackendDX9::GetBuffer(RHI_BufferHandle h) const
-{
-	if(!h.IsValid() || h.id >= m_buffers.size())
-		return nullptr;
-	return m_buffers[h.id];
-}
-
-void CRenderBackendDX9::FreeBufferHandle(RHI_BufferHandle h)
-{
-	if(!h.IsValid() || h.id >= m_buffers.size())
-		return;
-
-	DX9Buffer* buf = m_buffers[h.id];
-	if(!buf)
-	{
-		Print("! [DX9] Double free of RHI_BufferHandle(id=%u) detected, ignoring.", h.id);
-		return;
-	}
-
-	// Если этот буфер привязан к текущему контексту — надо разбиндить
-	// перед удалением, иначе D3D9 получит висячий указатель.
-	if(!buf->isIndex)
-	{
-		for(uint32_t i = 0; i < kMaxVertexStreams; ++i)
-		{
-			if(m_currentVB[i] == buf->vb)
-			{
-				if(m_pDevice)
-					m_pDevice->SetStreamSource(i, nullptr, 0, 0);
-				m_currentVB[i] = nullptr;
-				m_currentVBStride[i] = 0;
-				m_currentVBOffset[i] = 0;
-				if(i == 0)
-					m_stream0VertexCount = 0;
-			}
-		}
-	}
-	else
-	{
-		if(m_currentIB == buf->ib)
-		{
-			if(m_pDevice)
-				m_pDevice->SetIndices(nullptr);
-			m_currentIB = nullptr;
-		}
-	}
-
-	if(buf->vb)
-		buf->vb->Release();
-	if(buf->ib)
-		buf->ib->Release();
-
-	delete buf;
-	m_buffers[h.id] = nullptr;
-	m_freeBufferIndices.push(h.id);
-}
-
-// ============================================================================
-// Pool management: input layouts
-// ============================================================================
-
-RHI_InputLayoutHandle CRenderBackendDX9::AllocInputLayoutHandle(DX9InputLayout* lay)
-{
-	uint32_t idx;
-	if (!m_freeInputLayoutIndices.empty())
-	{
-		idx = m_freeInputLayoutIndices.top();
-		m_freeInputLayoutIndices.pop();
-		m_inputLayouts[idx] = lay;
-	}
-	else
-	{
-		idx = static_cast<uint32_t>(m_inputLayouts.size());
-		m_inputLayouts.push_back(lay);
-	}
-	return RHI_InputLayoutHandle{ idx };
-}
-
-DX9InputLayout* CRenderBackendDX9::GetInputLayout(RHI_InputLayoutHandle h) const
-{
-	if (!h.IsValid() || h.id >= m_inputLayouts.size())
-		return nullptr;
-	return m_inputLayouts[h.id];
-}
-
-void CRenderBackendDX9::FreeInputLayoutHandle(RHI_InputLayoutHandle h)
-{
-	if (!h.IsValid() || h.id >= m_inputLayouts.size())
-		return;
-
-	DX9InputLayout* lay = m_inputLayouts[h.id];
-	if (!lay)
-	{
-		Print("! [DX9] Double free of RHI_InputLayoutHandle(id=%u) detected, ignoring.", h.id);
-		return;
-	}
-
-	if (m_currentDecl == lay->decl)
-	{
-		if (m_pDevice)
-			m_pDevice->SetVertexDeclaration(nullptr);
-		m_currentDecl = nullptr;
-		m_psoCacheValid = false;
-	}
-
-	if (lay->decl)
-		lay->decl->Release();
-
-	delete lay;
-	m_inputLayouts[h.id] = nullptr;
-	m_freeInputLayoutIndices.push(h.id);
-}
-
-// ============================================================================
 // CreateBuffer
 // ============================================================================
 
@@ -239,7 +105,7 @@ RHI_BufferHandle CRenderBackendDX9::CreateVertexBuffer(const RHI_BufferDesc& des
 		}
 	}
 
-	return AllocBufferHandle(buf);
+	return m_buffers.Allocate(buf);
 }
 
 RHI_BufferHandle CRenderBackendDX9::CreateIndexBuffer(const RHI_BufferDesc& desc, const void* initialData)
@@ -288,12 +154,51 @@ RHI_BufferHandle CRenderBackendDX9::CreateIndexBuffer(const RHI_BufferDesc& desc
 		}
 	}
 
-	return AllocBufferHandle(buf);
+	return m_buffers.Allocate(buf);
 }
 
 void CRenderBackendDX9::DestroyBuffer(RHI_BufferHandle handle)
 {
-	FreeBufferHandle(handle);
+	DX9Buffer* buf = m_buffers.Release(handle);
+	if (!buf)
+	{
+		if (handle.IsValid() && handle.id < m_buffers.Data().size())
+			Print("! [DX9] DestroyBuffer: double free of RHI_BufferHandle(id=%u), ignoring", handle.id);
+		return;
+	}
+
+	if (!buf->isIndex)
+	{
+		for (uint32_t i = 0; i < kMaxVertexStreams; ++i)
+		{
+			if (m_currentVB[i] == buf->vb)
+			{
+				if (m_pDevice)
+					m_pDevice->SetStreamSource(i, nullptr, 0, 0);
+				m_currentVB[i] = nullptr;
+				m_currentVBStride[i] = 0;
+				m_currentVBOffset[i] = 0;
+				if (i == 0)
+					m_stream0VertexCount = 0;
+			}
+		}
+	}
+	else
+	{
+		if (m_currentIB == buf->ib)
+		{
+			if (m_pDevice)
+				m_pDevice->SetIndices(nullptr);
+			m_currentIB = nullptr;
+		}
+	}
+
+	if (buf->vb)
+		buf->vb->Release();
+	if (buf->ib)
+		buf->ib->Release();
+
+	delete buf;
 }
 
 // ============================================================================
@@ -388,14 +293,32 @@ RHI_InputLayoutHandle CRenderBackendDX9::CreateInputLayout(const RHI_InputLayout
 	DX9InputLayout* lay = new DX9InputLayout;
 	lay->decl = decl;
 	lay->desc = localDesc;
-	return AllocInputLayoutHandle(lay);
+	return m_inputLayouts.Allocate(lay);
 }
 
 void CRenderBackendDX9::DestroyInputLayout(RHI_InputLayoutHandle handle)
 {
-	FreeInputLayoutHandle(handle);
-}
+	DX9InputLayout* lay = m_inputLayouts.Release(handle);
+	if (!lay)
+	{
+		if (handle.IsValid() && handle.id < m_inputLayouts.Data().size())
+			Print("! [DX9] DestroyInputLayout: double free of RHI_InputLayoutHandle(id=%u), ignoring", handle.id);
+		return;
+	}
 
+	if (m_currentDecl == lay->decl)
+	{
+		if (m_pDevice)
+			m_pDevice->SetVertexDeclaration(nullptr);
+		m_currentDecl = nullptr;
+		m_psoCacheValid = false;
+	}
+
+	if (lay->decl)
+		lay->decl->Release();
+
+	delete lay;
+}
 
 // ============================================================================
 // Geometry binding

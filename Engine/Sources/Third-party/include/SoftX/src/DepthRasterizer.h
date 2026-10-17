@@ -13,16 +13,30 @@ SOFTX_BEGIN
 
 namespace DepthRasterizer
 {
+    template <ComparisonFunc Func>
+    SOFTX_FORCE_INLINE __m128 CompareMask(__m128 depths, __m128 stored)
+    {
+        if constexpr (Func == ComparisonFunc::Never)             return _mm_setzero_ps();
+        else if constexpr (Func == ComparisonFunc::Less)         return _mm_cmplt_ps(depths, stored);
+        else if constexpr (Func == ComparisonFunc::Equal)        return _mm_cmpeq_ps(depths, stored);
+        else if constexpr (Func == ComparisonFunc::LessEqual)    return _mm_cmple_ps(depths, stored);
+        else if constexpr (Func == ComparisonFunc::Greater)      return _mm_cmpgt_ps(depths, stored);
+        else if constexpr (Func == ComparisonFunc::NotEqual)     return _mm_cmpneq_ps(depths, stored);
+        else if constexpr (Func == ComparisonFunc::GreaterEqual) return _mm_cmpge_ps(depths, stored);
+        else /* Always */                                        return _mm_castsi128_ps(_mm_set1_epi32(-1));
+    }
+
+
     /**
      * Rasterizes a triangle for occlusion query – only depth is computed and
      * tested. Returns the number of visible (depth‑passing) pixels.
      */
-    static inline uint RasterizeTriangle(const RasterizerCommon::TriangleSetup& setup,
-                                         const RasterizerState& rasterizerState,
-                                         DepthBuffer& depthBuffer,
-                                         const Viewport& viewport,
-                                         uint2 tileMin,
-                                         uint2 tileMax)
+    template <ComparisonFunc Func, bool DepthWriteEnable>
+    static inline uint RasterizeTriangleTyped(const RasterizerCommon::TriangleSetup& setup,
+        DepthBuffer& depthBuffer,
+        const Viewport& viewport,
+        uint2 tileMin,
+        uint2 tileMax)
     {
         uint visibleCount = 0;
 
@@ -102,27 +116,13 @@ namespace DepthRasterizer
                 __m128 depths = current_depths;
 
                 __m128 storedDepths = depthBuffer.Read4(uint2(x, y));
-                __m128 depthPass;
-
-                switch (rasterizerState.depthFunc)
-                {
-                case ComparisonFunc::Never:        depthPass = _mm_setzero_ps(); break;
-                case ComparisonFunc::Less:         depthPass = _mm_cmplt_ps(depths, storedDepths); break;
-                case ComparisonFunc::Equal:        depthPass = _mm_cmpeq_ps(depths, storedDepths); break;
-                case ComparisonFunc::LessEqual:    depthPass = _mm_cmple_ps(depths, storedDepths); break;
-                case ComparisonFunc::Greater:      depthPass = _mm_cmpgt_ps(depths, storedDepths); break;
-                case ComparisonFunc::NotEqual:     depthPass = _mm_cmpneq_ps(depths, storedDepths); break;
-                case ComparisonFunc::GreaterEqual: depthPass = _mm_cmpge_ps(depths, storedDepths); break;
-                case ComparisonFunc::Always:       depthPass = _mm_castsi128_ps(_mm_set1_epi32(-1)); break;
-                default:                           depthPass = _mm_setzero_ps(); break;
-                }
-
+                const __m128 depthPass = CompareMask<Func>(current_depths, storedDepths);
                 __m128 visibilityMask = _mm_and_ps(_mm_castsi128_ps(finalActiveMaskI), depthPass);
                 int moveMask = _mm_movemask_ps(visibilityMask);
 
                 if (moveMask != 0)
                 {
-                    if (rasterizerState.depthWriteEnable)
+                    if constexpr (DepthWriteEnable)
                         depthBuffer.Write4(uint2(x, y), depths, visibilityMask);
 
                     visibleCount += __popcnt(moveMask);
@@ -137,6 +137,33 @@ namespace DepthRasterizer
         }
 
         return visibleCount;
+    }
+
+    template <ComparisonFunc Func>
+    static inline uint RasterizeTriangleDW(const RasterizerCommon::TriangleSetup& s, bool depthWrite, DepthBuffer& db, const Viewport& vp, uint2 tmin, uint2 tmax)
+    {
+        return depthWrite ? RasterizeTriangleTyped<Func, true >(s, db, vp, tmin, tmax) : RasterizeTriangleTyped<Func, false>(s, db, vp, tmin, tmax);
+    }
+
+    static inline uint RasterizeTriangle(const RasterizerCommon::TriangleSetup& s,
+        const RasterizerState& state,
+        DepthBuffer& db,
+        const Viewport& vp,
+        uint2 tmin,
+        uint2 tmax)
+    {
+        switch (state.depthFunc)
+        {
+        case ComparisonFunc::Never:        return RasterizeTriangleDW<ComparisonFunc::Never>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::Less:         return RasterizeTriangleDW<ComparisonFunc::Less>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::Equal:        return RasterizeTriangleDW<ComparisonFunc::Equal>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::LessEqual:    return RasterizeTriangleDW<ComparisonFunc::LessEqual>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::Greater:      return RasterizeTriangleDW<ComparisonFunc::Greater>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::NotEqual:     return RasterizeTriangleDW<ComparisonFunc::NotEqual>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::GreaterEqual: return RasterizeTriangleDW<ComparisonFunc::GreaterEqual>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        case ComparisonFunc::Always:       return RasterizeTriangleDW<ComparisonFunc::Always>(s, state.depthWriteEnable, db, vp, tmin, tmax);
+        }
+        return 0;
     }
 
 } // namespace DepthRasterizer
