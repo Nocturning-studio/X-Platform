@@ -484,12 +484,10 @@ void CRenderBackendDX9::SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt)
 	m_currentIB = nativeIB;
 }
 
-void CRenderBackendDX9::SetInputLayout(RHI_InputLayoutHandle layout)
+void CRenderBackendDX9::ApplyInputLayout(RHI_InputLayoutHandle layout)
 {
 	if (!m_pDevice)
 		return;
-
-	m_psoCacheValid = false;
 
 	IDirect3DVertexDeclaration9* nativeDecl = nullptr;
 	if (layout.IsValid())
@@ -497,7 +495,7 @@ void CRenderBackendDX9::SetInputLayout(RHI_InputLayoutHandle layout)
 		DX9InputLayout* lay = GetInputLayout(layout);
 		if (!lay)
 		{
-			Print("! [DX9] SetInputLayout: invalid handle (id=%u)", layout.id);
+			Print("! [DX9] ApplyInputLayout: invalid handle (id=%u)", layout.id);
 			return;
 		}
 		nativeDecl = lay->decl;

@@ -181,59 +181,55 @@ void CRenderBackendDX9::InvalidateStateCache()
 	m_psoCacheValid = false;
 }
 
-void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)
+void CRenderBackendDX9::ApplyBlendState(const RHI_BlendState& s)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
-
-	m_psoCacheValid = false;
 
 	RHI_BlendState& c = m_blendCache;
 	const bool force = !m_blendCacheValid;
 
-	if(force || c.enable != s.enable)
+	if (force || c.enable != s.enable)
 	{
 		c.enable = s.enable;
 		m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, s.enable ? TRUE : FALSE);
 	}
 
-	if(s.enable)
+	if (s.enable)
 	{
-		if(force || c.separateAlpha != s.separateAlpha)
+		if (force || c.separateAlpha != s.separateAlpha)
 		{
 			c.separateAlpha = s.separateAlpha;
 			m_pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, s.separateAlpha ? TRUE : FALSE);
 		}
-
-		if(force || c.srcColor != s.srcColor)
+		if (force || c.srcColor != s.srcColor)
 		{
 			c.srcColor = s.srcColor;
 			m_pDevice->SetRenderState(D3DRS_SRCBLEND, ToD3DBlend(s.srcColor));
 		}
-		if(force || c.dstColor != s.dstColor)
+		if (force || c.dstColor != s.dstColor)
 		{
 			c.dstColor = s.dstColor;
 			m_pDevice->SetRenderState(D3DRS_DESTBLEND, ToD3DBlend(s.dstColor));
 		}
-		if(force || c.opColor != s.opColor)
+		if (force || c.opColor != s.opColor)
 		{
 			c.opColor = s.opColor;
 			m_pDevice->SetRenderState(D3DRS_BLENDOP, ToD3DBlendOp(s.opColor));
 		}
-
-		if(s.separateAlpha)
+		if (s.separateAlpha)
 		{
-			if(force || c.srcAlpha != s.srcAlpha)
+			if (force || c.srcAlpha != s.srcAlpha)
 			{
 				c.srcAlpha = s.srcAlpha;
 				m_pDevice->SetRenderState(D3DRS_SRCBLENDALPHA, ToD3DBlend(s.srcAlpha));
 			}
-			if(force || c.dstAlpha != s.dstAlpha)
+			if (force || c.dstAlpha != s.dstAlpha)
 			{
 				c.dstAlpha = s.dstAlpha;
 				m_pDevice->SetRenderState(D3DRS_DESTBLENDALPHA, ToD3DBlend(s.dstAlpha));
 			}
-			if(force || c.opAlpha != s.opAlpha)
+			if (force || c.opAlpha != s.opAlpha)
 			{
 				c.opAlpha = s.opAlpha;
 				m_pDevice->SetRenderState(D3DRS_BLENDOPALPHA, ToD3DBlendOp(s.opAlpha));
@@ -241,7 +237,7 @@ void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)
 		}
 	}
 
-	if(force || c.writeMask != s.writeMask)
+	if (force || c.writeMask != s.writeMask)
 	{
 		c.writeMask = s.writeMask;
 		m_pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, s.writeMask);
@@ -253,66 +249,64 @@ void CRenderBackendDX9::SetBlendState(const RHI_BlendState& s)
 	m_blendCacheValid = true;
 }
 
-void CRenderBackendDX9::SetDepthStencilState(const RHI_DepthStencilState& s)
+void CRenderBackendDX9::ApplyDepthStencilState(const RHI_DepthStencilState& s)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
-
-	m_psoCacheValid = false;
 
 	RHI_DepthStencilState& c = m_depthCache;
 	const bool force = !m_depthCacheValid;
 
-	if(force || c.depthEnable != s.depthEnable)
+	if (force || c.depthEnable != s.depthEnable)
 	{
 		c.depthEnable = s.depthEnable;
 		m_pDevice->SetRenderState(D3DRS_ZENABLE, s.depthEnable ? D3DZB_TRUE : D3DZB_FALSE);
 	}
-	if(force || c.depthWriteEnable != s.depthWriteEnable)
+	if (force || c.depthWriteEnable != s.depthWriteEnable)
 	{
 		c.depthWriteEnable = s.depthWriteEnable;
 		m_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, s.depthWriteEnable ? TRUE : FALSE);
 	}
-	if(force || c.depthFunc != s.depthFunc)
+	if (force || c.depthFunc != s.depthFunc)
 	{
 		c.depthFunc = s.depthFunc;
 		m_pDevice->SetRenderState(D3DRS_ZFUNC, ToD3DCmpFunc(s.depthFunc));
 	}
 
-	if(force || c.stencilEnable != s.stencilEnable)
+	if (force || c.stencilEnable != s.stencilEnable)
 	{
 		c.stencilEnable = s.stencilEnable;
 		m_pDevice->SetRenderState(D3DRS_STENCILENABLE, s.stencilEnable ? TRUE : FALSE);
 	}
 
-	if(s.stencilEnable)
+	if (s.stencilEnable)
 	{
-		if(force || c.stencilFunc != s.stencilFunc)
+		if (force || c.stencilFunc != s.stencilFunc)
 		{
 			c.stencilFunc = s.stencilFunc;
 			m_pDevice->SetRenderState(D3DRS_STENCILFUNC, ToD3DCmpFunc(s.stencilFunc));
 		}
-		if(force || c.stencilReadMask != s.stencilReadMask)
+		if (force || c.stencilReadMask != s.stencilReadMask)
 		{
 			c.stencilReadMask = s.stencilReadMask;
 			m_pDevice->SetRenderState(D3DRS_STENCILMASK, s.stencilReadMask);
 		}
-		if(force || c.stencilWriteMask != s.stencilWriteMask)
+		if (force || c.stencilWriteMask != s.stencilWriteMask)
 		{
 			c.stencilWriteMask = s.stencilWriteMask;
 			m_pDevice->SetRenderState(D3DRS_STENCILWRITEMASK, s.stencilWriteMask);
 		}
-		if(force || c.stencilFailOp != s.stencilFailOp)
+		if (force || c.stencilFailOp != s.stencilFailOp)
 		{
 			c.stencilFailOp = s.stencilFailOp;
 			m_pDevice->SetRenderState(D3DRS_STENCILFAIL, ToD3DStencilOp(s.stencilFailOp));
 		}
-		if(force || c.stencilDepthFailOp != s.stencilDepthFailOp)
+		if (force || c.stencilDepthFailOp != s.stencilDepthFailOp)
 		{
 			c.stencilDepthFailOp = s.stencilDepthFailOp;
 			m_pDevice->SetRenderState(D3DRS_STENCILZFAIL, ToD3DStencilOp(s.stencilDepthFailOp));
 		}
-		if(force || c.stencilPassOp != s.stencilPassOp)
+		if (force || c.stencilPassOp != s.stencilPassOp)
 		{
 			c.stencilPassOp = s.stencilPassOp;
 			m_pDevice->SetRenderState(D3DRS_STENCILPASS, ToD3DStencilOp(s.stencilPassOp));
@@ -322,37 +316,35 @@ void CRenderBackendDX9::SetDepthStencilState(const RHI_DepthStencilState& s)
 	m_depthCacheValid = true;
 }
 
-void CRenderBackendDX9::SetRasterizerState(const RHI_RasterizerState& s)
+void CRenderBackendDX9::ApplyRasterizerState(const RHI_RasterizerState& s)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
-
-	m_psoCacheValid = false;
 
 	RHI_RasterizerState& c = m_rasterCache;
 	const bool force = !m_rasterCacheValid;
 
-	if(force || c.fillMode != s.fillMode)
+	if (force || c.fillMode != s.fillMode)
 	{
 		c.fillMode = s.fillMode;
 		m_pDevice->SetRenderState(D3DRS_FILLMODE, ToD3DFill(s.fillMode));
 	}
-	if(force || c.cullMode != s.cullMode)
+	if (force || c.cullMode != s.cullMode)
 	{
 		c.cullMode = s.cullMode;
 		m_pDevice->SetRenderState(D3DRS_CULLMODE, ToD3DCull(s.cullMode));
 	}
-	if(force || c.scissorEnable != s.scissorEnable)
+	if (force || c.scissorEnable != s.scissorEnable)
 	{
 		c.scissorEnable = s.scissorEnable;
 		m_pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, s.scissorEnable ? TRUE : FALSE);
 	}
-	if(force || c.depthBias != s.depthBias)
+	if (force || c.depthBias != s.depthBias)
 	{
 		c.depthBias = s.depthBias;
 		m_pDevice->SetRenderState(D3DRS_DEPTHBIAS, F2DW(s.depthBias));
 	}
-	if(force || c.slopeScaledDepthBias != s.slopeScaledDepthBias)
+	if (force || c.slopeScaledDepthBias != s.slopeScaledDepthBias)
 	{
 		c.slopeScaledDepthBias = s.slopeScaledDepthBias;
 		m_pDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(s.slopeScaledDepthBias));

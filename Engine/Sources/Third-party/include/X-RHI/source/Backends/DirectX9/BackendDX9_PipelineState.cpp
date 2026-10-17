@@ -96,28 +96,18 @@ void CRenderBackendDX9::SetPipelineState(RHI_PipelineStateHandle handle)
 		return;
 	}
 
-	// Быстрый путь: тот же PSO уже применён и не инвалидирован вручную.
 	if (m_psoCacheValid && m_currentPSO == handle)
 		return;
 
 	const RHI_PipelineStateDesc& d = pso->desc;
 
-	// Порядок: сначала IA, потом шейдеры, потом FF.
-	// (SetX-методы временно выставляют m_psoCacheValid = false —
-	//  в конце мы восстановим его.)
-	SetInputLayout(d.inputLayout);
-	SetVertexShader(d.vertexShader);
-	SetPixelShader(d.pixelShader);
+	ApplyInputLayout(d.inputLayout);
+	ApplyVertexShader(d.vertexShader);
+	ApplyPixelShader(d.pixelShader);
 
-	// В D3D9 топология-семейство (d.topologyType) игнорируется.
-	// Реальная топология (list/strip/fan) — через SetPrimitiveTopology().
-
-	SetBlendState(d.blend);
-	SetDepthStencilState(d.depthStencil);
-	SetRasterizerState(d.rasterizer);
-
-	// Layout в D3D9 не применяется (регистры неявные).
-	// Но сохраняем handle в PSO для возможной валидации.
+	ApplyBlendState(d.blend);
+	ApplyDepthStencilState(d.depthStencil);
+	ApplyRasterizerState(d.rasterizer);
 
 	m_currentPSO = handle;
 	m_psoCacheValid = true;

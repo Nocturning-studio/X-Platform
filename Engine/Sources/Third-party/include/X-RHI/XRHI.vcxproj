@@ -183,7 +183,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalIncludeDirectories>$(ProjectDir)Backends\DirectX9\</AdditionalIncludeDirectories>
       <CombineFilesOnlyFromTheSameFolder>true</CombineFilesOnlyFromTheSameFolder>
       <IncludeInUnityFile>true</IncludeInUnityFile>
@@ -240,7 +240,7 @@
       <CombineFilesOnlyFromTheSameFolder>true</CombineFilesOnlyFromTheSameFolder>
       <IncludeInUnityFile>true</IncludeInUnityFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

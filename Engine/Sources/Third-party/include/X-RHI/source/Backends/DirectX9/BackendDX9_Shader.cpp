@@ -200,30 +200,28 @@ void CRenderBackendDX9::DestroyShader(RHI_ShaderHandle handle)
 // Bind
 // ============================================================================
 
-void CRenderBackendDX9::SetVertexShader(RHI_ShaderHandle handle)
+void CRenderBackendDX9::ApplyVertexShader(RHI_ShaderHandle handle)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
 
-	m_psoCacheValid = false;
-
 	IDirect3DVertexShader9* native = nullptr;
-	if(handle.IsValid())
+	if (handle.IsValid())
 	{
 		DX9Shader* sh = GetShader(handle);
-		if(!sh || !sh->isVertex)
+		if (!sh || !sh->isVertex)
 		{
-			Print("! [DX9] SetVertexShader: invalid handle (id=%u)", handle.id);
+			Print("! [DX9] ApplyVertexShader: invalid handle (id=%u)", handle.id);
 			return;
 		}
 		native = sh->vs;
 	}
 
-	if(m_currentVS == native)
+	if (m_currentVS == native)
 		return;
 
 	const HRESULT hr = m_pDevice->SetVertexShader(native);
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
 		Print("! [DX9] SetVertexShader failed (hr=0x%08x)", hr);
 		return;
@@ -232,30 +230,28 @@ void CRenderBackendDX9::SetVertexShader(RHI_ShaderHandle handle)
 	m_currentVS = native;
 }
 
-void CRenderBackendDX9::SetPixelShader(RHI_ShaderHandle handle)
+void CRenderBackendDX9::ApplyPixelShader(RHI_ShaderHandle handle)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
 
-	m_psoCacheValid = false;
-
 	IDirect3DPixelShader9* native = nullptr;
-	if(handle.IsValid())
+	if (handle.IsValid())
 	{
 		DX9Shader* sh = GetShader(handle);
-		if(!sh || sh->isVertex)
+		if (!sh || sh->isVertex)
 		{
-			Print("! [DX9] SetPixelShader: invalid handle (id=%u)", handle.id);
+			Print("! [DX9] ApplyPixelShader: invalid handle (id=%u)", handle.id);
 			return;
 		}
 		native = sh->ps;
 	}
 
-	if(m_currentPS == native)
+	if (m_currentPS == native)
 		return;
 
 	const HRESULT hr = m_pDevice->SetPixelShader(native);
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
 		Print("! [DX9] SetPixelShader failed (hr=0x%08x)", hr);
 		return;
