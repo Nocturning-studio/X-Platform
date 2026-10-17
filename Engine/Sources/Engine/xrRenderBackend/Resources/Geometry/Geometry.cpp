@@ -41,15 +41,6 @@ uint32_t CGeometry::GetVertexCount() const
 
 void CGeometry::Bind(IRenderBackend& rhi) const
 {
-	// Input layout - это часть PSO.
-	//
-	//    Для сборки PSO используйте
-	//        geom.GetVertexDeclaration()->GetRHIHandle()
-	//    и кладите его в RHI_PipelineStateDesc::inputLayout.
-	//
-	//    Для legacy DX9-пути можно вручную:
-	//        AsDX9(rhi)->SetInputLayout(geom.GetVertexDeclaration()->GetRHIHandle());
-
 	// Vertex streams.
 	for(uint32_t s = 0; s < (uint32_t)m_streams.size(); ++s)
 	{

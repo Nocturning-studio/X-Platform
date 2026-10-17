@@ -132,68 +132,65 @@ namespace
 		};
 	}
 
-	bool TryRouteD3DRenderState(CRenderBackendDX9* dx9, D3DRENDERSTATETYPE state, DWORD value)
+	bool TryRouteD3DRenderState(CStateCache& cache, IRenderBackend* rhi, D3DRENDERSTATETYPE state, DWORD value)
 	{
-		if (!dx9)
-			return false;
-
 		switch (state)
 		{
 			// ---- Blend ----------------------------------------------------------
 		case D3DRS_ALPHABLENDENABLE:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.enable = (value != 0);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_SEPARATEALPHABLENDENABLE:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.separateAlpha = (value != 0);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_SRCBLEND:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.srcColor = static_cast<RHI_Blend>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_DESTBLEND:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.dstColor = static_cast<RHI_Blend>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_BLENDOP:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.opColor = static_cast<RHI_BlendOp>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_SRCBLENDALPHA:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.srcAlpha = static_cast<RHI_Blend>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_DESTBLENDALPHA:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.dstAlpha = static_cast<RHI_Blend>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_BLENDOPALPHA:
 		{
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.opAlpha = static_cast<RHI_BlendOp>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 		case D3DRS_COLORWRITEENABLE:
@@ -202,127 +199,127 @@ namespace
 		case D3DRS_COLORWRITEENABLE3:
 		{
 			// DX9-бэкенд хранит одну маску и применяет ко всем RT.
-			RHI_BlendState s = dx9->GetBlendState();
+			RHI_BlendState s = cache.GetBlendState();
 			s.writeMask = static_cast<uint8_t>(value);
-			dx9->SetBlendState(s);
+			cache.SetBlendState(s);
 			return true;
 		}
 
 		// ---- Depth / stencil ------------------------------------------------
 		case D3DRS_ZENABLE:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.depthEnable = (value != 0);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_ZWRITEENABLE:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.depthWriteEnable = (value != 0);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_ZFUNC:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.depthFunc = static_cast<RHI_CmpFunc>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILENABLE:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilEnable = (value != 0);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILFUNC:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilFunc = static_cast<RHI_CmpFunc>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILMASK:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilReadMask = static_cast<uint8_t>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILWRITEMASK:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilWriteMask = static_cast<uint8_t>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILFAIL:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilFailOp = static_cast<RHI_StencilOp>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILZFAIL:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilDepthFailOp = static_cast<RHI_StencilOp>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILPASS:
 		{
-			RHI_DepthStencilState s = dx9->GetDepthStencilState();
+			RHI_DepthStencilState s = cache.GetDepthStencilState();
 			s.stencilPassOp = static_cast<RHI_StencilOp>(value);
-			dx9->SetDepthStencilState(s);
+			cache.SetDepthStencilState(s);
 			return true;
 		}
 		case D3DRS_STENCILREF:
-			dx9->SetStencilRef(static_cast<uint8_t>(value));
+			cache.SetStencilRef(static_cast<uint8_t>(value));
 			return true;
 
 			// ---- Rasterizer -----------------------------------------------------
 		case D3DRS_FILLMODE:
 		{
-			RHI_RasterizerState s = dx9->GetRasterizerState();
+			RHI_RasterizerState s = cache.GetRasterizerState();
 			s.fillMode = static_cast<RHI_FillMode>(value);
-			dx9->SetRasterizerState(s);
+			cache.SetRasterizerState(s);
 			return true;
 		}
 		case D3DRS_CULLMODE:
 		{
-			RHI_RasterizerState s = dx9->GetRasterizerState();
+			RHI_RasterizerState s = cache.GetRasterizerState();
 			s.cullMode = static_cast<RHI_CullMode>(value);
-			dx9->SetRasterizerState(s);
+			cache.SetRasterizerState(s);
 			return true;
 		}
 		case D3DRS_SCISSORTESTENABLE:
 		{
-			RHI_RasterizerState s = dx9->GetRasterizerState();
+			RHI_RasterizerState s = cache.GetRasterizerState();
 			s.scissorEnable = (value != 0);
-			dx9->SetRasterizerState(s);
+			cache.SetRasterizerState(s);
 			return true;
 		}
 		case D3DRS_DEPTHBIAS:
 		{
-			RHI_RasterizerState s = dx9->GetRasterizerState();
+			RHI_RasterizerState s = cache.GetRasterizerState();
 			s.depthBias = DWORDToFloat(value);
-			dx9->SetRasterizerState(s);
+			cache.SetRasterizerState(s);
 			return true;
 		}
 		case D3DRS_SLOPESCALEDEPTHBIAS:
 		{
-			RHI_RasterizerState s = dx9->GetRasterizerState();
+			RHI_RasterizerState s = cache.GetRasterizerState();
 			s.slopeScaledDepthBias = DWORDToFloat(value);
-			dx9->SetRasterizerState(s);
+			cache.SetRasterizerState(s);
 			return true;
 		}
 
 		// ---- Blend factor ---------------------------------------------------
 		case D3DRS_BLENDFACTOR:
-			dx9->SetBlendFactor(D3DColorToFvec4(value));
+			cache.SetBlendFactor(D3DColorToFvec4(value));
 			return true;
 
 		default:
@@ -507,15 +504,12 @@ void CRenderBackendFacade::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 {
 	IRenderBackend* rhi = Engine.RHI.GetRawRHI();
 
-	if (TryRouteD3DRenderState(AsDX9(rhi), State, Value))
+	if (TryRouteD3DRenderState(m_stateCache, rhi, State, Value))
 		return;
 
-	// Fallback: неизвестный state. Пишем напрямую в D3D9 и инвалидируем
-	// кэш RHI-бэкенда, иначе следующая типизированная установка (с теми же
-	// значениями, что уже в кэше) не доедет до device.
 	CHK_DX(m_pDevice->SetRenderState(State, Value));
-
 	m_stateCache.Invalidate();
+	if (rhi) rhi->InvalidateCache();
 }
 
 void CRenderBackendFacade::SaveRenderState()

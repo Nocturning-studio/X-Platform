@@ -83,6 +83,9 @@ class XRHI_API CRenderBackendDX9 : public IRenderBackend
 	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) override;
 	virtual void SetPrimitiveTopology(RHI_Topology topology) override;
 
+	virtual void* GetShaderNativeHandle(RHI_ShaderHandle h) override;
+	virtual void* GetInputLayoutNativeHandle(RHI_InputLayoutHandle h) override;
+
 	virtual void SetViewport(const RHI_Viewport& vp) override;
 	virtual RHI_Viewport GetViewport() const override;
 	virtual void SetScissorRect(const RHI_Rect* rect) override;

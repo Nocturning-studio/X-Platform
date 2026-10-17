@@ -82,6 +82,9 @@ class XRHI_API IRenderBackend
 	virtual void SetIndexBuffer(RHI_BufferHandle ib, RHI_IndexFormat fmt) = 0;
 	virtual void SetPrimitiveTopology(RHI_Topology topology) = 0;
 
+	virtual void* GetShaderNativeHandle(RHI_ShaderHandle handle) { return nullptr; }
+	virtual void* GetInputLayoutNativeHandle(RHI_InputLayoutHandle handle) { return nullptr; }
+
 	virtual void SetViewport(const RHI_Viewport& vp) = 0;
 	virtual void SetScissorRect(const RHI_Rect* rect) = 0;
 	virtual RHI_Viewport GetViewport() const = 0;

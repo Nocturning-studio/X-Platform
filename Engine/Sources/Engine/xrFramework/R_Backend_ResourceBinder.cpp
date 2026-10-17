@@ -7,16 +7,6 @@
 #include <X-RHI/include/XRHI_BackendAccess.h>
 #include <xrRenderBackend/Resources/Shaders/ShaderPass.h>
 ////////////////////////////////////////////////////////////////////////////////
-namespace
-{
-	// Единая точка получения DX9-фасада. Возвращает nullptr для не-DX9 бэкенда
-	// (пригодится, когда появится DX12 — тут будет симметричная ветка).
-	inline CRenderBackendDX9* DX9Binder()
-	{
-		return AsDX9(Engine.RHI.GetRawRHI());
-	}
-} // namespace
-
 // ----------------------------------------------------------------
 // Invalidate
 // ----------------------------------------------------------------
@@ -121,7 +111,11 @@ void CBackendResourceBinder::SetPixelShader(CRenderBackendFacade& backend, RHI_S
 	{
 		backend.stat.ps++;
 		m_ps = ps;
-		DX9Binder()->SetPixelShader(ps);
+
+		IRenderBackend* rhi = Engine.RHI.GetRawRHI();
+		auto* native = static_cast<IDirect3DPixelShader9*>(rhi->GetShaderNativeHandle(ps));
+		backend.GetDevice()->SetPixelShader(native);
+
 		m_owner = EStateOwner::RHI;
 	}
 #ifdef DEBUG
@@ -139,7 +133,11 @@ void CBackendResourceBinder::SetVertexShader(CRenderBackendFacade& backend, RHI_
 	{
 		backend.stat.vs++;
 		m_vs = vs;
-		DX9Binder()->SetVertexShader(vs);
+
+		IRenderBackend* rhi = Engine.RHI.GetRawRHI();
+		auto* native = static_cast<IDirect3DVertexShader9*>(rhi->GetShaderNativeHandle(vs));
+		backend.GetDevice()->SetVertexShader(native);
+
 		m_owner = EStateOwner::RHI;
 	}
 #ifdef DEBUG
@@ -183,15 +181,20 @@ void CBackendResourceBinder::SetShaderPass(CRenderBackendFacade& backend, CShade
 void CBackendResourceBinder::SetVertexDeclaration(CRenderBackendFacade& backend, RHI_InputLayoutHandle decl)
 {
 	const bool cacheValid = (m_owner == EStateOwner::RHI && m_decl == decl);
-	if (!cacheValid)
-	{
+	if (cacheValid)
+		return;
+
 #ifdef DEBUG
-		backend.stat.decl++;
+	backend.stat.decl++;
 #endif
-		m_decl = decl;
-		DX9Binder()->SetInputLayout(decl);
-		m_owner = EStateOwner::RHI;
-}
+
+	IRenderBackend* rhi = Engine.RHI.GetRawRHI();
+	auto* native = static_cast<IDirect3DVertexDeclaration9*>(rhi->GetInputLayoutNativeHandle(decl));
+
+	backend.GetDevice()->SetVertexDeclaration(native);
+
+	m_decl = decl;
+	m_owner = EStateOwner::RHI;
 }
 
 // ----------------------------------------------------------------

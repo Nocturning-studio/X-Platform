@@ -674,4 +674,17 @@ RHI_Format CRenderBackendDX9::GetBackBufferFormat() const
 {
 	return D3DFormatToRHI(m_BackBufferFmt);
 }
+
+void* CRenderBackendDX9::GetShaderNativeHandle(RHI_ShaderHandle h)
+{
+	DX9Shader* sh = GetShader(h);
+	if (!sh) return nullptr;
+	return sh->isVertex ? static_cast<void*>(sh->vs) : static_cast<void*>(sh->ps);
+}
+
+void* CRenderBackendDX9::GetInputLayoutNativeHandle(RHI_InputLayoutHandle h)
+{
+	DX9InputLayout* l = GetInputLayout(h);
+	return l ? static_cast<void*>(l->decl) : nullptr;
+}
 ////////////////////////////////////////////////////////////////////////////////
