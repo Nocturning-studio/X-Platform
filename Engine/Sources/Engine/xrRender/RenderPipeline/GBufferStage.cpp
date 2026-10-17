@@ -105,6 +105,7 @@ void CGBufferStage::RenderScene()
 {
     RenderImplementation.set_active_phase(CRender::PHASE_NORMAL);
     RenderImplementation.Scene.Render(RenderImplementation.m_scene_visibility_data, SceneRenderPresets::Opaque);
+    RenderImplementation.Scene.Render(RenderImplementation.m_scene_visibility_data, SceneRenderPresets::HUDOnly);
     Engine.RHI->InvalidateCache();
 }
 ////////////////////////////////////////////////////////////////////////////////

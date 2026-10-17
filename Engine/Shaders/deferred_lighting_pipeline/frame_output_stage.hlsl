@@ -14,6 +14,8 @@ struct Interpolants
 
 float4 ps_main(Interpolants Input) : COLOR0
 {
-	return tex2D(s_frame, Input.TexCoords);
+    float4 OutputColor = tex2D(s_frame, Input.TexCoords);
+    OutputColor.a = 1.0f;
+    return OutputColor;
 }
 ////////////////////////////////////////////////////////////////////////////////
