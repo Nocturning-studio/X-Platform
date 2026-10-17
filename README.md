@@ -146,3 +146,6 @@ X-Platform/
 - **GSC Game World** — за оригинальный X-Ray Engine.
 - **Nocturning Studio** — за координацию и развитие проекта.
 - **Все контрибьюторы** — за вклад в код, тестирование и документацию.
+- **Авторам DeepSeek** - за секономленные нервы и дни дебаггинга
+<img width="960" height="204" alt="image" src="https://github.com/user-attachments/assets/7ad0b4cc-5ef1-4d78-a5ec-4dbe70d37cd6" />
+
