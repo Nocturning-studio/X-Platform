@@ -26,6 +26,7 @@
     <ClInclude Include="include\XRHI_Buffers.h" />
     <ClInclude Include="include\XRHI_Caps.h" />
     <ClInclude Include="include\XRHI_Config.h" />
+    <ClInclude Include="include\XRHI_DynamicState.h" />
     <ClInclude Include="include\XRHI_Handles.h" />
     <ClInclude Include="include\XRHI_InputLayout.h" />
     <ClInclude Include="include\XRHI_Log.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="include\XRHI_Types.h" />
     <ClInclude Include="source\Backends\DirectX9\BackendDX9.h" />
     <ClInclude Include="source\Backends\DirectX9\BackendDX9_Internal.h" />
+    <ClInclude Include="source\Backends\DirectX9\BackendDX9_StateCache.h" />
     <ClInclude Include="source\pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +55,7 @@
     <ClCompile Include="source\Backends\DirectX9\BackendDX9_RT.cpp" />
     <ClCompile Include="source\Backends\DirectX9\BackendDX9_Samplers.cpp" />
     <ClCompile Include="source\Backends\DirectX9\BackendDX9_Shader.cpp" />
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_StateCache.cpp" />
     <ClCompile Include="source\Backends\DirectX9\BackendDX9_States.cpp" />
     <ClCompile Include="source\Backends\DirectX9\BackendDX9_Texture.cpp" />
     <ClCompile Include="source\dllmain.cpp" />

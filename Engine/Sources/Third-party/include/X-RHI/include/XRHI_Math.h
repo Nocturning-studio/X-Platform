@@ -21,6 +21,12 @@ namespace XRHI {
             float y = 0.0f;
             float z = 0.0f;
             float w = 0.0f;
+
+            constexpr bool operator==(const Float4& o) const noexcept
+            {
+                return x == o.x && y == o.y && z == o.z && w == o.w;
+            }
+            constexpr bool operator!=(const Float4& o) const noexcept { return !(*this == o); }
         };
 
         static_assert(sizeof(Float4) == 16, "XRHI::math::Float4 must be 16 bytes");

@@ -133,28 +133,20 @@ void CRenderBackendDX9::DestroyShader(RHI_ShaderHandle handle)
 		return;
 	}
 
-	if (sh->isVertex && m_currentVS == sh->vs)
+	if (sh->isVertex && m_stateCache.GetVertexShader() == sh->vs)
 	{
-		if (m_pDevice)
-			m_pDevice->SetVertexShader(nullptr);
-		m_currentVS = nullptr;
-		m_psoCacheValid = false;
+		if (m_pDevice) m_pDevice->SetVertexShader(nullptr);
+		m_stateCache.InvalidateVertexShader(sh->vs);
 	}
-	else if (!sh->isVertex && m_currentPS == sh->ps)
+	else if (!sh->isVertex && m_stateCache.GetPixelShader() == sh->ps)
 	{
-		if (m_pDevice)
-			m_pDevice->SetPixelShader(nullptr);
-		m_currentPS = nullptr;
-		m_psoCacheValid = false;
+		if (m_pDevice) m_pDevice->SetPixelShader(nullptr);
+		m_stateCache.InvalidatePixelShader(sh->ps);
 	}
 
-	if (sh->vs)
-		sh->vs->Release();
-	if (sh->ps)
-		sh->ps->Release();
-	if (sh->blob)
-		sh->blob->Release();
-
+	if (sh->vs)   sh->vs->Release();
+	if (sh->ps)   sh->ps->Release();
+	if (sh->blob) sh->blob->Release();
 	delete sh;
 }
 
@@ -164,8 +156,7 @@ void CRenderBackendDX9::DestroyShader(RHI_ShaderHandle handle)
 
 void CRenderBackendDX9::ApplyVertexShader(RHI_ShaderHandle handle)
 {
-	if (!m_pDevice)
-		return;
+	if (!m_pDevice) return;
 
 	IDirect3DVertexShader9* native = nullptr;
 	if (handle.IsValid())
@@ -179,7 +170,7 @@ void CRenderBackendDX9::ApplyVertexShader(RHI_ShaderHandle handle)
 		native = sh->vs;
 	}
 
-	if (m_currentVS == native)
+	if (!m_stateCache.NeedsVertexShader(native))
 		return;
 
 	const HRESULT hr = m_pDevice->SetVertexShader(native);
@@ -188,14 +179,12 @@ void CRenderBackendDX9::ApplyVertexShader(RHI_ShaderHandle handle)
 		Print("! [DX9] SetVertexShader failed (hr=0x%08x)", hr);
 		return;
 	}
-
-	m_currentVS = native;
+	m_stateCache.MarkVertexShader(native);
 }
 
 void CRenderBackendDX9::ApplyPixelShader(RHI_ShaderHandle handle)
 {
-	if (!m_pDevice)
-		return;
+	if (!m_pDevice) return;
 
 	IDirect3DPixelShader9* native = nullptr;
 	if (handle.IsValid())
@@ -209,7 +198,7 @@ void CRenderBackendDX9::ApplyPixelShader(RHI_ShaderHandle handle)
 		native = sh->ps;
 	}
 
-	if (m_currentPS == native)
+	if (!m_stateCache.NeedsPixelShader(native))
 		return;
 
 	const HRESULT hr = m_pDevice->SetPixelShader(native);
@@ -218,8 +207,7 @@ void CRenderBackendDX9::ApplyPixelShader(RHI_ShaderHandle handle)
 		Print("! [DX9] SetPixelShader failed (hr=0x%08x)", hr);
 		return;
 	}
-
-	m_currentPS = native;
+	m_stateCache.MarkPixelShader(native);
 }
 
 // ============================================================================
@@ -330,6 +318,7 @@ RHI_ShaderCompileResult CRenderBackendDX9::CompileShader(const RHI_ShaderCompile
 	if(FAILED(hrCreate))
 	{
 		Print("! [DX9] CompileShader: Create*Shader failed (hr=0x%08x)", hrCreate);
+		sh->blob = nullptr;
 		bytecode->Release();
 		delete sh;
 		result.errorMessage = "Create*Shader failed";

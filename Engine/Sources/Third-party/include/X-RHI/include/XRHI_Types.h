@@ -37,6 +37,7 @@ enum class RHI_Format : uint32_t
 
 	// --- Color: 16-bit UNORM ---
 	R16G16B16A16_UNORM, // D3DFMT_A16B16G16R16
+	RG16_UNORM,			// D3DFMT_G16R16
 
 	// --- Color: 32-bit float ---
 	R32G32B32A32_FLOAT, // D3DFMT_A32B32G32R32F

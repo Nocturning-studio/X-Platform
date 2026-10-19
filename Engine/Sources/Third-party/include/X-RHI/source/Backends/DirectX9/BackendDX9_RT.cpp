@@ -214,12 +214,12 @@ void CRenderBackendDX9::ReleaseAllRTVDSV()
 
 void CRenderBackendDX9::InvalidateUserRTVDSVOnReset()
 {
-	// Освобождаем все пользовательские RTV/DSV. Back buffer слоты (id == 0)
-	// не трогаем — их поверхность обновится в RefreshBackBufferRTVs.
-
-	for(uint32_t i = 0; i < m_rtvSlots.size(); ++i)
+	for (uint32_t i = 0; i < m_rtvSlots.size(); ++i)
 	{
-		if(m_rtvSlots[i].surface)
+		if (m_backBufferRTV.IsValid() && i == m_backBufferRTV.id)
+			continue;
+
+		if (m_rtvSlots[i].surface)
 		{
 			m_rtvSlots[i].surface->Release();
 			m_rtvSlots[i].surface = nullptr;
@@ -328,8 +328,6 @@ void CRenderBackendDX9::SetRenderTargets(const RHI_RenderTargetView* rtvs,
 	if(!m_pDevice)
 		return;
 
-	m_psoCacheValid = false;
-
 	const uint32_t kMaxRT = m_DeviceCaps.MaxSimultaneousRTs;
 	if(count > kMaxRT)
 	{
@@ -377,6 +375,21 @@ void CRenderBackendDX9::SetRenderTargets(const RHI_RenderTargetView* rtvs,
 			m_currentDSSurface = ds;
 		}
 	}
+
+	if (count > 0)
+	{
+		IDirect3DSurface9* rt0 = ResolveRTASurface(rtvs[0]);
+		if (rt0)
+		{
+			D3DSURFACE_DESC rtdesc{};
+			if (SUCCEEDED(rt0->GetDesc(&rtdesc)))
+				m_stateCache.SetRenderTargetSize(rtdesc.Width, rtdesc.Height);
+		}
+	}
+	else
+	{
+		m_stateCache.SetRenderTargetSize(m_backBufferWidth, m_backBufferHeight);
+	}
 }
 
 // ============================================================================
@@ -385,29 +398,98 @@ void CRenderBackendDX9::SetRenderTargets(const RHI_RenderTargetView* rtvs,
 
 void CRenderBackendDX9::ClearRenderTarget(RHI_RenderTargetView rtv, const Float4& color)
 {
-	if(!m_pDevice)
+	if (!m_pDevice)
 		return;
 
 	IDirect3DSurface9* surf = ResolveRTASurface(rtv);
-	if(!surf)
+	if (!surf)
 		return;
 
 	const D3DCOLOR d3dColor = D3DCOLOR_COLORVALUE(color.x, color.y, color.z, color.w);
 
-	// Если этот RTV уже привязан в slot 0 — просто Clear().
-	if(m_currentRTASurfaces[0] == surf)
+	const uint32_t maxSlots = std::min<uint32_t>(
+		RHI_PipelineStateDesc::kMaxRenderTargets,
+		m_DeviceCaps.MaxSimultaneousRTs);
+
+	// Снимок текущих привязок RT0..N-1.
+	IDirect3DSurface9* saved[RHI_PipelineStateDesc::kMaxRenderTargets] = {};
+	bool anyOtherBound = false;
+	for (uint32_t i = 0; i < maxSlots; ++i)
+	{
+		saved[i] = m_currentRTASurfaces[i];
+		if (i > 0 && saved[i] != nullptr)
+			anyOtherBound = true;
+	}
+
+	// ---- Fast path: surf уже RT0 и других RT нет. ----
+	if (!anyOtherBound && saved[0] == surf)
 	{
 		m_pDevice->Clear(0, nullptr, D3DCLEAR_TARGET, d3dColor, 1.0f, 0);
 		return;
 	}
 
-	// Иначе: временно биндим в slot 0, чистим, восстанавливаем.
-	// Кэш RTV-кэш не трогаем — состояние устройства после restore
-	// то же, что было до вызова.
-	IDirect3DSurface9* saved = m_currentRTASurfaces[0];
-	m_pDevice->SetRenderTarget(0, surf);
+	// ---- Slow path ----
+	//    Сначала отвязываем ВСЕ остальные слоты (RT1..N-1).
+	//    Если surf уже занимает один из них, это освободит его
+	//    для привязки к RT0.
+	for (uint32_t i = 1; i < maxSlots; ++i)
+	{
+		if (saved[i] == nullptr)
+			continue;
+
+		const HRESULT hr = m_pDevice->SetRenderTarget(i, nullptr);
+		if (FAILED(hr))
+			Print("! [DX9] ClearRenderTarget: unbind RT%u failed (0x%08x)", i, hr);
+	}
+
+	//    Теперь привязываем целевой surf к RT0.
+	//    RT0 нельзя отвязать (SetRenderTarget(0, nullptr) => D3DERR_INVALIDCALL),
+	//    поэтому просто заменяем его на surf, запомнив старый.
+	IDirect3DSurface9* oldRT0 = saved[0];
+	bool replacedRT0 = false;
+
+	if (oldRT0 != surf)
+	{
+		const HRESULT hr = m_pDevice->SetRenderTarget(0, surf);
+		if (FAILED(hr))
+		{
+			Print("! [DX9] ClearRenderTarget: bind target to RT0 failed (0x%08x) "
+				"(rtv id=%u). Surface may be in an incompatible pool or already "
+				"bound to another device state.", hr, rtv.id);
+			// Не восстанавливаем RT1..N здесь: они уже отвязаны,
+			// но лучше попытаться вернуть их, чтобы не оставить
+			// устройство в частично изменённом состоянии.
+			for (uint32_t i = 1; i < maxSlots; ++i)
+			{
+				if (saved[i] != nullptr)
+					m_pDevice->SetRenderTarget(i, saved[i]);
+			}
+			return;
+		}
+		replacedRT0 = true;
+	}
+
+	// Очищаем — привязан только целевой surf (в RT0).
 	m_pDevice->Clear(0, nullptr, D3DCLEAR_TARGET, d3dColor, 1.0f, 0);
-	m_pDevice->SetRenderTarget(0, saved);
+
+	// Восстанавливаем RT0, если подменяли.
+	if (replacedRT0)
+	{
+		const HRESULT hr = m_pDevice->SetRenderTarget(0, oldRT0);
+		if (FAILED(hr))
+			Print("! [DX9] ClearRenderTarget: restore RT0 failed (0x%08x)", hr);
+	}
+
+	// Восстанавливаем RT1..N-1.
+	for (uint32_t i = 1; i < maxSlots; ++i)
+	{
+		if (saved[i] == nullptr)
+			continue;
+
+		const HRESULT hr = m_pDevice->SetRenderTarget(i, saved[i]);
+		if (FAILED(hr))
+			Print("! [DX9] ClearRenderTarget: restore RT%u failed (0x%08x)", i, hr);
+	}
 }
 
 void CRenderBackendDX9::ClearDepthStencil(RHI_DepthStencilView dsv, float depth, uint8_t stencil)

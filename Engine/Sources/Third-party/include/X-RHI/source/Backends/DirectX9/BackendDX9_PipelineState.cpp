@@ -32,29 +32,9 @@ RHI_PipelineStateHandle CRenderBackendDX9::CreatePipelineState(const RHI_Pipelin
 	return m_pipelineStates.Allocate(pso);
 }
 
-void CRenderBackendDX9::DestroyPipelineState(RHI_PipelineStateHandle handle)
-{
-	DX9PipelineState* pso = m_pipelineStates.Release(handle);
-	if (!pso)
-	{
-		if (handle.IsValid() && handle.id < m_pipelineStates.Data().size())
-			Print("! [DX9] DestroyPipelineState: double free of RHI_PipelineStateHandle(id=%u), ignoring", handle.id);
-		return;
-	}
-
-	if (m_currentPSO == handle)
-	{
-		m_currentPSO = {};
-		m_psoCacheValid = false;
-	}
-
-	delete pso;
-}
-
 void CRenderBackendDX9::SetPipelineState(RHI_PipelineStateHandle handle)
 {
-	if (!m_pDevice)
-		return;
+	if (!m_pDevice) return;
 
 	DX9PipelineState* pso = GetPipelineState(handle);
 	if (!pso)
@@ -63,7 +43,7 @@ void CRenderBackendDX9::SetPipelineState(RHI_PipelineStateHandle handle)
 		return;
 	}
 
-	if (m_psoCacheValid && m_currentPSO == handle)
+	if (!m_stateCache.NeedsPipelineState(handle))
 		return;
 
 	const RHI_PipelineStateDesc& d = pso->desc;
@@ -76,12 +56,27 @@ void CRenderBackendDX9::SetPipelineState(RHI_PipelineStateHandle handle)
 	ApplyDepthStencilState(d.depthStencil);
 	ApplyRasterizerState(d.rasterizer);
 
-	m_currentPSO = handle;
-	m_psoCacheValid = true;
+	m_stateCache.MarkPipelineState(handle);
 }
 
 RHI_PipelineStateHandle CRenderBackendDX9::GetCurrentPipelineState() const
 {
-	return m_psoCacheValid ? m_currentPSO : RHI_PipelineStateHandle{};
+	return m_stateCache.GetPipelineState();
+}
+
+void CRenderBackendDX9::DestroyPipelineState(RHI_PipelineStateHandle handle)
+{
+	DX9PipelineState* pso = m_pipelineStates.Release(handle);
+	if (!pso)
+	{
+		if (handle.IsValid() && handle.id < m_pipelineStates.Data().size())
+			Print("! [DX9] DestroyPipelineState: double free of RHI_PipelineStateHandle(id=%u), ignoring", handle.id);
+		return;
+	}
+
+	if (m_stateCache.GetPipelineState() == handle)
+		m_stateCache.InvalidatePipelineState();
+
+	delete pso;
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -93,7 +93,7 @@ RHI_BufferHandle CRenderBackendDX9::CreateVertexBuffer(const RHI_BufferDesc& des
 	if (initialData)
 	{
 		void* p = nullptr;
-		const DWORD lf = ToD3DLockFlags(RHI_BufferUsage_Dynamic, desc.usage, true);
+		const DWORD lf = ToD3DLockFlags(0, desc.usage, true);
 		if (SUCCEEDED(vb->Lock(0, 0, &p, lf)) && p)
 		{
 			memcpy(p, initialData, desc.sizeBytes);
@@ -142,7 +142,7 @@ RHI_BufferHandle CRenderBackendDX9::CreateIndexBuffer(const RHI_BufferDesc& desc
 	if (initialData)
 	{
 		void* p = nullptr;
-		const DWORD lf = ToD3DLockFlags(RHI_BufferUsage_Dynamic, desc.usage, true);
+		const DWORD lf = ToD3DLockFlags(0, desc.usage, true);
 		if (SUCCEEDED(ib->Lock(0, 0, &p, lf)) && p)
 		{
 			memcpy(p, initialData, desc.sizeBytes);
@@ -311,7 +311,7 @@ void CRenderBackendDX9::DestroyInputLayout(RHI_InputLayoutHandle handle)
 		if (m_pDevice)
 			m_pDevice->SetVertexDeclaration(nullptr);
 		m_currentDecl = nullptr;
-		m_psoCacheValid = false;
+		m_stateCache.InvalidatePipelineState();
 	}
 
 	if (lay->decl)
@@ -346,9 +346,9 @@ void CRenderBackendDX9::SetVertexBuffer(uint32_t slot, RHI_BufferHandle vb,
 		if(stride == 0)
 			stride = buf->desc.stride;
 
-		// Обновляем счётчик вершин для stream 0 — нужен DrawIndexed'у.
-		if(slot == 0 && stride > 0)
-			m_stream0VertexCount = buf->desc.sizeBytes / stride;
+		// Обновляем счётчик вершин для stream 0
+		const uint32_t avail = (offset < buf->desc.sizeBytes) ? (buf->desc.sizeBytes - offset) : 0;
+		m_stream0VertexCount = avail / stride;
 	}
 
 	if(m_currentVB[slot] == nativeVB &&
@@ -609,8 +609,7 @@ void CRenderBackendDX9::DrawFullscreen()
 	if (!m_pDevice)
 		return;
 
-	// Ленивая инициализация — на случай, если CreateDevice по какой-то
-	// причине не создал геометрию.
+	// Ленивая инициализация — на случай, если CreateDevice по какой-то причине не создал геометрию.
 	if (!m_fullscreenVB || !m_fullscreenDecl)
 	{
 		CreateFullscreenGeometry();
@@ -618,7 +617,7 @@ void CRenderBackendDX9::DrawFullscreen()
 			return;
 	}
 
-	m_psoCacheValid = false;
+	m_stateCache.InvalidatePipelineState();
 
 	// Привязываем layout.
 	if (m_currentDecl != m_fullscreenDecl)
@@ -656,17 +655,20 @@ void CRenderBackendDX9::DrawFullscreen()
 		m_currentIB = nullptr;
 	}
 
-	// Topology — треугольник. Кэшируем, чтобы Draw/DrawIndexed позже
-	// (если их вызовут без SetPrimitiveTopology) не попали в неверный
-	// D3D-topology.
+	// Topology — треугольник.
 	m_currentTopology = RHI_Topology::TriangleList;
 	m_currentD3DTopology = D3DPT_TRIANGLELIST;
 
+	{
+		const HRESULT hr = m_pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		if (FAILED(hr))
+			Print("! [DX9] DrawFullscreen: SetRenderState(CULLMODE, NONE) failed (0x%08x)", hr);
+		m_stateCache.InvalidateRasterizer();
+	}
+
 	const HRESULT hr = m_pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 	if (FAILED(hr))
-	{
 		Print("! [DX9] DrawFullscreen: DrawPrimitive failed (0x%08x)", hr);
-	}
 }
 
 // ============================================================================

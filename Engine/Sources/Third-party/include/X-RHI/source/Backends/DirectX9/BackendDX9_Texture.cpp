@@ -68,7 +68,7 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		}
 		else
 		{
-			Crash("! [DX9] CreateTexture: sampleable depth requested, "
+			Print("! [DX9] CreateTexture: sampleable depth requested, "
 				"but no INTZ/DF24/DF16 support on this device "
 				"(texture '%s'). Depth reads in shaders will not work.",
 				desc.debugName ? desc.debugName : "<unnamed>");
@@ -99,19 +99,33 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		mips = 1;
 	}
 
+	if (desc.usage & RHI_TexUsage_GenerateMips)
+	{
+		usage |= D3DUSAGE_AUTOGENMIPMAP;
+
+		if (mips == 1)
+		{
+			Print("! [DX9] CreateTexture: GenerateMips + mipLevels=1 is invalid, "
+				  "forcing full chain (texture '%s')",
+				  desc.debugName ? desc.debugName : "<unnamed>");
+			mips = 0;
+		}
+	}
+
 	DX9Texture* impl = new DX9Texture;
 	impl->format = desc.format;
 	impl->dim = desc.dim;
 	impl->width = desc.width;
 	impl->height = desc.height;
 	impl->depth = desc.depth;
-	impl->mipLevels = desc.mipLevels;
+	impl->mipLevels = mips;
 	impl->arraySize = desc.arraySize;
 	impl->sampleCount = desc.sampleCount;
 	impl->usage = desc.usage;
 	impl->isRenderTarget = (desc.usage & RHI_TexUsage_RenderTarget) != 0;
 	impl->isDepthStencil = (desc.usage & RHI_TexUsage_DepthStencil) != 0;
 	impl->isSampleableDepth = usingShadowFormat;
+	impl->d3dFormat = d3dFmt;
 
 	HRESULT hr = E_FAIL;
 	IDirect3DBaseTexture9* base = nullptr;
@@ -166,39 +180,74 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 		base->SetPrivateData(WKPDID_D3DDebugObjectName, desc.debugName, (DWORD)strlen(desc.debugName), 0);
 
 	// --- Initial data upload (только для обычных 2D-текстур без RT/DS) ---
-	if(initialData && desc.dim == RHI_TextureDim::Tex2D && !impl->isRenderTarget && !impl->isDepthStencil && pool == D3DPOOL_DEFAULT)
+	if (initialData && desc.dim == RHI_TextureDim::Tex2D && !impl->isRenderTarget && !impl->isDepthStencil)
 	{
 		const size_t pixelSize = GetPixelSize(desc.format);
-		if(pixelSize > 0)
+		if (pixelSize == 0)
 		{
+			Print("! [DX9] CreateTexture: cannot upload initial data — "
+				"unknown pixel size for fmt %u", (uint32_t)desc.format);
+		}
+		else
+		{
+			// Реальное число mip-уровней у destination. desc.mipLevels может
+			// быть 0 (full chain) — тогда фактическое значение известно только
+			// после CreateTexture.
+			const UINT destMips = impl->tex2D->GetLevelCount();
+
+			// initialData содержит только mip 0. Если у текстуры есть ещё
+			// мипы и НЕТ AUTOGENMIPMAP, заполнить их корректно нечем —
+			// предупреждаем, но mip 0 всё равно загружаем.
+			const bool hasAutoGen = (usage & D3DUSAGE_AUTOGENMIPMAP) != 0;
+			if (destMips > 1 && !hasAutoGen)
+			{
+				Print("! [DX9] CreateTexture: initialData is mip-0 only, "
+					"but texture has %u mips without AUTOGENMIPMAP. "
+					"Mips 1+ will be undefined.", destMips);
+			}
+
 			IDirect3DTexture9* sysTex = nullptr;
-			hr = m_pDevice->CreateTexture(desc.width, desc.height, desc.mipLevels, 0, d3dFmt, D3DPOOL_SYSTEMMEM, &sysTex, nullptr);
-			if(SUCCEEDED(hr))
+			const HRESULT stageHr = m_pDevice->CreateTexture(desc.width, 
+															 desc.height, 
+															 destMips,
+															 0,	// usage: staging
+															 d3dFmt, 
+															 D3DPOOL_SYSTEMMEM,
+															 &sysTex, 
+															 nullptr);
+
+			if (FAILED(stageHr) || !sysTex)
+			{
+				Print("! [DX9] CreateTexture: staging texture creation failed (0x%08x)", stageHr);
+			}
+			else
 			{
 				D3DLOCKED_RECT locked{};
-				if(SUCCEEDED(sysTex->LockRect(0, &locked, nullptr, 0)))
+				if (FAILED(sysTex->LockRect(0, &locked, nullptr, 0)))
+				{
+					Print("! [DX9] CreateTexture: staging LockRect(0) failed");
+				}
+				else
 				{
 					const uint8_t* src = static_cast<const uint8_t*>(initialData);
 					uint8_t* dst = static_cast<uint8_t*>(locked.pBits);
-					const size_t rowSize = size_t(desc.width) * pixelSize;
+					const size_t   rowSize = size_t(desc.width) * pixelSize;
 
-					for(uint32_t y = 0; y < desc.height; ++y)
+					for (uint32_t y = 0; y < desc.height; ++y)
 					{
 						memcpy(dst, src, rowSize);
 						src += rowSize;
 						dst += locked.Pitch;
 					}
 					sysTex->UnlockRect(0);
-					hr = m_pDevice->UpdateTexture(sysTex, impl->tex2D);
-					if(FAILED(hr))
-						Print("! [DX9] UpdateTexture failed (0x%08x)", hr);
+
+					const HRESULT upHr = m_pDevice->UpdateTexture(sysTex, impl->tex2D);
+					if (FAILED(upHr))
+						Print("! [DX9] CreateTexture: UpdateTexture failed (0x%08x)", upHr);
 				}
+
 				sysTex->Release();
 			}
-		}
-		else
-		{
-			Print("! [DX9] CreateTexture: cannot upload initial data — unknown pixel size for fmt %u", (uint32_t)desc.format);
 		}
 	}
 
@@ -221,8 +270,6 @@ void CRenderBackendDX9::DestroyTexture(RHI_TextureHandle handle)
 		impl->texCube->Release();
 	if (impl->tex3D)
 		impl->tex3D->Release();
-	if (impl->surface)
-		impl->surface->Release();
 	delete impl;
 }
 
@@ -304,7 +351,10 @@ void* CRenderBackendDX9::GetTextureNativeHandle(RHI_TextureHandle handle)
 	DX9Texture* tex = GetTexture(handle);
 	if(!tex)
 		return nullptr;
-	return tex->tex2D ? (void*)tex->tex2D : (void*)tex->texCube;
+	if (tex->tex2D)   return tex->tex2D;
+	if (tex->texCube) return tex->texCube;
+	if (tex->tex3D)   return tex->tex3D;
+	return nullptr;
 }
 
 bool CRenderBackendDX9::GetCubeMapFaceNative(RHI_TextureHandle handle, uint32_t face, uint32_t level, void** outSurface)

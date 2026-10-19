@@ -81,6 +81,12 @@
     <ClInclude Include="include\XRHI_Config.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="include\XRHI_DynamicState.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Backends\DirectX9\BackendDX9_StateCache.h">
+      <Filter>Source\Backends\DirectX 9</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\dllmain.cpp">
@@ -127,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="source\XRHI_Log.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Backends\DirectX9\BackendDX9_StateCache.cpp">
+      <Filter>Source\Backends\DirectX 9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

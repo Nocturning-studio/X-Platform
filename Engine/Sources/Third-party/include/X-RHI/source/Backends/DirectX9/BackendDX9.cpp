@@ -12,7 +12,7 @@
 CRenderBackendDX9::CRenderBackendDX9() : m_pD3D(nullptr), m_pDevice(nullptr), m_hWnd(nullptr)
 {
 	ZeroMemory(&m_PP, sizeof(m_PP));
-	m_BackBufferFmt = D3DFMT_UNKNOWN;
+	m_backBufferFmt = D3DFMT_UNKNOWN;
 }
 
 CRenderBackendDX9::~CRenderBackendDX9()
@@ -41,12 +41,12 @@ bool CRenderBackendDX9::DetermineDepthAndBackBufferFormatsFromPresentParams(cons
 		if(outBackBufferFmt == D3DFMT_UNKNOWN)
 		{
 			Print("! [DX9] Unsupported backbuffer format %d, falling back", (int)params.BackBufferFormat);
-			outBackBufferFmt = m_BackBufferFmt;
+			outBackBufferFmt = m_backBufferFmt;
 		}
 	}
 	else
 	{
-		outBackBufferFmt = m_BackBufferFmt;
+		outBackBufferFmt = m_backBufferFmt;
 	}
 
 	outDepthStencilFmt = D3DFMT_UNKNOWN;
@@ -136,7 +136,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 
 	D3DDISPLAYMODE d3ddm;
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
-	m_BackBufferFmt = d3ddm.Format;
+	m_backBufferFmt = d3ddm.Format;
 	m_DesktopRefreshRate = d3ddm.RefreshRate;
 
 	D3DFORMAT backBufferFmt = D3DFMT_UNKNOWN;
@@ -144,7 +144,7 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	if(!DetermineDepthAndBackBufferFormatsFromPresentParams(params, backBufferFmt, depthStencilFmt))
 		return false;
 
-	m_BackBufferFmt = backBufferFmt;
+	m_backBufferFmt = backBufferFmt;
 
 	UINT refreshHz = params.FullscreenRefreshHz ? params.FullscreenRefreshHz : m_DesktopRefreshRate;
 	FillPresentParams(params, backBufferFmt, depthStencilFmt, refreshHz);
@@ -184,6 +184,8 @@ bool CRenderBackendDX9::CreateDevice(HWND hWnd, const RHI_PresentationParams& pa
 	m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &m_DesktopMode);
 	CacheDeviceCapsFromD3D();
 
+	m_deviceRemoved = false;
+
 	Print("* [DX9] Device created successfully: %dx%d %s, interval=%d", m_backBufferWidth, m_backBufferHeight, params.Windowed ? "windowed" : "fullscreen", params.SyncInterval);
 	return true;
 }
@@ -217,8 +219,6 @@ void CRenderBackendDX9::ReleaseAllResources()
 			t->tex3D->Release();
 		if (t->texCube)
 			t->texCube->Release();
-		if (t->surface)
-			t->surface->Release();
 		delete t;
 		t = nullptr;
 	}
@@ -286,11 +286,7 @@ void CRenderBackendDX9::ReleaseAllResources()
 	}
 	m_pipelineStates.Clear();
 
-	m_currentPSO = {};
-	m_psoCacheValid = false;
-
-	m_currentVS = nullptr;
-	m_currentPS = nullptr;
+	m_stateCache.Invalidate();
 
 	// --- Cached state ---
 	InvalidateGeometryCache();
@@ -317,11 +313,6 @@ void CRenderBackendDX9::ReleaseNativeDeviceResources()
 		{
 			t->tex3D->Release();
 			t->tex3D = nullptr;
-		}
-		if (t->surface)
-		{
-			t->surface->Release();
-			t->surface = nullptr;
 		}
 	}
 
@@ -409,6 +400,7 @@ void CRenderBackendDX9::RecreateNativeDeviceResources()
 		DWORD usage = 0;
 		if (t->isRenderTarget) usage |= D3DUSAGE_RENDERTARGET;
 		if (t->isDepthStencil) usage |= D3DUSAGE_DEPTHSTENCIL;
+		if (t->usage & RHI_TexUsage_GenerateMips) usage |= D3DUSAGE_AUTOGENMIPMAP;
 
 		HRESULT hr = E_FAIL;
 		switch (t->dim)
@@ -521,7 +513,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	if(!m_pDevice)
 		return false;
 
-	D3DFORMAT backBufferFmt = m_BackBufferFmt;
+	D3DFORMAT backBufferFmt = m_backBufferFmt;
 	D3DFORMAT depthStencilFmt = D3DFMT_UNKNOWN;
 
 	if(!DetermineDepthAndBackBufferFormatsFromPresentParams(params, backBufferFmt, depthStencilFmt))
@@ -533,6 +525,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 
 	InvalidateUserRTVDSVOnReset();
 	ReleaseNativeDeviceResources();
+	DestroyFullscreenGeometry();
 
 	HRESULT hr = m_pDevice->Reset(&m_PP);
 	if(FAILED(hr))
@@ -542,7 +535,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 	}
 
 	RecreateNativeDeviceResources();
-
+	CreateFullscreenGeometry();
 	CacheBackBufferDimensions();
 	CreateFullscreenGeometry();
 
@@ -559,7 +552,7 @@ bool CRenderBackendDX9::Reset(const RHI_PresentationParams& params)
 
 RHI_DeviceStatus CRenderBackendDX9::CheckDeviceStatus() const
 {
-	if(!m_pDevice)
+	if (!m_pDevice || m_deviceRemoved) 
 		return RHI_DeviceStatus::Lost;
 
 	const HRESULT hr = m_pDevice->TestCooperativeLevel();
@@ -592,6 +585,12 @@ void CRenderBackendDX9::Present()
 		return;
 
 	const HRESULT hr = m_pDevice->PresentEx(nullptr, nullptr, nullptr, nullptr, 0);
+
+	if (hr == D3DERR_DEVICEREMOVED)
+	{
+		m_deviceRemoved = true;
+		return;
+	}
 
 	if (FAILED(hr) && hr != D3DERR_DEVICELOST && hr != D3DERR_DEVICENOTRESET)
 		Print("! [DX9] PresentEx failed (0x%08x)", hr);
@@ -653,7 +652,7 @@ void CRenderBackendDX9::GetAvailableResolutions(RHI_Format format, std::vector<s
 
 RHI_Format CRenderBackendDX9::GetBackBufferFormat() const
 {
-	return D3DFormatToRHI(m_BackBufferFmt);
+	return D3DFormatToRHI(m_backBufferFmt);
 }
 
 void* CRenderBackendDX9::GetShaderNativeHandle(RHI_ShaderHandle h)

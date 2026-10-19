@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "../../../include/XRHI.h"
 #include "BackendDX9_Internal.h"
+#include "BackendDX9_StateCache.h"
 ////////////////////////////////////////////////////////////////////////////////
 class CRenderBackendDX9 : public IRenderBackend
 {
@@ -95,7 +96,7 @@ class CRenderBackendDX9 : public IRenderBackend
 	virtual void SetBlendFactor(const Float4& factor) override;
 	virtual void SetDepthBounds(float minZ, float maxZ) override;
 
-	void InvalidateCache();
+	virtual void InvalidateCache() override;
 
 	virtual void Draw(uint32_t vertexCount, uint32_t startVertex = 0) override;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t startIndex = 0, uint32_t baseVertex = 0) override;
@@ -113,13 +114,14 @@ class CRenderBackendDX9 : public IRenderBackend
 	D3DDISPLAYMODE m_DesktopMode;
 	UINT m_DesktopRefreshRate = 60;
 	RHIDeviceCaps m_DeviceCaps;
+	bool m_deviceRemoved = false;
 
 	// ============================================================================
 	// Back buffer
 	// ============================================================================
 	uint32_t m_backBufferWidth = 0;
 	uint32_t m_backBufferHeight = 0;
-	D3DFORMAT m_BackBufferFmt;
+	D3DFORMAT m_backBufferFmt;
 
 	// ============================================================================
 	// Resource pools
@@ -163,29 +165,7 @@ class CRenderBackendDX9 : public IRenderBackend
 	// ============================================================================
 	// State caches
 	// ============================================================================
-	RHI_BlendState m_blendCache{};
-	RHI_DepthStencilState m_depthCache{};
-	RHI_RasterizerState m_rasterCache{};
-
-	bool m_blendCacheValid = false;
-	bool m_depthCacheValid = false;
-	bool m_rasterCacheValid = false;
-
-	RHI_Viewport m_viewportCache{};
-	bool m_viewportCacheValid = false;
-
-	RHI_Rect m_scissorCache{};
-	bool m_scissorCacheValid = false;
-	bool m_scissorEnabled = false;
-
-	uint8_t m_stencilRefCache = 0;
-	bool m_stencilRefCacheValid = false;
-
-	DWORD m_blendFactorCache = 0;
-	bool m_blendFactorCacheValid = false;
-
-	IDirect3DVertexShader9* m_currentVS = nullptr;
-	IDirect3DPixelShader9* m_currentPS = nullptr;
+	DX9StateCache m_stateCache;
 
 	// ============================================================================
 	// RTV / DSV storage and binding cache
@@ -203,16 +183,9 @@ class CRenderBackendDX9 : public IRenderBackend
 	RHI_RenderTargetView m_backBufferRTV{};
 	RHI_DepthStencilView m_backBufferDSV{};
 
-	// Кэш последних привязанных RT/DS. Нужен для дедупликации вызовов
-	// SetRenderTarget/SetDepthStencilSurface. (DX9 не поддерживает больше 4 MRT)
-	IDirect3DSurface9* m_currentRTASurfaces[4] = {};
+	// Кэш последних привязанных RT/DS. Нужен для дедупликации вызовов SetRenderTarget/SetDepthStencilSurface
+	IDirect3DSurface9* m_currentRTASurfaces[RHI_PipelineStateDesc::kMaxRenderTargets] = {};
 	IDirect3DSurface9* m_currentDSSurface = nullptr;
-
-	// ============================================================================
-	// Pipeline state (emulation)
-	// ============================================================================
-	RHI_PipelineStateHandle m_currentPSO{};
-	bool m_psoCacheValid = false;
 
 	// ============================================================================
 	// Device / presentation helpers
@@ -231,7 +204,7 @@ class CRenderBackendDX9 : public IRenderBackend
 	// ============================================================================
 	void ReleaseAllResources();
 	void InvalidateGeometryCache();	
-	void InvalidateStateCache();
+	void InvalidateStateCache() { m_stateCache.Invalidate(); }
 
 	void ReleaseNativeDeviceResources();
 	void RecreateNativeDeviceResources();

@@ -19,5 +19,6 @@
 #include "XRHI_Samplers.h"
 #include "XRHI_PipelineLayout.h"
 #include "XRHI_PipelineState.h"
+#include "XRHI_DynamicState.h"
 #include "XRHI_BackendInterface.h"
 ////////////////////////////////////////////////////////////////////////////////

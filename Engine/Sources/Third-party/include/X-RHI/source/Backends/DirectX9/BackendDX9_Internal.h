@@ -14,6 +14,9 @@ class DX9HandlePool
 
 	Handle Allocate(T* obj)
 	{
+		if (obj == nullptr)
+			Crash("DX9HandlePool::Allocate: null object");
+
 		uint32_t idx;
 		if(!m_free.empty())
 		{
@@ -66,7 +69,6 @@ struct DX9Texture
 	IDirect3DTexture9* tex2D = nullptr;
 	IDirect3DCubeTexture9* texCube = nullptr;
 	IDirect3DVolumeTexture9* tex3D = nullptr;
-	IDirect3DSurface9* surface = nullptr;
 
 	RHI_Format format = RHI_Format::Unknown;
 	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;

@@ -187,7 +187,7 @@ struct template_vector4
 		return *this;
 	}
 
-	IC BOOL similar(const Self& v, T E = EPS_L)
+	IC BOOL similar(const Self& v, T E = EPS_L) const
 	{
 		return _abs(x - v.x) < E && _abs(y - v.y) < E && _abs(z - v.z) < E && _abs(w - v.w) < E;
 	};
