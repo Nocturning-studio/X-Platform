@@ -9,7 +9,6 @@
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
 #include "xrFramework/xr_ioconsole.h"
-#include "xrFramework/LevelLoadingScreen.h"
 
 extern pureFrame* g_pNetProcessor;
 
@@ -132,7 +131,7 @@ bool CLevel::net_start_client5()
 	if(connected_to_server)
 	{
 		// Textures
-		if(!g_dedicated_server)
+		if(!Engine.IsDedicatedServer())
 		{
 			g_pGamePersistent->LoadTitle("st_loading_textures");
 			Engine.ResourceManager->DeferredLoad(FALSE);

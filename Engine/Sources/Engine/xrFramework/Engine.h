@@ -56,9 +56,10 @@ extern ENGINE_API CEngine* g_Engine;
 #include "RenderView.h"
 #include "RHI.h"
 #include "IEngineHost.h"
+#include "IGameModule.h"
+#include "XR_IOConsole.h"
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API CSheduler;
-class ENGINE_API CLevelLoadingScreen;
 class ENGINE_API CGameStateManager;
 class ENGINE_API CStats;
 class ENGINE_API CResourceManagerLegacy;
@@ -86,20 +87,22 @@ class ENGINE_API CEngine
 	typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
 
   private:
-	HMODULE hGame;
 	HMODULE hRender;
 	HMODULE hTuner;
 	HMODULE hOptick;
 
 	bool m_bLoaded;
+	bool m_gameLoaded;
+
+	bool m_dedicated_server;
 
 	xr_list<LOADING_EVENT> m_loading_events;
 
   public:
-	Factory_Create* pCreate;
-	Factory_Destroy* pDestroy;
+	TGameObjectFactoryCreate* pCreate;
+	TGameObjectFactoryDestroy* pDestroy;
 
-	BOOL tune_enabled;
+	BOOL tune_enabled = FALSE;
 	VTPause* tune_pause;
 	VTResume* tune_resume;
 
@@ -114,7 +117,7 @@ class ENGINE_API CEngine
 	CRenderView RenderView;
 
 	CGameStateManager* GameStateManager;
-	CLevelLoadingScreen* LoadingScreen;
+	ILoadingScreen* LoadingScreen;
 	CSheduler* Sheduler;
 	CStats* Statistic;
 	CResourceManagerLegacy* ResourceManager;
@@ -122,19 +125,42 @@ class ENGINE_API CEngine
 	CXRHISubsystem RHI;
 
 	IEngineHost* AppHost;
+	IGameModule* GameModule;
 
   public:
 	CEngine();
 	~CEngine();
 
 	void Run(IEngineHost* host);
-	bool IsLoaded() { return m_bLoaded; }
-	void SetLoaded() { m_bLoaded = TRUE; }
-	void SetUnloaded() { m_bLoaded = FALSE; }
 	xr_list<LOADING_EVENT> GetLoadingEvents() { return m_loading_events; }
 	void AddLoadingEvent(LOADING_EVENT _Event) { m_loading_events.push_back(_Event); }
 	void AddLoadingEventFront(LOADING_EVENT _Event) { m_loading_events.push_front(_Event); }
 	void PopLoadingEvent() { m_loading_events.pop_front(); }
+
+	CConsole* GetConsole() { return Console; }
+
+	bool IsGameLoaded() const { return m_gameLoaded; }
+	void SetGameLoaded(bool v) { m_gameLoaded = v; }
+
+	void ShowLoadingScreen()
+	{
+		m_gameLoaded = false;
+		if (LoadingScreen)
+			LoadingScreen->Show();
+	}
+	void HideLoadingScreen()
+	{
+		if (LoadingScreen)
+			LoadingScreen->Hide();
+		m_gameLoaded = true;
+	}
+
+	ILoadingScreen* GetLoadingScreen() { return LoadingScreen; }
+
+	bool IsLoaded() { return m_bLoaded; }
+	bool IsDedicatedServer() { return m_dedicated_server; }
+	void SetLoaded() { m_bLoaded = TRUE; }
+	void SetUnloaded() { m_bLoaded = FALSE; }
 
   private:
 	bool Initialize();

@@ -75,7 +75,7 @@ CMainMenu::CMainMenu()
 	m_NeedErrDialog = ErrNoError;
 	m_start_time = 0;
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		g_btnHint = xr_new<CUIButtonHint>();
 		m_pGameSpyFull = xr_new<CGameSpy_Full>();
@@ -143,7 +143,7 @@ void CMainMenu::Activate(bool bActivate)
 
 	bool b_is_single = IsGameTypeSingle();
 
-	if(g_dedicated_server && bActivate)
+	if(Engine.IsDedicatedServer() && bActivate)
 		return;
 
 	if(bActivate)

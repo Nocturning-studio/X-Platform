@@ -24,7 +24,7 @@ namespace std
 
 extern "C"
 {
-	DLL_API DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
+	DLL_API DLL_Pure* __cdecl GameObjectFactory_Create(CLASS_ID clsid)
 	{
 		DLL_Pure* object = object_factory().client_object(clsid);
 #ifdef DEBUG
@@ -35,7 +35,7 @@ extern "C"
 		return (object);
 	}
 
-	DLL_API void __cdecl xrFactory_Destroy(DLL_Pure* O)
+	DLL_API void __cdecl GameObjectFactory_Destroy(DLL_Pure* O)
 	{
 		xr_delete(O);
 	}
@@ -49,10 +49,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 	{
 	case DLL_PROCESS_ATTACH:
 	{
-		// register console commands
-		CCC_RegisterCommands();
-		// keyboard binding
-		CCC_RegisterInput();
 #ifdef DEBUG
 		g_profiler = xr_new<CProfiler>();
 #endif

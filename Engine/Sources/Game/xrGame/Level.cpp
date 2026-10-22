@@ -55,8 +55,6 @@
 
 CSoundEnvironment* g_SoundEnvironment = nullptr;
 
-ENGINE_API bool g_dedicated_server;
-
 extern BOOL g_bDebugDumpPhysicsStep;
 
 CPHWorld* ph_world = 0;
@@ -93,7 +91,7 @@ CLevel::CLevel()
 
 	m_pBulletManager = xr_new<CBulletManager>();
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		m_map_manager = xr_new<CMapManager>();
 	else
 		m_map_manager = NULL;
@@ -108,7 +106,7 @@ CLevel::CLevel()
 	physics_step_time_callback = (PhysicsStepTimeCallback*)&PhisStepsCallback;
 	m_seniority_hierarchy_holder = xr_new<CSeniorityHierarchyHolder>();
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		m_level_sound_manager = xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
@@ -162,7 +160,7 @@ CLevel::CLevel()
 
 	Msg("%s", Core.Params);
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		g_SoundEnvironment = xr_new<CSoundEnvironment>();
 		g_SoundEnvironment->OnLevelLoad();
@@ -175,7 +173,7 @@ CLevel::~CLevel()
 {
 	Msg("- Destroying level");
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		g_SoundEnvironment->OnLevelUnload();
 		xr_delete(g_SoundEnvironment);
@@ -225,7 +223,7 @@ CLevel::~CLevel()
 	xr_delete(m_debug_renderer);
 #endif
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
 	xr_delete(game);
@@ -480,13 +478,13 @@ void CLevel::OnFrame()
 	if(m_bNeed_CrPr)
 		make_NetCorrectionPrediction();
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		MapManager().Update();
 	// Inherited update
 	inherited::OnFrame();
 
 	// Draw client/server stats
-	if(!g_dedicated_server && psDeviceFlags.test(rsStatistic))
+	if(!Engine.IsDedicatedServer() && psDeviceFlags.test(rsStatistic))
 	{
 		CGameFont* F = HUD().Font().pFontDI;
 		if(!psNET_direct_connect)
@@ -541,7 +539,7 @@ void CLevel::OnFrame()
 
 	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
 	m_ph_commander->update();
 	m_ph_commander_scripts->update();
@@ -552,13 +550,13 @@ void CLevel::OnFrame()
 	Engine.Statistic->TEST0.End();
 
 	// update static sounds
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		g_SoundEnvironment->Update();
 		Engine.ThreadManager.AddParallelTask([this] { m_level_sound_manager->Update(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}
 	// deffer LUA-GC-STEP
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		Engine.ThreadManager.AddParallelTask([this] { script_gc(); }, CThreadManager::TaskPriority::Normal, CThreadManager::TaskType::AI);
 	}

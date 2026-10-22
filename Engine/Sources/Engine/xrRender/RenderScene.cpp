@@ -45,7 +45,7 @@ void CRenderScene::Initialize()
 
 	m_default_context.frustum = &m_frustum_base;
 
-	if (g_dedicated_server)
+	if (Engine.IsDedicatedServer())
 		return;
 
 	if(!m_details)
@@ -174,7 +174,7 @@ void CRenderScene::LoadHOM()
 
 void CRenderScene::LoadWallmarks()
 {
-	if (!g_dedicated_server && !m_wallmarks)
+	if (!Engine.IsDedicatedServer() && !m_wallmarks)
 		m_wallmarks = xr_new<CWallmarksEngine>();
 }
 
@@ -217,14 +217,14 @@ void CRenderScene::AddGeometry(IRender_Visual* V)
 
 void CRenderScene::AddStaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V)
 {
-	if (g_dedicated_server || !m_wallmarks)
+	if (Engine.IsDedicatedServer() || !m_wallmarks)
 		return;
 	m_wallmarks->AddStaticWallmark(T, V, P, &*S, s);
 }
 
 void CRenderScene::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
-	if (!g_dedicated_server && m_wallmarks)
+	if (!Engine.IsDedicatedServer() && m_wallmarks)
 		m_wallmarks->AddSkeletonWallmark(wm);
 }
 
@@ -232,12 +232,12 @@ void CRenderScene::AddSkeletonWallmark(const fmat4x4* xf, CKinematics* obj, ref_
 {
 	PROFILE_FUNCTION();
 #pragma fixme(Декали на скелетах)
-	// if (!g_dedicated_server && m_wallmarks) m_wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
+	// if (!Engine.IsDedicatedServer() && m_wallmarks) m_wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
 void CRenderScene::ClearStaticWallmarks()
 {
-	if (!g_dedicated_server && m_wallmarks)
+	if (!Engine.IsDedicatedServer() && m_wallmarks)
 		m_wallmarks->clear();
 }
 

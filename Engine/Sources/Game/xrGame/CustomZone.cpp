@@ -1226,7 +1226,7 @@ void CCustomZone::SpawnArtefact()
 	fvec3 pos;
 	Center(pos);
 	Level().spawn_item(*m_ArtefactSpawn[i].section, pos,
-					   (g_dedicated_server) ? u32(-1) : ai_location().level_vertex_id(), ID());
+					   (Engine.IsDedicatedServer()) ? u32(-1) : ai_location().level_vertex_id(), ID());
 }
 
 void CCustomZone::BornArtefact()

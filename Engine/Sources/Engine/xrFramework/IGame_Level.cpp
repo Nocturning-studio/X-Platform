@@ -10,7 +10,6 @@
 #include "xrLevel.h"
 #include "CameraManager.h"
 #include "xrFramework/xr_ioconsole.h"
-#include "xrFramework/LevelLoadingScreen.h"
 
 ENGINE_API IGame_Level* g_pGameLevel = NULL;
 
@@ -123,7 +122,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 
 	bReady = true;
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		IR_Capture();
 
 #ifndef DEDICATED_SERVER

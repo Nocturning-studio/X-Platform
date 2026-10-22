@@ -151,7 +151,7 @@ void CRenderTarget::CompileShaders()
 
 void CRenderTarget::delete_textures()
 {
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		return;
 
 	Msg("Destroying render target textures");
@@ -257,7 +257,7 @@ CRenderTarget::CRenderTarget()
 
 	g_cuboid.create(FVF::F_L, RenderBackendLegacy.Vertex.Buffer(), RenderBackendLegacy.Index.Buffer());
 
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		return;
 
 	u32 size = RenderImplementation.o.smapsize;
@@ -286,7 +286,7 @@ CRenderTarget::~CRenderTarget()
 	accum_omnip_geom_destroy();
 	accum_point_geom_destroy();
 
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		return;
 
 #ifdef DEBUG

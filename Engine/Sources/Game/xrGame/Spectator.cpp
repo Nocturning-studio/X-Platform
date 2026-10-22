@@ -452,7 +452,7 @@ BOOL CSpectator::net_Spawn(CSE_Abstract* DC)
 void CSpectator::net_Destroy()
 {
 	inherited::net_Destroy();
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		Level().MapManager().RemoveMapLocationByObjectID(ID());
 }
 

@@ -47,7 +47,7 @@ void CSector::Load(IReader& fs)
 	}
 
 	// 2. Загрузка Корневого Визуала (Геометрии)
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 	{
 		m_root_visual = nullptr;
 	}

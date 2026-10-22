@@ -9,7 +9,6 @@
 #include "xrFramework/IGame_Persistent.h"
 #include <xrCore/stream_reader.h>
 #include "xrFramework/xr_ioconsole.h"
-#include "xrFramework/LevelLoadingScreen.h"
 ////////////////////////////////////////////////////////////////////////////////
 struct ShaderRequest
 {
@@ -44,7 +43,7 @@ void CRender::LevelLoad(IReader* fs)
 	g_pGamePersistent->LoadTitle("st_loading_shaders");
 	{
 		// RT шейдеры нужны только для картинки
-		if (!g_dedicated_server)
+		if (!Engine.IsDedicatedServer())
 		{
 			Msg("* Compiling RenderTarget shaders...");
 			if (RenderTarget)
@@ -108,7 +107,7 @@ void CRender::LevelLoad(IReader* fs)
 	IReader local_fs(level_data_ptr, level_size);
 	LoadVisuals(&local_fs);
 
-	if (!g_dedicated_server)
+	if (!Engine.IsDedicatedServer())
 	{
 		Scene.LoadHOM(); 
 		CPUOCC.Load(Scene.GetHOM());
@@ -132,7 +131,7 @@ void CRender::LevelLoad(IReader* fs)
 	//  ИСТОЧНИКИ СВЕТА
 	////////////////////////////////////////////////////////////////////////////////
 	g_pGamePersistent->LoadTitle("st_loading_lights");
-	if (!g_dedicated_server)
+	if (!Engine.IsDedicatedServer())
 	{
 		IReader local_fs_lights(level_data_ptr, level_size);
 		Scene.LoadLights(&local_fs_lights);

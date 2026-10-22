@@ -12,8 +12,8 @@
 #include <ppl.h>
 #pragma warning(pop)
 
-extern "C" DLL_API DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid);
-extern "C" DLL_API void __cdecl xrFactory_Destroy(DLL_Pure* O);
+extern "C" DLL_API DLL_Pure* __cdecl GameObjectFactory_Create(CLASS_ID clsid);
+extern "C" DLL_API void __cdecl GameObjectFactory_Destroy(DLL_Pure* O);
 
 CUICellItem* create_cell_item(CInventoryItem* itm);
 
@@ -25,7 +25,7 @@ SBuyItemInfo::SBuyItemInfo()
 SBuyItemInfo::~SBuyItemInfo()
 {
 	CInventoryItem* iitem = (CInventoryItem*)m_cell_item->m_pData;
-	xrFactory_Destroy(&iitem->object());
+	GameObjectFactory_Destroy(&iitem->object());
 	delete_data(m_cell_item);
 }
 
@@ -84,7 +84,7 @@ CInventoryItem* CUIMpTradeWnd::CreateItem_internal(const shared_str& name_sect)
 {
 	CLASS_ID class_id = pSettings->r_clsid(name_sect, "class");
 
-	DLL_Pure* dll_pure = xrFactory_Create(class_id);
+	DLL_Pure* dll_pure = GameObjectFactory_Create(class_id);
 	VERIFY(dll_pure);
 	CInventoryItem* pIItem = smart_cast<CInventoryItem*>(dll_pure);
 	pIItem->object().Load(name_sect.c_str());

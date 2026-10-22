@@ -36,7 +36,7 @@ void CRender::Render()
 {
 	PROFILE_FUNCTION();
 
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		return;
 
 	Engine.Statistic->RenderCALC.Begin();

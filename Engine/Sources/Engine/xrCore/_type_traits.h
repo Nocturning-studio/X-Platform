@@ -2,87 +2,107 @@
 #define _STL_EXT_type_traits
 #pragma once
 
-// 1. class or not class
+#include <type_traits>
+
+////////////////////////////////////////////////////////////////////////////////
+// C++17-переработка старых метапрограммных traits из X-Ray SDK.
+//
+// Все шаблоны сохраняют оригинальный интерфейс ::result (enum { 0 | 1 })
+// для обратной совместимости с уже написанным кодом.
+//
+// Что починено относительно оригинальной реализации:
+//   * работают с final-классами (больше не пытаются наследоваться от T);
+//   * работают с union, int, указателями и любыми не-классами
+//     без ошибок компиляции;
+//   * не создают наследников — значит не навязывают ограничений на T
+//     (приватный деструктор, non-default-ctor и т.п. больше не мешают);
+//   * не зависят от ABI-раскладки vptr (никаких трюков с sizeof).
+//
+// Ограничение, сохранившееся с оригинала: T должен быть полным типом
+// (incomplete type — UB по стандарту, как и у std::is_polymorphic).
+////////////////////////////////////////////////////////////////////////////////
+
+// -----------------------------------------------------------------------------
+// 1. is_class
+//
+//   true, если T — класс или структура (не union, не встроенный тип,
+//   не указатель, не ссылка, не enum).
+// -----------------------------------------------------------------------------
 template <typename T>
 struct is_class
 {
-	struct _yes
-	{
-		char _a[1];
-	};
-	struct _no
-	{
-		char _a[2];
-	};
-
-	template <class U>
-	static _yes is_class_tester(void (U::*)(void));
-	template <class U>
-	static _no is_class_tester(...);
-
-	enum
-	{
-		result = (sizeof(_yes) == sizeof(is_class_tester<T>(0)))
-	};
+    static constexpr bool value = std::is_class_v<T>;
+    enum { result = value ? 1 : 0 };
 };
 
-// 2. is polymorphic (class)
+// -----------------------------------------------------------------------------
+// 2. is_pm_class
+//
+//   true, если T — полиморфный класс (содержит хотя бы одну виртуальную
+//   функцию / имеет vtable).
+//
+//   Работает с final-классами, потому что не наследуется от T.
+//   Работает с union/int/указателями — возвращает false без ошибок.
+// -----------------------------------------------------------------------------
 template <typename T>
 struct is_pm_class
 {
-	struct c1 : public T
-	{
-		char padding[16];
-		c1();
-		c1(const c1&);
-		c1& operator=(const c1&);
-	};
-	struct c2 : public T
-	{
-		char padding[16];
-		c2();
-		c2(const c2&);
-		c2& operator=(const c2&);
-		virtual ~c2();
-	};
-	enum
-	{
-		result = (sizeof(c1) == sizeof(c2))
-	};
+    static constexpr bool value = std::is_polymorphic_v<T>;
+    enum { result = value ? 1 : 0 };
 };
 
-// 3. select result based on class/not class
+// -----------------------------------------------------------------------------
+// 3. is_pm_classify
+//
+//   Диспетчер по признаку «T — класс / не класс».
+//
+//   В оригинале был нужен, потому что is_pm_class<T> пытался наследоваться
+//   от T и падал для не-классов. Теперь std::is_polymorphic сам корректно
+//   возвращает false для не-классов, так что диспетчер стал почти тривиальным.
+//   Оставлен ради обратной совместимости: если в коде где-то есть вызов
+//   is_pm_classify<...>::_detail<T>::result напрямую — он продолжит работать.
+// -----------------------------------------------------------------------------
 template <bool _is_class>
 struct is_pm_classify
 {
-	template <typename _T>
-	struct _detail
-	{
-		enum
-		{
-			result = is_pm_class<_T>::result
-		};
-	};
+    template <typename _T>
+    struct _detail
+    {
+        static constexpr bool value = std::is_polymorphic_v<_T>;
+        enum { result = value ? 1 : 0 };
+    };
 };
+
 template <>
 struct is_pm_classify<false>
 {
-	template <typename _T>
-	struct _detail
-	{
-		enum
-		{
-			result = false
-		};
-	};
+    template <typename _T>
+    struct _detail
+    {
+        // Для не-классов фиксируем результат явно:
+        //  1) это яснее по смыслу;
+        //  2) защищает от гипотетического изменения поведения stdlib;
+        //  3) не инстанцирует std::is_polymorphic (чуть быстрее компиляция
+        //     на типах вроде int/void*/SomeEnum).
+        static constexpr bool value = false;
+        enum { result = 0 };
+    };
 };
+
+// -----------------------------------------------------------------------------
+// 4. is_polymorphic
+//
+//   Историческое имя для std::is_polymorphic. Сохранено, потому что весь
+//   X-Ray код уже использует is_polymorphic<T>::result (например, в smart_cast).
+//
+//   Эквивалентно std::is_polymorphic_v<T>, но с ::result для обратной
+//   совместимости.
+// -----------------------------------------------------------------------------
 template <typename T>
 struct is_polymorphic
 {
-	enum
-	{
-		result = is_pm_classify<is_class<T>::result>::template _detail<T>::result
-	};
+    static constexpr bool value = std::is_polymorphic_v<T>;
+    enum { result = value ? 1 : 0 };
 };
 
-#endif
+#endif // _STL_EXT_type_traits

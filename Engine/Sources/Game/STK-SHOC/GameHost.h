@@ -8,19 +8,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "xrFramework/IEngineHost.h"
 ////////////////////////////////////////////////////////////////////////////////
+class CDllGameModule;
+////////////////////////////////////////////////////////////////////////////////
 class CGameHost final : public IEngineHost
 {
-public:
-    pcstr GetApplicationName()     const override { return "S.T.A.L.K.E.R.: Shadow Of Chernobyl"; }
-    pcstr GetApplicationSaveName() const override { return "stalker_shoc"; }
-    pcstr GetGameDllName()         const override { return "xrGame.dll"; }
-    pcstr GetRenderDllName()       const override { return "xrRender.dll"; }
-    pcstr GetSplashImagePath()     const override { return "game_splash.png"; }
+  public:
+	CGameHost();
+	~CGameHost() override;
 
-    bool OnPreInitialize() override;
-    bool OnPostInitialize() override;
-    void ProcessStartupCommands() override;
-    void OnFrame() override;
-    void OnPreDestroy() override;
+	pcstr GetApplicationName() const override { return "S.T.A.L.K.E.R.: Shadow Of Chernobyl"; }
+	pcstr GetApplicationSaveName() const override { return "stalker_shoc"; }
+	pcstr GetRenderDllName() const override { return "xrRender.dll"; }
+	pcstr GetSplashImagePath() const override { return "game_splash.png"; }
+
+	IGameModule* GetGameModule() override;
+
+	bool OnPreInitialize() override { return true; }
+	bool OnPostInitialize() override { return true; }
+	void ProcessStartupCommands() override;
+	void OnFrame() override {}
+	void OnPreDestroy() override {}
+
+  private:
+	CDllGameModule* m_gameModule = nullptr;
 };
 ////////////////////////////////////////////////////////////////////////////////

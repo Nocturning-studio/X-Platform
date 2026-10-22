@@ -169,8 +169,6 @@
 #include "actor_mp_client.h"
 #endif // NO_XR_GAME
 
-ENGINE_API bool g_dedicated_server;
-
 #ifndef NO_XR_GAME
 #define ADD(a, b, c, d) add<a, b>(c, d)
 #define ADD_MP(a, b, c, d, e, f) add(xr_new<CObjectItemClientServerSingleMp<a, b, c, d>>(e, f))
@@ -375,7 +373,7 @@ void CObjectFactory::register_classes()
 	// because we do not have scripts
 	// and script functionality is not
 	// needed here
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		return;
 
 	ADD(CElectricBall, CSE_ALifeItemArtefact, TEXT2CLSID("SCRPTART"), "artefact_s");

@@ -9,7 +9,7 @@
 #include "IRenderStage.h"
 #include "DeferredLightingResources.h"
 ////////////////////////////////////////////////////////////////////////////////
-class CGBufferStage : public IRenderStage
+class CGBufferStage final : public IRenderStage
 {
 public:
     explicit CGBufferStage(CDeferredLightingResources& res) : m_res(res) {}

@@ -25,59 +25,8 @@
     <Filter Include="Game API">
       <UniqueIdentifier>{0ee86c81-bf3e-4dd2-95ed-9054df5e4bb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game API\Objects">
-      <UniqueIdentifier>{ec2d6bac-933a-456b-a979-61e6d98d07d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\HUD">
-      <UniqueIdentifier>{094dbfff-f01c-49ce-a823-5b354fcb97f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Environment">
-      <UniqueIdentifier>{a4405cdd-2f45-4175-abd6-3a8e65234c10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Environment\Effects">
-      <UniqueIdentifier>{7e4cf23e-efba-4258-a86f-e6beb19b9d86}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Cameras">
-      <UniqueIdentifier>{1d9bdd97-e67c-4c7f-b0bd-75207d16c525}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Collision">
-      <UniqueIdentifier>{6a4a74ba-5a8a-4804-b384-9ebba169b127}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Animator">
-      <UniqueIdentifier>{890721e3-4146-458a-a663-6b82e1e10257}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Feelers">
-      <UniqueIdentifier>{ce753112-d3ff-4f61-a81b-c7ce8082f265}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine">
       <UniqueIdentifier>{709448d5-8520-4c48-a4cc-70c951b03f65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Collision Core">
-      <UniqueIdentifier>{46389353-7846-474f-9678-32adf27d87a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Console">
-      <UniqueIdentifier>{f6926292-2e77-49ec-aa6a-934a8cc2f7fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Noise">
-      <UniqueIdentifier>{557b67e4-0fc1-40cb-96e0-60ce0db42af4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\text_editor">
-      <UniqueIdentifier>{77af4278-71e3-4b6f-8a5c-fd27da36ae93}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\text_editor\edit_actions">
-      <UniqueIdentifier>{c07c2798-fcb8-48bd-b3f6-584a3c386207}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\text_editor\line_editor">
-      <UniqueIdentifier>{bf589450-b5b4-4fd7-8bef-2055633017c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\text_editor\line_editor_control">
-      <UniqueIdentifier>{42e37fd5-bc9c-4f61-81f4-1e0bfd5aa9de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Environment\Hemisphere">
-      <UniqueIdentifier>{a0a981e9-3342-4843-8de4-f900f0c05969}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Profiling">
-      <UniqueIdentifier>{8dc6eb7a-079c-47df-bbfa-b9bf38756dc6}</UniqueIdentifier>
     </Filter>
     <Filter Include="General\Kernel">
       <UniqueIdentifier>{109dc807-b1be-46d5-b006-c2b448dd9175}</UniqueIdentifier>
@@ -87,60 +36,6 @@
     </Filter>
     <Filter Include="Interfaces\UI">
       <UniqueIdentifier>{83fb0322-54fe-475c-b767-42e276abd678}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Game Level %28Maps/Scenes%29">
-      <UniqueIdentifier>{9698ab8f-4772-4318-9d5f-e35b907be079}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Game persistance">
-      <UniqueIdentifier>{3ec0edfc-9114-46c1-978b-8979cfef639e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Demo tools %28Demo/Photo modes%29">
-      <UniqueIdentifier>{8fb90e1d-39ce-40a0-abd4-25572962a6be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Demo tools %28Demo/Photo modes%29\Photo mode">
-      <UniqueIdentifier>{227abcdc-449a-4663-a476-96aca17ddd7d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Demo tools %28Demo/Photo modes%29\Demo">
-      <UniqueIdentifier>{60034e8b-b523-4455-9796-c5ce14356810}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Level loading screen %28Need be refactored%29">
-      <UniqueIdentifier>{0b973863-6ec7-42ac-a3b0-8551b2498ada}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Font manager">
-      <UniqueIdentifier>{a89d42b6-914f-4801-b7a5-0c5e5649e654}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Scripting">
-      <UniqueIdentifier>{945960da-72ca-46e6-a565-0c18dbf5c380}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\EventAPI">
-      <UniqueIdentifier>{81e08626-aa48-49c7-a5c3-0d7a6144e1bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Mail Slot">
-      <UniqueIdentifier>{e783879f-b2b9-4503-9df3-29fdd4df5c7a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Pure">
-      <UniqueIdentifier>{55f33a01-7fa0-4c86-affd-d394c030b61b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game API\Game state manager">
-      <UniqueIdentifier>{f7a65081-dab7-436e-9519-2bb4fb62d2cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core">
-      <UniqueIdentifier>{2014cfbf-992d-4909-95a5-9c43100d9451}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Windows %28Splash/Main window%29">
-      <UniqueIdentifier>{ae13243b-4395-4700-aab9-79025012a2af}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Windows %28Splash/Main window%29\Window manager">
-      <UniqueIdentifier>{7235f8b4-1e1c-47e8-bda0-90e0dba689ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Windows %28Splash/Main window%29\Logo window">
-      <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Time manager">
-      <UniqueIdentifier>{fb97fa90-365a-47d3-88d7-bcaf5f4f7a5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Thread manager">
-      <UniqueIdentifier>{104b3242-87ef-4020-b2f8-46f9b18684f2}</UniqueIdentifier>
     </Filter>
     <Filter Include="xrBind PSGP">
       <UniqueIdentifier>{9e9e5c50-5961-4cb8-a665-2b7c7524ad52}</UniqueIdentifier>
@@ -208,6 +103,120 @@
     <Filter Include="Rendering">
       <UniqueIdentifier>{975e1b55-dc3b-4c53-be20-7ea683528fd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Engine">
+      <UniqueIdentifier>{d2e1ab52-9f5a-4039-84f8-ace5e5e7fc8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules">
+      <UniqueIdentifier>{ee09113a-ad0b-4568-9d8b-e185a472edb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\EventAPI">
+      <UniqueIdentifier>{81e08626-aa48-49c7-a5c3-0d7a6144e1bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Font manager">
+      <UniqueIdentifier>{a89d42b6-914f-4801-b7a5-0c5e5649e654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Console">
+      <UniqueIdentifier>{f6926292-2e77-49ec-aa6a-934a8cc2f7fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Collision Core">
+      <UniqueIdentifier>{46389353-7846-474f-9678-32adf27d87a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Mail Slot">
+      <UniqueIdentifier>{e783879f-b2b9-4503-9df3-29fdd4df5c7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Noise">
+      <UniqueIdentifier>{557b67e4-0fc1-40cb-96e0-60ce0db42af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Profiling">
+      <UniqueIdentifier>{8dc6eb7a-079c-47df-bbfa-b9bf38756dc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Pure">
+      <UniqueIdentifier>{55f33a01-7fa0-4c86-affd-d394c030b61b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Scripting">
+      <UniqueIdentifier>{945960da-72ca-46e6-a565-0c18dbf5c380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\text_editor">
+      <UniqueIdentifier>{77af4278-71e3-4b6f-8a5c-fd27da36ae93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\text_editor\edit_actions">
+      <UniqueIdentifier>{c07c2798-fcb8-48bd-b3f6-584a3c386207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\text_editor\line_editor">
+      <UniqueIdentifier>{bf589450-b5b4-4fd7-8bef-2055633017c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\text_editor\line_editor_control">
+      <UniqueIdentifier>{42e37fd5-bc9c-4f61-81f4-1e0bfd5aa9de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Thread manager">
+      <UniqueIdentifier>{104b3242-87ef-4020-b2f8-46f9b18684f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Time manager">
+      <UniqueIdentifier>{fb97fa90-365a-47d3-88d7-bcaf5f4f7a5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Windows %28Splash/Main window%29">
+      <UniqueIdentifier>{ae13243b-4395-4700-aab9-79025012a2af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Windows %28Splash/Main window%29\Window manager">
+      <UniqueIdentifier>{7235f8b4-1e1c-47e8-bda0-90e0dba689ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Modules\Windows %28Splash/Main window%29\Logo window">
+      <UniqueIdentifier>{b2b7dca5-c79b-421a-a27b-88472eaacb39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Game module interface">
+      <UniqueIdentifier>{d42c338d-a270-4623-b712-635e12025ca3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules">
+      <UniqueIdentifier>{c84fc8c5-2f7f-4a2c-8d2e-813d91179134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Objects">
+      <UniqueIdentifier>{ec2d6bac-933a-456b-a979-61e6d98d07d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\HUD">
+      <UniqueIdentifier>{094dbfff-f01c-49ce-a823-5b354fcb97f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Game state manager">
+      <UniqueIdentifier>{f7a65081-dab7-436e-9519-2bb4fb62d2cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Game persistance">
+      <UniqueIdentifier>{3ec0edfc-9114-46c1-978b-8979cfef639e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Game Level %28Maps/Scenes%29">
+      <UniqueIdentifier>{9698ab8f-4772-4318-9d5f-e35b907be079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Feelers">
+      <UniqueIdentifier>{ce753112-d3ff-4f61-a81b-c7ce8082f265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Environment">
+      <UniqueIdentifier>{a4405cdd-2f45-4175-abd6-3a8e65234c10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Environment\Effects">
+      <UniqueIdentifier>{7e4cf23e-efba-4258-a86f-e6beb19b9d86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Environment\Hemisphere">
+      <UniqueIdentifier>{a0a981e9-3342-4843-8de4-f900f0c05969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Demo tools %28Demo/Photo modes%29">
+      <UniqueIdentifier>{8fb90e1d-39ce-40a0-abd4-25572962a6be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Demo tools %28Demo/Photo modes%29\Photo mode">
+      <UniqueIdentifier>{227abcdc-449a-4663-a476-96aca17ddd7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo">
+      <UniqueIdentifier>{60034e8b-b523-4455-9796-c5ce14356810}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Collision">
+      <UniqueIdentifier>{6a4a74ba-5a8a-4804-b384-9ebba169b127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Cameras">
+      <UniqueIdentifier>{1d9bdd97-e67c-4c7f-b0bd-75207d16c525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Animator">
+      <UniqueIdentifier>{890721e3-4146-458a-a663-6b82e1e10257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game API\Modules\Loading Screen">
+      <UniqueIdentifier>{57a9d780-3a13-47bb-919c-52a6af221837}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="psystem.h">
@@ -241,85 +250,85 @@
       <Filter>Interfaces\Collidable</Filter>
     </ClInclude>
     <ClInclude Include="IGame_ObjectPool.h">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClInclude>
     <ClInclude Include="pure_relcase.h">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClInclude>
     <ClInclude Include="xr_object.h">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClInclude>
     <ClInclude Include="xr_object_list.h">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClInclude>
     <ClInclude Include="CustomHUD.h">
-      <Filter>Game API\HUD</Filter>
+      <Filter>Game API\Modules\HUD</Filter>
     </ClInclude>
     <ClInclude Include="Environment.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Rain.h">
-      <Filter>Game API\Environment\Effects</Filter>
+      <Filter>Game API\Modules\Environment\Effects</Filter>
     </ClInclude>
     <ClInclude Include="thunderbolt.h">
-      <Filter>Game API\Environment\Effects</Filter>
+      <Filter>Game API\Modules\Environment\Effects</Filter>
     </ClInclude>
     <ClInclude Include="xr_efflensflare.h">
-      <Filter>Game API\Environment\Effects</Filter>
+      <Filter>Game API\Modules\Environment\Effects</Filter>
     </ClInclude>
     <ClInclude Include="CameraBase.h">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="CameraDebug.h">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="CameraDefs.h">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="CameraManager.h">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="Effector.h">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="EffectorPP.h">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="xr_area.h">
-      <Filter>Game API\Collision</Filter>
+      <Filter>Game API\Modules\Collision</Filter>
     </ClInclude>
     <ClInclude Include="xr_collide_defs.h">
-      <Filter>Game API\Collision</Filter>
+      <Filter>Game API\Modules\Collision</Filter>
     </ClInclude>
     <ClInclude Include="xr_collide_form.h">
-      <Filter>Game API\Collision</Filter>
+      <Filter>Game API\Modules\Collision</Filter>
     </ClInclude>
     <ClInclude Include="bone.h">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClInclude>
     <ClInclude Include="envelope.h">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClInclude>
     <ClInclude Include="motion.h">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClInclude>
     <ClInclude Include="ObjectAnimator.h">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClInclude>
     <ClInclude Include="Feel_Sound.h">
-      <Filter>Game API\Feelers</Filter>
+      <Filter>Game API\Modules\Feelers</Filter>
     </ClInclude>
     <ClInclude Include="Feel_Touch.h">
-      <Filter>Game API\Feelers</Filter>
+      <Filter>Game API\Modules\Feelers</Filter>
     </ClInclude>
     <ClInclude Include="Feel_Vision.h">
-      <Filter>Game API\Feelers</Filter>
+      <Filter>Game API\Modules\Feelers</Filter>
     </ClInclude>
     <ClInclude Include="FDemoPlay.h">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FDemoRecord.h">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FBasicVisual.h">
       <Filter>Legacy Render\Visuals</Filter>
@@ -447,62 +456,56 @@
     <ClInclude Include="du_sphere_part.h">
       <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
-    <ClInclude Include="Properties.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="std_classes.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="xrXRC.h">
-      <Filter>Engine\Collision Core</Filter>
+      <Filter>Engine\Modules\Collision Core</Filter>
     </ClInclude>
     <ClInclude Include="xr_ioc_cmd.h">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClInclude>
     <ClInclude Include="XR_IOConsole.h">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClInclude>
     <ClInclude Include="EventAPI.h">
-      <Filter>Engine\EventAPI</Filter>
+      <Filter>Engine\Modules\EventAPI</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_lua_extension.h">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Modules\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_lua_space.h">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Modules\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ai_script_space.h">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Modules\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="perlin.h">
-      <Filter>Engine\Noise</Filter>
+      <Filter>Engine\Modules\Noise</Filter>
     </ClInclude>
     <ClInclude Include="edit_actions.h">
-      <Filter>Engine\text_editor\edit_actions</Filter>
+      <Filter>Engine\Modules\text_editor\edit_actions</Filter>
     </ClInclude>
     <ClInclude Include="line_editor.h">
-      <Filter>Engine\text_editor\line_editor</Filter>
+      <Filter>Engine\Modules\text_editor\line_editor</Filter>
     </ClInclude>
     <ClInclude Include="line_edit_control.h">
-      <Filter>Engine\text_editor\line_editor_control</Filter>
+      <Filter>Engine\Modules\text_editor\line_editor_control</Filter>
     </ClInclude>
     <ClInclude Include="Environment_descriptor.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Environment_modifiers.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Environment_render.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Environment_ambient.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Environment_descriptor_mixer.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="xrHemisphere.h">
-      <Filter>Game API\Environment\Hemisphere</Filter>
+      <Filter>Game API\Modules\Environment\Hemisphere</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCompile.h">
       <Filter>Legacy Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
@@ -514,10 +517,10 @@
       <Filter>Legacy Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClInclude>
     <ClInclude Include="CPhotoMode.h">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
     </ClInclude>
     <ClInclude Include="Optick_Capture.h">
-      <Filter>Engine\Profiling</Filter>
+      <Filter>Engine\Modules\Profiling</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>General\Kernel</Filter>
@@ -532,10 +535,10 @@
       <Filter>Interfaces\UI</Filter>
     </ClInclude>
     <ClInclude Include="optick_include.h">
-      <Filter>Engine\Profiling</Filter>
+      <Filter>Engine\Modules\Profiling</Filter>
     </ClInclude>
     <ClInclude Include="demo_common.h">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FVF.h">
       <Filter>Legacy Render\Render backend\Backend</Filter>
@@ -550,49 +553,43 @@
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClInclude>
     <ClInclude Include="Environment_wind.h">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClInclude>
     <ClInclude Include="LogoWindow.h">
-      <Filter>Engine\Windows %28Splash/Main window%29\Logo window</Filter>
+      <Filter>Engine\Modules\Windows %28Splash/Main window%29\Logo window</Filter>
     </ClInclude>
     <ClInclude Include="IGame_Level.h">
-      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+      <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
     <ClInclude Include="xrLevel.h">
-      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+      <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.h">
-      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+      <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
     <ClInclude Include="IGame_Persistent.h">
-      <Filter>Game API\Game persistance</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelLoadingScreen.h">
-      <Filter>Engine\Level loading screen %28Need be refactored%29</Filter>
+      <Filter>Game API\Modules\Game persistance</Filter>
     </ClInclude>
     <ClInclude Include="FontManager.h">
-      <Filter>Engine\Font manager</Filter>
+      <Filter>Engine\Modules\Font manager</Filter>
     </ClInclude>
     <ClInclude Include="xrBind_PSGP.h">
       <Filter>xrBind PSGP</Filter>
     </ClInclude>
     <ClInclude Include="pure.h">
-      <Filter>Engine\Pure</Filter>
+      <Filter>Engine\Modules\Pure</Filter>
     </ClInclude>
     <ClInclude Include="GameStateManager.h">
-      <Filter>Game API\Game state manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Engine\Core</Filter>
+      <Filter>Game API\Modules\Game state manager</Filter>
     </ClInclude>
     <ClInclude Include="WindowManager.h">
-      <Filter>Engine\Windows %28Splash/Main window%29\Window manager</Filter>
+      <Filter>Engine\Modules\Windows %28Splash/Main window%29\Window manager</Filter>
     </ClInclude>
     <ClInclude Include="TimeManager.h">
-      <Filter>Engine\Time manager</Filter>
+      <Filter>Engine\Modules\Time manager</Filter>
     </ClInclude>
     <ClInclude Include="ThreadManager.h">
-      <Filter>Engine\Thread manager</Filter>
+      <Filter>Engine\Modules\Thread manager</Filter>
     </ClInclude>
     <ClInclude Include="RenderView.h">
       <Filter>Legacy Render\Render backend\Camera view</Filter>
@@ -618,9 +615,6 @@
     <ClInclude Include="R_Backend_tree.h">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="EngineQuit.hpp">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="device.h">
       <Filter>Legacy Render\Render backend</Filter>
     </ClInclude>
@@ -630,13 +624,37 @@
     <ClInclude Include="R_Backend_StateCache.h">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="IEngineHost.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="xrFramework.h">
       <Filter>General\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrEngineAPI.h" />
+    <ClInclude Include="Engine.h">
+      <Filter>Engine\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineQuit.hpp">
+      <Filter>Engine\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngineHost.h">
+      <Filter>Engine\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Properties.h">
+      <Filter>Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="std_classes.h">
+      <Filter>Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectFactory.h">
+      <Filter>Game API\Modules\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameModule.h">
+      <Filter>Game API\Game module interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CDllGameModule.h">
+      <Filter>Game API\Game module interface</Filter>
+    </ClInclude>
+    <ClInclude Include="ILoadingScreen.h">
+      <Filter>Game API\Modules\Loading Screen</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">
@@ -676,79 +694,79 @@
       <Filter>Interfaces\Collidable</Filter>
     </ClCompile>
     <ClCompile Include="IGame_ObjectPool.cpp">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClCompile>
     <ClCompile Include="pure_relcase.cpp">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClCompile>
     <ClCompile Include="xr_object.cpp">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClCompile>
     <ClCompile Include="xr_object_list.cpp">
-      <Filter>Game API\Objects</Filter>
+      <Filter>Game API\Modules\Objects</Filter>
     </ClCompile>
     <ClCompile Include="CustomHUD.cpp">
-      <Filter>Game API\HUD</Filter>
+      <Filter>Game API\Modules\HUD</Filter>
     </ClCompile>
     <ClCompile Include="Environment.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="Environment_render.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="Rain.cpp">
-      <Filter>Game API\Environment\Effects</Filter>
+      <Filter>Game API\Modules\Environment\Effects</Filter>
     </ClCompile>
     <ClCompile Include="thunderbolt.cpp">
-      <Filter>Game API\Environment\Effects</Filter>
+      <Filter>Game API\Modules\Environment\Effects</Filter>
     </ClCompile>
     <ClCompile Include="xr_efflensflare.cpp">
-      <Filter>Game API\Environment\Effects</Filter>
+      <Filter>Game API\Modules\Environment\Effects</Filter>
     </ClCompile>
     <ClCompile Include="CameraBase.cpp">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClCompile>
     <ClCompile Include="CameraManager.cpp">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClCompile>
     <ClCompile Include="Effector.cpp">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClCompile>
     <ClCompile Include="EffectorPP.cpp">
-      <Filter>Game API\Cameras</Filter>
+      <Filter>Game API\Modules\Cameras</Filter>
     </ClCompile>
     <ClCompile Include="xr_area.cpp">
-      <Filter>Game API\Collision</Filter>
+      <Filter>Game API\Modules\Collision</Filter>
     </ClCompile>
     <ClCompile Include="xr_area_raypick.cpp">
-      <Filter>Game API\Collision</Filter>
+      <Filter>Game API\Modules\Collision</Filter>
     </ClCompile>
     <ClCompile Include="xr_collide_form.cpp">
-      <Filter>Game API\Collision</Filter>
+      <Filter>Game API\Modules\Collision</Filter>
     </ClCompile>
     <ClCompile Include="Envelope.cpp">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClCompile>
     <ClCompile Include="interp.cpp">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClCompile>
     <ClCompile Include="motion.cpp">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClCompile>
     <ClCompile Include="ObjectAnimator.cpp">
-      <Filter>Game API\Animator</Filter>
+      <Filter>Game API\Modules\Animator</Filter>
     </ClCompile>
     <ClCompile Include="Feel_Touch.cpp">
-      <Filter>Game API\Feelers</Filter>
+      <Filter>Game API\Modules\Feelers</Filter>
     </ClCompile>
     <ClCompile Include="Feel_Vision.cpp">
-      <Filter>Game API\Feelers</Filter>
+      <Filter>Game API\Modules\Feelers</Filter>
     </ClCompile>
     <ClCompile Include="FDemoPlay.cpp">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="FDemoRecord.cpp">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="FBasicVisual.cpp">
       <Filter>Legacy Render\Visuals</Filter>
@@ -880,67 +898,67 @@
       <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="xrXRC.cpp">
-      <Filter>Engine\Collision Core</Filter>
+      <Filter>Engine\Modules\Collision Core</Filter>
     </ClCompile>
     <ClCompile Include="xr_ioc_cmd.cpp">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClCompile>
     <ClCompile Include="XR_IOConsole.cpp">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClCompile>
     <ClCompile Include="EventAPI.cpp">
-      <Filter>Engine\EventAPI</Filter>
+      <Filter>Engine\Modules\EventAPI</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_debug.cpp">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Modules\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ai_script_lua_extension.cpp">
-      <Filter>Engine\Scripting</Filter>
+      <Filter>Engine\Modules\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="perlin.cpp">
-      <Filter>Engine\Noise</Filter>
+      <Filter>Engine\Modules\Noise</Filter>
     </ClCompile>
     <ClCompile Include="edit_actions.cpp">
-      <Filter>Engine\text_editor\edit_actions</Filter>
+      <Filter>Engine\Modules\text_editor\edit_actions</Filter>
     </ClCompile>
     <ClCompile Include="line_editor.cpp">
-      <Filter>Engine\text_editor\line_editor</Filter>
+      <Filter>Engine\Modules\text_editor\line_editor</Filter>
     </ClCompile>
     <ClCompile Include="line_edit_control.cpp">
-      <Filter>Engine\text_editor\line_editor_control</Filter>
+      <Filter>Engine\Modules\text_editor\line_editor_control</Filter>
     </ClCompile>
     <ClCompile Include="XR_IOConsole_control.cpp">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClCompile>
     <ClCompile Include="XR_IOConsole_callback.cpp">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClCompile>
     <ClCompile Include="XR_IOConsole_get.cpp">
-      <Filter>Engine\Console</Filter>
+      <Filter>Engine\Modules\Console</Filter>
     </ClCompile>
     <ClCompile Include="Environment_descriptor.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="Environment_modifiers.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="Environment_ambient.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="Environment_descriptor_mixer.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="xrHemisphere.cpp">
-      <Filter>Game API\Environment\Hemisphere</Filter>
+      <Filter>Game API\Modules\Environment\Hemisphere</Filter>
     </ClCompile>
     <ClCompile Include="ShaderMacros.cpp">
       <Filter>Legacy Render\Execution &amp; 3D\Shaders\Resource Manager</Filter>
     </ClCompile>
     <ClCompile Include="CPhotoMode.cpp">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Photo mode</Filter>
     </ClCompile>
     <ClCompile Include="Optick_Capture.cpp">
-      <Filter>Engine\Profiling</Filter>
+      <Filter>Engine\Modules\Profiling</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>General\Kernel</Filter>
@@ -955,7 +973,7 @@
       <Filter>Interfaces\UI</Filter>
     </ClCompile>
     <ClCompile Include="demo_common.cpp">
-      <Filter>Game API\Demo tools %28Demo/Photo modes%29\Demo</Filter>
+      <Filter>Game API\Modules\Demo tools %28Demo/Photo modes%29\Demo</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend.cpp">
       <Filter>Legacy Render\Render backend\Backend</Filter>
@@ -970,49 +988,43 @@
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClCompile>
     <ClCompile Include="Environment_wind.cpp">
-      <Filter>Game API\Environment</Filter>
+      <Filter>Game API\Modules\Environment</Filter>
     </ClCompile>
     <ClCompile Include="LogoWindow.cpp">
-      <Filter>Engine\Windows %28Splash/Main window%29\Logo window</Filter>
+      <Filter>Engine\Modules\Windows %28Splash/Main window%29\Logo window</Filter>
     </ClCompile>
     <ClCompile Include="IGame_Level.cpp">
-      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+      <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
     <ClCompile Include="IGame_Level_check_textures.cpp">
-      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+      <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
-      <Filter>Game API\Game Level %28Maps/Scenes%29</Filter>
+      <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
     <ClCompile Include="IGame_Persistent.cpp">
-      <Filter>Game API\Game persistance</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelLoadingScreen.cpp">
-      <Filter>Engine\Level loading screen %28Need be refactored%29</Filter>
+      <Filter>Game API\Modules\Game persistance</Filter>
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
-      <Filter>Engine\Font manager</Filter>
+      <Filter>Engine\Modules\Font manager</Filter>
     </ClCompile>
     <ClCompile Include="mailSlot.cpp">
-      <Filter>Engine\Mail Slot</Filter>
+      <Filter>Engine\Modules\Mail Slot</Filter>
     </ClCompile>
     <ClCompile Include="pure.cpp">
-      <Filter>Engine\Pure</Filter>
+      <Filter>Engine\Modules\Pure</Filter>
     </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
-      <Filter>Game API\Game state manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Engine\Core</Filter>
+      <Filter>Game API\Modules\Game state manager</Filter>
     </ClCompile>
     <ClCompile Include="WindowManager.cpp">
-      <Filter>Engine\Windows %28Splash/Main window%29\Window manager</Filter>
+      <Filter>Engine\Modules\Windows %28Splash/Main window%29\Window manager</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
-      <Filter>Engine\Time manager</Filter>
+      <Filter>Engine\Modules\Time manager</Filter>
     </ClCompile>
     <ClCompile Include="ThreadManager.cpp">
-      <Filter>Engine\Thread manager</Filter>
+      <Filter>Engine\Modules\Thread manager</Filter>
     </ClCompile>
     <ClCompile Include="RenderView.cpp">
       <Filter>Legacy Render\Render backend\Camera view</Filter>
@@ -1047,9 +1059,6 @@
     <ClCompile Include="R_Backend_tree.cpp">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClCompile>
-    <ClCompile Include="EngineQuit.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
     <ClCompile Include="device.cpp">
       <Filter>Legacy Render\Render backend</Filter>
     </ClCompile>
@@ -1059,8 +1068,14 @@
     <ClCompile Include="R_Backend_StateCache.cpp">
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </ClCompile>
-    <ClCompile Include="IEngineHost.cpp">
-      <Filter>Engine\Core</Filter>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineQuit.cpp">
+      <Filter>Engine\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="CDllGameModule.cpp">
+      <Filter>Game API\Game module interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,6 @@
 #include "CustomHUD.h"
 #include "debug_ui.h"
 #include "xr_ioc_cmd.h"
-#include "LevelLoadingScreen.h"
 #include "igame_level.h"
 
 ENGINE_API CRenderDevice Device;

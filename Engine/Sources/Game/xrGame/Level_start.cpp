@@ -10,7 +10,6 @@
 #include "xrFramework/IGame_Persistent.h"
 #include "xrFramework/xr_ioconsole.h"
 #include "MainMenu.h"
-#include "xrFramework/LevelLoadingScreen.h"
 
 BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 {
@@ -252,7 +251,7 @@ struct LevelLoadFinalizer
 			{
 				MainMenu()->OnLoadError("BattlEye/BEServer.dll");
 			}
-			else if(g_connect_server_err == xrServer::ErrConnect && !psNET_direct_connect && !g_dedicated_server)
+			else if(g_connect_server_err == xrServer::ErrConnect && !psNET_direct_connect && !Engine.IsDedicatedServer())
 			{
 				MainMenu()->SwitchToMultiplayerMenu();
 			}
@@ -290,7 +289,7 @@ bool CLevel::net_start6()
 			Console->Execute(buf);
 		}
 
-		if(!g_dedicated_server)
+		if(!Engine.IsDedicatedServer())
 		{
 			if(g_hud)
 				HUD().GetUI()->OnConnected();

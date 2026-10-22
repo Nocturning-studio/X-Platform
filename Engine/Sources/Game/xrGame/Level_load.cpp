@@ -13,12 +13,6 @@
 #include "PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
-
-ENGINE_API bool g_dedicated_server;
 
 BOOL CLevel::Load_GameSpecific_Before()
 {
@@ -32,7 +26,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 #ifdef ALIFE_MP
 	if(!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
 #else
-	if(!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+	if(!Engine.IsDedicatedServer() && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
 #endif
 	{
 		IReader* stream = FS.r_open(fn_game);
@@ -69,7 +63,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		FS.r_close(F);
 	}
 
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		// loading static sounds
 		VERIFY(m_level_sound_manager);

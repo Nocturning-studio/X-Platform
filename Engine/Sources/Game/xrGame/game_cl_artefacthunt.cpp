@@ -342,7 +342,7 @@ void game_cl_ArtefactHunt::shedule_Update(u32 dt)
 
 	inherited::shedule_Update(dt);
 
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		return;
 
 	// out game information

@@ -9,7 +9,7 @@
 #include "IRenderPipeline.h"
 #include "DeferredLightingResources.h"
 ////////////////////////////////////////////////////////////////////////////////
-class CDeferredLightingPipeline : public IRenderPipeline
+class CDeferredLightingPipeline final : public IRenderPipeline
 {
 public:
     virtual std::string_view GetName() const override { return "Deferred lighting pipeline"; };

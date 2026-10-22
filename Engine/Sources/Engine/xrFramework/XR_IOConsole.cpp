@@ -301,7 +301,7 @@ void CConsole::OnRender()
 	{
 		bGame = true;
 	}
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 	{
 		bGame = false;
 	}
@@ -736,7 +736,7 @@ void CConsole::Hide()
 	{
 		return;
 	}
-	if(g_pGamePersistent && g_dedicated_server)
+	if(g_pGamePersistent && Engine.IsDedicatedServer())
 	{
 		return;
 	}

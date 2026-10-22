@@ -1014,6 +1014,7 @@
     <ClInclude Include="FryupZone.h" />
     <ClInclude Include="fs_registrator.h" />
     <ClInclude Include="GalantineArtifact.h" />
+    <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GamePersistent.h" />
@@ -1155,6 +1156,7 @@
     <ClInclude Include="level_path_manager.h" />
     <ClInclude Include="level_path_manager_inline.h" />
     <ClInclude Include="level_sounds.h" />
+    <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="location_manager.h" />
     <ClInclude Include="location_manager_inline.h" />
     <ClInclude Include="MainMenu.h" />
@@ -4909,6 +4911,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="GalantineArtifact.cpp" />
+    <ClCompile Include="GameModule.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GameObject.cpp">
@@ -6596,6 +6599,7 @@
     <ClCompile Include="Level_SLS_Save.cpp" />
     <ClCompile Include="level_sounds.cpp" />
     <ClCompile Include="Level_start.cpp" />
+    <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="location_manager.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="map_location.cpp" />

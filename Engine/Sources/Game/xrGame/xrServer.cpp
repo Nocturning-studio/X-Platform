@@ -44,7 +44,7 @@ xrClientData::~xrClientData()
 	xr_delete(ps);
 }
 
-xrServer::xrServer() : IPureServer(Engine.TimeManager.GetTimerGlobal(), g_dedicated_server)
+xrServer::xrServer() : IPureServer(Engine.TimeManager.GetTimerGlobal(), Engine.IsDedicatedServer())
 {
 	m_iCurUpdatePacket = 0;
 	m_aUpdatePackets.push_back(NET_Packet());

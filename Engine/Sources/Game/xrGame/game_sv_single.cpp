@@ -10,7 +10,6 @@
 #include "gamepersistent.h"
 #include "xrServer.h"
 #include "..\xrFramework/Engine.h"
-#include "xrFramework/LevelLoadingScreen.h"
 
 game_sv_Single::game_sv_Single()
 {

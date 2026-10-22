@@ -15,10 +15,9 @@ void set_device_paused(CRenderDevice* d, bool b)
 	Device.Pause(b, TRUE, FALSE, "set_device_paused_script");
 }
 
-extern ENGINE_API BOOL g_appLoaded;
 bool is_app_ready()
 {
-	return !!g_appLoaded;
+	return !!Engine.IsGameLoaded();
 }
 
 // --- Helper Functions для TimeManager ---

@@ -239,7 +239,7 @@ void CBulletManager::FireShotmark(SBullet* bullet, const fvec3& vDir, const fvec
 			// äîáàâèòü îòìåòêó íà ìàòåðèàëå
 			fvec3 p;
 			p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
-			if(!g_dedicated_server)
+			if(!Engine.IsDedicatedServer())
 				::Render->add_SkeletonWallmark(&R.O->renderable.transform, PKinematics(R.O->Visual()), *pWallmarkShader, p,
 											   bullet->dir, bullet->wallmark_size);
 		}

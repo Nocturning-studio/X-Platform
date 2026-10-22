@@ -303,7 +303,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(D);
 		R_ASSERT(l_tpALifeDynamicObject);
 
-		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server) ? u32(-1) : object().ai_location().level_vertex_id();
+		l_tpALifeDynamicObject->m_tNodeID = (Engine.IsDedicatedServer()) ? u32(-1) : object().ai_location().level_vertex_id();
 
 		// Fill
 		D->s_name = item_section_name;

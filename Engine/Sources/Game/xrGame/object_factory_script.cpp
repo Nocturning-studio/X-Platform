@@ -51,11 +51,9 @@ void CObjectFactory::register_script_class(LPCSTR unknown_class, LPCSTR clsid, L
 		creator, TEXT2CLSID(clsid), script_clsid));
 }
 
-ENGINE_API bool g_dedicated_server;
-
 void CObjectFactory::register_script_classes()
 {
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		ai();
 }
 

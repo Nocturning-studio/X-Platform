@@ -209,7 +209,7 @@ void ui_core::PopScissor()
 
 ui_core::ui_core()
 {
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 	{
 		m_pUICursor = xr_new<CUICursor>();
 		m_pFontManager = &Engine.FontManager;

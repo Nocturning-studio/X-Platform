@@ -50,6 +50,9 @@
     <ProjectReference Include="..\..\Engine\xrFramework\xrFramework.vcxproj">
       <Project>{2578c6d8-660d-48ae-9322-7422f8664f06}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\xrGame\xrGame.vcxproj">
+      <Project>{200652a6-043e-4634-8837-87983b3bd5e0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

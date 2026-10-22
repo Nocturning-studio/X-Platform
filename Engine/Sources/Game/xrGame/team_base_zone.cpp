@@ -87,7 +87,7 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 		setEnabled(TRUE);
 	}
 
-	if(GameID() != GAME_SINGLE && !g_dedicated_server)
+	if(GameID() != GAME_SINGLE && !Engine.IsDedicatedServer())
 	{
 		char BaseMapLocation[1024];
 		sprintf_s(BaseMapLocation, "mp_team_base_%d_location", m_Team);
@@ -99,7 +99,7 @@ BOOL CTeamBaseZone::net_Spawn(CSE_Abstract* DC)
 
 void CTeamBaseZone::net_Destroy()
 {
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		Level().MapManager().RemoveMapLocationByObjectID(ID());
 
 	inherited::net_Destroy();

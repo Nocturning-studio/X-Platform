@@ -12,7 +12,6 @@
 #include "ispatial.h"
 #include "Text_Console.h"
 #include <process.h>
-#include "LevelLoadingScreen.h"
 #include "EngineQuit.hpp"
 
 void CGameStateManager::Initialize()
@@ -109,7 +108,7 @@ void CGameStateManager::OnFrame()
 		g_pGameLevel->SoundEvent_Dispatch();
 
 	// Для выделенного сервера обновление консоли здесь
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		Console->OnFrame();
 
 #ifndef MASTER_GOLD

@@ -6,15 +6,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "GameHost.h"
+#include "xrFramework/CDllGameModule.h" 
 ////////////////////////////////////////////////////////////////////////////////
-bool CGameHost::OnPreInitialize()
+CGameHost::CGameHost() : m_gameModule(nullptr)
 {
-    return true;
 }
 
-bool CGameHost::OnPostInitialize()
+CGameHost::~CGameHost()
 {
-    return true;
+    xr_delete(m_gameModule);
+    m_gameModule = nullptr;
+}
+
+IGameModule* CGameHost::GetGameModule()
+{
+    if (!m_gameModule)
+        m_gameModule = xr_new<CDllGameModule>("xrGame.dll");
+    return m_gameModule;
 }
 
 void CGameHost::ProcessStartupCommands()
@@ -30,13 +38,5 @@ void CGameHost::ProcessStartupCommands()
 
     if (strstr(Core.Params, "-load_last_quick_save"))
         Console->Execute("load_last_quick_save");
-}
-
-void CGameHost::OnFrame()
-{
-}
-
-void CGameHost::OnPreDestroy()
-{
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -422,7 +422,7 @@ void game_cl_Deathmatch::shedule_Update(u32 dt)
 
 	inherited::shedule_Update(dt);
 
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 		return;
 
 	// fake

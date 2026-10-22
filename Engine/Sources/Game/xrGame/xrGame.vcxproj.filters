@@ -6582,6 +6582,12 @@
     <ClInclude Include="PresenceAudioIntegration\Sound_environment_geometry_provider.h">
       <Filter>Presence Audio Integration</Filter>
     </ClInclude>
+    <ClInclude Include="LoadingScreen.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModule.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9733,6 +9739,12 @@
     </ClCompile>
     <ClCompile Include="PresenceAudioIntegration\Sound_environment.cpp">
       <Filter>Presence Audio Integration</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingScreen.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModule.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

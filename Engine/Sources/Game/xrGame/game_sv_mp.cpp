@@ -1470,7 +1470,7 @@ void game_sv_mp::DumpOnlineStatistic()
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(idx);
 
-		if(m_server->GetServerClient() == l_pC && g_dedicated_server)
+		if(m_server->GetServerClient() == l_pC && Engine.IsDedicatedServer())
 			continue;
 
 		if(!l_pC->net_Ready)
@@ -1555,7 +1555,7 @@ void game_sv_mp::DumpRoundStatistics()
 	for(u32 idx = 0; idx < m_server->client_Count(); ++idx)
 	{
 		xrClientData* l_pC = (xrClientData*)m_server->client_Get(idx);
-		if(m_server->GetServerClient() == l_pC && g_dedicated_server)
+		if(m_server->GetServerClient() == l_pC && Engine.IsDedicatedServer())
 			continue;
 
 		string16 num_buf;

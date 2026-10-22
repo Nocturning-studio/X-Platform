@@ -7,14 +7,11 @@
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 #include "xrFrameworkAPI.h"
+#include "GameObjectFactory.h"
 ////////////////////////////////////////////////////////////////////////////////
 class IGame_Persistent;
-////////////////////////////////////////////////////////////////////////////////
-extern "C"
-{
-    typedef DLL_API DLL_Pure* __cdecl Factory_Create(CLASS_ID CLS_ID);
-    typedef DLL_API void __cdecl Factory_Destroy(DLL_Pure* O);
-};
+class ILoadingScreen;
+class IGameModule;
 ////////////////////////////////////////////////////////////////////////////////
 // Хост-приложение. Реализуется в Game.exe / Editor.exe.
 // xrFramework ничего не знает о конкретном приложении — он лишь вызывает хуки.
@@ -24,27 +21,21 @@ class ENGINE_API IEngineHost
 public:
     virtual ~IEngineHost() = default;
 
-    // ---- Идентификация ----
-    virtual pcstr GetApplicationName() const = 0;
-    virtual pcstr GetApplicationSaveName() const = 0;
+    virtual const char* GetApplicationName() const = 0;
+    virtual const char* GetApplicationSaveName() const = 0;
+    virtual const char* GetSplashImagePath() const { return "splash.png"; }
 
-    // ---- Что грузить динамически ----
-    virtual pcstr GetGameDllName()   const { return "xrGame.dll"; }
-    virtual pcstr GetRenderDllName() const { return "xrRender.dll"; }
+    // Хост возвращает игровой модуль. Может быть nullptr (bare framework).
+    // Game.exe / Editor.exe возвращают CDllGameModule (или in-process реализацию).
+    virtual IGameModule* GetGameModule() { return nullptr; }
 
-    virtual pcstr GetSplashImagePath() const { return "splash.png"; }
+    virtual const char* GetRenderDllName() const { return "xrRender.dll"; }
 
-    // ---- Жизненный цикл ----
+    // Lifecycle
     virtual bool OnPreInitialize() { return true; }
     virtual bool OnPostInitialize() { return true; }
     virtual void ProcessStartupCommands() {}
     virtual void OnFrame() {}
     virtual void OnPreDestroy() {}
-
-    // ---- Фабрики game-persistent ----
-    // По умолчанию используется CLSID_GAME_PERSISTANT через фабрику xrGame.dll.
-    // Editor.exe может переопределить.
-    virtual IGame_Persistent* CreateGamePersistent(Factory_Create* factory);
-    virtual void DestroyGamePersistent(IGame_Persistent* p, Factory_Destroy* factory);
 };
 ////////////////////////////////////////////////////////////////////////////////

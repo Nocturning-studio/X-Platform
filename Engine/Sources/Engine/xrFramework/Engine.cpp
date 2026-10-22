@@ -2,6 +2,10 @@
 // Authors:
 //			Oles (Oles Shishkovtsov)
 //			AlexMX (Alexander Maksimchuk)
+// 
+// Successors:
+//			NSDeathman
+//			EV
 //
 // Engine class realization
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +24,6 @@
 #include "Text_Console.h"
 #include <process.h>
 #include "LogoWindow.h"
-#include "LevelLoadingScreen.h"
 #include "IRender.h"
 #include "xrBind_PSGP.h"
 #include "EngineQuit.hpp"
@@ -34,7 +37,6 @@
 ENGINE_API CEngine* g_Engine;
 extern CRenderDevice Device;
 ENGINE_API CInifile* pGameIni = NULL;
-ENGINE_API bool g_dedicated_server = false;
 //////////////////////////////////////////////////////////////////////////
 void __cdecl dummy(void) {};
 extern void msCreate(LPCSTR name);
@@ -148,15 +150,24 @@ static void ShutdownSDL3()
 
 CEngine::CEngine()
 {
-	hGame = 0;
 	hRender = 0;
 	hTuner = 0;
 	hOptick = 0;
-	pCreate = 0;
-	pDestroy = 0;
+	pCreate = nullptr;
+	pDestroy = nullptr;
 	tune_pause = dummy;
 	tune_resume = dummy;
 	m_bLoaded = FALSE;
+	m_gameLoaded = false;
+	m_gameLoaded = false;
+	m_dedicated_server = false;
+	LoadingScreen = nullptr;
+	GameStateManager = nullptr;
+	Sheduler = nullptr;
+	Statistic = nullptr;
+	ResourceManager = nullptr;
+	AppHost = nullptr;
+	GameModule = nullptr;
 }
 
 CEngine::~CEngine()
@@ -175,7 +186,7 @@ bool CEngine::Initialize()
 	Debug.Initialize(false);
 #else  // DEDICATED_SERVER
 	Debug.Initialize(true);
-	g_dedicated_server = true;
+	m_dedicated_server = true;
 #endif // DEDICATED_SERVER
 
 	// Декодер ресурсов
@@ -215,10 +226,6 @@ bool CEngine::Initialize()
 	Sheduler = xr_new<CSheduler>();
 	Sheduler->Initialize();
 
-#ifdef DEBUG
-	msCreate("game");
-#endif
-
 	TimeManager.Initialize();
 	ThreadManager.Initialize();
 
@@ -230,7 +237,7 @@ bool CEngine::Initialize()
 
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");
-		if(g_dedicated_server)
+		if(m_dedicated_server)
 			bCaptureInput = FALSE;
 
 		pInput = xr_new<CInput>(bCaptureInput);
@@ -257,21 +264,19 @@ bool CEngine::Initialize()
 		}
 
 		// Game
+		GameModule = AppHost->GetGameModule();
+		if (GameModule)
 		{
-			LPCSTR g_name = AppHost->GetGameDllName();
-			Msg("Loading DLL: %s", g_name);
-			hGame = LoadLibrary(g_name);
-
-			if(0 == hGame)
-				R_CHK(GetLastError());
-
-			R_ASSERT2(hGame, "Game DLL raised exception during loading or there is no game DLL at all");
-
-			pCreate = (Factory_Create*)GetProcAddress(hGame, "xrFactory_Create");
-			R_ASSERT2(pCreate, "Error in xrFactory_Create");
-
-			pDestroy = (Factory_Destroy*)GetProcAddress(hGame, "xrFactory_Destroy");
-			R_ASSERT2(pDestroy, "Error in xrFactory_Destroy");
+			Msg("* [Engine] Game module: '%s'", GameModule->GetName());
+			pCreate = GameModule->GetGameObjectCreate();
+			pDestroy = GameModule->GetGameObjectDestroy();
+			R_ASSERT2(pCreate && pDestroy, "GameModule returned null game-object factories");
+			GameModule->RegisterConsoleCommands();
+			GameModule->RegisterInputCommands();
+		}
+		else
+		{
+			Msg("* [Engine] No game module — framework-only mode");
 		}
 
 #ifndef MASTER_GOLD
@@ -338,13 +343,17 @@ bool CEngine::Initialize()
 
 	Engine.ThreadManager.LegacyFrameMT.Add(&SoundProcessor);
 
-	g_pGamePersistent = AppHost->CreateGamePersistent(pCreate);
-	g_pGamePersistent->Initialize();
+	if (GameModule)
+	{
+		g_pGamePersistent = GameModule->CreatePersistent();
+		if (g_pGamePersistent)
+			g_pGamePersistent->Initialize();
+	}
 
 	g_SpatialSpace = xr_new<ISpatial_DB>();
 	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
 
-	LoadingScreen = xr_new<CLevelLoadingScreen>();
+	LoadingScreen = GameModule->CreateLoadingScreen();
 	LoadingScreen->Show();
 	g_pGamePersistent->LoadTitle("st_loading_game");
 	LoadingScreen->ForceRender();
@@ -355,6 +364,8 @@ bool CEngine::Initialize()
 	LoadingScreen->ForceRender();
 	Render->Create();
 	LoadingScreen->Hide();
+
+	m_gameLoaded = true;
 
 	return true;
 }
@@ -471,13 +482,12 @@ void CEngine::Destroy()
 
 	if (g_pGamePersistent)
 	{
-		AppHost->DestroyGamePersistent(g_pGamePersistent, pDestroy);
+		if (GameModule)
+			GameModule->DestroyPersistent(g_pGamePersistent);
 		g_pGamePersistent = nullptr;
 	}
 
 	LoadingScreen->Destroy();
-
-	FontManager.Destroy();
 
 	Event.Dump();
 
@@ -526,11 +536,6 @@ void CEngine::Destroy()
 		dbg_dump_leaks_prepare();
 #endif // DEBUG_MEMORY_MANAGER
 
-	if(hGame)
-	{
-		FreeLibrary(hGame);
-		hGame = 0;
-	}
 	if(hRender)
 	{
 		FreeLibrary(hRender);
@@ -543,6 +548,12 @@ void CEngine::Destroy()
 	}
 	pCreate = 0;
 	pDestroy = 0;
+
+	if (GameModule)
+	{
+		GameModule->OnFrameworkShutdown();
+		GameModule = nullptr;
+	}
 
 	Event._destroy();
 	XRC.r_clear_compact();

@@ -271,7 +271,7 @@ void BattlEyeSystem::ReadPacketServer(u32 sender, NET_Packet* pack)
 bool BattlEyeSystem::TestLoadClient()
 {
 	m_test_load_client = false;
-	if(g_dedicated_server)
+	if(Engine.IsDedicatedServer())
 	{
 		return true; // false = Error
 	}

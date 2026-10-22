@@ -13,10 +13,6 @@
 #include "CustomHUD.h"
 #endif
 
-#ifdef _EDITOR
-bool g_dedicated_server = false;
-#endif
-
 ENGINE_API IGame_Persistent* g_pGamePersistent = NULL;
 
 IGame_Persistent::IGame_Persistent()
@@ -55,7 +51,7 @@ void IGame_Persistent::OnAppDeactivate()
 
 void IGame_Persistent::OnAppStart()
 {
-	if(!g_dedicated_server)
+	if(!Engine.IsDedicatedServer())
 		Environment().load();
 }
 
