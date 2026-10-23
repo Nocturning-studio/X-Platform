@@ -107,6 +107,7 @@ class ENGINE_API CEngine
 	VTResume* tune_resume;
 
 	CEventAPI Event;
+	CConsole* Console;
 	CLevelManager LevelManager;
 	CFontManager FontManager;
 	CDebugUI DebugUI;
@@ -136,8 +137,6 @@ class ENGINE_API CEngine
 	void AddLoadingEvent(LOADING_EVENT _Event) { m_loading_events.push_back(_Event); }
 	void AddLoadingEventFront(LOADING_EVENT _Event) { m_loading_events.push_front(_Event); }
 	void PopLoadingEvent() { m_loading_events.pop_front(); }
-
-	CConsole* GetConsole() { return Console; }
 
 	bool IsGameLoaded() const { return m_gameLoaded; }
 	void SetGameLoaded(bool v) { m_gameLoaded = v; }
@@ -172,4 +171,5 @@ class ENGINE_API CEngine
 };
 ////////////////////////////////////////////////////////////////////////////////
 #include "ResourceManager.h"
+#include "xr_ioc_cmd.h"
 ////////////////////////////////////////////////////////////////////////////////

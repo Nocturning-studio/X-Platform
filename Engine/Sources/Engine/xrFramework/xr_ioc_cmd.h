@@ -28,30 +28,25 @@ enum
 	TUTORIALS_ENABLE = (1ul << 2ul)
 };
 
-#define CMD0(cls)                     \
-	{                                 \
-		static cls x##cls();          \
-		Console->AddCommand(&x##cls); \
+#define CMD0(cls)                       \
+	{                                   \
+		Engine.Console->AddCommand(xr_new<cls>()); \
 	}
-#define CMD1(cls, p1)                 \
-	{                                 \
-		static cls x##cls(p1);        \
-		Console->AddCommand(&x##cls); \
+#define CMD1(cls, p1)                   \
+	{                                   \
+		Engine.Console->AddCommand(xr_new<cls>(p1)); \
 	}
-#define CMD2(cls, p1, p2)             \
-	{                                 \
-		static cls x##cls(p1, p2);    \
-		Console->AddCommand(&x##cls); \
+#define CMD2(cls, p1, p2)               \
+	{                                   \
+		Engine.Console->AddCommand(xr_new<cls>(p1, p2)); \
 	}
-#define CMD3(cls, p1, p2, p3)          \
-	{                                  \
-		static cls x##cls(p1, p2, p3); \
-		Console->AddCommand(&x##cls);  \
+#define CMD3(cls, p1, p2, p3)           \
+	{                                   \
+		Engine.Console->AddCommand(xr_new<cls>(p1, p2, p3)); \
 	}
-#define CMD4(cls, p1, p2, p3, p4)          \
-	{                                      \
-		static cls x##cls(p1, p2, p3, p4); \
-		Console->AddCommand(&x##cls);      \
+#define CMD4(cls, p1, p2, p3, p4)       \
+	{                                   \
+		Engine.Console->AddCommand(xr_new<cls>(p1, p2, p3, p4)); \
 	}
 
 class ENGINE_API IConsole_Command
@@ -89,8 +84,8 @@ class ENGINE_API IConsole_Command
 	};
 	virtual ~IConsole_Command()
 	{
-		if(Console)
-			Console->RemoveCommand(this);
+		if(Engine.Console)
+			Engine.Console->RemoveCommand(this);
 	};
 
 	LPCSTR Name()
@@ -221,7 +216,7 @@ class ENGINE_API CCC_Token : public IConsole_Command
 	xr_token* tokens;
 
   public:
-	CCC_Token(LPCSTR N, u32* V, xr_token* T) : IConsole_Command(N), value(V), tokens(T) {};
+	  CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command(N), value(V), tokens(const_cast<xr_token*>(T)) {};
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -260,8 +255,8 @@ class ENGINE_API CCC_Token : public IConsole_Command
 		while(tok->name)
 		{
 			if(I[0])
-				strcat(I, "/");
-			strcat(I, tok->name);
+				strcat_s(I, "/");
+			strcat_s(I, tok->name);
 			tok++;
 		}
 	}
@@ -373,7 +368,7 @@ class ENGINE_API CCC_Vector3 : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		fvec3 v;
-		if(3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
+		if(3 != sscanf_s(args, "%f,%f,%f", &v.x, &v.y, &v.z))
 		{
 			InvalidSyntax();
 			return;
@@ -446,7 +441,7 @@ class ENGINE_API CCC_Integer : public IConsole_Command
 	}
 	virtual void Status(TStatus& S)
 	{
-		_itoa(*value, S, 10);
+		_itoa_s(*value, S, 10);
 	}
 	virtual void Info(TInfo& I)
 	{
@@ -476,13 +471,28 @@ class ENGINE_API CCC_String : public IConsole_Command
 		R_ASSERT(size > 1);
 	};
 
+	template<size_t N>
+	CCC_String(LPCSTR Name, const char(&V)[N], int _size = N) : IConsole_Command(Name), value(const_cast<LPSTR>(V)), size(_size)
+	{
+		bLowerCaseArgs = FALSE;
+		R_ASSERT(size > 1);
+		R_ASSERT(size <= (int)N);
+	}
+
 	virtual void Execute(LPCSTR args)
 	{
-		strncpy(value, args, size - 1);
+		if (!value || size <= 1)
+			return;
+
+		strncpy_s(value, (rsize_t)size, args ? args : "", (size_t)(size - 1));
+		value[size - 1] = 0;
 	}
 	virtual void Status(TStatus& S)
 	{
-		strcpy_s(S, value);
+		if (value)
+			strncpy_s(S, sizeof(TStatus), value, _TRUNCATE);
+		else
+			S[0] = 0;
 	}
 	virtual void Info(TInfo& I)
 	{

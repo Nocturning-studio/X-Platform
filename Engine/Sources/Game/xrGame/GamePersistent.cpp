@@ -123,7 +123,7 @@ CGamePersistent::CGamePersistent(void)
 	m_DofChangeSpeed = READ_IF_EXISTS(pSettings, r_float, "dof_params", "change_speed", 0.2f);
 	m_DofUI = READ_IF_EXISTS(pSettings, r_fvector3, "ui_dof", "dof", fvec3().set(2.0f, 0.5f, 1));
 
-	fvec3* DofValue = Console->GetFVectorPtr("r_dof");
+	fvec3* DofValue = Engine.Console->GetFVectorPtr("r_dof");
 	SetBaseDof(*DofValue);
 
 	SetNightVisionState(false);
@@ -438,8 +438,8 @@ void CGamePersistent::start_logo_intro()
 	if(0 != strstr(Core.Params, "-nointro") || !(ps_game_ls_flags.test(INTRO_ENABLE)))
 	{
 		m_intro_event = 0;
-		// Console->Show();
-		Console->Execute("main_menu on");
+		// Engine.Console->Show();
+		Engine.Console->Execute("main_menu on");
 		return;
 	}
 #endif
@@ -449,7 +449,7 @@ void CGamePersistent::start_logo_intro()
 		VERIFY(NULL == m_intro);
 		m_intro = xr_new<CUISequencer>();
 		m_intro->Start("intro_logo");
-		Console->Hide();
+		Engine.Console->Hide();
 	}
 }
 void CGamePersistent::update_logo_intro()
@@ -458,7 +458,7 @@ void CGamePersistent::update_logo_intro()
 	{
 		m_intro_event = 0;
 		xr_delete(m_intro);
-		Console->Execute("main_menu on");
+		Engine.Console->Execute("main_menu on");
 	}
 }
 
@@ -592,7 +592,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		LPCSTR demo = LPCSTR(P1);
 		sprintf_s(cmd, "demo_play %s", demo);
 		Msg("Execute %s", cmd);
-		Console->Execute(cmd);
+		Engine.Console->Execute(cmd);
 		xr_free(demo);
 		uTime2Change = Engine.TimeManager.TimerAsync() + u32(P2) * 1000;
 	}

@@ -149,7 +149,7 @@ void CUICDkey::SaveValue()
 	//	string256 tmp;
 	sprintf_s(gsCDKey, "%s", AddHyphens(m_lines.GetText()));
 	//	sprintf_s(tmp,"cdkey %s",AddHyphens(m_lines.GetText()));
-	//	Console->Execute(tmp);
+	//	Engine.Console->Execute(tmp);
 }
 
 bool CUICDkey::IsChanged()

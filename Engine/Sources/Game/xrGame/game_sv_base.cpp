@@ -434,7 +434,7 @@ void game_sv_GameState::Create(shared_str& options)
 	ConsoleCommands_Create();
 	//---------------------------------------------------------------------
 	//	CCC_LoadCFG_custom*	pTmp = xr_new<CCC_LoadCFG_custom>("sv_");
-	//	pTmp->Execute				(Console->ConfigFile);
+	//	pTmp->Execute				(Engine.Console->ConfigFile);
 	//	xr_delete					(pTmp);
 	//---------------------------------------------------------------------
 	LPCSTR svcfg_ltx_name = "-svcfg ";
@@ -445,7 +445,7 @@ void game_sv_GameState::Create(shared_str& options)
 		sscanf(strstr(Core.Params, svcfg_ltx_name) + sz, "%[^ ] ", svcfg_name);
 		//		if (FS.exist(svcfg_name))
 		{
-			Console->ExecuteScript(svcfg_name);
+			Engine.Console->ExecuteScript(svcfg_name);
 		}
 	};
 	//---------------------------------------------------------------------
@@ -460,7 +460,7 @@ void game_sv_GameState::ReadOptions(shared_str& options)
 	//.	if (!FS.exist(MAPROT_LIST))
 	FS.update_path(MAPROT_LIST, "$app_data_root$", MAPROT_LIST_NAME);
 	if(FS.exist(MAPROT_LIST))
-		Console->ExecuteScript(MAPROT_LIST);
+		Engine.Console->ExecuteScript(MAPROT_LIST);
 
 	g_sv_base_iVotingEnabled = get_option_i(*options, "vote", (g_sv_base_iVotingEnabled));
 	//---------------------------

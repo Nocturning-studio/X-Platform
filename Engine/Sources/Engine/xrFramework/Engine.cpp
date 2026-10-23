@@ -251,7 +251,7 @@ bool CEngine::Initialize()
 #else
 		Console = xr_new<CConsole>();
 #endif
-		Console->Initialize();
+		Engine.Console->Initialize();
 	}
 
 	{
@@ -315,7 +315,7 @@ bool CEngine::Initialize()
 	{
 		// Loads after xrGame and xrRender are register they commands
 		Msg("Loading user settings");
-		Console->ExecuteScript(Console->ConfigFile);
+		Engine.Console->ExecuteScript(Engine.Console->ConfigFile);
 	}
 
 	{

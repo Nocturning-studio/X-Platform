@@ -150,7 +150,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 	{
 
 	case kCONSOLE:
-		Console->Show();
+		Engine.Console->Show();
 		return;
 		break;
 
@@ -168,7 +168,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 			HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
 		}
 		else
-			Console->Execute("main_menu");
+			Engine.Console->Execute("main_menu");
 		return;
 	}
 	break;
@@ -201,7 +201,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 
 	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
 	{
-		Console->Execute("save");
+		Engine.Console->Execute("save");
 		return;
 	}
 	if(_curr == kQUICK_LOAD && IsGameTypeSingle())
@@ -211,7 +211,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 		FS.get_path("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.rescan_pathes();
 #endif // DEBUG
-		Console->Execute("load_last_quick_save");
+		Engine.Console->Execute("load_last_quick_save");
 		return;
 	}
 
@@ -220,8 +220,8 @@ void CLevel::IR_OnKeyboardPress(int key)
 	{
 	case DIK_NUMPAD5:
 	{
-		Console->Hide();
-		Console->Execute("demo_record 1");
+		Engine.Console->Hide();
+		Engine.Console->Execute("demo_record 1");
 	}
 	break;
 	case DIK_DIVIDE:

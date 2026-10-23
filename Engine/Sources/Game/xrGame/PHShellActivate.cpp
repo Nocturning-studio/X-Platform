@@ -13,15 +13,6 @@
 #include "PhysicsShellAnimator.h"
 #endif
 
-///////////////////////////////////////////////////////////////
-/// #pragma warning(disable:4995)
-// #include "xrFramework/../xrODE/ode/src/collision_kernel.h"
-// #include "xrFramework/../xrODE/ode/src/joint.h"
-// #include "xrFramework/../xrODE/ode/src/objects.h"
-
-// #pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
-
 #include "ExtendedGeom.h"
 
 #include "PHElement.h"

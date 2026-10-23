@@ -13,20 +13,6 @@
 #include "xrFramework/skeletoncustom.h"
 #include "PHCollideValidator.h"
 #include "game_object_space.h"
-// #pragma warning(disable:4995)
-// #pragma warning(disable:4267)
-// #include "xrFramework/../xrODE/ode/src/collision_kernel.h"
-// #pragma warning(default:4995)
-// #pragma warning(default:4267)
-///////////////////////////////////////////////////////////////
-/// #pragma warning(disable:4995)
-
-// #include "xrFramework/../xrODE/ode/src/joint.h"
-// #include "xrFramework/../xrODE/ode/src/objects.h"
-
-// #pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
-
 #include "ExtendedGeom.h"
 #include "PHElement.h"
 #include "PHShell.h"

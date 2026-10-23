@@ -1,6 +1,5 @@
 #include "pch.h"
-#include "xrFramework/xr_ioconsole.h"
-#include "xrFramework/xr_ioc_cmd.h"
+#include <xrFramework/Engine.h>
 #include "UIOptConCom.h"
 #include "xrCore/xrCore.h"
 #include "../game_base_space.h"
@@ -21,6 +20,11 @@ class CCC_UserName : public CCC_String
 {
   public:
 	CCC_UserName(LPCSTR N, LPSTR V, int _size) : CCC_String(N, V, _size)
+	{
+		bEmptyArgsHandled = false;
+	};
+	template<size_t N>
+	CCC_UserName(LPCSTR Name, const char(&V)[N], int _size = (int)N) : CCC_String(Name, const_cast<LPSTR>(V), _size)
 	{
 		bEmptyArgsHandled = false;
 	};

@@ -73,7 +73,7 @@ void CUIMapList::StartDedicatedServer()
 	strcat(g_sLaunchOnExit_params, GetCommandLine(""));
 	Msg("%s", "-- Going to quit before starting dedicated server");
 	Msg("%s %s", g_sLaunchOnExit_app, g_sLaunchOnExit_params);
-	Console->Execute("quit");
+	Engine.Console->Execute("quit");
 }
 
 void CUIMapList::Init(float x, float y, float width, float height)

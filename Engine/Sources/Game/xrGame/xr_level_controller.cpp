@@ -574,13 +574,13 @@ class CCC_UnBindAll : public IConsole_Command
 		}
 
 		bindConsoleCmds.clear();
-		//.		Console->Execute("cfg_load default_controls.ltx");
+		//.		Engine.Console->Execute("cfg_load default_controls.ltx");
 
 		string_path _cfg;
 		string_path cmd;
 		FS.update_path(_cfg, "$game_config$", "default_controls.ltx");
 		strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
-		Console->Execute(cmd);
+		Engine.Console->Execute(cmd);
 	}
 };
 
@@ -671,7 +671,7 @@ bool ConsoleBindCmds::execute(int dik)
 	if(it == m_bindConsoleCmds.end())
 		return false;
 
-	Console->Execute(it->second.cmd.c_str());
+	Engine.Console->Execute(it->second.cmd.c_str());
 	return true;
 }
 

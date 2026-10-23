@@ -43,7 +43,7 @@ LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 	case WM_PAINT:
 	{
-		CTextConsole* pTextConsole = (CTextConsole*)Console;
+		CTextConsole* pTextConsole = (CTextConsole*)Engine.Console;
 		pTextConsole->OnPaint();
 		return (LRESULT)0; // Say we handled it.
 	}

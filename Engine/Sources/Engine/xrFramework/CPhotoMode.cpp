@@ -160,12 +160,12 @@ void CPhotoMode::ResetParameters()
 
 	m_fFov = m_fGlobalFov;
 
-	Console->Execute("r_photo_grid off");
-	Console->Execute("r_cinema_borders off");
-	Console->Execute("r_watermark off");
+	Engine.Console->Execute("r_photo_grid off");
+	Engine.Console->Execute("r_cinema_borders off");
+	Engine.Console->Execute("r_watermark off");
 
 #ifndef MASTER_GOLD
-	Console->Execute("r_debug_render disabled");
+	Engine.Console->Execute("r_debug_render disabled");
 #endif
 }
 
@@ -392,12 +392,12 @@ void CPhotoMode::SwitchGridState()
 	if(m_bGridEnabled == false)
 	{
 		m_bGridEnabled = true;
-		Console->Execute("r_photo_grid on");
+		Engine.Console->Execute("r_photo_grid on");
 	}
 	else
 	{
 		m_bGridEnabled = false;
-		Console->Execute("r_photo_grid off");
+		Engine.Console->Execute("r_photo_grid off");
 	}
 }
 
@@ -408,12 +408,12 @@ void CPhotoMode::SwitchCinemaBordersState()
 	if(m_bBordersEnabled == false)
 	{
 		m_bBordersEnabled = true;
-		Console->Execute("r_cinema_borders on");
+		Engine.Console->Execute("r_cinema_borders on");
 	}
 	else
 	{
 		m_bBordersEnabled = false;
-		Console->Execute("r_cinema_borders off");
+		Engine.Console->Execute("r_cinema_borders off");
 	}
 }
 
@@ -422,12 +422,12 @@ void CPhotoMode::SwitchWatermarkVisibility()
 	if(m_bWatermarkEnabled == false)
 	{
 		m_bWatermarkEnabled = true;
-		Console->Execute("r_watermark on");
+		Engine.Console->Execute("r_watermark on");
 	}
 	else
 	{
 		m_bWatermarkEnabled = false;
-		Console->Execute("r_watermark off");
+		Engine.Console->Execute("r_watermark off");
 	}
 }
 
@@ -552,7 +552,7 @@ void CPhotoMode::MakeScreenshot()
 void CPhotoMode::IR_OnKeyboardPress(int dik)
 {
 	if(dik == DIK_GRAVE)
-		Console->Show();
+		Engine.Console->Show();
 
 	if(dik == DIK_BACK)
 		MakeCubemap();
@@ -598,25 +598,25 @@ void CPhotoMode::IR_OnKeyboardPress(int dik)
 #ifndef MASTER_GOLD
 #pragma todo("NSDeathman to all: Переделать быструю отладку рендера под удобный вид")
 	if(dik == DIK_1)
-		Console->Execute("r_debug_render gbuffer_albedo");
+		Engine.Console->Execute("r_debug_render gbuffer_albedo");
 	if(dik == DIK_2)
-		Console->Execute("r_debug_render gbuffer_position");
+		Engine.Console->Execute("r_debug_render gbuffer_position");
 	if(dik == DIK_3)
-		Console->Execute("r_debug_render gbuffer_normal");
+		Engine.Console->Execute("r_debug_render gbuffer_normal");
 	if(dik == DIK_4)
-		Console->Execute("r_debug_render gbuffer_roughness");
+		Engine.Console->Execute("r_debug_render gbuffer_roughness");
 	if(dik == DIK_5)
-		Console->Execute("r_debug_render gbuffer_matallness");
+		Engine.Console->Execute("r_debug_render gbuffer_matallness");
 	if(dik == DIK_6)
-		Console->Execute("r_debug_render gbuffer_lightmap_ao");
+		Engine.Console->Execute("r_debug_render gbuffer_lightmap_ao");
 	if(dik == DIK_7)
-		Console->Execute("r_debug_render direct_light");
+		Engine.Console->Execute("r_debug_render direct_light");
 	if(dik == DIK_8)
-		Console->Execute("r_debug_render indirect_light");
+		Engine.Console->Execute("r_debug_render indirect_light");
 	if(dik == DIK_9)
-		Console->Execute("r_debug_render real_time_ao");
+		Engine.Console->Execute("r_debug_render real_time_ao");
 	if(dik == DIK_0)
-		Console->Execute("r_debug_render disabled");
+		Engine.Console->Execute("r_debug_render disabled");
 #endif
 }
 

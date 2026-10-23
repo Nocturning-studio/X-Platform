@@ -175,7 +175,7 @@ void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 		item->CreateConsoleCommand(command, m_playerName.c_str(), m_message_box->m_pMessageBox->GetUserPassword(),
 								   m_message_box->GetPassword());
-		Console->Execute(command.c_str());
+		Engine.Console->Execute(command.c_str());
 	}
 }
 
@@ -509,7 +509,7 @@ void CServerList::ConnectToSelected()
 
 		item->CreateConsoleCommand(command, m_playerName.c_str(), "", "");
 
-		Console->Execute(command.c_str());
+		Engine.Console->Execute(command.c_str());
 	}
 }
 

@@ -290,6 +290,11 @@ class CCC_GSCDKey : public CCC_String
 	{
 		bEmptyArgsHandled = false;
 	};
+	template<size_t N>
+	CCC_GSCDKey(LPCSTR Name, const char(&V)[N], int _size = (int)N) : CCC_String(Name, const_cast<LPSTR>(V), _size)
+	{
+		bEmptyArgsHandled = false;
+	}
 	virtual void Execute(LPCSTR arguments)
 	{
 		CCC_String::Execute(arguments);
@@ -1483,7 +1488,7 @@ class CCC_SvStatus : public IConsole_Command
 			return;
 		if(Level().Server && Level().Server->game)
 		{
-			Console->Execute("cfg_load all_server_settings");
+			Engine.Console->Execute("cfg_load all_server_settings");
 		}
 	}
 	virtual void Info(TInfo& I)
@@ -1562,7 +1567,7 @@ void register_mp_console_commands()
 	CMD1(CCC_Kill, "g_kill");
 
 	// Net Interpolation
-	CMD4(CCC_Float, "net_cl_interpolation", &g_cl_lvInterp, -1, 1);
+	CMD4(CCC_Float, "net_cl_interpolation", &g_cl_lvInterp, -1.0f, 1.0f);
 	CMD4(CCC_Integer, "net_cl_icurvetype", &g_cl_InterpolationType, 0, 2);
 	CMD4(CCC_Integer, "net_cl_icurvesize", (int*)&g_cl_InterpolationMaxPoints, 0, 2000);
 

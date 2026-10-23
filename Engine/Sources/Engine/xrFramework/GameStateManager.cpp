@@ -57,8 +57,8 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 
 		// ... (логика main_menu) ...
 		{
-			Console->Execute("main_menu off");
-			Console->Hide();
+			Engine.Console->Execute("main_menu off");
+			Engine.Console->Hide();
 
 			g_pGamePersistent->PreStart(op_server);
 			g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
@@ -86,8 +86,8 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			DEL_INSTANCE(g_pGameLevel);
 			if((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
 			{
-				Console->Execute("main_menu off");
-				Console->Execute("main_menu on");
+				Engine.Console->Execute("main_menu off");
+				Engine.Console->Execute("main_menu on");
 			}
 		}
 		g_pGamePersistent->Disconnect();
@@ -109,7 +109,7 @@ void CGameStateManager::OnFrame()
 
 	// Для выделенного сервера обновление консоли здесь
 	if(Engine.IsDedicatedServer())
-		Console->OnFrame();
+		Engine.Console->OnFrame();
 
 #ifndef MASTER_GOLD
 	OptickCapture.OnFrame();

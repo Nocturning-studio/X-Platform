@@ -220,6 +220,4 @@ class ENGINE_API CConsole : public pureRender, public pureFrame
 
 }; // class CConsole
 
-ENGINE_API extern CConsole* Console;
-
 #endif // !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)

@@ -102,7 +102,7 @@ void CUIChangeWeather::OnBtn(int i)
 	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 	string1024 command;
 	sprintf_s(command, "cl_votestart changeweather %s %s", *m_data[i].m_weather_name, *m_data[i].m_weather_time);
-	Console->Execute(command);
+	Engine.Console->Execute(command);
 	game->StartStopMenu(this, true);
 }
 

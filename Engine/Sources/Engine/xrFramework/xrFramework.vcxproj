@@ -838,7 +838,6 @@
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="xrBind_PSGP.h" />
     <ClInclude Include="xrFramework.h" />
-    <ClInclude Include="xrEngineAPI.h" />
     <ClInclude Include="xrHemisphere.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrLevel.h" />

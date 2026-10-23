@@ -126,7 +126,7 @@ void CUIKickPlayer::OnBtnOk()
 		}
 		break;
 		}
-		Console->Execute(command);
+		Engine.Console->Execute(command);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 		game->StartStopMenu(this, true);
 	}

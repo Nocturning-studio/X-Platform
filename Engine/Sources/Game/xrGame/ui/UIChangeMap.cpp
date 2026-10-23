@@ -141,7 +141,7 @@ void CUIChangeMap::OnBtnOk()
 
 		string512 command;
 		sprintf_s(command, "cl_votestart changemap %s", name.c_str());
-		Console->Execute(command);
+		Engine.Console->Execute(command);
 		GetHolder()->StartStopMenu(this, true);
 	}
 }

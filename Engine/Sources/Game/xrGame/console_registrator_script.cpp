@@ -6,7 +6,7 @@ using namespace luabind;
 
 CConsole* console()
 {
-	return Console;
+	return Engine.Console;
 }
 
 int get_console_integer(CConsole* c, LPCSTR cmd)

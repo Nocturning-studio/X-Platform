@@ -462,7 +462,7 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 			P.r_stringZ(buff);
 			SetLogCB(console_log_cb);
 			_tmp_log.clear();
-			Console->Execute(buff);
+			Engine.Console->Execute(buff);
 			SetLogCB(NULL);
 
 			NET_Packet P_answ;

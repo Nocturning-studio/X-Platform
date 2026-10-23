@@ -167,12 +167,12 @@ void msParse(LPCSTR c)
 {
 	if(0 == xr_stricmp(c, "exit"))
 	{
-		Console->Execute("quit");
+		Engine.Console->Execute("quit");
 	}
 	if(0 == xr_stricmp(c, "quit"))
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
-		Console->Execute("quit");
+		Engine.Console->Execute("quit");
 	}
 }
 #endif

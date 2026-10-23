@@ -68,7 +68,8 @@ class CCC_Quit : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		//		TerminateProcess(GetCurrentProcess(),0);
-		Console->Hide();
+		Engine.Console->Execute("cfg_save");
+		Engine.Console->Hide();
 		Engine.Event.Defer("KERNEL:disconnect");
 		Engine.Event.Defer("KERNEL:quit");
 	}
@@ -250,7 +251,7 @@ class CCC_Help : public IConsole_Command
 	{
 		Log("- --- Command listing: start ---");
 		CConsole::vecCMD_IT it;
-		for(it = Console->Commands.begin(); it != Console->Commands.end(); it++)
+		for(it = Engine.Console->Commands.begin(); it != Engine.Console->Commands.end(); it++)
 		{
 			IConsole_Command& C = *(it->second);
 			TStatus _S;
@@ -304,7 +305,7 @@ class CCC_SaveCFG : public IConsole_Command
 	virtual void Execute(LPCSTR args)
 	{
 		string_path cfg_full_name;
-		strcpy_s(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
+		strcpy_s(cfg_full_name, (xr_strlen(args) > 0) ? args : Engine.Console->ConfigFile);
 
 		bool b_abs_name = xr_strlen(cfg_full_name) > 2 && cfg_full_name[1] == ':';
 
@@ -323,7 +324,7 @@ class CCC_SaveCFG : public IConsole_Command
 		if(F)
 		{
 			CConsole::vecCMD_IT it;
-			for(it = Console->Commands.begin(); it != Console->Commands.end(); it++)
+			for(it = Engine.Console->Commands.begin(); it != Engine.Console->Commands.end(); it++)
 				it->second->Save(F);
 			FS.w_close(F);
 			Msg("Config-file [%s] saved successfully", cfg_full_name);
@@ -389,7 +390,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 		{
 			F->r_string(str, sizeof(str));
 			if(allow(str))
-				Console->Execute(str);
+				Engine.Console->Execute(str);
 		}
 		FS.r_close(F);
 		Msg("[%s] successfully loaded.", cfg_full_name);

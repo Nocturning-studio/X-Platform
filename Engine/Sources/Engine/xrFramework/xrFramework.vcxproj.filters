@@ -627,7 +627,6 @@
     <ClInclude Include="xrFramework.h">
       <Filter>General\Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="xrEngineAPI.h" />
     <ClInclude Include="Engine.h">
       <Filter>Engine\Engine</Filter>
     </ClInclude>

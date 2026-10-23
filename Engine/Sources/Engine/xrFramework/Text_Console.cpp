@@ -35,8 +35,8 @@ void CTextConsole::Initialize()
 {
 	inherited::Initialize();
 
-	if(!Console)
-		Console = this;
+	if(!Engine.Console)
+		Engine.Console = this;
 
 	bool bHasConsole = (GetConsoleWindow() != NULL);
 	if(!bHasConsole && AllocConsole())

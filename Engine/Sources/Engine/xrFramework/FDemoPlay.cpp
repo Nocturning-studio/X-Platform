@@ -285,7 +285,7 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 			}
 			else
 			{
-				Console->Execute("quit");
+				Engine.Console->Execute("quit");
 				return;
 			}
 		}
@@ -349,7 +349,7 @@ void CDemoPlay::Update(SCamEffectorInfo& info)
 			SaveBenchmarkResults();
 		}
 		if(Engine.TimeManager.GetGlobalTimeMs() >= uTimeToQuit && !strstr(Core.Params, "-loop_demo"))
-			Console->Execute("quit");
+			Engine.Console->Execute("quit");
 	}
 }
 
@@ -485,7 +485,7 @@ void CDemoPlay::IR_OnKeyboardPress(int dik)
 			Close(); // В обычном режиме просто закрывает демо
 
 		if(dik == DIK_GRAVE)
-			Console->Show();
+			Engine.Console->Show();
 	}
 
 	if(dik == DIK_F12)

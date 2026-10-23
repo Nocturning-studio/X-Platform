@@ -135,14 +135,14 @@ void CUIVote::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIVote::OnBtnYes()
 {
-	Console->Execute("cl_voteyes");
+	Engine.Console->Execute("cl_voteyes");
 	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 	game->StartStopMenu(this, true);
 }
 
 void CUIVote::OnBtnNo()
 {
-	Console->Execute("cl_voteno");
+	Engine.Console->Execute("cl_voteno");
 	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 	game->StartStopMenu(this, true);
 }

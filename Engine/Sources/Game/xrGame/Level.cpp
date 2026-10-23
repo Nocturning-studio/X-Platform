@@ -578,12 +578,12 @@ void CLevel::OnFrame()
 		{
 			DemoStarted = true;
 			LPCSTR pStartup = strstr(Core.Params, "-demo_play ");
-			Console->Execute(pStartup + 1);
+			Engine.Console->Execute(pStartup + 1);
 			Msg("%s", pStartup);
 		}
 		else
 		{
-			Console->Execute("quit");
+			Engine.Console->Execute("quit");
 		}
 	}
 #endif

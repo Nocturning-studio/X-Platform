@@ -644,7 +644,7 @@ bool game_sv_mp::OnNextMap()
 	}*/
 	string1024 Command;
 	sprintf_s(Command, "sv_changelevel %s", MapName.c_str());
-	Console->Execute(Command);
+	Engine.Console->Execute(Command);
 	return true;
 };
 
@@ -669,7 +669,7 @@ void game_sv_mp::OnPrevMap()
 
 	string1024 Command;
 	sprintf_s(Command, "sv_changelevel %s", MapName.c_str());
-	Console->Execute(Command);
+	Engine.Console->Execute(Command);
 };
 
 struct _votecommands
@@ -841,7 +841,7 @@ void game_sv_mp::UpdateVote()
 	u_EventSend(P);
 
 	if(m_bVotingReal)
-		Console->Execute(m_pVoteCommand.c_str());
+		Engine.Console->Execute(m_pVoteCommand.c_str());
 };
 
 void game_sv_mp::OnVoteYes(ClientID sender)

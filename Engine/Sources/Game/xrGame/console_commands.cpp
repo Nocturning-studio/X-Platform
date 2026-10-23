@@ -372,7 +372,7 @@ class CCC_DemoRecord : public IConsole_Command
 			return;
 		};
 #endif
-		Console->Hide();
+		Engine.Console->Hide();
 		string_path fn_;
 		strconcat(sizeof(fn_), fn_, args, ".ltx");
 		string_path fn;
@@ -398,7 +398,7 @@ class CCC_Photo_Mode : public IConsole_Command
 			return;
 		};
 #endif
-		Console->Hide();
+		Engine.Console->Hide();
 		g_pGameLevel->Cameras().AddCamEffector(xr_new<CPhotoMode>());
 	}
 };
@@ -425,7 +425,7 @@ class CCC_DemoPlay : public IConsole_Command
 		}
 		else
 		{
-			Console->Hide();
+			Engine.Console->Hide();
 			string_path fn;
 			u32 loops = 0;
 			LPSTR comma = strchr(const_cast<LPSTR>(args), ',');
@@ -634,12 +634,12 @@ class CCC_LoadLastSave : public IConsole_Command
 		if(ai().get_alife())
 		{
 			strconcat(sizeof(command), command, "load ", g_last_saved_game);
-			Console->Execute(command);
+			Engine.Console->Execute(command);
 			return;
 		}
 
 		strconcat(sizeof(command), command, "start server(", g_last_saved_game, "/single/alife/load)");
-		Console->Execute(command);
+		Engine.Console->Execute(command);
 	}
 
 	virtual void Save(IWriter* F)
@@ -673,12 +673,12 @@ class CCC_LoadLastQuickSave : public IConsole_Command
 		if(ai().get_alife())
 		{
 			strconcat(sizeof(command), command, "load ", saved_game);
-			Console->Execute(command);
+			Engine.Console->Execute(command);
 			return;
 		}
 
 		strconcat(sizeof(command), command, "start server(", saved_game, "/single/alife/load)");
-		Console->Execute(command);
+		Engine.Console->Execute(command);
 	}
 };
 
@@ -1529,9 +1529,9 @@ void CCC_RadioMask::Execute(LPCSTR args)
 #define CMD_RADIOGROUPMASK2(p1, p2, p3, p4, p5, p6)                                                \
 	{                                                                                              \
 		static CCC_RadioMask x##CCC_RadioMask1(p1, p2, p3);                                        \
-		Console->AddCommand(&x##CCC_RadioMask1);                                                   \
+		Engine.Console->AddCommand(&x##CCC_RadioMask1);                                                   \
 		static CCC_RadioMask x##CCC_RadioMask2(p4, p5, p6);                                        \
-		Console->AddCommand(&x##CCC_RadioMask2);                                                   \
+		Engine.Console->AddCommand(&x##CCC_RadioMask2);                                                   \
 		static CCC_RadioGroupMask2 x##CCC_RadioGroupMask2(&x##CCC_RadioMask1, &x##CCC_RadioMask2); \
 	}
 

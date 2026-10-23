@@ -311,7 +311,7 @@ class CCC_ConditionsToken : public CCC_Token
 	bool conditions[MAX_CONDITIONS_TOKEN_SIZE];
 
   public:
-	CCC_ConditionsToken(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N, V, T)
+	CCC_ConditionsToken(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T)
 	{
 		memset(tokens_mem, 0, sizeof(tokens_mem));
 		memset(conditions, 1, sizeof(conditions));
@@ -413,7 +413,7 @@ class CCC_SaveOcclusionDepthBuffer : public IConsole_Command
 class CCC_Preset : public CCC_Token
 {
   public:
-	CCC_Preset(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N, V, T) {};
+	CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {};
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -438,14 +438,14 @@ class CCC_Preset : public CCC_Token
 		}
 		FS.update_path(_cfg, "$game_config$", _cfg);
 		strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
-		Console->Execute(cmd);
+		Engine.Console->Execute(cmd);
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////
 class CCC_EffPreset : public CCC_Token
 {
   public:
-	CCC_EffPreset(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N, V, T) {};
+	CCC_EffPreset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {};
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -467,7 +467,7 @@ class CCC_EffPreset : public CCC_Token
 		}
 		FS.update_path(_cfg, "$game_config$", _cfg);
 		strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
-		Console->Execute(cmd);
+		Engine.Console->Execute(cmd);
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////////
@@ -554,7 +554,7 @@ class CCC_Dof : public CCC_Vector3
 class CCC_DetailQuality : public CCC_Token
 {
   public:
-	CCC_DetailQuality(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N, V, T) {};
+	CCC_DetailQuality(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {};
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -628,12 +628,12 @@ void xrRender_initconsole()
 
 	CMD1(CCC_Screenshot, "screenshot");
 
-	CMD4(CCC_Float, "r_ao_radius", &ps_r_ao_radius, 1, 10);
+	CMD4(CCC_Float, "r_ao_radius", &ps_r_ao_radius, 1.0f, 10.0f);
 	CMD4(CCC_Float, "r_ao_bias", &ps_r_ao_bias, -1.0f, 1.0f);
 
 	// CMD4(CCC_Integer, "r_lsleep_frames", &ps_r_LightSleepFrames, 4, 30);
-	CMD4(CCC_Float, "r_ssa_glod_start", &ps_r_GLOD_ssa_start, 128, 512);
-	CMD4(CCC_Float, "r_ssa_glod_end", &ps_r_GLOD_ssa_end, 16, 96);
+	CMD4(CCC_Float, "r_ssa_glod_start", &ps_r_GLOD_ssa_start, 128.0f, 512.0f);
+	CMD4(CCC_Float, "r_ssa_glod_end", &ps_r_GLOD_ssa_end, 16.0f, 96.0f);
 	// CMD4(CCC_Float, "r_wallmark_shift_pp", &ps_r_WallmarkSHIFT, 0.0f, 1.f);
 	// CMD4(CCC_Float, "r_wallmark_shift_v", &ps_r_WallmarkSHIFT_V, 0.0f, 1.f);
 	// CMD4(CCC_Float, "r_wallmark_ttl", &ps_r_WallmarkTTL, 1.0f, 5.f * 60.f);
@@ -755,8 +755,8 @@ void xrRender_initconsole()
 
 	CMD3(CCC_Token, "r_color_blind_mode", &ps_r_color_blind_mode, color_blind_token);
 
-	CMD4(CCC_Float, "r_ssa_lod_a", &ps_r_ssaLOD_A, 16, 96);
-	CMD4(CCC_Float, "r_ssa_lod_b", &ps_r_ssaLOD_B, 32, 64);
+	CMD4(CCC_Float, "r_ssa_lod_a", &ps_r_ssaLOD_A, 16.0f, 96.0f);
+	CMD4(CCC_Float, "r_ssa_lod_b", &ps_r_ssaLOD_B, 32.0f, 64.0f);
 	CMD4(CCC_Float, "r_detalization_distance", &ps_r_detalization_distance, 10.0f, 100.0f);
 
 	CMD2(CCC_tf_MipBias, "r_tf_mipbias", &ps_r_tf_Mipbias);
@@ -764,18 +764,18 @@ void xrRender_initconsole()
 
 	// CMD3(CCC_Mask, "r_use_nvdbt", &ps_r_ls_flags, RFLAG_USE_NVDBT);
 
-	CMD4(CCC_Float, "r_ls_depth_scale", &ps_r_ls_depth_scale, 0.5, 1.5);
-	CMD4(CCC_Float, "r_ls_depth_bias", &ps_r_ls_depth_bias, -0.5, +0.5);
+	CMD4(CCC_Float, "r_ls_depth_scale", &ps_r_ls_depth_scale, 0.5f, 1.5f);
+	CMD4(CCC_Float, "r_ls_depth_bias", &ps_r_ls_depth_bias, -0.5f, +0.5f);
 	// CMD4(CCC_Float, "r_ls_squality", &ps_r_ls_squality, .5f, 1.f);
-	CMD4(CCC_Float, "r_tsm_bias", &ps_r_sun_tsm_bias, -0.5, +0.5);
+	CMD4(CCC_Float, "r_tsm_bias", &ps_r_sun_tsm_bias, -0.5f, +0.5f);
 	CMD4(CCC_Float, "r_ls_far", &ps_r_ls_far, 50.0f, 300.f);
 
 	CMD3(CCC_Mask, "r_disable_postprocess", &ps_render_flags, RFLAG_DISABLE_POSTPROCESS);
 
-	CMD4(CCC_Float, "r_debug_reserved_0", &ps_r_debug_reserved_0, -1000, 1000);
-	CMD4(CCC_Float, "r_debug_reserved_1", &ps_r_debug_reserved_1, -1000, 1000);
-	CMD4(CCC_Float, "r_debug_reserved_2", &ps_r_debug_reserved_2, -1000, 1000);
-	CMD4(CCC_Float, "r_debug_reserved_3", &ps_r_debug_reserved_3, -1000, 1000);
+	CMD4(CCC_Float, "r_debug_reserved_0", &ps_r_debug_reserved_0, -1000.0f, 1000.0f);
+	CMD4(CCC_Float, "r_debug_reserved_1", &ps_r_debug_reserved_1, -1000.0f, 1000.0f);
+	CMD4(CCC_Float, "r_debug_reserved_2", &ps_r_debug_reserved_2, -1000.0f, 1000.0f);
+	CMD4(CCC_Float, "r_debug_reserved_3", &ps_r_debug_reserved_3, -1000.0f, 1000.0f);
 
 	CMD3(CCC_Mask, "r_draw_sun_occluders", &ps_r_debug_flags, RFLAG_DRAW_SUN_OCCLUDERS);
 	CMD3(CCC_Mask, "r_draw_hom_occluders", &ps_r_debug_flags, RFLAG_DRAW_HOM_OCCLUDERS);
@@ -791,12 +791,12 @@ void xrRender_initconsole()
 void xrRender_console_apply_conditions()
 {
 #if 0
-	CCC_ConditionsToken* r1_aa_type = dynamic_cast<CCC_ConditionsToken*>(Console->GetCommand("r1_aa_type"));
+	CCC_ConditionsToken* r1_aa_type = dynamic_cast<CCC_ConditionsToken*>(Engine.Console->GetCommand("r1_aa_type"));
 	r1_aa_type->SetCondition(CSAA_4X, HW.GetCaps().max_coverage >= 2);
 	r1_aa_type->SetCondition(CSAA_8X, HW.GetCaps().max_coverage >= 4);
 	r1_aa_type->ApplyConditions();
 
-	CCC_ConditionsToken* r1_aa_transluency = dynamic_cast<CCC_ConditionsToken*>(Console->GetCommand("r1_aa_transluency"));
+	CCC_ConditionsToken* r1_aa_transluency = dynamic_cast<CCC_ConditionsToken*>(Engine.Console->GetCommand("r1_aa_transluency"));
 	r1_aa_transluency->SetCondition(trans_ssaa_fmt, HW.support(trans_ssaa_fmt, D3DRTYPE_SURFACE, NULL));
 	r1_aa_transluency->SetCondition(trans_atoc_fmt, HW.support(trans_atoc_fmt, D3DRTYPE_SURFACE, NULL));
 	r1_aa_transluency->ApplyConditions();
@@ -805,8 +805,8 @@ void xrRender_console_apply_conditions()
 ///////////////////////////////////////////////////////////////////////////////////
 void xrRender_apply_tf()
 {
-	Console->Execute("rs_anisothropy");
-	Console->Execute("r_tf_mipbias");
+	Engine.Console->Execute("rs_anisothropy");
+	Engine.Console->Execute("r_tf_mipbias");
 }
 ///////////////////////////////////////////////////////////////////////////////////
 #endif // #ifndef _EDITOR

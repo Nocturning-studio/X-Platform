@@ -164,12 +164,12 @@ void CMainMenu::Activate(bool bActivate)
 			VERIFY(m_startDialog);
 		}
 
-		m_Flags.set(flRestoreConsole, Console->bVisible);
+		m_Flags.set(flRestoreConsole, Engine.Console->bVisible);
 
 		if(b_is_single)
 			m_Flags.set(flRestorePause, Device.Paused());
 
-		Console->Hide();
+		Engine.Console->Hide();
 
 		m_Flags.set(flRestoreCursor, GetUICursor()->IsVisible());
 
@@ -203,16 +203,16 @@ void CMainMenu::Activate(bool bActivate)
 
 		Engine.Events.Render.Remove(this);
 
-		bool b = !!Console->bVisible;
+		bool b = !!Engine.Console->bVisible;
 		if(b)
 		{
-			Console->Hide();
+			Engine.Console->Hide();
 		}
 
 		IR_Release();
 		if(b)
 		{
-			Console->Show();
+			Engine.Console->Show();
 		}
 
 		StartStopMenu(m_startDialog, true);
@@ -226,7 +226,7 @@ void CMainMenu::Activate(bool bActivate)
 			Engine.Events.Render.Add(g_pGameLevel);
 		};
 		if(m_Flags.test(flRestoreConsole))
-			Console->Show();
+			Engine.Console->Show();
 
 		if(b_is_single)
 		{
@@ -244,7 +244,7 @@ void CMainMenu::Activate(bool bActivate)
 		if(m_Flags.test(flNeedVidRestart))
 		{
 			m_Flags.set(flNeedVidRestart, FALSE);
-			Console->Execute("vid_restart");
+			Engine.Console->Execute("vid_restart");
 		}
 	}
 }
@@ -302,7 +302,7 @@ void CMainMenu::IR_OnKeyboardPress(int dik)
 
 	if(is_binded(kCONSOLE, dik))
 	{
-		Console->Show();
+		Engine.Console->Show();
 		return;
 	}
 	if(DIK_F12 == dik)
@@ -442,7 +442,7 @@ void CMainMenu::OnFrame()
 		};
 
 		// if (m_Flags.test(flRestoreConsole))
-		//	Console->Show();
+		//	Engine.Console->Show();
 	}
 
 	if(IsActive() || m_sPDProgress.IsInProgress)
@@ -472,8 +472,8 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 			Engine.Events.Render.Add(g_pGameLevel);
 		};
 		m_screenshotFrame = Engine.TimeManager.GetFrameCount() + 1;
-		// m_Flags.set(flRestoreConsole, Console->bVisible);
-		Console->Hide();
+		// m_Flags.set(flRestoreConsole, Engine.Console->bVisible);
+		Engine.Console->Hide();
 	}
 }
 
@@ -632,7 +632,7 @@ void CMainMenu::OnRunDownloadedPatch(CUIWindow*, void*)
 {
 	strcpy(g_sLaunchOnExit_app, *m_sPatchFileName);
 	strcpy(g_sLaunchOnExit_params, "");
-	Console->Execute("quit");
+	Engine.Console->Execute("quit");
 }
 
 void CMainMenu::CancelDownload()

@@ -125,11 +125,11 @@ void CUIVotingCategory::OnBtn(int i)
 		switch(i)
 		{
 		case 0:
-			Console->Execute("cl_votestart restart");
+			Engine.Console->Execute("cl_votestart restart");
 			game->StartStopMenu(this, true);
 			break;
 		case 1:
-			Console->Execute("cl_votestart restart_fast");
+			Engine.Console->Execute("cl_votestart restart_fast");
 			game->StartStopMenu(this, true);
 			break;
 		case 2:

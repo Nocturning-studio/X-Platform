@@ -195,7 +195,7 @@ bool CLevel::net_start3()
 		sscanf(start, "%[^/]", CDKey);
 		string128 cmd;
 		sprintf_s(cmd, "cdkey %s", _strupr(CDKey));
-		Console->Execute(cmd);
+		Engine.Console->Execute(cmd);
 	}
 	return true;
 }
@@ -245,7 +245,7 @@ struct LevelLoadFinalizer
 			shared_str ln = Level().name();
 			Msg("! Failed to start client. Check the connection or level existance.");
 			DEL_INSTANCE(g_pGameLevel);
-			Console->Execute("main_menu on");
+			Engine.Console->Execute("main_menu on");
 
 			if(g_connect_server_err == xrServer::ErrBELoad)
 			{
@@ -286,7 +286,7 @@ bool CLevel::net_start6()
 			string256 buf, cmd, param;
 			sscanf(strstr(Core.Params, "-$") + 2, "%[^ ] %[^ ] ", cmd, param);
 			strconcat(sizeof(buf), buf, cmd, " ", param);
-			Console->Execute(buf);
+			Engine.Console->Execute(buf);
 		}
 
 		if(!Engine.IsDedicatedServer())

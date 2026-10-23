@@ -179,8 +179,8 @@ void CLoadingScreen::ForceRender()
 
     if (Engine.IsDedicatedServer())
     {
-        if (Engine.GetConsole())
-            Engine.GetConsole()->OnRender();
+        if (Engine.Console)
+            Engine.Console->OnRender();
     }
     else
     {

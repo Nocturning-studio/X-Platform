@@ -65,16 +65,16 @@ void ApplyFrameParameters(u32 frame, float interpolation_factor)
 	g_bBordersEnabled = FramesArray[ActualFrame].UseCinemaBorders;
 
 	if(g_bBordersEnabled)
-		Console->Execute("r_cinema_borders on");
+		Engine.Console->Execute("r_cinema_borders on");
 	else
-		Console->Execute("r_cinema_borders off");
+		Engine.Console->Execute("r_cinema_borders off");
 
 	g_bWatermarkEnabled = FramesArray[ActualFrame].UseWatermark;
 
 	if(g_bWatermarkEnabled)
-		Console->Execute("r_watermark on");
+		Engine.Console->Execute("r_watermark on");
 	else
-		Console->Execute("r_watermark off");
+		Engine.Console->Execute("r_watermark off");
 }
 
 void ResetParameters()
@@ -90,12 +90,12 @@ void ResetParameters()
 	g_bBordersEnabled = false;
 	g_bWatermarkEnabled = false;
 
-	Console->Execute("r_photo_grid off");
-	Console->Execute("r_cinema_borders off");
-	Console->Execute("r_watermark off");
+	Engine.Console->Execute("r_photo_grid off");
+	Engine.Console->Execute("r_cinema_borders off");
+	Engine.Console->Execute("r_watermark off");
 
 #ifndef MASTER_GOLD
-	Console->Execute("r_debug_render disabled");
+	Engine.Console->Execute("r_debug_render disabled");
 #endif
 }
 /////////////////////////////////////////////////////////////////

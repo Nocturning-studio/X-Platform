@@ -33,8 +33,6 @@ static u32 const tips_word_color = color_rgba(5, 100, 56, 200);
 static u32 const tips_scroll_back_color = color_rgba(15, 15, 15, 230);
 static u32 const tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
 
-ENGINE_API CConsole* Console = NULL;
-
 extern char const* const ioc_prompt;
 char const* const ioc_prompt = ">>> ";
 
@@ -56,9 +54,9 @@ class ConsoleInput : public text_editor::line_editor
 	void IR_OnMouseWheel(int direction) override
 	{
 		if(direction < 0)
-			Console->Next_log();
+			Engine.Console->Next_log();
 		else
-			Console->Prev_log();
+			Engine.Console->Prev_log();
 	}
 };
 
@@ -179,13 +177,13 @@ void CConsole::Initialize()
 	{
 		string64 c_name;
 		(void)sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
-		strcpy_s(Console->ConfigFile, c_name);
+		strcpy_s(Engine.Console->ConfigFile, c_name);
 		Msg("Execute custom game settings file: %s", c_name);
 	}
 	else
 	{
-		strcpy_s(Console->ConfigFile, sizeof(Console->ConfigFile), "user_game_settings");
-		Msg("Execute game settings file: %s", Console->ConfigFile);
+		strcpy_s(Engine.Console->ConfigFile, sizeof(Engine.Console->ConfigFile), "user_game_settings");
+		Msg("Execute game settings file: %s", Engine.Console->ConfigFile);
 	}
 }
 
@@ -197,12 +195,21 @@ CConsole::~CConsole()
 
 void CConsole::Destroy()
 {
-	Execute("cfg_save");
+	vecCMD old_cmds;
+	old_cmds.swap(Commands);
+
+	for (vecCMD_IT it = old_cmds.begin(); it != old_cmds.end(); ++it)
+	{
+		IConsole_Command* cc = it->second;
+		it->second = nullptr;
+		xr_delete(cc);
+	}
+	old_cmds.clear();
+
 	m_hShader_back.destroy();
 	m_hGeom_con.destroy();
 	xr_delete(pFont);
 	xr_delete(pFont2);
-	Commands.clear();
 }
 
 void CConsole::AddCommand(IConsole_Command* cc)

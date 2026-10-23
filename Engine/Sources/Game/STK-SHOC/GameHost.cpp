@@ -28,15 +28,15 @@ IGameModule* CGameHost::GetGameModule()
 void CGameHost::ProcessStartupCommands()
 {
     if (LPCSTR p = strstr(Core.Params, "-start "))
-        Console->Execute(p + 1);
+        Engine.Console->Execute(p + 1);
 
     if (LPCSTR p = strstr(Core.Params, "-load "))
-        Console->Execute(p + 1);
+        Engine.Console->Execute(p + 1);
 
     if (strstr(Core.Params, "-load_last_save"))
-        Console->Execute("load_last_save");
+        Engine.Console->Execute("load_last_save");
 
     if (strstr(Core.Params, "-load_last_quick_save"))
-        Console->Execute("load_last_quick_save");
+        Engine.Console->Execute("load_last_quick_save");
 }
 ////////////////////////////////////////////////////////////////////////////////

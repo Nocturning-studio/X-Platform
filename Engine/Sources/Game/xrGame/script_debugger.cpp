@@ -253,7 +253,7 @@ void CScriptDebugger::LineHook(const char* szFile, int nLine)
 	CheckNewMessages();
 	if(m_nMode == DMOD_STOP)
 	{
-		// Console->Execute("quit");
+		// Engine.Console->Execute("quit");
 		return;
 	}
 
@@ -460,7 +460,7 @@ bool CScriptDebugger::TranslateIdeMessage(CMailSlotMsg* msg)
 	case DMSG_STOP_DEBUGGING:
 	{
 		m_nMode = DMOD_STOP;
-		//			Console->Execute("quit");
+		//			Engine.Console->Execute("quit");
 		return true;
 	}
 	break;
