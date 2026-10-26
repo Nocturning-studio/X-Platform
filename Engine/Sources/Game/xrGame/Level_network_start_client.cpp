@@ -5,7 +5,7 @@
 #include "Physics.h"
 #include "level.h"
 #include "xrFramework/Engine.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
 #include "xrFramework/xr_ioconsole.h"
@@ -33,7 +33,7 @@ bool CLevel::net_start_client1()
 	string256 temp;
 	sprintf_s(temp, "%s %s", CStringTable().translate("st_client_connecting_to").c_str(), name_of_server);
 
-	g_pGamePersistent->LoadTitle(temp);
+	g_pAppContext->LoadTitle(temp);
 	return true;
 }
 
@@ -87,7 +87,7 @@ bool CLevel::net_start_client4()
 	if(connected_to_server)
 	{
 		// Begin spawn
-		g_pGamePersistent->LoadTitle("st_client_spawning");
+		g_pAppContext->LoadTitle("st_client_spawning");
 
 		// Send physics to single or multithreaded mode
 		LoadPhysicsGameParams();
@@ -133,7 +133,7 @@ bool CLevel::net_start_client5()
 		// Textures
 		if(!Engine.IsDedicatedServer())
 		{
-			g_pGamePersistent->LoadTitle("st_loading_textures");
+			g_pAppContext->LoadTitle("st_loading_textures");
 			Engine.ResourceManager->DeferredLoad(FALSE);
 			Engine.ResourceManager->DeferredUpload();
 			pHUD->Load();
@@ -151,7 +151,7 @@ bool CLevel::net_start_client6()
 		if(g_hud)
 			g_hud->OnConnected();
 
-		g_pGamePersistent->LoadTitle("st_client_synchronising");
+		g_pAppContext->LoadTitle("st_client_synchronising");
 		net_start_result_total = TRUE;
 	}
 	else

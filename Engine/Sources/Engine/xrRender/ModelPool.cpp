@@ -4,7 +4,7 @@
 #include "ModelPool.h"
 
 #ifndef _EDITOR
-#include "Engine\xrFramework\IGame_Persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\fmesh.h"
 #include "Engine\xrFramework\fhierrarhyvisual.h"
 #include "Engine\xrFramework\SkeletonAnimated.h"
@@ -22,7 +22,7 @@
 #include "fskinned.h"
 #include "fhierrarhyvisual.h"
 #include "SkeletonAnimated.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #endif
 
 IRender_Visual* CModelPool::Instance_Create(u32 type)
@@ -138,7 +138,7 @@ IRender_Visual* CModelPool::Instance_Load(const char* N, BOOL allow_register)
 	V = Instance_Create(H.type);
 	V->Load(N, data, 0);
 	FS.r_close(data);
-	g_pGamePersistent->RegisterModel(V);
+	g_pAppContext->RegisterModel(V);
 
 	// Registration
 	if(allow_register)
@@ -448,7 +448,7 @@ void CModelPool::Prefetch()
 	Logging(FALSE);
 	// prefetch visuals
 	string256 section;
-	strconcat(sizeof(section), section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
+	strconcat(sizeof(section), section, "prefetch_visuals_", g_pAppContext->m_game_params.m_game_type);
 	CInifile::Sect& sect = pSettings->r_section(section);
 	for(CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 	{

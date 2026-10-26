@@ -7,7 +7,7 @@
 #include "line_editor.h"
 
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 
 #include "Engine.h"
 #include "xr_input.h"
@@ -304,7 +304,7 @@ void CConsole::OnRender()
 	}
 
 	bool bGame = false;
-	if((g_pGameLevel && g_pGameLevel->bReady) || (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
+	if((g_pGameLevel && g_pGameLevel->bReady) || (g_pAppContext && g_pAppContext->m_pMainMenu && g_pAppContext->m_pMainMenu->IsActive()))
 	{
 		bGame = true;
 	}
@@ -743,7 +743,7 @@ void CConsole::Hide()
 	{
 		return;
 	}
-	if(g_pGamePersistent && Engine.IsDedicatedServer())
+	if(g_pAppContext && Engine.IsDedicatedServer())
 	{
 		return;
 	}

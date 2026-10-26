@@ -10,7 +10,7 @@
 #include "alife_simulator.h"
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "script_engine.h"
 #include "mainmenu.h"
 #include "object_factory.h"
@@ -40,8 +40,8 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
 
 	setup_command_line(command_line);
 
-	typedef IGame_Persistent::params params;
-	params& p = g_pGamePersistent->m_game_params;
+	typedef IAppContext::params params;
+	params& p = g_pAppContext->m_game_params;
 
 	R_ASSERT2(xr_strlen(p.m_game_or_spawn) && !xr_strcmp(p.m_alife, "alife") && !xr_strcmp(p.m_game_type, "single"),
 			  "Invalid server options!");

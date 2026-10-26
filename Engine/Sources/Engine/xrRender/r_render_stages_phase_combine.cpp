@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\environment.h"
 #include "blender_combine.h"
 ///////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ void CRender::combine_sun_shafts()
 	RenderBackendLegacy.SetStencil(FALSE);
 
 	RenderBackendLegacy.SetShaderElement(RenderTarget->s_combine->E[SE_COMBINE_VOLUMETRIC]);
-	float sun_shafts_intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity;
+	float sun_shafts_intensity = g_pAppContext->Environment().CurrentEnv->m_fSunShaftsIntensity;
 	RenderBackendLegacy.SetConstant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
 	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }
@@ -45,7 +45,7 @@ void CRender::render_skybox()
 
 	// Draw full-screen quad textured with our scene image draw skybox
 	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, FALSE);
-	g_pGamePersistent->Environment().RenderSky();
+	g_pAppContext->Environment().RenderSky();
 	RenderBackendLegacy.SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ void CRender::precombine_scene()
 
 	float additional_ambient = 0.0f;
 
-	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
+	if(g_pAppContext && g_pAppContext->GetNightVisionState())
 		additional_ambient = 0.5f;
 
 	RenderBackendLegacy.SetShaderElement(RenderTarget->s_combine->E[SE_PRECOMBINE_SCENE]);
@@ -73,10 +73,10 @@ void CRender::combine_scene_lighting()
 
 	float additional_ambient = 0.0f;
 
-	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
+	if(g_pAppContext && g_pAppContext->GetNightVisionState())
 		additional_ambient = 0.5f;
 
-	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptorMixer* envdesc = g_pAppContext->Environment().CurrentEnv;
 
 	const float minamb = 0.001f;
 	fvec4 ambclr = {_max(sRgbToLinear(envdesc->ambient.x), minamb),

@@ -288,7 +288,7 @@ void CPortalTraverser::RenderFade()
 		ssa_range = EPS;
 
 	// Получаем текущий ambient цвет из окружения
-	fvec3 ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
+	fvec3 ambient_f = g_pAppContext->Environment().CurrentEnv->ambient;
 	u32 ambient_clr = color_rgba_f(ambient_f.x, ambient_f.y, ambient_f.z, 0);
 
 	// 6. Заполнение геометрии

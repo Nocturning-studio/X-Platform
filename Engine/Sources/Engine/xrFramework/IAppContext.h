@@ -1,5 +1,5 @@
-#ifndef IGame_PersistentH
-#define IGame_PersistentH
+#ifndef IAppContextH
+#define IAppContextH
 #pragma once
 
 #include "Environment.h"
@@ -10,7 +10,7 @@
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
-class ENGINE_API IGame_Persistent :
+class ENGINE_API IAppContext :
 	public DLL_Pure,
 	public pureAppStart,
 	public pureAppEnd,
@@ -129,8 +129,8 @@ class ENGINE_API IGame_Persistent :
 	}
 #endif
 
-	IGame_Persistent();
-	virtual ~IGame_Persistent();
+	IAppContext();
+	virtual ~IAppContext();
 
 	u32 GameType()
 	{
@@ -161,5 +161,5 @@ class IMainMenu
 	virtual void DestroyInternal(bool bForce) = 0;
 };
 
-extern ENGINE_API IGame_Persistent* g_pGamePersistent;
-#endif // IGame_PersistentH
+extern ENGINE_API IAppContext* g_pAppContext;
+#endif // IAppContextH

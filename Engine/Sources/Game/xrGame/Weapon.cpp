@@ -25,7 +25,7 @@
 #include "clsid_game.h"
 #include "mathutils.h"
 #include "object_broker.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "GamePersistent.h"
 #include "EffectorFall.h"
 

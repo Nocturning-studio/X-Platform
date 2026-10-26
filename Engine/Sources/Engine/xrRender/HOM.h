@@ -1,5 +1,5 @@
 #pragma once
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 class CHOM
 {

@@ -41,7 +41,7 @@ void CRender::Render()
 
 	Engine.Statistic->RenderCALC.Begin();
 
-	bool b_need_render_menu = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+	bool b_need_render_menu = g_pAppContext ? g_pAppContext->OnRenderPPUI_query() : false;
 
 	if(b_need_render_menu)
 	{

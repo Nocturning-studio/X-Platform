@@ -6,7 +6,7 @@
 #include "xrFramework/fmesh.h"
 #include "xrFramework/xrLevel.h"
 #include "xrFramework/Engine.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 #include <xrCore/stream_reader.h>
 #include "xrFramework/xr_ioconsole.h"
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,12 +35,12 @@ void CRender::LevelLoad(IReader* fs)
 	fs->r(level_data_ptr, level_size);
 	IReader mem_fs(level_data_ptr, level_size);
 
-	g_pGamePersistent->LoadTitle("st_loading_components");
+	g_pAppContext->LoadTitle("st_loading_components");
 
 	////////////////////////////////////////////////////////////////////////////////
 	//  ШЕЙДЕРЫ
 	////////////////////////////////////////////////////////////////////////////////
-	g_pGamePersistent->LoadTitle("st_loading_shaders");
+	g_pAppContext->LoadTitle("st_loading_shaders");
 	{
 		// RT шейдеры нужны только для картинки
 		if (!Engine.IsDedicatedServer())
@@ -80,7 +80,7 @@ void CRender::LevelLoad(IReader* fs)
 	//  ГЕОМЕТРИЯ
 	////////////////////////////////////////////////////////////////////////////////
 	{
-		g_pGamePersistent->LoadTitle("st_loading_geometry");
+		g_pAppContext->LoadTitle("st_loading_geometry");
 
 		CStreamReader* geom = FS.rs_open("$level$", "level.geom");
 		R_ASSERT2(geom, "level.geom");
@@ -90,7 +90,7 @@ void CRender::LevelLoad(IReader* fs)
 
 		Engine.LoadingScreen->ForceRender();
 
-		g_pGamePersistent->LoadTitle("st_loading_fast_geometry");
+		g_pAppContext->LoadTitle("st_loading_fast_geometry");
 
 		CStreamReader* geomx = FS.rs_open("$level$", "level.geomx");
 		R_ASSERT2(geomx, "level.geomX");
@@ -98,7 +98,7 @@ void CRender::LevelLoad(IReader* fs)
 		FS.r_close(geomx);
 	}
 
-	g_pGamePersistent->LoadTitle("st_loading_spatial_db");
+	g_pAppContext->LoadTitle("st_loading_spatial_db");
 
 	////////////////////////////////////////////////////////////////////////////////
 	//  ВИЗУАЛЫ
@@ -119,7 +119,7 @@ void CRender::LevelLoad(IReader* fs)
 	////////////////////////////////////////////////////////////////////////////////
 	//  ФИНАЛИЗАЦИЯ
 	////////////////////////////////////////////////////////////////////////////////
-	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
+	g_pAppContext->LoadTitle("st_loading_sectors_portals");
 	{
 		IReader local_fs_sectors(level_data_ptr, level_size);
 		LoadSectors(&local_fs_sectors);
@@ -130,7 +130,7 @@ void CRender::LevelLoad(IReader* fs)
 	////////////////////////////////////////////////////////////////////////////////
 	//  ИСТОЧНИКИ СВЕТА
 	////////////////////////////////////////////////////////////////////////////////
-	g_pGamePersistent->LoadTitle("st_loading_lights");
+	g_pAppContext->LoadTitle("st_loading_lights");
 	if (!Engine.IsDedicatedServer())
 	{
 		IReader local_fs_lights(level_data_ptr, level_size);

@@ -9,7 +9,7 @@
 #include "actor.h"
 #include "clsid_game.h"
 #include "xrFramework/XR_IOConsole.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "date_time.h"
 #include "game_cl_base.h"
 #include "Spectator.h"
@@ -41,7 +41,7 @@ game_sv_mp::game_sv_mp() : inherited()
 	m_strWeaponsData = xr_new<CItemMgr>();
 	m_bVotingActive = false;
 	//------------------------------------------------------
-	g_pGamePersistent->Environment().SetWeather("demo_clear");
+	g_pAppContext->Environment().SetWeather("demo_clear");
 	m_aRanks.clear();
 	//------------------------------------------------------
 	round_end_reason = eRoundEnd_Force; // unknown

@@ -13,7 +13,7 @@
 #include "xr_object.h"
 #include "IRender.h"
 #include "CustomHUD.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 //////////////////////////////////////////////////////////////////////
 CPhotoMode* xrPhotoMode = 0;
 
@@ -88,11 +88,11 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	m_fGlobalTimeFactor = Engine.TimeManager.GetTimeFactor();
 	Engine.TimeManager.StopTime();
 
-	g_pGamePersistent->GetCurrentDof(m_vGlobalDepthOfFieldParameters);
+	g_pAppContext->GetCurrentDof(m_vGlobalDepthOfFieldParameters);
 	m_fDOF.set(m_vGlobalDepthOfFieldParameters);
 	m_fDOF.z = 2.0f;
 	m_fDOF.x = 10.0f;
-	g_pGamePersistent->SetBaseDof(m_fDOF);
+	g_pAppContext->SetBaseDof(m_fDOF);
 
 	m_bAutofocusEnabled = false;
 	m_bGridEnabled = false;
@@ -155,8 +155,8 @@ CPhotoMode::~CPhotoMode()
 void CPhotoMode::ResetParameters()
 {
 	m_fDOF = m_vGlobalDepthOfFieldParameters;
-	g_pGamePersistent->SetBaseDof(m_fDOF);
-	g_pGamePersistent->SetPickableEffectorDOF(false);
+	g_pAppContext->SetBaseDof(m_fDOF);
+	g_pAppContext->SetPickableEffectorDOF(false);
 
 	m_fFov = m_fGlobalFov;
 
@@ -369,7 +369,7 @@ BOOL CPhotoMode::ProcessCam(SCamEffectorInfo& info)
 
 		float x = 43.266615300557;
 		m_fDOF.y = (x / (2.0f * tan(PI * m_fFov / 360.f)));
-		g_pGamePersistent->SetBaseDof(m_fDOF);
+		g_pAppContext->SetBaseDof(m_fDOF);
 	}
 
 	return TRUE;
@@ -382,7 +382,7 @@ void CPhotoMode::SwitchAutofocusState()
 	else
 		m_bAutofocusEnabled = false;
 
-	g_pGamePersistent->SetPickableEffectorDOF(m_bAutofocusEnabled);
+	g_pAppContext->SetPickableEffectorDOF(m_bAutofocusEnabled);
 }
 
 // Решение действовать через консоль чудовищное, в будущем нужно заменить смену флага через консоль на смену через флаг
@@ -450,7 +450,7 @@ void CPhotoMode::ChangeDepthOfFieldFocalDepth(int direction)
 	fvec3 dof_params_old;
 	fvec3 dof_params_actual;
 
-	g_pGamePersistent->GetCurrentDof(dof_params_old);
+	g_pAppContext->GetCurrentDof(dof_params_old);
 
 	dof_params_actual = dof_params_old;
 
@@ -468,7 +468,7 @@ void CPhotoMode::ChangeDepthOfFieldFocalDepth(int direction)
 		dof_params_actual.x = 100.0f;
 
 	m_fDOF = dof_params_actual;
-	g_pGamePersistent->SetBaseDof(m_fDOF);
+	g_pAppContext->SetBaseDof(m_fDOF);
 }
 
 void CPhotoMode::ChangeDepthOfFieldFocalLength(int direction)
@@ -476,7 +476,7 @@ void CPhotoMode::ChangeDepthOfFieldFocalLength(int direction)
 	fvec3 dof_params_old;
 	fvec3 dof_params_actual;
 
-	g_pGamePersistent->GetCurrentDof(dof_params_old);
+	g_pAppContext->GetCurrentDof(dof_params_old);
 
 	dof_params_actual = dof_params_old;
 
@@ -493,7 +493,7 @@ void CPhotoMode::ChangeDepthOfFieldFocalLength(int direction)
 	//	dof_params_actual.x = 0.1f;
 
 	m_fDOF = dof_params_actual;
-	g_pGamePersistent->SetBaseDof(m_fDOF);
+	g_pAppContext->SetBaseDof(m_fDOF);
 }
 
 void CPhotoMode::ChangeDepthOfFieldFStop(int direction)
@@ -501,7 +501,7 @@ void CPhotoMode::ChangeDepthOfFieldFStop(int direction)
 	fvec3 dof_params_old;
 	fvec3 dof_params_actual;
 
-	g_pGamePersistent->GetCurrentDof(dof_params_old);
+	g_pAppContext->GetCurrentDof(dof_params_old);
 
 	dof_params_actual = dof_params_old;
 
@@ -519,7 +519,7 @@ void CPhotoMode::ChangeDepthOfFieldFStop(int direction)
 		dof_params_actual.z = 100.0f;
 
 	m_fDOF = dof_params_actual;
-	g_pGamePersistent->SetBaseDof(m_fDOF);
+	g_pAppContext->SetBaseDof(m_fDOF);
 }
 
 void CPhotoMode::ChangeFieldOfView(int direction)

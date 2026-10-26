@@ -411,7 +411,7 @@ void CSceneGraph::_RenderHUD(SceneGraphPacket& packet)
 	Engine.RenderView.Project.build_projection(deg2rad(psHUD_FOV * Engine.RenderView.Fov),
 											   Engine.RenderView.Aspect,
 											   VIEWPORT_NEAR_HUD,
-											   g_pGamePersistent->Environment().CurrentEnv->far_plane);
+											   g_pAppContext->Environment().CurrentEnv->far_plane);
 
 	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
 	RenderBackendLegacy.SetTransformProject(Engine.RenderView.Project);

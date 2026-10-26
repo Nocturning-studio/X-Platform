@@ -13,7 +13,7 @@
 #include "Level.h"
 #include "game_cl_base.h"
 #include "AI/Monsters/BaseMonster/base_monster.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <ppl.h>

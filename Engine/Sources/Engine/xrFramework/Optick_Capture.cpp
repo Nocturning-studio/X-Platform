@@ -30,7 +30,7 @@
 #pragma hdrstop
 
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 
 #include "Optick_Capture.h"
 ///////////////////////////////////////////////////////////////////////////////////

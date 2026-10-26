@@ -86,7 +86,7 @@ void CLevel::remove_objects()
 		Objects.Update(true);
 	}
 
-	g_pGamePersistent->destroy_particles(false);
+	g_pAppContext->destroy_particles(false);
 
 	if(!IsGameTypeSingle())
 		Msg("CLevel::remove_objects - End");

@@ -1,7 +1,7 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #include "environment.h"
 #ifndef _EDITOR
 #include "Engine.h"
@@ -13,16 +13,16 @@
 #include "CustomHUD.h"
 #endif
 
-ENGINE_API IGame_Persistent* g_pGamePersistent = NULL;
+ENGINE_API IAppContext* g_pAppContext = NULL;
 
-IGame_Persistent::IGame_Persistent()
+IAppContext::IAppContext()
 {
 	m_pMainMenu = NULL;
 
 	pEnvironment = xr_new<CEnvironment>();
 }
 
-IGame_Persistent::~IGame_Persistent()
+IAppContext::~IAppContext()
 {
 	Engine.Events.Frame.Remove(this);
 	Engine.Events.AppStart.Remove(this);
@@ -32,7 +32,7 @@ IGame_Persistent::~IGame_Persistent()
 	xr_delete(pEnvironment);
 }
 
-void IGame_Persistent::Initialize()
+void IAppContext::Initialize()
 {
 	Engine.Events.AppStart.Add(this);
 	Engine.Events.AppEnd.Add(this);
@@ -41,21 +41,21 @@ void IGame_Persistent::Initialize()
 	Engine.Events.AppDeactivate.Add(this);
 }
 
-void IGame_Persistent::OnAppActivate()
+void IAppContext::OnAppActivate()
 {
 }
 
-void IGame_Persistent::OnAppDeactivate()
+void IAppContext::OnAppDeactivate()
 {
 }
 
-void IGame_Persistent::OnAppStart()
+void IAppContext::OnAppStart()
 {
 	if(!Engine.IsDedicatedServer())
 		Environment().load();
 }
 
-void IGame_Persistent::OnAppEnd()
+void IAppContext::OnAppEnd()
 {
 	Environment().unload();
 	OnGameEnd();
@@ -65,7 +65,7 @@ void IGame_Persistent::OnAppEnd()
 #endif
 }
 
-void IGame_Persistent::PreStart(LPCSTR op)
+void IAppContext::PreStart(LPCSTR op)
 {
 	string256 prev_type;
 	params new_game_params;
@@ -78,7 +78,7 @@ void IGame_Persistent::PreStart(LPCSTR op)
 		OnGameEnd();
 	}
 }
-void IGame_Persistent::Start(LPCSTR op)
+void IAppContext::Start(LPCSTR op)
 {
 	string256 prev_type;
 	strcpy_s(prev_type, m_game_params.m_game_type);
@@ -99,7 +99,7 @@ void IGame_Persistent::Start(LPCSTR op)
 	VERIFY(ps_destroy.empty());
 }
 
-void IGame_Persistent::Disconnect()
+void IAppContext::Disconnect()
 {
 	// clear "need to play" particles
 	destroy_particles(true);
@@ -111,7 +111,7 @@ void IGame_Persistent::Disconnect()
 	Render->models_Clear(TRUE);
 }
 
-void IGame_Persistent::OnGameStart()
+void IAppContext::OnGameStart()
 {
 #ifndef _EDITOR
 	LoadTitle("st_prefetching_objects");
@@ -139,7 +139,7 @@ void IGame_Persistent::OnGameStart()
 #endif
 }
 
-void IGame_Persistent::OnGameEnd()
+void IAppContext::OnGameEnd()
 {
 #ifndef _EDITOR
 	ObjectPool.clear();
@@ -147,7 +147,7 @@ void IGame_Persistent::OnGameEnd()
 #endif
 }
 
-void IGame_Persistent::OnFrame()
+void IAppContext::OnFrame()
 {
 	PROFILE_FUNCTION();
 
@@ -188,7 +188,7 @@ void IGame_Persistent::OnFrame()
 	::Sound->set_device_pause_state(Device.Paused());
 }
 
-void IGame_Persistent::destroy_particles(const bool& all_particles)
+void IAppContext::destroy_particles(const bool& all_particles)
 {
 #ifndef _EDITOR
 	ps_needtoplay.clear();

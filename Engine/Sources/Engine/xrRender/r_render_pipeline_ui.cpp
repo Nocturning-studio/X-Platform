@@ -17,12 +17,12 @@ void CRender::RenderMenu()
 
 	// Main Render
 	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[0], RenderBackendLegacy.GetBaseZB());
-	g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
+	g_pAppContext->OnRenderPPUI_main(); // PP-UI
 
 	// Prepare distortion mask
 	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Distortion_Mask, RenderBackendLegacy.GetBaseZB());
 	RenderBackendLegacy.Clear(0, 0, CLEAR_RENDERTARGET, color_rgba(127, 127, 0, 127), 1.0f, 0);
-	g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
+	g_pAppContext->OnRenderPPUI_PP(); // PP-UI
 
 	// Apply distortion
 	RenderBackendLegacy.SetShader(RenderTarget->s_menu_distortion);

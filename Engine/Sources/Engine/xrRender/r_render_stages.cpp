@@ -192,8 +192,8 @@ void CRender::render_stage_forward()
 
 	Scene.Render(m_scene_visibility_data, SceneRenderPresets::RenderForwardStage);
 
-	g_pGamePersistent->Environment().RenderThunderbolt();
-	g_pGamePersistent->Environment().RenderRain();
+	g_pAppContext->Environment().RenderThunderbolt();
+	g_pAppContext->Environment().RenderRain();
 
 	// Debug passes
 	if (ps_r_debug_flags.test(RFLAG_DRAW_SUN_OCCLUDERS))
@@ -278,7 +278,7 @@ void CRender::render_postprocess()
 		render_depth_of_field();
 
 	if(ps_render_flags.test(RFLAG_LENS_FLARES))
-		g_pGamePersistent->Environment().RenderFlares();
+		g_pAppContext->Environment().RenderFlares();
 
 	// Generic1 -> Generic0
 	combine_additional_postprocess();
@@ -310,8 +310,8 @@ void CRender::render_postprocess()
 	// Generic1 -> Generic0
 	render_screen_overlays();
 
-	if(g_pGamePersistent)
-		g_pGamePersistent->OnRenderPPUI_PP();
+	if(g_pAppContext)
+		g_pAppContext->OnRenderPPUI_PP();
 
 	Engine.Statistic->RenderCALC_POSTPROCESS.End();
 }

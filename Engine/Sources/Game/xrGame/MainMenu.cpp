@@ -43,7 +43,7 @@ extern bool b_shniaganeed_pp;
 
 CMainMenu* MainMenu()
 {
-	return (CMainMenu*)g_pGamePersistent->m_pMainMenu;
+	return (CMainMenu*)g_pAppContext->m_pMainMenu;
 };
 //----------------------------------------------------------------------------------
 #define INIT_MSGBOX(_box, _template)      \
@@ -58,7 +58,7 @@ CMainMenu::CMainMenu()
 	m_Flags.zero();
 	m_startDialog = NULL;
 	m_screenshotFrame = u32(-1);
-	g_pGamePersistent->m_pMainMenu = this;
+	g_pAppContext->m_pMainMenu = this;
 	if(Device.b_is_Ready)
 		OnDeviceCreate();
 	ReadTextureInfo();
@@ -104,7 +104,7 @@ CMainMenu::~CMainMenu()
 {
 	xr_delete(g_btnHint);
 	xr_delete(m_startDialog);
-	g_pGamePersistent->m_pMainMenu = NULL;
+	g_pAppContext->m_pMainMenu = NULL;
 	xr_delete(m_pGameSpyFull);
 	delete_data(m_pMB_ErrDlgs);
 }

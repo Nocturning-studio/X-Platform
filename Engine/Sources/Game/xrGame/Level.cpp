@@ -2,7 +2,7 @@
 #include "xrFramework/fdemorecord.h"
 #include "xrFramework/fdemoplay.h"
 #include "xrFramework/environment.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "ParticlesObject.h"
 #include "Level.h"
 #include "xrServer.h"
@@ -537,7 +537,7 @@ void CLevel::OnFrame()
 		}
 	}
 
-	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
+	g_pAppContext->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
 
 	if(!Engine.IsDedicatedServer())
 		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
@@ -1059,11 +1059,11 @@ u32 GameID()
 	return Game().Type();
 }
 
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 bool IsGameTypeSingle()
 {
-	return g_pGamePersistent->GameType() == GAME_SINGLE || g_pGamePersistent->GameType() == GAME_ANY;
+	return g_pAppContext->GameType() == GAME_SINGLE || g_pAppContext->GameType() == GAME_ANY;
 }
 
 #ifdef BATTLEYE

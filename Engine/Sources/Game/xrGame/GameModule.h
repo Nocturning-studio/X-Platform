@@ -20,8 +20,8 @@ public:
     void RegisterConsoleCommands() override;
     void RegisterInputCommands()   override;
 
-    IGame_Persistent* CreatePersistent() override;
-    void DestroyPersistent(IGame_Persistent*) override;
+    IAppContext* CreatePersistent() override;
+    void DestroyPersistent(IAppContext*) override;
 
     ILoadingScreen* CreateLoadingScreen() override;
     void DestroyLoadingScreen(ILoadingScreen*) override;

@@ -23,8 +23,8 @@ public:
     TGameObjectFactoryDestroy* GetGameObjectDestroy() const override;
     void RegisterConsoleCommands() override;
     void RegisterInputCommands()   override;
-    IGame_Persistent* CreatePersistent() override;
-    void DestroyPersistent(IGame_Persistent* p) override;
+    IAppContext* CreatePersistent() override;
+    void DestroyPersistent(IAppContext* p) override;
     ILoadingScreen* CreateLoadingScreen() override;
     void DestroyLoadingScreen(ILoadingScreen* ls) override;
 

@@ -14,7 +14,7 @@
 #include "IRender.h"
 #include "resourcemanager.h"
 #include "optick_include.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #include "CustomHUD.h"
 #include "debug_ui.h"
 #include "xr_ioc_cmd.h"
@@ -125,7 +125,7 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 		if(!Paused())
 			bShowPauseString = TRUE;
 
-		if(bTimer && g_pGamePersistent->CanBePaused())
+		if(bTimer && g_pAppContext->CanBePaused())
 			g_pauseMngr.Pause(TRUE);
 
 		if(bSound)
@@ -361,8 +361,8 @@ void CRenderDevice::Reset()
 	RenderBackendLegacy.ResetEnd();
 	Engine.ResourceManager->ResetEnd();
 
-	if (g_pGamePersistent)
-		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
+	if (g_pAppContext)
+		g_pAppContext->Environment().bNeed_re_create_env = TRUE;
 
 #ifndef DEDICATED_SERVER
 	ShowCursor(FALSE);

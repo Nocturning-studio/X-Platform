@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Engine\xrFramework\xrLevel.h"
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\environment.h"
 #include "light_db.h"
 
@@ -116,7 +116,7 @@ void CLight_DB::Update()
 	{
 		light* _sun_original = (light*)sun_original._get();
 		light* _sun_adapted = (light*)sun_adapted._get();
-		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor* E = g_pAppContext->Environment().CurrentEnv;
 		//		VERIFY(_valid(E.sun_dir));
 		// #ifdef DEBUG
 		//		if (E.sun_dir.y >= 0)

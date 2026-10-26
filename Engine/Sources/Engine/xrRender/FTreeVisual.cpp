@@ -1,7 +1,7 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\igame_level.h"
 #include "Engine\xrFramework\environment.h"
 #include "Engine\xrFramework\fmesh.h"
@@ -107,7 +107,7 @@ struct FTreeVisual_setup
 	{
 		dwFrame = Engine.TimeManager.GetFrameCount();
 
-		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 
 		// Calc wind-vector3, scale
 		float tm_rot = PI_MUL_2 * Engine.TimeManager.GetGlobalTime() / desc->m_fTreeRotation;

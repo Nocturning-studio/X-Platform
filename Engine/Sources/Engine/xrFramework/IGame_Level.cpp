@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 
 #include "Engine.h"
 #include "std_classes.h"
@@ -40,9 +40,9 @@ IGame_Level::~IGame_Level()
 	// Render-level unload
 	Render->LevelUnload();
 
-	g_pGamePersistent->Environment().mods_unload();
+	g_pAppContext->Environment().mods_unload();
 
-	g_pGamePersistent->Environment().unload();
+	g_pAppContext->Environment().unload();
 
 	xr_delete(m_pCameras);
 
@@ -77,7 +77,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 	pLevel = xr_new<CInifile>(temp);
 
 	// Open
-	g_pGamePersistent->LoadTitle("st_opening_stream");
+	g_pAppContext->LoadTitle("st_opening_stream");
 	IReader* LL_Stream = FS.r_open("$level$", "level");
 	IReader& fs = *LL_Stream;
 
@@ -89,7 +89,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 	Engine.LoadingScreen->UpdateLevelLogo();
 
 	// CForms
-	g_pGamePersistent->LoadTitle("st_loading_cform");
+	g_pAppContext->LoadTitle("st_loading_cform");
 	ObjectSpace.Load();
 
 	// HUD + Environment
@@ -99,19 +99,19 @@ BOOL IGame_Level::Load(u32 dwNum)
 		pHUD = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
 
 	// Render-level Load
-	g_pGamePersistent->LoadTitle("st_start_loading_level");
+	g_pAppContext->LoadTitle("st_start_loading_level");
 	Render->LevelLoad(LL_Stream);
 	tscreate.FrameEnd();
 
 	// Objects
-	g_pGamePersistent->LoadTitle("st_loading_weathers");
-	g_pGamePersistent->Environment().load();
+	g_pAppContext->LoadTitle("st_loading_weathers");
+	g_pAppContext->Environment().load();
 
-	g_pGamePersistent->LoadTitle("st_loading_env_mods");
-	g_pGamePersistent->Environment().mods_load();
+	g_pAppContext->LoadTitle("st_loading_env_mods");
+	g_pAppContext->Environment().mods_load();
 
-	g_pGamePersistent->LoadTitle("st_loading_level_specific_ambients");
-	g_pGamePersistent->Environment().load_level_specific_ambients();
+	g_pAppContext->LoadTitle("st_loading_level_specific_ambients");
+	g_pAppContext->Environment().load_level_specific_ambients();
 
 	R_ASSERT(Load_GameSpecific_Before());
 	Objects.Load();

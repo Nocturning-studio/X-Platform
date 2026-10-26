@@ -2,7 +2,7 @@
 #include "GameStateManager.h"
 #include "Optick_Capture.h"
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "xr_input.h"
 #include "xr_ioconsole.h"
 #include "Engine.h"
@@ -60,7 +60,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			Engine.Console->Execute("main_menu off");
 			Engine.Console->Hide();
 
-			g_pGamePersistent->PreStart(op_server);
+			g_pAppContext->PreStart(op_server);
 			g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 
 			// --- ДЕЛЕГИРУЕМ ЗАГРУЗКУ ---
@@ -68,7 +68,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			// ----------------------------
 
 			Msg("\nStart level loading...");
-			g_pGamePersistent->Start(op_server);
+			g_pAppContext->Start(op_server);
 			g_pGameLevel->net_Start(op_server, op_client);
 
 			// --- ДЕЛЕГИРУЕМ ЗАВЕРШЕНИЕ ---
@@ -90,7 +90,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 				Engine.Console->Execute("main_menu on");
 			}
 		}
-		g_pGamePersistent->Disconnect();
+		g_pAppContext->Disconnect();
 	}
 }
 

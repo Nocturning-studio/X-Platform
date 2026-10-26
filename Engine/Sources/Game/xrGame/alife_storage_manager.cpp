@@ -20,7 +20,7 @@
 #include "xrFramework/Engine.h"
 #include "saved_game_wrapper.h"
 #include "string_table.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 
 using namespace ALife;
 
@@ -153,7 +153,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 	string512 temp;
 	strconcat(sizeof(temp), temp, CStringTable().translate("st_loading_saved_game").c_str(), " \"", save_name,
 			  SAVE_EXTENSION, "\"");
-	g_pGamePersistent->LoadTitle(temp);
+	g_pAppContext->LoadTitle(temp);
 
 	unload();
 	reload(m_section);

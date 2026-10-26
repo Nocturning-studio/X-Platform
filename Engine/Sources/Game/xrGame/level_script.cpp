@@ -13,7 +13,7 @@
 #include "patrol_path_storage.h"
 #include "xrServer.h"
 #include "client_spawn_manager.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "game_cl_base.h"
 #include "ui/UIDialogWnd.h"
 #include "date_time.h"
@@ -89,22 +89,22 @@ CScriptGameObject* get_object_by_id(u32 id)
 
 LPCSTR get_weather()
 {
-	return (*g_pGamePersistent->Environment().GetWeather());
+	return (*g_pAppContext->Environment().GetWeather());
 }
 
 void set_weather(LPCSTR weather_name, bool forced)
 {
-	return (g_pGamePersistent->Environment().SetWeather(weather_name, forced));
+	return (g_pAppContext->Environment().SetWeather(weather_name, forced));
 }
 
 bool set_weather_fx(LPCSTR weather_name)
 {
-	return (g_pGamePersistent->Environment().SetWeatherFX(weather_name));
+	return (g_pAppContext->Environment().SetWeatherFX(weather_name));
 }
 
 bool is_wfx_playing()
 {
-	return (g_pGamePersistent->Environment().IsWFXPlaying());
+	return (g_pAppContext->Environment().IsWFXPlaying());
 }
 
 void set_time_factor(float time_factor)
@@ -134,7 +134,7 @@ ESingleGameDifficulty get_game_difficulty()
 
 bool start_weather_fx_from_time(LPCSTR weather_name, float time)
 {
-	return (g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time));
+	return (g_pAppContext->Environment().StartWeatherFXFromTime(weather_name, time));
 }
 
 u32 get_time_days()
@@ -146,12 +146,12 @@ u32 get_time_days()
 
 float get_wfx_time()
 {
-	return (g_pGamePersistent->Environment().wfx_time);
+	return (g_pAppContext->Environment().wfx_time);
 }
 
 void stop_weather_fx()
 {
-	g_pGamePersistent->Environment().StopWFX();
+	g_pAppContext->Environment().StopWFX();
 }
 
 u32 get_time_hours()
@@ -191,7 +191,7 @@ u32 get_time_month()
 
 float rain_factor()
 {
-	return (g_pGamePersistent->Environment().CurrentEnv->rain_density);
+	return (g_pAppContext->Environment().CurrentEnv->rain_density);
 }
 
 u32 vertex_in_direction(u32 level_vertex_id, fvec3 direction, float max_distance)
@@ -372,7 +372,7 @@ CPHWorld* physics_world()
 }
 CEnvironment* environment()
 {
-	return (g_pGamePersistent->pEnvironment);
+	return (g_pAppContext->pEnvironment);
 }
 
 CEnvDescriptor* current_environment(CEnvironment* self)

@@ -301,7 +301,7 @@ class CCC_GSCDKey : public CCC_String
 
 		WriteRegistry_StrValue(REGISTRY_VALUE_GSCDKEY, value);
 
-		if(g_pGamePersistent && MainMenu())
+		if(g_pAppContext && MainMenu())
 			MainMenu()->ValidateCDKey();
 	}
 	virtual void Save(IWriter* F) {};
@@ -1063,7 +1063,7 @@ class CCC_SetWeather : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		if(!g_pGamePersistent)
+		if(!g_pAppContext)
 			return;
 		if(!OnServer())
 			return;
@@ -1073,7 +1073,7 @@ class CCC_SetWeather : public IConsole_Command
 		sscanf(args, "%s", weather_name);
 		if(!weather_name[0])
 			return;
-		g_pGamePersistent->Environment().SetWeather(weather_name);
+		g_pAppContext->Environment().SetWeather(weather_name);
 	};
 
 	virtual void Info(TInfo& I)

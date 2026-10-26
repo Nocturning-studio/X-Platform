@@ -21,7 +21,7 @@
 #include "xrFramework/skeletoncustom.h"
 #include "ai_object_location.h"
 #include "object_broker.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"

@@ -7,7 +7,7 @@ class CUIMessageBoxEx;
 class CGameSpy_HTTP;
 class CGameSpy_Full;
 #include "xrFramework/IInputReceiver.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "UIDialogHolder.h"
 #include "ui/UIWndCallback.h"
 #include "ui_base.h"

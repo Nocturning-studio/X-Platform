@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 
 #include "xrSheduler.h"
 #include "xr_object_list.h"
@@ -379,7 +379,7 @@ void CObjectList::Unload()
 
 CObject* CObjectList::Create(LPCSTR name)
 {
-	CObject* O = g_pGamePersistent->ObjectPool.create(name);
+	CObject* O = g_pAppContext->ObjectPool.create(name);
 	//	Msg("CObjectList::Create [%x]%s", O, name);
 	objects_sleeping.push_back(O);
 	return O;
@@ -411,7 +411,7 @@ void CObjectList::Destroy(CObject* O)
 		else
 			FATAL("! Unregistered object being destroyed");
 	}
-	g_pGamePersistent->ObjectPool.destroy(O);
+	g_pAppContext->ObjectPool.destroy(O);
 }
 
 void CObjectList::relcase_register(RELCASE_CALLBACK cb, int* ID)

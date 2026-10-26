@@ -8,7 +8,7 @@
 #include "level_graph.h"
 #include "client_spawn_manager.h"
 #include "xrFramework/xr_object.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 #ifdef DEBUG_MEMORY_MANAGER
 extern XRCORE_API BOOL g_bMEMO;

@@ -3,7 +3,7 @@
 // Nocturning studio for X-Platform
 ///////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\environment.h"
 #include "blender_effectors.h"
 ///////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ void CRender::render_effectors_pass_combine()
 
 	float NightVisionEnabled = 0.0f;
 
-	if(g_pGamePersistent && g_pGamePersistent->GetNightVisionState())
+	if(g_pAppContext && g_pAppContext->GetNightVisionState())
 		NightVisionEnabled = 1.0f;
 
 	// Fill vertex buffer
@@ -193,7 +193,7 @@ void CRender::render_effectors_pass_combine()
 
 	RenderBackendLegacy.SetConstant("actor_health", get_actor_health());
 
-	CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptor* E = g_pAppContext->Environment().CurrentEnv;
 	RenderBackendLegacy.SetConstant("vignette_power", E->m_VignettePower);
 
 	RenderBackendLegacy.SetGeometry(RenderTarget->g_effectors);
@@ -216,7 +216,7 @@ void CRender::render_effectors_pass_lut()
 	RenderBackendLegacy.SetStencil(FALSE);
 
 	RenderBackendLegacy.SetShaderElement(RenderTarget->s_effectors->E[SE_PASS_LUT], 0);
-	CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptorMixer* envdesc = g_pAppContext->Environment().CurrentEnv;
 	RenderBackendLegacy.SetConstant("c_lut_params", envdesc->weight, 0, 0, 0);
 	RenderBackendLegacy.RenderViewportSurface(RenderTarget->rt_Generic[1]);
 }

@@ -18,7 +18,7 @@
 #include "clsid_game.h"
 #include "map_manager.h"
 #include "map_location.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"

@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "FontManager.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 
 CFontManager::CFontManager()
 {

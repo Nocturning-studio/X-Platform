@@ -178,9 +178,6 @@
     <Filter Include="Game API\Modules\Game state manager">
       <UniqueIdentifier>{f7a65081-dab7-436e-9519-2bb4fb62d2cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game API\Modules\Game persistance">
-      <UniqueIdentifier>{3ec0edfc-9114-46c1-978b-8979cfef639e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game API\Modules\Game Level %28Maps/Scenes%29">
       <UniqueIdentifier>{9698ab8f-4772-4318-9d5f-e35b907be079}</UniqueIdentifier>
     </Filter>
@@ -567,9 +564,6 @@
     <ClInclude Include="LevelManager.h">
       <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
-    <ClInclude Include="IGame_Persistent.h">
-      <Filter>Game API\Modules\Game persistance</Filter>
-    </ClInclude>
     <ClInclude Include="FontManager.h">
       <Filter>Engine\Modules\Font manager</Filter>
     </ClInclude>
@@ -653,6 +647,9 @@
     </ClInclude>
     <ClInclude Include="ILoadingScreen.h">
       <Filter>Game API\Modules\Loading Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="IAppContext.h">
+      <Filter>Engine\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1001,9 +998,6 @@
     <ClCompile Include="LevelManager.cpp">
       <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
-    <ClCompile Include="IGame_Persistent.cpp">
-      <Filter>Game API\Modules\Game persistance</Filter>
-    </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>Engine\Modules\Font manager</Filter>
     </ClCompile>
@@ -1075,6 +1069,9 @@
     </ClCompile>
     <ClCompile Include="CDllGameModule.cpp">
       <Filter>Game API\Game module interface</Filter>
+    </ClCompile>
+    <ClCompile Include="IAppContext.cpp">
+      <Filter>Engine\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

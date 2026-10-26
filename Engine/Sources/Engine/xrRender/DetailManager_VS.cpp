@@ -2,10 +2,10 @@
 #pragma hdrstop
 #include "detailmanager.h"
 #ifdef _EDITOR
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "environment.h"
 #else
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\environment.h"
 #endif
 const int quant = 16384;
@@ -216,7 +216,7 @@ void CDetailManager::Render(DetailsRenderMode Mode, fmat4x4* pCullMatrix, const 
 	}
 
 	// Кэшируем цвета окружения
-	CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 	ctx.c_sun.set(desc->sun_color.x, desc->sun_color.y, desc->sun_color.z).mul(0.5f);
 	ctx.c_ambient.set(desc->ambient.x, desc->ambient.y, desc->ambient.z);
 	ctx.c_hemi.set(desc->hemi_color.x, desc->hemi_color.y, desc->hemi_color.z);

@@ -17,7 +17,7 @@
 #include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 #pragma todo("NSDeathman to NSDeathman: Отрефакторить и разделить ответственности")
 
@@ -156,7 +156,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 			if(pCO && pCO->m_NightVisionSect.size())
 			{
 				m_bNightVisionPostprocessEnabled = true;
-				g_pGamePersistent->SetNightVisionState(m_bNightVisionPostprocessEnabled);
+				g_pAppContext->SetNightVisionState(m_bNightVisionPostprocessEnabled);
 				HUD_SOUND::PlaySound(m_NightVisionOnSnd, pA->Position(), pA, bPlaySoundFirstPerson);
 				HUD_SOUND::PlaySound(m_NightVisionIdleSnd, pA->Position(), pA, bPlaySoundFirstPerson, true);
 			}
@@ -167,7 +167,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 		if(m_bNightVisionPostprocessEnabled)
 		{
 			m_bNightVisionPostprocessEnabled = false;
-			g_pGamePersistent->SetNightVisionState(m_bNightVisionPostprocessEnabled);
+			g_pAppContext->SetNightVisionState(m_bNightVisionPostprocessEnabled);
 			HUD_SOUND::PlaySound(m_NightVisionOffSnd, pA->Position(), pA, bPlaySoundFirstPerson);
 			HUD_SOUND::StopSound(m_NightVisionIdleSnd);
 		}

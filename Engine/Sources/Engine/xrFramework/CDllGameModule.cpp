@@ -58,12 +58,12 @@ void CDllGameModule::RegisterInputCommands()
     if (m_instance) m_instance->RegisterInputCommands();
 }
 
-IGame_Persistent* CDllGameModule::CreatePersistent()
+IAppContext* CDllGameModule::CreatePersistent()
 {
     return m_instance ? m_instance->CreatePersistent() : nullptr;
 }
 
-void CDllGameModule::DestroyPersistent(IGame_Persistent* p)
+void CDllGameModule::DestroyPersistent(IAppContext* p)
 {
     if (m_instance) m_instance->DestroyPersistent(p);
 }

@@ -8,7 +8,7 @@
 #include "GameModule.h"
 #include "LoadingScreen.h"
 #include <xrFramework/std_classes.h>
-#include <xrFramework/IGame_Persistent.h>
+#include <xrFramework/IAppContext.h>
 ////////////////////////////////////////////////////////////////////////////////
 extern void CCC_RegisterCommands();
 extern void CCC_RegisterInput();
@@ -39,12 +39,12 @@ void CGameModule::RegisterInputCommands()
     CCC_RegisterInput();
 }
 
-IGame_Persistent* CGameModule::CreatePersistent()
+IAppContext* CGameModule::CreatePersistent()
 {
-    return (IGame_Persistent*)GameObjectFactory_Create(CLSID_GAME_PERSISTANT);
+    return (IAppContext*)GameObjectFactory_Create(CLSID_GAME_PERSISTANT);
 }
 
-void CGameModule::DestroyPersistent(IGame_Persistent* p)
+void CGameModule::DestroyPersistent(IAppContext* p)
 {
     if (p) GameObjectFactory_Destroy(p);
 }

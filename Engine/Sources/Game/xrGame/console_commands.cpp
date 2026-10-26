@@ -1333,15 +1333,15 @@ class CCC_SetWeather : public IConsole_Command
 			return;
 		if(!g_pGameLevel)
 			return;
-		if(!g_pGamePersistent)
+		if(!g_pAppContext)
 			return;
 
-		g_pGamePersistent->Environment().SetWeather(args, true);
+		g_pAppContext->Environment().SetWeather(args, true);
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		auto& cycles = g_pGamePersistent->Environment().WeatherCycles;
+		auto& cycles = g_pAppContext->Environment().WeatherCycles;
 		for(auto& cycle : cycles)
 		{
 			tips.push_back(cycle.first);
@@ -1364,10 +1364,10 @@ class CCC_SetWeatherFX : public IConsole_Command
 			return;
 		if(!g_pGameLevel)
 			return;
-		if(!g_pGamePersistent)
+		if(!g_pAppContext)
 			return;
 
-		g_pGamePersistent->Environment().SetWeatherFX(args);
+		g_pAppContext->Environment().SetWeatherFX(args);
 	}
 };
 
@@ -1382,10 +1382,10 @@ class CCC_StopWeatherFX : public IConsole_Command
 	{
 		if(!g_pGameLevel)
 			return;
-		if(!g_pGamePersistent)
+		if(!g_pAppContext)
 			return;
 
-		g_pGamePersistent->Environment().StopWFX();
+		g_pAppContext->Environment().StopWFX();
 	}
 };
 #endif // MASTER_GOLD

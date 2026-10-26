@@ -13,7 +13,7 @@
 #include "xr_object.h"
 #include "IRender.h"
 #include "CustomHUD.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #include "CameraManager.h"
 
 #include "demo_common.h"
@@ -457,7 +457,7 @@ void CDemoRecord::Update(SCamEffectorInfo& info)
 
 	float x = 43.266615300557;
 	g_fDOF.y = (x / (2.0f * tan(PI * g_fFov / 360.f)));
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 }
 
 BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
@@ -485,7 +485,7 @@ void CDemoRecord::SwitchAutofocusState()
 		g_bAutofocusEnabled = false;
 	}
 
-	g_pGamePersistent->SetPickableEffectorDOF(g_bAutofocusEnabled);
+	g_pAppContext->SetPickableEffectorDOF(g_bAutofocusEnabled);
 }
 
 // Решение действовать через консоль чудовищное, в будущем нужно заменить смену флага через консоль на смену через флаг
@@ -681,7 +681,7 @@ void CDemoRecord::ChangeDepthOfFieldFocalDepth(int direction)
 	fvec3 dof_params_old;
 	fvec3 dof_params_actual;
 
-	g_pGamePersistent->GetCurrentDof(dof_params_old);
+	g_pAppContext->GetCurrentDof(dof_params_old);
 
 	dof_params_actual = dof_params_old;
 
@@ -699,7 +699,7 @@ void CDemoRecord::ChangeDepthOfFieldFocalDepth(int direction)
 		dof_params_actual.x = 100.0f;
 
 	g_fDOF = dof_params_actual;
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 }
 
 void CDemoRecord::ChangeDepthOfFieldFocalLength(int direction)
@@ -707,7 +707,7 @@ void CDemoRecord::ChangeDepthOfFieldFocalLength(int direction)
 	fvec3 dof_params_old;
 	fvec3 dof_params_actual;
 
-	g_pGamePersistent->GetCurrentDof(dof_params_old);
+	g_pAppContext->GetCurrentDof(dof_params_old);
 
 	dof_params_actual = dof_params_old;
 
@@ -724,7 +724,7 @@ void CDemoRecord::ChangeDepthOfFieldFocalLength(int direction)
 	//	dof_params_actual.x = 0.1f;
 
 	g_fDOF = dof_params_actual;
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 }
 
 void CDemoRecord::ChangeDepthOfFieldFStop(int direction)
@@ -732,7 +732,7 @@ void CDemoRecord::ChangeDepthOfFieldFStop(int direction)
 	fvec3 dof_params_old;
 	fvec3 dof_params_actual;
 
-	g_pGamePersistent->GetCurrentDof(dof_params_old);
+	g_pAppContext->GetCurrentDof(dof_params_old);
 
 	dof_params_actual = dof_params_old;
 
@@ -750,7 +750,7 @@ void CDemoRecord::ChangeDepthOfFieldFStop(int direction)
 		dof_params_actual.z = 100.0f;
 
 	g_fDOF = dof_params_actual;
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 }
 
 void CDemoRecord::ChangeFieldOfView(int direction)
@@ -800,7 +800,7 @@ void CDemoRecord::DeleteKey()
 	Msg("iCount = %d", iCount);
 
 	g_fDOF = FramesArray[iCount].DOF;
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 
 	g_fFov = FramesArray[iCount].Fov;
 

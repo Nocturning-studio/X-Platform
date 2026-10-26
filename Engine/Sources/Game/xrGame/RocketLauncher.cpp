@@ -9,7 +9,7 @@
 #include "xrserver_objects_alife_items.h"
 #include "level.h"
 #include "ai_object_location.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 CRocketLauncher::CRocketLauncher()
 {

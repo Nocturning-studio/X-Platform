@@ -14,7 +14,7 @@
 #include "MathUtils.h"
 #include "characterphysicssupport.h"
 #include "inventory.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 #ifdef DEBUG
 #include "phdebug.h"
 #endif

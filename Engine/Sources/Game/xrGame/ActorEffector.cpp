@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "ActorEffector.h"
 #include "PostprocessAnimator.h"
 #include "xrFramework/effectorPP.h"
@@ -361,7 +361,7 @@ void DeathEffector::Start(CActor* A)
 
 void DeathEffector::Update()
 {
-	bool bMenu = g_pGamePersistent->OnRenderPPUI_query();
+	bool bMenu = g_pAppContext->OnRenderPPUI_query();
 	if(!bMenu)
 	{
 		float FadeOutTime = 5.0f;

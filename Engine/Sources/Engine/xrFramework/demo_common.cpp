@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "demo_common.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #include "xr_ioconsole.h"
 /////////////////////////////////////////////////////////////////
 // Создаем массив из структур с запасом
@@ -27,10 +27,10 @@ void SetDefaultParameters()
 	g_fGlobalFov = Engine.RenderView.Fov;
 	g_fFov = g_fGlobalFov;
 
-	g_pGamePersistent->GetCurrentDof(g_vGlobalDepthOfFieldParameters);
+	g_pAppContext->GetCurrentDof(g_vGlobalDepthOfFieldParameters);
 	g_fDOF.set(g_vGlobalDepthOfFieldParameters);
 	g_fDOF.z = 1.0f;
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 
 	g_bAutofocusEnabled = false;
 	g_bGridEnabled = false;
@@ -60,7 +60,7 @@ void ApplyFrameParameters(u32 frame, float interpolation_factor)
 	g_fFov = lerp(FovActual, FovNext, interpolation_factor);
 
 	g_fDOF.set(FramesArray[ActualFrame].DOF);
-	g_pGamePersistent->SetBaseDof(g_fDOF);
+	g_pAppContext->SetBaseDof(g_fDOF);
 
 	g_bBordersEnabled = FramesArray[ActualFrame].UseCinemaBorders;
 
@@ -80,8 +80,8 @@ void ApplyFrameParameters(u32 frame, float interpolation_factor)
 void ResetParameters()
 {
 	g_fDOF = g_vGlobalDepthOfFieldParameters;
-	g_pGamePersistent->SetBaseDof(g_fDOF);
-	g_pGamePersistent->SetPickableEffectorDOF(false);
+	g_pAppContext->SetBaseDof(g_fDOF);
+	g_pAppContext->SetPickableEffectorDOF(false);
 
 	g_fFov = g_fGlobalFov;
 

@@ -3,7 +3,7 @@
 
 #include "xr_efflensflare.h"
 
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "Environment.h"
 #include "SkeletonCustom.h"
 #include "xrCDB/cl_intersect.h"
@@ -18,7 +18,7 @@
 #include "igame_level.h"
 #endif
 
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
+#define FAR_DIST g_pAppContext->Environment().CurrentEnv->far_plane
 
 #define MAX_Flares 24
 //////////////////////////////////////////////////////////////////////////////
@@ -185,12 +185,12 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 		vis = 0.f;
 		CKinematics* K = PKinematics(result.O->renderable.visual);
 		if(K && (result.element > 0))
-			vis = g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
+			vis = g_pAppContext->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
 	}
 	else
 	{
 		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-		vis = g_pGamePersistent->MtlTransparent(T->material);
+		vis = g_pAppContext->MtlTransparent(T->material);
 		if(fis_zero(vis))
 		{
 			fvec3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
@@ -227,16 +227,16 @@ void CLensFlare::OnFrame(shared_str id)
 #endif
 	dwFrame = Engine.TimeManager.GetFrameCount();
 
-	R_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir));
-	vSunDir.mul(g_pGamePersistent->Environment().CurrentEnv->sun_dir, -1);
+	R_ASSERT(_valid(g_pAppContext->Environment().CurrentEnv->sun_dir));
+	vSunDir.mul(g_pAppContext->Environment().CurrentEnv->sun_dir, -1);
 	R_ASSERT(_valid(vSunDir));
 
 	// color
-	float tf = g_pGamePersistent->Environment().fTimeFactor;
-	fvec3& c = g_pGamePersistent->Environment().CurrentEnv->sun_color;
+	float tf = g_pAppContext->Environment().fTimeFactor;
+	fvec3& c = g_pAppContext->Environment().CurrentEnv->sun_color;
 	LightColor.set(c.x, c.y, c.z, 1.f);
 
-	CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
+	CLensFlareDescriptor* desc = id.size() ? g_pAppContext->Environment().add_flare(m_Palette, id) : 0;
 
 	switch(m_State)
 	{

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "igame_level.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #include "igame_objectpool.h"
 #include "xr_object.h"
 
@@ -22,7 +22,7 @@ void IGame_ObjectPool::prefetch()
 
 	string256 section;
 	// prefetch objects
-	strconcat(sizeof(section), section, "prefetch_objects_", g_pGamePersistent->m_game_params.m_game_type);
+	strconcat(sizeof(section), section, "prefetch_objects_", g_pAppContext->m_game_params.m_game_type);
 	CInifile::Sect& sect = pSettings->r_section(section);
 	for(CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 	{

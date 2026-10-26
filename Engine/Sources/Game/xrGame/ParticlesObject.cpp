@@ -9,7 +9,7 @@
 #include "xrFramework/fbasicvisual.h"
 #include "xrFramework/ParticleCustom.h"
 #include "xrFramework/IRender.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 const fvec3 zero_vel = {0.f, 0.f, 0.f};
 

@@ -9,7 +9,7 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "ai_space.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 
 #include "xrFramework/XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"

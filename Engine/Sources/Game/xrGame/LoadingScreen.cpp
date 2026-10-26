@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "LoadingScreen.h"
-#include <Engine/xrFramework/IGame_Persistent.h>
+#include <Engine/xrFramework/IAppContext.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 // ---------------------------------------------------------------------------
@@ -140,8 +140,8 @@ void CLoadingScreen::Hide()
         return;
 
     bIsActive = false;
-    if (g_pGamePersistent)
-        g_pGamePersistent->LoadTitle("st_loading_end");
+    if (g_pAppContext)
+        g_pAppContext->LoadTitle("st_loading_end");
 
     Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
     Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
@@ -163,7 +163,7 @@ void CLoadingScreen::SetTitle(const char* str)
     Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
     Log(app_title);
 
-    if (g_pGamePersistent && g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
+    if (g_pAppContext && g_pAppContext->GameType() == 1 && strstr(Core.Params, "alife"))
         max_load_stage = 26;
     else
         max_load_stage = 16;

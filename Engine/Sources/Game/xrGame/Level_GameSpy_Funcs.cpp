@@ -4,7 +4,7 @@
 #include "xrFramework/Engine.h"
 #include "GameSpy/GameSpy_GCD_Client.h"
 
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 void CLevel::OnGameSpyChallenge(NET_Packet* P)
 {
 	Msg("xrGS::CDKey::Level : Responding on Challenge");
@@ -24,5 +24,5 @@ void CLevel::OnGameSpyChallenge(NET_Packet* P)
 	newP.w_stringZ(ResponseStr);
 	Send(newP, net_flags(TRUE, TRUE, TRUE, TRUE));
 
-	//	g_pGamePersistent->LoadTitle("st_validating_cdkey");
+	//	g_pAppContext->LoadTitle("st_validating_cdkey");
 };

@@ -10,7 +10,7 @@
 #include "GameObjectFactory.h"
 #include "ILoadingScreen.h"
 ////////////////////////////////////////////////////////////////////////////////
-class IGame_Persistent;
+class IAppContext;
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API IGameModule
 {
@@ -31,8 +31,8 @@ class ENGINE_API IGameModule
 	virtual void RegisterInputCommands() {}
 
 	// ---- Game persistent ----
-	virtual IGame_Persistent* CreatePersistent() = 0;
-	virtual void DestroyPersistent(IGame_Persistent*) = 0;
+	virtual IAppContext* CreatePersistent() = 0;
+	virtual void DestroyPersistent(IAppContext*) = 0;
 
 	// ---- Loading screen ----
 	virtual ILoadingScreen* CreateLoadingScreen() = 0;

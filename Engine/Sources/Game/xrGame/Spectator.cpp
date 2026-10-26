@@ -448,7 +448,7 @@ BOOL CSpectator::net_Spawn(CSE_Abstract* DC)
 	return TRUE;
 };
 
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 void CSpectator::net_Destroy()
 {
 	inherited::net_Destroy();

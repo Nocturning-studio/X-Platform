@@ -13,7 +13,7 @@
 #include "GameStateManager.h"
 #include "xrSheduler.h"
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "xr_input.h"
 #include "xr_ioconsole.h"
 #include "Engine.h"
@@ -345,9 +345,9 @@ bool CEngine::Initialize()
 
 	if (GameModule)
 	{
-		g_pGamePersistent = GameModule->CreatePersistent();
-		if (g_pGamePersistent)
-			g_pGamePersistent->Initialize();
+		g_pAppContext = GameModule->CreatePersistent();
+		if (g_pAppContext)
+			g_pAppContext->Initialize();
 	}
 
 	g_SpatialSpace = xr_new<ISpatial_DB>();
@@ -355,12 +355,12 @@ bool CEngine::Initialize()
 
 	LoadingScreen = GameModule->CreateLoadingScreen();
 	LoadingScreen->Show();
-	g_pGamePersistent->LoadTitle("st_loading_game");
+	g_pAppContext->LoadTitle("st_loading_game");
 	LoadingScreen->ForceRender();
 
 	Memory.mem_usage();
 
-	g_pGamePersistent->LoadTitle("st_loading_shaders");
+	g_pAppContext->LoadTitle("st_loading_shaders");
 	LoadingScreen->ForceRender();
 	Render->Create();
 	LoadingScreen->Hide();
@@ -480,11 +480,11 @@ void CEngine::Destroy()
 	xr_delete(g_SpatialSpacePhysic);
 	xr_delete(g_SpatialSpace);
 
-	if (g_pGamePersistent)
+	if (g_pAppContext)
 	{
 		if (GameModule)
-			GameModule->DestroyPersistent(g_pGamePersistent);
-		g_pGamePersistent = nullptr;
+			GameModule->DestroyPersistent(g_pAppContext);
+		g_pAppContext = nullptr;
 	}
 
 	LoadingScreen->Destroy();

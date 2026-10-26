@@ -2,14 +2,14 @@
 #define GamePersistentH
 #pragma once
 
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 class CMainMenu;
 class CUICursor;
 class CParticlesObject;
 class CUISequencer;
 class ui_core;
 
-class CGamePersistent : public IGame_Persistent, public IEventReceiver
+class CGamePersistent : public IAppContext, public IEventReceiver
 {
 	// ambient particles
 	CParticlesObject* ambient_particles;
@@ -107,7 +107,7 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
 
 IC CGamePersistent& GamePersistent()
 {
-	return *((CGamePersistent*)g_pGamePersistent);
+	return *((CGamePersistent*)g_pAppContext);
 }
 
 #endif // GamePersistentH

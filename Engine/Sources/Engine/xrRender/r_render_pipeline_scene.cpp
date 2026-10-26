@@ -80,8 +80,8 @@ void CRender::RenderScene()
 
 	render_postprocess();
 
-	if(g_pGamePersistent)
-		g_pGamePersistent->OnRenderPPUI_main();
+	if(g_pAppContext)
+		g_pAppContext->OnRenderPPUI_main();
 
 	if(!m_bFirstFrameAfterReset)
 		output_frame_to_screen();

@@ -5,14 +5,14 @@
 #pragma hdrstop
 
 #include "ps_instance.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 
 CPS_Instance::CPS_Instance(bool destroy_on_game_load)
 	: ISpatial(g_SpatialSpace), m_destroy_on_game_load(destroy_on_game_load)
 {
 	// OPTICK_EVENT("CPS_Instance::CPS_Instance");
 
-	g_pGamePersistent->ps_active.insert(this);
+	g_pAppContext->ps_active.insert(this);
 	renderable.pROS_Allowed = FALSE;
 
 	m_iLifeTime = int_max;
@@ -27,14 +27,14 @@ CPS_Instance::~CPS_Instance()
 	// OPTICK_EVENT("CPS_Instance::~CPS_Instance");
 
 	VERIFY(!g_bRendering);
-	xr_set<CPS_Instance*>::iterator it = g_pGamePersistent->ps_active.find(this);
-	VERIFY(it != g_pGamePersistent->ps_active.end());
-	g_pGamePersistent->ps_active.erase(it);
+	xr_set<CPS_Instance*>::iterator it = g_pAppContext->ps_active.find(this);
+	VERIFY(it != g_pAppContext->ps_active.end());
+	g_pAppContext->ps_active.erase(it);
 
 	xr_vector<CPS_Instance*>::iterator it2 =
-		std::find(g_pGamePersistent->ps_destroy.begin(), g_pGamePersistent->ps_destroy.end(), this);
+		std::find(g_pAppContext->ps_destroy.begin(), g_pAppContext->ps_destroy.end(), this);
 
-	VERIFY(it2 == g_pGamePersistent->ps_destroy.end());
+	VERIFY(it2 == g_pAppContext->ps_destroy.end());
 
 	spatial_unregister();
 	shedule_unregister();
@@ -63,7 +63,7 @@ void CPS_Instance::PSI_destroy()
 
 	m_bDead = TRUE;
 	m_iLifeTime = 0;
-	g_pGamePersistent->ps_destroy.push_back(this);
+	g_pAppContext->ps_destroy.push_back(this);
 }
 //----------------------------------------------------
 void CPS_Instance::PSI_internal_delete()

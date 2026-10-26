@@ -40,7 +40,7 @@ extern void dump_list_xmls();
 extern void CreateUIGeom();
 extern void DestroyUIGeom();
 
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 void init_game_globals()
 {
 	CreateUIGeom();

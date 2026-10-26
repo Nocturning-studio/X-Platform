@@ -13,7 +13,7 @@
 #include "Entity.h"
 #include "level.h"
 #include "game_cl_base.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 
 #include "InventoryOwner.h"
 #include "relation_registry.h"
@@ -115,7 +115,7 @@ void CHUDTarget::CursorOnFrame()
 	if(Level().CurrentEntity())
 	{
 		RQ.O = 0;
-		RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.99f;
+		RQ.range = g_pAppContext->Environment().CurrentEnv->far_plane * 0.99f;
 		RQ.element = -1;
 
 		collide::ray_defs RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);

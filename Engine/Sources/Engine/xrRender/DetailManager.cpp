@@ -12,10 +12,10 @@
 #include "ESceneClassList.h"
 #include "Scene.h"
 #include "SceneObject.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "environment.h"
 #else
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\environment.h"
 #endif
 

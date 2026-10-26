@@ -483,8 +483,8 @@ class CCC_DofFStop : public CCC_Float
 		float v = float(atof(args));
 
 		CCC_Float::Execute(args);
-		if(g_pGamePersistent)
-			g_pGamePersistent->SetBaseDof(ps_r_dof);
+		if(g_pAppContext)
+			g_pAppContext->SetBaseDof(ps_r_dof);
 	}
 
 	//	CCC_Dof should save all data as well as load from config
@@ -504,8 +504,8 @@ class CCC_DofFocalDepth : public CCC_Float
 	virtual void Execute(LPCSTR args)
 	{
 		CCC_Float::Execute(args);
-		if(g_pGamePersistent)
-			g_pGamePersistent->SetBaseDof(ps_r_dof);
+		if(g_pAppContext)
+			g_pAppContext->SetBaseDof(ps_r_dof);
 	}
 
 	//	CCC_Dof should save all data as well as load from config
@@ -537,8 +537,8 @@ class CCC_Dof : public CCC_Vector3
 		// else
 		//{
 		CCC_Vector3::Execute(args);
-		if(g_pGamePersistent)
-			g_pGamePersistent->SetBaseDof(ps_r_dof);
+		if(g_pAppContext)
+			g_pAppContext->SetBaseDof(ps_r_dof);
 		//}
 	}
 	virtual void Status(TStatus& S)

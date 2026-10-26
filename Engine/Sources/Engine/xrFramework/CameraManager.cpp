@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include "igame_level.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 
 #include "Environment.h"
 #include "CameraBase.h"
@@ -293,7 +293,7 @@ void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 		   C->vNormal,
 		   C->f_fov,
 		   C->f_aspect,
-		   g_pGamePersistent->Environment().CurrentEnv->far_plane,
+		   g_pAppContext->Environment().CurrentEnv->far_plane,
 		   C->m_Flags.flags);
 }
 
@@ -459,7 +459,7 @@ void CCameraManager::ApplyDevice(float _viewport_near)
 	Engine.RenderView.Aspect = m_cam_info.fAspect;
 	Engine.RenderView.Project.build_projection(deg2rad(m_cam_info.fFov), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
 
-	if(g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive())
+	if(g_pAppContext && g_pAppContext->m_pMainMenu->IsActive())
 	{
 		ResetPP();
 	}

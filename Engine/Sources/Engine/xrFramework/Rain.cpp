@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Rain.h"
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "environment.h"
 
 #ifdef _EDITOR
@@ -119,7 +119,7 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 	// -------------------------------------------------------------------------
 	// 1. Параметры окружения
 	// -------------------------------------------------------------------------
-	CEnvDescriptorMixer* env = g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptorMixer* env = g_pAppContext->Environment().CurrentEnv;
 	float wind_strength = env->wind_strength;
 	float wind_direction = env->wind_direction;
 
@@ -221,7 +221,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 {
 	PROFILE_FUNCTION();
 
-	CEnvDescriptorMixer* env = g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptorMixer* env = g_pAppContext->Environment().CurrentEnv;
 	float factor = env->rain_density;
 	if(factor < EPS_L)
 		return;
@@ -466,7 +466,7 @@ void CEffect_Rain::OnFrame()
 		return;
 #endif
 
-	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	float factor = g_pAppContext->Environment().CurrentEnv->rain_density;
 
 	// Calculate hemi factor (occlusion by roofs for sound)
 	float hemi_factor = 1.f;
@@ -543,7 +543,7 @@ void CEffect_Rain::Render()
 		return;
 #endif
 
-	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	float factor = g_pAppContext->Environment().CurrentEnv->rain_density;
 	if(factor < EPS_L)
 		return;
 
@@ -551,7 +551,7 @@ void CEffect_Rain::Render()
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(MAX_DESIRED_DROPS));
 
 	float factor_visual = factor / 2.f + .5f;
-	fvec3 f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
+	fvec3 f_rain_color = g_pAppContext->Environment().CurrentEnv->rain_color;
 	u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 
 	// 1. Render Drops

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Engine\xrFramework\igame_persistent.h"
+#include "Engine\xrFramework\IAppContext.h"
 #include "Engine\xrFramework\environment.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -206,7 +206,7 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 {
 	////OPTICK_EVENT("CRender::accumulate_volumetric_sun");
 
-	if(!(g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity > 0.05f) || !ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
+	if(!(g_pAppContext->Environment().CurrentEnv->m_fSunShaftsIntensity > 0.05f) || !ps_r_lighting_flags.test(RFLAG_SUN_SHAFTS))
 	{
 		if(!bVolumetricSunTextureCleared)
 		{
@@ -244,7 +244,7 @@ void CRender::accumulate_volumetric_sun(u32 sub_phase, fmat4x4 m_shadow, fvec3 L
 	float Weight = RenderTarget->rt_Volumetric_Sun->dwWidth;
 	float Height = RenderTarget->rt_Volumetric_Sun->dwHeight;
 
-	float sun_shafts_intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity;
+	float sun_shafts_intensity = g_pAppContext->Environment().CurrentEnv->m_fSunShaftsIntensity;
 	RenderBackendLegacy.SetConstant("image_resolution", Weight, Height, 1.0f / Weight, 1.0f / Height);
 	RenderBackendLegacy.SetConstant("sun_shafts_intensity", sun_shafts_intensity, 0, 0, 0);
 	RenderBackendLegacy.SetConstant("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);

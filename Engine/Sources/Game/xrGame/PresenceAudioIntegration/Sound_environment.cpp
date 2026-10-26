@@ -16,7 +16,7 @@
 
 #include "Sound_environment.h"
 #include "Sound_environment_geometry_provider.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "xrFramework/Environment.h"
 #include "xrFramework/xr_ioconsole.h" // Для регистрации команд
 #include "xrSound/SoundRender_Core.h"
@@ -193,8 +193,8 @@ void CSoundEnvironment::Update()
 
 	// Получаем погоду (туман влияет на поглощение ВЧ)
 	float fog_density = 0.0f;
-	if(g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv)
-		fog_density = g_pGamePersistent->Environment().CurrentEnv->fog_density;
+	if(g_pAppContext && g_pAppContext->Environment().CurrentEnv)
+		fog_density = g_pAppContext->Environment().CurrentEnv->fog_density;
 
 	// 3. Отправка в SDK
 	m_pAudioSystem->Update(camPos, dt, fog_density);

@@ -12,7 +12,7 @@
 
 #include "xrRender/r_color_converting.h"
 
-#include "igame_persistent.h"
+#include "IAppContext.h"
 #include "environment.h"
 
 // matrices
@@ -109,7 +109,7 @@ class cl_fog_params : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z),
 					   desc->fog_density);
 		}
@@ -127,7 +127,7 @@ class cl_fog_color : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z), 0);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
@@ -143,7 +143,7 @@ static class cl_fog_density final : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_density, 0, 0, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, FogDensity);
@@ -158,7 +158,7 @@ static class cl_fog_sky_influence final : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			FogDensity.set(desc->fog_sky_influence, 0, 0, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, FogDensity);
@@ -173,7 +173,7 @@ static class cl_vertical_fog_density final : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			VerticalFogDensity.set(desc->vertical_fog_density, 0, 0, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, VerticalFogDensity);
@@ -188,7 +188,7 @@ static class cl_vertical_fog_height final : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			VerticalFogHeight.set(desc->vertical_fog_height, 0, 0, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, VerticalFogHeight);
@@ -199,7 +199,7 @@ static class cl_rain_density : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor* E = g_pAppContext->Environment().CurrentEnv;
 		float fValue = E->rain_density;
 		RenderBackendLegacy.SetConstant(C, fValue, fValue, fValue, 0);
 	}
@@ -209,7 +209,7 @@ static class cl_water_intensity : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		CEnvDescriptor* E = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor* E = g_pAppContext->Environment().CurrentEnv;
 		float fValue = E->m_fWaterIntensity;
 		RenderBackendLegacy.SetConstant(C, fValue, fValue, fValue, 0);
 	}
@@ -267,7 +267,7 @@ class cl_sun0_color : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->sun_color.x), sRgbToLinear(desc->sun_color.y), sRgbToLinear(desc->sun_color.z), 0);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
@@ -279,7 +279,7 @@ static class cl_env_color : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		CEnvDescriptorMixer* envdesc = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptorMixer* envdesc = g_pAppContext->Environment().CurrentEnv;
 		fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS, sRgbToLinear(envdesc->hemi_color.y) * 2 + EPS,
 						sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
 		RenderBackendLegacy.SetConstant(C, envclr);
@@ -294,7 +294,7 @@ class cl_sun0_dir_w : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(desc->sun_dir.x, desc->sun_dir.y, desc->sun_dir.z, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
@@ -310,7 +310,7 @@ class cl_sun0_dir_e : public R_constant_setup
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			fvec3 D;
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			Engine.RenderView.View.transform_dir(D, desc->sun_dir);
 			D.normalize();
 			result.set(D.x, D.y, D.z, 0);
@@ -329,7 +329,7 @@ class cl_amb_color : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptorMixer* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->ambient.x), sRgbToLinear(desc->ambient.y), sRgbToLinear(desc->ambient.z), desc->weight);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
@@ -345,7 +345,7 @@ class cl_ambient_brightness : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptorMixer* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptorMixer* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(desc->ambient_brightness, 0, 0, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
@@ -361,7 +361,7 @@ class cl_hemi_color : public R_constant_setup
 	{
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
-			CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 			result.set(sRgbToLinear(desc->hemi_color.x), sRgbToLinear(desc->hemi_color.y), sRgbToLinear(desc->hemi_color.z), desc->hemi_color.w);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
@@ -381,7 +381,7 @@ class cl_wind_params : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 		RenderBackendLegacy.SetConstant(C, desc->wind_direction3D.x, desc->wind_direction3D.y, desc->wind_direction3D.z, desc->wind_gusting);
 	}
 };
@@ -391,7 +391,7 @@ class cl_wind_turbulence : public R_constant_setup
 {
 	virtual void setup(R_constant* C)
 	{
-		CEnvDescriptor* desc = g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
 
 		RenderBackendLegacy.SetConstant(C, desc->wind_turbulence, desc->wind_turbulence, desc->wind_anim_time, desc->wind_strength);
 	}

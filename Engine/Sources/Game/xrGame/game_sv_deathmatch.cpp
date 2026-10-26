@@ -6,7 +6,7 @@
 #include "xrserver.h"
 #include "Inventory.h"
 #include "CustomZone.h"
-#include "xrFramework/igame_persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "clsid_game.h"
 #include "Actor.h"
 #include "game_cl_base.h"

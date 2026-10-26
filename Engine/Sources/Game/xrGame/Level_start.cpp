@@ -7,7 +7,7 @@
 #include "xrGameSpyServer.h"
 #include "xrFramework/Engine.h"
 #include "xrFramework/device.h"
-#include "xrFramework/IGame_Persistent.h"
+#include "xrFramework/IAppContext.h"
 #include "xrFramework/xr_ioconsole.h"
 #include "MainMenu.h"
 
@@ -95,10 +95,10 @@ bool CLevel::net_start1()
 	// Start client and server if need it
 	if(m_caServerOptions.size())
 	{
-		g_pGamePersistent->LoadTitle("st_server_starting");
+		g_pAppContext->LoadTitle("st_server_starting");
 
-		typedef IGame_Persistent::params params;
-		params& p = g_pGamePersistent->m_game_params;
+		typedef IAppContext::params params;
+		params& p = g_pAppContext->m_game_params;
 		// Connect
 		if(!xr_strcmp(p.m_game_type, "single"))
 		{

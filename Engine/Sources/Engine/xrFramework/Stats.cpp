@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "ISpatial.h"
-#include "IGame_Persistent.h"
+#include "IAppContext.h"
 #include "IRender.h"
 #include "xr_object.h"
 
@@ -368,7 +368,7 @@ void CStats::Show()
 		// Game specific
 		F.SetHeightI(f_base_size);
 		F.OutSet(400, 0);
-		g_pGamePersistent->Statistics(&F);
+		g_pAppContext->Statistics(&F);
 
 		//////////////////////////////////////////////////////////////////////////
 		// process PURE STATS
