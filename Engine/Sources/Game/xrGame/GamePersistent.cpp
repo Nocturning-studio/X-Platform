@@ -58,7 +58,7 @@ static void ode_free(void* ptr, size_t size)
 }
 #endif // DEBUG_MEMORY_MANAGER
 
-CGamePersistent::CGamePersistent(void)
+CGameContext::CGameContext(void)
 {
 	m_game_params.m_e_game_type = GAME_ANY;
 
@@ -80,7 +80,7 @@ CGamePersistent::CGamePersistent(void)
 	m_pUI_core = NULL;
 	m_pMainMenu = NULL;
 	m_intro = NULL;
-	m_intro_event.bind(this, &CGamePersistent::start_logo_intro);
+	m_intro_event.bind(this, &CGameContext::start_logo_intro);
 #ifdef DEBUG
 	m_frame_counter = 0;
 	m_last_stats_frame = u32(-2);
@@ -129,7 +129,7 @@ CGamePersistent::CGamePersistent(void)
 	SetNightVisionState(false);
 }
 
-CGamePersistent::~CGamePersistent(void)
+CGameContext::~CGameContext(void)
 {
 	CWeaponHUD::DestroySharedContainer();
 	FS.r_close(pDemoFile);
@@ -138,7 +138,7 @@ CGamePersistent::~CGamePersistent(void)
 	Engine.Event.Handler_Detach(eQuickLoad, this);
 }
 
-void CGamePersistent::RegisterModel(IRender_Visual* V)
+void CGameContext::RegisterModel(IRender_Visual* V)
 {
 	// Check types
 	switch(V->Type)
@@ -173,7 +173,7 @@ void CGamePersistent::RegisterModel(IRender_Visual* V)
 extern void clean_game_globals();
 extern void init_game_globals();
 
-void CGamePersistent::OnAppStart()
+void CGameContext::OnAppStart()
 {
 	// load game materials
 	GMLib.Load();
@@ -183,7 +183,7 @@ void CGamePersistent::OnAppStart()
 	m_pMainMenu = xr_new<CMainMenu>();
 }
 
-void CGamePersistent::OnAppEnd()
+void CGameContext::OnAppEnd()
 {
 	if(m_pMainMenu->IsActive())
 		m_pMainMenu->Activate(false);
@@ -198,13 +198,13 @@ void CGamePersistent::OnAppEnd()
 	GMLib.Unload();
 }
 
-void CGamePersistent::Start(LPCSTR op)
+void CGameContext::Start(LPCSTR op)
 {
 	__super::Start(op);
-	m_intro_event.bind(this, &CGamePersistent::start_game_intro);
+	m_intro_event.bind(this, &CGameContext::start_game_intro);
 }
 
-void CGamePersistent::Disconnect()
+void CGameContext::Disconnect()
 {
 	CWeaponHUD::CleanSharedContainer();
 
@@ -220,14 +220,14 @@ void CGamePersistent::Disconnect()
 #include "xr_level_controller.h"
 #include "xrFramework/xr_ioc_cmd.h"
 
-void CGamePersistent::OnGameStart()
+void CGameContext::OnGameStart()
 {
 	__super::OnGameStart();
 
 	UpdateGameType();
 }
 
-void CGamePersistent::UpdateGameType()
+void CGameContext::UpdateGameType()
 {
 	__super::UpdateGameType();
 	//  [7/11/2005]
@@ -250,7 +250,7 @@ void CGamePersistent::UpdateGameType()
 		g_current_keygroup = _sp;
 }
 
-void CGamePersistent::OnGameEnd()
+void CGameContext::OnGameEnd()
 {
 	__super::OnGameEnd();
 
@@ -260,7 +260,7 @@ void CGamePersistent::OnGameEnd()
 	CWeaponHUD::CleanSharedContainer();
 }
 
-void CGamePersistent::WeathersUpdate()
+void CGameContext::WeathersUpdate()
 {
 	if(g_pLevel && !Engine.IsDedicatedServer())
 	{
@@ -432,7 +432,7 @@ void CGamePersistent::WeathersUpdate()
 
 #include "UI/UIGameTutorial.h"
 
-void CGamePersistent::start_logo_intro()
+void CGameContext::start_logo_intro()
 {
 #if 1 // def DEBUG
 	if(0 != strstr(Core.Params, "-nointro") || !(ps_game_ls_flags.test(INTRO_ENABLE)))
@@ -443,7 +443,7 @@ void CGamePersistent::start_logo_intro()
 		return;
 	}
 #endif
-	m_intro_event.bind(this, &CGamePersistent::update_logo_intro);
+	m_intro_event.bind(this, &CGameContext::update_logo_intro);
 	if(!Engine.IsDedicatedServer() && 0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pLevel)
 	{
 		VERIFY(NULL == m_intro);
@@ -452,7 +452,7 @@ void CGamePersistent::start_logo_intro()
 		Engine.Console->Hide();
 	}
 }
-void CGamePersistent::update_logo_intro()
+void CGameContext::update_logo_intro()
 {
 	if(m_intro && (false == m_intro->IsActive()))
 	{
@@ -462,7 +462,7 @@ void CGamePersistent::update_logo_intro()
 	}
 }
 
-void CGamePersistent::start_game_intro()
+void CGameContext::start_game_intro()
 {
 #if 1 // def DEBUG
 	if(0 != strstr(Core.Params, "-nointro"))
@@ -473,7 +473,7 @@ void CGamePersistent::start_game_intro()
 #endif
 	if(g_pLevel && g_pLevel->bReady)
 	{
-		m_intro_event.bind(this, &CGamePersistent::update_game_intro);
+		m_intro_event.bind(this, &CGameContext::update_game_intro);
 		if(0 == xr_stricmp(m_game_params.m_new_or_load, "new"))
 		{
 			VERIFY(NULL == m_intro);
@@ -483,7 +483,7 @@ void CGamePersistent::start_game_intro()
 		}
 	}
 }
-void CGamePersistent::update_game_intro()
+void CGameContext::update_game_intro()
 {
 	if(m_intro && (false == m_intro->IsActive()))
 	{
@@ -495,7 +495,7 @@ void CGamePersistent::update_game_intro()
 extern CUISequencer* g_tutorial;
 extern CUISequencer* g_tutorial2;
 
-void CGamePersistent::OnFrame()
+void CGameContext::OnFrame()
 {
 	PROFILE_FUNCTION();
 
@@ -567,7 +567,7 @@ void CGamePersistent::OnFrame()
 #include "game_sv_single.h"
 #include "xrServer.h"
 
-void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
+void CGameContext::OnEvent(EVENT E, u64 P1, u64 P2)
 {
 	if(E == eQuickLoad)
 	{
@@ -598,7 +598,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 }
 
-void CGamePersistent::Statistics(CGameFont* F)
+void CGameContext::Statistics(CGameFont* F)
 {
 #ifdef DEBUG
 #ifndef _EDITOR
@@ -608,14 +608,14 @@ void CGamePersistent::Statistics(CGameFont* F)
 #endif
 }
 
-float CGamePersistent::MtlTransparent(u32 mtl_idx)
+float CGameContext::MtlTransparent(u32 mtl_idx)
 {
 	return GMLib.GetMaterialByIdx((u16)mtl_idx)->fVisTransparencyFactor;
 }
 static BOOL bRestorePause = FALSE;
 static BOOL bEntryFlag = TRUE;
 
-void CGamePersistent::OnAppActivate()
+void CGameContext::OnAppActivate()
 {
 	bool bIsMP = (g_pLevel && Level().game && GameID() != GAME_SINGLE);
 	bIsMP &= !Device.Paused();
@@ -632,7 +632,7 @@ void CGamePersistent::OnAppActivate()
 	bEntryFlag = TRUE;
 }
 
-void CGamePersistent::OnAppDeactivate()
+void CGameContext::OnAppDeactivate()
 {
 	if(!bEntryFlag)
 		return;
@@ -653,43 +653,43 @@ void CGamePersistent::OnAppDeactivate()
 	bEntryFlag = FALSE;
 }
 
-bool CGamePersistent::OnRenderPPUI_query()
+bool CGameContext::OnRenderPPUI_query()
 {
-	// OPTICK_EVENT("CGamePersistent::OnRenderPPUI_query");
+	// OPTICK_EVENT("CGameContext::OnRenderPPUI_query");
 
 	return MainMenu()->OnRenderPPUI_query();
 	// enable PP or not
 }
 
-void CGamePersistent::OnRenderPPUI_main()
+void CGameContext::OnRenderPPUI_main()
 {
-	// OPTICK_EVENT("CGamePersistent::OnRenderPPUI_main");
+	// OPTICK_EVENT("CGameContext::OnRenderPPUI_main");
 
 	// always
 	MainMenu()->OnRenderPPUI_main();
 }
 
-void CGamePersistent::OnRenderPPUI_PP()
+void CGameContext::OnRenderPPUI_PP()
 {
-	// OPTICK_EVENT("CGamePersistent::OnRenderPPUI_PP");
+	// OPTICK_EVENT("CGameContext::OnRenderPPUI_PP");
 
 	MainMenu()->OnRenderPPUI_PP();
 }
 #include "string_table.h"
 #include "xrFramework/Engine.h"
-void CGamePersistent::LoadTitle(LPCSTR str)
+void CGameContext::LoadTitle(LPCSTR str)
 {
 	string512 buff;
 	sprintf_s(buff, "%s", CStringTable().translate(str).c_str());
 	Engine.LoadingScreen->SetTitle(buff);
 }
 
-bool CGamePersistent::CanBePaused()
+bool CGameContext::CanBePaused()
 {
 	return IsGameTypeSingle();
 }
 
-void CGamePersistent::SetPickableEffectorDOF(bool bSet)
+void CGameContext::SetPickableEffectorDOF(bool bSet)
 {
 	if((m_bPickableDOF == false) && (bSet == false))
 		return;
@@ -700,17 +700,17 @@ void CGamePersistent::SetPickableEffectorDOF(bool bSet)
 		RestoreEffectorDOF();
 }
 
-void CGamePersistent::GetCurrentDof(fvec3& dof)
+void CGameContext::GetCurrentDof(fvec3& dof)
 {
 	dof = m_dof[1];
 }
 
-void CGamePersistent::SetBaseDof(const fvec3& dof)
+void CGameContext::SetBaseDof(const fvec3& dof)
 {
 	m_dof[0] = m_dof[1] = m_dof[2] = m_dof[3] = dof;
 }
 
-void CGamePersistent::SetEffectorDOF(const fvec3& needed_dof)
+void CGameContext::SetEffectorDOF(const fvec3& needed_dof)
 {
 	if(m_bPickableDOF)
 		return;
@@ -719,7 +719,7 @@ void CGamePersistent::SetEffectorDOF(const fvec3& needed_dof)
 	m_dof[2] = m_dof[1]; // current
 }
 
-void CGamePersistent::RestoreEffectorDOF()
+void CGameContext::RestoreEffectorDOF()
 {
 	SetEffectorDOF(m_dof[3]);
 }
@@ -727,7 +727,7 @@ void CGamePersistent::RestoreEffectorDOF()
 #include "hudmanager.h"
 #pragma todo(NSDeathman to NSDeathman : Доработать)
 //	m_dof		[4];	// 0-dest 1-current 2-from 3-original
-void CGamePersistent::UpdateDof()
+void CGameContext::UpdateDof()
 {
 	if(m_bPickableDOF)
 	{

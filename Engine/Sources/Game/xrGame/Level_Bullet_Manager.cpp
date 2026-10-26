@@ -128,7 +128,7 @@ void CBulletManager::PlayExplodePS(const fmat4x4& xf)
 
 		CParticlesObject* ps = CParticlesObject::Create(*ps_name, TRUE);
 		ps->UpdateParent(xf, zero_vel);
-		GamePersistent().ps_needtoplay.push_back(ps);
+		GameContext().ps_needtoplay.push_back(ps);
 	}
 }
 

@@ -9,7 +9,7 @@ class CParticlesObject;
 class CUISequencer;
 class ui_core;
 
-class CGamePersistent : public IAppContext, public IEventReceiver
+class CGameContext : public IAppContext, public IEventReceiver
 {
 	// ambient particles
 	CParticlesObject* ambient_particles;
@@ -55,8 +55,8 @@ class CGamePersistent : public IAppContext, public IEventReceiver
 	u32 uTime2Change;
 	EVENT eDemoStart;
 
-	CGamePersistent();
-	virtual ~CGamePersistent();
+	CGameContext();
+	virtual ~CGameContext();
 
 	virtual void Start(LPCSTR op);
 	virtual void Disconnect();
@@ -105,9 +105,9 @@ class CGamePersistent : public IAppContext, public IEventReceiver
 	};
 };
 
-IC CGamePersistent& GamePersistent()
+IC CGameContext& GameContext()
 {
-	return *((CGamePersistent*)g_pAppContext);
+	return *((CGameContext*)g_pAppContext);
 }
 
 #endif // GamePersistentH

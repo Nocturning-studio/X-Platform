@@ -950,7 +950,7 @@ void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, fvec3& pos)
 	ps = CParticlesObject::Create(EffName, TRUE);
 
 	ps->UpdateParent(M, fvec3().set(0.f, 0.f, 0.f));
-	GamePersistent().ps_needtoplay.push_back(ps);
+	GameContext().ps_needtoplay.push_back(ps);
 }
 
 void game_cl_Deathmatch::OnSpawn(CObject* pObj)

@@ -35,7 +35,7 @@ CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapo
 	m_bLockType = false;
 
 	m_fSavedTimeFactor = Engine.TimeManager.GetTimeFactor();
-	GamePersistent().GetCurrentDof(m_SavedDof);
+	GameContext().GetCurrentDof(m_SavedDof);
 }
 
 CWeaponMagazined::~CWeaponMagazined()
@@ -1170,8 +1170,8 @@ void CWeaponMagazined::OnZoomIn()
 
 		if(psActorFlags.test(AF_NEED_DOF)) // && !IsScopeAttached())
 		{
-			GamePersistent().GetCurrentDof(m_SavedDof);
-			GamePersistent().SetPickableEffectorDOF(true);
+			GameContext().GetCurrentDof(m_SavedDof);
+			GameContext().SetPickableEffectorDOF(true);
 		}
 	}
 }
@@ -1195,8 +1195,8 @@ void CWeaponMagazined::OnZoomOut()
 
 		if(psActorFlags.test(AF_NEED_DOF)) // && !IsScopeAttached())
 		{
-			GamePersistent().SetPickableEffectorDOF(false);
-			GamePersistent().SetBaseDof(m_SavedDof);
+			GameContext().SetPickableEffectorDOF(false);
+			GameContext().SetBaseDof(m_SavedDof);
 		}
 	}
 }

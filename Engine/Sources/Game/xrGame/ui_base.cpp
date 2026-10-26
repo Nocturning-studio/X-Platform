@@ -10,7 +10,7 @@ CUICursor* GetUICursor()
 };
 ui_core* UI()
 {
-	return GamePersistent().m_pUI_core;
+	return GameContext().m_pUI_core;
 };
 extern ENGINE_API fvec2 g_current_font_scale;
 

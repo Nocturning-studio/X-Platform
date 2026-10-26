@@ -20,7 +20,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 	g_pAppContext->LoadTitle("st_loading_ai_objects");
 	string_path fn_game;
 
-	if(GamePersistent().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
+	if(GameContext().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
 		ai().load(net_SessionName());
 
 #ifdef ALIFE_MP
@@ -115,7 +115,7 @@ BOOL CLevel::Load_GameSpecific_After()
 				if(gameLtx.line_exist(Level().name(), "weathers"))
 				{
 					LPCSTR weathers_sect = gameLtx.r_string(Level().name(), "weathers");
-					GamePersistent().Environment().SetWeather(weathers_sect);
+					GameContext().Environment().SetWeather(weathers_sect);
 				}
 			}
 		}

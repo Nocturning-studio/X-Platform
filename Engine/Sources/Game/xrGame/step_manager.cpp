@@ -170,7 +170,7 @@ void CStepManager::update()
 				pos.c.set(get_foot_position(ELegType(i)));
 
 				ps->UpdateParent(pos, fvec3().set(0.f, 0.f, 0.f));
-				GamePersistent().ps_needtoplay.push_back(ps);
+				GameContext().ps_needtoplay.push_back(ps);
 			}
 
 			// Play Camera FXs

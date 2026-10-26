@@ -374,7 +374,7 @@ void CBurer::Hit(SHit* pHDS)
 		CParticlesObject* ps = CParticlesObject::Create(particle_fire_shield, TRUE);
 
 		ps->UpdateParent(pos, fvec3().set(0.f, 0.f, 0.f));
-		GamePersistent().ps_needtoplay.push_back(ps);
+		GameContext().ps_needtoplay.push_back(ps);
 	}
 	else if(!m_shield_active)
 		//				inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);

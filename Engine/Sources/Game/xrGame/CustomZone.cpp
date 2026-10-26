@@ -1385,7 +1385,7 @@ void CCustomZone::enter_Zone(SZoneObjectInfo& io)
 	// if (m_zone_flags.test(eAffectPickDOF) && Level().CurrentEntity())
 	//{
 	//	if (io.object->ID() == Level().CurrentEntity()->ID())
-	//		GamePersistent().SetPickableEffectorDOF(true);
+	//		GameContext().SetPickableEffectorDOF(true);
 	// }
 }
 
@@ -1396,7 +1396,7 @@ void CCustomZone::exit_Zone(SZoneObjectInfo& io)
 	// if (m_zone_flags.test(eAffectPickDOF) && Level().CurrentEntity())
 	//{
 	//	if (io.object->ID() == Level().CurrentEntity()->ID())
-	//		GamePersistent().SetPickableEffectorDOF(false);
+	//		GameContext().SetPickableEffectorDOF(false);
 	// }
 }
 

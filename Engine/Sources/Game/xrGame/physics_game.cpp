@@ -46,7 +46,7 @@ class CPHParticlesPlayCall : public CPHAction
 		pos.c.set(*((fvec3*)c.pos));
 
 		ps->UpdateParent(pos, zero_vel);
-		GamePersistent().ps_needtoplay.push_back(ps);
+		GameContext().ps_needtoplay.push_back(ps);
 	};
 	virtual bool obsolete() const
 	{
