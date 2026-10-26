@@ -176,6 +176,9 @@ class ENGINE_API IRender_interface
 	virtual void ResetBegin() = 0;
 	virtual void ResetEnd() = 0;
 
+	virtual void NewLevel() = 0;
+	virtual void DestroyLevel() = 0;
+
 	virtual void LevelLoad(IReader*) = 0;
 	virtual void LevelUnload() = 0;
 

@@ -55,6 +55,7 @@ class ENGINE_API CObjectList
 
 	CObject* Create(LPCSTR name);
 	void Destroy(CObject* O);
+	void ForceDestroy(CObject* O);
 
 	void SingleUpdate(CObject* O);
 	void Update(bool bForce);

@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include "wound.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 #include "xrFramework/bone.h"
 
 CWound::CWound(u16 bone_num)

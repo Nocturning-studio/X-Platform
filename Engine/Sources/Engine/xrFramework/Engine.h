@@ -91,10 +91,11 @@ class ENGINE_API CEngine
 	HMODULE hTuner;
 	HMODULE hOptick;
 
-	bool m_bLoaded;
-	bool m_gameLoaded;
+	bool m_bLoaded = false;
+	bool m_gameLoaded = false;
 
-	bool m_dedicated_server;
+	bool m_dedicated_server = false;
+	bool m_editor_mode = false;
 
 	xr_list<LOADING_EVENT> m_loading_events;
 
@@ -160,6 +161,9 @@ class ENGINE_API CEngine
 	bool IsDedicatedServer() { return m_dedicated_server; }
 	void SetLoaded() { m_bLoaded = TRUE; }
 	void SetUnloaded() { m_bLoaded = FALSE; }
+
+	bool IsEditorMode() const { return m_editor_mode; }
+	IEditorLevel* CreateEditorLevel();
 
   private:
 	bool Initialize();

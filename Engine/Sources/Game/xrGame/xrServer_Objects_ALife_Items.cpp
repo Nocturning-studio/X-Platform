@@ -8,7 +8,7 @@
 
 #include "pch.h"
 #include "xrMessages.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 #include "clsid_game.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "clsid_game.h"
@@ -16,7 +16,7 @@
 #ifndef XRGAME_EXPORTS
 #include "bone.h"
 #else
-#include "..\xrFramework/bone.h"
+#include "xrFramework/bone.h"
 #ifdef DEBUG
 #define PHPH_DEBUG
 #endif

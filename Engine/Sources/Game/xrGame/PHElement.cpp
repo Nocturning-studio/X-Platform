@@ -9,7 +9,7 @@
 #include "game_object_space.h"
 // #include "xrFramework/skeletoncustom.h"
 #include "xrFramework/skeletonanimated.h"
-#include <../../xrODE/ode/src/util.h>
+#include <xrODE/ode/src/util.h>
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif

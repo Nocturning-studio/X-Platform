@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorGameAPI.h" />
+    <ClInclude Include="EditorModule.h" />
+    <ClInclude Include="EditorLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorContext.h">
+      <Filter>Context</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorGameAPI.cpp" />
+    <ClCompile Include="EditorModule.cpp" />
+    <ClCompile Include="EditorLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorContext.cpp">
+      <Filter>Context</Filter>
+    </ClCompile>
+    <ClCompile Include="entry_point.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+    <ClCompile Include="lib_exports.cpp">
+      <Filter>Kernel</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Kernel">
+      <UniqueIdentifier>{86553710-121a-47cb-9e6c-2e83ae0351cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{3022f799-a880-4b71-9033-4738fc2d0f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Context">
+      <UniqueIdentifier>{2489f331-61d8-4810-9dfb-56d2c129a02c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

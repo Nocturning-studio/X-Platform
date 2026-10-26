@@ -1,0 +1,34 @@
+////////////////////////////////////////////////////////////////////////////////
+// Created: 26.10.2026 22:27:06
+// Author: NS_Deathman
+// File: GameEditorAPI.h
+// Nocturning studio for X-Platform
+////////////////////////////////////////////////////////////////////////////////
+#pragma once
+////////////////////////////////////////////////////////////////////////////////
+#include <xrFramework/xrFramework.h>
+////////////////////////////////////////////////////////////////////////////////
+class CSE_Abstract;
+class IRender_Visual;
+////////////////////////////////////////////////////////////////////////////////
+struct SEditorGameAPI
+{
+    u32 version;
+
+    // Server objects (замена F_entity_Create/F_entity_Destroy)
+    CSE_Abstract* (*CreateServerObject)(LPCSTR section);
+    void (*DestroyServerObject)(CSE_Abstract*);
+
+    // Global state
+    void (*InitGameGlobals)();
+    void (*CleanGameGlobals)();
+
+    // Materials (GMLib живёт в xrGame.dll)
+    void (*RegisterModel)(IRender_Visual* V);
+    float (*MtlTransparent)(u32 mtl_idx);
+
+    // Registration
+    void (*RegisterConsoleCommands)();
+    void (*RegisterInputCommands)();
+};
+////////////////////////////////////////////////////////////////////////////////

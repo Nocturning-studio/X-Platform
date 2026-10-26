@@ -6,7 +6,7 @@
 #include "pch.h"
 #include "BottleItem.h"
 #include "xrmessages.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 #include "entity_alive.h"
 #include "EntityCondition.h"
 

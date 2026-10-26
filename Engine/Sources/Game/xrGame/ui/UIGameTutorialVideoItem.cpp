@@ -6,7 +6,7 @@
 #include "../object_broker.h"
 #include "xrFramework/xr_input.h"
 #include "xrGame/xr_level_controller.h"
-#include <xrDebug_macros.h>
+#include <xrCore/xrDebug_macros.h>
 
 extern ENGINE_API BOOL bShowPauseString;
 

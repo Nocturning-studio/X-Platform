@@ -12,15 +12,15 @@ namespace
     using FnGetModule = IGameModule * (*)();
 }
 ////////////////////////////////////////////////////////////////////////////////
-CDllGameModule::CDllGameModule(pcstr dllName) : m_dllName(dllName ? dllName : "")
+CDllGameModule::CDllGameModule(pcstr dllName, pcstr exportName) : m_dllName(dllName ? dllName : ""), m_exportName(exportName ? exportName : "xrGame_GetModule")
 {
     R_ASSERT2(!m_dllName.empty(), "CDllGameModule: empty DLL name");
 
     m_handle = LoadLibraryA(m_dllName.c_str());
     R_ASSERT3(m_handle, "Cannot load game module", m_dllName.c_str());
 
-    auto getModule = (FnGetModule)GetProcAddress(m_handle, "xrGame_GetModule");
-    R_ASSERT3(getModule, "Game module missing xrGame_GetModule export", m_dllName.c_str());
+    auto getModule = (FnGetModule)GetProcAddress(m_handle, m_exportName.c_str());
+    R_ASSERT3(getModule, "Game module missing export", m_exportName.c_str());
 
     m_instance = getModule();
     R_ASSERT2(m_instance, "xrGame_GetModule returned nullptr");
@@ -58,14 +58,14 @@ void CDllGameModule::RegisterInputCommands()
     if (m_instance) m_instance->RegisterInputCommands();
 }
 
-IAppContext* CDllGameModule::CreatePersistent()
+IAppContext* CDllGameModule::CreateGameContext()
 {
-    return m_instance ? m_instance->CreatePersistent() : nullptr;
+    return m_instance ? m_instance->CreateGameContext() : nullptr;
 }
 
-void CDllGameModule::DestroyPersistent(IAppContext* p)
+void CDllGameModule::DestroyGameContext(IAppContext* p)
 {
-    if (m_instance) m_instance->DestroyPersistent(p);
+    if (m_instance) m_instance->DestroyGameContext(p);
 }
 
 ILoadingScreen* CDllGameModule::CreateLoadingScreen()

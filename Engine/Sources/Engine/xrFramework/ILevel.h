@@ -74,6 +74,8 @@ class ENGINE_API ILevel : public DLL_Pure,
 	// temporary
 	xr_vector<ISpatial*> snd_ER;
 
+	BOOL m_bRenderLevelLoaded = FALSE;
+
   public:
 	CObjectList Objects;
 	CObjectSpace ObjectSpace;
@@ -101,7 +103,7 @@ class ENGINE_API ILevel : public DLL_Pure,
 	ILevel();
 	virtual ~ILevel();
 
-	virtual shared_str name() const = 0;
+	virtual shared_str Name() const = 0;
 	virtual void GetLevelInfo(CServerInfo* si) = 0;
 
 	virtual BOOL net_Start(LPCSTR op_server, LPCSTR op_client) = 0;

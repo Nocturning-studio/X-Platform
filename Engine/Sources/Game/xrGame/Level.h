@@ -7,7 +7,7 @@
 #pragma once
 
 #include "xrFramework/ILevel.h"
-#include "xrFramework/../xrNetServer/net_client.h"
+#include "xrNetServer/net_client.h"
 #include "script_export_space.h"
 #include "xrFramework/StatGraph.h"
 #include "xrMessages.h"

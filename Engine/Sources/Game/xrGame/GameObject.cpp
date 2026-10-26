@@ -21,7 +21,7 @@
 #include "ai_debug.h"
 #include "xrFramework/ILevel.h"
 #include "level.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 #include "script_callback_ex.h"
 #include "MathUtils.h"
 #include "game_cl_base_weapon_usage_statistic.h"

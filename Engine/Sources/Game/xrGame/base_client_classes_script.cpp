@@ -13,7 +13,7 @@
 #include "xrFramework/fbasicvisual.h"
 #include "xrFramework/skeletonanimated.h"
 #include "ai/stalker/ai_stalker.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 
 using namespace luabind;
 

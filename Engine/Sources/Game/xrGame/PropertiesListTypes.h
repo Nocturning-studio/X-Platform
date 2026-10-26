@@ -40,8 +40,9 @@ class PropItem;
 DEFINE_VECTOR(PropItem*, PropItemVec, PropItemIt);
 
 //------------------------------------------------------------------------------
-#include "ChooseTypes.H"
+#include <xrCore/ChooseTypes.H>
 #include <FastDelegate/FastDelegate.h>
+#include "smart_cast.h"
 //------------------------------------------------------------------------------
 typedef fastdelegate::FastDelegate2<PropValue*, xr_string&> TOnDrawTextEvent;
 typedef fastdelegate::FastDelegate1<PropItem*> TOnClick;
@@ -450,14 +451,14 @@ class ShortcutValue : public CustomValue<xr_shortcut>
 	virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText);
 	bool ApplyValue(const xr_shortcut& val)
 	{
-		if(!(*value == val))
+		if(!(*this->value == val))
 		{
 			bool allow = true;
 			if(!OnValidateResultEvent.empty())
 				OnValidateResultEvent(this, val, allow);
 			if(allow)
 			{
-				set_value(*value, val);
+				set_value(*this->value, val);
 				return true;
 			}
 		}
@@ -526,7 +527,7 @@ class CTextValue : public PropValue
 	{
 		if(0 != xr_strcmp(value, val))
 		{
-			strcpy(value, val);
+			strncpy_s(value, lim + 1, val, _TRUNCATE);
 			return true;
 		}
 		return false;
@@ -537,7 +538,7 @@ class CTextValue : public PropValue
 	}
 	virtual void ResetValue()
 	{
-		strcpy(value, init_value.c_str());
+		strncpy_s(value, lim + 1, init_value.c_str(), _TRUNCATE);
 	}
 };
 //------------------------------------------------------------------------------
@@ -606,16 +607,16 @@ class NumericValue : public CustomValue<T>
   public:
 	NumericValue(T* val) : CustomValue<T>(val)
 	{
-		value = val;
-		init_value = *value;
+		this->value = val;
+		this->init_value = *this->value;
 		dec = 0;
 	};
 	NumericValue(T* val, T mn, T mx, T increm, int decim)
 		: CustomValue<T>(val), lim_mn(mn), lim_mx(mx), inc(increm), dec(decim)
 	{
 		clamp(*val, lim_mn, lim_mx);
-		value = val;
-		init_value = *value;
+		this->value = val;
+		this->init_value = *this->value;
 	};
 	bool ApplyValue(const T& _val)
 	{
@@ -629,7 +630,7 @@ class NumericValue : public CustomValue<T>
 		if(!OnDrawText.empty())
 			OnDrawText(this, draw_val);
 		else
-			draw_sprintf(draw_val, *value, dec);
+			draw_sprintf(draw_val, *this->value, dec);
 		return draw_val;
 	}
 };
@@ -744,25 +745,25 @@ class FlagValue : public CustomValue<T>, public FlagValueCustom
 	}
 	virtual bool Equal(PropValue* val)
 	{
-		return !!value->equal(*((FlagValue<T>*)val)->value, mask);
+		return !!this->value->equal(*((FlagValue<T>*)val)->value, mask);
 	}
 	virtual const T& GetValue()
 	{
-		return *value;
+		return *this->value;
 	}
 	virtual void ResetValue()
 	{
-		value->set(mask, init_value.is(mask));
+		this->value->set(mask, this->init_value.is(mask));
 	}
 	virtual bool GetValueEx()
 	{
-		return !!value->is(mask);
+		return !!this->value->is(mask);
 	}
 	bool ApplyValue(const T& val)
 	{
-		if(!val.equal(*value, mask))
+		if(!val.equal(*this->value, mask))
 		{
-			value->set(mask, val.is(mask));
+			this->value->set(mask, val.is(mask));
 			return true;
 		}
 		return false;
@@ -801,7 +802,7 @@ class TokenValue : public CustomValue<T>, public TokenValueCustom
 			OnDrawText(this, draw_val);
 		else
 			for(int i = 0; token[i].name; i++)
-				if(token[i].id == (int)GetValue())
+				if(token[i].id == (int)this->GetValue())
 					return token[i].name;
 		return draw_val;
 	}
@@ -834,7 +835,7 @@ class RTokenValue : public CustomValue<T>, public RTokenValueCustom
 			OnDrawText(this, draw_val);
 		else
 			for(u32 k = 0; k < token_count; k++)
-				if((T)token[k].id == GetValue())
+				if((T)token[k].id == this->GetValue())
 					return *token[k].name;
 		return draw_val;
 	}

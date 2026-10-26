@@ -2305,6 +2305,9 @@
     <Filter Include="Presence Audio Integration">
       <UniqueIdentifier>{fe0667fb-844d-446a-8e23-d4b52eb6f799}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Editor">
+      <UniqueIdentifier>{a489a8d4-25cd-46a9-8877-e52d85e1b9ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6588,6 +6591,9 @@
     <ClInclude Include="GameModule.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="editor\GameEditorAPI.h">
+      <Filter>Core\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9745,6 +9751,9 @@
     </ClCompile>
     <ClCompile Include="GameModule.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="editor\GameEditorAPI.cpp">
+      <Filter>Core\Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

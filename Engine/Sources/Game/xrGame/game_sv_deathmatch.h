@@ -2,7 +2,7 @@
 
 #include "game_sv_mp.h"
 #include "inventory_space.h"
-#include "xrFramework/../xrNetServer/client_id.h"
+#include "xrNetServer/client_id.h"
 #include "Hit.h"
 #include "xrFramework/pure_relcase.h"
 

@@ -37,12 +37,17 @@ ILevel::~ILevel()
 
 	xr_delete(pLevel);
 
-	// Render-level unload
-	Render->LevelUnload();
+	if (m_bRenderLevelLoaded)
+	{
+		Render->LevelUnload();
+		m_bRenderLevelLoaded = FALSE;
+	}
 
-	g_pAppContext->Environment().mods_unload();
-
-	g_pAppContext->Environment().unload();
+	if (g_pAppContext)
+	{
+		g_pAppContext->Environment().mods_unload();
+		g_pAppContext->Environment().unload();
+	}
 
 	xr_delete(m_pCameras);
 
@@ -101,6 +106,7 @@ BOOL ILevel::Load(u32 dwNum)
 	// Render-level Load
 	g_pAppContext->LoadTitle("st_start_loading_level");
 	Render->LevelLoad(LL_Stream);
+	m_bRenderLevelLoaded = TRUE;
 	tscreate.FrameEnd();
 
 	// Objects

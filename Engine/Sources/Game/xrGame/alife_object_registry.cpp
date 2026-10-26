@@ -8,7 +8,7 @@
 
 #include "pch.h"
 #include "alife_object_registry.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 #include "ai_debug.h"
 
 CALifeObjectRegistry::CALifeObjectRegistry(LPCSTR section)

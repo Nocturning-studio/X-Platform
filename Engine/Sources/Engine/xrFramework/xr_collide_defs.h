@@ -1,11 +1,7 @@
 #ifndef xr_collide_defsH
 #define xr_collide_defsH
 #pragma once
-#include "pch.h"
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
+#include "xrFrameworkAPI.h"
 
 class ENGINE_API CObject;
 namespace collide
@@ -195,7 +191,7 @@ class rq_results
 	}
 	IC void r_sort()
 	{
-		concurrency::parallel_sort(results.begin(), results.end(), r_sort_pred);
+		std::sort(results.begin(), results.end(), r_sort_pred);
 	}
 };
 typedef BOOL rq_callback(rq_result& result, LPVOID user_data);

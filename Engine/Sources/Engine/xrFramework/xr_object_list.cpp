@@ -72,14 +72,9 @@ CObject* CObjectList::FindObjectByCLS_ID(CLASS_ID cls)
 
 void CObjectList::o_remove(xr_vector<CObject*>& v, CObject* O)
 {
-	//.	if(O->ID()==1026)
-	//.	{
-	//.		Log("ahtung");
-	//.	}
 	xr_vector<CObject*>::iterator _i = std::find(v.begin(), v.end(), O);
 	VERIFY(_i != v.end());
 	v.erase(_i);
-	//.	Msg("---o_remove[%s][%d]", O->cName().c_str(), O->ID() );
 }
 
 void CObjectList::o_activate(CObject* O)
@@ -110,28 +105,18 @@ void CObjectList::SingleUpdate(CObject* O)
 		O->IAmNotACrowAnyMore();
 		O->UpdateCL();
 		VERIFY3(O->dbg_update_cl == Engine.TimeManager.GetFrameCount(), "Broken sequence of calls to 'UpdateCL'", *O->cName());
-		//		if (O->getDestroy())
-		//		{
-		//			destroy_queue.push_back(O);
-		//.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(),
-		// Engine.TimeManager.GetFrameCount());
-		//		}
-		//		else
 		if(O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
 		{
 			// Push to destroy-queue if it isn't here already
 			Msg("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]", O->ID(),
 				*O->cName(), *O->cNameSect(), O->H_Parent()->ID(), *O->H_Parent()->cName());
-			//			if (std::find(destroy_queue.begin(),destroy_queue.end(),O)==destroy_queue.end())
-			//				destroy_queue.push_back	(O);
 		}
 	}
 #ifdef DEBUG
 	if(O->getDestroy() && (Engine.TimeManager.GetFrameCount() != O->dwFrame_UpdateCL))
 	{
 		//		destroy_queue.push_back(O);
-		Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(),
-			Engine.TimeManager.GetFrameCount());
+		Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(), Engine.TimeManager.GetFrameCount());
 	}
 #endif
 }
@@ -230,7 +215,6 @@ void CObjectList::Update(bool bForce)
 		for(int it = destroy_queue.size() - 1; it >= 0; it--)
 		{
 			CObject* O = destroy_queue[it];
-			//			Msg				("Object [%x]", O);
 #ifdef DEBUG
 			Msg("Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), *O->cName(), Engine.TimeManager.GetFrameCount());
 #endif // DEBUG
@@ -245,17 +229,13 @@ void CObjectList::net_Register(CObject* O)
 {
 	R_ASSERT(O);
 	map_NETID.insert(mk_pair(O->ID(), O));
-	// Msg			("-------------------------------- Register: %s",O->cName());
 }
 
 void CObjectList::net_Unregister(CObject* O)
 {
 	xr_map<u32, CObject*>::iterator it = map_NETID.find(O->ID());
 	if((it != map_NETID.end()) && (it->second == O))
-	{
-		// Msg			("-------------------------------- Unregster: %s",O->cName());
 		map_NETID.erase(it);
-	}
 }
 
 int g_Dump_Export_Obj = 0;
@@ -275,7 +255,6 @@ u32 CObjectList::net_Export(NET_Packet* _Packet, u32 start, u32 max_object_size)
 		{
 			Packet.w_u16(u16(P->ID()));
 			Packet.w_chunk_open8(position);
-			// Msg						("cl_export: %d '%s'",P->ID(),*P->cName());
 			P->net_Export(Packet);
 
 #ifdef DEBUG
@@ -292,8 +271,6 @@ u32 CObjectList::net_Export(NET_Packet* _Packet, u32 start, u32 max_object_size)
 				Msg("* %s : %d", *(P->cNameSect()), sz);
 			}
 			Packet.w_chunk_close8(position);
-			//			if (0==(--count))
-			//				break;
 			if(max_object_size > (NET_PacketSizeLimit - Packet.w_tell()))
 				break;
 		}
@@ -412,6 +389,32 @@ void CObjectList::Destroy(CObject* O)
 			FATAL("! Unregistered object being destroyed");
 	}
 	g_pAppContext->ObjectPool.destroy(O);
+}
+
+void CObjectList::ForceDestroy(CObject* O)
+{
+	if (!O) return;
+
+	auto it0 = std::find(crows_0.begin(), crows_0.end(), O);
+	if (it0 != crows_0.end()) crows_0.erase(it0);
+	auto it1 = std::find(crows_1.begin(), crows_1.end(), O);
+	if (it1 != crows_1.end()) crows_1.erase(it1);
+
+	auto dq = std::find(destroy_queue.begin(), destroy_queue.end(), O);
+	if (dq != destroy_queue.end()) destroy_queue.erase(dq);
+
+	auto ia = std::find(objects_active.begin(), objects_active.end(), O);
+	if (ia != objects_active.end()) objects_active.erase(ia);
+	else
+	{
+		auto is = std::find(objects_sleeping.begin(), objects_sleeping.end(), O);
+		if (is != objects_sleeping.end()) objects_sleeping.erase(is);
+	}
+
+	net_Unregister(O);
+	O->net_Destroy();
+
+	if (g_pAppContext) g_pAppContext->ObjectPool.destroy(O);
 }
 
 void CObjectList::relcase_register(RELCASE_CALLBACK cb, int* ID)

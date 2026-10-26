@@ -726,6 +726,7 @@
     <ClInclude Include="CPhotoMode.h" />
     <ClInclude Include="EngineQuit.hpp" />
     <ClInclude Include="GameObjectFactory.h" />
+    <ClInclude Include="IEditorLevel.h" />
     <ClInclude Include="IEngineHost.h" />
     <ClInclude Include="IGameModule.h" />
     <ClInclude Include="ILoadingScreen.h" />
@@ -920,11 +921,6 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_Demo|Win32'">Level2</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release Master Gold|Win32'">Level2</WarningLevel>
     </ClCompile>
-    <ClCompile Include="du_box.cpp" />
-    <ClCompile Include="du_cone.cpp" />
-    <ClCompile Include="du_cylinder.cpp" />
-    <ClCompile Include="du_sphere.cpp" />
-    <ClCompile Include="du_sphere_part.cpp" />
     <ClCompile Include="edit_actions.cpp" />
     <ClCompile Include="Effector.cpp" />
     <ClCompile Include="EffectorPP.cpp" />
@@ -1112,6 +1108,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\engine.globals.props" />
     <None Include="cpp.hint" />
     <None Include="R_Backend.inl" />
   </ItemGroup>

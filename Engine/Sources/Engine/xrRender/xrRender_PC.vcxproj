@@ -943,9 +943,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\xrFramework\du_cone.h" />
-    <ClInclude Include="..\xrFramework\du_sphere.h" />
-    <ClInclude Include="..\xrFramework\du_sphere_part.h" />
     <ClInclude Include="Blender_bent_normals.h" />
     <ClInclude Include="Blender_hi_z.h" />
     <ClInclude Include="Blender_terrain.h" />
@@ -1036,9 +1033,6 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\xrFramework\du_cone.cpp" />
-    <ClCompile Include="..\xrFramework\du_sphere.cpp" />
-    <ClCompile Include="..\xrFramework\du_sphere_part.cpp" />
     <ClCompile Include="CPUOcclusion.cpp" />
     <ClCompile Include="DetailManager.cpp" />
     <ClCompile Include="DetailManager_VS.cpp" />

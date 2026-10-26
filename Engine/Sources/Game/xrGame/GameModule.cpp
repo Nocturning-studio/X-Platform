@@ -39,12 +39,12 @@ void CGameModule::RegisterInputCommands()
     CCC_RegisterInput();
 }
 
-IAppContext* CGameModule::CreatePersistent()
+IAppContext* CGameModule::CreateGameContext()
 {
     return (IAppContext*)GameObjectFactory_Create(CLSID_GAME_PERSISTANT);
 }
 
-void CGameModule::DestroyPersistent(IAppContext* p)
+void CGameModule::DestroyGameContext(IAppContext* p)
 {
     if (p) GameObjectFactory_Destroy(p);
 }

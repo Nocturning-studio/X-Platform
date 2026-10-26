@@ -232,7 +232,7 @@ void CDemoRecord::MakeLevelMapProcess()
 		if(g_bDR_LM_4Steps)
 			GetLM_BBox(bb, g_iDR_LM_Step);
 
-		sprintf_s(tmp, sizeof(tmp), "%s_[%3.3f, %3.3f]-[%3.3f, %3.3f]", *g_pLevel->name(), bb.min.x, bb.min.z,
+		sprintf_s(tmp, sizeof(tmp), "%s_[%3.3f, %3.3f]-[%3.3f, %3.3f]", *g_pLevel->Name(), bb.min.x, bb.min.z,
 				  bb.max.x, bb.max.z);
 		Render->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP, tmp);
 		psHUD_Flags.assign(s_hud_flag);

@@ -9,6 +9,7 @@
 #include "xrFrameworkAPI.h"
 #include "GameObjectFactory.h"
 #include "ILoadingScreen.h"
+#include "IEditorLevel.h"
 ////////////////////////////////////////////////////////////////////////////////
 class IAppContext;
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,12 +32,18 @@ class ENGINE_API IGameModule
 	virtual void RegisterInputCommands() {}
 
 	// ---- Game persistent ----
-	virtual IAppContext* CreatePersistent() = 0;
-	virtual void DestroyPersistent(IAppContext*) = 0;
+	virtual IAppContext* CreateGameContext() = 0;
+	virtual void DestroyGameContext(IAppContext*) = 0;
+
+	virtual IAppContext* CreateEditorContext() { return nullptr; }
+	virtual void DestroyEditorContext(IAppContext* c) { DestroyGameContext(c); }
 
 	// ---- Loading screen ----
 	virtual ILoadingScreen* CreateLoadingScreen() = 0;
 	virtual void DestroyLoadingScreen(ILoadingScreen*) = 0;
+
+	virtual IEditorLevel* CreateEditorLevel() { return nullptr; }
+	virtual void DestroyEditorLevel(IEditorLevel* l) { if (l) { l->net_Stop(); xr_delete(l); } }
 
 	virtual void OnFrameworkShutdown() {}
 };

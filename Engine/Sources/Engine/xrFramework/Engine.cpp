@@ -176,6 +176,8 @@ CEngine::~CEngine()
 
 bool CEngine::Initialize()
 {
+	m_editor_mode = (AppHost->GetRunMode() == EEngineRunMode::Editor);
+
 	// Предварительная настройка интерфейса (Splash Screen)
 	auto Logo = xr_make_unique<LogoWindow>();
 	Logo->Show();
@@ -312,6 +314,7 @@ bool CEngine::Initialize()
 #endif
 	}
 
+	if (!m_editor_mode)
 	{
 		// Loads after xrGame and xrRender are register they commands
 		Msg("Loading user settings");
@@ -345,7 +348,7 @@ bool CEngine::Initialize()
 
 	if (GameModule)
 	{
-		g_pAppContext = GameModule->CreatePersistent();
+		g_pAppContext = m_editor_mode ? GameModule->CreateEditorContext() : GameModule->CreateGameContext();
 		if (g_pAppContext)
 			g_pAppContext->Initialize();
 	}
@@ -480,10 +483,21 @@ void CEngine::Destroy()
 	xr_delete(g_SpatialSpacePhysic);
 	xr_delete(g_SpatialSpace);
 
+	if (m_editor_mode && g_pLevel && GameModule)
+	{
+		GameModule->DestroyEditorLevel(static_cast<IEditorLevel*>(g_pLevel));
+		g_pLevel = nullptr;
+	}
+
 	if (g_pAppContext)
 	{
 		if (GameModule)
-			GameModule->DestroyPersistent(g_pAppContext);
+		{
+			if (m_editor_mode)
+				GameModule->DestroyEditorContext(g_pAppContext);
+			else
+				GameModule->DestroyGameContext(g_pAppContext);
+		}
 		g_pAppContext = nullptr;
 	}
 
@@ -582,4 +596,12 @@ void CEngine::Run(IEngineHost* host)
 	AppHost->OnPreDestroy();
 	Destroy();
 	AppHost = nullptr;
+}
+
+IEditorLevel* CEngine::CreateEditorLevel()
+{
+	if (!m_editor_mode || !GameModule) return nullptr;
+	IEditorLevel* level = GameModule->CreateEditorLevel();
+	if (level) g_pLevel = level;
+	return level;
 }

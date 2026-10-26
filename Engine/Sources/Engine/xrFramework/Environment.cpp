@@ -680,7 +680,7 @@ void CEnvironment::mods_load()
 
 void CEnvironment::load_level_specific_ambients()
 {
-	const shared_str level_name = g_pLevel->name();
+	const shared_str level_name = g_pLevel->Name();
 
 	string_path path;
 	strconcat(sizeof(path), path, "environment\\ambients\\", level_name.c_str(), ".ltx");

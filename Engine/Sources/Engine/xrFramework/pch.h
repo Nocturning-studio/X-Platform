@@ -6,6 +6,8 @@
 #define WIN32_LEAN_AND_MEAN
 #define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
 
+#include <ppl.h>
+
 #include <xrCore/xrCore.h>
 #include <X-RHI/include/XRHI.h>
 #include <xrRenderBackend/xrRenderBackend.h>

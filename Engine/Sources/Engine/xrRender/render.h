@@ -250,6 +250,9 @@ class CRender : public IRender_interface, public pureFrame
 	virtual void ResetBegin() override;
 	virtual void ResetEnd() override;
 
+	virtual void NewLevel() override {};
+	virtual void DestroyLevel() override {};
+
 	virtual void LevelLoad(IReader*) override;
 	virtual void LevelUnload() override;
 

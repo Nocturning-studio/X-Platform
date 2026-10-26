@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "actor_mp_server.h"
-#include "xrFramework/../xrNetServer/net_utils.h"
+#include "xrNetServer/net_utils.h"
 
 void CSE_ActorMP::UPDATE_Read(NET_Packet& packet)
 {

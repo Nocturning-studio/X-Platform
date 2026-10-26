@@ -459,9 +459,6 @@
     <ClInclude Include="RenderPipeline\IndirectLightingStage.h">
       <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrFramework\du_cone.h" />
-    <ClInclude Include="..\xrFramework\du_sphere.h" />
-    <ClInclude Include="..\xrFramework\du_sphere_part.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -731,9 +728,6 @@
     <ClCompile Include="RenderPipeline\IndirectLightingStage.cpp">
       <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrFramework\du_cone.cpp" />
-    <ClCompile Include="..\xrFramework\du_sphere.cpp" />
-    <ClCompile Include="..\xrFramework\du_sphere_part.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -11,7 +11,7 @@
 class ENGINE_API CDllGameModule final : public IGameModule
 {
 public:
-    explicit CDllGameModule(const char* dllName);
+    explicit CDllGameModule(const char* dllName, const char* exportName = "xrGame_GetModule");
     ~CDllGameModule() override;
 
     CDllGameModule(const CDllGameModule&) = delete;
@@ -22,9 +22,9 @@ public:
     TGameObjectFactoryCreate* GetGameObjectCreate()  const override;
     TGameObjectFactoryDestroy* GetGameObjectDestroy() const override;
     void RegisterConsoleCommands() override;
-    void RegisterInputCommands()   override;
-    IAppContext* CreatePersistent() override;
-    void DestroyPersistent(IAppContext* p) override;
+    void RegisterInputCommands() override;
+    IAppContext* CreateGameContext() override;
+    void DestroyGameContext(IAppContext* p) override;
     ILoadingScreen* CreateLoadingScreen() override;
     void DestroyLoadingScreen(ILoadingScreen* ls) override;
 
@@ -32,6 +32,7 @@ public:
 
 private:
     xr_string m_dllName;
+    xr_string m_exportName;
     HMODULE m_handle = nullptr;
     IGameModule* m_instance = nullptr;
 };

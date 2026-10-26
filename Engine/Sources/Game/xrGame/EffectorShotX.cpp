@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "EffectorShotX.h"
-#include "..\xrFramework/CameraBase.h"
+#include "xrFramework/CameraBase.h"
 
 CCameraShotEffectorX::CCameraShotEffectorX(float max_angle, float relax_speed, float max_angle_horz,
 										   float step_angle_horz, float angle_frac)

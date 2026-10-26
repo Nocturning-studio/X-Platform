@@ -214,6 +214,9 @@
     <Filter Include="Game API\Modules\Loading Screen">
       <UniqueIdentifier>{57a9d780-3a13-47bb-919c-52a6af221837}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Editor API">
+      <UniqueIdentifier>{cc45ef18-1d5f-4202-b8aa-52702bf8e3eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="psystem.h">
@@ -651,6 +654,9 @@
     <ClInclude Include="IAppContext.h">
       <Filter>Engine\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="IEditorLevel.h">
+      <Filter>Editor API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">
@@ -878,21 +884,6 @@
     <ClCompile Include="D3DUtils.cpp">
       <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
-    <ClCompile Include="du_box.cpp">
-      <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_cone.cpp">
-      <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_cylinder.cpp">
-      <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_sphere.cpp">
-      <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_sphere_part.cpp">
-      <Filter>Legacy Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
     <ClCompile Include="xrXRC.cpp">
       <Filter>Engine\Modules\Collision Core</Filter>
     </ClCompile>
@@ -1079,5 +1070,6 @@
       <Filter>Legacy Render\Render backend\Backend</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="..\..\..\engine.globals.props" />
   </ItemGroup>
 </Project>
