@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "IAppContext.h"
 
 #include "xrSheduler.h"
@@ -211,7 +211,7 @@ void CObjectList::Update(bool bForce)
 		for(int it = destroy_queue.size() - 1; it >= 0; it--)
 			Sound->object_relcase(destroy_queue[it]);
 
-		CCustomHUD& hud = *g_pGameLevel->pHUD;
+		CCustomHUD& hud = *g_pLevel->pHUD;
 		RELCASE_CALLBACK_VEC::iterator It = m_relcase_callbacks.begin();
 		RELCASE_CALLBACK_VEC::iterator Ite = m_relcase_callbacks.end();
 		for(; It != Ite; ++It)

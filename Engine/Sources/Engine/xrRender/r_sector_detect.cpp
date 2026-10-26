@@ -65,7 +65,7 @@ IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 	// Geometry model
 	int id2 = -1;
 	float range2 = range1;
-	xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
+	xrc.ray_query(g_pLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
 	if(xrc.r_count())
 	{
 		CDB::RESULT* RP2 = xrc.r_begin();
@@ -97,7 +97,7 @@ IRender_Sector* CRender::detectSector(const fvec3& P, fvec3& dir)
 	else
 	{
 		// Take triangle at ID and use it's Sector
-		CDB::TRI* pTri = g_pGameLevel->ObjectSpace.GetStaticTris() + ID;
+		CDB::TRI* pTri = g_pLevel->ObjectSpace.GetStaticTris() + ID;
 		return getSector(pTri->sector);
 	}
 }

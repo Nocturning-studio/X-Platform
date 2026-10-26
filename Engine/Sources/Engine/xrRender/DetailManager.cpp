@@ -701,10 +701,10 @@ void CDetailManager::cache_Decompress(Slot* S, xrXRC& local_xrc)
 	// Editor code omitted for brevity
 #else
 	local_xrc.box_options(CDB::OPT_FULL_TEST);
-	local_xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), bC, bD);
+	local_xrc.box_query(g_pLevel->ObjectSpace.GetStaticModel(), bC, bD);
 	u32 triCount = local_xrc.r_count();
-	CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	fvec3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+	CDB::TRI* tris = g_pLevel->ObjectSpace.GetStaticTris();
+	fvec3* verts = g_pLevel->ObjectSpace.GetStaticVerts();
 #endif
 
 	if(0 == triCount)

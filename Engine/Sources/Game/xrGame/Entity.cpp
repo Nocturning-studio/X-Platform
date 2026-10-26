@@ -319,11 +319,11 @@ void CEntity::set_death_time()
 
 bool CEntity::IsFocused() const
 {
-	return (smart_cast<const CEntity*>(g_pGameLevel->CurrentEntity()) == this);
+	return (smart_cast<const CEntity*>(g_pLevel->CurrentEntity()) == this);
 }
 bool CEntity::IsMyCamera() const
 {
-	return (smart_cast<const CEntity*>(g_pGameLevel->CurrentViewEntity()) == this);
+	return (smart_cast<const CEntity*>(g_pLevel->CurrentViewEntity()) == this);
 }
 
 void CEntity::set_ready_to_save()

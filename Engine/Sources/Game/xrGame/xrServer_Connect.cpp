@@ -55,7 +55,7 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 	if(game->get_option_i(*session_name, "battleye", 1) != 0) // default => battleye enable (always)
 	{
 		// if level exist & if server in internet
-		if(g_pGameLevel && (game->get_option_i(*session_name, "public", 0) != 0))
+		if(g_pLevel && (game->get_option_i(*session_name, "public", 0) != 0))
 		{
 			if(Level().battleye_system.server)
 			{
@@ -68,9 +68,9 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
 					return ErrBELoad;
 				}
 			}
-		} // g_pGameLevel
+		} // g_pLevel
 	}
-/*	if ( g_pGameLevel && Level().battleye_system.server )
+/*	if ( g_pLevel && Level().battleye_system.server )
 	{
 		if ( game->get_option_i( *session_name, "battleye_update", 1) != 0 ) // default => battleye auto_update enable
    (always)
@@ -128,7 +128,7 @@ void xrServer::AttachNewClient(IClient* CL)
 	msgConfig.is_battleye = 0;
 
 #ifdef BATTLEYE
-	msgConfig.is_battleye = (g_pGameLevel && Level().battleye_system.server != 0) ? 1 : 0;
+	msgConfig.is_battleye = (g_pLevel && Level().battleye_system.server != 0) ? 1 : 0;
 #endif // BATTLEYE
 
 	if(psNET_direct_connect) // single_game

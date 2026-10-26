@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "feel_touch.h"
 #include "xr_object.h"
 using namespace Feel;
@@ -41,7 +41,7 @@ void Touch::feel_touch_update(fvec3& C, float R)
 	// Find nearest objects
 	q_nearest.clear_not_free();
 	q_nearest.reserve(feel_touch.size());
-	g_pGameLevel->ObjectSpace.GetNearest(q_nearest, C, R, NULL);
+	g_pLevel->ObjectSpace.GetNearest(q_nearest, C, R, NULL);
 	xr_vector<CObject*>::iterator n_begin = q_nearest.begin();
 	xr_vector<CObject*>::iterator n_end = q_nearest.end();
 	if(n_end != n_begin)

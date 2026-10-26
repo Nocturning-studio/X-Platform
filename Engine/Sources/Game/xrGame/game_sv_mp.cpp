@@ -112,7 +112,7 @@ void game_sv_mp::OnRoundStart()
 {
 	inherited::OnRoundStart();
 
-	if(g_pGameLevel && Level().game)
+	if(g_pLevel && Level().game)
 	{
 		Game().m_WeaponUsageStatistic->Clear();
 	}

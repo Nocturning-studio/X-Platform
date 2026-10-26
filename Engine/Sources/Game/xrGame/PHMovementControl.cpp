@@ -1214,7 +1214,7 @@ void CPHMovementControl::TraceBorder(const fvec3& prev_position)
 
 	STraceBorderQParams p(this, dir);
 	storage.r_clear();
-	g_pGameLevel->ObjectSpace.RayQuery(storage, RD, BorderTraceCallback, &p, NULL,
+	g_pLevel->ObjectSpace.RayQuery(storage, RD, BorderTraceCallback, &p, NULL,
 									   static_cast<CObject*>(m_character->PhysicsRefObject()));
 }
 

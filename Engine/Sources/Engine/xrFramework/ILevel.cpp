@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "IAppContext.h"
 
 #include "Engine.h"
@@ -11,12 +11,12 @@
 #include "CameraManager.h"
 #include "xrFramework/xr_ioconsole.h"
 
-ENGINE_API IGame_Level* g_pGameLevel = NULL;
+ENGINE_API ILevel* g_pLevel = NULL;
 
-IGame_Level::IGame_Level()
+ILevel::ILevel()
 {
 	m_pCameras = xr_new<CCameraManager>(true);
-	g_pGameLevel = this;
+	g_pLevel = this;
 	pLevel = NULL;
 	bReady = false;
 	pCurrentEntity = NULL;
@@ -26,7 +26,7 @@ IGame_Level::IGame_Level()
 
 #include "resourcemanager.h"
 
-IGame_Level::~IGame_Level()
+ILevel::~ILevel()
 {
 	Engine.ThreadManager.WaitForFrameEnd();
 
@@ -53,7 +53,7 @@ IGame_Level::~IGame_Level()
 	CCameraManager::ResetPP();
 }
 
-void IGame_Level::net_Stop()
+void ILevel::net_Stop()
 {
 	for(int i = 0; i < 6; i++)
 		Objects.Update(true);
@@ -67,7 +67,7 @@ void IGame_Level::net_Stop()
 //-------------------------------------------------------------------------------------------
 extern CStatTimer tscreate;
 
-BOOL IGame_Level::Load(u32 dwNum)
+BOOL ILevel::Load(u32 dwNum)
 {
 	// Initialize level data
 	Engine.LevelManager.SetLevel(dwNum);
@@ -134,7 +134,7 @@ BOOL IGame_Level::Load(u32 dwNum)
 	return TRUE;
 }
 
-void IGame_Level::OnRender()
+void ILevel::OnRender()
 {
 	PROFILE_FUNCTION();
 
@@ -144,7 +144,7 @@ void IGame_Level::OnRender()
 #endif
 }
 
-void IGame_Level::OnFrame()
+void ILevel::OnFrame()
 {
 	PROFILE_FUNCTION();
 

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 
 #include "xr_area.h"
 #include "xr_object.h"
@@ -10,7 +10,7 @@
 
 using namespace collide;
 
-void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
+void ILevel::SoundEvent_Register(ref_sound_data_ptr S, float range)
 {
 	if(!Engine.IsLoaded())
 		return;
@@ -80,7 +80,7 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
 	snd_ER.clear_not_free();
 }
 
-void IGame_Level::SoundEvent_Dispatch()
+void ILevel::SoundEvent_Dispatch()
 {
 	while(!snd_Events.empty())
 	{
@@ -97,8 +97,8 @@ void IGame_Level::SoundEvent_Dispatch()
 
 void __stdcall _sound_event(ref_sound_data_ptr S, float range)
 {
-	if(g_pGameLevel && S && S->feedback)
-		g_pGameLevel->SoundEvent_Register(S, range);
+	if(g_pLevel && S && S->feedback)
+		g_pLevel->SoundEvent_Register(S, range);
 }
 
 //----------------------------------------------------------------------
@@ -170,7 +170,7 @@ IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* 
 //----------------------------------------------------------------------
 static void __stdcall build_callback(fvec3* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params)
 {
-	g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
+	g_pLevel->Load_GameSpecific_CFORM(T, Tcnt);
 }
 void CObjectSpace::Load()
 {

@@ -19,7 +19,7 @@
 #include "ai_object_location_impl.h"
 #include "game_graph.h"
 #include "ai_debug.h"
-#include "xrFramework/igame_level.h"
+#include "xrFramework/ILevel.h"
 #include "level.h"
 #include "xrFramework/../xrNetServer/net_utils.h"
 #include "script_callback_ex.h"
@@ -113,7 +113,7 @@ void CGameObject::net_Destroy()
 
 	inherited::net_Destroy();
 	setReady(FALSE);
-	g_pGameLevel->Objects.net_Unregister(this);
+	g_pLevel->Objects.net_Unregister(this);
 
 	if(this == Level().CurrentEntity())
 	{
@@ -276,7 +276,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 	};
 
 	setReady(TRUE);
-	g_pGameLevel->Objects.net_Register(this);
+	g_pLevel->Objects.net_Register(this);
 
 	m_server_flags.one();
 	if(O)

@@ -15,7 +15,7 @@
 #include "ui_main.h"
 #else
 #include "xr_object.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #endif
 
 #define FAR_DIST g_pAppContext->Environment().CurrentEnv->far_plane
@@ -189,11 +189,11 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 	}
 	else
 	{
-		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
+		CDB::TRI* T = g_pLevel->ObjectSpace.GetStaticTris() + result.element;
 		vis = g_pAppContext->MtlTransparent(T->material);
 		if(fis_zero(vis))
 		{
-			fvec3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			fvec3* V = g_pLevel->ObjectSpace.GetStaticVerts();
 			fp->parent->m_ray_cache.set(fp->P, fp->D, fp->f, TRUE);
 			fp->parent->m_ray_cache.verts[0].set(V[T->verts[0]]);
 			fp->parent->m_ray_cache.verts[1].set(V[T->verts[1]]);
@@ -222,7 +222,7 @@ void CLensFlare::OnFrame(shared_str id)
 	if(dwFrame == Engine.TimeManager.GetFrameCount())
 		return;
 #ifndef _EDITOR
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
 #endif
 	dwFrame = Engine.TimeManager.GetFrameCount();
@@ -331,7 +331,7 @@ void CLensFlare::OnFrame(shared_str id)
 	else
 		fBlend = fBlend + BLEND_INC_SPEED * Engine.TimeManager.GetDeltaTime();
 #else
-	CObject* o_main = g_pGameLevel->CurrentViewEntity();
+	CObject* o_main = g_pLevel->CurrentViewEntity();
 	STranspParam TP(this, Engine.RenderView.Position, vSunDir, 1000.f, EPS_L);
 	collide::ray_defs RD(TP.P, TP.D, TP.f, CDB::OPT_CULL, collide::rqtBoth);
 	if(m_ray_cache.result && m_ray_cache.similar(TP.P, TP.D, TP.f))
@@ -350,7 +350,7 @@ void CLensFlare::OnFrame(shared_str id)
 		{
 			// cache outdated. real query.
 			r_dest.r_clear();
-			if(g_pGameLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, NULL, o_main))
+			if(g_pLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, NULL, o_main))
 				m_ray_cache.result = FALSE;
 		}
 	}

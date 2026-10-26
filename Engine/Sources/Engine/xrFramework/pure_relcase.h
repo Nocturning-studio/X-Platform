@@ -10,9 +10,9 @@ class ENGINE_API pure_relcase
 	template <typename class_type>
 	pure_relcase(void (xr_stdcall class_type::*function_to_bind)(CObject*))
 	{
-		R_ASSERT(g_pGameLevel);
+		R_ASSERT(g_pLevel);
 		class_type* self = static_cast<class_type*>(this);
-		g_pGameLevel->Objects.relcase_register(CObjectList::RELCASE_CALLBACK(self, function_to_bind), &m_ID);
+		g_pLevel->Objects.relcase_register(CObjectList::RELCASE_CALLBACK(self, function_to_bind), &m_ID);
 	}
 	virtual ~pure_relcase();
 };

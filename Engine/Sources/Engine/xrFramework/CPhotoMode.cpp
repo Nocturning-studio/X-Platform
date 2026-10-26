@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "Engine.h"
 
 #include "gamefont.h"
@@ -130,7 +130,7 @@ CPhotoMode::CPhotoMode(float life_time) : CEffectorCam(cefDemo, life_time)
 	music.create("photo_mode_dbg_sound", st_Music, sg_Undefined);
 	music.play_at_pos(0, Engine.RenderView.Position, sm_NoPitch);
 
-	Actor = g_pGameLevel->CurrentViewEntity();
+	Actor = g_pLevel->CurrentViewEntity();
 	m_bActorShowState = true;
 	Actor->setVisible(TRUE);
 }

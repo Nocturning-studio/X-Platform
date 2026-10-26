@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 
 #include "CameraBase.h"
 

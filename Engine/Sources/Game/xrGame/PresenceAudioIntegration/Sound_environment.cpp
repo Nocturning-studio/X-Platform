@@ -177,7 +177,7 @@ void CSoundEnvironment::Update()
 		return;
 	}
 
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
 	if(!m_bEnabled)
 		m_bEnabled = true;

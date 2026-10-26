@@ -20,7 +20,7 @@ struct ShaderRequest
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::LevelLoad(IReader* fs)
 {
-	R_ASSERT(0 != g_pGameLevel);
+	R_ASSERT(0 != g_pLevel);
 	R_ASSERT(!Scene.GetGraph().b_loaded);
 
 	Engine.LoadingScreen->Show();
@@ -157,7 +157,7 @@ void CRender::LevelLoad(IReader* fs)
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::LevelUnload()
 {
-	if (0 == g_pGameLevel)
+	if (0 == g_pLevel)
 		return;
 	if (!Scene.GetGraph().b_loaded)
 		return;

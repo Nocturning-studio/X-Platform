@@ -262,7 +262,7 @@ void CGamePersistent::OnGameEnd()
 
 void CGamePersistent::WeathersUpdate()
 {
-	if(g_pGameLevel && !Engine.IsDedicatedServer())
+	if(g_pLevel && !Engine.IsDedicatedServer())
 	{
 		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
 		BOOL bIndoor = TRUE;
@@ -444,7 +444,7 @@ void CGamePersistent::start_logo_intro()
 	}
 #endif
 	m_intro_event.bind(this, &CGamePersistent::update_logo_intro);
-	if(!Engine.IsDedicatedServer() && 0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pGameLevel)
+	if(!Engine.IsDedicatedServer() && 0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pLevel)
 	{
 		VERIFY(NULL == m_intro);
 		m_intro = xr_new<CUISequencer>();
@@ -471,7 +471,7 @@ void CGamePersistent::start_game_intro()
 		return;
 	}
 #endif
-	if(g_pGameLevel && g_pGameLevel->bReady)
+	if(g_pLevel && g_pLevel->bReady)
 	{
 		m_intro_event.bind(this, &CGamePersistent::update_game_intro);
 		if(0 == xr_stricmp(m_game_params.m_new_or_load, "new"))
@@ -519,9 +519,9 @@ void CGamePersistent::OnFrame()
 	if(!m_pMainMenu->IsActive())
 		m_pMainMenu->DestroyInternal(false);
 
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
-	if(!g_pGameLevel->bReady)
+	if(!g_pLevel->bReady)
 		return;
 
 	__super::OnFrame();
@@ -617,7 +617,7 @@ static BOOL bEntryFlag = TRUE;
 
 void CGamePersistent::OnAppActivate()
 {
-	bool bIsMP = (g_pGameLevel && Level().game && GameID() != GAME_SINGLE);
+	bool bIsMP = (g_pLevel && Level().game && GameID() != GAME_SINGLE);
 	bIsMP &= !Device.Paused();
 
 	if(!bIsMP)
@@ -637,7 +637,7 @@ void CGamePersistent::OnAppDeactivate()
 	if(!bEntryFlag)
 		return;
 
-	bool bIsMP = (g_pGameLevel && Level().game && GameID() != GAME_SINGLE);
+	bool bIsMP = (g_pLevel && Level().game && GameID() != GAME_SINGLE);
 
 	bRestorePause = FALSE;
 

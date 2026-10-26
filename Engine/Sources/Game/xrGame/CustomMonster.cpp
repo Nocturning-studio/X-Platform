@@ -632,7 +632,7 @@ void CCustomMonster::UpdateCamera()
 	if(g_Alive())
 		update_range_fov(new_range, new_fov, memory().visual().current_state().m_max_view_distance * eye_range,
 						 eye_fov);
-	g_pGameLevel->Cameras().Update(eye_matrix.c, eye_matrix.k, eye_matrix.j, new_fov, .75f, new_range, 0);
+	g_pLevel->Cameras().Update(eye_matrix.c, eye_matrix.k, eye_matrix.j, new_fov, .75f, new_range, 0);
 }
 
 void CCustomMonster::HitSignal(float /**perc/**/, fvec3& /**vLocalDir/**/, CObject* /**who/**/)

@@ -88,7 +88,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void* userdata)
 		break;
 	case G_BATTLEYE_KEY:
 #ifdef BATTLEYE
-		if(g_pGameLevel && Level().battleye_system.server)
+		if(g_pLevel && Level().battleye_system.server)
 		{
 			pQR2->BufferAdd_Int(outbuf, 1);
 		}

@@ -6,7 +6,7 @@
 #define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
-#include "xrFramework/igame_level.h"
+#include "xrFramework/ILevel.h"
 #include "xrFramework/../xrNetServer/net_client.h"
 #include "script_export_space.h"
 #include "xrFramework/StatGraph.h"
@@ -57,7 +57,7 @@ class GlobalFeelTouch : public Feel::Touch
 	bool is_object_denied(CObject const* O);
 };
 
-class CLevel : public IGame_Level, public IPureClient
+class CLevel : public ILevel, public IPureClient
 {
 #include "Level_network_Demo.h"
 	void ClearAllObjects();
@@ -67,7 +67,7 @@ class CLevel : public IGame_Level, public IPureClient
 	bool m_bSynchronization;
 #endif
   protected:
-	typedef IGame_Level inherited;
+	typedef ILevel inherited;
 
 	CLevelSoundManager* m_level_sound_manager;
 
@@ -380,7 +380,7 @@ add_to_type_list(CLevel)
 
 	IC CLevel& Level()
 {
-	return *((CLevel*)g_pGameLevel);
+	return *((CLevel*)g_pLevel);
 }
 IC game_cl_GameState& Game()
 {

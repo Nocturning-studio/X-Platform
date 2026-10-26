@@ -317,7 +317,7 @@ float CExplosive::TestPassEffect(const fvec3& source_p, const fvec3& dir, float 
 #else
 		SExpQParams ep;
 #endif
-		g_pGameLevel->ObjectSpace.RayQuery(storage, RD, grenade_hit_callback, &ep, NULL, blasted_obj);
+		g_pLevel->ObjectSpace.RayQuery(storage, RD, grenade_hit_callback, &ep, NULL, blasted_obj);
 		shoot_factor = ep.shoot_factor;
 	}
 	else

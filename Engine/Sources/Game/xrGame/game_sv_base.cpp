@@ -605,7 +605,7 @@ void game_sv_GameState::Update()
 
 game_sv_GameState::game_sv_GameState()
 {
-	VERIFY(g_pGameLevel);
+	VERIFY(g_pLevel);
 	m_server = Level().Server;
 	m_event_queue = xr_new<GameEventQueue>();
 

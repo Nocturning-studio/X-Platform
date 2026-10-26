@@ -34,7 +34,7 @@ void CRender::update_light_tracking(SceneGraphPacket& packet)
 
 	const size_t light_track_id = uLastLTRACK % renderable_count;
 
-	if(CObject* current_entity = g_pGameLevel->CurrentViewEntity())
+	if(CObject* current_entity = g_pLevel->CurrentViewEntity())
 	{
 		if(CROS_impl* ros = (CROS_impl*)current_entity->ROS())
 			ros->update(current_entity);
@@ -114,10 +114,10 @@ void CRender::calculate_scene_culling()
 		MergeCulledLights(m_scene_visibility_data.packet);
 	}
 
-	if(g_pGameLevel && (active_phase() != PHASE_SHADOW_DEPTH))
+	if(g_pLevel && (active_phase() != PHASE_SHADOW_DEPTH))
 	{
 		CurrentRenderContext::Scope tls_scope(m_scene_visibility_data.packet, m_scene_visibility_data.context);
-		g_pGameLevel->pHUD->Render_Last();
+		g_pLevel->pHUD->Render_Last();
 	}
 }
 
@@ -129,7 +129,7 @@ IC float u_diffuse2s(float x, float y, float z)
 
 bool CRender::need_render_sun()
 {
-	if (!g_pGameLevel)
+	if (!g_pLevel)
 		return false;
 
 	light* sun = (light*)Scene.GetLights().sun_adapted._get();

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 
 #include "Engine.h"
 #include "xr_ioconsole.h"
@@ -424,7 +424,7 @@ class CCC_Start : public IConsole_Command
 	CCC_Start(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args)
 	{
-		/*		if (g_pGameLevel)	{
+		/*		if (g_pLevel)	{
 					Log		("! Please disconnect/unload first");
 					return;
 				}

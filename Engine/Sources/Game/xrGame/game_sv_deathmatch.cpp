@@ -1401,7 +1401,7 @@ void game_sv_Deathmatch::LoadAnomalySets()
 		m_AnomalyIDSetsList.clear();
 	};
 	//-----------------------------------------------------------
-	if(!g_pGameLevel || !Level().pLevel)
+	if(!g_pLevel || !Level().pLevel)
 		return;
 
 	char* ASetBaseName = GetAnomalySetBaseName();

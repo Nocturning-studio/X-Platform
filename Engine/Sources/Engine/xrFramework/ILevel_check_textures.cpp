@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "resourcemanager.h"
-#include "igame_level.h"
+#include "ILevel.h"
 
-void IGame_Level::LL_CheckTextures()
+void ILevel::LL_CheckTextures()
 {
 	u32 m_base, c_base, m_lmaps, c_lmaps;
 	Engine.ResourceManager->_GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);

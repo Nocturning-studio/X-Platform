@@ -138,7 +138,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 #else
 				collide::rq_result RQ;
 				collide::rq_target RT = m_Flags.is(dfCollisionDyn) ? collide::rqtBoth : collide::rqtStatic;
-				if(g_pGameLevel->ObjectSpace.RayPick(m.posB, dir, dist, RT, RQ, NULL))
+				if(g_pLevel->ObjectSpace.RayPick(m.posB, dir, dist, RT, RQ, NULL))
 				{
 					pt.mad(m.posB, dir, RQ.range);
 					if(RQ.O)
@@ -147,8 +147,8 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 					}
 					else
 					{
-						CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + RQ.element;
-						fvec3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+						CDB::TRI* T = g_pLevel->ObjectSpace.GetStaticTris() + RQ.element;
+						fvec3* verts = g_pLevel->ObjectSpace.GetStaticVerts();
 						n.mknormal(verts[T->verts[0]], verts[T->verts[1]], verts[T->verts[2]]);
 					}
 #endif

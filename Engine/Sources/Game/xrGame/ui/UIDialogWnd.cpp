@@ -43,7 +43,7 @@ bool CUIDialogWnd::IR_OnKeyboardHold(int dik)
 	if(OnKeyboardHold(dik))
 		return true;
 
-	if(!StopAnyMove() && g_pGameLevel)
+	if(!StopAnyMove() && g_pLevel)
 	{
 		CObject* O = Level().CurrentEntity();
 		if(O)
@@ -75,7 +75,7 @@ bool CUIDialogWnd::IR_OnKeyboardPress(int dik)
 	if(OnKeyboard(dik, WINDOW_KEY_PRESSED))
 		return true;
 
-	if(!StopAnyMove() && g_pGameLevel)
+	if(!StopAnyMove() && g_pLevel)
 	{
 		CObject* O = Level().CurrentEntity();
 		if(O)
@@ -108,7 +108,7 @@ bool CUIDialogWnd::IR_OnKeyboardRelease(int dik)
 	if(OnKeyboard(dik, WINDOW_KEY_RELEASED))
 		return true;
 
-	if(!StopAnyMove() && g_pGameLevel)
+	if(!StopAnyMove() && g_pLevel)
 	{
 		CObject* O = Level().CurrentEntity();
 		if(O)
@@ -148,7 +148,7 @@ bool CUIDialogWnd::IR_OnMouseMove(int dx, int dy)
 
 		OnMouse(cPos.x, cPos.y, WINDOW_MOUSE_MOVE);
 	}
-	else if(!StopAnyMove() && g_pGameLevel)
+	else if(!StopAnyMove() && g_pLevel)
 	{
 		CObject* O = Level().CurrentEntity();
 		if(O)

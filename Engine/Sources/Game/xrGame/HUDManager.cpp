@@ -3,7 +3,7 @@
 #include "hudtarget.h"
 
 #include "actor.h"
-#include "xrFramework/igame_level.h"
+#include "xrFramework/ILevel.h"
 #include "clsid_game.h"
 #include "GamePersistent.h"
 
@@ -54,7 +54,7 @@ void CHUDManager::Render_First()
 		return;
 	if(0 == pUI)
 		return;
-	CObject* O = g_pGameLevel->CurrentViewEntity();
+	CObject* O = g_pLevel->CurrentViewEntity();
 	if(0 == O)
 		return;
 	CActor* A = smart_cast<CActor*>(O);
@@ -78,7 +78,7 @@ void CHUDManager::Render_Last()
 	if(0 == pUI)
 		return;
 
-	CObject* O = g_pGameLevel->CurrentViewEntity();
+	CObject* O = g_pLevel->CurrentViewEntity();
 	if(0 == O)
 		return;
 
@@ -104,7 +104,7 @@ void CHUDManager::Render_Actor_Shadow() // added by KD
 	if(0 == pUI)
 		return;
 
-	CObject* O = g_pGameLevel->CurrentViewEntity();
+	CObject* O = g_pLevel->CurrentViewEntity();
 	if(0 == O)
 		return;
 

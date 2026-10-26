@@ -382,7 +382,7 @@ void CCustomRocket::OnH_A_Independent()
 {
 	inherited::OnH_A_Independent();
 
-	if(!g_pGameLevel->bReady || !m_bLaunched)
+	if(!g_pLevel->bReady || !m_bLaunched)
 		return;
 	setVisible(true);
 	StartFlying();

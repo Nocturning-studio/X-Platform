@@ -128,9 +128,9 @@ void CUIZoneMap::SetupCurrentMap()
 		if(pGameIni->line_exist(ln, "minimap_zoom"))
 			zoom_factor *= pGameIni->r_float(ln, "minimap_zoom");
 	}
-	else if(g_pGameLevel->pLevel->section_exist("minimap_zoom"))
+	else if(g_pLevel->pLevel->section_exist("minimap_zoom"))
 	{
-		zoom_factor *= g_pGameLevel->pLevel->r_float("minimap_zoom", "value");
+		zoom_factor *= g_pLevel->pLevel->r_float("minimap_zoom", "value");
 	}
 	wnd_size.x = m_activeMap->BoundRect().width() * zoom_factor;
 	wnd_size.y = m_activeMap->BoundRect().height() * zoom_factor;

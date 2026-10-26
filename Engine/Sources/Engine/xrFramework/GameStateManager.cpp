@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "GameStateManager.h"
 #include "Optick_Capture.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "IAppContext.h"
 #include "xr_input.h"
 #include "xr_ioconsole.h"
@@ -61,7 +61,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 			Engine.Console->Hide();
 
 			g_pAppContext->PreStart(op_server);
-			g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
+			g_pLevel = (ILevel*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 
 			// --- ДЕЛЕГИРУЕМ ЗАГРУЗКУ ---
 			Engine.LoadingScreen->Show();
@@ -69,7 +69,7 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 
 			Msg("\nStart level loading...");
 			g_pAppContext->Start(op_server);
-			g_pGameLevel->net_Start(op_server, op_client);
+			g_pLevel->net_Start(op_server, op_client);
 
 			// --- ДЕЛЕГИРУЕМ ЗАВЕРШЕНИЕ ---
 			Engine.LoadingScreen->Hide();
@@ -80,10 +80,10 @@ void CGameStateManager::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if(E == eDisconnect)
 	{
-		if(g_pGameLevel)
+		if(g_pLevel)
 		{
-			g_pGameLevel->net_Stop();
-			DEL_INSTANCE(g_pGameLevel);
+			g_pLevel->net_Stop();
+			DEL_INSTANCE(g_pLevel);
 			if((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
 			{
 				Engine.Console->Execute("main_menu off");
@@ -104,8 +104,8 @@ void CGameStateManager::OnFrame()
 	g_SpatialSpacePhysic->update();
 
 	// Звуковые события уровня
-	if(g_pGameLevel)
-		g_pGameLevel->SoundEvent_Dispatch();
+	if(g_pLevel)
+		g_pLevel->SoundEvent_Dispatch();
 
 	// Для выделенного сервера обновление консоли здесь
 	if(Engine.IsDedicatedServer())

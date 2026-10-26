@@ -669,7 +669,7 @@ void CIKLimb::Collide(SIKCollideData& cld, CGameObject* O, const fmat4x4& foot, 
 
 	collide::rq_result R;
 
-	if(g_pGameLevel->ObjectSpace.RayPick(pos, pick_v, l_pick_dist, collide::rqtBoth, R, O))
+	if(g_pLevel->ObjectSpace.RayPick(pos, pick_v, l_pick_dist, collide::rqtBoth, R, O))
 	{
 		if(!R.O)
 		{

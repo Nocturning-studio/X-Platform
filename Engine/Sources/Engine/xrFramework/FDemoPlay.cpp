@@ -10,7 +10,7 @@
 #include "gamefont.h"
 #include "Engine.h"
 #include "xr_input.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "iinputreceiver.h"
 #include "Game/xrGame/Level.h"
 #include "CustomHUD.h"
@@ -22,7 +22,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 	if(!FS.exist(name))
 	{
 		Msg("Can't find file: %s", name);
-		g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+		g_pLevel->Cameras().RemoveCamEffector(cefDemo);
 		return;
 	}
 
@@ -37,7 +37,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 	if(m_frames_count == 0)
 	{
 		Msg("File corrupted: frames count is zero");
-		g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+		g_pLevel->Cameras().RemoveCamEffector(cefDemo);
 		return;
 	}
 
@@ -101,7 +101,7 @@ CDemoPlay::~CDemoPlay()
 	Engine.RenderView.ViewProjection.mul(Engine.RenderView.Project, Engine.RenderView.View);
 
 	// Обновляем камеру в менеджере камер
-	// g_pGameLevel->Cameras().Update(Engine.RenderView.Position, Engine.RenderView.Direction, Engine.RenderView.Top);
+	// g_pLevel->Cameras().Update(Engine.RenderView.Position, Engine.RenderView.Direction, Engine.RenderView.Top);
 }
 
 // -----------------------------------------------------------------------------------------
@@ -466,7 +466,7 @@ void CDemoPlay::SaveBenchmarkResults()
 
 void CDemoPlay::Close()
 {
-	g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+	g_pLevel->Cameras().RemoveCamEffector(cefDemo);
 	fLifeTime = -1;
 }
 

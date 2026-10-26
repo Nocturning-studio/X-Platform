@@ -555,7 +555,7 @@
     <ClInclude Include="LogoWindow.h">
       <Filter>Engine\Modules\Windows %28Splash/Main window%29\Logo window</Filter>
     </ClInclude>
-    <ClInclude Include="IGame_Level.h">
+    <ClInclude Include="ILevel.h">
       <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClInclude>
     <ClInclude Include="xrLevel.h">
@@ -989,10 +989,10 @@
     <ClCompile Include="LogoWindow.cpp">
       <Filter>Engine\Modules\Windows %28Splash/Main window%29\Logo window</Filter>
     </ClCompile>
-    <ClCompile Include="IGame_Level.cpp">
+    <ClCompile Include="ILevel.cpp">
       <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
-    <ClCompile Include="IGame_Level_check_textures.cpp">
+    <ClCompile Include="ILevel_check_textures.cpp">
       <Filter>Game API\Modules\Game Level %28Maps/Scenes%29</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">

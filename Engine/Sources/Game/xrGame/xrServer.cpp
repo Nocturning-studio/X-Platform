@@ -69,7 +69,7 @@ xrServer::~xrServer()
 bool xrServer::HasBattlEye()
 {
 #ifdef BATTLEYE
-	return (g_pGameLevel && Level().battleye_system.server) ? true : false;
+	return (g_pLevel && Level().battleye_system.server) ? true : false;
 #else
 	return false;
 #endif // BATTLEYE
@@ -421,7 +421,7 @@ void xrServer::SendUpdatesToAll()
 	VERIFY(verify_entities());
 
 #ifdef BATTLEYE
-	if(g_pGameLevel)
+	if(g_pLevel)
 	{
 		Level().battleye_system.UpdateServer(this);
 	}
@@ -436,7 +436,7 @@ void console_log_cb(LPCSTR text)
 
 u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
-	if(g_pGameLevel && Level().IsDemoSave())
+	if(g_pLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
 	u16 type;
 	P.r_begin(type);
@@ -492,7 +492,7 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 extern float g_fCatchObjectTime;
 u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
-	if(g_pGameLevel && Level().IsDemoSave())
+	if(g_pLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
 	u16 type;
 	P.r_begin(type);
@@ -591,7 +591,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 			CL->ps->setName(CL->name.c_str());
 
 #ifdef BATTLEYE
-			if(g_pGameLevel && Level().battleye_system.server)
+			if(g_pLevel && Level().battleye_system.server)
 			{
 				Level().battleye_system.server->AddConnected_OnePlayer(CL);
 			}
@@ -724,7 +724,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 	case M_BATTLEYE:
 	{
 #ifdef BATTLEYE
-		if(g_pGameLevel)
+		if(g_pLevel)
 		{
 			Level().battleye_system.ReadPacketServer(sender.value(), &P);
 		}

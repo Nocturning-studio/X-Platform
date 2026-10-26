@@ -11,7 +11,7 @@
 #ifdef _EDITOR
 #include "ui_toolscustom.h"
 #else
-#include "igame_level.h"
+#include "ILevel.h"
 #include "xr_area.h"
 #include "xr_object.h"
 #endif
@@ -151,8 +151,8 @@ BOOL CEffect_Thunderbolt::RayPick(const fvec3& s, const fvec3& d, float& dist)
 	bRes = Tools->RayPick(s, d, dist, 0, 0);
 #else
 	collide::rq_result RQ;
-	CObject* E = g_pGameLevel->CurrentViewEntity();
-	bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, dist, collide::rqtBoth, RQ, E);
+	CObject* E = g_pLevel->CurrentViewEntity();
+	bRes = g_pLevel->ObjectSpace.RayPick(s, d, dist, collide::rqtBoth, RQ, E);
 	if(bRes)
 		dist = RQ.range;
 	else

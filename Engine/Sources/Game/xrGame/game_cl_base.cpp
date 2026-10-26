@@ -197,7 +197,7 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet& P)
 	{
 
 #ifdef BATTLEYE
-		if(g_pGameLevel && Level().battleye_system.GetTestClient())
+		if(g_pLevel && Level().battleye_system.GetTestClient())
 		{
 			bool res_battleye = Level().battleye_system.LoadClient();
 			VERIFY(res_battleye);

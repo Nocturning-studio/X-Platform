@@ -12,7 +12,7 @@
 #include "pch.h"
 #include "GameStateManager.h"
 #include "xrSheduler.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "IAppContext.h"
 #include "xr_input.h"
 #include "xr_ioconsole.h"

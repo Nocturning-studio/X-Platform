@@ -54,7 +54,7 @@ class ENGINE_API CServerInfo
 };
 
 //-----------------------------------------------------------------------------------------------------------
-class ENGINE_API IGame_Level : public DLL_Pure,
+class ENGINE_API ILevel : public DLL_Pure,
 							   public IInputReceiver,
 							   public pureRender,
 							   public pureFrame,
@@ -98,8 +98,8 @@ class ENGINE_API IGame_Level : public DLL_Pure,
 
   public:
 	// Main, global functions
-	IGame_Level();
-	virtual ~IGame_Level();
+	ILevel();
+	virtual ~ILevel();
 
 	virtual shared_str name() const = 0;
 	virtual void GetLevelInfo(CServerInfo* si) = 0;
@@ -151,16 +151,16 @@ class ENGINE_API IGame_Level : public DLL_Pure,
 };
 
 //-----------------------------------------------------------------------------------------------------------
-extern ENGINE_API IGame_Level* g_pGameLevel;
+extern ENGINE_API ILevel* g_pLevel;
 
 template <typename _class_type>
 void relcase_register(_class_type* self, void (xr_stdcall _class_type::*function_to_bind)(CObject*))
 {
-	g_pGameLevel->Objects.relcase_register(CObjectList::RELCASE_CALLBACK(self, function_to_bind));
+	g_pLevel->Objects.relcase_register(CObjectList::RELCASE_CALLBACK(self, function_to_bind));
 }
 
 template <typename _class_type>
 void relcase_unregister(_class_type* self, void (xr_stdcall _class_type::*function_to_bind)(CObject*))
 {
-	g_pGameLevel->Objects.relcase_unregister(CObjectList::RELCASE_CALLBACK(self, function_to_bind));
+	g_pLevel->Objects.relcase_unregister(CObjectList::RELCASE_CALLBACK(self, function_to_bind));
 }

@@ -149,7 +149,7 @@ void CUISequenceSimpleItem::Update()
 			s.Stop();
 	}
 
-	if(g_pGameLevel)
+	if(g_pLevel)
 	{
 		CUIGameSP* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 
@@ -190,7 +190,7 @@ void CUISequenceSimpleItem::Start()
 	if(m_sound._handle())
 		m_sound.play(NULL, sm_2D);
 
-	if(g_pGameLevel)
+	if(g_pLevel)
 	{
 		bool bShowPda = false;
 		CUIGameSP* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -257,7 +257,7 @@ bool CUISequenceSimpleItem::Stop(bool bForce)
 	if(m_flags.test(etiNeedPauseSound))
 		Device.Pause(FALSE, FALSE, TRUE, "simpleitem_stop");
 
-	if(g_pGameLevel)
+	if(g_pLevel)
 	{
 		CUIGameSP* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 		if(ui_game_sp && ui_game_sp->PdaMenu->IsShown())

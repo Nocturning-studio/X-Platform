@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"
 #include "xr_area.h"

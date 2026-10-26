@@ -3,7 +3,7 @@
 #include "UI/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
 #include "xrFramework/xr_IOConsole.h"
-#include "xrFramework/IGame_Level.h"
+#include "xrFramework/ILevel.h"
 #include "xrFramework/CameraManager.h"
 #include "xr_Level_controller.h"
 #include "ui\UITextureMaster.h"
@@ -184,13 +184,13 @@ void CMainMenu::Activate(bool bActivate)
 		m_startDialog->m_bWorkInPause = true;
 		StartStopMenu(m_startDialog, true);
 
-		if(g_pGameLevel)
+		if(g_pLevel)
 		{
 			if(b_is_single)
 			{
-				Engine.Events.Frame.Remove(g_pGameLevel);
+				Engine.Events.Frame.Remove(g_pLevel);
 			}
-			Engine.Events.Render.Remove(g_pGameLevel);
+			Engine.Events.Render.Remove(g_pLevel);
 			CCameraManager::ResetPP();
 		};
 		Engine.Events.Render.Add(this, 4); // 1-console 2-cursor 3-tutorial
@@ -217,13 +217,13 @@ void CMainMenu::Activate(bool bActivate)
 
 		StartStopMenu(m_startDialog, true);
 		CleanInternals();
-		if(g_pGameLevel)
+		if(g_pLevel)
 		{
 			if(b_is_single)
 			{
-				Engine.Events.Frame.Add(g_pGameLevel);
+				Engine.Events.Frame.Add(g_pLevel);
 			}
-			Engine.Events.Render.Add(g_pGameLevel);
+			Engine.Events.Render.Add(g_pLevel);
 		};
 		if(m_Flags.test(flRestoreConsole))
 			Engine.Console->Show();
@@ -357,7 +357,7 @@ void CMainMenu::OnRender()
 	if(m_Flags.test(flGameSaveScreenshot))
 		return;
 
-	if(g_pGameLevel)
+	if(g_pLevel)
 		Render->Calculate();
 
 	Render->Render();
@@ -435,10 +435,10 @@ void CMainMenu::OnFrame()
 		m_Flags.set(flGameSaveScreenshot, FALSE);
 		::Render->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, m_screenshot_name);
 
-		if(g_pGameLevel && m_Flags.test(flActive))
+		if(g_pLevel && m_Flags.test(flActive))
 		{
-			Engine.Events.Frame.Remove(g_pGameLevel);
-			Engine.Events.Render.Remove(g_pGameLevel);
+			Engine.Events.Frame.Remove(g_pLevel);
+			Engine.Events.Render.Remove(g_pLevel);
 		};
 
 		// if (m_Flags.test(flRestoreConsole))
@@ -466,10 +466,10 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	{
 		m_Flags.set(flGameSaveScreenshot, TRUE);
 		strcpy(m_screenshot_name, name);
-		if(g_pGameLevel && m_Flags.test(flActive))
+		if(g_pLevel && m_Flags.test(flActive))
 		{
-			Engine.Events.Frame.Add(g_pGameLevel);
-			Engine.Events.Render.Add(g_pGameLevel);
+			Engine.Events.Frame.Add(g_pLevel);
+			Engine.Events.Render.Add(g_pLevel);
 		};
 		m_screenshotFrame = Engine.TimeManager.GetFrameCount() + 1;
 		// m_Flags.set(flRestoreConsole, Engine.Console->bVisible);
@@ -648,7 +648,7 @@ void CMainMenu::SetNeedVidRestart()
 
 void CMainMenu::OnDeviceReset()
 {
-	if(IsActive() && g_pGameLevel)
+	if(IsActive() && g_pLevel)
 		SetNeedVidRestart();
 }
 

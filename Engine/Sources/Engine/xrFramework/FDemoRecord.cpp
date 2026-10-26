@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "Engine.h"
 
 #include "gamefont.h"
@@ -106,7 +106,7 @@ CDemoRecord::~CDemoRecord()
 
 void CDemoRecord::Close()
 {
-	// g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+	// g_pLevel->Cameras().RemoveCamEffector(cefDemo);
 	fLifeTime = -1;
 }
 
@@ -191,7 +191,7 @@ void CDemoRecord::MakeLevelMapProcess()
 		s_hud_flag.assign(psHUD_Flags);
 		psHUD_Flags.assign(0);
 
-		Fbox bb = g_pGameLevel->ObjectSpace.GetBoundingVolume();
+		Fbox bb = g_pLevel->ObjectSpace.GetBoundingVolume();
 
 		if(g_bDR_LM_UsePointsBBox)
 		{
@@ -219,7 +219,7 @@ void CDemoRecord::MakeLevelMapProcess()
 	case 2:
 	{
 		string_path tmp;
-		Fbox bb = g_pGameLevel->ObjectSpace.GetBoundingVolume();
+		Fbox bb = g_pLevel->ObjectSpace.GetBoundingVolume();
 
 		if(g_bDR_LM_UsePointsBBox)
 		{
@@ -232,7 +232,7 @@ void CDemoRecord::MakeLevelMapProcess()
 		if(g_bDR_LM_4Steps)
 			GetLM_BBox(bb, g_iDR_LM_Step);
 
-		sprintf_s(tmp, sizeof(tmp), "%s_[%3.3f, %3.3f]-[%3.3f, %3.3f]", *g_pGameLevel->name(), bb.min.x, bb.min.z,
+		sprintf_s(tmp, sizeof(tmp), "%s_[%3.3f, %3.3f]-[%3.3f, %3.3f]", *g_pLevel->name(), bb.min.x, bb.min.z,
 				  bb.max.x, bb.max.z);
 		Render->Screenshot(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP, tmp);
 		psHUD_Flags.assign(s_hud_flag);

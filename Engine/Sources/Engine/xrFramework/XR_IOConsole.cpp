@@ -6,7 +6,7 @@
 #include "XR_IOConsole.h"
 #include "line_editor.h"
 
-#include "igame_level.h"
+#include "ILevel.h"
 #include "IAppContext.h"
 
 #include "Engine.h"
@@ -304,7 +304,7 @@ void CConsole::OnRender()
 	}
 
 	bool bGame = false;
-	if((g_pGameLevel && g_pGameLevel->bReady) || (g_pAppContext && g_pAppContext->m_pMainMenu && g_pAppContext->m_pMainMenu->IsActive()))
+	if((g_pLevel && g_pLevel->bReady) || (g_pAppContext && g_pAppContext->m_pMainMenu && g_pAppContext->m_pMainMenu->IsActive()))
 	{
 		bGame = true;
 	}

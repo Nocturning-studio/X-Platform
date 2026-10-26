@@ -601,7 +601,7 @@ bool CInventory::Action(s32 cmd, u32 flags)
 		};
 	};
 
-	if(g_pGameLevel && OnClient() && pActor)
+	if(g_pLevel && OnClient() && pActor)
 	{
 		switch(cmd)
 		{
@@ -688,7 +688,7 @@ bool CInventory::Action(s32 cmd, u32 flags)
 	break;
 	}
 
-	if(b_send_event && g_pGameLevel && OnClient() && pActor)
+	if(b_send_event && g_pLevel && OnClient() && pActor)
 		SendActionEvent(cmd, flags);
 
 	return false;

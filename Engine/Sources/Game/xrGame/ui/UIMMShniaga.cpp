@@ -88,7 +88,7 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
 	strconcat(sizeof(_path), _path, path, ":shniaga:magnifire:y_offset");
 	m_offset = xml_doc.ReadFlt(_path, 0, 0);
 
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 	{
 
 		if(!*g_last_saved_game || !CSavedGameWrapper::valid_saved_game(g_last_saved_game))

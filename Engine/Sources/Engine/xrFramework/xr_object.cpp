@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "igame_level.h"
+#include "ILevel.h"
 
 #include "xr_object.h"
 #include "xr_area.h"
@@ -12,7 +12,7 @@
 
 void CObject::MakeMeCrow_internal()
 {
-	g_pGameLevel->Objects.o_crow(this);
+	g_pLevel->Objects.o_crow(this);
 }
 
 void CObject::cName_set(shared_str N)
@@ -66,14 +66,14 @@ void CObject::processing_activate()
 	VERIFY3(255 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: overflow", *cName());
 	Props.bActiveCounter++;
 	if(0 == (Props.bActiveCounter - 1))
-		g_pGameLevel->Objects.o_activate(this);
+		g_pLevel->Objects.o_activate(this);
 }
 void CObject::processing_deactivate()
 {
 	VERIFY3(0 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow", *cName());
 	Props.bActiveCounter--;
 	if(0 == Props.bActiveCounter)
-		g_pGameLevel->Objects.o_sleep(this);
+		g_pLevel->Objects.o_sleep(this);
 }
 
 void CObject::setEnabled(BOOL _enabled)
@@ -309,7 +309,7 @@ void CObject::UpdateCL()
 	spatial_update(base_spu_epsP * 5, base_spu_epsR * 5);
 
 	// crow
-	if(Parent == g_pGameLevel->CurrentViewEntity())
+	if(Parent == g_pLevel->CurrentViewEntity())
 		MakeMeCrow();
 	else if(AlwaysTheCrow())
 		MakeMeCrow();
@@ -433,11 +433,11 @@ void CObject::setDestroy(BOOL _destroy)
 	Props.bDestroy = _destroy ? 1 : 0;
 	if(_destroy)
 	{
-		g_pGameLevel->Objects.register_object_to_destroy(this);
+		g_pLevel->Objects.register_object_to_destroy(this);
 #ifdef DEBUG
 		Msg("cl setDestroy [%d][%d]", ID(), Engine.TimeManager.GetFrameCount());
 #endif
 	}
 	else
-		VERIFY(!g_pGameLevel->Objects.registered_object_to_destroy(this));
+		VERIFY(!g_pLevel->Objects.registered_object_to_destroy(this));
 }

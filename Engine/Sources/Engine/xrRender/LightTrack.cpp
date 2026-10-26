@@ -122,7 +122,7 @@ void CROS_impl::calc_sky_ao_value(fvec3& position, CObject* _object)
 		// take sample
 		fvec3 direction;
 		direction.set(hdir[sample][0], hdir[sample][1], hdir[sample][2]).normalize();
-		result[sample] = !g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
+		result[sample] = !g_pLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
 	}
 
 	// Расчет значения гемисферы

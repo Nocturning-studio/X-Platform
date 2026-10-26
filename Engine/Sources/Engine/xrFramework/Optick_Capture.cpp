@@ -29,7 +29,7 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "igame_level.h"
+#include "ILevel.h"
 #include "IAppContext.h"
 
 #include "Optick_Capture.h"

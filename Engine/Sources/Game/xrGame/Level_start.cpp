@@ -240,11 +240,11 @@ struct LevelLoadFinalizer
 {
 	bool xr_stdcall net_start_finalizer()
 	{
-		if(g_pGameLevel && !g_start_total_res)
+		if(g_pLevel && !g_start_total_res)
 		{
 			shared_str ln = Level().name();
 			Msg("! Failed to start client. Check the connection or level existance.");
-			DEL_INSTANCE(g_pGameLevel);
+			DEL_INSTANCE(g_pLevel);
 			Engine.Console->Execute("main_menu on");
 
 			if(g_connect_server_err == xrServer::ErrBELoad)

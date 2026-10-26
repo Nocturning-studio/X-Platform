@@ -105,7 +105,7 @@ void CLevel::net_Stop()
 
 	remove_objects();
 
-	IGame_Level::net_Stop();
+	ILevel::net_Stop();
 	IPureClient::Disconnect();
 
 	if(Server)
@@ -263,7 +263,7 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 	else
 		IPureClient::Send(P, dwFlags, dwTimeout);
 
-	if(g_pGameLevel && Level().game && GameID() != GAME_SINGLE && !g_SV_Disable_Auth_Check)
+	if(g_pLevel && Level().game && GameID() != GAME_SINGLE && !g_SV_Disable_Auth_Check)
 	{
 		// anti-cheat
 		phTimefactor = 1.f;
@@ -297,8 +297,8 @@ struct _NetworkProcessor : public pureFrame
 	{
 		// PROFILE_FUNCTION();
 
-		if(g_pGameLevel && !Device.Paused())
-			g_pGameLevel->net_Update();
+		if(g_pLevel && !Device.Paused())
+			g_pLevel->net_Update();
 	}
 } NET_processor;
 

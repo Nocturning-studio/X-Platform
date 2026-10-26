@@ -3,7 +3,7 @@
 #include "IRender.h"
 #include "xr_object.h"
 #include "xr_collide_form.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "xrCDB/cl_intersect.h"
 
 #pragma warning(push)
@@ -38,8 +38,8 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 	fp->vis *= vis;
 	if(NULL == result.O && fis_zero(vis))
 	{
-		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-		fvec3* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+		CDB::TRI* T = g_pLevel->ObjectSpace.GetStaticTris() + result.element;
+		fvec3* V = g_pLevel->ObjectSpace.GetStaticVerts();
 		fp->item->Cache.verts[0].set(V[T->verts[0]]);
 		fp->item->Cache.verts[1].set(V[T->verts[1]]);
 		fp->item->Cache.verts[2].set(V[T->verts[2]]);
@@ -224,7 +224,7 @@ void Vision::o_trace(fvec3& P, float dt, float vis_threshold)
 				{
 					// cache outdated. real query.
 					VERIFY(!fis_zero(RD.dir.square_magnitude()));
-					if(g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))
+					if(g_pLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))
 					{
 						I->Cache_vis = feel_params.vis;
 						I->Cache.set(P, D, f, TRUE);

@@ -565,8 +565,8 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 		Scene.Render(item.vis_result, SceneRenderPresets::Opaque);
 
-		if (g_pGameLevel)
-			g_pGameLevel->pHUD->Render_Actor_Shadow();
+		if (g_pLevel)
+			g_pLevel->pHUD->Render_Actor_Shadow();
 
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 			Scene.RenderDetails(DetailsRenderMode::DepthOnly,

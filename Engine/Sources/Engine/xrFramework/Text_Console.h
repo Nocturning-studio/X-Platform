@@ -1,6 +1,6 @@
 #pragma once
 #include "XR_IOConsole.h"
-#include "IGame_Level.h"
+#include "ILevel.h"
 #include <windows.h>
 #include <process.h> // для _beginthreadex
 

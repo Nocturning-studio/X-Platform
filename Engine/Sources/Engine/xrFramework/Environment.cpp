@@ -17,7 +17,7 @@
 #include "resourcemanager.h"
 
 #ifndef _EDITOR
-#include "IGame_Level.h"
+#include "ILevel.h"
 #endif
 
 #include "D3DUtils.h"
@@ -487,7 +487,7 @@ void CEnvironment::OnFrame()
 	if(!psDeviceFlags.is(rsEnvironment))
 		return;
 #else
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
 #endif
 
@@ -680,7 +680,7 @@ void CEnvironment::mods_load()
 
 void CEnvironment::load_level_specific_ambients()
 {
-	const shared_str level_name = g_pGameLevel->name();
+	const shared_str level_name = g_pLevel->name();
 
 	string_path path;
 	strconcat(sizeof(path), path, "environment\\ambients\\", level_name.c_str(), ".ltx");

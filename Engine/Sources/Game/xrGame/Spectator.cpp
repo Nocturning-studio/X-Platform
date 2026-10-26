@@ -82,7 +82,7 @@ void CSpectator::UpdateCL()
 		}
 	};
 
-	if(g_pGameLevel->CurrentViewEntity() == this)
+	if(g_pLevel->CurrentViewEntity() == this)
 	{
 		if(eacFreeFly != cam_active)
 		{
@@ -406,7 +406,7 @@ void CSpectator::cam_Update(CActor* A)
 		P.y -= 1.6f;
 		Transform().translate_over(P);
 		//-----------------------------------
-		g_pGameLevel->Cameras().UpdateFromCamera(cam);
+		g_pLevel->Cameras().UpdateFromCamera(cam);
 	}
 	else
 	{
@@ -420,7 +420,7 @@ void CSpectator::cam_Update(CActor* A)
 
 		cam->Update(point, dangle);
 		//		cam->vPosition.set(point0);
-		g_pGameLevel->Cameras().UpdateFromCamera(cam);
+		g_pLevel->Cameras().UpdateFromCamera(cam);
 		// hud output
 	};
 }

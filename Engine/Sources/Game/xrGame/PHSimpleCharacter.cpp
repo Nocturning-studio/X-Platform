@@ -1393,7 +1393,7 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 	CObject* object = smart_cast<CObject*>(m_phys_ref_object);
 	VERIFY(object);
 	VERIFY(!fis_zero(Q.dir.square_magnitude()));
-	if(g_pGameLevel->ObjectSpace.RayQuery(RQR, object->collidable.model, Q))
+	if(g_pLevel->ObjectSpace.RayQuery(RQR, object->collidable.model, Q))
 	{
 		collide::rq_result* R = RQR.r_begin();
 		contact_bone = (u16)R->element;

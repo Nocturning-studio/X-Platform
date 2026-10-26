@@ -17,7 +17,7 @@
 #include "Engine\xrFramework\resourcemanager.h"
 #include "Engine\xrFramework\vis_common.h"
 #include "Engine\xrFramework\IRender.h"
-#include "Engine\xrFramework\igame_level.h"
+#include "Engine\xrFramework\ILevel.h"
 #include "Engine\xrFramework\blender.h"
 #include "Engine\xrFramework\blender_clsid.h"
 #include "Engine\xrFramework\psystem.h"

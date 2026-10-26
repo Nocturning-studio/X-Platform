@@ -18,7 +18,7 @@
 #include "CustomHUD.h"
 #include "debug_ui.h"
 #include "xr_ioc_cmd.h"
-#include "igame_level.h"
+#include "ILevel.h"
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;
@@ -371,8 +371,8 @@ void CRenderDevice::Reset()
 	Engine.Events.DeviceReset.Process(rp_DeviceReset);
 
 	bool b_16_after = (float)dwWidth / (float)dwHeight > (1024.0f / 768.0f + 0.01f);
-	if (b_16_after != b_16_before && g_pGameLevel && g_pGameLevel->pHUD)
-		g_pGameLevel->pHUD->OnScreenRatioChanged();
+	if (b_16_after != b_16_before && g_pLevel && g_pLevel->pHUD)
+		g_pLevel->pHUD->OnScreenRatioChanged();
 
 	Engine.DebugUI.OnResetEnd();
 

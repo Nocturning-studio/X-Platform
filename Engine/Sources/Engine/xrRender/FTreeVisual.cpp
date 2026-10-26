@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #include "Engine\xrFramework\IAppContext.h"
-#include "Engine\xrFramework\igame_level.h"
+#include "Engine\xrFramework\ILevel.h"
 #include "Engine\xrFramework\environment.h"
 #include "Engine\xrFramework\fmesh.h"
 

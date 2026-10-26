@@ -7,7 +7,7 @@
 #include "ui_toolscustom.h"
 #else
 #include "IRender.h"
-#include "igame_level.h"
+#include "ILevel.h"
 #include "xr_area.h"
 #include "xr_object.h"
 #endif
@@ -204,12 +204,12 @@ void CEffect_Rain::SpawnDrop(RainDrop& dest, float radius, FastRandom& R)
 
 BOOL CEffect_Rain::RayTrace(const fvec3& s, const fvec3& d, float& range, collide::rq_target tgt)
 {
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return FALSE;
 
 	collide::rq_result RQ;
-	CObject* E = g_pGameLevel->CurrentViewEntity();
-	BOOL res = g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
+	CObject* E = g_pLevel->CurrentViewEntity();
+	BOOL res = g_pLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
 	if(res)
 	{
 		range = RQ.range - 0.01f;
@@ -462,7 +462,7 @@ void CEffect_Rain::OnFrame()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
 #endif
 
@@ -471,7 +471,7 @@ void CEffect_Rain::OnFrame()
 	// Calculate hemi factor (occlusion by roofs for sound)
 	float hemi_factor = 1.f;
 #ifndef _EDITOR
-	CObject* E = g_pGameLevel->CurrentViewEntity();
+	CObject* E = g_pLevel->CurrentViewEntity();
 	if(E && E->renderable_ROS())
 	{
 		float lumi = E->renderable_ROS()->get_luminocity_ao();
@@ -539,7 +539,7 @@ void CEffect_Rain::Render()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
 #endif
 

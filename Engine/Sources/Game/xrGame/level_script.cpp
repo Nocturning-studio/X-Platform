@@ -300,7 +300,7 @@ void show_indicators()
 
 bool is_level_present()
 {
-	return (!!g_pGameLevel);
+	return (!!g_pLevel);
 }
 
 void add_call(const luabind::functor<bool>& condition, const luabind::functor<void>& action)

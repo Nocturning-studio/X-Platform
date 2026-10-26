@@ -7,7 +7,7 @@
 #pragma once
 #include "pch.h"
 #include <PresenceAudioSDK/Include/PresenceAudioAPI.h>
-#include "xrFramework/igame_level.h"
+#include "xrFramework/ILevel.h"
 #include "xrFramework/xr_area.h"
 #include "xrGame\GameMtlLib.h"
 
@@ -144,7 +144,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 		result.materialID = 0;
 
 		// Критическая проверка: уровень мог выгрузиться
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return result;
 
 		// Конвертация векторов
@@ -169,7 +169,7 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 
 		// Трассировка только по статике (rqtStatic) для скорости и стабильности
 		// Игнорируем динамические объекты (NPC, ящики) для расчета реверберации
-		BOOL hit = g_pGameLevel->ObjectSpace.RayPick(xStart, xDir, traceDist, collide::rqtStatic, rq, NULL);
+		BOOL hit = g_pLevel->ObjectSpace.RayPick(xStart, xDir, traceDist, collide::rqtStatic, rq, NULL);
 
 		if(hit)
 		{
@@ -177,8 +177,8 @@ class XRayGeometryAdapter : public Presence::IGeometryProvider
 			result.distance = rq.range + K_BIAS;
 
 			// Получение треугольника для нормали и материала
-			CDB::TRI* tri = g_pGameLevel->ObjectSpace.GetStaticTris() + rq.element;
-			fvec3* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			CDB::TRI* tri = g_pLevel->ObjectSpace.GetStaticTris() + rq.element;
+			fvec3* verts = g_pLevel->ObjectSpace.GetStaticVerts();
 
 			fvec3 xNorm;
 			xNorm.mknormal(verts[tri->verts[0]], verts[tri->verts[1]], verts[tri->verts[2]]);

@@ -156,7 +156,7 @@ game_GameState::game_GameState()
 	m_round = -1;
 	m_round_start_time_str[0] = 0;
 
-	VERIFY(g_pGameLevel);
+	VERIFY(g_pLevel);
 	m_qwStartProcessorTime = Level().timeServer_Async();
 	m_qwStartGameTime = g_qwStartGameTime;
 	m_fTimeFactor = g_fTimeFactor;

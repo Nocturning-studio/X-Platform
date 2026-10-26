@@ -384,7 +384,7 @@ class CCC_BanPlayerByName : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args_)
 	{
-		if(!g_pGameLevel || !Level().Server || !Level().Server->game)
+		if(!g_pLevel || !Level().Server || !Level().Server->game)
 			return;
 		string4096 buff;
 		strcpy(buff, args_);
@@ -477,7 +477,7 @@ class CCC_BanPlayerByIP : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args_)
 	{
-		if(!g_pGameLevel || !Level().Server)
+		if(!g_pLevel || !Level().Server)
 			return;
 		//-----------
 		string4096 buff;
@@ -538,7 +538,7 @@ class CCC_UnBanPlayerByIP : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		if(!g_pGameLevel || !Level().Server)
+		if(!g_pLevel || !Level().Server)
 			return;
 
 		if(!xr_strlen(args))
@@ -760,7 +760,7 @@ class CCC_AddMap : public IConsole_Command
 	{
 		char MapName[256] = {0};
 		sscanf(args, "%s", MapName);
-		if(!g_pGameLevel || !Level().Server || !Level().Server->game)
+		if(!g_pLevel || !Level().Server || !Level().Server->game)
 			return;
 		Level().Server->game->MapRotation_AddMap(MapName);
 	};
@@ -780,7 +780,7 @@ class CCC_ListMaps : public IConsole_Command
 	};
 	virtual void Execute(LPCSTR args)
 	{
-		if(!g_pGameLevel || !Level().Server || !Level().Server->game)
+		if(!g_pLevel || !Level().Server || !Level().Server->game)
 			return;
 		Level().Server->game->MapRotation_ListMaps();
 	};
@@ -1041,7 +1041,7 @@ class CCC_StartTimeEnvironment : public IConsole_Command
 		sscanf(args, "%d:%d:%d.%d", &hours, &mins, &secs, &milisecs);
 		u64 NewTime = generate_time(year, month, day, hours, mins, secs, milisecs);
 
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 
 		if(!Level().Server)
@@ -1213,7 +1213,7 @@ class CCC_SV_Integer : public CCC_Integer
 	{
 		CCC_Integer::Execute(args);
 
-		if(!g_pGameLevel || !Level().Server || !Level().Server->game)
+		if(!g_pLevel || !Level().Server || !Level().Server->game)
 			return;
 
 		Level().Server->game->signal_Syncronize();
@@ -1228,7 +1228,7 @@ class CCC_SV_Float : public CCC_Float
 	virtual void Execute(LPCSTR args)
 	{
 		CCC_Float::Execute(args);
-		if(!g_pGameLevel || !Level().Server || !Level().Server->game)
+		if(!g_pLevel || !Level().Server || !Level().Server->game)
 			return;
 		Level().Server->game->signal_Syncronize();
 	}
@@ -1345,7 +1345,7 @@ class CCC_BattlEyeSrv : public IConsole_Command
 	}
 	virtual void Execute(LPCSTR args)
 	{
-		if(!g_pGameLevel || !OnServer())
+		if(!g_pLevel || !OnServer())
 		{
 			return;
 		}
@@ -1393,7 +1393,7 @@ class CCC_BattlEyeCl : public IConsole_Command
 	}
 	virtual void Execute(LPCSTR args)
 	{
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 		{
 			return;
 		}

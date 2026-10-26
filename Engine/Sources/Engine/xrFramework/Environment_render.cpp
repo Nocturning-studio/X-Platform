@@ -10,7 +10,7 @@
 #include "thunderbolt.h"
 
 #ifndef _EDITOR
-#include "igame_level.h"
+#include "ILevel.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ void CEnvironment::RenderSky()
 	// OPTICK_EVENT("CEnvironment::RenderSky");
 
 #ifndef _EDITOR
-	if(0 == g_pGameLevel)
+	if(0 == g_pLevel)
 		return;
 #endif
 
@@ -163,7 +163,7 @@ void CEnvironment::RenderClouds()
 void CEnvironment::RenderFlares()
 {
 #ifndef _EDITOR
-	if(0 == g_pGameLevel)
+	if(0 == g_pLevel)
 		return;
 #endif
 	// 1
@@ -180,7 +180,7 @@ void CEnvironment::RenderThunderbolt()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if(0 == g_pGameLevel)
+	if(0 == g_pLevel)
 		return;
 #endif
 	// 2
@@ -192,7 +192,7 @@ void CEnvironment::RenderRain()
 	PROFILE_FUNCTION();
 
 #ifndef _EDITOR
-	if(0 == g_pGameLevel)
+	if(0 == g_pLevel)
 		return;
 #endif
 	// 2

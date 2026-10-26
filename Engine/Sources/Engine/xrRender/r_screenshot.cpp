@@ -118,12 +118,12 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
     #ifdef BENCHMARK_BUILD
                 sprintf_s(file_name, sizeof(file_name),
                     "X-Ray Benchmark (time - %s) (%s)",
-                    timestamp(t_stemp), g_pGameLevel->name().c_str());
+                    timestamp(t_stemp), g_pLevel->name().c_str());
     #else
                 sprintf_s(file_name, sizeof(file_name),
                     "X-Ray Engine (build id - %d) (user - %s) (time - %s) (%s)",
                     GlobalBuildInfo.ID, Core.UserName, timestamp(t_stemp),
-                    (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
+                    (g_pLevel) ? g_pLevel->name().c_str() : "mainmenu");
     #endif
             }
             else
@@ -159,7 +159,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 
         case IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP:
         {
-            if (!g_pGameLevel)
+            if (!g_pLevel)
             {
                 Msg("! Can't capture level map, level does no loaded");
                 _RELEASE(shot);
@@ -167,7 +167,7 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
             }
 
             sprintf_s(file_name, sizeof(string_path), "level_map_%s_%s.dds",
-                g_pGameLevel->name().c_str(), timestamp(t_stemp));
+                g_pLevel->name().c_str(), timestamp(t_stemp));
 
             // D3D-ресурсы создаём на рендер-потоке. Всё остальное — в воркере.
             IDirect3DTexture9* texture = nullptr;

@@ -181,7 +181,7 @@ class CCC_GameDifficulty : public CCC_Token
 	virtual void Execute(LPCSTR args)
 	{
 		CCC_Token::Execute(args);
-		if(g_pGameLevel && Level().game)
+		if(g_pLevel && Level().game)
 		{
 			// #ifndef	DEBUG
 			if(GameID() != GAME_SINGLE)
@@ -378,7 +378,7 @@ class CCC_DemoRecord : public IConsole_Command
 		string_path fn;
 		FS.update_path(fn, "$demos$", fn_);
 
-		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
+		g_pLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
 	}
 };
 
@@ -399,7 +399,7 @@ class CCC_Photo_Mode : public IConsole_Command
 		};
 #endif
 		Engine.Console->Hide();
-		g_pGameLevel->Cameras().AddCamEffector(xr_new<CPhotoMode>());
+		g_pLevel->Cameras().AddCamEffector(xr_new<CPhotoMode>());
 	}
 };
 
@@ -419,7 +419,7 @@ class CCC_DemoPlay : public IConsole_Command
 			return;
 		};
 #endif
-		if(0 == g_pGameLevel)
+		if(0 == g_pLevel)
 		{
 			Msg("! There are no level(s) started");
 		}
@@ -436,7 +436,7 @@ class CCC_DemoPlay : public IConsole_Command
 			}
 			strconcat(sizeof(fn), fn, args, ".ltx");
 			FS.update_path(fn, "$demos$", fn);
-			g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
+			g_pLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
 		}
 	}
 };
@@ -721,7 +721,7 @@ class CCC_FloatBlock : public CCC_Float
 #ifdef _DEBUG
 		CCC_Float::Execute(args);
 #else
-		if(!g_pGameLevel || GameID() == GAME_SINGLE)
+		if(!g_pLevel || GameID() == GAME_SINGLE)
 			CCC_Float::Execute(args);
 		else
 		{
@@ -743,7 +743,7 @@ class CCC_Net_CL_InputUpdateRate : public CCC_Integer
 	virtual void Execute(LPCSTR args)
 	{
 		CCC_Integer::Execute(args);
-		if((*value_blin > 0) && g_pGameLevel)
+		if((*value_blin > 0) && g_pLevel)
 		{
 			g_dwInputUpdateDelta = 1000 / (*value_blin);
 		};
@@ -1112,7 +1112,7 @@ class CCC_PHGravity : public IConsole_Command
 		if(!ph_world)
 			return;
 #ifndef DEBUG
-		if(g_pGameLevel && Level().game && GameID() != GAME_SINGLE)
+		if(g_pLevel && Level().game && GameID() != GAME_SINGLE)
 		{
 			Msg("Command is not available in Multiplayer");
 			return;
@@ -1244,7 +1244,7 @@ class CCC_Spawn : public IConsole_Command
 
 	void Execute(LPCSTR args)
 	{
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 
 		if(!pSettings->section_exist(args))
@@ -1277,7 +1277,7 @@ class CCC_SpawnToInventory : public IConsole_Command
 
 	void Execute(LPCSTR args)
 	{
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 
 		if(!pSettings->section_exist(args))
@@ -1331,7 +1331,7 @@ class CCC_SetWeather : public IConsole_Command
 	{
 		if(!strlen(args))
 			return;
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 		if(!g_pAppContext)
 			return;
@@ -1362,7 +1362,7 @@ class CCC_SetWeatherFX : public IConsole_Command
 	{
 		if(!strlen(args))
 			return;
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 		if(!g_pAppContext)
 			return;
@@ -1380,7 +1380,7 @@ class CCC_StopWeatherFX : public IConsole_Command
 
 	void Execute(LPCSTR args) override
 	{
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 		if(!g_pAppContext)
 			return;
@@ -1430,7 +1430,7 @@ struct CCC_StartTimeSingle : public IConsole_Command
 		day = _max(day, 1);
 		g_qwStartGameTime = generate_time(year, month, day, hours, mins, secs, milisecs);
 
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 
 		if(!Level().Server)
@@ -1458,7 +1458,7 @@ struct CCC_TimeFactorSingle : public CCC_Float
 	{
 		CCC_Float::Execute(args);
 
-		if(!g_pGameLevel)
+		if(!g_pLevel)
 			return;
 
 		if(!Level().Server)

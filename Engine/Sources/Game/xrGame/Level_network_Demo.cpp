@@ -106,7 +106,7 @@ void CLevel::Demo_DumpData()
 
 void CLevel_DemoCrash_Handler()
 {
-	if(!g_pGameLevel)
+	if(!g_pLevel)
 		return;
 	Level().WriteStoredDemo();
 	Level().CallOldCrashHandler();

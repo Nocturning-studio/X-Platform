@@ -52,7 +52,7 @@ IC void throw_and_log(const xr_string& s)
 
 #include "xrFramework/gamefont.h"
 #include "xrFramework/xr_object.h"
-#include "xrFramework/igame_level.h"
+#include "xrFramework/ILevel.h"
 
 #define REGISTRY_VALUE_GSCDKEY "InstallCDKEY"
 #define REGISTRY_VALUE_VERSION "InstallVers"

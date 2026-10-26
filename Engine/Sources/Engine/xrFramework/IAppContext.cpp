@@ -5,7 +5,7 @@
 #include "environment.h"
 #ifndef _EDITOR
 #include "Engine.h"
-#include "IGame_Level.h"
+#include "ILevel.h"
 #include "XR_IOConsole.h"
 #include "resourcemanager.h"
 #include "IRender.h"

@@ -53,7 +53,7 @@ void CRender::Render()
 	}
 	else
 	{
-		if(!(g_pGameLevel && g_pGameLevel->pHUD))
+		if(!(g_pLevel && g_pLevel->pHUD))
 			return;
 
 		if (scene_pipe == nullptr)
