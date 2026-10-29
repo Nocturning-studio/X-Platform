@@ -28,6 +28,13 @@ void CEditorLevel::NewLevel()
     m_level_name = "untitled";
     bReady = true;
 
+    Fbox bounds;
+    bounds.set(-16384, -16384, -16384, 16384, 16384, 16384);
+    if (!g_SpatialSpace->m_root)
+        g_SpatialSpace->initialize(bounds);
+    if (!g_SpatialSpacePhysic->m_root)
+        g_SpatialSpacePhysic->initialize(bounds);
+
     Render->NewLevel();
 
     Engine.Events.Render.Add(this);

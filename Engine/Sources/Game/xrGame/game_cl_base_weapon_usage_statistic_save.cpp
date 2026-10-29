@@ -77,7 +77,7 @@ void WeaponUsageStatistic::SaveData()
 		break;
 	};
 	GetLocalTime(&Time);
-	sprintf_s(mFileName, "(%s)_(%s)_%02d.%02d.%02d_%02d.%02d.%02d.wus", *(Level().name()), GameType, Time.wMonth,
+	sprintf_s(mFileName, "(%s)_(%s)_%02d.%02d.%02d_%02d.%02d.%02d.wus", *(Level().Name()), GameType, Time.wMonth,
 			  Time.wDay, Time.wYear, Time.wHour, Time.wMinute, Time.wSecond);
 
 	//---------------------------------------------------------

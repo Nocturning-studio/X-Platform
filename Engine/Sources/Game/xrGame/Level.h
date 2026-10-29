@@ -305,7 +305,7 @@ class CLevel : public ILevel, public IPureClient
 	virtual ~CLevel();
 
 	// названияе текущего уровня
-	virtual shared_str name() const;
+	virtual shared_str Name() const;
 	virtual void GetLevelInfo(CServerInfo* si);
 
 	// gets the time from the game simulation

@@ -174,8 +174,20 @@ CEngine::~CEngine()
 {
 }
 
+LONG WINAPI CEngine::OnCrashFilter(EXCEPTION_POINTERS* ep)
+{
+	if (pInput)
+	{
+		pInput->SetAllAcquire(FALSE);
+		pInput->exclusive_mode(false);
+	}
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
 bool CEngine::Initialize()
 {
+	SetUnhandledExceptionFilter(&CEngine::OnCrashFilter);
+
 	m_editor_mode = (AppHost->GetRunMode() == EEngineRunMode::Editor);
 
 	// Предварительная настройка интерфейса (Splash Screen)
@@ -239,7 +251,7 @@ bool CEngine::Initialize()
 
 	{
 		BOOL bCaptureInput = !strstr(Core.Params, "-i");
-		if(m_dedicated_server)
+		if(m_dedicated_server || m_editor_mode)
 			bCaptureInput = FALSE;
 
 		pInput = xr_new<CInput>(bCaptureInput);
@@ -330,6 +342,12 @@ bool CEngine::Initialize()
 
 	Statistic = xr_new<CStats>();
 	Statistic->Initialize();
+
+	if (m_editor_mode)
+	{
+		Msg("* [Editor] Forcing windowed render device");
+		psDeviceFlags.set(rsFullscreen, false);  // если такой флаг есть в твоей ветке
+	}
 
 	Device.Initialize();
 	Render->Initialize();

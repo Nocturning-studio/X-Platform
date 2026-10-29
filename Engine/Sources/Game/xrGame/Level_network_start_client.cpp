@@ -58,10 +58,10 @@ bool CLevel::net_start_client3()
 		LPCSTR level_name = NULL;
 		if(psNET_direct_connect)
 		{
-			level_name = ai().get_alife() ? *name() : Server->level_name(Server->GetConnectOptions()).c_str();
+			level_name = ai().get_alife() ? *Name() : Server->level_name(Server->GetConnectOptions()).c_str();
 		}
 		else
-			level_name = ai().get_alife() ? *name() : net_SessionName();
+			level_name = ai().get_alife() ? *Name() : net_SessionName();
 
 		// Determine internal level-ID
 		int level_id = Engine.LevelManager.GetLevelID(level_name);

@@ -251,7 +251,7 @@ bool patrol_path_exists(LPCSTR patrol_path)
 
 LPCSTR get_name()
 {
-	return (*Level().name());
+	return (*Level().Name());
 }
 
 void prefetch_sound(LPCSTR name)

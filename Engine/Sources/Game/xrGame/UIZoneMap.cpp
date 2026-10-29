@@ -110,10 +110,10 @@ void CUIZoneMap::SetupCurrentMap()
 {
 	CInifile* pLtx = pGameIni;
 
-	if(!pLtx->section_exist(Level().name()))
+	if(!pLtx->section_exist(Level().Name()))
 		pLtx = Level().pLevel;
 
-	m_activeMap->Init(Level().name(), *pLtx, "hud\\default");
+	m_activeMap->Init(Level().Name(), *pLtx, "hud\\default");
 
 	Frect r;
 	m_clipFrame.GetAbsoluteRect(r);
@@ -122,7 +122,7 @@ void CUIZoneMap::SetupCurrentMap()
 	fvec2 wnd_size;
 	float zoom_factor = float(m_clipFrame.GetWndRect().width()) / 100.0f;
 
-	LPCSTR ln = Level().name().c_str();
+	LPCSTR ln = Level().Name().c_str();
 	if(pGameIni->section_exist(ln))
 	{
 		if(pGameIni->line_exist(ln, "minimap_zoom"))

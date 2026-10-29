@@ -33,5 +33,7 @@ class CEditorHost final : public IEngineHost
   private:
 	CDllGameModule* m_gameModule = nullptr;
 	IEditorLevel* m_level = nullptr;
+
+	static LONG WINAPI OnCrashFilter(EXCEPTION_POINTERS* ep);
 };
 ////////////////////////////////////////////////////////////////////////////////

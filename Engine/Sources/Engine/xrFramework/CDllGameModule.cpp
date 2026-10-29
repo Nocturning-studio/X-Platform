@@ -68,6 +68,26 @@ void CDllGameModule::DestroyGameContext(IAppContext* p)
     if (m_instance) m_instance->DestroyGameContext(p);
 }
 
+IAppContext* CDllGameModule::CreateEditorContext()
+{
+    return m_instance ? m_instance->CreateEditorContext() : nullptr;
+}
+
+void CDllGameModule::DestroyEditorContext(IAppContext* p)
+{
+    if (m_instance) m_instance->DestroyEditorContext(p);
+}
+
+IEditorLevel* CDllGameModule::CreateEditorLevel()
+{
+    return m_instance ? m_instance->CreateEditorLevel() : nullptr;
+}
+
+void CDllGameModule::DestroyEditorLevel(IEditorLevel* l)
+{
+    if (m_instance) m_instance->DestroyEditorLevel(l);
+}
+
 ILoadingScreen* CDllGameModule::CreateLoadingScreen()
 {
     return m_instance ? m_instance->CreateLoadingScreen() : nullptr;

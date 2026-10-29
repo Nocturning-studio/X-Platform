@@ -637,7 +637,7 @@ bool game_sv_mp::OnNextMap()
 	m_bMapSwitched = true;
 
 	/*
-	if (!xr_stricmp(MapName.c_str(), Level().name().c_str()))
+	if (!xr_stricmp(MapName.c_str(), Level().Name().c_str()))
 	{
 		m_bMapSwitched		= false;
 		return				false;
@@ -665,7 +665,7 @@ void game_sv_mp::OnPrevMap()
 	Msg("Goint to level %s", MapName.c_str());
 	m_bMapSwitched = true;
 
-	//.	if (!xr_stricmp(MapName.c_str(), Level().name().c_str())) return;
+	//.	if (!xr_stricmp(MapName.c_str(), Level().Name().c_str())) return;
 
 	string1024 Command;
 	sprintf_s(Command, "sv_changelevel %s", MapName.c_str());
@@ -1450,7 +1450,7 @@ void game_sv_mp::DumpOnlineStatistic()
 
 	ini.w_u32(current_section.c_str(), "players_total_cnt", m_server->client_Count());
 
-	sprintf_s(str_buff, "\"%s\"", CStringTable().translate(Level().name().c_str()).c_str());
+	sprintf_s(str_buff, "\"%s\"", CStringTable().translate(Level().Name().c_str()).c_str());
 	ini.w_string(current_section.c_str(), "current_map_name", str_buff);
 
 	sprintf_s(str_buff, "%s", CStringTable().translate(type_name()).c_str());
@@ -1546,10 +1546,10 @@ void game_sv_mp::DumpRoundStatistics()
 	sprintf_s(str_buff, "%s", CStringTable().translate(type_name()).c_str());
 	ini.w_string(current_section.c_str(), "game_mode", str_buff);
 
-	sprintf_s(str_buff, "\"%s\"", CStringTable().translate(Level().name().c_str()).c_str());
+	sprintf_s(str_buff, "\"%s\"", CStringTable().translate(Level().Name().c_str()).c_str());
 	ini.w_string(current_section.c_str(), "current_map_name", str_buff);
 
-	sprintf_s(str_buff, "\"%s\"", Level().name().c_str());
+	sprintf_s(str_buff, "\"%s\"", Level().Name().c_str());
 	ini.w_string(current_section.c_str(), "current_map_name_internal", str_buff);
 
 	for(u32 idx = 0; idx < m_server->client_Count(); ++idx)

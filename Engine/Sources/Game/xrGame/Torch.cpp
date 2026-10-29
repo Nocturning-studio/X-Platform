@@ -128,7 +128,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 	bool bPlaySoundFirstPerson = (pA == Level().CurrentViewEntity());
 
 	LPCSTR disabled_names = pSettings->r_string(cNameSect(), "disabled_maps");
-	LPCSTR curr_map = *Level().name();
+	LPCSTR curr_map = *Level().Name();
 	u32 cnt = _GetItemCount(disabled_names);
 	bool b_allow = true;
 	string512 tmp;

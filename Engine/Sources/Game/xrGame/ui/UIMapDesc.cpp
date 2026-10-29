@@ -76,16 +76,16 @@ void CUIMapDesc::Init()
 
 	CInifile& gameLtx = *pGameIni;
 
-	if(gameLtx.section_exist(Level().name()), *Level().name() && gameLtx.line_exist(Level().name(), "texture"))
+	if(gameLtx.section_exist(Level().Name()), *Level().Name() && gameLtx.line_exist(Level().Name(), "texture"))
 	{
-		m_pImage->InitTexture(gameLtx.r_string(Level().name(), "texture"));
+		m_pImage->InitTexture(gameLtx.r_string(Level().Name(), "texture"));
 	}
 	else
 		m_pImage->InitTexture("ui\\ui_noise");
 
 	CUIXmlInit::InitWindow(xml_doc, "map_desc:map_info", 0, m_pMapInfo);
 
-	m_pMapInfo->InitMap(*Level().name());
+	m_pMapInfo->InitMap(*Level().Name());
 
 	ADD_TEXT_TO_VIEW2(m_pMapInfo->GetLargeDesc(), m_pTextDesc);
 

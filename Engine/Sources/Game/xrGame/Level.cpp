@@ -266,7 +266,7 @@ CLevel::~CLevel()
 		Debug.set_crashhandler(m_pOldCrashHandler);
 }
 
-shared_str CLevel::name() const
+shared_str CLevel::Name() const
 {
 	return (m_name);
 }

@@ -110,11 +110,11 @@ BOOL CLevel::Load_GameSpecific_After()
 		if(game && (GameID() != GAME_SINGLE))
 		{
 			CInifile& gameLtx = *pGameIni;
-			if(gameLtx.section_exist(Level().name()))
+			if(gameLtx.section_exist(Level().Name()))
 			{
-				if(gameLtx.line_exist(Level().name(), "weathers"))
+				if(gameLtx.line_exist(Level().Name(), "weathers"))
 				{
-					LPCSTR weathers_sect = gameLtx.r_string(Level().name(), "weathers");
+					LPCSTR weathers_sect = gameLtx.r_string(Level().Name(), "weathers");
 					GameContext().Environment().SetWeather(weathers_sect);
 				}
 			}

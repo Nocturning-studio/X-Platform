@@ -736,7 +736,7 @@ void CUIMapWnd::OnToolActorClicked(CUIWindow*, void*)
 	v2.set(v.x, v.z);
 
 	CUICustomMap* lm = NULL;
-	u16 idx = GetIdxByName(Level().name());
+	u16 idx = GetIdxByName(Level().Name());
 	if(idx != u16(-1))
 	{
 		lm = GetMapByIdx(idx);

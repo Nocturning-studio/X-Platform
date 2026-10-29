@@ -163,6 +163,7 @@ class ENGINE_API CEngine
 	void SetUnloaded() { m_bLoaded = FALSE; }
 
 	bool IsEditorMode() const { return m_editor_mode; }
+	IEditorLevel* CreateEditorLevel();
 
   private:
 	bool Initialize();
@@ -171,6 +172,8 @@ class ENGINE_API CEngine
 	bool CheckLoadingEvents();
 	void UpdateGameLogic();
 	void Destroy();
+
+	static LONG WINAPI OnCrashFilter(EXCEPTION_POINTERS* ep);
 };
 ////////////////////////////////////////////////////////////////////////////////
 #include "ResourceManager.h"

@@ -22,9 +22,17 @@ public:
     TGameObjectFactoryCreate* GetGameObjectCreate()  const override;
     TGameObjectFactoryDestroy* GetGameObjectDestroy() const override;
     void RegisterConsoleCommands() override;
-    void RegisterInputCommands() override;
+    void RegisterInputCommands()   override;
+
     IAppContext* CreateGameContext() override;
     void DestroyGameContext(IAppContext* p) override;
+
+    // Editor
+    IAppContext* CreateEditorContext() override;
+    void DestroyEditorContext(IAppContext* p) override;
+    IEditorLevel* CreateEditorLevel() override;
+    void DestroyEditorLevel(IEditorLevel* l) override;
+
     ILoadingScreen* CreateLoadingScreen() override;
     void DestroyLoadingScreen(ILoadingScreen* ls) override;
 

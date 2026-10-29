@@ -710,7 +710,7 @@ class CCC_ChangeGameType : public CCC_ChangeLevelGameType
 		sscanf(args, "%s", GameType);
 
 		string1024 argsNew;
-		sprintf_s(argsNew, "%s %s", Level().name().c_str(), GameType);
+		sprintf_s(argsNew, "%s %s", Level().Name().c_str(), GameType);
 
 		CCC_ChangeLevelGameType::Execute((LPCSTR)argsNew);
 	};

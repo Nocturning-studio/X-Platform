@@ -242,7 +242,7 @@ struct LevelLoadFinalizer
 	{
 		if(g_pLevel && !g_start_total_res)
 		{
-			shared_str ln = Level().name();
+			shared_str ln = Level().Name();
 			Msg("! Failed to start client. Check the connection or level existance.");
 			DEL_INSTANCE(g_pLevel);
 			Engine.Console->Execute("main_menu on");

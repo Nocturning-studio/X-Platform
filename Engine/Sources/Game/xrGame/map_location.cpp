@@ -264,13 +264,13 @@ shared_str CMapLocation::LevelName()
 		}
 		else
 		{
-			m_cached.m_LevelName = Level().name();
+			m_cached.m_LevelName = Level().Name();
 			return m_cached.m_LevelName;
 		}
 	}
 	else
 	{
-		m_cached.m_LevelName = Level().name();
+		m_cached.m_LevelName = Level().Name();
 		return m_cached.m_LevelName;
 	}
 }
@@ -397,7 +397,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 			UpdateSpotPointer(map, GetSpotPointer(sp));
 		}
 	}
-	else if(Level().name() == map->MapName() && GetSpotPointer(sp))
+	else if(Level().Name() == map->MapName() && GetSpotPointer(sp))
 	{
 		GameGraph::_GRAPH_ID dest_graph_id;
 
