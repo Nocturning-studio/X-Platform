@@ -357,16 +357,10 @@ bool CEngine::Initialize()
 	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
 
 	LoadingScreen = GameModule->CreateLoadingScreen();
-	LoadingScreen->Show();
-	g_pAppContext->LoadTitle("st_loading_game");
-	LoadingScreen->ForceRender();
 
 	Memory.mem_usage();
 
-	g_pAppContext->LoadTitle("st_loading_shaders");
-	LoadingScreen->ForceRender();
 	Render->Create();
-	LoadingScreen->Hide();
 
 	m_gameLoaded = true;
 
@@ -501,7 +495,8 @@ void CEngine::Destroy()
 		g_pAppContext = nullptr;
 	}
 
-	LoadingScreen->Destroy();
+	if(LoadingScreen)
+		LoadingScreen->Destroy();
 
 	Event.Dump();
 
