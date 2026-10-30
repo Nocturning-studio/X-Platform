@@ -35,7 +35,6 @@ public:
 		POINT = 1,
 		SPOT = 2,
 		OMNIPART = 3,
-		REFLECTED = 4,
 	};
 
 public:
@@ -226,10 +225,6 @@ public:
 	virtual void LevelLoad(IReader*) = 0;
 	virtual void LevelUnload() = 0;
 
-#pragma todo("Move to Game persistent or somewhere else")
-	virtual void set_actor_health(float health) = 0;
-	virtual float get_actor_health() = 0;
-
 	virtual IDirect3DBaseTexture9* TextureLoad(LPCSTR fname, u32& msize) = 0;
 	void shader_option_skinning(s32 mode)
 	{
@@ -237,9 +232,6 @@ public:
 	}
 
 	virtual CShaderMacros FetchShaderMacros() = 0;
-
-	// Information
-	virtual void Statistics(CGameFont* F) {};
 
 	virtual LPCSTR getShaderPath() = 0;
 	virtual ref_shader getShader(int id) = 0;
@@ -299,15 +291,9 @@ public:
 	virtual void Render() = 0;
 	virtual void Screenshot(ScreenshotMode mode = ScreenshotMode::SM_NORMAL, LPCSTR name = 0) = 0;
 
-	virtual bool is_dynamic_sun_enabled() = 0;
-
 	// Render mode
 	virtual void set_render_mode(int mode) = 0;
 	virtual u32 memory_usage() = 0;
-
-	// KD: need to know, what R2 phase is active now
-	virtual u32 active_phase() = 0;
-	virtual void set_active_phase(int active_phase) = 0;
 
 	// Constructor/destructor
 	virtual ~IRender_interface();

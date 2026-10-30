@@ -1155,8 +1155,6 @@ void CActor::shedule_Update(u32 DT)
 	// звук тяжелого дыхания при уталости и хромании
 	if(this == Level().CurrentControlEntity() && !Engine.IsDedicatedServer())
 	{
-		Render->set_actor_health(conditions().GetHealth());
-
 		if(LastChanceMode() && !m_bLastChanceActivated && m_bLastChanceAvailable && (conditions().GetHealth() < 0.2f) && g_Alive())
 		{
 			Msg("Last chance used");
@@ -1312,9 +1310,11 @@ void CActor::shedule_Update(u32 DT)
 	Check_for_AutoPickUp();
 };
 #include "debug_renderer.h"
+#pragma fixme("Actor shadows")
 void CActor::renderable_Render()
 {
 	inherited::renderable_Render();
+	/*
 	if(!HUDview())
 	{
 		if((cam_active == eacFirstEye &&   // first eye cam
@@ -1326,6 +1326,7 @@ void CActor::renderable_Render()
 
 			CInventoryOwner::renderable_Render();
 	}
+	*/
 }
 
 BOOL CActor::renderable_ShadowGenerate()
