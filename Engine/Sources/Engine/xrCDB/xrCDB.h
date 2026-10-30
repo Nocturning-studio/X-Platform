@@ -8,7 +8,9 @@
 // that uses this DLL. This way any other project whose source files include this file see
 // XRCDB_API functions as being imported from a DLL, wheras this DLL sees symbols
 // defined with this macro as being exported.
-#ifdef XRCDB_EXPORTS
+#if defined(XRCDB_EXPORTS)
+#define XRCDB_API __declspec(dllexport)
+#elif defined(ENGINE_STATIC)
 #define XRCDB_API __declspec(dllexport)
 #else
 #define XRCDB_API __declspec(dllimport)

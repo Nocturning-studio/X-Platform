@@ -339,3 +339,13 @@ BOOL _valid(const template_vector4<T>& v)
 {
 	return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z) && _valid((T)v.w);
 }
+
+IC fvec4 pow(const fvec4& x, float e)
+{
+	fvec4 result;
+	result.x = pow(x.x, e);
+	result.y = pow(x.y, e);
+	result.z = pow(x.z, e);\
+	result.w = pow(x.w, e);
+	return result;
+}

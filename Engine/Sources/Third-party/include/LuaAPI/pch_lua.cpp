@@ -7,5 +7,5 @@
 
 namespace boost
 {
-	void throw_exception(std::exception const&) { abort(); }
+	__declspec(dllexport) void throw_exception(std::exception const&) { abort(); }
 } // namespace boost

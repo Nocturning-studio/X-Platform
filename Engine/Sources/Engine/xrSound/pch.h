@@ -27,3 +27,4 @@
 #include <xrCore/xr_resource.h>
 
 #pragma comment(lib, "PresenceAudioSDK.lib")
+#pragma comment(lib, "OpenAL32.lib")

@@ -4,7 +4,6 @@
 #include "ETextureParams.h"
 
 // eye-params
-float r_dtex_range = 50;
 class cl_dt_scaler : public R_constant_setup
 {
   public:
@@ -13,7 +12,7 @@ class cl_dt_scaler : public R_constant_setup
 	cl_dt_scaler(float s) : scale(s) {};
 	virtual void setup(R_constant* C)
 	{
-		RenderBackendLegacy.SetConstant(C, scale, scale, scale, 1 / r_dtex_range);
+		RenderBackendLegacy.SetConstant(C, scale, scale, scale, 1 / 50);
 	}
 };
 

@@ -157,7 +157,7 @@ xr_string ANSIToUTF8(const xr_string& string)
 	return result;
 }
 
-#ifndef XRCORE_STATIC
+#if !XRCORE_STATIC && !ENGINE_STATIC
 
 int oldin;
 int oldout;

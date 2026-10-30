@@ -9,9 +9,6 @@
 #include "ResourceManager.h"
 #include "Blender_Recorder.h"
 #include "Blender.h"
-
-#include "xrRender/r_color_converting.h"
-
 #include "IAppContext.h"
 #include "environment.h"
 
@@ -110,8 +107,9 @@ class cl_fog_params : public R_constant_setup
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
-			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z),
-					   desc->fog_density);
+			fvec3 color = desc->fog_color;
+			color = pow(color, 2.2f);
+			result.set(color.x, color.y, color.z, desc->fog_density);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
 	}
@@ -128,7 +126,9 @@ class cl_fog_color : public R_constant_setup
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
-			result.set(sRgbToLinear(desc->fog_color.x), sRgbToLinear(desc->fog_color.y), sRgbToLinear(desc->fog_color.z), 0);
+			fvec3 color = desc->fog_color;
+			color = pow(color, 2.2f);
+			result.set(color.x, color.y, color.z, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
 	}
@@ -268,7 +268,9 @@ class cl_sun0_color : public R_constant_setup
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
-			result.set(sRgbToLinear(desc->sun_color.x), sRgbToLinear(desc->sun_color.y), sRgbToLinear(desc->sun_color.z), 0);
+			fvec3 color = desc->sun_color;
+			color = pow(color, 2.2f);
+			result.set(color.x, color.y, color.z, 0);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
 	}
@@ -280,8 +282,9 @@ static class cl_env_color : public R_constant_setup
 	virtual void setup(R_constant* C)
 	{
 		CEnvDescriptorMixer* envdesc = g_pAppContext->Environment().CurrentEnv;
-		fvec4 envclr = {sRgbToLinear(envdesc->hemi_color.x) * 2 + EPS, sRgbToLinear(envdesc->hemi_color.y) * 2 + EPS,
-						sRgbToLinear(envdesc->hemi_color.z) * 2 + EPS, envdesc->weight};
+		fvec4 envclr = envdesc->hemi_color * 2.0f + EPS;
+		envclr = pow(envclr, 2.2f);
+		envclr.w = envdesc->weight;
 		RenderBackendLegacy.SetConstant(C, envclr);
 	}
 } binder_env_color;
@@ -330,7 +333,9 @@ class cl_amb_color : public R_constant_setup
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptorMixer* desc = g_pAppContext->Environment().CurrentEnv;
-			result.set(sRgbToLinear(desc->ambient.x), sRgbToLinear(desc->ambient.y), sRgbToLinear(desc->ambient.z), desc->weight);
+			fvec3 color = desc->ambient;
+			color = pow(color, 2.2f);
+			result.set(color.x, color.y, color.z, desc->weight);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
 	}
@@ -362,7 +367,9 @@ class cl_hemi_color : public R_constant_setup
 		if(marker != Engine.TimeManager.GetFrameCount())
 		{
 			CEnvDescriptor* desc = g_pAppContext->Environment().CurrentEnv;
-			result.set(sRgbToLinear(desc->hemi_color.x), sRgbToLinear(desc->hemi_color.y), sRgbToLinear(desc->hemi_color.z), desc->hemi_color.w);
+			fvec4 color = desc->hemi_color;
+			color = pow(color, 2.2f);
+			result.set(color.x, color.y, color.z, desc->hemi_color.w);
 		}
 		RenderBackendLegacy.SetConstant(C, result);
 	}

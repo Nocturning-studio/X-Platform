@@ -22,8 +22,8 @@
 #include <pch_lua.h>
 
 #define LUA_LIB
-#include <luabind/detail/object_rep.hpp>
-#include <luabind/detail/class_rep.hpp>
+#include <LuaAPI/luabind/detail/object_rep.hpp>
+#include <LuaAPI/luabind/detail/class_rep.hpp>
 
 // #define TEST_GARBAGE_COLLECTOR
 

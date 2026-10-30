@@ -496,8 +496,8 @@ class ENGINE_API CRenderBackendFacade
 };
 
 extern ENGINE_API CRenderBackendFacade RenderBackendLegacy;
-extern ENGINE_API void R_InitVidModeList();
-extern ENGINE_API void R_FreeVidModeList();
+void R_InitVidModeList();
+void R_FreeVidModeList();
 
 #include "R_Backend.inl"
 

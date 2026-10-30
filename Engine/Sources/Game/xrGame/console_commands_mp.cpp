@@ -14,10 +14,6 @@
 #include "game_sv_artefacthunt.h"
 #include "date_time.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
 
 extern float g_cl_lvInterp;
 extern int g_cl_InterpolationType; // 0 - Linear, 1 - BSpline, 2 - HSpline
@@ -29,7 +25,6 @@ extern BOOL g_b_COD_PickUpMode;
 extern int g_iWeaponRemove;
 extern int g_iCorpseRemove;
 extern BOOL g_bCollectStatisticData;
-// extern	BOOL	g_bStatisticSaveAuto	;
 extern BOOL g_SV_Disable_Auth_Check;
 
 extern int g_sv_mp_iDumpStatsPeriod;
@@ -82,9 +77,9 @@ extern int g_sv_Pending_Wait_Time;
 extern int g_sv_Client_Reconnect_Time;
 int g_dwEventDelay = 0;
 
-void XRNETSERVER_API DumpNetCompressorStats(bool brief);
-BOOL XRNETSERVER_API g_net_compressor_enabled;
-BOOL XRNETSERVER_API g_net_compressor_gather_stats;
+extern void DumpNetCompressorStats(bool brief);
+XRNETSERVER_API BOOL g_net_compressor_enabled;
+XRNETSERVER_API BOOL g_net_compressor_gather_stats;
 
 class CCC_Restart : public IConsole_Command
 {

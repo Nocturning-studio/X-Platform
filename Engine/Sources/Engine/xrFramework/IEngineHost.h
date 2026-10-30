@@ -35,7 +35,6 @@ public:
     // Хост возвращает игровой модуль. Может быть nullptr (bare framework).
     // Game.exe / Editor.exe возвращают CDllGameModule (или in-process реализацию).
     virtual IGameModule* GetGameModule() { return nullptr; }
-    virtual const char* GetRenderDllName() const { return "xrRender.dll"; }
 
     // Lifecycle
     virtual bool OnPreInitialize() { return true; }

@@ -2,7 +2,9 @@
 #define PSystemH
 #pragma once
 
-#ifdef XR_PARTICLES_EXPORTS
+#if defined(XR_PARTICLES_EXPORTS)
+#define PARTICLES_API __declspec(dllexport)
+#elif defined(ENGINE_STATIC)
 #define PARTICLES_API __declspec(dllexport)
 #else
 #define PARTICLES_API __declspec(dllimport)

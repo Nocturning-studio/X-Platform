@@ -12,6 +12,7 @@
 using namespace CDB;
 using namespace Opcode;
 
+#ifndef ENGINE_STATIC
 BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 {
 	switch(ul_reason_for_call)
@@ -24,6 +25,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 	}
 	return TRUE;
 }
+#endif
 
 // Model building
 MODEL::MODEL()

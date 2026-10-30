@@ -2,12 +2,6 @@
 #define PSystemH
 #pragma once
 
-#ifdef XR_PARTICLES_EXPORTS
-#define PARTICLES_API __declspec(dllexport)
-#else
-#define PARTICLES_API __declspec(dllimport)
-#endif
-
 // Actually this must be < sqrt(MAXFLOAT) since we store this value squared.
 #define P_MAXFLOAT 1.0e16f
 

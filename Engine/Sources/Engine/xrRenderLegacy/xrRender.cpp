@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "xrRender_console.h"
 
+#ifndef ENGINE_STATIC
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
 	switch(ul_reason_for_call)
@@ -18,3 +19,20 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
 	}
 	return TRUE;
 }
+#else
+void xrRender_Init()
+{
+	static bool initialized = false;
+	if (initialized)
+		return;
+	initialized = true;
+
+	::Render = &RenderImplementation;
+	xrRender_initconsole();
+}
+
+void xrRender_Shutdown()
+{
+	::Render = nullptr;
+}
+#endif

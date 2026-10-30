@@ -874,4 +874,12 @@ IC BOOL exact_normalize(fvec3& a)
 {
 	return exact_normalize(&a.x);
 }
+IC fvec3 pow(const fvec3& x, float e)
+{
+	fvec3 result;
+	result.x = pow(x.x, e);
+	result.y = pow(x.y, e);
+	result.z = pow(x.z, e);
+	return result;
+}
 #pragma warning(pop)

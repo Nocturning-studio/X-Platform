@@ -38,6 +38,9 @@ ENGINE_API CEngine* g_Engine;
 extern CRenderDevice Device;
 ENGINE_API CInifile* pGameIni = NULL;
 //////////////////////////////////////////////////////////////////////////
+extern void xrRender_Init();
+extern void xrRender_Shutdown();
+//////////////////////////////////////////////////////////////////////////
 void __cdecl dummy(void) {};
 extern void msCreate(LPCSTR name);
 extern void __cdecl xrBind_PSGP(xrDispatchTable* T, DWORD dwFeatures);
@@ -54,7 +57,7 @@ struct _SoundProcessor : public pureFrame
 //////////////////////////////////////////////////////////////////////////
 // Resource auto-decoder hooks
 typedef void DUMMY_STUFF(const void*, const u32&, void*);
-XRCORE_API DUMMY_STUFF* g_temporary_stuff;
+extern DUMMY_STUFF* g_temporary_stuff;
 //////////////////////////////////////////////////////////////////////////
 
 // Log callback to route SDL3 messages to console/logs
@@ -150,7 +153,6 @@ static void ShutdownSDL3()
 
 CEngine::CEngine()
 {
-	hRender = 0;
 	hTuner = 0;
 	hOptick = 0;
 	pCreate = nullptr;
@@ -269,14 +271,10 @@ bool CEngine::Initialize()
 	}
 
 	{
-		// Render
-		{
-			LPCSTR render_name = AppHost->GetRenderDllName();
-			Log("Loading DLL:", render_name);
-			hRender = LoadLibrary(render_name);
-			R_ASSERT2(hRender, "! Can't load renderer");
-		}
+		xrRender_Init();
+	}
 
+	{
 		// Game
 		GameModule = AppHost->GetGameModule();
 		if (GameModule)
@@ -563,11 +561,8 @@ void CEngine::Destroy()
 		dbg_dump_leaks_prepare();
 #endif // DEBUG_MEMORY_MANAGER
 
-	if(hRender)
-	{
-		FreeLibrary(hRender);
-		hRender = 0;
-	}
+	xrRender_Shutdown();
+
 	if(hOptick)
 	{
 		FreeLibrary(hOptick);

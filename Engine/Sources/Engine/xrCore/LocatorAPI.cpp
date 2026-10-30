@@ -28,7 +28,7 @@ const u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 #define PROTECTED_BUILD
 
 typedef void DUMMY_STUFF(const void*, const u32&, void*);
-XRCORE_API DUMMY_STUFF* g_temporary_stuff = 0;
+DUMMY_STUFF* g_temporary_stuff = 0;
 
 #ifdef PROTECTED_BUILD
 #pragma warning(push)

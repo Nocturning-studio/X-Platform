@@ -21,7 +21,7 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 #include <pch_lua.h>
 
-#include <luabind/detail/link_compatibility.hpp>
+#include <LuaAPI/luabind/detail/link_compatibility.hpp>
 
 namespace luabind
 {

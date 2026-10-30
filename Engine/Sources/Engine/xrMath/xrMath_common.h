@@ -8,12 +8,6 @@
 #define MSVC_COMPILER
 #endif
 
-#ifdef XRMATH_EXPORTS
-#define XRMATH_API __declspec(dllexport)
-#else
-#define XRMATH_API __declspec(dllimport)
-#endif
-
 #ifndef IC
 #define IC inline
 #endif

@@ -20,7 +20,7 @@
 #include "Engine\xrFramework\ILevel.h"
 #include "Engine\xrFramework\blender.h"
 #include "Engine\xrFramework\blender_clsid.h"
-#include "Engine\xrFramework\psystem.h"
+#include "Engine\xrParticles\psystem.h"
 #include "xrRender_console.h"
 #include "render.h"
 #include "r_color_converting.h"

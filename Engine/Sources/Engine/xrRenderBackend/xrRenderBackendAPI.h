@@ -1,6 +1,8 @@
 #pragma once
 
-#ifdef XRRENDERBACKEND_EXPORTS
+#if defined(XRRENDERBACKEND_EXPORTS)
+#define XRRB_API __declspec(dllexport)
+#elif defined(ENGINE_STATIC)
 #define XRRB_API __declspec(dllexport)
 #else
 #define XRRB_API __declspec(dllimport)

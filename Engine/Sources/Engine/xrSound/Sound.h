@@ -2,7 +2,9 @@
 
 #include "Game/xrGame/PresenceAudioIntegration/Sound_environment_common.h"
 
-#ifdef XRSOUND_EXPORTS
+#if defined(XRSOUND_EXPORTS)
+#define XRSOUND_API __declspec(dllexport)
+#elif defined(ENGINE_STATIC)
 #define XRSOUND_API __declspec(dllexport)
 #else
 #define XRSOUND_API __declspec(dllimport)

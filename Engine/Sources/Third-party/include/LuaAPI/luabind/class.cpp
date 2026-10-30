@@ -23,11 +23,11 @@
 
 #define LUA_LIB
 
-#include <luabind/lua_include.hpp>
+#include <LuaAPI/luabind/lua_include.hpp>
 
-#include <luabind/config.hpp>
-#include <luabind/class.hpp>
-#include <luabind/detail/get_signature.hpp>
+#include <LuaAPI/luabind/config.hpp>
+#include <LuaAPI/luabind/class.hpp>
+#include <LuaAPI/luabind/detail/get_signature.hpp>
 
 #include <cstring>
 // #include <iostream>

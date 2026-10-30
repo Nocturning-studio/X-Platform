@@ -22,10 +22,10 @@
 #include <pch_lua.h>
 
 #define LUA_LIB
-#include <luabind/lua_include.hpp>
+#include <LuaAPI/luabind/lua_include.hpp>
 
-#include <luabind/luabind.hpp>
-#include <luabind/detail/implicit_cast.hpp>
+#include <LuaAPI/luabind/luabind.hpp>
+#include <LuaAPI/luabind/detail/implicit_cast.hpp>
 
 namespace luabind
 {

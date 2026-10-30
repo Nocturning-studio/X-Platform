@@ -657,6 +657,7 @@
     <ClInclude Include="IEditorLevel.h">
       <Filter>Editor API</Filter>
     </ClInclude>
+    <ClInclude Include="xrFrameworkAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IInputReceiver.cpp">

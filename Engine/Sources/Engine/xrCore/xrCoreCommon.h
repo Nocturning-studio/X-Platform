@@ -1,6 +1,8 @@
 #pragma once
 
-#ifdef XRCORE_EXPORTS
+#if defined(XRCORE_EXPORTS)
+#define XRCORE_API __declspec(dllexport)
+#elif defined(ENGINE_STATIC)
 #define XRCORE_API __declspec(dllexport)
 #else
 #define XRCORE_API __declspec(dllimport)

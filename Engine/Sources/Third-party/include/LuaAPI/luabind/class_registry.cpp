@@ -22,12 +22,12 @@
 #include <pch_lua.h>
 
 #define LUA_LIB
-#include <luabind/lua_include.hpp>
+#include <LuaAPI/luabind/lua_include.hpp>
 
-#include <luabind/luabind.hpp>
-#include <luabind/detail/class_registry.hpp>
-#include <luabind/detail/class_rep.hpp>
-#include <luabind/detail/operator_id.hpp>
+#include <LuaAPI/luabind/luabind.hpp>
+#include <LuaAPI/luabind/detail/class_registry.hpp>
+#include <LuaAPI/luabind/detail/class_rep.hpp>
+#include <LuaAPI/luabind/detail/operator_id.hpp>
 
 namespace luabind
 {

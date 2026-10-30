@@ -459,6 +459,9 @@
     <ClInclude Include="RenderPipeline\IndirectLightingStage.h">
       <Filter>Render pipeline\Stages\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="xrRender.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

@@ -2,7 +2,7 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "Engine\xrFramework\psystem.h"
+#include "Engine\xrParticles\psystem.h"
 #include "ParticleGroup.h"
 #include "PSLibrary.h"
 
@@ -304,6 +304,8 @@ struct zero_vis_pred
 		return x == 0;
 	}
 };
+
+extern PAPI::IParticleManager* PAPI::ParticleManager();
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
 	CParticleEffect* PE = static_cast<CParticleEffect*>(_effect);

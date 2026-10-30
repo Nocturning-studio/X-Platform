@@ -22,9 +22,9 @@
 #include <pch_lua.h>
 
 #define LUA_LIB
-#include <luabind/detail/pcall.hpp>
-#include <luabind/error.hpp>
-#include <luabind/lua_include.hpp>
+#include <LuaAPI/luabind/detail/pcall.hpp>
+#include <LuaAPI/luabind/error.hpp>
+#include <LuaAPI/luabind/lua_include.hpp>
 
 namespace luabind
 {

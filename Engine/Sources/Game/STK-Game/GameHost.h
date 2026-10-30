@@ -18,7 +18,6 @@ class CGameHost final : public IEngineHost
 
 	pcstr GetApplicationName() const override { return "S.T.A.L.K.E.R.: Shadow Of Chernobyl"; }
 	pcstr GetApplicationSaveName() const override { return "stalker_shoc"; }
-	pcstr GetRenderDllName() const override { return "xrRender.dll"; }
 	pcstr GetSplashImagePath() const override { return "game_splash.png"; }
 
 	IGameModule* GetGameModule() override;

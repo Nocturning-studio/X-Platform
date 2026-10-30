@@ -10,6 +10,7 @@
 #pragma once
 
 #include <xrCore/xrCore.h>
+#pragma comment(lib, "xrCore.lib")
 
 // #include <errno.h>
 #include <locale.h>
@@ -26,12 +27,6 @@
 #include "src\lualib.h"
 */
 
-#ifdef __BORLANDC__
-#pragma comment(lib, "x:\\xrCoreB.lib")
-#else
-#pragma comment(lib, "xrCore.lib")
-#endif
-
 #if !defined(DEBUG) || defined(FORCE_NO_EXCEPTIONS)
 // release: no error checking, no exceptions
 #define LUABIND_NO_EXCEPTIONS
@@ -39,7 +34,7 @@
 
 namespace boost
 {
-	void throw_exception(std::exception const&);
+	__declspec(dllexport) void throw_exception(std::exception const&);
 } // namespace boost
 #endif
 #define LUABIND_DONT_COPY_STRINGS

@@ -3,7 +3,9 @@
 #include "net_utils.h"
 #include "net_messages.h"
 
-#ifdef XR_NETSERVER_EXPORTS
+#if defined(XR_NETSERVER_EXPORTS)
+#define XRNETSERVER_API __declspec(dllexport)
+#elif defined(ENGINE_STATIC)
 #define XRNETSERVER_API __declspec(dllexport)
 #else
 #define XRNETSERVER_API __declspec(dllimport)

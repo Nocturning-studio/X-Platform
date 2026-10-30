@@ -14,7 +14,7 @@ struct _MM_ALIGN16 vec_t : public fvec3
 {
 	float pad;
 };
-vec_t vec_c(float _x, float _y, float _z)
+inline vec_t vec_c(float _x, float _y, float _z)
 {
 	vec_t v;
 	v.x = _x;

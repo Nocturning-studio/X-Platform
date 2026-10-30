@@ -12,7 +12,7 @@ ENGINE_API CRenderBackendFacade RenderBackendLegacy;
 
 xr_token* vid_mode_token = NULL;
 
-static void R_FreeVidModeList()
+void R_FreeVidModeList()
 {
 	if(vid_mode_token)
 	{
@@ -23,7 +23,7 @@ static void R_FreeVidModeList()
 	}
 }
 
-static void R_InitVidModeList()
+void R_InitVidModeList()
 {
 	if(vid_mode_token != NULL)
 		return;

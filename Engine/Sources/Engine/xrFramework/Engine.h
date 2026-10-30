@@ -87,7 +87,6 @@ class ENGINE_API CEngine
 	typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
 
   private:
-	HMODULE hRender;
 	HMODULE hTuner;
 	HMODULE hOptick;
 

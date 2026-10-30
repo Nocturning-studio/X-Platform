@@ -24,10 +24,10 @@
 #include <algorithm>
 
 #define LUA_LIB
-#include <luabind/lua_include.hpp>
+#include <LuaAPI/luabind/lua_include.hpp>
 
-#include <luabind/config.hpp>
-#include <luabind/weak_ref.hpp>
+#include <LuaAPI/luabind/config.hpp>
+#include <LuaAPI/luabind/weak_ref.hpp>
 #include <cassert>
 
 namespace luabind

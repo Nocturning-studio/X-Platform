@@ -19,7 +19,6 @@ class CEditorHost final : public IEngineHost
 	EEngineRunMode GetRunMode() const override { return EEngineRunMode::Editor; }
 	pcstr GetApplicationName() const override { return "S.T.A.L.K.E.R. Editor"; }
 	pcstr GetApplicationSaveName() const override { return "stalker_editor"; }
-	pcstr GetRenderDllName() const override { return "xrRender.dll"; }
 	pcstr GetSplashImagePath() const override { return "editor_splash.png"; }
 
 	IGameModule* GetGameModule() override;

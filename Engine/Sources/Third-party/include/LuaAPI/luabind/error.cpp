@@ -21,7 +21,7 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 #include <pch_lua.h>
 
-#include <luabind/error.hpp>
+#include <LuaAPI/luabind/error.hpp>
 
 namespace luabind
 {
