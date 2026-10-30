@@ -8,10 +8,61 @@
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="render.cpp" />
+    <ClCompile Include="Backend\RenderBackend.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Textures\Texture.cpp">
+      <Filter>Backend\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Shaders\ShaderConstantBuffer.cpp">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Shaders\ShaderConstantTable.cpp">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Shaders\ShaderIncluder.cpp">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Shaders\ShaderPass.cpp">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Shaders\ShaderProgram.cpp">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Shaders\ShaderSampler.cpp">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Geometry\Buffer.cpp">
+      <Filter>Backend\Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Geometry\Geometry.cpp">
+      <Filter>Backend\Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\Geometry\VertexDeclaration.cpp">
+      <Filter>Backend\Resources\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend\Resources\ResourceManager.cpp">
+      <Filter>Backend\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Kernel">
       <UniqueIdentifier>{5f58b87a-9a0b-4394-9465-7605d9e71f02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backend">
+      <UniqueIdentifier>{2f7d9388-d5ed-4838-ad2e-50710c5c3afa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backend\Resources">
+      <UniqueIdentifier>{74baec00-0dd5-4ffa-8459-4819dc76f506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backend\Resources\Textures">
+      <UniqueIdentifier>{c2b222db-159b-43cc-87ef-e4548767df4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backend\Resources\Shaders">
+      <UniqueIdentifier>{f4f24edd-8bd2-439b-84cc-24e55b40b6ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backend\Resources\Geometry">
+      <UniqueIdentifier>{23427879-7a6a-4da5-b3ae-41291bbaab8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -20,5 +71,54 @@
     </ClInclude>
     <ClInclude Include="render.h" />
     <ClInclude Include="render_api.h" />
+    <ClInclude Include="Backend\RenderBackend.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Textures\Texture.h">
+      <Filter>Backend\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderConstant.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderConstantBuffer.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderConstantTable.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderIncluder.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderPass.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderProgram.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderSampler.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Shaders\ShaderSamplerBinding.h">
+      <Filter>Backend\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Geometry\Buffer.h">
+      <Filter>Backend\Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Geometry\Geometry.h">
+      <Filter>Backend\Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\Geometry\VertexDeclaration.h">
+      <Filter>Backend\Resources\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\ResourceManager.h">
+      <Filter>Backend\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\ResourceState.h">
+      <Filter>Backend\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend\Resources\SharedResource.h">
+      <Filter>Backend\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d9fwd.h" />
   </ItemGroup>
 </Project>

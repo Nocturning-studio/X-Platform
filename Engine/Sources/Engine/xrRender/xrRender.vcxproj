@@ -170,11 +170,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Backend\RenderBackend.h" />
+    <ClInclude Include="Backend\Resources\Geometry\Buffer.h" />
+    <ClInclude Include="Backend\Resources\Geometry\Geometry.h" />
+    <ClInclude Include="Backend\Resources\Geometry\VertexDeclaration.h" />
+    <ClInclude Include="Backend\Resources\ResourceManager.h" />
+    <ClInclude Include="Backend\Resources\ResourceState.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderConstant.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderConstantBuffer.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderConstantTable.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderIncluder.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderPass.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderProgram.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderSampler.h" />
+    <ClInclude Include="Backend\Resources\Shaders\ShaderSamplerBinding.h" />
+    <ClInclude Include="Backend\Resources\SharedResource.h" />
+    <ClInclude Include="Backend\Resources\Textures\Texture.h" />
+    <ClInclude Include="d3d9fwd.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="render_api.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Backend\RenderBackend.cpp" />
+    <ClCompile Include="Backend\Resources\Geometry\Buffer.cpp" />
+    <ClCompile Include="Backend\Resources\Geometry\Geometry.cpp" />
+    <ClCompile Include="Backend\Resources\Geometry\VertexDeclaration.cpp" />
+    <ClCompile Include="Backend\Resources\ResourceManager.cpp" />
+    <ClCompile Include="Backend\Resources\Shaders\ShaderConstantBuffer.cpp" />
+    <ClCompile Include="Backend\Resources\Shaders\ShaderConstantTable.cpp" />
+    <ClCompile Include="Backend\Resources\Shaders\ShaderIncluder.cpp" />
+    <ClCompile Include="Backend\Resources\Shaders\ShaderPass.cpp" />
+    <ClCompile Include="Backend\Resources\Shaders\ShaderProgram.cpp" />
+    <ClCompile Include="Backend\Resources\Shaders\ShaderSampler.cpp" />
+    <ClCompile Include="Backend\Resources\Textures\Texture.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

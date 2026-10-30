@@ -8,12 +8,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <xrCore/xrCore.h>
 #include <xrFramework/xrFrameworkAPI.h>
+#include <xrRender/Backend/RenderBackend.h>
 #include <xrFramework/Frustum.h>
 #include <xrFramework/vis_common.h>
 #include <xrFramework/GameFont.h>
 #include <Engine/xrFramework/ShaderMacros.h>
 #include <xrCDB/xrCDB.h>
 #include "render_api.h"
+#include "d3d9fwd.h"
 ////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API IRenderable;
 class ENGINE_API IRender_Visual;

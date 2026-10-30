@@ -8,20 +8,23 @@
 
 #include <ppl.h>
 
-#include <xrCore/xrCore.h>
-#include <X-RHI/include/XRHI.h>
-#include <xrRenderBackend/xrRenderBackend.h>
-
 #ifdef _DEBUG
 #define D3D_DEBUG_INFO
 #endif
 
 #pragma warning(disable : 4995)
 #include <d3d9.h>
+#include <DXSDK/d3dx9.h>
+#include <d3dcompiler.h>
+#include <d3dcommon.h>
 #include <DPlay\dplay8.h>
 #pragma warning(default : 4995)
 
 #include "xrFrameworkAPI.h"
+
+#include <xrCore/xrCore.h>
+#include <X-RHI/include/XRHI.h>
+#include <xrRender/render.h>
 
 // Our headers
 #include "xrXRC.h"

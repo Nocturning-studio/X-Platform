@@ -11,4 +11,5 @@
 #include <xrMath/xrMath.h>
 #include <xrCore/xrCore.h>
 #include <X-RHI/include/XRHI.h>
-#include <xrRenderBackend/xrRenderBackend.h>
+
+#include <xrRender/render_api.h>

@@ -809,9 +809,6 @@
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\xrRenderBackend\xrRenderBackend.vcxproj">
-      <Project>{7837bb7f-b177-4af4-97af-e0b0621d02a3}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\xrRender\xrRender.vcxproj">
       <Project>{b1083814-d1e1-4ac3-bb04-ea67a234332d}</Project>
     </ProjectReference>
