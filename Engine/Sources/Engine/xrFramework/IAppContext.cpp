@@ -8,7 +8,6 @@
 #include "ILevel.h"
 #include "XR_IOConsole.h"
 #include "resourcemanager.h"
-#include "IRender.h"
 #include "ps_instance.h"
 #include "CustomHUD.h"
 #endif

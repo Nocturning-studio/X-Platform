@@ -1,7 +1,5 @@
 #pragma once
-
-#include "IRender.h"
-
+#include <xrRender/render.h>
 //////////////////////////////////////////////////////////////////////////
 // definition ("Renderable")
 class ENGINE_API IRenderable

@@ -8,7 +8,7 @@
 #include "EditorLevel.h"
 #include "EditorGameAPI.h"
 #include <xrFramework/Engine.h>
-#include <xrFramework/IRender.h>
+#include <xrRender/render.h>
 #include <xrFramework/xr_object.h>
 #include <xrFramework/xr_object_list.h>
 #include <xrGame/xrServer_Objects.h>

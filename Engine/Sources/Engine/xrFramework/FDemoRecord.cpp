@@ -11,11 +11,9 @@
 #include "xr_ioconsole.h"
 #include "xr_input.h"
 #include "xr_object.h"
-#include "IRender.h"
 #include "CustomHUD.h"
 #include "IAppContext.h"
 #include "CameraManager.h"
-
 #include "demo_common.h"
 //////////////////////////////////////////////////////////////////////
 #ifdef DEBUG

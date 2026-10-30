@@ -4,7 +4,6 @@
 
 #include "ISpatial.h"
 #include "IAppContext.h"
-#include "IRender.h"
 #include "xr_object.h"
 
 int g_ErrorLineCount = 15;
@@ -106,6 +105,9 @@ void _draw_cam_pos(CGameFont* pFont)
 
 void CStats::Show()
 {
+	return;
+
+	/*
 	// Stop timers
 	{
 		EngineTOTAL.FrameEnd();
@@ -492,6 +494,7 @@ void CStats::Show()
 	}
 	dwSND_Played = dwSND_Allocated = 0;
 	Particles_starting = Particles_active = Particles_destroy = 0;
+	*/
 }
 
 void _LogCallback(LPCSTR string)

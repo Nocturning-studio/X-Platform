@@ -2,14 +2,8 @@
 #pragma hdrstop
 
 #include "ResourceManager.h"
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <ppl.h>
-#pragma warning(pop)
+#include <xrRender/render.h>
 
 void CResourceManagerLegacy::ResetBegin()
 {

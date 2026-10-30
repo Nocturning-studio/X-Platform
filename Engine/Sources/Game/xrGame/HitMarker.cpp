@@ -2,7 +2,7 @@
 // OLES
 #include "pch.h"
 #include "HitMarker.h"
-#include "xrFramework/IRender.h"
+#include <xrRender/render.h>
 #include "xrFramework/LightAnimLibrary.h"
 #include "UIStaticItem.h"
 

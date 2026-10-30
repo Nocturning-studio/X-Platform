@@ -24,7 +24,7 @@
 LPCSTR GAME_CONFIG = "game.ltx";
 #else
 #include "xrFramework/bone.h"
-#include "xrFramework/IRender.h"
+#include <xrRender/render.h>
 #endif
 
 #pragma warning(push)

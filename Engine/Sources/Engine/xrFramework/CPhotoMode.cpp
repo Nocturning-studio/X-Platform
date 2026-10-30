@@ -11,7 +11,6 @@
 #include "xr_ioconsole.h"
 #include "xr_input.h"
 #include "xr_object.h"
-#include "IRender.h"
 #include "CustomHUD.h"
 #include "IAppContext.h"
 //////////////////////////////////////////////////////////////////////

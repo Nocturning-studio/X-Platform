@@ -4,7 +4,6 @@
 #include "fdemoplay.h"
 #include "xr_ioconsole.h"
 #include "motion.h"
-#include "IRender.h"
 #include "CameraManager.h"
 #include "demo_common.h"
 #include "gamefont.h"
@@ -15,6 +14,7 @@
 #include "Game/xrGame/Level.h"
 #include "CustomHUD.h"
 #include <ctime> // Для даты в отчете
+#include <xrRender/render.h>
 //////////////////////////////////////////////////////////////////////
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time)
 {

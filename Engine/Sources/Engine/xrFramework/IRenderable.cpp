@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ispatial.h"
 #include "irenderable.h"
+#include <xrRender/render.h>
 
 IRenderable::IRenderable()
 {

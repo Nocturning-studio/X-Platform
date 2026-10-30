@@ -14,7 +14,7 @@
 
 #include "Engine.h"
 #include "gamefont.h"
-#include "IRender.h"
+#include <xrRender/render.h>
 
 #include "Game/xrGame/ActorEffector.h"
 

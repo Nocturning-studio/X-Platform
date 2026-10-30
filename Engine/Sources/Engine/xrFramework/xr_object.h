@@ -8,9 +8,9 @@
 #include "icollidable.h"
 
 // refs
-class ENGINE_API IRender_Visual;
-class ENGINE_API IRender_Sector;
-class ENGINE_API IRender_ObjectSpecific;
+class IRender_Visual;
+class IRender_Sector;
+class IRender_ObjectSpecific;
 class ENGINE_API CCustomHUD;
 class NET_Packet;
 class CSE_Abstract;

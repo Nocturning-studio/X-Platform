@@ -5,7 +5,7 @@
 
 #include "pch.h"
 #include "Tracer.h"
-#include "xrFramework/IRender.h"
+#include <xrRender/render.h>
 
 const u32 MAX_TRACERS = (1024 * 5);
 const float TRACER_SIZE = 0.13f;

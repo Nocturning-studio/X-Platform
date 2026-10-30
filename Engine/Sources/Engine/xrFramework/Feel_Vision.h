@@ -1,7 +1,6 @@
 #pragma once
 
 #include "xr_collide_defs.h"
-#include "IRender.h"
 #include "pure_relcase.h"
 
 class IRender_Sector;

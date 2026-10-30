@@ -10,9 +10,7 @@
 #include "SkeletonCustom.h"
 #include "SkeletonX.h"
 #include "fmesh.h"
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
+#include <xrRender/render.h>
 int psSkeletonUpdate = 32;
 xrCriticalSection UCalc_Mutex
 #ifdef PROFILE_CRITICAL_SECTIONS

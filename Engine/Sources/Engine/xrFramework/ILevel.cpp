@@ -5,12 +5,11 @@
 #include "Engine.h"
 #include "std_classes.h"
 #include "customHUD.h"
-#include "IRender.h"
 #include "gamefont.h"
 #include "xrLevel.h"
 #include "CameraManager.h"
 #include "xrFramework/xr_ioconsole.h"
-
+#include <xrRender/render.h>
 ENGINE_API ILevel* g_pLevel = NULL;
 
 ILevel::ILevel()

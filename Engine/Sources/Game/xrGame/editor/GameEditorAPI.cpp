@@ -7,7 +7,7 @@
 #include "pch.h"
 #include "GameEditorAPI.h"
 #include <xrFramework/GameObjectFactory.h>
-#include <xrFramework/IRender.h>
+#include <xrRender/render.h>
 #include <xrFramework/Fmesh.h>
 #include <xrFramework/SkeletonCustom.h>
 #include <xrGame/xrServer_Objects.h>

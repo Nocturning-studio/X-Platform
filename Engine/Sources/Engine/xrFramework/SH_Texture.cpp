@@ -2,13 +2,10 @@
 #pragma hdrstop
 
 #include "ResourceManager.h"
-
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
-
 #include "tntQAVI.h"
 #include "xrTheora_Surface.h"
+
+#include <xrRender/render.h>
 
 void resptrcode_texture::create(LPCSTR _name)
 {

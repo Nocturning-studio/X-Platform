@@ -9,13 +9,12 @@
 #include <DXSDK/d3dx9.h>
 #pragma warning(default : 4995)
 
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
 #include "fmesh.h"
 #include "xrBind_PSGP.h"
+
+#include <xrRender/render.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

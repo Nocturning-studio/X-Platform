@@ -1,10 +1,6 @@
 #include "pch.h"
 #pragma hdrstop
 
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
-
 #include "Environment.h"
 #include "xr_efflensflare.h"
 #include "rain.h"
@@ -498,10 +494,7 @@ void CEnvironment::OnFrame()
 	float current_weight;
 	lerp(current_weight);
 
-	if(Render->is_dynamic_sun_enabled())
-		calculate_dynamic_sun_dir();
-	else
-		set_static_sun_dir();
+	calculate_dynamic_sun_dir();
 
 	// Устанавливаем текстуры скайбокса в render targets
 	if(CurrentEnv->sky_texture_0)

@@ -11,7 +11,6 @@
 #pragma warning(default : 4995)
 
 #include "Engine.h"
-#include "IRender.h"
 #include "resourcemanager.h"
 #include "optick_include.h"
 #include "IAppContext.h"
@@ -19,6 +18,8 @@
 #include "debug_ui.h"
 #include "xr_ioc_cmd.h"
 #include "ILevel.h"
+
+#include <xrRender/render.h>
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;

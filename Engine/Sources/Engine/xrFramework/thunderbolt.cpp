@@ -1,9 +1,6 @@
 #include "pch.h"
 #pragma once
 
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
 #include "Thunderbolt.h"
 #include "IAppContext.h"
 #include "LightAnimLibrary.h"

@@ -1,7 +1,6 @@
 #include "pch.h"
 #pragma hdrstop
 
-#include "IRender.h"
 #include "ResourceManager.h"
 #include "tss.h"
 #include "blender.h"
@@ -10,6 +9,8 @@
 #include "ai_script_lua_extension.h"
 #include <LuaAPI/luabind/error.hpp>
 #include <LuaAPI/luabind/return_reference_to_policy.hpp>
+
+#include <xrRender/render.h>
 
 using namespace luabind;
 
@@ -525,7 +526,7 @@ void CResourceManagerLegacy::LS_Load()
 					  value("srcalphasat", int(D3DBLEND_SRCALPHASAT))]];
 
 	// load shaders
-	xr_vector<char*>* folder = FS.file_list_open("$engine_shaders$", ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
+	xr_vector<char*>* folder = FS.file_list_open("$engine_shaders$", "", FS_ListFiles | FS_RootOnly);
 	VERIFY(folder);
 
 	for(u32 it = 0; it < folder->size(); it++)

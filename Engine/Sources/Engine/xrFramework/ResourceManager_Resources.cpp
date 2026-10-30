@@ -3,9 +3,6 @@
 
 #pragma warning(disable : 4995)
 #include <DXSDK/d3dx9.h>
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
 #pragma warning(default : 4995)
 
 #include "ResourceManager.h"

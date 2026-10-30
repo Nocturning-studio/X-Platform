@@ -237,12 +237,6 @@
     <ClInclude Include="IRenderable.h">
       <Filter>Interfaces\Render</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderDetailModel.h">
-      <Filter>Interfaces\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="IRender.h">
-      <Filter>Interfaces\Render</Filter>
-    </ClInclude>
     <ClInclude Include="ISpatial.h">
       <Filter>Interfaces\SPATIAL</Filter>
     </ClInclude>
@@ -673,9 +667,6 @@
       <Filter>Interfaces\Sheduler</Filter>
     </ClCompile>
     <ClCompile Include="IRenderable.cpp">
-      <Filter>Interfaces\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="IRender.cpp">
       <Filter>Interfaces\Render</Filter>
     </ClCompile>
     <ClCompile Include="ISpatial.cpp">

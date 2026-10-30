@@ -2,15 +2,11 @@
 #include "Rain.h"
 #include "IAppContext.h"
 #include "environment.h"
-
-#ifdef _EDITOR
-#include "ui_toolscustom.h"
-#else
-#include "IRender.h"
 #include "ILevel.h"
 #include "xr_area.h"
 #include "xr_object.h"
-#endif
+
+#include <xrRender/render.h>
 //////////////////////////////////////////////////////////////////////
 // Xorshift RNG с MurmurHash3 инициализацией
 //////////////////////////////////////////////////////////////////////

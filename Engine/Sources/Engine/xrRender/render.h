@@ -1,24 +1,32 @@
+////////////////////////////////////////////////////////////////////////////////
+// Created: 30.10.2026 17:39:53
+// Author: NS_Deathman
+// File: render.h
+// Nocturning studio for X-Platform
+////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "frustum.h"
-#include "vis_common.h"
-#include "IRenderDetailModel.h"
-#include "ShaderMacros.h"
-
-// refs
+////////////////////////////////////////////////////////////////////////////////
+#include <xrCore/xrCore.h>
+#include <xrFramework/xrFrameworkAPI.h>
+#include <xrFramework/Frustum.h>
+#include <xrFramework/vis_common.h>
+#include <xrFramework/GameFont.h>
+#include <Engine/xrFramework/ShaderMacros.h>
+#include <xrCDB/xrCDB.h>
+#include "render_api.h"
+////////////////////////////////////////////////////////////////////////////////
 class ENGINE_API IRenderable;
 class ENGINE_API IRender_Visual;
 class ENGINE_API IBlender;
 class ENGINE_API CSkeletonWallmark;
 class ENGINE_API CKinematics;
 struct ENGINE_API FSlideWindowItem;
-
 const float fLightSmoothFactor = 4.f;
-
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
-class ENGINE_API IRender_Light : public xr_resource
+class XRRENDER_API IRender_Light : public xr_resource
 {
-  public:
+public:
 	enum LT
 	{
 		DIRECT = 0,
@@ -28,7 +36,7 @@ class ENGINE_API IRender_Light : public xr_resource
 		REFLECTED = 4,
 	};
 
-  public:
+public:
 	virtual void set_type(LT type) = 0;
 	virtual void set_active(bool) = 0;
 	virtual bool get_active() = 0;
@@ -44,7 +52,7 @@ class ENGINE_API IRender_Light : public xr_resource
 	virtual void set_color(float r, float g, float b) = 0;
 	virtual ~IRender_Light();
 };
-struct ENGINE_API resptrcode_light : public resptr_base<IRender_Light>
+struct XRRENDER_API resptrcode_light : public resptr_base<IRender_Light>
 {
 	void destroy()
 	{
@@ -55,9 +63,9 @@ typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Glow)
-class ENGINE_API IRender_Glow : public xr_resource
+class XRRENDER_API IRender_Glow : public xr_resource
 {
-  public:
+public:
 	virtual void set_active(bool) = 0;
 	virtual bool get_active() = 0;
 	virtual void set_position(const fvec3& P) = 0;
@@ -68,7 +76,7 @@ class ENGINE_API IRender_Glow : public xr_resource
 	virtual void set_color(float r, float g, float b) = 0;
 	virtual ~IRender_Glow();
 };
-struct ENGINE_API resptrcode_glow : public resptr_base<IRender_Glow>
+struct XRRENDER_API resptrcode_glow : public resptr_base<IRender_Glow>
 {
 	void destroy()
 	{
@@ -79,9 +87,9 @@ typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Per-object render-specific data)
-class ENGINE_API IRender_ObjectSpecific
+class XRRENDER_API IRender_ObjectSpecific
 {
-  public:
+public:
 	enum mode
 	{
 		TRACE_LIGHTS = (1 << 0),
@@ -90,43 +98,77 @@ class ENGINE_API IRender_ObjectSpecific
 		TRACE_ALL = (TRACE_LIGHTS | TRACE_SUN | TRACE_AO),
 	};
 
-  public:
+public:
 	virtual void force_mode(u32 mode) = 0;
 	virtual float get_luminocity() = 0;
 	virtual float get_luminocity_ao() = 0;
 
 	virtual ~IRender_ObjectSpecific() {};
 };
+//////////////////////////////////////////////////////////////////////////
+class XRRENDER_API IRender_DetailModel
+{
+public:
+	struct fvfVertexIn
+	{
+		fvec3 P;
+		float u, v;
+	};
+	struct fvfVertexOut
+	{
+		fvec3 P;
+		u32 C;
+		float u, v;
+	};
+
+public:
+	Fsphere bv_sphere;
+	Fbox bv_bb;
+	flags32 m_Flags;
+	float m_fMinScale;
+	float m_fMaxScale;
+
+	ref_shader shader;
+	fvfVertexIn* vertices;
+	u32 number_vertices;
+	u16* indices;
+	u32 number_indices;
+
+public:
+	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
+	virtual void transfer(fmat4x4& mTransform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
+	virtual ~IRender_DetailModel() {};
+};
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Portal)
-class ENGINE_API IRender_Portal
+class XRRENDER_API IRender_Portal
 {
-  public:
+public:
 	virtual ~IRender_Portal() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Sector)
-class ENGINE_API IRender_Sector
+class XRRENDER_API IRender_Sector
 {
-  public:
+public:
 	virtual ~IRender_Sector() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Target)
-class ENGINE_API IRender_Target
+class XRRENDER_API IRender_Target
 {
-  public:
+public:
 	virtual u32 get_width() = 0;
 	virtual u32 get_height() = 0;
 	virtual ~IRender_Target() {};
 };
 
-class ENGINE_API IEffectorsManager
+class XRRENDER_API IEffectorsManager
 {
-  public:
+public:
 	virtual void set_blur(float f) = 0;
 	virtual void set_gray(float f) = 0;
 	virtual void set_duality_h(float f) = 0;
@@ -145,9 +187,9 @@ class ENGINE_API IEffectorsManager
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Renderer)
-class ENGINE_API IRender_interface
+class XRRENDER_API IRender_interface
 {
-  public:
+public:
 	enum class ScreenshotMode : u32
 	{
 		SM_NORMAL = 0,		 // jpeg\png,	name ignored
@@ -164,11 +206,11 @@ class ENGINE_API IRender_interface
 		MODE_FAR = 2
 	};
 
-  public:
+public:
 	// options
 	s32 m_skinning;
 
-  public:
+public:
 	// Loading / Unloading
 	virtual void Initialize() = 0;
 	virtual void Create() = 0;
@@ -269,4 +311,6 @@ class ENGINE_API IRender_interface
 	virtual ~IRender_interface();
 };
 
-extern ENGINE_API IRender_interface* Render;
+extern XRRENDER_API IRender_interface* Render;
+
+////////////////////////////////////////////////////////////////////////////////

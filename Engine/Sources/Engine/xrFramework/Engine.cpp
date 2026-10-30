@@ -24,22 +24,19 @@
 #include "Text_Console.h"
 #include <process.h>
 #include "LogoWindow.h"
-#include "IRender.h"
 #include "xrBind_PSGP.h"
 #include "EngineQuit.hpp"
 #include "SDL3/SDL.h"
 //////////////////////////////////////////////////////////////////////////
 #include <xrCore/build_identificator.h>
-//////////////////////////////////////////////////////////////////////////
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include <xrCore/trivial_encryptor.h>
+//////////////////////////////////////////////////////////////////////////
+#include <xrRender/render.h>
 //////////////////////////////////////////////////////////////////////////
 ENGINE_API CEngine* g_Engine;
 extern CRenderDevice Device;
 ENGINE_API CInifile* pGameIni = NULL;
-//////////////////////////////////////////////////////////////////////////
-extern void xrRender_Init();
-extern void xrRender_Shutdown();
 //////////////////////////////////////////////////////////////////////////
 void __cdecl dummy(void) {};
 extern void msCreate(LPCSTR name);
@@ -268,10 +265,6 @@ bool CEngine::Initialize()
 		Console = xr_new<CConsole>();
 #endif
 		Engine.Console->Initialize();
-	}
-
-	{
-		xrRender_Init();
 	}
 
 	{
@@ -560,8 +553,6 @@ void CEngine::Destroy()
 	if(Memory.debug_mode)
 		dbg_dump_leaks_prepare();
 #endif // DEBUG_MEMORY_MANAGER
-
-	xrRender_Shutdown();
 
 	if(hOptick)
 	{

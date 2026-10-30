@@ -3,12 +3,13 @@
 
 #include "xr_object.h"
 #include "xr_area.h"
-#include "IRender.h"
 #include "xrLevel.h"
 #include "fbasicvisual.h"
 
 #include "Engine.h"
 #include "GameFont.h"
+
+#include <xrRender/render.h>
 
 void CObject::MakeMeCrow_internal()
 {

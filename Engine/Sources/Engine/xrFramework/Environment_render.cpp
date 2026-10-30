@@ -2,17 +2,11 @@
 #pragma hdrstop
 
 #include "Environment.h"
-#ifndef _EDITOR
-#include "IRender.h"
-#endif
 #include "xr_efflensflare.h"
 #include "rain.h"
 #include "thunderbolt.h"
-
-#ifndef _EDITOR
 #include "ILevel.h"
-#endif
-
+#include <xrRender/render.h>
 //////////////////////////////////////////////////////////////////////////
 // half box def
 
