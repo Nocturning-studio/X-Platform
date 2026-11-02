@@ -172,6 +172,7 @@ class xr_vector : public std::vector<T, Alloc>
 	void clear_and_free()
 	{
 		inherited::clear();
+		inherited::shrink_to_fit();
 	}
 
 	void clear_not_free()

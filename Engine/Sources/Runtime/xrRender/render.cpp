@@ -253,6 +253,7 @@ void CRender::OnFrame()
 	Models->DeleteQueue();
 	CPUOCC.Update();
 	Scene.OnFrame();
+	Scene.GetGraph().GetLoosePacket().Clear();
 
 	if(need_render_sun())
 	{

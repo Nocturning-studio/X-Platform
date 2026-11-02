@@ -41,6 +41,7 @@ struct SunCascadeBuffer
             {
                 items[i]->vis_result.FreeResources();
                 xr_delete(items[i]);
+                items[i] = nullptr;
             }
         }
     }

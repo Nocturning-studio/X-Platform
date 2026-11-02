@@ -146,7 +146,7 @@ void CRender::LevelLoad(IReader* fs)
 		SceneGraphPacket& packet = Scene.GetGraph().m_packet;
 		packet.lstLODs.clear();
 		packet.lstLODgroups.clear();
-		packet.mapLOD.clear();
+		packet.mapLOD.Clear();
 	}
 
 	Scene.SetLoaded();

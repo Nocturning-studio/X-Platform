@@ -176,20 +176,24 @@ void CRenderScene::AddVisual(IRender_Visual* V)
 		return;
 	}
 
-	m_graph.ProcessDynamicVisual(V, m_default_context, m_graph.m_packet);
+	R_ERROR("! [SceneGraph] add_Visual outside render context");
 }
 
 void CRenderScene::AddGeometry(IRender_Visual* V)
 {
-	if (!V) return;
+	if (!V)
+		return;
 
 	const SceneTraversalContext& ctx = GetActiveContext();
 	const u32 frustumMask = ctx.frustum ? ctx.frustum->getMask() : 0;
 
 	if (CurrentRenderContext::packet && CurrentRenderContext::context)
+	{
 		m_graph.add_Static(V, frustumMask, *CurrentRenderContext::context, *CurrentRenderContext::packet);
-	else
-		m_graph.add_Static(V, frustumMask, m_default_context, m_graph.m_packet);
+		return;
+	}
+
+	R_ERROR("! [SceneGraph] add_Geometry outside render context");
 }
 
 void CRenderScene::AddStaticWallmark(ref_shader& S, const fvec3& P, float s, CDB::TRI* T, fvec3* V)
@@ -246,7 +250,6 @@ void CRenderScene::ComputeVisibilityInternal(const SSceneVisibilityRequest& req,
 	ctx.is_hud_pass = FALSE;
 	ctx.is_invisible_mode = FALSE;
 	ctx.fetch_flags = req.flags;
-	ctx.culling_bounds = req.culling_bounds;
 	ctx.frustum = req.frustum_override;
 	ctx.transform = &Fidentity;
 	ctx.traversal_marker_id = ++m_graph.m_traversal_marker;

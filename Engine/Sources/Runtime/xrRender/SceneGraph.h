@@ -1,10 +1,9 @@
 #pragma once
 
-#include <unordered_map>
-
 #include "..\xrEngine\IRender.h"
 #include "..\xrEngine\ispatial.h"
 #include "SceneGraphTypes.h"
+#include "SceneGraphArenaAllocator.h"
 #include "r_sector.h"
 #include "r_portal.h"
 #include "r_portal_traverser.h"
@@ -27,15 +26,22 @@ class R_feedback
 ////////////////////////////////////////////////////////////////////////////////
 struct SceneGraphPacket
 {
+	static constexpr u32 k_static_entries_hint = 1500;
+	static constexpr u32 k_static_batches_hint = 256;
+	static constexpr u32 k_dynamic_entries_hint = 1500;
+	static constexpr u32 k_dynamic_batches_hint = 256;
+
+	SceneGraphArena arena;
+
 	// Dynamic scene graph containers
-	SceneGraphTypes::mapNormal_T queue_static[2]; // [0] = deffered lighting, [1] = forward lighting
-	SceneGraphTypes::mapMatrix_T queue_dynamic[2];
-	SceneGraphTypes::mapSorted_T queue_transparent;
-	SceneGraphTypes::mapHUD_T queue_hud;
-	SceneGraphTypes::mapLOD_T mapLOD;
-	SceneGraphTypes::mapSorted_T queue_distortion;
-	SceneGraphTypes::mapSorted_T queue_wallmarks;
-	SceneGraphTypes::mapSorted_T mapEmissive;
+	SceneGraphTypes::RenderQueue<SceneGraphTypes::StaticRenderNode>  queue_static[2]; // [0] = deffered lighting, [1] = forward lighting
+	SceneGraphTypes::RenderQueue<SceneGraphTypes::DynamicRenderNode> queue_dynamic[2];
+	SceneGraphTypes::QueueTransparent queue_transparent;
+	SceneGraphTypes::QueueHUD queue_hud;
+	SceneGraphTypes::QueueLOD mapLOD;
+	SceneGraphTypes::QueueTransparent queue_distortion;
+	SceneGraphTypes::QueueTransparent queue_wallmarks;
+	SceneGraphTypes::QueueTransparent mapEmissive;
 
 	// Добавляем персональный обходчик порталов для этого пакета
 	CPortalTraverser portal_traverser;
@@ -84,14 +90,29 @@ struct SceneGraphPacket
 		portal_traverser.Reset();
 	}
 
-	void InitResources()
+	void InitResources(size_t arena_bytes = 2 * 1024 * 1024)
 	{
+		arena.Init(arena_bytes);
+		for (int i = 0; i < 2; ++i)
+		{
+			queue_static[i].Init(&arena);
+			queue_dynamic[i].Init(&arena);
+		}
+
+		queue_transparent.Init(&arena);
+		queue_hud.Init(&arena);
+		mapLOD.Init(&arena);
+		queue_distortion.Init(&arena);
+		queue_wallmarks.Init(&arena);
+		mapEmissive.Init(&arena);
+
 		portal_traverser.CreateResources();
 	}
 
 	void FreeResources()
 	{
 		portal_traverser.DestroyResources();
+		arena.Destroy();
 	}
 
 	void Clear()
@@ -101,16 +122,21 @@ struct SceneGraphPacket
 		m_culled_dynamics.clear();
 		portal_traverser.Reset();
 		visible_sectors_map.clear();
-		queue_static[0].clear();
-		queue_static[1].clear();
-		queue_dynamic[0].clear();
-		queue_dynamic[1].clear();
-		queue_transparent.clear();
-		queue_hud.clear();
-		mapLOD.clear();
-		queue_distortion.clear();
-		queue_wallmarks.clear();
-		mapEmissive.clear();
+
+		arena.Reset();
+
+		for (int i = 0; i < 2; ++i)
+		{
+			queue_static[i].ReserveAfterReset(k_static_entries_hint, k_static_batches_hint);
+			queue_dynamic[i].ReserveAfterReset(k_dynamic_entries_hint, k_dynamic_batches_hint);
+		}
+
+		queue_transparent.ReserveAfterReset(512);
+		queue_distortion.ReserveAfterReset(64);
+		queue_wallmarks.ReserveAfterReset(64);
+		mapEmissive.ReserveAfterReset(64);
+		queue_hud.ReserveAfterReset(128);
+		mapLOD.ReserveAfterReset(4096);
 
 		lstLODs.clear();
 		lstLODgroups.clear();
@@ -122,56 +148,17 @@ struct SceneGraphPacket
 	void Destroy()
 	{
 		ReleaseVisualRefs();
-		queue_static[0].destroy();
-		queue_static[1].destroy();
-		queue_dynamic[0].destroy();
-		queue_dynamic[1].destroy();
-		queue_transparent.destroy();
-		queue_hud.destroy();
-		mapLOD.destroy();
-		queue_distortion.destroy();
-		queue_wallmarks.destroy();
-		mapEmissive.destroy();
-	}
-};
-
-////////////////////////////////////////////////////////////////////////////////
-//  Scratch Pad (Working Buffers)
-//  Используется только при рендеринге (сортировке/флаттенинге)
-//  Чтобы не переаллоцировать вектора каждый кадр.
-////////////////////////////////////////////////////////////////////////////////
-struct SceneGraphScratchPad
-{
-	// Static Geometry Sorting Buffers
-	xr_vector<SceneGraphTypes::mapNormalVS::TNode*, render_alloc<SceneGraphTypes::mapNormalVS::TNode*>> nrmVS;
-	xr_vector<SceneGraphTypes::mapNormalPS::TNode*, render_alloc<SceneGraphTypes::mapNormalPS::TNode*>> nrmPS;
-	xr_vector<SceneGraphTypes::mapNormalCS::TNode*, render_alloc<SceneGraphTypes::mapNormalCS::TNode*>> nrmCS;
-	xr_vector<SceneGraphTypes::mapNormalStates::TNode*, render_alloc<SceneGraphTypes::mapNormalStates::TNode*>> nrmStates;
-	xr_vector<SceneGraphTypes::mapNormalTextures::TNode*, render_alloc<SceneGraphTypes::mapNormalTextures::TNode*>> nrmTextures;
-	xr_vector<SceneGraphTypes::mapNormalTextures::TNode*, render_alloc<SceneGraphTypes::mapNormalTextures::TNode*>> nrmTexturesTemp;
-
-	// Dynamic Geometry Sorting Buffers
-	xr_vector<SceneGraphTypes::mapMatrixVS::TNode*, render_alloc<SceneGraphTypes::mapMatrixVS::TNode*>> matVS;
-	xr_vector<SceneGraphTypes::mapMatrixPS::TNode*, render_alloc<SceneGraphTypes::mapMatrixPS::TNode*>> matPS;
-	xr_vector<SceneGraphTypes::mapMatrixCS::TNode*, render_alloc<SceneGraphTypes::mapMatrixCS::TNode*>> matCS;
-	xr_vector<SceneGraphTypes::mapMatrixStates::TNode*, render_alloc<SceneGraphTypes::mapMatrixStates::TNode*>> matStates;
-	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>> matTextures;
-	xr_vector<SceneGraphTypes::mapMatrixTextures::TNode*, render_alloc<SceneGraphTypes::mapMatrixTextures::TNode*>> matTexturesTemp;
-
-	void Clear()
-	{
-		nrmVS.clear();
-		nrmPS.clear();
-		nrmCS.clear();
-		nrmStates.clear();
-		nrmTextures.clear();
-		nrmTexturesTemp.clear();
-		matVS.clear();
-		matPS.clear();
-		matCS.clear();
-		matStates.clear();
-		matTextures.clear();
-		matTexturesTemp.clear();
+		queue_static[0].Clear();
+		queue_static[1].Clear();
+		queue_dynamic[0].Clear();
+		queue_dynamic[1].Clear();
+		queue_transparent.Clear();
+		queue_hud.Clear();
+		mapLOD.Clear();
+		queue_distortion.Clear();
+		queue_wallmarks.Clear();
+		mapEmissive.Clear();
+		FreeResources();
 	}
 };
 
@@ -193,7 +180,6 @@ struct SceneTraversalContext
 	bool use_hom;
 	bool use_feedback;
 	SceneRenderFlags fetch_flags = SceneRenderPresets::GatherMainView;
-	xr_vector<Fbox3, render_alloc<Fbox3>>* culling_bounds;
 
 	SceneTraversalContext()
 		: owner(nullptr),
@@ -206,8 +192,7 @@ struct SceneTraversalContext
 		  RenderView(),
 		  use_hom(true),
 		  use_feedback(false),
-		  fetch_flags(),
-		  culling_bounds(nullptr)
+		  fetch_flags()
 	{
 	}
 
@@ -253,8 +238,6 @@ class CSceneGraph
   public:
 	SceneGraphPacket m_packet;
 
-	SceneGraphScratchPad m_scratch;
-
 	R_feedback* m_feedback_interface;
 	u32 val_feedback_breakp;
 	std::atomic<u32> m_traversal_marker;
@@ -289,6 +272,8 @@ class CSceneGraph
 	{
 		counter_S = counter_D = 0;
 	}
+
+	SceneGraphPacket& GetLoosePacket() { return m_packet; }
 
 	// === Insertion API (Updated Signatures) ===
 	BOOL add_Dynamic(IRender_Visual* pVisual, u32 planes, const SceneTraversalContext& ctx, SceneGraphPacket& dest);

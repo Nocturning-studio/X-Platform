@@ -527,7 +527,6 @@ void CRender::gather_scene_for_cascade(u32 cascade_ind, ShadowCascadeWorkItem& i
 	req.frustum_override = &item.cull_frustum;
 	req.render_phase = CRender::PHASE_SHADOW_DEPTH;
 	req.flags = SceneRenderPresets::Opaque;
-	req.culling_bounds = nullptr;
 
 	Scene.ComputeVisibility(req, item.vis_result);
 }
@@ -549,8 +548,8 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 
 	SceneGraphPacket& packet = item.vis_result.packet;
 
-	const bool bNormal = packet.queue_static[0].size() || packet.queue_dynamic[0].size();
-	const bool bSpecial = packet.queue_static[1].size() || packet.queue_dynamic[1].size() || packet.queue_transparent.size();
+	const bool bNormal = packet.queue_static[0].Size() || packet.queue_dynamic[0].Size();
+	const bool bSpecial = packet.queue_static[1].Size() || packet.queue_dynamic[1].Size() || packet.queue_transparent.Size();
 
 	if (bNormal || bSpecial)
 	{
@@ -563,15 +562,18 @@ void CRender::draw_sun_cascade(u32 cascade_ind, ShadowCascadeWorkItem& item)
 		if (CSunOccluder* occ = Scene.GetSunOccluder())
 			occ->Render();
 
-		Scene.Render(item.vis_result, SceneRenderPresets::Opaque);
-
 		if (g_pGameLevel)
+		{
+			CurrentRenderContext::Scope tls_scope(item.vis_result.packet, item.vis_result.context);
 			g_pGameLevel->pHUD->Render_Actor_Shadow();
+		}
+
+		Scene.Render(item.vis_result, SceneRenderPresets::Opaque);
 
 		if (ps_r_lighting_flags.test(RFLAG_SUN_DETAILS))
 			Scene.RenderDetails(DetailsRenderMode::DepthOnly,
-				&item.cull_transform,
-				&item.cull_frustum);
+								&item.cull_transform,
+								&item.cull_frustum);
 
 		sun->TransformContext.Sun.transluent = FALSE;
 	}

@@ -984,6 +984,7 @@
     <ClInclude Include="r_color_converting.h" />
     <ClInclude Include="r_sun_cascades.h" />
     <ClInclude Include="SceneGraph.h" />
+    <ClInclude Include="SceneGraphArenaAllocator.h" />
     <ClInclude Include="SceneGraphTypes.h" />
     <ClInclude Include="GPUOcclusion.h" />
     <ClInclude Include="r_render_pipeline.h" />

@@ -88,12 +88,10 @@ void CRender::calculate_scene_culling()
 	if (has_sector)
 	{
 		req.flags = SceneRenderPresets::GatherMainView;
-		req.culling_bounds = m_need_render_sun ? &main_coarse_structure : nullptr;
 	}
 	else
 	{
 		req.flags = SceneRenderPresets::HUDOnly;
-		req.culling_bounds = nullptr;
 	}
 
 	set_active_phase(PHASE_NORMAL);

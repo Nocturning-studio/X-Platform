@@ -323,6 +323,7 @@ class _MM_ALIGN16 ray_collider
 		return true;
 	}
 
+#pragma todo("Переработать")
 	void _prim(DWORD prim)
 	{
 		float u, v, r;
@@ -352,6 +353,9 @@ class _MM_ALIGN16 ray_collider
 			}
 			else
 			{
+				if (dest->r_count() >= 8192)
+					return;
+
 				RESULT& R = dest->r_add();
 				R.id = prim;
 				R.range = r;

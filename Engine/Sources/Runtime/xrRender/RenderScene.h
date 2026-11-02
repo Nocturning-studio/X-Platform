@@ -40,8 +40,6 @@ struct SSceneVisibilityRequest
 
 	u32 render_phase = 0;
 
-	xr_vector<Fbox3, render_alloc<Fbox3>>* culling_bounds = nullptr;
-
 	IC bool has(SceneRenderFlags f) const noexcept { return (static_cast<u32>(flags) & static_cast<u32>(f)) != 0u; }
 };
 

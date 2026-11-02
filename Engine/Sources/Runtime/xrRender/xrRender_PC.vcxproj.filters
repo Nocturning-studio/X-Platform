@@ -417,6 +417,9 @@
     <ClInclude Include="RenderSceneFlags.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="SceneGraphArenaAllocator.h">
+      <Filter>Scene\Scene Graph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

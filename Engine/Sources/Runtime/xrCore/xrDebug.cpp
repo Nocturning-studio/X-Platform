@@ -8,12 +8,17 @@
 #include <malloc.h>
 #include <direct.h>
 #include <stdio.h>
+#include <Psapi.h>
+#include <atomic>
 
 extern bool shared_str_initialized;
 
 XRCORE_API xrDebug Debug;
 
 static bool error_after_dialog = false;
+static HANDLE g_oom_log_handle = INVALID_HANDLE_VALUE;
+static std::atomic<bool> g_oom_entered{ false };
+
 
 // ---------------------------------------------------------------------------
 // Вспомогательные функции
@@ -138,7 +143,7 @@ static void gather_info(const char* expression, const char* description,
 		}
 	}
 
-	if(includeStack)
+	if(includeStack && !g_oom_entered.load())
 	{
 		if(!IsDebuggerPresent() && !strstr(GetCommandLine(), "-no_call_stack_assert"))
 		{
@@ -181,7 +186,12 @@ void xrDebug::backend(const char* expression, const char* description,
 		(MUTEX_PROFILE_ID(xrDebug::backend))
 #endif
 			;
-	CS.Enter();
+	if (!CS.TryEnter())
+	{
+		// Другой поток уже показывает ошибку. Просто выходим.
+		// Не блокируем систему.
+		return;
+	}
 	error_after_dialog = true;
 
 	string4096 assertion_info;
@@ -203,10 +213,16 @@ void xrDebug::backend(const char* expression, const char* description,
 	if(get_on_dialog())
 		get_on_dialog()(true);
 
-#ifdef XRCORE_STATIC
-	MessageBox(nullptr, assertion_info, "X-Ray error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-#else
-	int result = MessageBox(nullptr, assertion_info, "Fatal Error", MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_SYSTEMMODAL);
+	HANDLE hWatchdog = CreateThread(nullptr, 0,
+		[](LPVOID) -> DWORD {
+			Sleep(60000);
+			TerminateProcess(GetCurrentProcess(), 1);
+			return 0;
+		}, nullptr, 0, nullptr);
+	if (hWatchdog) CloseHandle(hWatchdog);
+
+	int result = MessageBox(nullptr, assertion_info, "Fatal Error", MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_TOPMOST);
+
 	switch(result)
 	{
 	case IDCANCEL:
@@ -222,7 +238,6 @@ void xrDebug::backend(const char* expression, const char* description,
 	default:
 		__debugbreak();
 	}
-#endif
 
 	if(get_on_dialog())
 		get_on_dialog()(false);
@@ -332,7 +347,6 @@ static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* 
 				  func[0] ? func : __FUNCTION__, ignore_always);
 }
 
-static void std_out_of_memory_handler() { handler_base("std: out of memory"); }
 static void pure_call_handler() { handler_base("pure virtual function call"); }
 
 #ifdef CS_USE_EXCEPTIONS
@@ -361,21 +375,167 @@ void debug_on_thread_spawn()
 	std::set_terminate(_terminate);
 }
 
+// ============================================================================
+// Emergency OOM handler — allocation-free
+// ============================================================================
+void xrDebug::InitializeOOMEmergency()
+{
+    char path[MAX_PATH] = {};
+    DWORD n = GetModuleFileNameA(nullptr, path, MAX_PATH);
+    if (n == 0 || n >= MAX_PATH)
+        return;
+
+    // Заменяем .exe → .oom.log, или приписываем
+    char* dot = strrchr(path, '.');
+    if (dot && (dot - path) < (MAX_PATH - 9))
+        strcpy_s(dot, MAX_PATH - (dot - path), ".oom.log");
+    else
+        strcat_s(path, ".oom.log");
+
+    g_oom_log_handle = CreateFileA(
+        path, GENERIC_WRITE, FILE_SHARE_READ,
+        nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+}
+
+static void OOM_WriteRaw(const char* s, size_t n)
+{
+    if (g_oom_log_handle == INVALID_HANDLE_VALUE) return;
+    DWORD written = 0;
+    WriteFile(g_oom_log_handle, s, (DWORD)n, &written, nullptr);
+}
+static void OOM_WriteStr(const char* s) { OOM_WriteRaw(s, strlen(s)); }
+
+static void OOM_WriteFmt(const char* fmt, ...)
+{
+    char buf[1024];
+    va_list args;
+    va_start(args, fmt);
+    int n = _vsnprintf_s(buf, sizeof(buf), _TRUNCATE, fmt, args);
+    va_end(args);
+    if (n > 0) OOM_WriteRaw(buf, (size_t)n);
+}
+
+static void OOM_FlushAndClose()
+{
+    if (g_oom_log_handle != INVALID_HANDLE_VALUE)
+    {
+        FlushFileBuffers(g_oom_log_handle);
+        CloseHandle(g_oom_log_handle);
+        g_oom_log_handle = INVALID_HANDLE_VALUE;
+    }
+}
+
+// Walk stack — никакой символизации, только raw return addresses.
+// Symbolization offline (WinDbg + PDB).
+static void OOM_DumpRawStack()
+{
+    void* frames[96];
+    USHORT n = CaptureStackBackTrace(0, 96, frames, nullptr);
+    for (USHORT i = 0; i < n; ++i)
+        OOM_WriteFmt("  #%02u  0x%08p\n", i, frames[i]);
+}
+
+static void OOM_DumpMemoryInfo(size_t request)
+{
+    OOM_WriteFmt("Request:    %zu bytes (%zu KB)\n", request, request / 1024);
+
+    MEMORYSTATUSEX msex = { sizeof(msex) };
+    if (GlobalMemoryStatusEx(&msex))
+    {
+        OOM_WriteFmt("Phys total: %llu MB\n", msex.ullTotalPhys     / (1024ull * 1024));
+        OOM_WriteFmt("Phys avail: %llu MB\n", msex.ullAvailPhys     / (1024ull * 1024));
+        OOM_WriteFmt("Virt total: %llu MB\n", msex.ullTotalVirtual  / (1024ull * 1024));
+        OOM_WriteFmt("Virt avail: %llu MB\n", msex.ullAvailVirtual  / (1024ull * 1024));
+    }
+
+    PROCESS_MEMORY_COUNTERS_EX pmc = { sizeof(pmc) };
+    if (GetProcessMemoryInfo(GetCurrentProcess(),
+                             (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+    {
+        OOM_WriteFmt("WorkingSet: %llu MB\n", pmc.WorkingSetSize     / (1024ull * 1024));
+        OOM_WriteFmt("Peak WS:    %llu MB\n", pmc.PeakWorkingSetSize / (1024ull * 1024));
+        OOM_WriteFmt("Pagefile:   %llu MB\n", pmc.PagefileUsage      / (1024ull * 1024));
+    }
+
+    OOM_WriteFmt("xrMemory: stat_calls=%u counter=%d\n",
+                 Memory.stat_calls, Memory.stat_counter);
+}
+
+[[noreturn]] static void OOM_Fatal(size_t request)
+{
+    // Recursion guard — если уже в OOM, terminate NOW
+    bool expected = false;
+    if (!g_oom_entered.compare_exchange_strong(expected, true))
+    {
+        TerminateProcess(GetCurrentProcess(), 0xC0000017); // STATUS_NO_MEMORY
+    }
+
+    OOM_WriteStr("\n\n===========================================\n");
+    OOM_WriteStr("         OUT OF MEMORY\n");
+    OOM_WriteStr("===========================================\n");
+
+    __try
+    {
+        OOM_DumpMemoryInfo(request);
+        OOM_WriteStr("\nStack trace (raw addresses — symbolize offline):\n");
+        OOM_DumpRawStack();
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        OOM_WriteStr("(exception during OOM diagnostics)\n");
+    }
+
+    OOM_WriteStr("===========================================\n");
+    OOM_FlushAndClose();
+
+    const char* cmd = GetCommandLineA();
+    const bool  debugger_attached = IsDebuggerPresent() != FALSE;
+    const bool  show_dialog       = strstr(cmd, "-oom_show_dialog") != nullptr;
+
+    // Если под отладчиком — даём шанс посмотреть
+    if (debugger_attached)
+    {
+        __debugbreak();   // VS catches as exception
+        // Если продолжили — умираем
+        TerminateProcess(GetCurrentProcess(), 0xC0000017);
+    }
+
+    if (!show_dialog)
+    {
+        // По умолчанию — тихий выход. Лог лежит рядом с exe.
+        TerminateProcess(GetCurrentProcess(), 0xC0000017);
+    }
+
+    // Показать диалог, но с watchdog
+    HANDLE hWatchdog = CreateThread(nullptr, 0,
+        [](LPVOID) -> DWORD
+        {
+            Sleep(15000);
+            TerminateProcess(GetCurrentProcess(), 0xC0000017);
+            return 0;
+        }, nullptr, 0, nullptr);
+    if (hWatchdog) CloseHandle(hWatchdog);
+
+    MessageBoxA(nullptr,
+        "Out of memory.\n\n"
+        "Details written to <exe>.oom.log.\n\n"
+        "Process will terminate automatically in 15 seconds.",
+        "Fatal: Out Of Memory",
+        MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+    TerminateProcess(GetCurrentProcess(), 0xC0000017);
+}
+
+// CRT new handler
 int out_of_memory_handler(size_t size)
 {
-	Memory.mem_compact();
-#ifndef _EDITOR
-	u32 crt_heap = mem_usage_impl((HANDLE)_get_heap_handle(), 0, 0);
-#else
-	u32 crt_heap = 0;
-#endif
-	u32 process_heap = mem_usage_impl(GetProcessHeap(), 0, 0);
-	int eco_strings = (int)g_pStringContainer->stat_economy();
-	int eco_smem = (int)g_pSharedMemoryContainer->stat_economy();
-	Msg("* [x-ray]: crt heap[%d K], process heap[%d K]", crt_heap / 1024, process_heap / 1024);
-	Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", eco_strings / 1024, eco_smem);
-	Debug.fatal(DEBUG_INFO, "Out of memory. Memory request: %d K", size / 1024);
-	return 1;
+    OOM_Fatal(size);
+}
+
+// std::new_handler
+static void std_out_of_memory_handler()
+{
+    OOM_Fatal(0);
 }
 
 // ---------------------------------------------------------------------------
@@ -385,6 +545,9 @@ static LPTOP_LEVEL_EXCEPTION_FILTER previous_filter = nullptr;
 
 LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
 {
+	if (g_oom_entered.load())
+		TerminateProcess(GetCurrentProcess(), 0xC0000017);
+
 	string256 errorMsg;
 	format_message(errorMsg, sizeof(errorMsg));
 
@@ -440,6 +603,8 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
 void xrDebug::Initialize(const bool& dedicated)
 {
 	DebugSupport::Instance().Initialize();
+
+	InitializeOOMEmergency();
 
 	debug_on_thread_spawn();
 	_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);

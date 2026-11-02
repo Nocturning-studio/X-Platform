@@ -105,7 +105,8 @@ class XRCDB_API MODEL
 	{
 		if(S_READY != status)
 		{
-			Log("! WARNING: syncronized CDB::query");
+			static thread_local bool s_warned = false;
+			if (!s_warned) { Log("! WARNING: syncronized CDB::query"); s_warned = true; }
 			xrCriticalSection* C = (xrCriticalSection*)&cs;
 			C->Enter();
 			C->Leave();
@@ -194,9 +195,14 @@ class XRCDB_API COLLIDER
 	{
 		return rd.size();
 	};
+#pragma todo("Переработать")
 	ICF void r_clear()
 	{
-		rd.clear_not_free();
+		constexpr u32 k_cap_limit = 8192;
+		if (rd.capacity() > k_cap_limit)
+			rd.clear_and_free();
+		else
+			rd.clear_not_free();
 	};
 	ICF void r_clear_compact()
 	{

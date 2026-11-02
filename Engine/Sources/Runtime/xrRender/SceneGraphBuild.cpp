@@ -30,45 +30,26 @@ CSceneGraph::CSceneGraph()
 
 void CSceneGraph::destroy()
 {
-	// 1. Очистка рабочих буферов (Scratch Pad)
-	// Это временные буферы для сортировки, очищаем память векторов.
-	m_scratch.nrmVS.clear();
-	m_scratch.nrmPS.clear();
-	m_scratch.nrmCS.clear();
-	m_scratch.nrmStates.clear();
-	m_scratch.nrmTextures.clear();
-	m_scratch.nrmTexturesTemp.clear();
-
-	m_scratch.matVS.clear();
-	m_scratch.matPS.clear();
-	m_scratch.matCS.clear();
-	m_scratch.matStates.clear();
-	m_scratch.matTextures.clear();
-	m_scratch.matTexturesTemp.clear();
-
-	// 2. Очистка списков результатов (Packet Lists)
+	// 1. Списки результатов
 	m_packet.lstLODs.clear();
 	m_packet.lstLODgroups.clear();
 	m_packet.m_spatial_query_results.clear();
-
 	m_packet.m_visuals_static_visible.clear();
 	m_packet.m_visuals_dynamic_visible.clear();
 
-	// 3. Уничтожение Fixed Maps (Packet Queues)
-	// Важно вызвать destroy(), чтобы освободить память аллокатора FixedMAP
-	m_packet.queue_static[0].destroy();
-	m_packet.queue_static[1].destroy();
+	// 2. Очереди статики / динамики — std::map
+	m_packet.queue_static[0].Clear();
+	m_packet.queue_static[1].Clear();
+	m_packet.queue_dynamic[0].Clear();
+	m_packet.queue_dynamic[1].Clear();
 
-	m_packet.queue_dynamic[0].destroy();
-	m_packet.queue_dynamic[1].destroy();
-
-	m_packet.queue_transparent.destroy();
-	m_packet.queue_hud.destroy();
-
-	m_packet.mapLOD.destroy();
-	m_packet.queue_distortion.destroy();
-	m_packet.queue_wallmarks.destroy();
-	m_packet.mapEmissive.destroy();
+	// 3. Остальные FixedMAP — destroy()
+	m_packet.queue_transparent.Clear();
+	m_packet.queue_hud.Clear();
+	m_packet.mapLOD.Clear();
+	m_packet.queue_distortion.Clear();
+	m_packet.queue_wallmarks.Clear();
+	m_packet.mapEmissive.Clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,14 +221,15 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 		SceneGraphPacket::DReuseItem item = {pVisual, *ctx.transform};
 		dest.m_visuals_dynamic_visible.push_back(item);
 
-		for(int i = 0; i < pVisual->shader->elements_count; ++i)
+		for (int i = 0; i < pVisual->shader->elements_count; ++i)
 		{
 			ShaderElement* se = pVisual->shader->E[i]._get();
-			if(se && se->flags.bDistort)
+			if (se && se->flags.bDistort)
 			{
-				auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
-				node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-				node->val.se = se;
+				_MatrixItemS item;
+				item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+				item.se = se;
+				dest.queue_distortion.Push(distance_sq, item);
 			}
 		}
 	}
@@ -261,17 +243,19 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// -------------------------------------------------------------------------
 	if(ctx.is_hud_pass)
 	{
-		if(shader_element->flags.bStrictB2F)
+		if (shader_element->flags.bStrictB2F)
 		{
-			auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
-			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-			node->val.se = shader_element;
+			_MatrixItemS item;
+			item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+			item.se = shader_element;
+			dest.queue_transparent.Push(distance_sq, item);
 		}
 		else
 		{
-			auto* node = dest.queue_hud.insertInAnyWay(distance_sq);
-			node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-			node->val.se = shader_element;
+			_MatrixItemS item;
+			item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+			item.se = shader_element;
+			dest.queue_hud.Push(distance_sq, item);
 		}
 		return;
 	}
@@ -279,33 +263,33 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 	// --- B. Transparent (Alpha Blending) ---
 	if (shader_element->flags.bStrictB2F && ctx.has(SceneRenderFlags::AlphaBlend))
 	{
-		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
-		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-		node->val.se = shader_element;
+		_MatrixItemS item;
+		item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		item.se = shader_element;
+		dest.queue_transparent.Push(distance_sq, item);
 		return;
 	}
 
-	if(shader_element->flags.bEmissive && ctx.has(SceneRenderFlags::Emissive))
+	if (shader_element->flags.bEmissive && ctx.has(SceneRenderFlags::Emissive))
 	{
-		auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
-		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-		node->val.se = pVisual->shader->E[4]._get();
+		_MatrixItemS item;
+		item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		item.se = pVisual->shader->E[4]._get();
+		dest.mapEmissive.Push(distance_sq, item);
 	}
 
 	if (shader_element->flags.bWmark && ctx.has(SceneRenderFlags::Wallmarks))
 	{
-		auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
-		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-		node->val.se = shader_element;
+		_MatrixItemS item;
+		item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		item.se = shader_element;
+		dest.queue_wallmarks.Push(distance_sq, item);
 		return;
 	}
 
 	// -------------------------------------------------------------------------
 	// Opaque Geometry (Основная геометрия)
 	// -------------------------------------------------------------------------
-
-	// Создаем узел, используя данные из ctx
-	DynamicRenderNode item = {screen_space_area, pVisual, *ctx.transform, ao_cube.data()};
 
 	if(shader_element->passes.empty())
 	{
@@ -317,91 +301,15 @@ void CSceneGraph::EnqueueDynamic(IRender_Visual* pVisual, fvec3& object_center, 
 
 	SPass& pass = *shader_element->passes.front();
 
-	// Выбираем очередь из переданного пакета dest
-	auto& target_map = dest.queue_dynamic[priority];
+	SceneGraphTypes::RenderEntry<SceneGraphTypes::DynamicRenderNode> entry;
+	entry.key = PassKey{ pass.vs->sh, pass.ps->sh,
+						 pass.constants._get(),
+						 pass.state->state,
+						 pass.T._get() };
+	entry.item = SceneGraphTypes::DynamicRenderNode(
+		screen_space_area, pVisual, *ctx.transform, ao_cube.data());
 
-	// Иерархическая вставка (State Sorting):
-	// VS -> PS -> Constants -> States -> Textures -> Items
-#ifdef USE_RESOURCE_DEBUGGER
-	target_map.insert(pass.vs);
-	auto* node_vs = target_map.find(pass.vs);
-	VERIFY(node_vs);
-
-	node_vs->val.insert(pass.ps);
-	auto* node_ps = node_vs->val.find(pass.ps);
-	VERIFY(node_ps);
-#else
-	target_map.insert(pass.vs->sh);
-	auto* node_vs = target_map.find(pass.vs->sh);
-	if(!node_vs)
-	{
-#ifdef DEBUG
-		Msg("! [SceneGraph] Failed to find vertex shader node");
-#endif
-		return;
-	}
-
-	node_vs->val.insert(pass.ps->sh);
-	auto* node_ps = node_vs->val.find(pass.ps->sh);
-	if(!node_ps)
-	{
-#ifdef DEBUG
-		Msg("! [SceneGraph] Failed to find pixel shader node");
-#endif
-		return;
-	}
-#endif
-
-	node_ps->val.insert(pass.constants._get());
-	auto* node_cs = node_ps->val.find(pass.constants._get());
-	if(!node_cs)
-		return;
-
-	node_cs->val.insert(pass.state->state);
-	auto* node_state = node_cs->val.find(pass.state->state);
-	if(!node_state)
-		return;
-
-	node_state->val.insert(pass.T._get());
-	auto* node_tex = node_state->val.find(pass.T._get());
-	if(!node_tex)
-		return;
-
-	// Добавляем объект в конечный лист
-	node_tex->val.push_back(item);
-
-	// Пробрасываем максимальный SSA вверх по иерархии для сортировки групп (Early Z)
-	if(screen_space_area > node_tex->val.screenSpaceArea)
-	{
-		node_tex->val.screenSpaceArea = screen_space_area;
-		if(screen_space_area > node_state->val.screenSpaceArea)
-		{
-			node_state->val.screenSpaceArea = screen_space_area;
-			if(screen_space_area > node_cs->val.screenSpaceArea)
-			{
-				node_cs->val.screenSpaceArea = screen_space_area;
-				if(screen_space_area > node_ps->val.screenSpaceArea)
-				{
-					node_ps->val.screenSpaceArea = screen_space_area;
-					if(screen_space_area > node_vs->val.screenSpaceArea)
-					{
-						node_vs->val.screenSpaceArea = screen_space_area;
-					}
-				}
-			}
-		}
-	}
-
-	// -------------------------------------------------------------------------
-	// 8. Сбор данных для теней (Cascaded Shadow Maps Culling)
-	// -------------------------------------------------------------------------
-	if(ctx.culling_bounds)
-	{
-		Fbox3 temp_box;
-		// Трансформируем AABB матрицей из ctx
-		temp_box.transform(pVisual->vis.box, *ctx.transform);
-		ctx.culling_bounds->push_back(temp_box);
-	}
+	dest.queue_dynamic[priority].entries.push_back(entry);
 }
 
 ////////////////////////////////////////////////////////////////////////////////==================
@@ -462,14 +370,15 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 		ao_cube = RenderImplementation.compute_object_ao_cube(ctx.owner);
 		dest.m_visuals_static_visible.push_back(pVisual);
 
-		for(int i = 0; i < pVisual->shader->elements_count; ++i)
+		for (int i = 0; i < pVisual->shader->elements_count; ++i)
 		{
 			ShaderElement* se = pVisual->shader->E[i]._get();
-			if(se && se->flags.bDistort)
+			if (se && se->flags.bDistort)
 			{
-				auto* node = dest.queue_distortion.insertInAnyWay(distance_sq);
-				node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-				node->val.se = se;
+				_MatrixItemS item;
+				item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+				item.se = se;
+				dest.queue_distortion.Push(distance_sq, item);
 			}
 		}
 	}
@@ -477,24 +386,27 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 	// Маршрутизация
 	if (shader_element->flags.bStrictB2F && ctx.has(SceneRenderFlags::AlphaBlend))
 	{
-		auto* node = dest.queue_transparent.insertInAnyWay(distance_sq);
-		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-		node->val.se = shader_element;
+		_MatrixItemS item;
+		item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		item.se = shader_element;
+		dest.queue_transparent.Push(distance_sq, item);
 		return;
 	}
 
-	if(shader_element->flags.bEmissive && ctx.has(SceneRenderFlags::Emissive))
+	if (shader_element->flags.bEmissive && ctx.has(SceneRenderFlags::Emissive))
 	{
-		auto* node = dest.mapEmissive.insertInAnyWay(distance_sq);
-		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-		node->val.se = pVisual->shader->E[4]._get();
+		_MatrixItemS item;
+		item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		item.se = pVisual->shader->E[4]._get();
+		dest.mapEmissive.Push(distance_sq, item);
 	}
 
 	if (shader_element->flags.bWmark && ctx.has(SceneRenderFlags::Wallmarks))
 	{
-		auto* node = dest.queue_wallmarks.insertInAnyWay(distance_sq);
-		node->val.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
-		node->val.se = shader_element;
+		_MatrixItemS item;
+		item.Copy(screen_space_area, pVisual, *ctx.transform, ao_cube.data());
+		item.se = shader_element;
+		dest.queue_wallmarks.Push(distance_sq, item);
 		return;
 	}
 
@@ -517,91 +429,19 @@ void CSceneGraph::EnqueueStatic(IRender_Visual* pVisual, const SceneTraversalCon
 
 	SPass& pass = *shader_element->passes.front();
 
-	// Выбираем очередь из переданного пакета dest
-	auto& target_map = dest.queue_static[priority];
+	SceneGraphTypes::RenderEntry<SceneGraphTypes::StaticRenderNode> entry;
+	entry.key = PassKey{ pass.vs->sh, pass.ps->sh,
+						 pass.constants._get(),
+						 pass.state->state,
+						 pass.T._get() };
+	entry.item = SceneGraphTypes::StaticRenderNode{ screen_space_area, pVisual };
 
-	// Иерархическая вставка
-#ifdef USE_RESOURCE_DEBUGGER
-	target_map.insert(pass.vs);
-	auto* node_vs = target_map.find(pass.vs);
-	VERIFY(node_vs);
-
-	node_vs->val.insert(pass.ps);
-	auto* node_ps = node_vs->val.find(pass.ps);
-	VERIFY(node_ps);
-#else
-	target_map.insert(pass.vs->sh);
-	auto* node_vs = target_map.find(pass.vs->sh);
-	if(!node_vs)
-	{
-#ifdef DEBUG
-		Msg("! [SceneGraph] Failed to find vertex shader node");
-#endif
-		return;
-	}
-
-	node_vs->val.insert(pass.ps->sh);
-	auto* node_ps = node_vs->val.find(pass.ps->sh);
-	if(!node_ps)
-	{
-#ifdef DEBUG
-		Msg("! [SceneGraph] Failed to find pixel shader node");
-#endif
-		return;
-	}
-#endif
-
-	node_ps->val.insert(pass.constants._get());
-	auto* node_cs = node_ps->val.find(pass.constants._get());
-	if(!node_cs)
-		return;
-
-	node_cs->val.insert(pass.state->state);
-	auto* node_state = node_cs->val.find(pass.state->state);
-	if(!node_state)
-		return;
-
-	node_state->val.insert(pass.T._get());
-	auto* node_tex = node_state->val.find(pass.T._get());
-	if(!node_tex)
-		return;
-
-	StaticRenderNode item = {screen_space_area, pVisual};
-	node_tex->val.push_back(item);
-
-	// Обновление SSA
-	if(screen_space_area > node_tex->val.screenSpaceArea)
-	{
-		node_tex->val.screenSpaceArea = screen_space_area;
-		if(screen_space_area > node_state->val.screenSpaceArea)
-		{
-			node_state->val.screenSpaceArea = screen_space_area;
-			if(screen_space_area > node_cs->val.screenSpaceArea)
-			{
-				node_cs->val.screenSpaceArea = screen_space_area;
-				if(screen_space_area > node_ps->val.screenSpaceArea)
-				{
-					node_ps->val.screenSpaceArea = screen_space_area;
-					if(screen_space_area > node_vs->val.screenSpaceArea)
-					{
-						node_vs->val.screenSpaceArea = screen_space_area;
-					}
-				}
-			}
-		}
-	}
-
-	// 9. Сбор данных для теней
-	if(ctx.culling_bounds)
-	{
-		// Для статики просто берем AABB, так как она не трансформируется
-		ctx.culling_bounds->push_back(pVisual->vis.box);
-	}
+	dest.queue_static[priority].entries.push_back(entry);
 }
 
-////////////////////////////////////////////////////////////////////////////////==================
+////////////////////////////////////////////////////////////////////////////////
 //  Optimization Data & Constants (Anonymous Namespace)
-////////////////////////////////////////////////////////////////////////////////==================
+////////////////////////////////////////////////////////////////////////////////
 namespace
 {
 // Значения для разных уровней качества (Low, Med, High, Ultra)
@@ -993,9 +833,10 @@ void CSceneGraph::ProcessStaticVisual(IRender_Visual* pVisual, const SceneTraver
 			{
 				dest.m_visuals_static_visible.push_back(pVisual);
 
-				auto* N = dest.mapLOD.insertInAnyWay(D);
-				N->val.screenSpaceArea = screenSpaceArea;
-				N->val.pVisual = pVisual;
+				LodRenderNode node;
+				node.screenSpaceArea = screenSpaceArea;
+				node.pVisual = pVisual;
+				dest.mapLOD.Push(D, node);
 			}
 		}
 
@@ -1333,9 +1174,10 @@ void CSceneGraph::add_Static(IRender_Visual* pVisual, u32 planes, const SceneTra
 				return;
 
 			// Вставляем в mapLOD целевого пакета
-			auto* node = dest.mapLOD.insertInAnyWay(dist_unused);
-			node->val.screenSpaceArea = screen_space_area;
-			node->val.pVisual = pVisual;
+			LodRenderNode node;
+			node.screenSpaceArea = screen_space_area;
+			node.pVisual = pVisual;
+			dest.mapLOD.Push(dist_unused, node);
 		}
 		else if(screen_space_area > r_ssaLOD_B) // Если объект близко - рисуем его детальную геометрию (детей)
 		{
@@ -1387,106 +1229,25 @@ void CSceneGraph::PrepareDynamicInstances(SceneGraphPacket& packet, const SceneT
 
 void CSceneGraph::DebugCheckDuplicateVisuals(SceneGraphPacket& packet)
 {
-	// Вспомогательная лямбда для проверки вектора узлов
-	auto check_batch = [](auto& batch, const char* context)
+#ifdef DEBUG
+	auto check_entries = [](const auto& entries, const char* ctx)
 	{
-		std::unordered_set<IRender_Visual*> unique_set;
-		for(const auto& node : batch)
+		std::unordered_set<IRender_Visual*> seen;
+		for (const auto& e : entries)
 		{
-			IRender_Visual* v = node.pVisual;
-			if(!unique_set.insert(v).second)
+			if (!seen.insert(e.item.pVisual).second)
 			{
-				Msg("[DUPLICATE] visual 0x%p in %s", v, context);
-				R_ERROR("Duplicate visual detected in render packet");
+				Msg("[DUPLICATE] visual 0x%p in %s", e.item.pVisual, ctx);
+				R_ERROR("Duplicate visual detected");
 			}
 		}
 	};
 
-	// --- Статическая геометрия (queue_static[0] и queue_static[1]) ---
-	for(int priority = 0; priority < 2; ++priority)
+	for (int p = 0; p < 2; ++p)
 	{
-		auto& mapVS = packet.queue_static[priority];
-		for(auto itVS = mapVS.begin(); itVS != mapVS.end(); ++itVS)
-		{
-			auto& mapPS = itVS->val;
-			for(auto itPS = mapPS.begin(); itPS != mapPS.end(); ++itPS)
-			{
-				auto& mapCS = itPS->val;
-				for(auto itCS = mapCS.begin(); itCS != mapCS.end(); ++itCS)
-				{
-					auto& mapState = itCS->val;
-					for(auto itState = mapState.begin(); itState != mapState.end(); ++itState)
-					{
-						auto& mapTex = itState->val;
-						for(auto itTex = mapTex.begin(); itTex != mapTex.end(); ++itTex)
-						{
-							check_batch(itTex->val, "static opaque batch");
-						}
-					}
-				}
-			}
-		}
+		check_entries(packet.queue_static[p].entries, "static opaque");
+		check_entries(packet.queue_dynamic[p].entries, "dynamic opaque");
 	}
-
-	// --- Динамическая геометрия (queue_dynamic[0] и queue_dynamic[1]) ---
-	for(int priority = 0; priority < 2; ++priority)
-	{
-		auto& mapVS = packet.queue_dynamic[priority];
-		for(auto itVS = mapVS.begin(); itVS != mapVS.end(); ++itVS)
-		{
-			auto& mapPS = itVS->val;
-			for(auto itPS = mapPS.begin(); itPS != mapPS.end(); ++itPS)
-			{
-				auto& mapCS = itPS->val;
-				for(auto itCS = mapCS.begin(); itCS != mapCS.end(); ++itCS)
-				{
-					auto& mapState = itCS->val;
-					for(auto itState = mapState.begin(); itState != mapState.end(); ++itState)
-					{
-						auto& mapTex = itState->val;
-						for(auto itTex = mapTex.begin(); itTex != mapTex.end(); ++itTex)
-						{
-							check_batch(itTex->val, "dynamic opaque batch");
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// --- Sorted-контейнеры (transparent, distortion, wallmarks, emissive, HUD) ---
-	auto check_sorted = [](auto& sortedMap, const char* context)
-	{
-		std::unordered_set<IRender_Visual*> unique_set;
-		for(auto it = sortedMap.begin(); it != sortedMap.end(); ++it)
-		{
-			IRender_Visual* v = it->val.pVisual;
-			if(!unique_set.insert(v).second)
-			{
-				Msg("[DUPLICATE] visual 0x%p in %s", v, context);
-				R_ERROR("Duplicate visual detected in render packet");
-			}
-		}
-	};
-
-	check_sorted(packet.queue_transparent, "transparent");
-	check_sorted(packet.queue_distortion, "distortion");
-	check_sorted(packet.queue_wallmarks, "wallmarks");
-	check_sorted(packet.mapEmissive, "emissive");
-	check_sorted(packet.queue_hud, "HUD");
-
-	// --- LOD map ---
-	{
-		std::unordered_set<IRender_Visual*> unique_set;
-		for(auto it = packet.mapLOD.begin(); it != packet.mapLOD.end(); ++it)
-		{
-			IRender_Visual* v = it->val.pVisual;
-			if(!unique_set.insert(v).second)
-			{
-				Msg("[DUPLICATE] visual 0x%p in LOD map", v);
-				R_ERROR("Duplicate visual detected in render packet");
-			}
-		}
-	}
+#endif
 }
 ////////////////////////////////////////////////////////////////////////////////

@@ -159,14 +159,13 @@ void CRender::render_lights(light_Package& LP)
             req.frustum_override = nullptr;
             req.render_phase = CRender::PHASE_SHADOW_DEPTH;
             req.flags = SceneRenderPresets::Opaque;
-            req.culling_bounds = nullptr;
 
             Scene.ComputeVisibility(req, m_spot_shadow_vis);
 
             SceneGraphPacket& packet = m_spot_shadow_vis.packet;
 
-            bool bNormal = packet.queue_static[0].size() || packet.queue_dynamic[0].size();
-            bool bSpecial = packet.queue_static[1].size() || packet.queue_dynamic[1].size() || packet.queue_transparent.size();
+            bool bNormal = packet.queue_static[0].Size() || packet.queue_dynamic[0].Size();
+            bool bSpecial = packet.queue_static[1].Size() || packet.queue_dynamic[1].Size() || packet.queue_transparent.Size();
 
             if (bNormal || bSpecial)
             {
