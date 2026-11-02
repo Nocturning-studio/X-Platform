@@ -149,7 +149,6 @@ void CRenderBackendFacade::Create(HWND m_hWnd)
 
 	u32 width, height;
 	SelectResolution(width, height, bWindowed);
-	u32 presentInterval = SelectPresentInterval();
 	u32 refreshHz = D3DPRESENT_RATE_DEFAULT;
 
 	CWindowManager& wm = Engine.WindowManager;
@@ -168,7 +167,7 @@ void CRenderBackendFacade::Create(HWND m_hWnd)
 	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
 	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
 	params.BackBufferCount = 2;
-	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
+	params.SyncInterval = SelectPresentInterval();
 	params.FullscreenRefreshHz = refreshHz;
 	params.SwapEffect = RHI_SwapEffect::Discard;
 	params.EnableAutoDepthStencil = true;
@@ -253,7 +252,6 @@ void CRenderBackendFacade::Reset()
 
 	u32 width, height;
 	SelectResolution(width, height, bWindowed);
-	u32 presentInterval = SelectPresentInterval();
 	u32 refreshHz = D3DPRESENT_RATE_DEFAULT;
 
 	CWindowManager& wm = Engine.WindowManager;
@@ -273,7 +271,7 @@ void CRenderBackendFacade::Reset()
 	params.BackBufferFormat = RHI_Format::RGBA8_UNORM;
 	params.DepthStencilFormat = RHI_Format::D24_UNORM_S8_UINT;
 	params.BackBufferCount = 1;
-	params.SyncInterval = (presentInterval == 0) ? 0 : 1;
+	params.SyncInterval = SelectPresentInterval();
 	params.FullscreenRefreshHz = refreshHz;
 	params.SwapEffect = RHI_SwapEffect::Discard;
 	params.EnableAutoDepthStencil = true;
@@ -321,11 +319,9 @@ void CRenderBackendFacade::SelectResolution(u32& dwWidth, u32& dwHeight, BOOL bW
 u32 CRenderBackendFacade::SelectPresentInterval()
 {
 #ifdef DEDICATED_SERVER
-	return D3DPRESENT_INTERVAL_IMMEDIATE;
+	return 0;
 #else
-	if(!psDeviceFlags.test(rsVSync))
-		return D3DPRESENT_INTERVAL_IMMEDIATE;
-	return D3DPRESENT_INTERVAL_DEFAULT;
+	return psDeviceFlags.test(rsVSync) ? 1 : 0;
 #endif
 }
 

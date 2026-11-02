@@ -63,7 +63,6 @@ struct ShaderCacheMetadata
 {
 	u32 crc;
 	time_t sourceModTime;
-	u32 buildId;
 	u32 dependencyCount;
 };
 #pragma pack(pop)
@@ -479,7 +478,7 @@ HRESULT CResourceManagerLegacy::ReadShaderCache(string_path name, T*& result, ti
 		ShaderCacheMetadata metadata;
 		file->r(&metadata, sizeof(ShaderCacheMetadata));
 
-		if(metadata.buildId == GlobalBuildInfo.ID && metadata.sourceModTime == sourceModTime)
+		if(metadata.sourceModTime == sourceModTime)
 		{
 			bool bEnableDependencySystem = false;
 #ifndef MASTER_GOLD
@@ -521,10 +520,7 @@ HRESULT CResourceManagerLegacy::ReadShaderCache(string_path name, T*& result, ti
 		}
 		else
 		{
-			if(metadata.buildId != GlobalBuildInfo.ID)
-				Msg("! Shader cache build ID mismatch for: %s (expected: %d, got: %d)", name, GlobalBuildInfo.ID, metadata.buildId);
-			else
-				Msg("! Shader source file modified for: %s", name);
+			Msg("! Shader source file modified for: %s", name);
 		}
 	}
 	else
@@ -708,7 +704,6 @@ HRESULT CResourceManagerLegacy::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR sr
 					ShaderCacheMetadata metadata;
 					metadata.crc = crc;
 					metadata.sourceModTime = sourceModTime;
-					metadata.buildId = GlobalBuildInfo.ID;
 					metadata.dependencyCount = (u32)dependencies.size();
 
 					file->w(&metadata, sizeof(ShaderCacheMetadata));
