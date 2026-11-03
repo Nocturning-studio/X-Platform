@@ -144,7 +144,9 @@ struct profile_timer_script
 
 	IC void stop()
 	{
-		THROW(m_recurse_mark);
+		if (!m_recurse_mark)
+			return;
+
 		--m_recurse_mark;
 
 		if(m_recurse_mark)

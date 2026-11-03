@@ -15,9 +15,8 @@
 
 extern "C"
 {
-#include <lua.h>
-#include <luajit.h>
-#include <lcoco.h>
+#include <LuaJIT-2.1.0-beta3/src/lua.h>
+#include <LuaJIT-2.1.0-beta3/src/luajit.h>
 };
 // #define DBG_DISABLE_SCRIPTS
 
@@ -94,6 +93,8 @@ class CScriptEngine : public CScriptStorage
 	CScriptDebugger* debugger();
 #endif
 	void collect_all_garbage();
+
+	void define_legacy_functions();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
