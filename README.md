@@ -64,6 +64,16 @@ X-Platform/
 - ОЗУ: 4GB
 - Видеокарта: RX580
 
+## Лицензия
+
+Проект распространяется на условиях **PolyForm Noncommercial 1.0.0**.
+
+- **X-Platform Code** (код, созданный Nocturning Studio и независимыми контрибьюторами) — под лицензией PolyForm Noncommercial 1.0.0. Коммерческое использование запрещено без отдельного разрешения, код полностью открыт для любого некоммерческого использования. Вы можете копировать и менять код как угодно, сохранение копирайтов не является строго обязательным, но мы будем рады их сохранению.
+- **GSC Game World Proprietary Code** — оригинальный код X-Ray Engine остаётся под проприетарной лицензией GSC Game World, мы не имеем права как-либо менять условия лицензирования этого кода, поэтому при любом использовании вам необходимо сохранять текст лицензии GCS в вашем коде в неизменном виде. Коммерческое использование кода GSC строго запрещается
+- **Third-Party Components** — сторонние библиотеки (LuaAPI, Optick, X-RHI, Imgui, SDL3, ogg/vorbis/theora и др.) распространяются на условиях их собственных лицензий.
+
+Полный текст лицензии доступен в файле [LICENSE](LICENSE) или на сайте [PolyForm Project](https://polyformproject.org/licenses/noncommercial/1.0.0).
+
 <img width="3500" height="1876" alt="Splash screen1" src="https://github.com/user-attachments/assets/f4f2b12e-a019-405c-bc74-4fd0d5eff0da" />
 <img width="1920" height="1040" alt="image" src="https://github.com/user-attachments/assets/d0c1971e-03fe-4d52-b9fe-de876cab8c84" />
 <img width="1920" height="1080" alt="Opener" src="https://github.com/user-attachments/assets/b7422e36-c5ce-4792-bb49-75d8ca376bb7" />
