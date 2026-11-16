@@ -3,7 +3,6 @@
 #include "BRDF.xrh"
 #include "AmbientOcclusion.xrh"
 
-static const uint IBL_MAX_MIP_LEVELS = 11;
 static const float IBL_LOD_BIAS = 0.5;
 static const float MULTI_SCATTERING_ENERGY_PRESERVATION = 0.96;
 static const float MAX_SKY_INFLUENCE = 0.6;
@@ -11,6 +10,7 @@ static const float ROUGHNESS_SKY_REDUCTION = 2.0;
 static const float SPECULAR_INTENSITY_SCALE = 0.7;
 static const float MAX_SPECULAR_CONTRIBUTION = 0.4;
 static const float DIFFUSE_GI_BOOST = 1.1;
+static const float SKYBOX_BRIGHTNESS = 2.0;
 
 uniform sampler2D s_brdf_lut;
 
@@ -244,9 +244,9 @@ IBLResult CalculateIndirectLighting(GBuffer GBuffer, float3 WorldSpaceNormal, fl
     result.MultiScatterCompensation = CalculateMultiScatteringCompensation(context, GBuffer);
     
     // IBL
-    result.IndirectDiffuse = CalculateIBLDiffuse(GBuffer, WorldSpaceNormal, BentNormal, context.kD, Ambient, context);
+    result.IndirectDiffuse = CalculateIBLDiffuse(GBuffer, WorldSpaceNormal, BentNormal, context.kD, Ambient, context) * SKYBOX_BRIGHTNESS;
     
-    result.IndirectSpecular = CalculateIBLSpecular(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, context, Ambient);
+    result.IndirectSpecular = CalculateIBLSpecular(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, context, Ambient) * SKYBOX_BRIGHTNESS;
     
     result.IndirectSpecular *= result.MultiScatterCompensation;
     result.DiffuseDominance = context.DiffuseDominance;
@@ -294,9 +294,9 @@ IBLResult CalculateIndirectLighting(GBuffer GBuffer, float3 WorldSpaceNormal, fl
     
     result.MultiScatterCompensation = CalculateMultiScatteringCompensation(context, GBuffer);
     
-    result.IndirectDiffuse = CalculateIBLDiffuse(GBuffer, WorldSpaceNormal, BentNormal, context.kD, Ambient, context);
+    result.IndirectDiffuse = CalculateIBLDiffuse(GBuffer, WorldSpaceNormal, BentNormal, context.kD, Ambient, context) * SKYBOX_BRIGHTNESS;
                                                        
-    result.IndirectSpecular = CalculateIBLSpecular(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, context, Ambient);
+    result.IndirectSpecular = CalculateIBLSpecular(GBuffer, WorldSpaceNormal, BentNormal, ViewDirection, context, Ambient) * SKYBOX_BRIGHTNESS;
     
     result.IndirectSpecular *= result.MultiScatterCompensation;
     result.DiffuseDominance = context.DiffuseDominance;

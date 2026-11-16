@@ -31,23 +31,12 @@ AmbientOcclusion CalculateAmbientOcclusion(GBuffer GBuffer, float3 WorldSpaceNor
     
     ao.RealTime = tex2Dlod0(s_ao, TexCoords).r;
     
-    const float adjustBrightness = 7.0f;
-    const float minAmbient = 0.016f;
+    const float adjustBrightness = 1.5f;
+    const float minAmbient = 0.015f;
     
-    float LightmapRaw = saturate(GBuffer.AO);
+    float LightmapRaw = GBuffer.AO;
     
-    float nvFactor = saturate(additional_ambient * 10.0f); 
-    
-    float targetGamma = 2.2f;
-    float LightmapCurve = safe_pow(LightmapRaw * adjustBrightness, targetGamma);
-    
-    float LightmapFinal = (LightmapCurve * AMBIENT_BRIGHTNESS) + minAmbient;
-    
-    float nvBoost = additional_ambient; // Сила подсветки
-    
-    LightmapFinal = max(LightmapFinal, nvBoost * ao.RealTime);
-    
-    ao.Lightmap = Reinhard(LightmapFinal);
+    ao.Lightmap = LightmapRaw * adjustBrightness + minAmbient;
     
     ao.Baked = GBuffer.BakedAO;
     
