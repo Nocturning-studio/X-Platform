@@ -2,7 +2,7 @@
 #include "resource.h"
 #include "LogoWindow.h"
 
-static BOOL CALLBACK logoDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CALLBACK logoDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch(msg)
 	{

@@ -254,7 +254,7 @@ void CEffect_Rain::SimulateDrops(float dt)
 	concurrency::combinable<xr_vector<fvec3>> local_splash_queue;
 
 	// ПАРАЛЛЕЛЬНЫЙ ЦИКЛ
-	concurrency::parallel_for(size_t(0), m_drops.size(), [&](size_t i)
+	concurrency::parallel_for(size_t(0), size_t(m_drops.size()), [&](size_t i)
 							  {
 		// Генерация уникального seed
 		u32 seed = u32(i) ^ (current_frame * 719393u) ^ global_time;

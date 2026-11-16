@@ -527,7 +527,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, fvec3& view, int limit)
 	// PPL Распаковка
 	if(bTasksProcessed)
 	{
-		concurrency::parallel_for(size_t(0), cache_task.size(), [&](size_t i)
+		concurrency::parallel_for(size_t(0), size_t(cache_task.size()), [&](size_t i)
 								  {
 			xrXRC thread_local_xrc;
 			cache_Decompress(cache_task[i], thread_local_xrc); });

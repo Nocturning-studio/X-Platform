@@ -1,134 +1,175 @@
 @rem Script to build LuaJIT with MSVC.
 @rem Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 @rem
-@rem Either open a "Visual Studio .NET Command Prompt"
-@rem (Note that the Express Edition does not contain an x64 compiler)
-@rem -or-
-@rem Open a "Windows SDK Command Shell" and set the compiler environment:
-@rem     setenv /release /x86
-@rem   -or-
-@rem     setenv /release /x64
+@rem Usage:
+@rem   msvcbuild.bat [gc64] [debug] [amalg^|static] ^<src_dir^> ^<lib_dir^> ^<int_dir^> [forced]
 @rem
-@rem Then cd to this directory and run this script.
+@rem   src_dir  - LuaJIT source tree (contains host\, jit\, lj_*.c, etc.)
+@rem   lib_dir  - where lua51.lib / lua51.dll are placed (created if missing)
+@rem   int_dir  - scratch for *.obj, minilua.exe, buildvm.exe, generated headers
+@rem   forced   - rebuild even if lua51.lib already exists
 
 @if not defined INCLUDE goto :FAIL
-
 @setlocal
+
+@rem ---- parse mode flags ----
+@set LJGC64=
+@set LJDEBUG=
+@set LJMODE=static
+@set LJFORCED=
+
+:PARSE
+@if "%~1"=="" goto :PARSED
+@if /I "%~1"=="gc64"   (set "LJGC64=1"&shift&goto :PARSE)
+@if /I "%~1"=="debug"  (set "LJDEBUG=1"&shift&goto :PARSE)
+@if /I "%~1"=="amalg"  (set "LJMODE=amalg"&shift&goto :PARSE)
+@if /I "%~1"=="static" (set "LJMODE=static"&shift&goto :PARSE)
+@if /I "%~1"=="forced" (set "LJFORCED=1"&shift&goto :PARSE)
+@goto :PARSED
+:PARSED
+
+@if "%~3"=="" goto :USAGE
+
+@set LJSRCDIR=%~f1
+@set LJOUTDIR=%~f2
+@set LJINTDIR=%~f3
+@if /I "%~4"=="forced" set "LJFORCED=1"
+
+@if not "%LJSRCDIR:~-1%"=="\" set LJSRCDIR=%LJSRCDIR%\
+@if not "%LJOUTDIR:~-1%"=="\" set LJOUTDIR=%LJOUTDIR%\
+@if not "%LJINTDIR:~-1%"=="\" set LJINTDIR=%LJINTDIR%\
+
+@rem "S" = stripped variant, safe to embed inside /I"..." (no trailing backslash!)
+@set LJINTDIRS=%LJINTDIR:~0,-1%
+@set LJOUTDIRS=%LJOUTDIR:~0,-1%
+@rem /Fo needs "...\\" -- a lone trailing \" is eaten by the CRT arg parser.
+@set LJINTFO=%LJINTDIRS%\\
+
+@if not defined LJFORCED if exist "%LJOUTDIRS%\lua51.lib" (
+    @echo lua51.lib already exists in "%LJOUTDIRS%" -- pass "forced" to rebuild.
+    @goto :END
+)
+
+@if not exist "%LJINTDIRS%" mkdir "%LJINTDIRS%"
+@if errorlevel 1 goto :BAD
+@if not exist "%LJOUTDIRS%" mkdir "%LJOUTDIRS%"
+@if errorlevel 1 goto :BAD
+
 @set LJCOMPILE=cl /nologo /c /O2 /W3 /MD /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
 @set LJLINK=link /nologo
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
-@set DASMDIR=..\dynasm
+@set DASMDIR=%LJSRCDIR%..\dynasm
 @set DASM=%DASMDIR%\dynasm.lua
-@set DASC=vm_x86.dasc
+@set DASC=%LJSRCDIR%vm_x86.dasc
 @set LJDLLNAME=lua51.dll
 @set LJLIBNAME=lua51.lib
 @set ALL_LIB=lib_base.c lib_math.c lib_bit.c lib_string.c lib_table.c lib_io.c lib_os.c lib_package.c lib_debug.c lib_jit.c lib_ffi.c
 
-cd /D %~dp0
+@cd /D "%LJSRCDIR%"
 
-@if "%4" equ "forced" goto :FORCED
-@if exist %3lua51.lib goto :ENDNMOVE
-:FORCED
-
-%LJCOMPILE% host\minilua.c
+@rem ---- 1/4: minilua ----
+@echo [1/4] minilua
+%LJCOMPILE% /Fo"%LJINTFO%" host\minilua.c
 @if errorlevel 1 goto :BAD
-%LJLINK% /out:minilua.exe minilua.obj
+%LJLINK% /out:"%LJINTDIRS%\minilua.exe" "%LJINTDIRS%\minilua.obj"
 @if errorlevel 1 goto :BAD
-if exist minilua.exe.manifest^
-  %LJMT% -manifest minilua.exe.manifest -outputresource:minilua.exe
+@if exist "%LJINTDIRS%\minilua.exe.manifest" %LJMT% -manifest "%LJINTDIRS%\minilua.exe.manifest" -outputresource:"%LJINTDIRS%\minilua.exe"
 
 @set DASMFLAGS=-D WIN -D JIT -D FFI -D P64
 @set LJARCH=x64
-@minilua
+@"%LJINTDIRS%\minilua.exe"
 @if errorlevel 8 goto :X64
 @set DASMFLAGS=-D WIN -D JIT -D FFI
 @set LJARCH=x86
 @set LJCOMPILE=%LJCOMPILE% /arch:SSE2
 :X64
-@if "%1" neq "gc64" goto :NOGC64
-@shift
-@set DASC=vm_x64.dasc
+@if not defined LJGC64 goto :NOGC64
+@set DASC=%LJSRCDIR%vm_x64.dasc
 @set LJCOMPILE=%LJCOMPILE% /DLUAJIT_ENABLE_GC64
 :NOGC64
-minilua %DASM% -LN %DASMFLAGS% -o host\buildvm_arch.h %DASC%
+@"%LJINTDIRS%\minilua.exe" "%DASM%" -LN %DASMFLAGS% -o "%LJINTDIRS%\buildvm_arch.h" "%DASC%"
 @if errorlevel 1 goto :BAD
 
-%LJCOMPILE% /I "." /I %DASMDIR% host\buildvm*.c
+@rem ---- 2/4: buildvm ----
+@echo [2/4] buildvm
+%LJCOMPILE% /I"." /I"%DASMDIR%" /I"%LJINTDIRS%" /Fo"%LJINTFO%" host\buildvm*.c
 @if errorlevel 1 goto :BAD
+@pushd "%LJINTDIRS%"
 %LJLINK% /out:buildvm.exe buildvm*.obj
-@if errorlevel 1 goto :BAD
-if exist buildvm.exe.manifest^
-  %LJMT% -manifest buildvm.exe.manifest -outputresource:buildvm.exe
+@if errorlevel 1 ( @popd & goto :BAD )
+@popd
+@if exist "%LJINTDIRS%\buildvm.exe.manifest" %LJMT% -manifest "%LJINTDIRS%\buildvm.exe.manifest" -outputresource:"%LJINTDIRS%\buildvm.exe"
 
-buildvm -m peobj -o lj_vm.obj
+@"%LJINTDIRS%\buildvm.exe" -m peobj  -o "%LJINTDIRS%\lj_vm.obj"     %ALL_LIB%
 @if errorlevel 1 goto :BAD
-buildvm -m bcdef -o lj_bcdef.h %ALL_LIB%
+@"%LJINTDIRS%\buildvm.exe" -m bcdef  -o "%LJINTDIRS%\lj_bcdef.h"    %ALL_LIB%
 @if errorlevel 1 goto :BAD
-buildvm -m ffdef -o lj_ffdef.h %ALL_LIB%
+@"%LJINTDIRS%\buildvm.exe" -m ffdef  -o "%LJINTDIRS%\lj_ffdef.h"    %ALL_LIB%
 @if errorlevel 1 goto :BAD
-buildvm -m libdef -o lj_libdef.h %ALL_LIB%
+@"%LJINTDIRS%\buildvm.exe" -m libdef -o "%LJINTDIRS%\lj_libdef.h"   %ALL_LIB%
 @if errorlevel 1 goto :BAD
-buildvm -m recdef -o lj_recdef.h %ALL_LIB%
+@"%LJINTDIRS%\buildvm.exe" -m recdef -o "%LJINTDIRS%\lj_recdef.h"   %ALL_LIB%
 @if errorlevel 1 goto :BAD
-buildvm -m vmdef -o jit\vmdef.lua %ALL_LIB%
+@"%LJINTDIRS%\buildvm.exe" -m vmdef  -o "jit\vmdef.lua"             %ALL_LIB%
 @if errorlevel 1 goto :BAD
-buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
+@"%LJINTDIRS%\buildvm.exe" -m folddef -o "%LJINTDIRS%\lj_folddef.h" lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 
-@if "%1" neq "debug" goto :NODEBUG
-@shift
-@set LJCOMPILE=%LJCOMPILE% /Zi
+@rem ---- 3/4: debug flags ----
+@if not defined LJDEBUG goto :NODEBUG
+@set LJCOMPILE=%LJCOMPILE% /Zi /Fd"%LJINTDIRS%\vc.pdb"
 @set LJLINK=%LJLINK% /debug /opt:ref /opt:icf /incremental:no
 :NODEBUG
-@if "%1"=="amalg" goto :AMALGDLL
-@if "%1"=="static" goto :STATIC
-%LJCOMPILE% /MD /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
-@if errorlevel 1 goto :BAD
-%LJLINK% /DLL /out:%LJDLLNAME% lj_*.obj lib_*.obj
-@if errorlevel 1 goto :BAD
-@goto :MTDLL
-:STATIC
-%LJCOMPILE% lj_*.c lib_*.c
-@if errorlevel 1 goto :BAD
-%LJLIB% /OUT:%LJLIBNAME% lj_*.obj lib_*.obj
-@if errorlevel 1 goto :BAD
-@goto :MTDLL
-:AMALGDLL
-%LJCOMPILE% /MD /DLUA_BUILD_AS_DLL ljamalg.c
-@if errorlevel 1 goto :BAD
-%LJLINK% /DLL /out:%LJDLLNAME% ljamalg.obj lj_vm.obj
-@if errorlevel 1 goto :BAD
-:MTDLL
-if exist %LJDLLNAME%.manifest^
-  %LJMT% -manifest %LJDLLNAME%.manifest -outputresource:%LJDLLNAME%;2
 
-%LJCOMPILE% luajit.c
-@if errorlevel 1 goto :BAD
-%LJLINK% /out:luajit.exe luajit.obj %LJLIBNAME%
-@if errorlevel 1 goto :BAD
-if exist luajit.exe.manifest^
-  %LJMT% -manifest luajit.exe.manifest -outputresource:luajit.exe
+@rem ---- 4/4: main lib ----
+@echo [3/4] %LJMODE% library
+@if /I "%LJMODE%"=="amalg" goto :AMALG
 
-@del *.obj *.manifest minilua.exe buildvm.exe
-@del host\buildvm_arch.h
-@del lj_bcdef.h lj_ffdef.h lj_libdef.h lj_recdef.h lj_folddef.h
+%LJCOMPILE% /I"." /I"%LJINTDIRS%" /Fo"%LJINTFO%" lj_*.c lib_*.c
+@if errorlevel 1 goto :BAD
+@pushd "%LJINTDIRS%"
+%LJLIB% /OUT:"%LJOUTDIRS%\%LJLIBNAME%" lj_*.obj lib_*.obj
+@if errorlevel 1 ( @popd & goto :BAD )
+@popd
+@goto :BUILDEXE
+
+:AMALG
+%LJCOMPILE% /DLUA_BUILD_AS_DLL /I"." /I"%LJINTDIRS%" /Fo"%LJINTFO%" ljamalg.c
+@if errorlevel 1 goto :BAD
+@pushd "%LJINTDIRS%"
+%LJLINK% /DLL /out:"%LJOUTDIRS%\%LJDLLNAME%" ljamalg.obj lj_vm.obj
+@if errorlevel 1 ( @popd & goto :BAD )
+@popd
+@if exist "%LJOUTDIRS%\%LJDLLNAME%.manifest" %LJMT% -manifest "%LJOUTDIRS%\%LJDLLNAME%.manifest" -outputresource:"%LJOUTDIRS%\%LJDLLNAME%;2"
+
+:BUILDEXE
+@echo [4/4] luajit.exe
+%LJCOMPILE% /I"." /I"%LJINTDIRS%" /Fo"%LJINTFO%" luajit.c
+@if errorlevel 1 goto :BAD
+@pushd "%LJINTDIRS%"
+%LJLINK% /out:luajit.exe luajit.obj "%LJOUTDIRS%\%LJLIBNAME%"
+@if errorlevel 1 ( @popd & goto :BAD )
+@popd
+@if exist "%LJINTDIRS%\luajit.exe.manifest" %LJMT% -manifest "%LJINTDIRS%\luajit.exe.manifest" -outputresource:"%LJINTDIRS%\luajit.exe"
+
 @echo.
 @echo === Successfully built LuaJIT for Windows/%LJARCH% ===
-
+@echo   output:  %LJOUTDIRS%\%LJLIBNAME%
+@echo   scratch: %LJINTDIRS%
 @goto :END
+
 :BAD
 @echo.
 @echo *******************************************************
 @echo *** Build FAILED -- Please check the error messages ***
-@echo *******************************************************
+@echo *******************************************************
 @goto :END
+
+:USAGE
+@echo Usage: %~nx0 [gc64] [debug] [amalg^|static] ^<src_dir^> ^<lib_dir^> ^<int_dir^> [forced]
+
 :FAIL
 @echo You must open a "Visual Studio .NET Command Prompt" to run this script
 :END
-
-@move %2lua51.lib %3lua51.lib
-@del minilua.exe luajit.exe luajit.lib minilua.lib buildvm.lib minilua.exp luajit.exp buildvm.exp
-@rem move %2lua51.exp %3lua51.exp
-
-:ENDNMOVE
+@endlocal
