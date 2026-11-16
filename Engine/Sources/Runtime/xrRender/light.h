@@ -87,7 +87,7 @@ class light : public IRender_Light, public ISpatial
 	ref_shader get_shader_point() { return s_point; }
 	u32 get_transform_frame() { return m_transform_frame; }
 	fmat4x4 get_transform() { return m_transform; }
-	smapvis get_smapvis() { return svis; }
+	smapvis& get_smapvis() { return svis; }
 	virtual vis_data& get_homdata();
 
 	virtual void set_type(LT type)

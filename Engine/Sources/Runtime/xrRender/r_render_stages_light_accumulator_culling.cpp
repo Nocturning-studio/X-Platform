@@ -15,75 +15,180 @@ void CRender::render_stage_lights_culling()
     const fvec3& cam_pos = Engine.RenderView.Position;
     const float max_dist_sq = ps_r_light_distance_cull * ps_r_light_distance_cull;
 
-    // Локальные ссылки — короче и без частых Scene.Get*().
     CLight_DB& lights = Scene.GetLights();
     light_Package& LP_normal_pkg = Scene.GetNormalLights();
     light_Package& LP_pending_pkg = Scene.GetPendingLights();
     xr_vector<light*>& cpu_pending_lights = Scene.GetCpuOccPendingLights();
 
-#ifdef DEBUG_LIGHTS_CULLING
-    Msg("[CPU-OCC] === Frame %d BEGIN ===", frame);
-    Msg("[CPU-OCC] Lights in package: point=%d spot=%d shadowed=%d",
-        lights.package.v_point.size(), lights.package.v_spot.size(), lights.package.v_shadowed.size());
-#endif
+    light_Package& LP = lights.package;
 
-    // --------------------------------------------------------------------
-    // 0. Сбор результатов предыдущего кадра (CPU occlusion)
-    // --------------------------------------------------------------------
+    // ------------------------------------------------------------------
+    // Хелпер: «видим, без запроса» + дистанционный куллинг.
+    // frame2test намеренно = frame, чтобы на следующем кадре свет, вернувшийся
+    // в диапазон, получил свежую проверку без задержки на 10..20 кадров.
+    // ------------------------------------------------------------------
+    auto distribute_visible_no_query = [&](xr_vector<light*>& src, xr_vector<light*>& dst)
     {
-        OPTICK_EVENT("collect_cpu_query_results");
+        for (light* L : src)
+        {
+            if (!L) continue;
+
+            const float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
+            if (dist_sq > max_dist_sq)
+            {
+                L->VisibilityData.visible = false;
+                L->VisibilityData.pending = false;
+                L->VisibilityData.frame2test = frame + ::Random.randI(2, 5);   // короткий recheck
+                continue;
+            }
+
+            L->VisibilityData.visible = true;
+            L->VisibilityData.pending = false;
+            L->VisibilityData.frame2test = frame;
+            dst.push_back(L);
+        }
+    };
+
+    // =====================================================================
+    // Fast-path #1: HOM выключен -> CPUOCC бесполезен (пустой depth-буфер).
+    // Всё отдаём как видимое, иначе все запросы вернут 0 и откуллят сцену.
+    // =====================================================================
+    if (!CPUOCC.IsLoaded())
+    {
+        OPTICK_EVENT("lights_culling_no_hom");
+
+        // Осушаем «зависший» запрос, чтобы CPUOCC не остался в pending-состоянии
         if (CPUOCC.IsQueryReady())
         {
-#ifdef DEBUG_LIGHTS_CULLING
-            Msg("[CPU-OCC] Query ready, processing %d pending lights", cpu_pending_lights.size());
-#endif
             for (light* L : cpu_pending_lights)
             {
-                if (!L || !L->VisibilityData.pending)
-                    continue;
-
-                u32 samples = CPUOCC.GetVisibleSamples(L->VisibilityData.query_id);
-                if (samples != 0xfffffffe)
-                {
-                    bool newVisible = (samples > ps_r_light_fragments_cull);
-                    L->VisibilityData.visible = newVisible;
-                    L->VisibilityData.pending = false;
-
-                    if (newVisible)
-                        L->VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
-                    else
-                        L->VisibilityData.frame2test = frame + ::Random.randI(5, 10);
-
-#ifdef DEBUG_LIGHTS_CULLING
-                    Msg("[CPU-OCC]   Light %p (type %d) query_id=%u samples=%u -> %s",
-                        L, L->LightFlags.type, L->VisibilityData.query_id, samples,
-                        newVisible ? "VISIBLE" : "CULLED");
-#endif
-                }
+                if (!L) continue;
+                L->VisibilityData.visible = true;
+                L->VisibilityData.pending = false;
+                L->VisibilityData.frame2test = frame;
             }
             CPUOCC.ResetPendingQuery();
+            cpu_pending_lights.clear();
         }
-        cpu_pending_lights.clear();
+
+        LP_normal_pkg.clear();
+        LP_pending_pkg.clear();
+
+        distribute_visible_no_query(LP.v_point, LP_normal_pkg.v_point);
+        distribute_visible_no_query(LP.v_spot, LP_normal_pkg.v_spot);
+        distribute_visible_no_query(LP.v_shadowed, LP_normal_pkg.v_shadowed);
+
+        LP_normal_pkg.sort();
+        return;
     }
 
-    // --------------------------------------------------------------------
-    // 1. Очистка пакетов
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // Fast-path #2: предыдущий запрос ещё в полёте.
+    // Пересобираем пакеты из мастера (LP.v_*) по последнему известному
+    // состоянию visible/pending — НЕ трогая in-flight query.
+    // render_lights(…) в конце кадра опустошит LP_normal_pkg/LP_pending_pkg,
+    // поэтому при возврате без пересборки кадр был бы пустым.
+    //
+    // Важно: не выходим здесь, если ждать нечего (cpu_pending_lights пуст) —
+    // иначе BeginOcclusionQueries никогда не вызовется и IsQueryReady()
+    // навсегда останется false (дедлок первого кадра).
+    // =====================================================================
+    if (!CPUOCC.IsQueryReady() && !cpu_pending_lights.empty())
+    {
+        OPTICK_EVENT("lights_culling_wait_query");
+
+        LP_normal_pkg.clear();
+        LP_pending_pkg.clear();
+
+        // Читаем состояние, ничего не мутируем.
+        auto rebuild = [&](xr_vector<light*>& src,
+            xr_vector<light*>& dst_normal,
+            xr_vector<light*>& dst_pending)
+        {
+            for (light* L : src)
+            {
+                if (!L) continue;
+
+                // дистанционный куллинг — можно и нужно применять и здесь
+                const float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
+                if (dist_sq > max_dist_sq) continue;
+
+                if (L->VisibilityData.pending)
+                    dst_pending.push_back(L);         // в полёте -> рендерим как «pending»
+                else if (L->VisibilityData.visible)
+                    dst_normal.push_back(L);
+            }
+        };
+
+        rebuild(LP.v_point, LP_normal_pkg.v_point, LP_pending_pkg.v_point);
+        rebuild(LP.v_spot, LP_normal_pkg.v_spot, LP_pending_pkg.v_spot);
+        rebuild(LP.v_shadowed, LP_normal_pkg.v_shadowed, LP_pending_pkg.v_shadowed);
+
+        LP_normal_pkg.sort();
+        LP_pending_pkg.sort();
+        return;
+    }
+
+    // =====================================================================
+    // 1. Сбор результатов предыдущего кадра
+    // =====================================================================
+    {
+        OPTICK_EVENT("collect_cpu_query_results");
+
+        for (light* L : cpu_pending_lights)
+        {
+            if (!L) continue;
+            if (!L->VisibilityData.pending) continue;
+
+            const u32 samples = CPUOCC.GetVisibleSamples(L->VisibilityData.query_id);
+
+            if (samples == 0xfffffffe)
+            {
+                // Не должно случаться при IsQueryReady() == true, но
+                // не застреваем в pending — временно visible.
+                Msg("! [lights] query_id=%u not resolved despite IsQueryReady()", L->VisibilityData.query_id);
+                L->VisibilityData.visible = true;
+                L->VisibilityData.pending = false;
+                L->VisibilityData.frame2test = frame + 1;
+                continue;
+            }
+
+            const bool newVisible = (samples > ps_r_light_fragments_cull);
+            L->VisibilityData.visible = newVisible;
+            L->VisibilityData.pending = false;
+
+            if (newVisible)
+                L->VisibilityData.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
+            else
+                L->VisibilityData.frame2test = frame + ::Random.randI(5, 10);
+
+#ifdef DEBUG_LIGHTS_CULLING
+            Msg("[CPU-OCC]   Light %p (type %d) qid=%u samples=%u -> %s",
+                L, L->LightFlags.type, L->VisibilityData.query_id, samples,
+                newVisible ? "VISIBLE" : "CULLED");
+#endif
+        }
+
+        CPUOCC.ResetPendingQuery();
+        cpu_pending_lights.clear();   // безопасно: только что прочли всё
+    }
+
+    // =====================================================================
+    // 2. Очистка пакетов
+    // =====================================================================
     {
         OPTICK_EVENT("clear_packages");
         LP_normal_pkg.clear();
         LP_pending_pkg.clear();
     }
 
-    light_Package& LP = lights.package;
-
     stats.l_shadowed = LP.v_shadowed.size();
     stats.l_unshadowed = LP.v_point.size() + LP.v_spot.size();
     stats.l_total = stats.l_shadowed + stats.l_unshadowed;
 
-    // --------------------------------------------------------------------
-    // 2. Заполнение depth buffer и начало нового occlusion query
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // 3. Начало нового батча CPUOCC
+    // =====================================================================
     {
         OPTICK_EVENT("begin_query");
 
@@ -91,9 +196,9 @@ void CRender::render_stage_lights_culling()
         CPUOCC.BeginOcclusionQueries(Engine.RenderView.ViewProjection, vp);
     }
 
-    // --------------------------------------------------------------------
-    // 3. Подготовка источников (классификация)
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // 4. Подготовка (классификация)
+    // =====================================================================
     struct LightPrepareResult
     {
         light* L;
@@ -108,30 +213,28 @@ void CRender::render_stage_lights_culling()
 
     auto prepare_one = [&](light* L) -> LightPrepareResult
     {
-        float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
+        if (!L)
+            return { nullptr, false, false };
+
+        const float dist_sq = cam_pos.distance_to_sqr(L->spatial.sphere.P);
+
         if (dist_sq > max_dist_sq)
         {
             L->VisibilityData.visible = false;
             L->VisibilityData.pending = false;
-            L->VisibilityData.frame2test = frame + ::Random.randI(10, 20);
-#ifdef DEBUG_LIGHTS_CULLING
-            Msg("[CPU-OCC] PREP: light %p culled by distance (dist %.1f > max %.1f)",
-                L, sqrtf(dist_sq), sqrtf(max_dist_sq));
-#endif
+            L->VisibilityData.frame2test = frame + ::Random.randI(2, 5);
             return { L, false, false };
         }
 
-#ifdef DEBUG_LIGHTS_CULLING
-        Msg("[CPU-OCC] PREP: light %p type %d dist %.1f frame2test %d (curr %d) shadow=%d",
-            L, L->LightFlags.type, sqrtf(dist_sq), L->VisibilityData.frame2test, frame, L->LightFlags.bShadow);
-#endif
+        // Свет вернулся в диапазон после дистанционного куллинга (или был
+        // occ-куллен, но уже прошёл положенный recheck) — сбрасываем
+        // frame2test, чтобы vis_prepare() отработал в ЭТОМ кадре.
+        if (!L->VisibilityData.visible && !L->VisibilityData.pending && L->VisibilityData.frame2test > frame)
+        {
+            L->VisibilityData.frame2test = frame;
+        }
 
-        bool needs_q = L->vis_prepare(frame);
-
-#ifdef DEBUG_LIGHTS_CULLING
-        Msg("[CPU-OCC]   -> needs_q=%d pending=%d visible=%d",
-            needs_q, L->VisibilityData.pending, L->VisibilityData.visible);
-#endif
+        const bool needs_q = L->vis_prepare(frame);
         return { L, needs_q, L->VisibilityData.pending };
     };
 
@@ -141,93 +244,65 @@ void CRender::render_stage_lights_culling()
         if (total_lights > 64)
         {
             concurrency::parallel_invoke(
-                [&]()
-                {
-                    OPTICK_EVENT("prepare_point");
-                    for (light* L : LP.v_point)
-                        prepared_point.push_back(prepare_one(L));
-                },
-                [&]()
-                {
-                    OPTICK_EVENT("prepare_spot");
-                    for (light* L : LP.v_spot)
-                        prepared_spot.push_back(prepare_one(L));
-                },
-                    [&]()
-                {
-                    OPTICK_EVENT("prepare_shadowed");
-                    for (light* L : LP.v_shadowed)
-                        prepared_shadowed.push_back(prepare_one(L));
-                });
+                [&]() { for (light* L : LP.v_point)    prepared_point.push_back(prepare_one(L));    },
+                [&]() { for (light* L : LP.v_spot)     prepared_spot.push_back(prepare_one(L));     },
+                [&]() { for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L)); });
         }
         else
         {
             OPTICK_EVENT("prepare_sequential");
-            for (light* L : LP.v_point)
-                prepared_point.push_back(prepare_one(L));
-            for (light* L : LP.v_spot)
-                prepared_spot.push_back(prepare_one(L));
-            for (light* L : LP.v_shadowed)
-                prepared_shadowed.push_back(prepare_one(L));
+            for (light* L : LP.v_point)    prepared_point.push_back(prepare_one(L));
+            for (light* L : LP.v_spot)     prepared_spot.push_back(prepare_one(L));
+            for (light* L : LP.v_shadowed) prepared_shadowed.push_back(prepare_one(L));
         }
     }
 
-    // --------------------------------------------------------------------
-    // 4. Выдача CPU occlusion запросов
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // 5. Выдача CPU occlusion запросов
+    // =====================================================================
     {
         OPTICK_EVENT("Issue CPU occlusion queries");
 
-#ifdef DEBUG_LIGHTS_CULLING
-        u32 total_issued = 0;
-#endif
-
-        auto issue_queries = [&](xr_vector<LightPrepareResult>& prepared_list, const char* name)
+        auto issue_queries = [&](xr_vector<LightPrepareResult>& list)
         {
-#ifdef DEBUG_LIGHTS_CULLING
-            u32 issued = 0, fallback = 0;
-#endif
-            for (auto& item : prepared_list)
+            for (auto& item : list)
             {
-                if (!item.needs_query)
-                    continue;
-
+                if (!item.needs_query) continue;
                 light* L = item.L;
-                u32 qid = (u32)CPUOCC.AddLightVolume(L);
-                L->VisibilityData.query_id = qid;
-#ifdef DEBUG_LIGHTS_CULLING
-                ++issued;
+
+                const u32 qid = (u32)CPUOCC.AddLightVolume(L);
                 if (qid == UINT32_MAX)
-                    ++fallback;
-#endif
+                {
+                    // Пул исчерпан / AddLightVolume не смог — не оставляем
+                    // свет в pending навсегда: считаем видимым, перепроверим
+                    // на следующем кадре.
+                    L->VisibilityData.visible = true;
+                    L->VisibilityData.pending = false;
+                    L->VisibilityData.frame2test = frame + 1;
+                    item.pending = false;
+                    continue;
+                }
+
+                L->VisibilityData.query_id = qid;
             }
-#ifdef DEBUG_LIGHTS_CULLING
-            Msg("[CPU-OCC]   %s: issued=%d, fallback=%d", name, issued, fallback);
-            total_issued += issued;
-#endif
         };
 
-        issue_queries(prepared_point, "point");
-        issue_queries(prepared_spot, "spot");
-        issue_queries(prepared_shadowed, "shadowed");
-
-#ifdef DEBUG_LIGHTS_CULLING
-        Msg("[CPU-OCC] Total queries issued: %d", total_issued);
-#endif
+        issue_queries(prepared_point);
+        issue_queries(prepared_spot);
+        issue_queries(prepared_shadowed);
     }
 
-    // --------------------------------------------------------------------
-    // 5. Завершение запроса и сохранение pending-источников
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // 6. Завершение батча и сбор pending-источников
+    // =====================================================================
     {
         OPTICK_EVENT("End occlusion queries");
         CPUOCC.EndOcclusionQueries();
 
-        cpu_pending_lights.clear();
         auto gather_pending = [&](const auto& src)
         {
-            for (auto& item : src)
-                if (item.pending)
+            for (const auto& item : src)
+                if (item.pending && item.L)
                     cpu_pending_lights.push_back(item.L);
         };
         gather_pending(prepared_point);
@@ -235,9 +310,9 @@ void CRender::render_stage_lights_culling()
         gather_pending(prepared_shadowed);
     }
 
-    // --------------------------------------------------------------------
-    // 6. Распределение по LP_normal / LP_pending
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // 7. Распределение normal / pending
+    // =====================================================================
     {
         OPTICK_EVENT("Distribute to normal/pending");
 
@@ -245,6 +320,7 @@ void CRender::render_stage_lights_culling()
         {
             for (auto& item : prepared_list)
             {
+                if (!item.L) continue;
                 if (item.pending)
                     pending_list.push_back(item.L);
                 else if (item.L->VisibilityData.visible)
@@ -257,19 +333,9 @@ void CRender::render_stage_lights_culling()
         distribute(prepared_shadowed, LP_normal_pkg.v_shadowed, LP_pending_pkg.v_shadowed);
     }
 
-#ifdef DEBUG_LIGHTS_CULLING
-    {
-        u32 total_visible = LP_normal_pkg.v_point.size() + LP_normal_pkg.v_spot.size() + LP_normal_pkg.v_shadowed.size();
-        u32 total_pending = LP_pending_pkg.v_point.size() + LP_pending_pkg.v_spot.size() + LP_pending_pkg.v_shadowed.size();
-        u32 total_prepared = prepared_point.size() + prepared_spot.size() + prepared_shadowed.size();
-        u32 total_invisible = total_prepared - total_visible - total_pending;
-        Msg("[CPU-OCC] END FRAME %d: visible=%d pending=%d culled=%d", frame, total_visible, total_pending, total_invisible);
-    }
-#endif
-
-    // --------------------------------------------------------------------
-    // 7. Сортировка
-    // --------------------------------------------------------------------
+    // =====================================================================
+    // 8. Сортировка
+    // =====================================================================
     {
         OPTICK_EVENT("Sorting light arrays");
         LP_normal_pkg.sort();
@@ -285,16 +351,9 @@ void CRender::update_shadow_map_visibility()
     {
         for (light* L : list)
         {
-            if (!L)
-                continue;
-            try
-            {
-                L->get_smapvis().flushoccq();
-            }
-            catch (...)
-            {
-                Msg("! Failed to flush-OCCq on light %p", L);
-            }
+            if (!L) continue;
+            try { L->get_smapvis().flushoccq(); }
+            catch (...) { Msg("! Failed to flush-OCCq on light %p", L); }
         }
     };
 

@@ -76,8 +76,6 @@ void CRender::render_lights(light_Package& LP)
         OPTICK_EVENT("Pack shadow maps");
 
         xr_vector<light*>& source = LP.v_shadowed;
-        if (source.empty())
-            return;
 
         xr_vector<light*> refactored;
         refactored.reserve(source.size());

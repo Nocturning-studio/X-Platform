@@ -3,8 +3,14 @@
 
 smapvis::smapvis()
 {
-    invalidate();
+    state = state_counting;
     frame_sleep = 0;
+    test_count = 0;
+    test_current = 0;
+    testQ_V = nullptr;
+    testQ_id = 0;
+    testQ_frame = 0xFFFFFFFF;
+    invisible.clear();
 }
 
 smapvis::~smapvis()

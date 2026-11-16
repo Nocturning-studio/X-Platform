@@ -110,7 +110,7 @@ void CRender::LevelLoad(IReader* fs)
 
 	if (!g_dedicated_server)
 	{
-		Scene.LoadHOM(); 
+		Scene.LoadHOM();
 		CPUOCC.Load(Scene.GetHOM());
 		Scene.LoadDetails();
 		Scene.LoadSunOccluder();
