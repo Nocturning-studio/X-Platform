@@ -613,7 +613,7 @@ HRESULT CResourceManagerLegacy::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR sr
 	HRESULT _result = E_FAIL;
 
 	string_path cache_dest;
-	sprintf_s(cache_dest, sizeof cache_dest, "shaders_cache\\%s%s.%s\\%s_%s_%d.xrcache", ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
+	sprintf_s(cache_dest, sizeof cache_dest, "shaders_cache\\%s%s.%s\\%s_%s.xrcache", ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry);
 
 	string_path source_file_path;
 	sprintf_s(source_file_path, sizeof source_file_path, "%s%s.%s", ::Render->getShaderPath(), name, ext);
@@ -746,7 +746,7 @@ HRESULT CResourceManagerLegacy::CompileShader(LPCSTR name, LPCSTR ext, LPCSTR sr
 			if(SUCCEEDED(disasmResult) && pDisassembly)
 			{
 				string_path disasm_path;
-				sprintf_s(disasm_path, sizeof disasm_path, "shaders_cache\\%s%s.%s\\%s_%s_%d.html", ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry, GlobalBuildInfo.ID);
+				sprintf_s(disasm_path, sizeof disasm_path, "shaders_cache\\%s%s.%s\\%s_%s.html", ::Render->getShaderPath(), name, ext, macros.get_name().c_str(), entry);
 
 				EnsureCacheDirectoryExists(disasm_path);
 
