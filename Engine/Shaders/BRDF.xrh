@@ -114,7 +114,7 @@ float G_SchlickBeckmann(float cosTheta, float k)
 
 float Vis_SmithGGX(float NdotV, float NdotL, float roughness)
 {
-    float k = pow(roughness + 1.0, 2.0) / 8.0; 
+    float k = roughness * 0.5;
 	return G_SchlickBeckmann(NdotV, k) * G_SchlickBeckmann(NdotL, k);
 }
 
@@ -227,7 +227,7 @@ float3 CalculateSheen(float3 Normal, float3 ViewDirection, float3 LightDirection
     float V = Vis_Neubelt(NdotV, NdotL);
     float3 F = Fresnel_Sheen(HdotV, SheenColor);
     
-    return (D * V) * F * SheenIntensity * NdotL;
+    return (D * V) * F * SheenIntensity;
 }
 
 // =============================================================================
@@ -247,7 +247,7 @@ float3 CalculateClearCoat(float3 Normal, float3 ViewDirection, float3 LightDirec
     float V = Vis_Kelemen(LoH);
     float3 F = fresnelSchlick(HdotV, CoatF0);
 
-    return (D * V) * F * CoatIntensity * NdotL;
+    return (D * V) * F * CoatIntensity;
 }
 
 float3 ApplyClearCoatAttenuation(float3 BaseColor, float CoatIntensity, float HdotV)
@@ -288,11 +288,11 @@ float3 EnergyCompensation(float3 F0, float NdotV, float a)
 // MATERIAL PROPERTIES
 // =============================================================================
 
-float3 EnergyConservingDiffuse(float3 Albedo, float3 F0, float Metallic, float Roughness, float NdotL, float NdotV, float LdotH, float LdotV)
+float3 EnergyConservingDiffuse(float3 Albedo, float3 F0, float Metallic, float Roughness, float NdotL, float NdotV, float LdotH, float LdotV, float HdotV)
 {
     float3 diffuseTerm = BurleyDiffuse(Roughness, NdotV, NdotL, LdotH);
     
-    float3 F = fresnelSchlick(NdotV, F0);
+    float3 F = fresnelSchlick(HdotV, F0);
     float3 kD = (1.0 - F) * (1.0 - Metallic);
 
     return diffuseTerm * Albedo * kD;
@@ -365,10 +365,10 @@ float3 Calculate_Lighting_Model(GBuffer GBuffer, float3 LightDirection, float3 L
     float3 F = fresnelSchlick(HdotV, F0);
     float3 specularRad = (D * V) * F;
     
-    float3 energyComp = EnergyCompensation(F0, NdotV, linearRoughness);
-    specularRad *= energyComp;
+    //float3 energyComp = EnergyCompensation(F0, NdotV, perceptualRoughness);
+    //specularRad *= energyComp;
 
-    float3 diffuseRad = EnergyConservingDiffuse(Albedo, F0, GBuffer.Metallic, linearRoughness, NdotL, NdotV, LdotH, sLdotV);
+    float3 diffuseRad = EnergyConservingDiffuse(Albedo, F0, GBuffer.Metallic, linearRoughness, NdotL, NdotV, LdotH, sLdotV, HdotV);
     
     float3 baseLayer = (diffuseRad + specularRad) * coatAttenuation * sheenAttenuation;
     float3 DirectLighting = baseLayer + sheenRad * coatAttenuation + clearCoatRad;

@@ -31,7 +31,7 @@ AmbientOcclusion CalculateAmbientOcclusion(GBuffer GBuffer, float3 WorldSpaceNor
     
     ao.RealTime = tex2Dlod0(s_ao, TexCoords).r;
     
-    const float adjustBrightness = 1.5f;
+    const float adjustBrightness = 2.0f;
     const float minAmbient = 0.015f;
     
     float LightmapRaw = GBuffer.AO;

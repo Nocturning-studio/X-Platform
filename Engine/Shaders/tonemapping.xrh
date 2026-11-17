@@ -82,7 +82,7 @@ static const float3 luminance_weights = float3(0.2125f, 0.7154f, 0.0721f);
 float3 LumaWeightedReinhard(float3 Color)
 {
     const float white_level = 1.0f;
-    const float luminance_saturation = 1.0f;
+    const float luminance_saturation = 1.2f;
     const float pixel_luminance = dot(Color, luminance_weights);
     const float tone_mapped_luminance = 1.0f - exp(-pixel_luminance / white_level);
     return tone_mapped_luminance * safe_pow(Color / pixel_luminance, luminance_saturation);

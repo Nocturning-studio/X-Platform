@@ -2,7 +2,7 @@
 
 IC float sRgbToLinear(float vValue)
 {
-	return pow(vValue, 2.4f);
+	return pow(vValue, 2.2f);
 }
 
 IC fvec3 sRgbToLinear(fvec3 vValue)

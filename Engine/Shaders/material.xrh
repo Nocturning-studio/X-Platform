@@ -89,8 +89,8 @@ MaterialParams GetMaterial(float2 UV, float3x3 TBN, float3 Position)
 
 #ifdef USE_BUMP
     // Make normals more power with heightmap
-    Material.Normal.xy *= Material.Height + 1.0f;
-    Material.Normal.z *= Material.Height;
+    //Material.Normal.xy *= Material.Height + 1.0f;
+    //Material.Normal.z *= Material.Height;
 #endif
     
     Material.Normal = normalize(Material.Normal);

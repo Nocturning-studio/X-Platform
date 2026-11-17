@@ -135,21 +135,32 @@ float3 GetSpecularDominantDir(float3 ViewDirection, float3 Normal, float Roughne
     return normalize(lerp(Normal, perfectReflection, lerpFactor));
 }
 
+float3 GetIrradianceCubemap(float3 Coords, float3 WorldSpaceNormal, float MipLevel)
+{
+    float3 Cubemap = GetSkyCubeInterpolated(env_s0, env_s1, Coords, env_color.w, MipLevel);
+    
+    //float sphericalHarmonics = WorldSpaceNormal.y * 0.5f + 0.5f;
+    //sphericalHarmonics += 0.75f;
+    //sphericalHarmonics = saturate(sphericalHarmonics);
+    
+    return Cubemap;// * pow2(sphericalHarmonics);
+}
+
 float3 GetCubemap(float3 Coords, float3 WorldSpaceNormal, float MipLevel)
 {
     float3 Cubemap = GetSkyCubeInterpolated(sky_s0, sky_s1, Coords, env_color.w, MipLevel);
     
-    float sphericalHarmonics = WorldSpaceNormal.y * 0.5f + 0.5f;
-    sphericalHarmonics += 0.75f;
-    sphericalHarmonics = saturate(sphericalHarmonics);
+    //float sphericalHarmonics = WorldSpaceNormal.y * 0.5f + 0.5f;
+    //sphericalHarmonics += 0.75f;
+    //sphericalHarmonics = saturate(sphericalHarmonics);
     
-    return Cubemap * pow2(sphericalHarmonics);
+    return Cubemap;// * pow2(sphericalHarmonics);
 }
 
 float3 CalculateIBLDiffuse(GBuffer GBuffer, float3 WorldSpaceNormal, float3 BentNormal, float3 kD, float Ambient, IBLContext Context)
 {
     float3 irradianceCoords = RemapCubeCoords(BentNormal);
-    float3 irradiance = GetCubemap(irradianceCoords, BentNormal, 8);
+    float3 irradiance = GetIrradianceCubemap(irradianceCoords, BentNormal, 8);
     float3 Diffuse = CalculateIBLLambertDiffuse(GBuffer, kD, Ambient, Context);
     return irradiance * Diffuse;
 }

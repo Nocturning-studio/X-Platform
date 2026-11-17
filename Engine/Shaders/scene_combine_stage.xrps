@@ -45,7 +45,7 @@ float4 main(float2 TexCoords : TEXCOORD0, float2 Pos2D : VPOS) : COLOR0
 
     // 4. Get Direct Lighting
     // ----------------------
-    float3 DirectLighting = tex2Dlod0(s_light_accumulator, TexCoords).rgb * 2.0f;
+    float3 DirectLighting = tex2Dlod0(s_light_accumulator, TexCoords).rgb;
     
     // 5. Calculate Indirect Lighting (IBL)
     // ------------------------------------
