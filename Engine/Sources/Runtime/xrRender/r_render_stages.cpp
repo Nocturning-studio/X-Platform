@@ -8,8 +8,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 void CRender::prepare_to_render()
 {
-	m_need_render_sun = need_render_sun();
-
 	Scene.GetFrustumBase().CreateFromMatrix(Engine.RenderView.ViewProjection, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 }
 

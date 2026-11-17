@@ -237,12 +237,12 @@ void CRender::ResetEnd()
 	m_spot_shadow_vis.InitResources();
 	m_sun_cascades_buffer[0].Init();
 	m_sun_cascades_buffer[1].Init();
+	m_sun_gather_done.store(true);
 }
 
 void CRender::WaitForPendingTasks()
 {
-#pragma fixme("")
-	//wait_for_sun_task();
+	wait_for_sun_task();
 }
 
 void CRender::OnFrame()
@@ -255,7 +255,9 @@ void CRender::OnFrame()
 	Scene.OnFrame();
 	Scene.GetGraph().GetLoosePacket().Clear();
 
-	if(need_render_sun())
+	m_need_render_sun = need_render_sun();
+
+	if(m_need_render_sun)
 	{
 		wait_for_sun_task();
 		swap_sun_buffers();
