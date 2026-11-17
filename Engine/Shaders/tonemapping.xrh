@@ -5,12 +5,12 @@
 ////////////////////////////////////////////////////////////////////////////
 float3 sRgbToLinear(float3 Color)
 {
-    return safe_pow(Color, 2.2f);
+    return safe_pow(Color, 2.4f);
 }
 
 float3 LinearTosRgb(float3 Color)
 {
-    return safe_pow(Color, 1.0f / 2.2f);
+    return safe_pow(Color, 1.0f / 2.4f);
 }
 ////////////////////////////////////////////////////////////////////////////
 float3 LogToLinear(float3 logColor)
