@@ -174,7 +174,12 @@ RHI_TextureHandle CRenderBackendDX9::CreateTexture(const RHI_TextureDesc& desc, 
 					sysTex->UnlockRect(0);
 					hr = m_pDevice->UpdateTexture(sysTex, impl->tex2D);
 					if (FAILED(hr))
-						Msg("! [DX9] UpdateTexture failed (0x%08x)", hr);
+					{
+						Msg("! [DX9] UpdateTexture failed (0x%08x) — destroying texture", hr);
+						impl->tex2D->Release();
+						delete impl;
+						return {};
+					}
 				}
 				sysTex->Release();
 			}
@@ -196,10 +201,31 @@ void CRenderBackendDX9::DestroyTexture(RHI_TextureHandle handle)
 		Msg("! [DX9] DestroyTexture: invalid handle (id=%u)", handle.id);
 		return;
 	}
+
+	IDirect3DBaseTexture9* base = impl->GetBase();
+
+	if (base && m_pDevice)
+	{
+		for (uint32_t slot = 0; slot < 16 + 4; ++slot)
+		{
+			IDirect3DBaseTexture9* cur = nullptr;
+			if (SUCCEEDED(m_pDevice->GetTexture(slot, &cur)) && cur == base)
+			{
+				m_pDevice->SetTexture(slot, nullptr);
+				cur->Release();
+			}
+			else if (cur)
+			{
+				cur->Release();
+			}
+		}
+	}
+
 	if (impl->tex2D)   impl->tex2D->Release();
 	if (impl->texCube) impl->texCube->Release();
 	if (impl->tex3D)   impl->tex3D->Release();
 	if (impl->surface) impl->surface->Release();
+
 	FreeRHI_TextureHandle(handle);
 }
 

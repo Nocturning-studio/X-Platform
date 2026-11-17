@@ -386,11 +386,13 @@ void CRenderBackendDX9::DestroyBuffer(RHI_BufferHandle handle)
 void* CRenderBackendDX9::LockBuffer(RHI_BufferHandle handle, uint32_t offset, uint32_t size, uint32_t flags)
 {
 	DX9Buffer* buf = GetBuffer(handle);
-	if(!buf || !buf->locked == false)
+
+	if (!buf)
+		return nullptr;
+
+	if (buf->locked)
 	{
-		// D3D9 не поддерживает рекурсивный Lock.
-		if(buf && buf->locked)
-			Msg("! [DX9] LockBuffer: buffer (id=%u) is already locked", handle.id);
+		Msg("! [DX9] LockBuffer: buffer (id=%u) is already locked", handle.id);
 		return nullptr;
 	}
 

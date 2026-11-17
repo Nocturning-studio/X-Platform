@@ -394,10 +394,9 @@ void CRenderBackendDX9::SetShaderConstants(RHI_ShaderType stage, uint32_t startR
 	if (!m_pDevice || !data || vec4Count == 0)
 		return;
 
-	// D3D9 требует, чтобы константы были выровнены на 16 байт. Мы не
-	// проверяем это здесь — align — ответственность вызывающего кода.
-	// CShaderConstantBuffer хранит массив в ALIGN(16) fvec4, так что
-	// выравнивание соблюдено.
+	// D3D9 не требует выравнивания для Set*ShaderConstantF.
+	// Однако группы float4 внутри шейдера с static flow control должны быть
+	// непрерывны — это ответственность вызывающего кода (CShaderConstantBuffer).
 	//
 	// Регистры нумеруются с 0, максимум — 255 для SM3.0 (или меньше по caps).
 	// Не проверяем границы — D3D9 молча проигнорирует out-of-range регистры.

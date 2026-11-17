@@ -334,26 +334,28 @@ void CRenderBackendDX9::SetRenderTargets(const RHI_RenderTargetView* rtvs,
 void CRenderBackendDX9::ClearRenderTarget(RHI_RenderTargetView rtv, const fvec4& color)
 {
 	if (!m_pDevice) return;
-
 	IDirect3DSurface9* surf = ResolveRTASurface(rtv);
 	if (!surf) return;
 
 	const D3DCOLOR d3dColor = D3DCOLOR_COLORVALUE(color.x, color.y, color.z, color.w);
 
-	// Если этот RTV уже привязан в slot 0 — просто Clear().
-	if (m_currentRTASurfaces[0] == surf)
+	if (m_currentRTASurfaces[0] == surf && !m_currentRTASurfaces[1] && !m_currentRTASurfaces[2] && !m_currentRTASurfaces[3])
 	{
 		m_pDevice->Clear(0, nullptr, D3DCLEAR_TARGET, d3dColor, 1.0f, 0);
 		return;
 	}
 
-	// Иначе: временно биндим в slot 0, чистим, восстанавливаем.
-	// Кэш RTV-кэш не трогаем — состояние устройства после restore
-	// то же, что было до вызова.
-	IDirect3DSurface9* saved = m_currentRTASurfaces[0];
+	IDirect3DSurface9* saved[4];
+	for (uint32_t i = 0; i < 4; ++i) saved[i] = m_currentRTASurfaces[i];
+
+	for (uint32_t i = 0; i < 4; ++i)
+		if (saved[i]) m_pDevice->SetRenderTarget(i, nullptr);
+
 	m_pDevice->SetRenderTarget(0, surf);
 	m_pDevice->Clear(0, nullptr, D3DCLEAR_TARGET, d3dColor, 1.0f, 0);
-	m_pDevice->SetRenderTarget(0, saved);
+
+	for (uint32_t i = 0; i < 4; ++i)
+		if (saved[i]) m_pDevice->SetRenderTarget(i, saved[i]);
 }
 
 void CRenderBackendDX9::ClearDepthStencil(RHI_DepthStencilView dsv, float depth, uint8_t stencil)

@@ -15,6 +15,14 @@ enum RHI_BufferUsage : uint32_t
 	RHI_BufferUsage_CPUReadable = 1u << 3,
 };
 
+enum RHI_LockFlags : uint32_t
+{
+	RHI_Lock_None = 0,
+	RHI_Lock_Discard = 1u << 0,		// discard previous contents
+	RHI_Lock_ReadOnly = 1u << 1,	// don't write
+	RHI_Lock_NoOverwrite = 1u << 2, // write-once
+};
+
 enum class RHI_IndexFormat : uint32_t
 {
 	UInt16 = 0,
@@ -29,12 +37,10 @@ inline uint32_t RHI_IndexFormatSize(RHI_IndexFormat f)
 struct RHI_BufferDesc
 {
 	uint32_t sizeBytes = 0;
-	uint32_t stride = 0;								   // VB only: размер одной вершины
-	RHI_IndexFormat indexFormat = RHI_IndexFormat::UInt16; // IB only
+	uint32_t stride = 0;
+	RHI_IndexFormat indexFormat = RHI_IndexFormat::UInt16;
 	uint32_t usage = RHI_BufferUsage_Default;
 	const char* debugName = nullptr;
-
-	// ---- Фабрики ----
 
 	static RHI_BufferDesc Vertex(uint32_t sizeBytes,
 								 uint32_t stride,
