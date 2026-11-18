@@ -638,6 +638,11 @@
     <ProjectReference Include="..\..\..\Runtime\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\LuaJIT-2.1.0-beta3\LuaJIT-2.1.0-beta3.vcxproj">
+      <Project>{19109bc8-f916-43cb-8ec3-6e964bd24962}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
